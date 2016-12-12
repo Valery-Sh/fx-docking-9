@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.properties;
 
+import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,6 +15,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.MultiTab;
 import org.vns.javafx.dock.api.StateTransformer;
 import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -205,5 +207,19 @@ public class StateProperty<T extends Dockable> {
         titleProperty.set(title);
         titleBarProperty().set(tb);
         return tb;
+    }
+    
+    public Dockable getImmediateParent(Node node) {
+        Dockable retval = getDockable();
+        if ( immediateParent != null ) {
+            retval = immediateParent.apply(node);
+        }
+        return retval;
+    }
+
+    public Function<Node,Dockable> immediateParent = null;
+    
+    public Dockable aaaa(Node node,Function<Node,Dockable> f) {
+        return f.apply(node);
     }
 }

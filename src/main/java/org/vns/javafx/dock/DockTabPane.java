@@ -61,6 +61,9 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     private final HBox titleBarBox = new HBox();
 
     private void init(DockPane dockPane) {
+        Node n = null;
+        stateProperty.aaaa(n, DockTabPane::immediateParent1);
+        
         StackPane stackPane = new StackPane();
         menuButton = new Button();
         menuButton.focusTraversableProperty().set(false);
@@ -81,7 +84,10 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
         //this.dockableState = new DockableState(this);
         getTitleBars().addListener(this::onChangeTitleBars);
     }
-
+    
+    public Dockable immediateParent1(Node node) {
+        return null;
+    }
     public void onChangeTitleBars(Change<? extends Node> c) {
         while (c.next()) {
             if (c.wasUpdated()) {
