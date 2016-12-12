@@ -148,6 +148,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
                 ((Dockable)f).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
 
+            
         }
     }
 }
