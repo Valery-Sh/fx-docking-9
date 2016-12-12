@@ -182,6 +182,9 @@ public class StateProperty<T extends Dockable> {
     }
 
     public boolean isDocked() {
+        if ( !isFloating() && parent == null ) {
+            return false;
+        }
         return !isFloating() && parent.parentSplitPane(getNode()) != null;
     }
 

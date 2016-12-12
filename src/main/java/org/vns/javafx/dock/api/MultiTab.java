@@ -11,5 +11,6 @@ public interface MultiTab {
     ObservableList<Node> getTitleBars();
     ObservableList<Node> getContents();
     void remove(Dockable child);
+    void dock(int pos, Dockable node);
     
 }

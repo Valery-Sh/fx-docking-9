@@ -1,16 +1,12 @@
 package org.vns.javafx.dock.api.properties;
 
 import org.vns.javafx.dock.DockTitleBar;
-import javafx.beans.Observable;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
@@ -23,7 +19,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     public static final PseudoClass CHOOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("choosed");
 
-    private final BooleanProperty choosedProperty = new SimpleBooleanProperty(false);// {
+    //private final BooleanProperty choosedProperty = new SimpleBooleanProperty(false);// {
 
     private final ReadOnlyObjectWrapper<Dockable> ownerWrapper = new ReadOnlyObjectWrapper<>();
 
@@ -54,6 +50,9 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     }
 
     public void setActiveChoosedPseudoClass(boolean newValue) {
+        if ( get() == null ) {
+            return;
+        }
         if ( newValue ) {
             turnOnChoosedPseudoClass();
         } else {
@@ -64,7 +63,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     }
 
     
-    protected void choosedPropertyInvalidated(Observable obsv) {
+/*    protected void choosedPropertyInvalidated(Observable obsv) {
         if (getOwner() == null || ! activeChoosedPseudoClass ) {
             return;
         }
@@ -74,10 +73,10 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             getOwner().stateProperty().getNode().toFront();
         }
     }
-
+*/
     protected void turnOffChoosedPseudoClass() {
-        choosedProperty.removeListener(this::choosedPropertyInvalidated);
-        choosedProperty.set(false);
+        //choosedProperty.removeListener(this::choosedPropertyInvalidated);
+        //choosedProperty.set(false);
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
@@ -85,10 +84,10 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         if ( activeChoosedPseudoClass ) {
             return;
         }
-        choosedProperty.set(false);
-        choosedProperty.addListener(this::choosedPropertyInvalidated);
+       // choosedProperty.set(false);
+        //choosedProperty.addListener(this::choosedPropertyInvalidated);
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                
-        choosedProperty.set(true);
+        //choosedProperty.set(true);
         
    }
 
@@ -116,10 +115,10 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     }
 
-    public BooleanProperty choosedProperty() {
+/*    public BooleanProperty choosedProperty() {
         return choosedProperty;
     }
-
+*/
     public boolean isDefaultTitleBar() {
         return get() != null && (get() instanceof DockTitleBar);
     }

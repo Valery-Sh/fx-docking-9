@@ -16,6 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.properties.StateProperty;
 
@@ -23,7 +24,7 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  *
  * @author Valery Shyshkin
  */
-public class DockToolBarTitled extends VBox implements Dockable{
+public class DockToolBarTitled extends VBox implements Dockable, DockTarget{
     
     StringProperty titleProperty = new SimpleStringProperty("Tool Bar Enabled");
     StateProperty stateProperty = new StateProperty(this);
@@ -64,5 +65,10 @@ public class DockToolBarTitled extends VBox implements Dockable{
     @Override
     public StateProperty stateProperty() {
         return stateProperty;
+    }
+
+    @Override
+    public void dock(Node dockable, Side dockPos) {
+        stateProperty.getParent().dock(dockable, dockPos, this);
     }
 }

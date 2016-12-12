@@ -41,12 +41,12 @@ public class DockPaneDelegate<T extends Pane> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
         });
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            Node newNode = DockUtil.getDockableParent(newValue);
+            Node newNode = DockUtil.getDockableParentLeaf(newValue);
             if (newNode != null) {
-                boolean b = ((Dockable) newNode).stateProperty().titleBarProperty().choosedProperty().get();
+                //boolean b = ((Dockable) newNode).stateProperty().titleBarProperty().choosedProperty().get();
                 ((Dockable) newNode).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-            Dockable oldNode = (Dockable) DockUtil.getDockableParent(oldValue);
+            Dockable oldNode = (Dockable) DockUtil.getDockableParentLeaf(oldValue);
             if (oldNode != null && oldNode != newNode) {
                 oldNode.stateProperty().titleBarProperty().setActiveChoosedPseudoClass(false);
             } else if (oldNode != null && !oldNode.stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {

@@ -3,8 +3,6 @@ package org.vns.javafx.dock.api.demo;
 import org.vns.javafx.dock.api.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -34,12 +32,19 @@ public class DockNodeImpl extends VBox implements Dockable {
             newtb.getStyleClass().add("dock-title-bar");
             bar.setId("SECOND");  
             System.out.println("SECOND !!!!");
-            stateProperty.titleBarProperty().set(newtb);
+            //stateProperty.titleBarProperty().set(newtb);
             
         });
     }
     
-
+    /*public void addNode(Node node) {
+        int idx = 1;
+        if ( getChildren().size() == 0 ) {
+            idx = 0;
+        }
+        getChildren().add(getC)
+    }
+*/
     @Override
     public StringProperty titleProperty() {
         return new SimpleStringProperty("NODE default");

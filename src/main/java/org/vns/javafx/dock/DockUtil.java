@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock;
 
 import java.util.ArrayList;
@@ -65,6 +60,42 @@ public class DockUtil {
             }
         }
     }
+
+
+    public static Node getDockableParentLeaf(Node child) {
+        Node retval = null;
+        Node  p = getDockableParent(child);
+        if ( p == null ) {
+            return null;
+        }
+        retval = getDockableParent((Parent)p, child);
+        if ( retval == null ) {
+            retval = p;
+        }
+        return retval;
+    }
+    
+    public static Node getDockableParent(Parent root, Node child) {
+        if ( child == null || child.getScene() == null || child.getScene().getRoot() == null ) {
+            return null;
+        }
+        Node retval = null;
+        
+        
+        List<Node> dockables = new ArrayList<>();
+        addAllDockable(root, dockables);
+        
+        for ( Node dockable : dockables ) {
+            Node node = findNode((Parent) dockable, child);
+            if ( node != null ) {
+                retval = dockable;
+                break;
+            }
+        }
+        
+        return  retval;
+    }
+    
     
     public static Node getDockableParent(Node child) {
         if ( child == null || child.getScene() == null || child.getScene().getRoot() == null ) {
@@ -73,7 +104,8 @@ public class DockUtil {
         Node retval = null;
         
         Parent root = child.getScene().getRoot();
-        List<Node> dockables = new ArrayList<>();
+        return getDockableParent(root, child);
+/*        List<Node> dockables = new ArrayList<>();
         addAllDockable(root, dockables);
         
         for ( Node dockable : dockables ) {
@@ -87,6 +119,7 @@ public class DockUtil {
         }
         
         return  retval;
+*/
     }
     private static Node findNode(Parent dockable, Node toSearch) {
         Node retval = null;

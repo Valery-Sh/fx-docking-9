@@ -13,5 +13,6 @@ import javafx.scene.Node;
  * @author Valery
  */
 public interface DockTarget {
-    //void dock(Node dockableTagget, Side dockPos);
+    default void dock(Node dockable, Side dockPos) {};
+    default void dock(Node dockable) {};    
 }

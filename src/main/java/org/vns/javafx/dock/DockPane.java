@@ -35,10 +35,12 @@ public class DockPane extends StackPane implements DockTarget{
     protected DockPaneDelegate getDelegate() {
         return this.delegeteProperty.get();
     }
+    @Override
     public void dock(Node dockable, Side dockPos) {
         delegeteProperty.get().dock(dockable, dockPos);
     }
-    public void dock(Node node, Side dockPos, DockTarget target) {
+/*    public void dock(Node node, Side dockPos, DockTarget target) {
         delegeteProperty.get().dock(node, dockPos, target);
     }    
+*/
 }
