@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.properties;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -15,7 +16,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.MultiTab;
 import org.vns.javafx.dock.api.StateTransformer;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -41,7 +41,6 @@ public class StateProperty<T extends Dockable> {
     private Dockable owner;
 
     public StateProperty(T dockable) {
-        
         dockableWrapper.set(dockable);
         titleBarProperty = new TitleBarProperty(dockable);
         init();
@@ -52,6 +51,14 @@ public class StateProperty<T extends Dockable> {
         dockedProperty.addListener(this::dockedChanged);
         //titleBarProperty.addListener(this::titlebarChanged);
 
+    }
+
+    public Dockable getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Dockable owner) {
+        this.owner = owner;
     }
 
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
@@ -69,10 +76,10 @@ public class StateProperty<T extends Dockable> {
                 }
             }
         }
-        
+
         String id = newValue.getId();
         getDockable().stateProperty().titleBarProperty().changeOwner(getDockable());
-        if (newValue != null  &&   getDockable().stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {
+        if (newValue != null && getDockable().stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {
             //newValue.pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);            
         }
     }
@@ -118,25 +125,26 @@ public class StateProperty<T extends Dockable> {
     public void setTitleBar(Region node) {
         titleBarProperty.set(node);
     }
+
     public boolean addTitleBar(int idx, Region node, ObservableList children) {
-        if ( titleBarProperty.get() != null ) {
+        if (titleBarProperty.get() != null) {
             return false;
         }
-        children.add(idx,node);
+        children.add(idx, node);
         titleBarProperty.set(node);
         return true;
     }
-    
+
     public boolean replaceTitleBar(int idx, Region node, ObservableList children) {
-        if ( titleBarProperty.get() == null ) {
+        if (titleBarProperty.get() == null) {
             return false;
         }
         Node oldNode = titleBarProperty.get();
         int oldIdx = children.indexOf(oldNode);
-        if ( oldIdx < 0 ) {
+        if (oldIdx < 0) {
             return false;
         }
-        children.set(idx,node);
+        children.set(idx, node);
         titleBarProperty.set(node);
         return true;
     }
@@ -153,13 +161,13 @@ public class StateProperty<T extends Dockable> {
         if (!isDocked()) {
             return;
         }
-        setDocked(false);
-        /*        if (owner != null && (owner instanceof MultiTab)) {
+        setDocked(false, owner);
+        if (owner != null && (owner instanceof MultiTab)) {
             ((MultiTab) owner).remove(getDockable());
         } else {
             parent.remove(getNode());
         }
-         */
+        //!!!!!!!! must we assign null to owner ?????
     }
 
     public void setFloating(boolean floating) {
@@ -168,7 +176,7 @@ public class StateProperty<T extends Dockable> {
         }
         StateTransformer t = new StateTransformer(this);
         t.makeFloating();
-        this.floatingProperty.set(floating);
+        floatingProperty.set(floating);
     }
 
     public DockedProperty dockedProperty() {
@@ -184,10 +192,18 @@ public class StateProperty<T extends Dockable> {
     }
 
     public boolean isDocked() {
-        if ( !isFloating() && parent == null ) {
+        
+        if (!isFloating() && parent == null ) {
             return false;
         }
-        return !isFloating() && parent.parentSplitPane(getNode()) != null;
+        if (isFloating() ) {
+            return false;
+        }
+        if (!dockedProperty.get() ) {
+            return false;
+        }
+        return true;
+        //return !isFloating() && parent.parentSplitPane(getNode()) != null;
     }
 
     public void setDocked(boolean docked) {
@@ -195,7 +211,7 @@ public class StateProperty<T extends Dockable> {
         this.dockedProperty.set(docked);
     }
 
-    public void setDocked(Dockable owner, boolean docked) {
+    public void setDocked(boolean docked, Dockable owner ) {
         this.owner = owner;
         this.dockedProperty.set(docked);
     }
@@ -208,18 +224,26 @@ public class StateProperty<T extends Dockable> {
         titleBarProperty().set(tb);
         return tb;
     }
-    
+
     public Dockable getImmediateParent(Node node) {
         Dockable retval = getDockable();
-        if ( immediateParent != null ) {
+        if (immediateParent != null) {
             retval = immediateParent.apply(node);
         }
         return retval;
     }
 
-    public Function<Node,Dockable> immediateParent = null;
-    
-    public Dockable aaaa(Node node,Function<Node,Dockable> f) {
-        return f.apply(node);
+    private Function<Node, Dockable> immediateParent = null;
+
+    public void setImmediateParentFunction(Function<Node, Dockable> f) {
+        immediateParent = f;
     }
+        public Function<Integer, String> converter = (i) -> Integer.toString(i);
+
+        public void setConverter(Function<Integer, String> converter) {
+            this.converter = converter;
+        }
+        public Function<Integer, String> getConverter() {
+            return this.converter;
+        }
 }

@@ -22,15 +22,18 @@ import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockToolBarTitled;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.properties.StateProperty;
 
 /**
  *
  * @author Valery
  */
 public class TestDockToolBar extends Application {
+    
 
     @Override
     public void start(Stage stage) throws Exception {
+        
         DockPane dockPane = new DockPane();
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);

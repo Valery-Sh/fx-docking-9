@@ -5,6 +5,7 @@
  */
 package org.vns.javafx.dock.api.properties;
 
+import java.util.function.Function;
 import javafx.beans.property.BooleanPropertyBase;
 
 /**
@@ -12,6 +13,15 @@ import javafx.beans.property.BooleanPropertyBase;
  * @author Valery
  */
 public class DockedProperty extends BooleanPropertyBase {
+        public Function<Integer, String> converter = (i) -> Integer.toString(i);
+
+        public void setConverter(Function<Integer, String> converter) {
+            this.converter = converter;
+        }
+
+        public Function<Integer, String> getConverter() {
+            return this.converter;
+        }
 
     public DockedProperty() {
     }

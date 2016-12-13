@@ -40,19 +40,29 @@ public class DockPaneDelegate<T extends Pane> {
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
         });
+        
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            Node newNode = DockUtil.getDockableParentLeaf(newValue);
+            Node newNode = DockUtil.getDockableImmediateParent(newValue);
+
             if (newNode != null) {
-                //boolean b = ((Dockable) newNode).stateProperty().titleBarProperty().choosedProperty().get();
+                Dockable n = ((Dockable) newNode).stateProperty().getImmediateParent(newValue);
+                if (n != null && n != newNode) {
+                    newNode = (Node) n;
+                }
                 ((Dockable) newNode).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-            Dockable oldNode = (Dockable) DockUtil.getDockableParentLeaf(oldValue);
+            Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
+            if (oldNode != null) {
+                Dockable n = ((Dockable) oldNode).stateProperty().getImmediateParent(oldValue);
+                if (n != null && n != oldNode) {
+                    oldNode = n;
+                }
+            }
             if (oldNode != null && oldNode != newNode) {
                 oldNode.stateProperty().titleBarProperty().setActiveChoosedPseudoClass(false);
             } else if (oldNode != null && !oldNode.stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {
                 oldNode.stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-
         });
 
     }
@@ -102,7 +112,7 @@ public class DockPaneDelegate<T extends Pane> {
             if (state.getParent() == null || state.getParent() != this) {
                 state.setParent(this);
             }
-            state.setDocked(true);
+            state.setDocked(true, null);
         }
     }
 
@@ -120,9 +130,9 @@ public class DockPaneDelegate<T extends Pane> {
             if (state.getParent() == null || state.getParent() != this) {
                 state.setParent(this);
             }
-            state.setDocked(true);
+            state.setDocked(true, null);
         }
-        
+
     }
 
     public void remove(Node dockNode) {

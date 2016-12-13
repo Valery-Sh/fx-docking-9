@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.demo;
 
+import java.util.function.Function;
 import org.vns.javafx.dock.api.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -16,6 +17,16 @@ import org.vns.javafx.dock.api.properties.StateProperty;
 public class DockNodeImpl extends VBox implements Dockable {
     
     StateProperty stateProperty;
+
+    public void print() {
+
+//        System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
+//        System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
+        
+        //stateProperty.setConverter( (Integer i) -> Integer.toString(i) + " !!!" );
+        //System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
+        //System.out.println(stateProperty.converter.apply(30).length());
+    }    
     
     public DockNodeImpl() {
         stateProperty = new StateProperty(this);

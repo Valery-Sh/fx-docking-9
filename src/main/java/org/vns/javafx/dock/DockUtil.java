@@ -62,7 +62,7 @@ public class DockUtil {
     }
 
 
-    public static Node getDockableParentLeaf(Node child) {
+    public static Node getDockableImmediateParent(Node child) {
         Node retval = null;
         Node  p = getDockableParent(child);
         if ( p == null ) {
@@ -80,8 +80,6 @@ public class DockUtil {
             return null;
         }
         Node retval = null;
-        
-        
         List<Node> dockables = new ArrayList<>();
         addAllDockable(root, dockables);
         
@@ -101,27 +99,10 @@ public class DockUtil {
         if ( child == null || child.getScene() == null || child.getScene().getRoot() == null ) {
             return null;
         }
-        Node retval = null;
-        
         Parent root = child.getScene().getRoot();
         return getDockableParent(root, child);
-/*        List<Node> dockables = new ArrayList<>();
-        addAllDockable(root, dockables);
-        
-        for ( Node dockable : dockables ) {
-            //List<Node> list = getAllNodes((Parent)d);
-            Node node = findNode((Parent) dockable, child);
-            if ( node != null ) {
-                retval = dockable;
-                break;
-            }
-            
-        }
-        
-        return  retval;
-*/
     }
-    private static Node findNode(Parent dockable, Node toSearch) {
+    public static Node findNode(Parent dockable, Node toSearch) {
         Node retval = null;
         for (Node node : dockable.getChildrenUnmodifiable()) {
             if ( node == toSearch) {

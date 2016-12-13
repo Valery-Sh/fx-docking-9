@@ -5,6 +5,7 @@
  */
 package org.vns.javafx.dock;
 
+import java.util.function.Function;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -19,7 +20,6 @@ import org.vns.javafx.dock.api.DockTarget;
 public class DockPane extends StackPane implements DockTarget{
     
     private final DockPaneDelegateProperty<DockPaneDelegate> delegeteProperty = new DockPaneDelegateProperty<>();
-    
             
     public DockPane() {
         init();
