@@ -42,8 +42,8 @@ public class DockPaneDelegate<T extends Pane> {
         });
         
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            Node newNode = DockUtil.getDockableImmediateParent(newValue);
-
+            //Node newNode = DockUtil.getDockableImmediateParent(newValue);
+            Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {return p instanceof Dockable;} );
             if (newNode != null) {
                 Dockable n = ((Dockable) newNode).stateProperty().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
@@ -51,7 +51,8 @@ public class DockPaneDelegate<T extends Pane> {
                 }
                 ((Dockable) newNode).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-            Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
+            //Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
+            Dockable oldNode =  (Dockable) DockUtil.getImmediateParent(oldValue, (p) -> {return p instanceof Dockable;} );
             if (oldNode != null) {
                 Dockable n = ((Dockable) oldNode).stateProperty().getImmediateParent(oldValue);
                 if (n != null && n != oldNode) {

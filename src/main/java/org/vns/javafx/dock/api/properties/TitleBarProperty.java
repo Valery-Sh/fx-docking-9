@@ -134,13 +134,21 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         }
 */
         if ( oldValue != null ) {
-            Node f = DockUtil.getFocusedDockable(oldValue);
+            //Node f = DockUtil.getFocusedDockable(oldValue);
+            Node f = DockUtil.getImmediateParent(oldValue, nd -> {
+                return (nd instanceof Dockable);
+            });
+            
             if ( f != null ) {
                 ((Dockable)f).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
-            Node f = DockUtil.getFocusedDockable(newValue);
+            //Node f = DockUtil.getFocusedDockable(newValue);
+            Node f = DockUtil.getImmediateParent(newValue, nd -> {
+                return (nd instanceof Dockable);
+            });
+            
             if ( f != null ) {
                 ((Dockable)f).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }

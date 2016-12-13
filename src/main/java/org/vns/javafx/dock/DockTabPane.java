@@ -96,7 +96,9 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     }
 
     public Dockable getImmediateParent(Node child) {
-        Node retval = DockUtil.getDockableParent(this, child);
+        //Node retval = DockUtil.getDockableParent(this, child);
+        Node retval = DockUtil.getImmediateParent(this, child, (p) -> { return (p instanceof Dockable); });
+        
         if ( retval == null  ) {
             retval = getDockableParentByTitleBar(getTitleBars(), child);
         }

@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventType;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
@@ -38,10 +41,19 @@ public class TestDockToolBar extends Application {
 
         dockPane.dock(p1, Side.TOP);
 
+//////////////////////////////////////////////////////////        
         Button b2 = new Button("b02");
-        Pane p2 = new HBox(b2);
-        dockPane.dock(p2, Side.RIGHT);
-
+        Button bb1 = new Button("bb1");
+        Pane p2 = new HBox(bb1);
+        p2.setId("HBox p2");
+        
+        SplitPane sp01 = new SplitPane(new Label("splb01"),b2,new Label("splb01"),p2);        
+        sp01.setId("Split sp01");
+        VBox vb01 = new VBox(sp01);
+        vb01.setId("VBox vb01");
+        p2.getChildren().addAll(new Label("lb1"));
+        dockPane.dock(vb01, Side.RIGHT);
+///////////////////////////////////////////////////////////////
         Button b3 = new Button("b03");
         Pane p3 = new HBox(b3);
         dockPane.dock(p3, Side.BOTTOM);
@@ -70,67 +82,44 @@ public class TestDockToolBar extends Application {
         DockNodeImpl dn03 = new DockNodeImpl();
         
         TextArea ta = new TextArea();
+        Button bClick = new Button("testGet");
+        dn03.getChildren().add(bClick);
         dn03.getChildren().add(ta);
         tabPane01.dock(0, dn03);
-        
+        bClick.setOnAction(value -> {
+            List<Parent> list = new ArrayList<>();
+            Node p = DockUtil.getImmediateParent(dockPane, b2, list);
+            System.err.println("FOUNT BUTTON b2 text=" + b2.getText());
+            System.err.println("FOUNT BUTTON p=" + p);
+            System.err.println("FOUNT BUTTON list.size()=" + list.size());
+            list.forEach(el ->{
+                System.err.println("CHAIH: el.class=" + el.getClass().getName() + "; id=" + el.getId());
+            });
+            System.err.println("=======================================");
+            list.clear();
+            p = DockUtil.getImmediateParent(dockPane, b2, list, (pr) -> {return (pr instanceof VBox ) || (pr instanceof SplitPane );});
+            System.err.println("B. FOUNT BUTTON b2 text=" + b2.getText());
+            System.err.println("B. FOUNT BUTTON list.size()=" + list.size());
+            list.forEach(el ->{
+                System.err.println("CHAIH: el.class=" + el.getClass().getName() + "; id=" + el.getId());
+            });            
+            System.err.println("=======================================");
+            list.clear();
+            p = DockUtil.getImmediateParent(dockPane, tb2, (pr) -> {return (pr instanceof Dockable );});
+            System.err.println("C. FOUNT BUTTON p.id=" + p.getId());
+            System.err.println("C. FOUNT BUTTON list.size()=" + list.size());
+            list.forEach(el ->{
+                System.err.println("C. CHAIH: el.class=" + el.getClass().getName() + "; id=" + el.getId());
+            });            
+            
+            
+        });
         Scene scene = new Scene(dockPane);
 
         stage.setTitle("Dockable and Toolbar");
         stage.setScene(scene);
 
         tb2.setFocusTraversable(false);
-        tb2.setOnAction(value -> {
-            Parent pp1 = (Parent) dockPane.getChildrenUnmodifiable().get(0);
-            int sz = dockPane.getChildrenUnmodifiable().size();
-            System.err.println("1. dockPane  sz=" + sz + "; class=" + pp1.getClass().getName());
-            sz = pp1.getChildrenUnmodifiable().size();
-            System.err.println("2. pp1  sz=" + sz);
-            int i = 0;
-            int j = 0;
-            for (Node n : pp1.getChildrenUnmodifiable()) {
-                System.err.println("   1." + (i++) + "); class=" + n.getClass().getName());
-                for (Node n1 : ((Parent) n).getChildrenUnmodifiable()) {
-                    System.err.println("      2.1." + (j++) + "); class=" + n1.getClass().getName());
-                }
-
-            }
-            List<Node> list = new ArrayList<>();
-            DockUtil.addAllDockable(pp1, list);
-            Node focused = tb2.getScene().getFocusOwner();
-            String id = focused.getId();
-            Node f = DockUtil.getFocusedDockable(focused);
-            String id1 = f.getId();
-
-            List<Node> list00 = getAllNodes(pp1);
-
-            list00.forEach(n -> {
-                if (n.isFocused()) {
-                    System.err.println("  --- list00 Dockable class=" + n.getClass().getName());
-                }
-            });
-
-            List<Node> list01 = getAllNodes(pp1);
-            List<Node> list02 = new ArrayList<>();
-            i = 0;
-            System.err.println("  --- list size==" + list01.size());
-            list01.forEach(n -> {
-                if (n instanceof Dockable) {
-                    System.err.println("  --- list01 Dockable class=" + n.getClass().getName());
-                    list02.add(n);
-                }
-            });
-
-            System.err.println("     ---  list02 size==" + list02.size());
-
-            list02.forEach(n -> {
-                System.err.println("        --- ; class=" + n.getClass().getName());
-            });
-
-            //Parent pp2 = (Parent) pp1.getChildrenUnmodifiable().get(0);
-            //sz = pp2.getChildrenUnmodifiable().size();
-            //System.err.println("2. sz=" + sz);
-            //System.err.println("SIZE = " + ((Parent)dockPane.getChildrenUnmodifiable().get(0)).getChildrenUnmodifiable().size());            
-        });
 
         stage.show();
 
