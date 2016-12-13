@@ -47,10 +47,7 @@ public class StateProperty<T extends Dockable> {
     }
 
     private void init() {
-
         dockedProperty.addListener(this::dockedChanged);
-        //titleBarProperty.addListener(this::titlebarChanged);
-
     }
 
     public Dockable getOwner() {
@@ -61,28 +58,6 @@ public class StateProperty<T extends Dockable> {
         this.owner = owner;
     }
 
-    public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-        int idx = -1;
-        Pane pane = null;
-        if (oldValue != null && oldValue.getParent() != null && (oldValue.getParent() instanceof Pane)) {
-            System.err.println("StateProperty: titleBarChanged oldValue != null parentClass=" + oldValue.getParent());
-            idx = ((Pane) oldValue.getParent()).getChildren().indexOf(oldValue);
-            if (idx >= 0) {
-                pane = (Pane) oldValue.getParent();
-                ((Pane) oldValue.getParent()).getChildren().remove(oldValue);
-                if (newValue != null) {
-                    //((Pane) oldValue.getParent()).getChildren().remove(oldValue);
-                    pane.getChildren().add(idx, newValue);
-                }
-            }
-        }
-
-        String id = newValue.getId();
-        getDockable().stateProperty().titleBarProperty().changeOwner(getDockable());
-        if (newValue != null && getDockable().stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {
-            //newValue.pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);            
-        }
-    }
 
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
@@ -97,12 +72,8 @@ public class StateProperty<T extends Dockable> {
     }
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        if (oldValue && !newValue) {
-            if (owner != null && (owner instanceof MultiTab)) {
-                ((MultiTab) owner).remove(getDockable());
-            } else {
-                parent.remove(getNode());
-            }
+        if ( ! newValue) {
+            parent.remove(getNode());
         }
     }
 
@@ -126,16 +97,16 @@ public class StateProperty<T extends Dockable> {
         titleBarProperty.set(node);
     }
 
-    public boolean addTitleBar(int idx, Region node, ObservableList children) {
+    public boolean addTitleBar(int idx, Region newTitleBar, ObservableList children) {
         if (titleBarProperty.get() != null) {
             return false;
         }
-        children.add(idx, node);
-        titleBarProperty.set(node);
+        children.add(idx, newTitleBar);
+        titleBarProperty.set(newTitleBar);
         return true;
     }
 
-    public boolean replaceTitleBar(int idx, Region node, ObservableList children) {
+    public boolean replaceTitleBar(int idx, Region newTitleBar, ObservableList children) {
         if (titleBarProperty.get() == null) {
             return false;
         }
@@ -144,8 +115,8 @@ public class StateProperty<T extends Dockable> {
         if (oldIdx < 0) {
             return false;
         }
-        children.set(idx, node);
-        titleBarProperty.set(node);
+        children.set(idx, newTitleBar);
+        titleBarProperty.set(newTitleBar);
         return true;
     }
 
@@ -163,7 +134,7 @@ public class StateProperty<T extends Dockable> {
         }
         setDocked(false, owner);
         if (owner != null && (owner instanceof MultiTab)) {
-            ((MultiTab) owner).remove(getDockable());
+            ((MultiTab) owner).undock(getDockable());
         } else {
             parent.remove(getNode());
         }
@@ -238,12 +209,4 @@ public class StateProperty<T extends Dockable> {
     public void setImmediateParentFunction(Function<Node, Dockable> f) {
         immediateParent = f;
     }
-        public Function<Integer, String> converter = (i) -> Integer.toString(i);
-
-        public void setConverter(Function<Integer, String> converter) {
-            this.converter = converter;
-        }
-        public Function<Integer, String> getConverter() {
-            return this.converter;
-        }
 }

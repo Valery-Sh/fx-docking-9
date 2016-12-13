@@ -1,9 +1,10 @@
 package org.vns.javafx.dock.api.demo;
 
-import java.util.function.Function;
 import org.vns.javafx.dock.api.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -16,7 +17,7 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  */
 public class DockNodeImpl extends VBox implements Dockable {
     
-    StateProperty stateProperty;
+    StateProperty<Dockable> stateProperty;
 
     public void print() {
 
@@ -30,11 +31,11 @@ public class DockNodeImpl extends VBox implements Dockable {
     
     public DockNodeImpl() {
         stateProperty = new StateProperty(this);
-        
         Region bar = stateProperty.createDefaultTitleBar("Default Title Bar");
         //bar.setId("FIRST");
         bar.getStyleClass().add("dock-title-bar");
         getChildren().add(0,bar);
+        
         Button b1 = new Button("Change Title Bar");
         getChildren().add(b1);
         b1.setOnAction(value -> {
@@ -46,16 +47,11 @@ public class DockNodeImpl extends VBox implements Dockable {
             //stateProperty.titleBarProperty().set(newtb);
             
         });
+        
+        stateProperty.titleBarProperty().addListener(this::titlebarChanged);
+        
     }
     
-    /*public void addNode(Node node) {
-        int idx = 1;
-        if ( getChildren().size() == 0 ) {
-            idx = 0;
-        }
-        getChildren().add(getC)
-    }
-*/
     @Override
     public StringProperty titleProperty() {
         return new SimpleStringProperty("NODE default");
@@ -64,6 +60,15 @@ public class DockNodeImpl extends VBox implements Dockable {
     @Override
     public StateProperty stateProperty() {
         return stateProperty;
+    }
+    public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        if ( oldValue != null && newValue == null ) {
+            getChildren().remove(oldValue);
+        } else if ( oldValue != null && newValue != null ) {
+            getChildren().set(0,newValue);
+        } else if ( oldValue == null && newValue != null ) {
+            getChildren().add(0,newValue);
+        }
     }
 
 }

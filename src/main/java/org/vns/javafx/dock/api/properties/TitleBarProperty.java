@@ -29,7 +29,6 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     public TitleBarProperty(Dockable owner) {
         super();
-
         ownerWrapper.set(owner);
         init();
     }
@@ -39,7 +38,6 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     }
 
     private void init() {
-
         addListener(this::titlebarChanged);
         //choosedProperty.addListener(this::choosedPropertyInvalidated);
         activeChoosedPseudoClass = false;

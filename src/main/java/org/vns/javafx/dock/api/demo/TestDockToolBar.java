@@ -15,14 +15,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockToolBarTitled;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.properties.StateProperty;
 
 /**
  *
@@ -66,8 +64,9 @@ public class TestDockToolBar extends Application {
         tb2.setId("Tb2");
         dtt02.getToolBar().getItems().add(0, tb2);
 
-        DockTabPane tabPane01 = new DockTabPane(dockPane);
+        DockTabPane tabPane01 = new DockTabPane();
         dockPane.dock(tabPane01, Side.BOTTOM);
+        
         DockNodeImpl dn03 = new DockNodeImpl();
         
         TextArea ta = new TextArea();

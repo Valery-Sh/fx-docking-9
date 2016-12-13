@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
  *
  * @author Valery
  */
-public interface DockableTitleBar extends TitleBarOwner {
+public interface DockableTitleBar extends HasOwner {
     Label getLabel();
     Button getCloseButton();
     Button getStateButton();

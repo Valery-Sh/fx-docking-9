@@ -5,7 +5,6 @@
  */
 package org.vns.javafx.dock;
 
-import java.util.function.Function;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -39,8 +38,4 @@ public class DockPane extends StackPane implements DockTarget{
     public void dock(Node dockable, Side dockPos) {
         delegeteProperty.get().dock(dockable, dockPos);
     }
-/*    public void dock(Node node, Side dockPos, DockTarget target) {
-        delegeteProperty.get().dock(node, dockPos, target);
-    }    
-*/
 }
