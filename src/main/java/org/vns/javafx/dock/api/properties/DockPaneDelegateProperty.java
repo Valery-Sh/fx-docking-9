@@ -1,6 +1,7 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.properties;
 
 import javafx.beans.property.ObjectPropertyBase;
+import org.vns.javafx.dock.api.DockPaneDelegate;
 
 public class DockPaneDelegateProperty<T extends DockPaneDelegate> extends ObjectPropertyBase<T> {
 

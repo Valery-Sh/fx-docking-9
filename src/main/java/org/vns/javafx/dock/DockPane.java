@@ -9,7 +9,7 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockPaneDelegate;
-import org.vns.javafx.dock.api.DockPaneDelegateProperty;
+import org.vns.javafx.dock.api.properties.DockPaneDelegateProperty;
 import org.vns.javafx.dock.api.DockTarget;
 
 /**

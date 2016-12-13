@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.properties;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -9,7 +8,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.DockPaneDelegate;
 import org.vns.javafx.dock.api.Dockable;
@@ -132,12 +130,15 @@ public class StateProperty<T extends Dockable> {
         if (!isDocked()) {
             return;
         }
-        setDocked(false, owner);
-        if (owner != null && (owner instanceof MultiTab)) {
+        setDocked(false);
+/*        if (owner != null && (owner instanceof MultiTab)) {
             ((MultiTab) owner).undock(getDockable());
         } else {
             parent.remove(getNode());
         }
+*/        
+        parent.remove(getNode());
+        
         //!!!!!!!! must we assign null to owner ?????
     }
 
@@ -178,15 +179,15 @@ public class StateProperty<T extends Dockable> {
     }
 
     public void setDocked(boolean docked) {
-        owner = null;
+//        owner = null;
         this.dockedProperty.set(docked);
     }
 
-    public void setDocked(boolean docked, Dockable owner ) {
+/*    public void setDocked(boolean docked, Dockable owner ) {
         this.owner = owner;
         this.dockedProperty.set(docked);
     }
-
+*/
     public Region createDefaultTitleBar(String title) {
         DockTitleBar tb = new DockTitleBar(getDockable());
         tb.setId("FIRST");

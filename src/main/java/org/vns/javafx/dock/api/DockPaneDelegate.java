@@ -113,7 +113,7 @@ public class DockPaneDelegate<T extends Pane> {
             if (state.getParent() == null || state.getParent() != this) {
                 state.setParent(this);
             }
-            state.setDocked(true, null);
+            state.setDocked(true);
         }
     }
 
@@ -131,7 +131,7 @@ public class DockPaneDelegate<T extends Pane> {
             if (state.getParent() == null || state.getParent() != this) {
                 state.setParent(this);
             }
-            state.setDocked(true, null);
+            state.setDocked(true);
         }
 
     }
