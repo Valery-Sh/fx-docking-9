@@ -60,11 +60,11 @@ public class StateProperty<T extends Dockable> {
         return titleBarProperty;
     }
 
-    public PaneDelegate getParent() {
+    public PaneDelegate getPaneDelegate() {
         return paneDelegate;
     }
 
-    public void setParent(PaneDelegate dockPaneDelegate) {
+    public void setPaneDelegate(PaneDelegate dockPaneDelegate) {
         this.paneDelegate = dockPaneDelegate;
     }
 

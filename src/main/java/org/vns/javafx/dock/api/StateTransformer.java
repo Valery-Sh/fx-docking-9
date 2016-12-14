@@ -89,7 +89,7 @@ public class StateTransformer {
         stageProperty.set(newStage);
 
         newStage.titleProperty().bind(dockable.titleProperty());
-        Pane dockPane = dockable.stateProperty().getParent().getDockPane();
+        Pane dockPane = dockable.stateProperty().getPaneDelegate().getDockPane();
         //Pane dockPane = new DockPane();  
         //((DockPane)dockPane).dock(titleBar, Side.TOP);
         //DockPaneDelegate ddd = ((DockPane)dockPane).

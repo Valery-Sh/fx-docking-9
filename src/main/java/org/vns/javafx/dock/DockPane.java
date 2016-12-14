@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock;
 
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.properties.PaneDelegateProperty;
@@ -28,8 +24,7 @@ public class DockPane extends StackPane implements DockTarget{
         super(children);
     }
     private void init() {
-        PaneDelegate dlg = new PaneDelegate(this);
-        delegeteProperty.set(dlg);
+        delegeteProperty.set(new PaneDelegate(this));
     }
     protected PaneDelegate getDelegate() {
         return this.delegeteProperty.get();
@@ -38,4 +33,5 @@ public class DockPane extends StackPane implements DockTarget{
     public void dock(Node dockable, Side dockPos) {
         delegeteProperty.get().dock(dockable, dockPos);
     }
+    
 }

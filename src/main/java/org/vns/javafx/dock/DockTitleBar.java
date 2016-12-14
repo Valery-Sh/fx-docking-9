@@ -16,7 +16,7 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  *
  * @author Valery
  */
-public class DockTitleBar extends HBox implements DockableTitleBar {
+public class DockTitleBar extends HBox {//implements DockableTitleBar {
 
 
     public enum StyleClasses {
@@ -115,7 +115,7 @@ public class DockTitleBar extends HBox implements DockableTitleBar {
         
     }
 
-    @Override
+    //@Override
     public Dockable getOwner() {
         if ( dockNode == null ) {
             return null;
@@ -127,22 +127,22 @@ public class DockTitleBar extends HBox implements DockableTitleBar {
         return dragboard;
     }
 */
-    @Override
+    //@Override
     public Label getLabel() {
         return label;
     }
 
-    @Override
+    //@Override
     public Button getCloseButton() {
         return closeButton;
     }
 
-    @Override
+    //@Override
     public Button getStateButton() {
         return stateButton;
     }
 
-    @Override
+    //@Override
     public Button getPinButton() {
         return pinButton;
     }

@@ -17,7 +17,7 @@ public interface Dockable extends DockTarget {
     
     @Override
     default void dock(Node node, Side dockPos) {
-        stateProperty().getParent().dock(node, dockPos, this);
+        stateProperty().getPaneDelegate().dock(node, dockPos, this);
     }
     
     

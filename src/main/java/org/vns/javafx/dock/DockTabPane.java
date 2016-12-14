@@ -224,7 +224,7 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     }
      */
     protected boolean addDockNode(Dockable dockable) {
-        dockable.stateProperty().setParent(stateProperty().getParent());
+        dockable.stateProperty().setPaneDelegate(stateProperty().getPaneDelegate());
         if (getChildren().isEmpty()) {
             add(dockable);
             return true;
@@ -320,7 +320,7 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
         if (this.addDockNode(pos, node)) {
             ((Dockable) node).stateProperty().setDocked(true);
 //            ((Dockable) node).stateProperty().setOwner(this);
-            ((Dockable) node).stateProperty().setParent(this.stateProperty.getParent());
+            ((Dockable) node).stateProperty().setPaneDelegate(this.stateProperty.getPaneDelegate());
         }
 
     }
@@ -334,7 +334,7 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
         if (addDockNode((Dockable) node)) {
             ((Dockable) node).stateProperty().setDocked(true);
 //            ((Dockable) node).stateProperty().setOwner(this);
-            ((Dockable) node).stateProperty().setParent(stateProperty.getParent());
+            ((Dockable) node).stateProperty().setPaneDelegate(stateProperty.getPaneDelegate());
         }
     }
 

@@ -3,13 +3,16 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
@@ -115,6 +118,33 @@ public class DockUtil {
         return retval;
     }
      */
+    
+    public static ObservableList<Dockable> initialize(Region root) {
+        ObservableList<Dockable> retval = FXCollections.observableArrayList();
+        if ( ! (root instanceof DockTarget) ) {
+            return retval;
+        }
+        
+        List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+        retval.addAll(list.toArray(new Dockable[0]));
+        list.forEach( d -> {
+            ((DockTarget)root).dock(root, Side.TOP);
+        } );
+        return retval;
+    }
+    
+    public static List findNodes(Parent root, Predicate predicate) {
+        List retval = new ArrayList();
+        for (Node node : root.getChildrenUnmodifiable()) {
+            if (predicate.test(node)) {
+                retval.add(node);
+            }
+            if (node instanceof Parent) {
+                retval.addAll(findNodes((Parent) node, predicate));
+            }
+        }
+        return retval;
+    }
     
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
         if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
