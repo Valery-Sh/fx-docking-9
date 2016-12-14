@@ -185,8 +185,8 @@ public class StateTransformer {
 
     protected void dock(Pane dockPane, Dockable dockable) {
         Node node = (Node) dockable;
-        DockSplitDelegate.DockSplitPane rootSplitPane = null;
-        rootSplitPane = new DockSplitDelegate.DockSplitPane();
+        SplitDelegate.DockSplitPane rootSplitPane = null;
+        rootSplitPane = new SplitDelegate.DockSplitPane();
         
         //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
         

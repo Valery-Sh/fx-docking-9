@@ -8,8 +8,8 @@ package org.vns.javafx.dock;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import org.vns.javafx.dock.api.DockPaneDelegate;
-import org.vns.javafx.dock.api.properties.DockPaneDelegateProperty;
+import org.vns.javafx.dock.api.PaneDelegate;
+import org.vns.javafx.dock.api.properties.PaneDelegateProperty;
 import org.vns.javafx.dock.api.DockTarget;
 
 /**
@@ -18,7 +18,7 @@ import org.vns.javafx.dock.api.DockTarget;
  */
 public class DockPane extends StackPane implements DockTarget{
     
-    private final DockPaneDelegateProperty<DockPaneDelegate> delegeteProperty = new DockPaneDelegateProperty<>();
+    private final PaneDelegateProperty<PaneDelegate> delegeteProperty = new PaneDelegateProperty<>();
             
     public DockPane() {
         init();
@@ -28,10 +28,10 @@ public class DockPane extends StackPane implements DockTarget{
         super(children);
     }
     private void init() {
-        DockPaneDelegate dlg = new DockPaneDelegate(this);
+        PaneDelegate dlg = new PaneDelegate(this);
         delegeteProperty.set(dlg);
     }
-    protected DockPaneDelegate getDelegate() {
+    protected PaneDelegate getDelegate() {
         return this.delegeteProperty.get();
     }
     @Override

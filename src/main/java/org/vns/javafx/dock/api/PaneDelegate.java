@@ -8,7 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import org.vns.javafx.dock.api.DockSplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.api.properties.StateProperty;
@@ -18,14 +18,14 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  * @author Valery
  * @param <T>
  */
-public class DockPaneDelegate<T extends Pane> {
+public class PaneDelegate<T extends Pane> {
 
     private final ObjectProperty<T> dockPaneProperty = new SimpleObjectProperty<>();
-    private DockSplitDelegate splitDelegate;
+    private SplitDelegate splitDelegate;
     private DockSplitPane rootSplitPane;
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
-    public DockPaneDelegate(T dockPane) {
+    public PaneDelegate(T dockPane) {
         dockPaneProperty.set(dockPane);
         init();
     }
@@ -35,7 +35,7 @@ public class DockPaneDelegate<T extends Pane> {
         rootSplitPane = new DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
 
-        splitDelegate = new DockSplitDelegate(rootSplitPane);
+        splitDelegate = new SplitDelegate(rootSplitPane);
 
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());

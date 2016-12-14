@@ -15,7 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.vns.javafx.dock.api.DockSplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *

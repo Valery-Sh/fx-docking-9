@@ -9,7 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import org.vns.javafx.dock.api.DockPaneDelegate;
+import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.MultiTab;
 import org.vns.javafx.dock.api.StateTransformer;
@@ -34,7 +34,7 @@ public class StateProperty<T extends Dockable> {
     private final DockedProperty dockedProperty = new DockedProperty(false);
     private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
 
-    private DockPaneDelegate parent;
+    private PaneDelegate parent;
 
     private Dockable owner;
 
@@ -61,11 +61,11 @@ public class StateProperty<T extends Dockable> {
         return titleBarProperty;
     }
 
-    public DockPaneDelegate getParent() {
+    public PaneDelegate getParent() {
         return parent;
     }
 
-    public void setParent(DockPaneDelegate dockPaneDelegate) {
+    public void setParent(PaneDelegate dockPaneDelegate) {
         this.parent = dockPaneDelegate;
     }
 

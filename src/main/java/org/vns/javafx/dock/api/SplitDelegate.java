@@ -10,12 +10,12 @@ import javafx.scene.control.SplitPane;
  *
  * @author Valery Shyshkin
  */
-public class DockSplitDelegate {
+public class SplitDelegate {
 
     private DockSplitPane root;
     private int targetIndex;
 
-    public DockSplitDelegate(DockSplitPane root) {
+    public SplitDelegate(DockSplitPane root) {
         this.root = root;
     }
 

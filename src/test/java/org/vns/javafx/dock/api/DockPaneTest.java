@@ -17,7 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.vns.javafx.dock.JavaFXThreadingRule;
-import org.vns.javafx.dock.api.DockSplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
@@ -52,7 +52,7 @@ public class DockPaneTest {
     public void testGetDelegate() {
         System.out.println("getDelegate");
         DockPane instance = new DockPane();
-        DockPaneDelegate expResult = null;
+        PaneDelegate expResult = null;
     }
 
     /**

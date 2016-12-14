@@ -1,14 +1,14 @@
 package org.vns.javafx.dock.api.properties;
 
 import javafx.beans.property.ObjectPropertyBase;
-import org.vns.javafx.dock.api.DockPaneDelegate;
+import org.vns.javafx.dock.api.PaneDelegate;
 
-public class DockPaneDelegateProperty<T extends DockPaneDelegate> extends ObjectPropertyBase<T> {
+public class PaneDelegateProperty<T extends PaneDelegate> extends ObjectPropertyBase<T> {
 
-    public DockPaneDelegateProperty() {
+    public PaneDelegateProperty() {
     }
     
-    public DockPaneDelegateProperty(T initialValue) {
+    public PaneDelegateProperty(T initialValue) {
         super(initialValue);
         //initialValue
     }

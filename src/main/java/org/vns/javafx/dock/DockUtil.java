@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
-import org.vns.javafx.dock.api.DockSplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -115,6 +115,7 @@ public class DockUtil {
         return retval;
     }
      */
+    
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
         if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
             return null;
@@ -131,7 +132,16 @@ public class DockUtil {
         return getDockableParent(root, child);
     }
      */
+    /**
+     * 
+     * @param root
+     * @param toSearch
+     * @return 
+     */
     public static Node findNode(Parent root, Node toSearch) {
+        if ( toSearch == null ) {
+            return null;
+        }
         Node retval = null;
         for (Node node : root.getChildrenUnmodifiable()) {
             if (node == toSearch) {
