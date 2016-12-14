@@ -11,7 +11,6 @@ import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.MultiTab;
 import org.vns.javafx.dock.api.StateTransformer;
 import org.vns.javafx.dock.DockTitleBar;
 
@@ -34,9 +33,9 @@ public class StateProperty<T extends Dockable> {
     private final DockedProperty dockedProperty = new DockedProperty(false);
     private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
 
-    private PaneDelegate parent;
+    private PaneDelegate paneDelegate;
 
-    private Dockable owner;
+    //private Dockable owner;
 
     public StateProperty(T dockable) {
         dockableWrapper.set(dockable);
@@ -48,30 +47,30 @@ public class StateProperty<T extends Dockable> {
         dockedProperty.addListener(this::dockedChanged);
     }
 
-    public Dockable getOwner() {
+/*    public Dockable getOwner() {
         return owner;
     }
 
     public void setOwner(Dockable owner) {
         this.owner = owner;
     }
-
+*/
 
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
     }
 
     public PaneDelegate getParent() {
-        return parent;
+        return paneDelegate;
     }
 
     public void setParent(PaneDelegate dockPaneDelegate) {
-        this.parent = dockPaneDelegate;
+        this.paneDelegate = dockPaneDelegate;
     }
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if ( ! newValue) {
-            parent.remove(getNode());
+            paneDelegate.remove(getNode());
         }
     }
 
@@ -137,7 +136,7 @@ public class StateProperty<T extends Dockable> {
             parent.remove(getNode());
         }
 */        
-        parent.remove(getNode());
+        paneDelegate.remove(getNode());
         
         //!!!!!!!! must we assign null to owner ?????
     }
@@ -165,7 +164,7 @@ public class StateProperty<T extends Dockable> {
 
     public boolean isDocked() {
         
-        if (!isFloating() && parent == null ) {
+        if (!isFloating() && paneDelegate == null ) {
             return false;
         }
         if (isFloating() ) {

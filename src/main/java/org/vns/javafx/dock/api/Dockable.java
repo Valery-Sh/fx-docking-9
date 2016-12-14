@@ -21,8 +21,11 @@ public interface Dockable extends DockTarget {
     }
     
     
-    static void initDefaultStylesheet() {
-        URL u = Dockable.class.getResource("default.css");
+    static void initDefaultStylesheet(URL cssURL) {
+        URL u = cssURL;
+        if ( u == null) {
+            u = Dockable.class.getResource("default.css");
+        }
 
         StyleManager.getInstance()
                 .addUserAgentStylesheet(Dockable.class.getResource("default.css").toExternalForm());

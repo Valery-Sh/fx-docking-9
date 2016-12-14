@@ -55,7 +55,7 @@ public class TestDockPane extends Application {
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
-        Dockable.initDefaultStylesheet();
+        Dockable.initDefaultStylesheet(null);
 
     }
 

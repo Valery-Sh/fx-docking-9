@@ -45,8 +45,8 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     private Button menuButton;
 
     private Map<Dockable, Object> listeners = new HashMap<>();
-    
-/*    private final ObjectProperty<Pane> dockPaneProperty = new SimpleObjectProperty() {
+
+    /*    private final ObjectProperty<Pane> dockPaneProperty = new SimpleObjectProperty() {
         
         @Override
         protected void invalidated() {
@@ -65,16 +65,16 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
         init(dockPane);
         titleBarProperty = new TitleBarProperty<>(null);
     }
-*/
+     */
     public DockTabPane() {
         init();
         titleBarProperty = new TitleBarProperty<>(null);
     }
-    
+
     private final HBox titleBarBox = new HBox();
 
     private void init() {
-        stateProperty.setImmediateParentFunction(this::getImmediateParent);        
+        stateProperty.setImmediateParentFunction(this::getImmediateParent);
 
         StackPane stackPane = new StackPane();
         menuButton = new Button();
@@ -91,49 +91,86 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
         HBox full = new HBox(titleBarBox, fillPane, menuButton);
         getChildren().addAll(full, stackPane);
         //DockTabPane.this.dockPaneProperty.set(dockPane);
-        
+
         getTitleBars().addListener(DockTabPane.this::onChangeTitleBars);
     }
 
+    /**
+     *
+     * @param child a node that may be a children of Dockable instance or it's
+     * titleBar
+     * @return
+     */
     public Dockable getImmediateParent(Node child) {
-        //Node retval = DockUtil.getDockableParent(this, child);
-        Node retval = DockUtil.getImmediateParent(this, child, (p) -> { return (p instanceof Dockable); });
-        
-        if ( retval == null  ) {
-            retval = getDockableParentByTitleBar(getTitleBars(), child);
+
+        Dockable retval = (Dockable) DockUtil.getImmediateParent(this, child, (p) -> {
+            return (p instanceof Dockable);
+        });
+
+        if (retval == null) {
+            retval = getDockableParentByTitleBar(child);
         }
 
-        if ( retval == null ) {
+        if (retval == null) {
             retval = this;
         }
-        return (Dockable) retval;
+        return retval;
     }
-    
-    public static Node getDockableParentByTitleBar(List<Node> titleBars, Node child) {
-        if ( child == null || child.getScene() == null || child.getScene().getRoot() == null ) {
+
+    private Dockable getTitleBarOwner(Node titleBar) {
+        Dockable retval = null;
+        for (Node d : getContents()) {
+            if ((d instanceof Dockable) && ((Dockable) d).stateProperty().getTitleBar() == titleBar) {
+                retval = (Dockable) d;
+                break;
+            }
+        }
+        return retval;
+    }
+
+    public Dockable getDockableParentByTitleBar(Node child) {
+        /*        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
+            return null;
+        }
+         */
+        Dockable retval = null;
+
+        for (Node bar : getTitleBars()) {
+            if (bar.isFocused()) {
+                retval = getTitleBarOwner(bar);
+            } else {
+                Node node = DockUtil.findNode((Parent) bar, child);
+                retval = getTitleBarOwner(bar);
+            }
+        }
+        return retval;
+    }
+
+/*    public static Node getDockableParentByTitleBar(List<Node> titleBars, Node child) {
+        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
             return null;
         }
         Node retval = null;
-        
-        for ( Node bar : titleBars ) {
-            if ( bar.isFocused() ) {
-                if ( bar instanceof HasOwner) {
+
+        for (Node bar : titleBars) {
+            if (bar.isFocused()) {
+                if (bar instanceof HasOwner) {
                     return (Node) ((HasOwner) bar).getOwner();
                 } else {
                     return null;
                 }
             }
-            if ( bar instanceof Parent ) {
+            if (bar instanceof Parent) {
                 Node node = DockUtil.findNode((Parent) bar, child);
-                if ( node != null && (bar instanceof HasOwner) ) {
-                    retval = (Node) ((HasOwner)bar).getOwner();
+                if (node != null && (bar instanceof HasOwner)) {
+                    retval = (Node) ((HasOwner) bar).getOwner();
                     break;
                 }
             }
         }
-        return  retval;
+        return retval;
     }
-
+*/
     public void onChangeTitleBars(Change<? extends Node> c) {
         while (c.next()) {
             if (c.wasUpdated()) {
@@ -151,27 +188,28 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
             }
         }
     }
-    
+
     protected void addDockedListener(Dockable source) {
         DockedProperty dp = source.stateProperty().dockedProperty();
         DockedChangeListener dcl = new DockedChangeListener(source);
         dp.addListener(dcl);
         listeners.put(source, dcl);
     }
+
     protected void removeDockedListener(Dockable source) {
         DockedProperty dp = source.stateProperty().dockedProperty();
         DockedChangeListener dcl = (DockedChangeListener) listeners.get(source);
-        if ( dcl != null ) {
+        if (dcl != null) {
             dp.removeListener(dcl);
-            listeners.remove(source);            
+            listeners.remove(source);
         }
     }
-    
-    protected void dockedChanged(Dockable source,ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
+    protected void dockedChanged(Dockable source, ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (oldValue && !newValue) {
         }
     }
-    
+
     private void add(Dockable dockable) {
         getTitleBars().add(dockable.stateProperty().getTitleBar());
         MenuItem mi = new MenuItem();
@@ -181,10 +219,10 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     }
 
 
-/*    public ObjectProperty<Pane> dockPaneProperty() {
+    /*    public ObjectProperty<Pane> dockPaneProperty() {
         return dockPaneProperty;
     }
-*/
+     */
     protected boolean addDockNode(Dockable dockable) {
         dockable.stateProperty().setParent(stateProperty().getParent());
         if (getChildren().isEmpty()) {
@@ -217,8 +255,9 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
     public ObservableList<Node> getTitleBars() {
         //return ((HBox) getChildren().get(0)).getChildren();
         Node n = null;
-        if ( ! titleBarBox.getChildren().isEmpty())
+        if (!titleBarBox.getChildren().isEmpty()) {
             n = titleBarBox.getChildren().get(0);
+        }
         return titleBarBox.getChildren();
     }
 
@@ -229,8 +268,18 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
 
     @Override
     public void undock(Dockable child) {
-        DockTitleBar found = null;
-        for (Node tb : getTitleBars()) {
+        //DockTitleBar found = null;
+        //Node found = null;
+        Region ctb = child.stateProperty().getTitleBar();
+        /*        int idx = getTitleBars().indexOf(ctb);
+        if ( idx < 0 ) {
+            return;
+        }
+        
+         */
+
+ /*        for (Node tb : getTitleBars()) {
+            
             if (!(tb instanceof DockTitleBar)) {
                 continue;
             }
@@ -239,11 +288,12 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
                 break;
             }
         }
+         */
         getContents().remove((Node) child);
-        if (found != null) {
-            getTitleBars().remove(found);
-            ((Dockable)child).stateProperty().titleBarProperty().set(null);
-            ((Dockable)child).stateProperty().titleBarProperty().set(found);
+        if (ctb != null) {
+            getTitleBars().remove(ctb);
+            ((Dockable) child).stateProperty().titleBarProperty().set(null);
+            ((Dockable) child).stateProperty().titleBarProperty().set(ctb);
         }
     }
 
@@ -269,7 +319,7 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
          */
         if (this.addDockNode(pos, node)) {
             ((Dockable) node).stateProperty().setDocked(true);
-            ((Dockable) node).stateProperty().setOwner(this);
+//            ((Dockable) node).stateProperty().setOwner(this);
             ((Dockable) node).stateProperty().setParent(this.stateProperty.getParent());
         }
 
@@ -283,26 +333,26 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
          */
         if (addDockNode((Dockable) node)) {
             ((Dockable) node).stateProperty().setDocked(true);
-            ((Dockable) node).stateProperty().setOwner(this);
+//            ((Dockable) node).stateProperty().setOwner(this);
             ((Dockable) node).stateProperty().setParent(stateProperty.getParent());
         }
     }
 
-    
     public class DockedChangeListener implements ChangeListener<Boolean> {
-        
+
         private final Dockable source;
 
         public DockedChangeListener(Dockable source) {
             this.source = source;
         }
+
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-            if ( ! newValue ) {
+            if (!newValue) {
                 undock(source);
                 removeDockedListener(source);
             }
         }
     }
-    
+
 }//DockTabPane
