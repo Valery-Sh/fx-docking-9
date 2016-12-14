@@ -35,6 +35,7 @@ public class StateProperty<T extends Dockable> {
 
     private PaneDelegate paneDelegate;
 
+    private String dockPos;
     //private Dockable owner;
 
     public StateProperty(T dockable) {
@@ -46,6 +47,15 @@ public class StateProperty<T extends Dockable> {
     private void init() {
         dockedProperty.addListener(this::dockedChanged);
     }
+
+    public String getDockPos() {
+        return dockPos;
+    }
+
+    public void setDockPos(String dockPos) {
+        this.dockPos = dockPos;
+    }
+
 
 /*    public Dockable getOwner() {
         return owner;

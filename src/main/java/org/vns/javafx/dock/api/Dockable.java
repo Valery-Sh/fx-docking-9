@@ -20,6 +20,12 @@ public interface Dockable extends DockTarget {
         stateProperty().getPaneDelegate().dock(node, dockPos, this);
     }
     
+    default String getDockPos() {
+        return stateProperty().getDockPos();
+    }
+    default void setDockPos(String dockPos) {
+        stateProperty().setDockPos(dockPos);
+    }
     
     static void initDefaultStylesheet(URL cssURL) {
         URL u = cssURL;
@@ -30,6 +36,4 @@ public interface Dockable extends DockTarget {
         StyleManager.getInstance()
                 .addUserAgentStylesheet(Dockable.class.getResource("default.css").toExternalForm());
     }
-    
-    
 }

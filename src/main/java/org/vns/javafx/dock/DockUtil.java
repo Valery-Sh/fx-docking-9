@@ -118,6 +118,47 @@ public class DockUtil {
         return retval;
     }
      */
+    public static Side sideValue(String dockPos) {
+        Side retval = null;
+        if ( dockPos == null ) {
+            retval = Side.BOTTOM;
+        } else {
+            switch(dockPos) {
+                case "TOP" :
+                    retval = Side.TOP;
+                    break;
+                case "BOTTOM" :
+                    retval = Side.BOTTOM;
+                    break;                    
+                case "LEFT" :
+                    retval = Side.LEFT;
+                    break;                    
+                case "RIGHT" :
+                    retval = Side.RIGHT;                    
+                    break;                    
+            }
+        }
+        return retval;
+    }
+    
+    public static void dock(DockTarget pane, Dockable... nodes) {
+        for ( Dockable d : nodes ) {
+            pane.dock((Node)d, d.getDockPos());            
+        }
+    }     
+    public static ObservableList<Dockable> getAllDockable(Region root) {
+        ObservableList<Dockable> retval = FXCollections.observableArrayList();
+        if ( ! (root instanceof DockTarget) ) {
+            return retval;
+        }
+        
+        List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+        retval.addAll(list.toArray(new Dockable[0]));
+        list.forEach( d -> {
+            //((DockTarget)root).dock(root, d.stateProperty().getDockPos());
+        } );
+        return retval;
+    }
     
     public static ObservableList<Dockable> initialize(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
@@ -128,7 +169,9 @@ public class DockUtil {
         List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
-            ((DockTarget)root).dock(root, Side.TOP);
+            //((DockTarget)root).dock(root, d.stateProperty().getDockPos());
+            ((DockTarget)root).dock((Node)d, d.stateProperty().getDockPos());
+
         } );
         return retval;
     }
