@@ -86,7 +86,7 @@ public class TestDockToolBar extends Application {
         dn03.getChildren().add(bClick);
         dn03.getChildren().add(ta);
         tabPane01.dock(0, dn03);
-        bClick.setOnAction(value -> {
+/*        bClick.setOnAction(value -> {
             List<Parent> list = new ArrayList<>();
             Node p = DockUtil.getImmediateParent(dockPane, b2, list);
             System.err.println("FOUNT BUTTON b2 text=" + b2.getText());
@@ -114,6 +114,7 @@ public class TestDockToolBar extends Application {
             
             
         });
+*/        
         Scene scene = new Scene(dockPane);
 
         stage.setTitle("Dockable and Toolbar");

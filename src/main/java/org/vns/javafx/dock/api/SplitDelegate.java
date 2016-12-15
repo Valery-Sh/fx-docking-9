@@ -5,6 +5,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
+import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -90,7 +91,6 @@ public class SplitDelegate {
     }
 
     public void dock(Node node, Side dockPos, DockTarget target) {
-
         if (target == null) {
             dock(node, dockPos);
         }
@@ -102,6 +102,10 @@ public class SplitDelegate {
         if (parentSplitPane == null) {
             return;
         }
+        DockUtil.print(parentSplitPane, 0, " ", p -> {
+            return (p instanceof Dockable) || (p instanceof SplitPane);            
+        });
+        //if ( true ) return;
 
         Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
                 ? Orientation.HORIZONTAL : Orientation.VERTICAL;
@@ -115,7 +119,6 @@ public class SplitDelegate {
             parentSplitPane.setOrientation(newOrientation);
             oldOrientation = newOrientation;
         }
-
         if (newOrientation != oldOrientation) {
 
             DockSplitPane dp = new DockSplitPane();
@@ -123,12 +126,19 @@ public class SplitDelegate {
 
             int idx = parentSplitPane.getItems().indexOf((Node) targetNode);
             if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                ++idx;
+                //++idx;
             }
-            dp.getItems().add((Node) targetNode);
-            dp.getItems().add(node);
+            if ( dockPos == Side.TOP || dockPos == Side.LEFT ) {
+                dp.getItems().add(node);
+                dp.getItems().add((Node) targetNode);
+            } else {
+                dp.getItems().add((Node) targetNode);
+                dp.getItems().add(node);
+                
+            }
 
-            parentSplitPane.getItems().add(idx - 1, dp);
+            //parentSplitPane.getItems().add(idx - 1, dp);
+            parentSplitPane.getItems().add(idx, dp);
             parentSplitPane.getItems().remove((Node) targetNode);
             parentSplitPane = dp;
         } else {

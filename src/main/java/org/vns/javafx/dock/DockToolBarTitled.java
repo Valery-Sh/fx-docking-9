@@ -30,7 +30,9 @@ public class DockToolBarTitled extends VBox implements Dockable, DockTarget{
     StateProperty stateProperty = new StateProperty(this);
     
     private ToolBar toolBar = new ToolBar();
-
+    
+    private Dockable dockTarget;
+    
     public DockToolBarTitled() {
         init();
     }
@@ -55,7 +57,14 @@ public class DockToolBarTitled extends VBox implements Dockable, DockTarget{
     public ToolBar getToolBar() {
         return toolBar;
     }
-    
+
+    public Dockable getDockTarget() {
+        return dockTarget;
+    }
+
+    public void setDockTarget(Dockable dockTarget) {
+        this.dockTarget = dockTarget;
+    }
     
     @Override
     public StringProperty titleProperty() {

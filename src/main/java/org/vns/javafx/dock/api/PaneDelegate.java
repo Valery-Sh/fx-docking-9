@@ -42,8 +42,6 @@ public class PaneDelegate<T extends Pane> {
         });
         
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            //Node newNode = DockUtil.getDockableImmediateParent(newValue);
-            if ( true ) return; 
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {return p instanceof Dockable;} );
             if (newNode != null) {
                 Dockable n = ((Dockable) newNode).stateProperty().getImmediateParent(newValue);

@@ -66,58 +66,6 @@ public class DockUtil {
         }
     }
 
-    /*    public static Parent getImmediateParent(Parent root, Node child, Consumer<Parent> consumer) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-            return null;
-        }
-        Parent retval = null;
-        List<Node> dockables = new ArrayList<>();
-        addAllDockable(root, dockables);
-
-        for (Node dockable : dockables) {
-            Node node = findNode((Parent) dockable, child);
-            if (node != null) {
-                retval = (Parent) dockable;
-                break;
-            }
-        }
-
-        return retval;
-    }
-     */
-
- /*    public static Node getDockableImmediateParent(Node child) {
-        Node retval = null;
-        Node p = getDockableParent(child);
-        if (p == null) {
-            return null;
-        }
-        retval = getDockableParent((Parent) p, child);
-        if (retval == null) {
-            retval = p;
-        }
-        return retval;
-    }
-     */
- /*    public static Node getDockableParent(Parent root, Node child) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-            return null;
-        }
-        Node retval = null;
-        List<Node> dockables = new ArrayList<>();
-        addAllDockable(root, dockables);
-
-        for (Node dockable : dockables) {
-            Node node = findNode((Parent) dockable, child);
-            if (node != null) {
-                retval = dockable;
-                break;
-            }
-        }
-
-        return retval;
-    }
-     */
     public static Side sideValue(String dockPos) {
         Side retval = null;
         if ( dockPos == null ) {
@@ -184,27 +132,13 @@ public class DockUtil {
             }
             if (node instanceof Parent) {
                 retval.addAll(findNodes((Parent) node, predicate));
+                System.err.println("");
             }
         }
         return retval;
     }
     
-    public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-            return null;
-        }
-        Parent root = child.getScene().getRoot();
-        return DockUtil.getImmediateParent(root, child, predicate);
-    }
 
-    /*    public static Node getDockableParent(Node child) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-            return null;
-        }
-        Parent root = child.getScene().getRoot();
-        return getDockableParent(root, child);
-    }
-     */
     /**
      * 
      * @param root
@@ -230,49 +164,6 @@ public class DockUtil {
 
     }
 
-    /*    public static Node getFocusedDockable(Node focusedNode) {
-        if (focusedNode == null || focusedNode.getScene() == null || focusedNode.getScene().getRoot() == null) {
-            return null;
-        }
-        Node retval = null;
-
-        Parent root = focusedNode.getScene().getRoot();
-        List<Node> dockables = new ArrayList<>();
-        
-
-        return retval;
-    }
-     */
- /*    public static Node getFocusedDockable(Node focusedNode) {
-        if (focusedNode == null || focusedNode.getScene() == null || focusedNode.getScene().getRoot() == null) {
-            return null;
-        }
-        Node retval = null;
-
-        Parent root = focusedNode.getScene().getRoot();
-        List<Node> dockables = new ArrayList<>();
-        
-        addAllDockable(root, dockables);
-
-        for (Node dockable : dockables) {
-            //List<Node> list = getAllNodes((Parent)d);
-            Node node = getFocused((Parent) dockable);
-            if (node != null) {
-                retval = dockable;
-                break;
-            }
-
-        }
-
-        return retval;
-    }
-     */
- /*    public static ArrayList<Node> getAllNodes(Parent root) {
-        ArrayList<Node> nodes = new ArrayList<Node>();
-        addAllDescendents(root, nodes);
-        return nodes;
-    }
-     */
  /*    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
@@ -293,6 +184,55 @@ public class DockUtil {
         }
     }
      */
+
+    public static void print(Parent root, int level, String indent, Predicate<Node> predicate ) {
+        StringBuilder sb = new StringBuilder();
+        print(sb, root, level, indent, predicate);
+        System.out.println("=======================================");
+        System.out.println(sb);
+        System.out.println("=======================================");
+        
+    }
+    public static void print(StringBuilder sb,Node node, int level, String indent, Predicate<Node> predicate ) {
+        String id = node.getId() == null ? " " : node.getId()+" ";
+        String ln = level + "." + id;
+        String ind = new String( new char[level]).replace("\0",indent);
+        if ( predicate.test(node)) {
+            sb.append(ind)
+                .append(ln)
+                .append(" : " )
+                .append(node.getClass().getName())
+                .append(System.lineSeparator());
+        }    
+        if ( node instanceof Parent) {
+            List<Node> list = ((Parent)node).getChildrenUnmodifiable();
+            for ( Node n : list) {
+                int newLevel = level;
+                if ( predicate.test(n)) {
+                    newLevel++;
+                }
+                print(sb,n,newLevel,indent, predicate);
+            }
+        }
+    }
+
+    public static List<Parent> getParentChain(Parent root, Node child, Predicate<Parent> predicate) {
+        List<Parent> retval = new ArrayList<>();
+        Node p = child;
+        while (true) {
+            Parent p1 = getImmediateParent(root, p);
+            if (p1 != null) {
+                p = p1;
+                if ( predicate.test(p1)) {
+                    retval.add(0, p1);
+                }
+            } else {
+                break;
+            }
+        }
+        return retval;
+    }
+
     public static Parent getImmediateParent(Parent root, Node child) {
         Parent retval = null;
         List<Node> list = root.getChildrenUnmodifiable();
@@ -303,7 +243,7 @@ public class DockUtil {
                 break;
             }
             if (r instanceof Parent) {
-                retval = DockUtil.getImmediateParent((Parent) r, child);
+                retval = getImmediateParent((Parent) r, child);
                 if (retval != null) {
                     break;
                 }
@@ -311,112 +251,39 @@ public class DockUtil {
         }
         return retval;
     }
-
+    
     public static Parent getImmediateParent(Parent root, Node child, Predicate<Parent> predicate) {
+        List<Parent> chain = getParentChain(root, child, predicate);
         Parent retval = null;
-        List<Parent> list = new ArrayList<>();
-        getImmediateParent(root, child, list, predicate);
-        if (!list.isEmpty()) {
-            retval = list.get(list.size() - 1);
+        if ( ! chain.isEmpty() && root != chain.get(chain.size()-1)  ) {
+            retval = chain.get(chain.size()-1);
         }
         return retval;
     }
 
-    public static Parent getImmediateParent(Parent root, Node child, List<Parent> chain) {
-        Parent retval = null;
-        List<Node> list = root.getChildrenUnmodifiable();
-        for (int i = 0; i < list.size(); i++) {
-            Node r = list.get(i);
-            if (r == child) {
-                retval = root;
-                chain.add(root);
-                break;
-            }
-            int sz = chain.size();
-            if (r instanceof Parent) {
-                chain.add((Parent) r);
-                retval = DockUtil.getImmediateParent((Parent) r, child, chain);
-                if (retval != null) {
-                    chain.add(retval);
-                    break;
-                } else {
-                    chain.remove(r);
-                }
-            }
-        }
-        return retval;
-    }
-
-    public static Parent getImmediateParent(Parent root, Node child, List<Parent> chain, Predicate<Parent> predicate) {
-        Parent retval = null;
-        List<Node> list = root.getChildrenUnmodifiable();
-        for (int i = 0; i < list.size(); i++) {
-            Node r = list.get(i);
-            if (r == child) {
-                retval = root;
-                if (predicate.test(root)) {
-                    chain.add(root);
-                }
-                break;
-            }
-
-            if (r instanceof Parent) {
-                if (predicate.test((Parent) r)) {
-                    chain.add((Parent) r);
-                }
-                retval = getImmediateParent((Parent) r, child, chain, predicate);
-                if (retval != null) {
-                    if (predicate.test(retval)) {
-                        chain.add(retval);
-                    }
-                    break;
-                } else {
-                    chain.remove(r);
-                }
-            }
-        }
-        return retval;
-    }
-
-/*    public static Node getFocused(Parent parent) {
-        Node retval = null;
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            if (node.isFocused()) {
-                retval = node;
-            } else if (node instanceof Parent) {
-                retval = getFocused((Parent) node);
-            }
-            if (retval != null) {
-                break;
-            }
-        }
-        return retval;
-
-    }
-*/    
-            
-/*    public static Node getFocusedDockable(Node focusedNode) {
-        if (focusedNode == null || focusedNode.getScene() == null || focusedNode.getScene().getRoot() == null) {
+    public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
+        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
             return null;
         }
-        Node retval = null;
-
-        Parent root = focusedNode.getScene().getRoot();
-        List<Node> dockables = new ArrayList<>();
-
-        addAllDockable(root, dockables);
-
-        for (Node dockable : dockables) {
-            //List<Node> list = getAllNodes((Parent)d);
-            Node node = getFocused((Parent) dockable);
-            if (node != null) {
-                retval = dockable;
+        Parent root = child.getScene().getRoot();
+        Parent retval = null;
+        Node p = child;
+        while (true) {
+            Parent p1 = getImmediateParent(root, p);
+            if (p1 != null) {
+                p = p1;
+                if ( predicate.test(p1)) {
+                    //retval.add(0, p1);
+                    retval = p1;
+                }
+            } else {
                 break;
             }
-
         }
-
+        if ( retval == root ) {
+            root = null;
+        }
         return retval;
     }
-*/
+    
 }
