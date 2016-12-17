@@ -13,6 +13,7 @@ import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.StateTransformer;
 import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.api.DragTransformer;
 
 /**
  *
@@ -33,7 +34,13 @@ public class StateProperty<T extends Dockable> {
     private final DockedProperty dockedProperty = new DockedProperty(false);
     private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
 
+    private DragTransformer dragTransformer;
+    
     private PaneDelegate paneDelegate;
+    /**
+     * Last dock target pane
+     */
+    private PaneDelegate priorPaneDelegate;
 
     private String dockPos;
     //private Dockable owner;
@@ -46,6 +53,8 @@ public class StateProperty<T extends Dockable> {
 
     private void init() {
         dockedProperty.addListener(this::dockedChanged);
+        dragTransformer = new DragTransformer(this);
+        titleBarProperty.addListener(this::titlebarChanged);
     }
 
     public String getDockPos() {
@@ -54,6 +63,14 @@ public class StateProperty<T extends Dockable> {
 
     public void setDockPos(String dockPos) {
         this.dockPos = dockPos;
+    }
+
+    public PaneDelegate getPriorPaneDelegate() {
+        return priorPaneDelegate;
+    }
+
+    public void setPriorPaneDelegate(PaneDelegate priorPaneDelegate) {
+        this.priorPaneDelegate = priorPaneDelegate;
     }
 
 
@@ -155,6 +172,7 @@ public class StateProperty<T extends Dockable> {
         if (isFloating()) {
             return;
         }
+        setPriorPaneDelegate(paneDelegate);
         StateTransformer t = new StateTransformer(this);
         t.makeFloating();
         floatingProperty.set(floating);
@@ -219,4 +237,17 @@ public class StateProperty<T extends Dockable> {
     public void setImmediateParentFunction(Function<Node, Dockable> f) {
         immediateParent = f;
     }
+    protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        dragTransformer.titlebarChanged(ov, oldValue, newValue);
+/*        if ( oldValue != null && newValue == null ) {
+           // getChildren().remove(oldValue);
+        } else if ( oldValue != null && newValue != null ) {
+            //getChildren().set(0,newValue);
+        } else if ( oldValue == null && newValue != null ) {
+            //getChildren().add(0,newValue);
+        }
+*/        
+    }
+    
+    
 }

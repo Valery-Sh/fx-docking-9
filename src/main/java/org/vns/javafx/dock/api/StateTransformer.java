@@ -29,7 +29,7 @@ public class StateTransformer {
 
     private ObjectProperty<Stage> stageProperty = new SimpleObjectProperty<>();
     private BorderPane borderPane;
-    //private Stage stage;
+
     private StateProperty stateProperty;   
 
     private ResizeTransformer resizer;
@@ -88,8 +88,11 @@ public class StateTransformer {
         Stage newStage = new Stage();
         stageProperty.set(newStage);
 
-        newStage.titleProperty().bind(dockable.titleProperty());
+        //newStage.titleProperty().bind(dockable.titleProperty());
+        newStage.setTitle("FLOATING STAGE");
         Pane dockPane = dockable.stateProperty().getPaneDelegate().getDockPane();
+        
+        dockable.stateProperty().setPriorPaneDelegate(dockable.stateProperty().getPaneDelegate());
         //Pane dockPane = new DockPane();  
         //((DockPane)dockPane).dock(titleBar, Side.TOP);
         //DockPaneDelegate ddd = ((DockPane)dockPane).

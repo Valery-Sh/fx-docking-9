@@ -38,6 +38,7 @@ public class TestDockableTarget extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
+        dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
         DockToolBarTitled dtt01 = new DockToolBarTitled();
         dtt01.setId("ddt01");
@@ -75,8 +76,8 @@ public class TestDockableTarget extends Application {
             
         });
         Scene scene = new Scene(dockPane);
-
-        stage.setTitle("Dockable and Toolbar");
+        
+        stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
 
         stage.show();
