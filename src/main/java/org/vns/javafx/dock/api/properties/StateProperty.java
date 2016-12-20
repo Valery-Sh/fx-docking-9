@@ -5,9 +5,11 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.Dockable;
@@ -36,11 +38,14 @@ public class StateProperty<T extends Dockable> {
 
     private DragTransformer dragTransformer;
     
-    private PaneDelegate paneDelegate;
+    //private PaneDelegate paneDelegate;
     /**
      * Last dock target pane
      */
-    private PaneDelegate priorPaneDelegate;
+    private PaneDelegate originalPaneDelegate;
+
+    private PaneDelegateProperty<PaneDelegate> paneDelegateProperty = new PaneDelegateProperty<>();
+    
 
     private String dockPos;
     //private Dockable owner;
@@ -55,22 +60,34 @@ public class StateProperty<T extends Dockable> {
         dockedProperty.addListener(this::dockedChanged);
         dragTransformer = new DragTransformer(this);
         titleBarProperty.addListener(this::titlebarChanged);
+        paneDelegateProperty.addListener(this::paneDelegateChanged);
+    }
+
+    protected void paneDelegateChanged(ObservableValue<? extends PaneDelegate> observable, PaneDelegate oldValue, PaneDelegate newValue) {
+        originalPaneDelegate = oldValue;
+    }
+    public DragTransformer getDragTransformer() {
+        return dragTransformer;
     }
 
     public String getDockPos() {
         return dockPos;
     }
-
+    
+/*    public Pane getDockPane(int state) {
+        if ( isFloating() ) {
+            return getPaneDelegate().getDockPane();
+        } else {
+            return getPaneDelegate().getDockPane();
+        }
+    }
+*/    
     public void setDockPos(String dockPos) {
         this.dockPos = dockPos;
     }
 
-    public PaneDelegate getPriorPaneDelegate() {
-        return priorPaneDelegate;
-    }
-
-    public void setPriorPaneDelegate(PaneDelegate priorPaneDelegate) {
-        this.priorPaneDelegate = priorPaneDelegate;
+    public PaneDelegate getOrigionalPaneDelegate() {
+        return originalPaneDelegate;
     }
 
 
@@ -88,16 +105,16 @@ public class StateProperty<T extends Dockable> {
     }
 
     public PaneDelegate getPaneDelegate() {
-        return paneDelegate;
+        return paneDelegateProperty.get();
     }
 
     public void setPaneDelegate(PaneDelegate dockPaneDelegate) {
-        this.paneDelegate = dockPaneDelegate;
+        this.paneDelegateProperty.set(dockPaneDelegate);
     }
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if ( ! newValue) {
-            paneDelegate.remove(getNode());
+            getPaneDelegate().remove(getNode());
         }
     }
 
@@ -163,7 +180,7 @@ public class StateProperty<T extends Dockable> {
             parent.remove(getNode());
         }
 */        
-        paneDelegate.remove(getNode());
+        getPaneDelegate().remove(getNode());
         
         //!!!!!!!! must we assign null to owner ?????
     }
@@ -172,7 +189,6 @@ public class StateProperty<T extends Dockable> {
         if (isFloating()) {
             return;
         }
-        setPriorPaneDelegate(paneDelegate);
         StateTransformer t = new StateTransformer(this);
         t.makeFloating();
         floatingProperty.set(floating);
@@ -192,7 +208,7 @@ public class StateProperty<T extends Dockable> {
 
     public boolean isDocked() {
         
-        if (!isFloating() && paneDelegate == null ) {
+        if (!isFloating() && getPaneDelegate() == null ) {
             return false;
         }
         if (isFloating() ) {

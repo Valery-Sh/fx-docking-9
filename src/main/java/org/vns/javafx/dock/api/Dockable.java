@@ -12,6 +12,9 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  * @author Valery
  */
 public interface Dockable extends DockTarget {
+    public static int DOCKED = 0;
+    public static int FLOAT = 2;    
+    
     StringProperty titleProperty();
     StateProperty stateProperty();
     

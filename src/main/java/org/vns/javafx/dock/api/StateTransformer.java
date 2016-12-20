@@ -92,12 +92,8 @@ public class StateTransformer {
         newStage.setTitle("FLOATING STAGE");
         Pane dockPane = dockable.stateProperty().getPaneDelegate().getDockPane();
         
-        dockable.stateProperty().setPriorPaneDelegate(dockable.stateProperty().getPaneDelegate());
-        //Pane dockPane = new DockPane();  
-        //((DockPane)dockPane).dock(titleBar, Side.TOP);
-        //DockPaneDelegate ddd = ((DockPane)dockPane).
-        //dockable.stateProperty().setParent(dockPane);        
-        //Region r;
+        //dockable.stateProperty().setPriorPaneDelegate(dockable.stateProperty().getPaneDelegate());
+        //dockable.stateProperty().getDragTransformer().setTargetDockPane(dockPane);        
         
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
@@ -121,16 +117,22 @@ public class StateTransformer {
                 stagePosition = stagePosition.add(translation);
             }
          */
-
+        PaneDelegate  pn01 = stateProperty.getPaneDelegate();
+        
         borderPane = new BorderPane();
         dockPane = new DockPane();
         ((DockPane)dockPane).dock((Node)dockable, Side.TOP);
         borderPane.getStyleClass().add("dock-node-border");
         
         dock(dockPane, dockable);
+        //stateProperty.getPaneDelegate().setDockPane(dockPane);
         borderPane.setCenter(dockPane);
 
         Scene scene = new Scene(borderPane);
+        PaneDelegate  pn02 = stateProperty.getPaneDelegate();
+        boolean b = pn01 == pn02;
+        
+        
 /*        if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
             newStage.initOwner(dockPane.getScene().getWindow());

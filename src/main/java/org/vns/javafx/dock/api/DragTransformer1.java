@@ -173,7 +173,7 @@ public class DragTransformer1 {
              stateProperty.setFloating(true);
              
          } else {
-            ((Node)ev.getSource()).setMouseTransparent(false);
+            ((Node)ev.getSource()).setMouseTransparent(true);
             ((Node)ev.getSource()).startFullDrag();
             Node s = (Node) ev.getSource();
             s.getScene().getWindow().addEventFilter(MouseEvent.MOUSE_DRAGGED, hhhh);             
@@ -207,7 +207,7 @@ public class DragTransformer1 {
             //targetPaneDelegate.getDockPane().addEventFilter(MouseEvent.MOUSE_DRAGGED, this::mouseOnDockPaneDragged);
             //targetPaneDelegate.getDockPane().addEventFilter(MouseEvent.MOUSE_RELEASED, this::mouseOnDockPaneReleased);            
             //stateProperty.setFloating(true);
-            targetPaneDelegate = stateProperty.getPriorPaneDelegate();
+            targetPaneDelegate = stateProperty.getOrigionalPaneDelegate();
 
             targetPaneDelegate.getDockPane().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this::mouseOnDockPaneDragged);
             targetPaneDelegate.getDockPane().removeEventFilter(MouseEvent.MOUSE_RELEASED, this::mouseOnDockPaneReleased);

@@ -4,6 +4,7 @@ import org.vns.javafx.dock.DockUtil;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -24,19 +25,18 @@ public class PaneDelegate<T extends Pane> {
     private SplitDelegate splitDelegate;
     private DockSplitPane rootSplitPane;
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
-
+    
     public PaneDelegate(T dockPane) {
         dockPaneProperty.set(dockPane);
         init();
     }
 
     private void init() {
-
         rootSplitPane = new DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
-
+        
         splitDelegate = new SplitDelegate(rootSplitPane);
-
+        
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
         });
@@ -74,7 +74,9 @@ public class PaneDelegate<T extends Pane> {
     public ObjectProperty<T> dockPaneProperty() {
         return dockPaneProperty;
     }
-
+    protected void dockPaneChanged() {
+        
+    }
     public T getDockPane() {
         return this.dockPaneProperty.get();
     }
