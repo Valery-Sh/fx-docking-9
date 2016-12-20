@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.demo.TestIfStageActive;
+import static org.vns.javafx.dock.api.demo.TestIfStageActive.stg01;
+import static org.vns.javafx.dock.api.demo.TestIfStageActive.stg02;
 import org.vns.javafx.dock.api.properties.StateProperty;
 
 /**
@@ -128,7 +130,7 @@ public class DragTransformer {
             ((Node)ev.getSource()).setMouseTransparent(false);
         }
         
-        TestIfStageActive.frontStage.toFront();
+        //TestIfStageActive.frontStage.toFront();
         
         System.err.println("Mouse Pressed source.class=" + ev.getSource().getClass().getName());
     }
@@ -260,12 +262,24 @@ public class DragTransformer {
         public void handle(DockInputEvent ev) {
             //out("DockInputHandler source Id=" + ((Node)ev.getSource()).getId() );
             out("===========================================");
+            
             MouseEvent me = ev.getMouseEvent();
+            StageRegistry.getInstance().getTarget(me.getScreenX(), me.getScreenY());
+            
             Node n = ((Node) ev.getSource());
             String sep = System.lineSeparator();
-            String s = "me.getX()=" + me.getX() + sep;
+            //String s = "me.getX()=" + me.getX() + sep;
+            String s = "me.getScreenX()=" + me.getScreenX()  
+                    + "; stg02.getX()=" + stg02.getX()
+                    + "; width=" + stg01.getWidth()
+                    + sep;
             out(s);
-            s = "me.getY()=" + me.getY() + sep;
+            //s = "me.getY()=" + me.getY() + sep;
+            s = "me.getScreenY()=" + me.getScreenY()  
+                    + "; stg02.getY()=" + stg02.getY()
+                    + "; height=" + stg01.getHeight()                    
+                    + sep;
+            
             out(s);
 
         }
@@ -273,6 +287,6 @@ public class DragTransformer {
     }
 
     public static void out(String s) {
-        System.err.println(s);
+//        System.err.println(s);
     }
 }

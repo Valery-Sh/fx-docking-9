@@ -4,7 +4,6 @@ import org.vns.javafx.dock.DockUtil;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -25,6 +24,7 @@ public class PaneDelegate<T extends Pane> {
     private SplitDelegate splitDelegate;
     private DockSplitPane rootSplitPane;
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
+    private int zorder = 0;
     
     public PaneDelegate(T dockPane) {
         dockPaneProperty.set(dockPane);
@@ -152,7 +152,12 @@ public class PaneDelegate<T extends Pane> {
     protected void setRootSplitPane(DockSplitPane rootSplitPane) {
         this.rootSplitPane = rootSplitPane;
     }
-
+    public int zorder() {
+        return zorder;
+    }
+    public void setZorder(int zorder) {
+        this.zorder = zorder;
+    }
     /*    public static Dockable findFocusedDockNode(Node focusedNode) {
         if (focusedNode == null) {
             return null;

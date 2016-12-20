@@ -4,6 +4,7 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.properties.PaneDelegateProperty;
 import org.vns.javafx.dock.api.DockTarget;
@@ -12,7 +13,7 @@ import org.vns.javafx.dock.api.DockTarget;
  *
  * @author Valery
  */
-public class DockPane extends StackPane implements DockTarget{
+public class DockPane extends StackPane implements DockPaneTarget{
     
     private final PaneDelegateProperty<PaneDelegate> delegeteProperty = new PaneDelegateProperty<>();
             
@@ -26,7 +27,7 @@ public class DockPane extends StackPane implements DockTarget{
     private void init() {
         delegeteProperty.set(new PaneDelegate(this));
     }
-    protected PaneDelegate getDelegate() {
+    public PaneDelegate getDelegate() {
         return this.delegeteProperty.get();
     }
     @Override

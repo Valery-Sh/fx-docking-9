@@ -86,6 +86,7 @@ public class StateTransformer {
         }
 
         Stage newStage = new Stage();
+        StageRegistry.register(newStage);                        
         stageProperty.set(newStage);
 
         //newStage.titleProperty().bind(dockable.titleProperty());

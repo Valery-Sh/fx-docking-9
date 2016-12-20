@@ -32,6 +32,7 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockToolBarTitled;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragPopup;
+import org.vns.javafx.dock.api.StageRegistry;
 
 /**
  *
@@ -40,10 +41,12 @@ import org.vns.javafx.dock.api.DragPopup;
 public class TestIfStageActive extends Application {
 
     public static Stage frontStage;
-
+    public static Stage stg01;
+    public static Stage stg02;
+    
     @Override
     public void start(Stage stage) throws Exception {
-
+        StageRegistry.register(stage);
         //com.sun.javafx.scene.NodeHelper.
         Node dd;
 
@@ -112,19 +115,21 @@ public class TestIfStageActive extends Application {
         stage.show();
 
         Stage stage01 = new Stage();
+        stg01 = stage01;
+        StageRegistry.register(stage01);        
         stage01.setTitle("Stage01");
         Pane pane01 = new Pane();
         pane01.setPrefSize(100, 200);
         Scene scene01 = new Scene(pane01);
         initSceneDragAndDrop(scene01);
         pane01.setOnMouseDragOver(v -> {
-            System.err.println("Stage01. hover ");
+            //System.err.println("Stage01. hover ");
         });
 
         pane01.hoverProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                System.err.println("Stage01. hover = " + newValue);
+                //System.err.println("Stage01. hover = " + newValue);
             }
         });
         stage01.setScene(scene01);
@@ -136,7 +141,9 @@ public class TestIfStageActive extends Application {
         stage01.show();
 
         Stage stage02 = new Stage();
-        frontStage = stage02;
+        stg02 = stage02;        
+        StageRegistry.register(stage02);                
+        //frontStage = stage02;
         stage02.setTitle("Stage02");
         Pane pane02 = new Pane();
         pane02.setPrefSize(100, 200);

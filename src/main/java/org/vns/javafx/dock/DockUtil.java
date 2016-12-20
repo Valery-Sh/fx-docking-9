@@ -124,7 +124,7 @@ public class DockUtil {
         return retval;
     }
     
-    public static List findNodes(Parent root, Predicate predicate) {
+    public static List findNodes(Parent root, Predicate<Node> predicate) {
         List retval = new ArrayList();
         for (Node node : root.getChildrenUnmodifiable()) {
             if (predicate.test(node)) {
