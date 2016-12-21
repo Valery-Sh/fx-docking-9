@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import org.vns.javafx.dock.DockPane;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -18,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.properties.StateProperty;
 
 /**
@@ -100,7 +100,9 @@ public class StateTransformer {
                 && dockPane.getScene().getWindow() != null) {
             newStage.initOwner(dockPane.getScene().getWindow());
         }
-
+        //System.err.println("STATE TRANS isStage=" + (dockPane.getScene().getWindow() instanceof Stage));
+        //System.err.println("STATE TRANS newStage.getOwner=" + newStage.getOwner());        
+        
         newStage.initStyle(stageStyle);
 
         //>>> stage.initStyle(stageStyle);
@@ -122,6 +124,11 @@ public class StateTransformer {
         
         borderPane = new BorderPane();
         dockPane = new DockPane();
+        //
+        // Prohibit to use as a dock target
+        //
+        ((DockPaneTarget)dockPane).getDelegate().setUsedAsDockTarget(false);
+        
         ((DockPane)dockPane).dock((Node)dockable, Side.TOP);
         borderPane.getStyleClass().add("dock-node-border");
         

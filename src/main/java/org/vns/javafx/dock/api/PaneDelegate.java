@@ -25,6 +25,7 @@ public class PaneDelegate<T extends Pane> {
     private DockSplitPane rootSplitPane;
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
     private int zorder = 0;
+    private boolean usedAsDockTarget = true;    
     
     public PaneDelegate(T dockPane) {
         dockPaneProperty.set(dockPane);
@@ -32,6 +33,7 @@ public class PaneDelegate<T extends Pane> {
     }
 
     private void init() {
+        StageRegistry.start();
         rootSplitPane = new DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
         
@@ -65,6 +67,14 @@ public class PaneDelegate<T extends Pane> {
             }
         });
 
+    }
+
+    public boolean isUsedAsDockTarget() {
+        return usedAsDockTarget;
+    }
+
+    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
+        this.usedAsDockTarget = usedAsDockTarget;
     }
 
     public DockSplitPane parentSplitPane(Node node) {

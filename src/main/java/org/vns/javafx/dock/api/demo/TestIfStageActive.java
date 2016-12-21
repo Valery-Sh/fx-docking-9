@@ -28,11 +28,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockToolBarTitled;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.StageRegistry;
+//import org.vns.javafx.dock.api.StageRegistry;
 
 /**
  *
@@ -46,7 +48,7 @@ public class TestIfStageActive extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        StageRegistry.register(stage);
+//        StageRegistry.register(stage);
         //com.sun.javafx.scene.NodeHelper.
         Node dd;
 
@@ -112,11 +114,11 @@ public class TestIfStageActive extends Application {
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
 
-        stage.show();
+        
 
         Stage stage01 = new Stage();
         stg01 = stage01;
-        StageRegistry.register(stage01);        
+        //StageRegistry.register(stage01);        
         stage01.setTitle("Stage01");
         Pane pane01 = new Pane();
         pane01.setPrefSize(100, 200);
@@ -126,29 +128,61 @@ public class TestIfStageActive extends Application {
             //System.err.println("Stage01. hover ");
         });
 
-        pane01.hoverProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                //System.err.println("Stage01. hover = " + newValue);
-            }
-        });
         stage01.setScene(scene01);
-        /*        Platform.runLater(() -> {
-            stage.requestFocus();
-        });
-         */
-        //stage01.initOwner(stage);
+        stage01.setAlwaysOnTop(true);
+        stage.setAlwaysOnTop(true);
+        
+        stage.show();
         stage01.show();
 
+        
+        StageHelper.getStages().forEach(s -> {
+            System.err.println("TITLE: " + s.getTitle());
+        });
+        
         Stage stage02 = new Stage();
         stg02 = stage02;        
-        StageRegistry.register(stage02);                
+        //StageRegistry.register(stage02);                
         //frontStage = stage02;
         stage02.setTitle("Stage02");
         Pane pane02 = new Pane();
-        pane02.setPrefSize(100, 200);
+        pane02.setPrefSize(200, 200);
         Scene scene02 = new Scene(pane02);
         stage02.setScene(scene02);
+        
+        Stage stage03 = new Stage();
+        
+        //StageRegistry.register(stage03);                
+        //frontStage = stage02;
+        stage03.setTitle("Stage03");
+        Pane pane03 = new Pane();
+        pane03.setPrefSize(200, 150);
+        Scene scene03 = new Scene(pane03);
+        stage03.setScene(scene03);
+        stage03.initOwner(stage);
+        
+        Stage stage04 = new Stage();
+        
+        //StageRegistry.register(stage04);                
+        //frontStage = stage02;
+        stage04.setTitle("Stage04");
+        Pane pane04 = new Pane();
+        pane04.setPrefSize(200, 150);
+        
+        Scene scene04 = new Scene(pane04);
+        stage04.setScene(scene04);
+        stage04.initOwner(stage03);
+        
+        Stage stage05 = new Stage();
+        
+        //StageRegistry.register(stage05);                
+        //frontStage = stage02;
+        stage05.setTitle("Stage05");
+        Pane pane05 = new Pane();
+        pane05.setPrefSize(200, 150);
+        Scene scene05 = new Scene(pane05);
+        stage05.setScene(scene05);
+        stage05.initOwner(stage03);
         /*Platform.runLater(() -> {
             stage02.requestFocus();
         });
@@ -156,15 +190,50 @@ public class TestIfStageActive extends Application {
         //stage02.initOwner(stage);
         stage02.setX(100);
         stage02.show();
+
+        stage05.show();
+        stage03.show();
+        stage04.show();        
+        
+        Platform.runLater( () -> {
+
+            //StageHelper.getStages().remove(stage05);
+            //stage05.initOwner(stage03);
+            //stage05.close();
+            //stage05.show();
+            //stage05.toFront();
+            //StageHelper.getStages().add(stage05);
+            
+            StageHelper.getStages().forEach(s -> {
+                System.err.println("RUN LATER: stage.title=" + s.getTitle() + "; owner=" + StageRegistry.getOwner(s) );
+                
+            });
+            
+        });
+        
         b1.setOnAction(ev ->{
-            ObservableList<Stage> ls = StageHelper.getStages();
-            ls.remove(stage02);
-            ls.add(0, stage02);
-            System.out.println("Stages.size=" + ls.size());
-            for ( int i=0; i < ls.size(); i++) {
-                System.out.println("Stage title=" + ls.get(i).getTitle());
+            System.out.println("===============================");
+            System.out.println("1) On b1 Action Stages.size=" + StageHelper.getStages().size());
+            
+            for ( int i=0; i < StageHelper.getStages().size(); i++) {
+                System.out.println("2) On b1 Action: Stage title=" + StageHelper.getStages().get(i).getTitle());
             }
-            stage01.toFront();
+            System.out.println("----------------------------------");
+            System.out.println("3) On b1 Action Stages.size=" + StageRegistry.getStages().size());
+            
+            for ( int i=0; i < StageRegistry.getStages().size(); i++) {
+                Stage stg = StageRegistry.getStages().get(i);
+                String tStg = stg.getTitle();
+                String tOwner = null;
+                Window w = StageRegistry.getOwner(stg);
+                if ( w != null && (w instanceof Stage)) {
+                    tOwner = ((Stage)w).getTitle();
+                }
+                System.out.println("4) On b1 Action: Stage title=" + tStg + "; owner.title=" + tOwner);
+            }
+            
+            System.out.println("===============================");
+
         });
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
