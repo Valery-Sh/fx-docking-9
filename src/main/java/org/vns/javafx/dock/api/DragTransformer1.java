@@ -18,17 +18,17 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  *
  * @author Valery
  */
-public class DragTransformer implements EventHandler<MouseEvent> {
+public class DragTransformer1 {
 
     private final StateProperty stateProperty;
-
+    
     private Parent targetDockPane;
 
-//    MouseDragHandler dragHandler = new MouseDragHandler();
+    MouseDragHandler dragHandler = new MouseDragHandler();
 
     private Point2D startMousePos;
 
-    public DragTransformer(StateProperty stateProperty) {
+    public DragTransformer1(StateProperty stateProperty) {
         this.stateProperty = stateProperty;
     }
 
@@ -45,105 +45,60 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
     }
 
-    private void removeEventHandlers_old(Node node) {
+
+    private void removeEventHandlers(Node node) {
         node.setOnMousePressed(null);
         node.setOnDragDetected(null);
     }
 
-    private void removeEventHandlers(Node titleBar) {
-        titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
-        titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
-        titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-        titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
-    }
-
-    private void addEventHandlers_OLD(Node titleBar) {
+    private void addEventHandlers(Node titleBar) {
         titleBar.setOnMousePressed(this::mousePressed);
         titleBar.setOnDragDetected(this::mouseDragDetected);
     }
 
-    private void addEventHandlers(Node titleBar) {
-        titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
-        titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
-        titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-        titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
-    }
-
     protected void mousePressed(MouseEvent ev) {
-        Point2D p = stateProperty.getNode().localToScreen(0, 0);
+        
+        Point2D p = stateProperty.getNode().localToScreen(0,0);
         double x = p.getX() - ev.getScreenX();
         double y = p.getY() - ev.getScreenY();
-        this.startMousePos = new Point2D(x, y);
+        
+        //this.startMousePos = new Point2D(ev.getX(), ev.getY());
+        this.startMousePos = new Point2D(x,y);
+        if (stateProperty.isFloating()) {
+            ((Node) ev.getSource()).setMouseTransparent(true);
+        } else {
+            ((Node) ev.getSource()).setMouseTransparent(false);
+        }
+        System.err.println("*************** Mouse Pressed source.class=" + ev.getSource().getClass().getName());
     }
 
-    protected void mouseReleased_old(MouseEvent ev) {
+    protected void mouseReleased(MouseEvent ev) {
         ((Node) ev.getSource()).setMouseTransparent(false);
+        
         System.err.println("************** this Mouse Released source.class=" + ev.getSource().getClass().getName());
     }
 
-    public void mouseDragged(MouseEvent ev) {
-        if ( ! stateProperty.isFloating() ) {
-            return;
-        }
-        Insets insets = ((BorderPane) stateProperty.getNode().getScene().getRoot()).getInsets();
-
-        Stage stage = (Stage) stateProperty.getNode().getScene().getWindow();
-        stage.setX(ev.getScreenX() + startMousePos.getX() - insets.getLeft());
-        stage.setY(ev.getScreenY() + startMousePos.getY() - insets.getTop());
-        if (stateProperty.isFloating()) {
-            Stage result = StageRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
-        }
-    }
-
-    public void mouseReleased(MouseEvent ev) {
-        System.err.println("1) ***************** mouseReleased SOURCE EVENT:" + ev.getSource().getClass().getName());
-        //((Node)ev.getSource()).removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        //((Node)ev.getSource()).removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-
-        if (targetDockPane != null) {
-//            System.err.println("2) ***************** mouseReleased REMOVE HANDLLERS");
-            targetDockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-            targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        }
-
-    }
 
     protected void mouseDragDetected(MouseEvent ev) {
         if (!stateProperty.isFloating()) {
-//             ((Node) ev.getSource()).setMouseTransparent(true);
-            targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
+            targetDockPane = ((Node)ev.getSource()).getScene().getRoot();
             stateProperty.setFloating(true);
-            targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-            targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dragHandler);
+            targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dragHandler);
             //targetDockPane.startFullDrag();
-            //System.err.println("1) source = " + ((Node) ev.getSource()).getScene().getRoot().getClass().getName());
+            System.err.println("1) source = " + ((Node)ev.getSource()).getScene().getRoot().getClass().getName());
         } else {
-  //          ((Node) ev.getSource()).setMouseTransparent(true);
-            targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-            targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            ((Node)ev.getSource()).setMouseTransparent(true);
+            targetDockPane = ((Node)ev.getSource()).getScene().getRoot();
+            targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dragHandler);
+            targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dragHandler);
             //((Node) ev.getSource()).startFullDrag();
-
-            //System.err.println("2) source = " + ((Node) ev.getSource()).getScene().getRoot().getClass().getName());
+            
+            System.err.println("2) source = " + ((Node)ev.getSource()).getScene().getRoot().getClass().getName());
         }
     }
 
-    @Override
-    public void handle(MouseEvent ev) {
-        if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            mousePressed(ev);
-        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            //System.err.println("DRAG DETECTED");
-            mouseDragDetected(ev);
-        } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-            //System.err.println("MOUSE DRAGGED");  
-            mouseDragged(ev);
-        } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            mouseReleased(ev);
-        }
-    }
-
-/*    public class MouseDragHandler implements EventHandler<MouseEvent> {
+    public class MouseDragHandler implements EventHandler<MouseEvent> {
 
         @Override
         public void handle(MouseEvent ev) {
@@ -157,8 +112,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
 
         public void mouseDragged(MouseEvent ev) {
-            Insets insets = ((BorderPane) stateProperty.getNode().getScene().getRoot()).getInsets();
-
+            Insets insets = ((BorderPane)stateProperty.getNode().getScene().getRoot()).getInsets();
+            
             Stage stage = (Stage) stateProperty.getNode().getScene().getWindow();
             stage.setX(ev.getScreenX() + startMousePos.getX() - insets.getLeft());
             stage.setY(ev.getScreenY() + startMousePos.getY() - insets.getTop());
@@ -176,12 +131,12 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                 targetDockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
                 targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
             }
-
+            
         }
 
     }
-*/
-    /*    public static class DockInputEvent extends InputEvent {
+
+/*    public static class DockInputEvent extends InputEvent {
 
         private MouseEvent mouseEvent;
 
@@ -248,5 +203,5 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     public static void out(String s) {
 //        System.err.println(s);
     }
-     */
+*/
 }

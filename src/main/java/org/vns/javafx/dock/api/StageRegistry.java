@@ -110,10 +110,11 @@ public class StageRegistry {
             if (newValue) {
                 stages.remove(stage);
                 stages.add(0, stage);
-                System.out.println("============================================");
+/*                System.out.println("============================================");
                 stages.forEach(s -> {
                     System.out.println("STAGE: " + s.getTitle());
                 });
+*/                
             }
         });
     }
@@ -172,24 +173,14 @@ public class StageRegistry {
                 targetStages.add(s);
             }
         });
-        System.err.println("getTarget(x,y) targetStages.sz=" + targetStages.size());
-
         for (Stage s1 : targetStages) {
-            System.err.println("00) getTarget(x,y) s1.title=" + s1.getTitle() + "; allStages.sz=" + allStages.size());
-            System.err.println("0) getTarget(x,y) s1.title=" + s1.getTitle());
-
             retval = s1;
             for (Stage s2 : allStages) {
-                System.err.println("1) getTarget(x,y) s2.title=" + s2.getTitle());
                 if (s1 == s2) {
                     continue;
                 }
-                System.err.println("2) getTarget(x,y) s2.title=" + s2.getTitle());
-
                 if (s1 != getTarget(s1, s2)) {
                     retval = null;
-                    System.err.println("11111 getTarget(x,y) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
-
                     break;
                 }
             }
@@ -199,60 +190,38 @@ public class StageRegistry {
         }
         System.err.println("3) retval=" + retval + "; title=" + (retval==null ? null: retval.getTitle()) );
         
-/*        if (retval == null) {
-            System.err.println("END: getTarget(x,y) retval=" + retval);
-        } else {
-            System.err.println("END: getTarget(x,y) retval.title=" + retval.getTitle());
-        }
-*/
         return retval;
     }
 
     public Stage getTarget(Stage s1, Stage s2) {
         Stage retval = null;
-        //Window own1 = s1.getOwner();
-        //Window own2 = s2.getOwner();
-
-        //s1.getScene().getRoot().setStyle("-fx-background-color: lightgray");
-        //s2.getScene().getRoot().setStyle("-fx-background-color: lightgray");
-
         Stage s = s1;
 
         boolean b1 = s1.isAlwaysOnTop();
         boolean b2 = s2.isAlwaysOnTop();
-        //s1.getScene().setFill(null);
-        //s2.getScene().setFill(null);
-        //s1.getScene().getRoot().setStyle("-fx-background-color: blue");
-        //s2.getScene().getRoot().setStyle("-fx-background-color: blue");
-        //System.err.println("zorder(s1) < zorder(s2) = " + (zorder(s1) < zorder(s2)) + "; stages.sz=" + stages.size());
         if (isChild(s1, s2)) {
             //retval must be null s2 is a child window of s1
-            System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
+            //System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
 
         } else if (isChild(s2, s1)) {
-            System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
+            //System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
             retval = s1;
         } else if (zorder(s1) < zorder(s2) && !b1 && !b2) {
-            System.err.println("A.1");
+            //System.err.println("A.1");
             retval = s1;
         } else if (zorder(s1) < zorder(s2) && b1 && b2) {
             retval = s1;
         } else if (b1 && !b2) {
-            System.err.println("A.2");
+            //System.err.println("A.2");
             retval = s1;
         } else if (!b1 && b2) {
-            System.err.println("A.3");
+            //System.err.println("A.3");
         }
         String t = null;
         if ( retval != null ) {
             t = retval.getTitle();
         }
         System.err.println("!!!!!!!!!! retval = " + retval + "; title=" + t);
-        if (retval != null) {
-            //System.err.println("COLOR @@@@@@@@@@ RED " + retval);
-            //retval.getScene().setFill(Color.RED);
-            //retval.getScene().getRoot().setStyle("-fx-background-color: red");
-        }
 
         return retval;
     }
@@ -273,7 +242,6 @@ public class StageRegistry {
     }
 
     private static class SingletonInstance {
-
         private static final StageRegistry instance = new StageRegistry();
     }
 }
