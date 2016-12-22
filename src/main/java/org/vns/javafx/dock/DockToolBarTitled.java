@@ -82,6 +82,7 @@ public class DockToolBarTitled extends VBox implements Dockable, DockTarget{
     }
     //private String dockpos = "BOTTOM";
 
+    @Override
     public String getDockPos() {
         return stateProperty.getDockPos();
     }

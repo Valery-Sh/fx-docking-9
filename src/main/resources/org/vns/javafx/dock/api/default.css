@@ -39,6 +39,12 @@
 .dock-node:maximized .dock-title-state-button {
   -fx-graphic: url(restore.png);
 }
+
+.dock-place {
+    -fx-fill: -fx-selection-bar;
+    -fx-opacity: 0.3;
+}
+
 .dock-area-indicator {
   -fx-fill: -fx-selection-bar;
   -fx-opacity: 0.5;
@@ -73,10 +79,34 @@
   -fx-padding: 5;
 }
 
+.dock-pos-button {
+  -fx-padding: 4;
+} 
+
 /* JavaFX developers really seem to have fat fingers? */
 .dock-root-pane .button {
   -fx-padding: 4;
 }
+
+
+.dock-pos-top {
+  -fx-graphic: url(dock-popup-top-24x24.png);
+  -fx-padding: 4;
+}
+.dock-pos-bottom {
+  -fx-graphic: url(dock-popup-bottom-24x24.png);
+  -fx-padding: 4;
+}
+.dock-pos-left {
+  -fx-graphic: url(dock-popup-left-24x24.png);
+  -fx-padding: 4;
+}
+
+.dock-pos-right {
+  -fx-graphic: url(dock-popup-right-24x24.png);
+  -fx-padding: 4;
+}
+
 
 /* Set the icons for the indicator buttons here. */
 .dock-center {

@@ -44,7 +44,7 @@ public class TestDockableTarget extends Application {
         dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
         b1.setOnAction(a -> { 
-            new DragPopup(dockPane);
+            //new DragPopup(dockPane);
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
         DockToolBarTitled dtt01 = new DockToolBarTitled();

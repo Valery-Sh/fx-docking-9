@@ -6,6 +6,7 @@ import java.util.Stack;
 import java.util.function.Predicate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -136,6 +137,30 @@ public class DockUtil {
             }
         }
         return retval;
+    }
+    public static Node findNode(Parent root, Predicate<Node> predicate) {
+        List<Node> ls = findNodes(root, predicate);
+        if ( ls.isEmpty() ) {
+            return null;
+        }
+        return ls.get(0);
+    }
+    public static Node findNode(Parent root, double screenX, double screenY) {
+        
+        Predicate<Node> predicate =  (node) -> {
+            Point2D p = node.localToScreen(0,0);
+            boolean b = false;
+            if ( node instanceof Dockable ) {
+                b = ((Dockable)node).stateProperty().getPaneDelegate().isUsedAsDockTarget();    
+            }
+            return b && !( (screenX < p.getX() 
+                      || screenX > p.getX() + ((Region)node).getWidth()
+                      || screenY < p.getY() || screenY > p.getY() + ((Region)node).getHeight()
+                    ));
+            };
+           
+
+        return findNode(root, predicate);
     }
     
 
