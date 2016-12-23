@@ -17,7 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockToolBarTitled;
+import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -31,12 +31,12 @@ public class TestForFXML01 extends Application {
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
         Button b1 = new Button("b01");
-        DockToolBarTitled dtt = new DockToolBarTitled();
+        TitledToolBar dtt = new TitledToolBar();
 
         b1.setLayoutX(126);
         b1.setLayoutY(90);
         dockPane.dock(dtt, Side.TOP);
-        DockToolBarTitled dtt01 = new DockToolBarTitled();
+        TitledToolBar dtt01 = new TitledToolBar();
         dtt01.getChildren().add(b1);
         dtt.dock(dtt01, Side.TOP);
         List<Parent> chain = new ArrayList<>();
@@ -51,7 +51,7 @@ public class TestForFXML01 extends Application {
         for (Parent p : chain) {
             //System.err.println("1. " + p.getClass().getName());
         }
-        DockToolBarTitled dtt02 = new DockToolBarTitled();
+        TitledToolBar dtt02 = new TitledToolBar();
 
         //dockPane.getChildren().add(b1);
         Scene scene = new Scene(dockPane);

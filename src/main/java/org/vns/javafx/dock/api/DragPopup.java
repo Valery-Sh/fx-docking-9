@@ -45,7 +45,6 @@ public class DragPopup extends Popup {
     }
 
     private void init() {
-        //System.err.println("##############################");
         popupPane = new BorderPane();
         popupPane.setMouseTransparent(true);
 
@@ -86,7 +85,7 @@ public class DragPopup extends Popup {
         dockNodePopup = new Popup();
 
         dockNodePane = new GridPane();
-
+        dockNodePane.getStyleClass().add("dock-target-pos");
         nodeBtnTop = new Button();
         nodeBtnTop.getStyleClass().add("dock-pos-top");
         nodeBtnBottom = new Button();
@@ -174,7 +173,7 @@ public class DragPopup extends Popup {
         //System.err.println("DOCKPANE !!!!!!!!!! " + dockPane);
         Region d = (Region) DockUtil.findNode(dockPane, screenX, screenY);
         if (d != null) {
-            Point2D p = d.localToScreen((d.getWidth() - dockNodePane.getWidth()) / 2, (getHeight() - dockNodePane.getHeight()) / 2);
+            Point2D p = d.localToScreen((d.getWidth() - dockNodePane.getWidth()) / 2, (d.getHeight() - dockNodePane.getHeight()) / 2);
             dockNodePopup.show(this, p.getX(), p.getY());
         }
 

@@ -21,7 +21,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
-import org.vns.javafx.dock.DockToolBarTitled;
+import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -64,12 +64,12 @@ public class TestDockToolBar extends Application {
         dn01.getChildren().add(new Label("DOCK NODE IMPL"));
         dockPane.dock(dn01, Side.TOP);
 
-        DockToolBarTitled dtt = new DockToolBarTitled();
+        TitledToolBar dtt = new TitledToolBar();
         dn01.setId("Dtt");
         dtt.setFocusTraversable(true);
         dockPane.dock(dtt, Side.TOP);
 
-        DockToolBarTitled dtt02 = new DockToolBarTitled();
+        TitledToolBar dtt02 = new TitledToolBar();
         dtt02.setId(" Dtt02");
         dn01.dock(dtt02, Side.BOTTOM);
         Button tb2 = new Button("", new Ellipse(8, 8, 8, 6));

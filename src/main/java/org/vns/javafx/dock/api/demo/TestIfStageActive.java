@@ -10,7 +10,9 @@ import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,8 +24,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockToolBarTitled;
+import org.vns.javafx.dock.DockToolBar;
+import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.StageRegistry;
@@ -57,14 +61,14 @@ public class TestIfStageActive extends Application {
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
          */
-        DockToolBarTitled dtt01 = new DockToolBarTitled();
+        TitledToolBar dtt01 = new TitledToolBar();
         dtt01.setId("ddt01");
         Label lb = new Label("id = dtt01");
         dtt01.getChildren().add(lb);
 
         dockPane.dock(dtt01, Side.BOTTOM);
 
-        DockToolBarTitled dtt02 = new DockToolBarTitled();
+        TitledToolBar dtt02 = new TitledToolBar();
         dtt02.setId("ddt02");
         dtt02.getChildren().add(b1);
         dockPane.dock(dtt02, Side.RIGHT);
@@ -82,11 +86,13 @@ public class TestIfStageActive extends Application {
             System.err.println("%%%%%%%%%%%% RELEASED");
         });
 
-        DockToolBarTitled dtt03 = new DockToolBarTitled();
+        TitledToolBar dtt03 = new TitledToolBar();
         dtt03.setId("ddt03");
         lb = new Label("id = dtt03");
         dtt03.getChildren().add(lb);
         dtt01.dock(dtt03, Side.RIGHT);
+        
+        
         /*        b1.setOnAction(ev ->{
             DockUtil.print(dockPane, 1, " ", p -> {
                 return ((p instanceof Control) || (p instanceof Pane)) 
@@ -132,13 +138,7 @@ public class TestIfStageActive extends Application {
             //System.err.println("++++ DOCKABLE LIST: " + ((Node) s).getId());
         });
 
-/*        dtt01.stateProperty().setFloating(true);
-        ((Stage) ((Region) dtt01).getScene().getWindow()).close();
-        DockUtil.print(dockPane, 1, " ", p -> {
-            return ((p instanceof Control) || (p instanceof Pane))
-                    && !(p.getClass().getName().startsWith("com.sun.javafx"));
-        });
-*/
+
         dtt03.dock(dtt01, Side.TOP);
 
         dtt01.stateProperty().setFloating(false);
@@ -148,8 +148,28 @@ public class TestIfStageActive extends Application {
         dtt01.stateProperty().setFloating(false);
 
         dockPane.dock(dtt01, Side.LEFT);
+        
+        DockNode dockNode01 = new DockNode();
+        dockNode01.setId("dockNode01");
+        dockNode01.titleProperty().set("Dock Node01");
+        dockPane.dock(dockNode01, Side.BOTTOM);
 
-
+        DockToolBar dockToolBar01 = new DockToolBar();
+        dockToolBar01.setId("dockToolBar01");
+        dockToolBar01.titleProperty().set("Dock ToolBar 01");
+        Label lbTB = new Label("Tool Bar");
+        lbTB.autosize();
+        
+        //lbTB.setPrefHeight(100);
+        //lbTB.setPrefWidth(28);
+        lbTB.setRotate(-90);
+        lbTB.autosize();
+        
+        dockToolBar01.getItems().add(new Group(lbTB));
+        dockToolBar01.setOrientation(Orientation.VERTICAL);
+        dockToolBar01.useAaTitleBar(lbTB);
+        dockPane.dock(dockToolBar01, Side.LEFT);
+        
         Stage stage02 = new Stage();
         stg02 = stage02;
 

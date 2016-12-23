@@ -1,8 +1,5 @@
 package org.vns.javafx.dock;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -11,14 +8,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableTitleBar;
 import org.vns.javafx.dock.api.properties.StateProperty;
 
 /**
  *
  * @author Valery
  */
-public class DockTitleBar extends HBox {//implements DockableTitleBar {
+public class DockTitleBar extends HBox {
 
 
     public enum StyleClasses {

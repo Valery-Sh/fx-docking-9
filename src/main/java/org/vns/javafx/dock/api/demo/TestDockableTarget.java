@@ -25,7 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockToolBarTitled;
+import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.findNodes;
 import org.vns.javafx.dock.api.Dockable;
@@ -47,14 +47,14 @@ public class TestDockableTarget extends Application {
             //new DragPopup(dockPane);
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
-        DockToolBarTitled dtt01 = new DockToolBarTitled();
+        TitledToolBar dtt01 = new TitledToolBar();
         dtt01.setId("ddt01");
         Label lb = new Label("id = dtt01");
         dtt01.getChildren().add(lb);
         
         dockPane.dock(dtt01, Side.BOTTOM);
 
-        DockToolBarTitled dtt02 = new DockToolBarTitled();
+        TitledToolBar dtt02 = new TitledToolBar();
         dtt02.setId("ddt02");
         dtt02.getChildren().add(b1);
         dockPane.dock(dtt02, Side.RIGHT);
@@ -72,7 +72,7 @@ public class TestDockableTarget extends Application {
             System.err.println("%%%%%%%%%%%% RELEASED");
         });
         
-        DockToolBarTitled dtt03 = new DockToolBarTitled();
+        TitledToolBar dtt03 = new TitledToolBar();
         dtt03.setId("ddt03");
         lb = new Label("id = dtt03");
         dtt03.getChildren().add(lb);        
