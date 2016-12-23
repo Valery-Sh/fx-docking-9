@@ -2,12 +2,14 @@ package org.vns.javafx.dock;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableTitleBar;
 import org.vns.javafx.dock.api.properties.StateProperty;
@@ -72,8 +74,6 @@ public class DockTitleBar extends HBox {//implements DockableTitleBar {
 
     
     private void init() {
-        //dockNode.stateProperty().titleBarProperty().changeOwner(dockNode);
-        //!!!!!! this.dragboard = new DockDragboard(this);
 
         label = new Label("Dock Title Bar");
         label.textProperty().bind(dockNode.titleProperty());
@@ -96,17 +96,15 @@ public class DockTitleBar extends HBox {//implements DockableTitleBar {
             dockNode.stateProperty().getNode().toFront();
         });
         
-        stateButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        closeButton.setOnAction( a -> {
                 StateProperty sp = dockNode.stateProperty();
-                if (sp.isFloating()) {
-                    //!!!sp.setMaximized(!sp.isMaximized());
+                if (sp.isFloating() && ( getScene().getWindow() instanceof Stage)) {
+                    ((Stage)getScene().getWindow()).close();
                 } else {
-                    sp.setFloating(true);
+                    //sp.setFloating(true);
                 }
-            }
         });
+        
         stateButton.setTooltip(new Tooltip("Undock pane"));
         closeButton.setTooltip(new Tooltip("Close pane"));        
         pinButton.setTooltip(new Tooltip("Pin pane"));        

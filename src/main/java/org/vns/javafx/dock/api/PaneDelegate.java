@@ -5,9 +5,12 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
@@ -25,8 +28,8 @@ public class PaneDelegate<T extends Pane> {
     private DockSplitPane rootSplitPane;
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
     private int zorder = 0;
-    private boolean usedAsDockTarget = true;    
-    
+    private boolean usedAsDockTarget = true;
+
     public PaneDelegate(T dockPane) {
         dockPaneProperty.set(dockPane);
         init();
@@ -36,15 +39,17 @@ public class PaneDelegate<T extends Pane> {
         StageRegistry.start();
         rootSplitPane = new DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
-        
+
         splitDelegate = new SplitDelegate(rootSplitPane);
-        
+
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
         });
-        
+
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {return p instanceof Dockable;} );
+            Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
+                return p instanceof Dockable;
+            });
             if (newNode != null) {
                 Dockable n = ((Dockable) newNode).stateProperty().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
@@ -53,7 +58,9 @@ public class PaneDelegate<T extends Pane> {
                 ((Dockable) newNode).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             //Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
-            Dockable oldNode =  (Dockable) DockUtil.getImmediateParent(oldValue, (p) -> {return p instanceof Dockable;} );
+            Dockable oldNode = (Dockable) DockUtil.getImmediateParent(oldValue, (p) -> {
+                return p instanceof Dockable;
+            });
             if (oldNode != null) {
                 Dockable n = ((Dockable) oldNode).stateProperty().getImmediateParent(oldValue);
                 if (n != null && n != oldNode) {
@@ -84,9 +91,11 @@ public class PaneDelegate<T extends Pane> {
     public ObjectProperty<T> dockPaneProperty() {
         return dockPaneProperty;
     }
+
     protected void dockPaneChanged() {
-        
+
     }
+
     public T getDockPane() {
         return this.dockPaneProperty.get();
     }
@@ -112,13 +121,22 @@ public class PaneDelegate<T extends Pane> {
         if (isDocked(node)) {
             return;
         }
+        if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
+            ((Stage) node.getScene().getWindow()).close();
+        }
+        if (node instanceof Dockable) {
+            ((Dockable) node).stateProperty().setFloating(false);
+        }
         splitDelegate.dock(node, dockPos);
+
         DockSplitPane save = rootSplitPane;
         if (rootSplitPane != splitDelegate.getRoot()) {
             rootSplitPane = splitDelegate.getRoot();
         }
+
         int idx = getDockPane().getChildren().indexOf(save);
         getDockPane().getChildren().set(idx, rootSplitPane);
+
         if (node instanceof Dockable) {
             StateProperty state = ((Dockable) node).stateProperty();
             if (state.getPaneDelegate() == null || state.getPaneDelegate() != this) {
@@ -135,6 +153,13 @@ public class PaneDelegate<T extends Pane> {
         if (target == null) {
             dock(node, dockPos);
         } else {
+            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
+                ((Stage) node.getScene().getWindow()).close();
+            }
+            if (node instanceof Dockable) {
+                ((Dockable) node).stateProperty().setFloating(false);
+            }
+
             splitDelegate.dock(node, dockPos, target);
         }
         if (node instanceof Dockable) {
@@ -145,6 +170,14 @@ public class PaneDelegate<T extends Pane> {
             state.setDocked(true);
         }
 
+    }
+
+    public double[] getDimension(Node node, Side dockPos, DockTarget target) {
+
+        if (isDocked(node)) {
+            return null;
+        }
+        return splitDelegate.getDimension(node, dockPos, target);
     }
 
     public void remove(Node dockNode) {
@@ -162,9 +195,11 @@ public class PaneDelegate<T extends Pane> {
     protected void setRootSplitPane(DockSplitPane rootSplitPane) {
         this.rootSplitPane = rootSplitPane;
     }
+
     public int zorder() {
         return zorder;
     }
+
     public void setZorder(int zorder) {
         this.zorder = zorder;
     }

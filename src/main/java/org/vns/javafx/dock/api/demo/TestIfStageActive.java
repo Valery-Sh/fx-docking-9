@@ -6,33 +6,26 @@
 package org.vns.javafx.dock.api.demo;
 
 import com.sun.javafx.stage.StageHelper;
-import com.sun.javafx.stage.WindowHelper;
+import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.geometry.Side;
-import javafx.scene.DepthTest;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Popup;
-import javafx.stage.Screen;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockToolBarTitled;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.StageRegistry;
 //import org.vns.javafx.dock.api.StageRegistry;
 
@@ -45,7 +38,7 @@ public class TestIfStageActive extends Application {
     public static Stage frontStage;
     public static Stage stg01;
     public static Stage stg02;
-    
+
     @Override
     public void start(Stage stage) throws Exception {
 //        StageRegistry.register(stage);
@@ -56,13 +49,14 @@ public class TestIfStageActive extends Application {
         //nn.
         stage.setTitle("Tests If Stage Active");
         DockPane dockPane = new DockPane();
+        dockPane.setPrefHeight(200);
         dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
-/*        b1.setOnAction(a -> {
+        /*        b1.setOnAction(a -> {
             //new DragPopup(dockPane);
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
-*/        
+         */
         DockToolBarTitled dtt01 = new DockToolBarTitled();
         dtt01.setId("ddt01");
         Label lb = new Label("id = dtt01");
@@ -93,7 +87,7 @@ public class TestIfStageActive extends Application {
         lb = new Label("id = dtt03");
         dtt03.getChildren().add(lb);
         dtt01.dock(dtt03, Side.RIGHT);
-/*        b1.setOnAction(ev ->{
+        /*        b1.setOnAction(ev ->{
             DockUtil.print(dockPane, 1, " ", p -> {
                 return ((p instanceof Control) || (p instanceof Pane)) 
                 && ! ( p.getClass().getName().startsWith("com.sun.javafx"));
@@ -114,8 +108,6 @@ public class TestIfStageActive extends Application {
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
 
-        
-
         Stage stage01 = new Stage();
         stg01 = stage01;
         //StageRegistry.register(stage01);        
@@ -131,71 +123,76 @@ public class TestIfStageActive extends Application {
         stage01.setScene(scene01);
         stage01.setAlwaysOnTop(true);
         stage.setAlwaysOnTop(true);
-        
-        stage.show();
-        stage01.show();
 
-        
-        StageHelper.getStages().forEach(s -> {
-            System.err.println("TITLE: " + s.getTitle());
+        stage.show();
+        //stage01.show();
+        List<Dockable> ls = DockUtil.getAllDockable(dockPane);
+
+        ls.forEach(s -> {
+            //System.err.println("++++ DOCKABLE LIST: " + ((Node) s).getId());
         });
-        
+
+/*        dtt01.stateProperty().setFloating(true);
+        ((Stage) ((Region) dtt01).getScene().getWindow()).close();
+        DockUtil.print(dockPane, 1, " ", p -> {
+            return ((p instanceof Control) || (p instanceof Pane))
+                    && !(p.getClass().getName().startsWith("com.sun.javafx"));
+        });
+*/
+        dtt03.dock(dtt01, Side.TOP);
+
+        dtt01.stateProperty().setFloating(false);
+
+        dtt01.stateProperty().setFloating(true);
+        ((Stage) ((Region) dtt01).getScene().getWindow()).close();
+        dtt01.stateProperty().setFloating(false);
+
+        dockPane.dock(dtt01, Side.LEFT);
+
+
         Stage stage02 = new Stage();
-        stg02 = stage02;        
-        //StageRegistry.register(stage02);                
-        //frontStage = stage02;
+        stg02 = stage02;
+
         stage02.setTitle("Stage02");
         Pane pane02 = new Pane();
         pane02.setPrefSize(200, 200);
         Scene scene02 = new Scene(pane02);
         stage02.setScene(scene02);
-        
+
         Stage stage03 = new Stage();
-        
-        //StageRegistry.register(stage03);                
-        //frontStage = stage02;
+
         stage03.setTitle("Stage03");
         Pane pane03 = new Pane();
         pane03.setPrefSize(200, 150);
         Scene scene03 = new Scene(pane03);
         stage03.setScene(scene03);
         stage03.initOwner(stage);
-        
+
         Stage stage04 = new Stage();
-        
-        //StageRegistry.register(stage04);                
-        //frontStage = stage02;
         stage04.setTitle("Stage04");
         Pane pane04 = new Pane();
         pane04.setPrefSize(200, 150);
-        
+
         Scene scene04 = new Scene(pane04);
         stage04.setScene(scene04);
         stage04.initOwner(stage03);
-        
+
         Stage stage05 = new Stage();
-        
-        //StageRegistry.register(stage05);                
-        //frontStage = stage02;
+
         stage05.setTitle("Stage05");
         Pane pane05 = new Pane();
         pane05.setPrefSize(200, 150);
         Scene scene05 = new Scene(pane05);
         stage05.setScene(scene05);
         stage05.initOwner(stage03);
-        /*Platform.runLater(() -> {
-            stage02.requestFocus();
-        });
-        */
         //stage02.initOwner(stage);
-        stage02.setX(100);
-        stage02.show();
 
-        stage05.show();
-        stage03.show();
-        stage04.show();        
-        
-        Platform.runLater( () -> {
+        //stage02.setX(100);
+        //stage02.show();
+        //stage05.show();
+        //stage03.show();
+        //stage04.show();        
+        Platform.runLater(() -> {
 
             //StageHelper.getStages().remove(stage05);
             //stage05.initOwner(stage03);
@@ -203,39 +200,38 @@ public class TestIfStageActive extends Application {
             //stage05.show();
             //stage05.toFront();
             //StageHelper.getStages().add(stage05);
-            
             StageHelper.getStages().forEach(s -> {
-                System.err.println("RUN LATER: stage.title=" + s.getTitle() + "; owner=" + StageRegistry.getOwner(s) );
-                
+                //System.err.println("RUN LATER: stage.title=" + s.getTitle() + "; owner=" + StageRegistry.getOwner(s));
+
             });
-            
+
         });
-        
-        b1.setOnAction(ev ->{
-            System.out.println("===============================");
-            System.out.println("1) On b1 Action Stages.size=" + StageHelper.getStages().size());
-            
-            for ( int i=0; i < StageHelper.getStages().size(); i++) {
-                System.out.println("2) On b1 Action: Stage title=" + StageHelper.getStages().get(i).getTitle());
+
+        b1.setOnAction(ev -> {
+            //System.out.println("===============================");
+            //System.out.println("1) On b1 Action Stages.size=" + StageHelper.getStages().size());
+
+            for (int i = 0; i < StageHelper.getStages().size(); i++) {
+                //System.out.println("2) On b1 Action: Stage title=" + StageHelper.getStages().get(i).getTitle());
             }
-            System.out.println("----------------------------------");
-            System.out.println("3) On b1 Action Stages.size=" + StageRegistry.getStages().size());
-            
-            for ( int i=0; i < StageRegistry.getStages().size(); i++) {
+            //System.out.println("----------------------------------");
+            //System.out.println("3) On b1 Action Stages.size=" + StageRegistry.getStages().size());
+
+            for (int i = 0; i < StageRegistry.getStages().size(); i++) {
                 Stage stg = StageRegistry.getStages().get(i);
                 String tStg = stg.getTitle();
                 String tOwner = null;
                 Window w = StageRegistry.getOwner(stg);
-                if ( w != null && (w instanceof Stage)) {
-                    tOwner = ((Stage)w).getTitle();
+                if (w != null && (w instanceof Stage)) {
+                    tOwner = ((Stage) w).getTitle();
                 }
-                System.out.println("4) On b1 Action: Stage title=" + tStg + "; owner.title=" + tOwner);
+                //System.out.println("4) On b1 Action: Stage title=" + tStg + "; owner.title=" + tOwner);
             }
-            
-            System.out.println("===============================");
+
+            //System.out.println("===============================");
 
         });
-        
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

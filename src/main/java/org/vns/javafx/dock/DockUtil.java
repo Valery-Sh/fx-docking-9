@@ -10,6 +10,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Control;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
@@ -209,7 +211,13 @@ public class DockUtil {
         }
     }
      */
-
+    public static void print(Parent root) {
+        print(root, 1, " ", p -> {
+            return ((p instanceof Control) || (p instanceof Pane))
+                    && !(p.getClass().getName().startsWith("com.sun.javafx"));
+        });        
+    }
+    
     public static void print(Parent root, int level, String indent, Predicate<Node> predicate ) {
         StringBuilder sb = new StringBuilder();
         print(sb, root, level, indent, predicate);
