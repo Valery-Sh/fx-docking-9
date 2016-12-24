@@ -27,7 +27,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.MultiTab;
 import org.vns.javafx.dock.api.properties.StateProperty;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
-import org.vns.javafx.dock.api.HasOwner;
 import org.vns.javafx.dock.api.properties.DockedProperty;
 
 /**

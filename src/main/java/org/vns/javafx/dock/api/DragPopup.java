@@ -133,10 +133,6 @@ public class DragPopup extends Popup {
 
     }
 
-    public void showGrid(double x, double y) {
-
-    }
-
     public boolean hideWhenOut(double x, double y) {
         if (!isShowing()) {
             return true;
@@ -176,8 +172,11 @@ public class DragPopup extends Popup {
             Point2D p = d.localToScreen((d.getWidth() - dockNodePane.getWidth()) / 2, (d.getHeight() - dockNodePane.getHeight()) / 2);
             dockNodePopup.show(this, p.getX(), p.getY());
         }
-
-        System.err.println("DOCKABLE " + d);
+        
+//        if ( (dockPane instanceof DockPaneTarget ) {
+            
+//        }
+        //System.err.println("handle DOCKABLE " + d);
         dockPlace.setVisible(false);
         dragTarget = null;
 
@@ -212,6 +211,7 @@ public class DragPopup extends Popup {
     public void showDockPlace(Side side) {
         dockPos = side;
         dragTarget = dockPane;
+        //System.err.println("showDockPlace dockTarget " + dragTarget);
         switch (side) {
             case TOP:
                 dockPlace.setWidth(dockPane.getWidth());
@@ -246,6 +246,9 @@ public class DragPopup extends Popup {
     }
 
     public void showDockPlace(Region target, Side side) {
+        if ( target == null ) {
+            return;
+        }
         dockPos = side;
         dragTarget = target;
         

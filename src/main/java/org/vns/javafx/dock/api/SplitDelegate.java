@@ -2,12 +2,9 @@ package org.vns.javafx.dock.api;
 
 import java.util.Stack;
 import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.Region;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -148,61 +145,6 @@ public class SplitDelegate {
         //}
     }
 
-    public double[] getDimension(Node node, Side dockPos, DockTarget target) {
-        if (target == null) {
-            return null;
-        }
-        Node targetNode = (Node) target;
-        DockSplitPane parentSplitPane = new DockSplitPane();
-        parentSplitPane.getItems().addAll(getTargetSplitPane(targetNode).getItems());
-        parentSplitPane.setOrientation(getTargetSplitPane(targetNode).getOrientation());
-
-        Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
-                ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-        Orientation oldOrientation = parentSplitPane.getOrientation();
-
-        int itemCount = parentSplitPane.getItems().size();
-        //
-        // If itemcount == 1 then can just change orientation
-        //
-        if (newOrientation != oldOrientation && itemCount == 1) {
-            parentSplitPane.setOrientation(newOrientation);
-            oldOrientation = newOrientation;
-        }
-        if (newOrientation != oldOrientation) {
-
-            DockSplitPane dp = new DockSplitPane();
-            dp.setOrientation(newOrientation);
-
-            int idx = parentSplitPane.getItems().indexOf((Node) targetNode);
-            if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                //++idx;
-            }
-            if (dockPos == Side.TOP || dockPos == Side.LEFT) {
-                dp.getItems().add(node);
-                dp.getItems().add((Node) targetNode);
-            } else {
-                dp.getItems().add((Node) targetNode);
-                dp.getItems().add(node);
-
-            }
-
-            //parentSplitPane.getItems().add(idx - 1, dp);
-            parentSplitPane.getItems().add(idx, dp);
-            parentSplitPane.getItems().remove((Node) targetNode);
-            parentSplitPane = dp;
-        } else {
-            int idx = parentSplitPane.getItems().indexOf(targetNode);
-            if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                ++idx;
-            }
-            parentSplitPane.getItems().add(idx, node);
-        }
-        //parentSplitPane.setDividerPosition(node, dockPos);
-
-        return parentSplitPane.getDimension(node, dockPos);
-
-    }
 
     /**
      * An immediate parent object of type DockSplitPane
@@ -244,9 +186,6 @@ public class SplitDelegate {
             setDividerPosition(node, this, dockPos);
         }
 
-        public double[] getDimension(Node node, Side dockPos) {
-            return getDimension(node, this, dockPos);
-        }
 
         public static void setDividerPosition(Node node, DockSplitPane split, Side dockPos) {
             if (split.getItems().size() <= 1) {
@@ -284,44 +223,5 @@ public class SplitDelegate {
                 }
             }
         }
-
-        public double[] getDimension(Node node, DockSplitPane split, Side dockPos) {
-
-            double w = ((Region) node).getWidth();
-            double h = ((Region) node).getHeight();
-
-            if (split.getItems().size() <= 1) {
-                return new double[]{w, h};
-            }
-
-            int idx = split.getItems().indexOf(node);
-            double sizeSum = 0;
-            for (int i = 0; i < split.getItems().size(); i++) {
-                if (i == idx) {
-                    continue;
-                }
-                if (split.getOrientation() == Orientation.HORIZONTAL) {
-                    sizeSum += split.getItems().get(i).prefWidth(0);
-                } else {
-                    sizeSum += split.getItems().get(i).prefHeight(0);
-                }
-            }
-            if (dockPos == Side.TOP || dockPos == Side.LEFT) {
-                if (split.getOrientation() == Orientation.HORIZONTAL) {
-                    w = node.prefWidth(0) / (sizeSum + node.prefWidth(0));
-                } else {
-                    h = node.prefHeight(0) / (sizeSum + node.prefHeight(0));
-                }
-            } else {
-                if (split.getOrientation() == Orientation.HORIZONTAL) {
-                    w = 1 - node.prefWidth(0) / (sizeSum + node.prefWidth(0));
-                } else {
-                    h = 1 - node.prefHeight(0) / (sizeSum + node.prefHeight(0));
-                }
-            }
-            return new double[]{w, h};
-        }
-
     }
-
 }

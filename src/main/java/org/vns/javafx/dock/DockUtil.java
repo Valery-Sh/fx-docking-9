@@ -13,8 +13,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
@@ -155,6 +157,31 @@ public class DockUtil {
             if ( node instanceof Dockable ) {
                 b = ((Dockable)node).stateProperty().getPaneDelegate().isUsedAsDockTarget();    
             }
+            return b && !( (screenX < p.getX() 
+                      || screenX > p.getX() + ((Region)node).getWidth()
+                      || screenY < p.getY() || screenY > p.getY() + ((Region)node).getHeight()
+                    ));
+            };
+           
+
+        return findNode(root, predicate);
+    }
+    public static Node findDockPane(Parent root, double screenX, double screenY ) {
+        System.err.println("DockUtil.findDockPane param.X=" + screenX + "; y="+ screenY);
+        
+        Predicate<Node> predicate =  (node) -> {
+            Point2D p = node.localToScreen(0,0);
+            boolean b = false;
+            if ( node instanceof DockPaneTarget ) {
+                System.err.println("DockUtil.findDockPane pane.X=" + p.getX() + "; y="+ p.getY());
+                System.err.println("DockUtil.findDockPane " + node.getId());
+                PaneDelegate pd = ((DockPaneTarget)node).getDelegate();
+                b = pd.isUsedAsDockTarget() && pd.zorder() == 0 ;    
+                System.err.println("DockUtil.findDockPane zorder=" + pd.zorder());
+                System.err.println("DockUtil.findDockPane isUsedAsDockTarget=" + pd.isUsedAsDockTarget());
+                
+            }
+            
             return b && !( (screenX < p.getX() 
                       || screenX > p.getX() + ((Region)node).getWidth()
                       || screenY < p.getY() || screenY > p.getY() + ((Region)node).getHeight()

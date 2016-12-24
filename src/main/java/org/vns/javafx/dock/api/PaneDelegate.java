@@ -172,14 +172,6 @@ public class PaneDelegate<T extends Pane> {
 
     }
 
-    public double[] getDimension(Node node, Side dockPos, DockTarget target) {
-
-        if (isDocked(node)) {
-            return null;
-        }
-        return splitDelegate.getDimension(node, dockPos, target);
-    }
-
     public void remove(Node dockNode) {
         DockSplitPane dsp = getParentSplitPane(rootSplitPane, dockNode);
         if (dsp != null) {
