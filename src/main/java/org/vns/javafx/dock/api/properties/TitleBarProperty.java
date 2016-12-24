@@ -68,7 +68,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, choosedProperty.get());
 
         if (choosedProperty.get()) {
-            getOwner().stateProperty().getNode().toFront();
+            getOwner().getDockState().getNode().toFront();
         }
     }
 */
@@ -140,7 +140,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                ((Dockable)f).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(false);
+                ((Dockable)f).getDockState().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
@@ -150,7 +150,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                ((Dockable)f).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
+                ((Dockable)f).getDockState().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
 
             

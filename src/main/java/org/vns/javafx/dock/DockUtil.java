@@ -18,6 +18,7 @@ import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -108,7 +109,7 @@ public class DockUtil {
         List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
-            //((DockTarget)root).dock(root, d.stateProperty().getDockPos());
+            //((DockTarget)root).dock(root, d.getDockState().getDockPos());
         } );
         return retval;
     }
@@ -122,8 +123,8 @@ public class DockUtil {
         List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
-            //((DockTarget)root).dock(root, d.stateProperty().getDockPos());
-            ((DockTarget)root).dock((Node)d, d.stateProperty().getDockPos());
+            //((DockTarget)root).dock(root, d.getDockState().getDockPos());
+            ((DockTarget)root).dock((Node)d, d.getDockState().getDockPos());
 
         } );
         return retval;
@@ -149,13 +150,15 @@ public class DockUtil {
         }
         return ls.get(0);
     }
-    public static Node findNode(Parent root, double screenX, double screenY) {
+    public static Node findDockable(Parent root, double screenX, double screenY) {
         
         Predicate<Node> predicate =  (node) -> {
             Point2D p = node.localToScreen(0,0);
             boolean b = false;
             if ( node instanceof Dockable ) {
-                b = ((Dockable)node).stateProperty().getPaneDelegate().isUsedAsDockTarget();    
+                PaneDelegate pd = ((Dockable)node).getDockState().getPaneDelegate();
+                DockableState st = ((Dockable)node).getDockState();
+                b = pd.isUsedAsDockTarget() && pd.zorder() == 0 && st.isUsedAsDockTarget();    
             }
             return b && !( (screenX < p.getX() 
                       || screenX > p.getX() + ((Region)node).getWidth()

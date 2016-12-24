@@ -18,7 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -30,13 +30,13 @@ public class StateTransformer {
     private ObjectProperty<Stage> stageProperty = new SimpleObjectProperty<>();
     private BorderPane borderPane;
 
-    private StateProperty stateProperty;   
+    private DockableState dockState;   
 
     private ResizeTransformer resizer;
     
     
-    public StateTransformer(StateProperty stateProperty) {
-        this.stateProperty = stateProperty;
+    public StateTransformer(DockableState dockState) {
+        this.dockState = dockState;
     }
 
     public ObjectProperty<Stage> stageProperty() {
@@ -47,10 +47,10 @@ public class StateTransformer {
         return stageProperty.get();
     }
     private Region node() {
-        return stateProperty.getNode();
+        return dockState.getNode();
     }
     private Dockable dockable() {
-        return stateProperty.getDockable();
+        return dockState.getDockable();
     }
     
     //==========================
@@ -77,12 +77,12 @@ public class StateTransformer {
         Region node = (Region)dockable;
 
         Point2D screenPoint = node.localToScreen(0, 0);
-        Node titleBar = dockable.stateProperty().getTitleBar();
+        Node titleBar = dockable.getDockState().getTitleBar();
         titleBar.setVisible(true);
         titleBar.setManaged(true);
 
-        if (dockable.stateProperty().isDocked()) {
-            dockable.stateProperty().undock();
+        if (dockable.getDockState().isDocked()) {
+            dockable.getDockState().undock();
         }
 
         Stage newStage = new Stage();
@@ -91,10 +91,10 @@ public class StateTransformer {
 
         //newStage.titleProperty().bind(dockable.titleProperty());
         newStage.setTitle("FLOATING STAGE");
-        Pane dockPane = dockable.stateProperty().getPaneDelegate().getDockPane();
+        Pane dockPane = dockable.getDockState().getPaneDelegate().getDockPane();
         
-        //dockable.stateProperty().setPriorPaneDelegate(dockable.stateProperty().getPaneDelegate());
-        //dockable.stateProperty().getDragTransformer().setTargetDockPane(dockPane);        
+        //dockable.getDockState().setPriorPaneDelegate(dockable.getDockState().getPaneDelegate());
+        //dockable.getDockState().getDragTransformer().setTargetDockPane(dockPane);        
         
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
@@ -120,7 +120,7 @@ public class StateTransformer {
                 stagePosition = stagePosition.add(translation);
             }
          */
-        PaneDelegate  pn01 = stateProperty.getPaneDelegate();
+        PaneDelegate  pn01 = dockState.getPaneDelegate();
         
         borderPane = new BorderPane();
         dockPane = new DockPane();
@@ -137,7 +137,7 @@ public class StateTransformer {
         borderPane.setCenter(dockPane);
 
         Scene scene = new Scene(borderPane);
-        PaneDelegate  pn02 = stateProperty.getPaneDelegate();
+        PaneDelegate  pn02 = dockState.getPaneDelegate();
         boolean b = pn01 == pn02;
         
         
@@ -167,7 +167,7 @@ public class StateTransformer {
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
-        newStage.setResizable(dockable.stateProperty().isResizable());
+        newStage.setResizable(dockable.getDockState().isResizable());
         if (newStage.isResizable()) {
             newStage.addEventFilter(MouseEvent.MOUSE_PRESSED, this::pressedHandle);
             newStage.addEventFilter(MouseEvent.MOUSE_MOVED, this::movedHandle);

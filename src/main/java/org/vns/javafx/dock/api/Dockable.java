@@ -5,7 +5,7 @@ import java.net.URL;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -16,18 +16,18 @@ public interface Dockable extends DockTarget {
     public static int FLOAT = 2;    
     
     StringProperty titleProperty();
-    StateProperty stateProperty();
+    DockableState getDockState();
     
     @Override
     default void dock(Node node, Side dockPos) {
-        stateProperty().getPaneDelegate().dock(node, dockPos, this);
+        getDockState().getPaneDelegate().dock(node, dockPos, this);
     }
     
     default String getDockPos() {
-        return stateProperty().getDockPos();
+        return getDockState().getDockPos();
     }
     default void setDockPos(String dockPos) {
-        stateProperty().setDockPos(dockPos);
+        getDockState().setDockPos(dockPos);
     }
     
     static void initDefaultStylesheet(URL cssURL) {

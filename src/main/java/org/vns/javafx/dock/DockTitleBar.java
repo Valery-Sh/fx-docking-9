@@ -8,7 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -89,11 +89,11 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            dockNode.stateProperty().getNode().toFront();
+            dockNode.getDockState().getNode().toFront();
         });
         
-        closeButton.setOnAction( a -> {
-                StateProperty sp = dockNode.stateProperty();
+        closeButton.setOnAction(a -> {
+                DockableState sp = dockNode.getDockState();
                 if (sp.isFloating() && ( getScene().getWindow() instanceof Stage)) {
                     ((Stage)getScene().getWindow()).close();
                 } else {
@@ -105,7 +105,7 @@ public class DockTitleBar extends HBox {
         closeButton.setTooltip(new Tooltip("Close pane"));        
         pinButton.setTooltip(new Tooltip("Pin pane"));        
         
-        //dockNode.stateProperty().titleBarProperty().changeOwner(dockNode);
+        //dockNode.getDockState().titleBarProperty().changeOwner(dockNode);
         
     }
 

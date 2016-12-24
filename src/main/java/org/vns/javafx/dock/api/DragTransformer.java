@@ -12,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -20,7 +20,7 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  */
 public class DragTransformer implements EventHandler<MouseEvent> {
 
-    private final StateProperty stateProperty;
+    private final DockableState stateProperty;
 
     private final DragPopup popup;
 
@@ -31,7 +31,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
     private Point2D startMousePos;
 
-    public DragTransformer(StateProperty stateProperty) {
+    public DragTransformer(DockableState stateProperty) {
         this.stateProperty = stateProperty;
         this.popup = new DragPopup();
         //System.err.println("DragTransformer popup.isShowing()=" + popup.isShowing());

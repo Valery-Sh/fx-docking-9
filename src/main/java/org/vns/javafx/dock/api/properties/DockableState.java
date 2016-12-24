@@ -20,7 +20,7 @@ import org.vns.javafx.dock.api.DragTransformer;
  * @author Valery
  * @param <T>
  */
-public class StateProperty<T extends Dockable> {
+public class DockableState<T extends Dockable> {
 
     private final TitleBarProperty<Region> titleBarProperty;
 
@@ -34,6 +34,8 @@ public class StateProperty<T extends Dockable> {
     private final DockedProperty dockedProperty = new DockedProperty(false);
     private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
 
+    private boolean usedAsDockTarget = true;
+    
     private DragTransformer dragTransformer;
 
     //private PaneDelegate paneDelegate;
@@ -47,7 +49,7 @@ public class StateProperty<T extends Dockable> {
     private String dockPos;
     //private Dockable owner;
 
-    public StateProperty(T dockable) {
+    public DockableState(T dockable) {
         dockableWrapper.set(dockable);
         titleBarProperty = new TitleBarProperty(dockable);
         init();
@@ -58,6 +60,14 @@ public class StateProperty<T extends Dockable> {
         dragTransformer = new DragTransformer(this);
         titleBarProperty.addListener(this::titlebarChanged);
         paneDelegateProperty.addListener(this::paneDelegateChanged);
+    }
+
+    public boolean isUsedAsDockTarget() {
+        return usedAsDockTarget;
+    }
+
+    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
+        this.usedAsDockTarget = usedAsDockTarget;
     }
 
     protected void paneDelegateChanged(ObservableValue<? extends PaneDelegate> observable, PaneDelegate oldValue, PaneDelegate newValue) {

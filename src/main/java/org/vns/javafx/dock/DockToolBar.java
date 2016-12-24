@@ -16,7 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -25,7 +25,7 @@ import org.vns.javafx.dock.api.properties.StateProperty;
 public class DockToolBar extends ToolBar implements Dockable{
 
     StringProperty titleProperty = new SimpleStringProperty("Tool Bar Enabled");
-    StateProperty stateProperty = new StateProperty(this);
+    DockableState dockState = new DockableState(this);
     
     private Dockable dockTarget;
     
@@ -35,16 +35,16 @@ public class DockToolBar extends ToolBar implements Dockable{
     private void init() {
         Separator titleBar = new Separator();
         titleBar.setPrefWidth(USE_PREF_SIZE);
-        stateProperty.setTitleBar(titleBar);
+        dockState.setTitleBar(titleBar);
         //stateProperty.titleBarProperty().setActiveChoosedPseudoClass(false);
         Button b1 = new Button("",new Circle(0, 0, 4));
 /*        b1.setOnAction(value -> {
-            stateProperty.titleBarProperty().setActiveChoosedPseudoClass(true); 
+            getDockState.titleBarProperty().setActiveChoosedPseudoClass(true); 
         });
 */
         Button b2 = new Button("", new Rectangle(0,0,8,8));
 /*        b2.setOnAction(value -> {
-            stateProperty.titleBarProperty().setActiveChoosedPseudoClass(false); 
+            getDockState.titleBarProperty().setActiveChoosedPseudoClass(false); 
         });        
 */        
         getItems().addAll(b1,b2, new Separator(), titleBar);
@@ -64,25 +64,25 @@ public class DockToolBar extends ToolBar implements Dockable{
     }
 
     @Override
-    public StateProperty stateProperty() {
-        return stateProperty;
+    public DockableState getDockState() {
+        return dockState;
     }
 
     @Override
     public void dock(Node dockable, Side dockPos) {
-        stateProperty.getPaneDelegate().dock(dockable, dockPos, this);
+        dockState.getPaneDelegate().dock(dockable, dockPos, this);
     }
 
     @Override
     public String getDockPos() {
-        return stateProperty.getDockPos();
+        return dockState.getDockPos();
     }
 
     @Override
     public void setDockPos(String dockpos) {
-        this.stateProperty.setDockPos(dockpos);
+        this.dockState.setDockPos(dockpos);
     }
     public void useAaTitleBar(Region titleBar) {
-        stateProperty.setTitleBar(titleBar);
+        dockState.setTitleBar(titleBar);
     }
 }

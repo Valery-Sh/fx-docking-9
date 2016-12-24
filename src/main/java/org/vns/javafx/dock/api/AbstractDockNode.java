@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -17,7 +17,7 @@ public class AbstractDockNode  extends VBox implements Dockable, DockTarget{
     
     StringProperty titleProperty = new SimpleStringProperty("Dock Node");
     
-    StateProperty stateProperty = new StateProperty(this);
+    DockableState dockState = new DockableState(this);
     
     private Dockable dockTarget;
     
@@ -27,7 +27,7 @@ public class AbstractDockNode  extends VBox implements Dockable, DockTarget{
     private void init() {
         Region titleBar = new DockTitleBar(this);
         getChildren().add(titleBar);
-        stateProperty.setTitleBar(titleBar);
+        dockState.setTitleBar(titleBar);
     }
 
     public Dockable getDockTarget() {
@@ -44,26 +44,26 @@ public class AbstractDockNode  extends VBox implements Dockable, DockTarget{
     }
 
     @Override
-    public StateProperty stateProperty() {
-        return stateProperty;
+    public DockableState getDockState() {
+        return dockState;
     }
 
     @Override
     public void dock(Node dockable, Side dockPos) {
-        stateProperty.getPaneDelegate().dock(dockable, dockPos, this);
+        dockState.getPaneDelegate().dock(dockable, dockPos, this);
     }
 
     @Override
     public String getDockPos() {
-        return stateProperty.getDockPos();
+        return dockState.getDockPos();
     }
 
     @Override
     public void setDockPos(String dockpos) {
-        this.stateProperty.setDockPos(dockpos);
+        this.dockState.setDockPos(dockpos);
     }
     
     public void assignDragRegion(Region dragRegion) {
-        stateProperty.setTitleBar(dragRegion);
+        dockState.setTitleBar(dragRegion);
     }
 }

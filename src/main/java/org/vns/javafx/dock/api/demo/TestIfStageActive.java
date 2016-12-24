@@ -141,11 +141,11 @@ public class TestIfStageActive extends Application {
 
         dtt03.dock(dtt01, Side.TOP);
 
-        dtt01.stateProperty().setFloating(false);
+        dtt01.getDockState().setFloating(false);
 
-        dtt01.stateProperty().setFloating(true);
+        dtt01.getDockState().setFloating(true);
         ((Stage) ((Region) dtt01).getScene().getWindow()).close();
-        dtt01.stateProperty().setFloating(false);
+        dtt01.getDockState().setFloating(false);
 
         dockPane.dock(dtt01, Side.LEFT);
         

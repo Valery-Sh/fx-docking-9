@@ -6,7 +6,7 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -14,10 +14,10 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  */
 public class DockNodeImpl extends VBox implements Dockable {
     
-    StateProperty stateProperty;
+    DockableState stateProperty;
     
     public DockNodeImpl() {
-        stateProperty = new StateProperty(this);
+        stateProperty = new DockableState(this);
     }
     
 
@@ -27,7 +27,7 @@ public class DockNodeImpl extends VBox implements Dockable {
     }
 
     @Override
-    public StateProperty stateProperty() {
+    public DockableState getDockState() {
         return stateProperty;
     }
 

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -51,26 +51,26 @@ public class PaneDelegate<T extends Pane> {
                 return p instanceof Dockable;
             });
             if (newNode != null) {
-                Dockable n = ((Dockable) newNode).stateProperty().getImmediateParent(newValue);
+                Dockable n = ((Dockable) newNode).getDockState().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
                     newNode = (Node) n;
                 }
-                ((Dockable) newNode).stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
+                ((Dockable) newNode).getDockState().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             //Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
             Dockable oldNode = (Dockable) DockUtil.getImmediateParent(oldValue, (p) -> {
                 return p instanceof Dockable;
             });
             if (oldNode != null) {
-                Dockable n = ((Dockable) oldNode).stateProperty().getImmediateParent(oldValue);
+                Dockable n = ((Dockable) oldNode).getDockState().getImmediateParent(oldValue);
                 if (n != null && n != oldNode) {
                     oldNode = n;
                 }
             }
             if (oldNode != null && oldNode != newNode) {
-                oldNode.stateProperty().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !oldNode.stateProperty().titleBarProperty().isActiveChoosedPseudoClass()) {
-                oldNode.stateProperty().titleBarProperty().setActiveChoosedPseudoClass(true);
+                oldNode.getDockState().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !oldNode.getDockState().titleBarProperty().isActiveChoosedPseudoClass()) {
+                oldNode.getDockState().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -113,7 +113,7 @@ public class PaneDelegate<T extends Pane> {
             return;
         }
         if (node instanceof Dockable) {
-            ((Dockable) node).stateProperty().undock();
+            ((Dockable) node).getDockState().undock();
         }
     }
 
@@ -125,7 +125,7 @@ public class PaneDelegate<T extends Pane> {
             ((Stage) node.getScene().getWindow()).close();
         }
         if (node instanceof Dockable) {
-            ((Dockable) node).stateProperty().setFloating(false);
+            ((Dockable) node).getDockState().setFloating(false);
         }
         splitDelegate.dock(node, dockPos);
 
@@ -138,7 +138,7 @@ public class PaneDelegate<T extends Pane> {
         getDockPane().getChildren().set(idx, rootSplitPane);
 
         if (node instanceof Dockable) {
-            StateProperty state = ((Dockable) node).stateProperty();
+            DockableState state = ((Dockable) node).getDockState();
             if (state.getPaneDelegate() == null || state.getPaneDelegate() != this) {
                 state.setPaneDelegate(this);
             }
@@ -157,13 +157,13 @@ public class PaneDelegate<T extends Pane> {
                 ((Stage) node.getScene().getWindow()).close();
             }
             if (node instanceof Dockable) {
-                ((Dockable) node).stateProperty().setFloating(false);
+                ((Dockable) node).getDockState().setFloating(false);
             }
 
             splitDelegate.dock(node, dockPos, target);
         }
         if (node instanceof Dockable) {
-            StateProperty state = ((Dockable) node).stateProperty();
+            DockableState state = ((Dockable) node).getDockState();
             if (state.getPaneDelegate() == null || state.getPaneDelegate() != this) {
                 state.setPaneDelegate(this);
             }

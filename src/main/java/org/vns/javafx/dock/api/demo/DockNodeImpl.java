@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.properties.StateProperty;
+import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -17,20 +17,20 @@ import org.vns.javafx.dock.api.properties.StateProperty;
  */
 public class DockNodeImpl extends VBox implements Dockable {
     
-    StateProperty<Dockable> stateProperty;
+    DockableState<Dockable> stateProperty;
 
     public void print() {
 
-//        System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
-//        System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
+//        System.out.println(((Function<Integer,String>)getDockState.converter).apply(3).length());
+//        System.out.println(((Function<Integer,String>)getDockState.converter).apply(3).length());
         
         //stateProperty.setConverter( (Integer i) -> Integer.toString(i) + " !!!" );
-        //System.out.println(((Function<Integer,String>)stateProperty.converter).apply(3).length());
-        //System.out.println(stateProperty.converter.apply(30).length());
+        //System.out.println(((Function<Integer,String>)getDockState.converter).apply(3).length());
+        //System.out.println(getDockState.converter.apply(30).length());
     }    
     
     public DockNodeImpl() {
-        stateProperty = new StateProperty(this);
+        stateProperty = new DockableState(this);
         Region bar = stateProperty.createDefaultTitleBar("Default Title Bar");
         //bar.setId("FIRST");
         bar.getStyleClass().add("dock-title-bar");
@@ -58,7 +58,7 @@ public class DockNodeImpl extends VBox implements Dockable {
     }
 
     @Override
-    public StateProperty stateProperty() {
+    public DockableState getDockState() {
         return stateProperty;
     }
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
