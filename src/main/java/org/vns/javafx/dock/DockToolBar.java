@@ -16,7 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.properties.DockableState;
+import org.vns.javafx.dock.api.DockableState;
 
 /**
  *

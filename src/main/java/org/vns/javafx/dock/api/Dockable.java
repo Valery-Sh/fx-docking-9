@@ -5,7 +5,6 @@ import java.net.URL;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *

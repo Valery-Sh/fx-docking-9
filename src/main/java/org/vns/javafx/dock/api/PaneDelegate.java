@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
-import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *

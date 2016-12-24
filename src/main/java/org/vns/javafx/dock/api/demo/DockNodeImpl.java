@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.properties.DockableState;
+import org.vns.javafx.dock.api.DockableState;
 
 /**
  *
@@ -17,7 +17,7 @@ import org.vns.javafx.dock.api.properties.DockableState;
  */
 public class DockNodeImpl extends VBox implements Dockable {
     
-    DockableState<Dockable> stateProperty;
+    DockableState stateProperty;
 
     public void print() {
 

@@ -18,7 +18,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.api.properties.DockableState;
 
 /**
  *
@@ -47,10 +46,10 @@ public class StateTransformer {
         return stageProperty.get();
     }
     private Region node() {
-        return dockState.getNode();
+        return dockState.node();
     }
     private Dockable dockable() {
-        return dockState.getDockable();
+        return dockState.dockable();
     }
     
     //==========================

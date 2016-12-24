@@ -5,34 +5,22 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.stage.StageHelper;
-import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
-import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
+
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockToolBar;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StageRegistry;
 
 /**
  *
@@ -100,10 +88,12 @@ public class TestSeveralDockPanes extends Application {
         DockPane stg01dp01 = new DockPane();
         //stg01dp01.getDelegate().setUsedAsDockTarget(false);
         stg01dp01.setPrefHeight(200);
+        stg01dp01.setPrefWidth(200);
         stg01dp01.setId("stg01dp01");
         DockNode stg01dn01 = new DockNode();
         stg01dn01.setId("stg01dn01");
         stg01dp01.dock(stg01dn01, Side.TOP);
+        
         
         stage.show();
         

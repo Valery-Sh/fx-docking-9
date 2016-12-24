@@ -18,7 +18,7 @@ import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
-import org.vns.javafx.dock.api.properties.DockableState;
+import org.vns.javafx.dock.api.DockableState;
 
 /**
  *

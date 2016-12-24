@@ -68,7 +68,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, choosedProperty.get());
 
         if (choosedProperty.get()) {
-            getOwner().getDockState().getNode().toFront();
+            getOwner().getDockState().node().toFront();
         }
     }
 */

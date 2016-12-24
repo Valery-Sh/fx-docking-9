@@ -1,5 +1,6 @@
-package org.vns.javafx.dock.api.properties;
+package org.vns.javafx.dock.api;
 
+import java.util.Properties;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -9,26 +10,27 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import org.vns.javafx.dock.api.PaneDelegate;
-import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StateTransformer;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.DragTransformer;
+import org.vns.javafx.dock.api.properties.DockFloatingProperty;
+import org.vns.javafx.dock.api.properties.DockResizableProperty;
+import org.vns.javafx.dock.api.properties.DockedProperty;
+import org.vns.javafx.dock.api.properties.PaneDelegateProperty;
+import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
  *
  * @author Valery
  * @param <T>
  */
-public class DockableState<T extends Dockable> {
+public class DockableState {
 
     private final TitleBarProperty<Region> titleBarProperty;
 
     private final StringProperty titleProperty = new SimpleStringProperty("");
 
-    private final ReadOnlyObjectWrapper<T> dockableWrapper = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Dockable> dockableWrapper = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectProperty<T> dockableProperty = dockableWrapper.getReadOnlyProperty();
+    private final ReadOnlyObjectProperty<Dockable> dockableProperty = dockableWrapper.getReadOnlyProperty();
 
     private final DockFloatingProperty floatingProperty = new DockFloatingProperty(false);
     private final DockedProperty dockedProperty = new DockedProperty(false);
@@ -44,12 +46,13 @@ public class DockableState<T extends Dockable> {
      */
     private PaneDelegate originalPaneDelegate;
 
-    private PaneDelegateProperty<PaneDelegate> paneDelegateProperty = new PaneDelegateProperty<>();
+    private final PaneDelegateProperty<PaneDelegate> paneDelegateProperty = new PaneDelegateProperty<>();
 
     private String dockPos;
-    //private Dockable owner;
+    
+    private Properties properties;
 
-    public DockableState(T dockable) {
+    public DockableState(Dockable dockable) {
         dockableWrapper.set(dockable);
         titleBarProperty = new TitleBarProperty(dockable);
         init();
@@ -80,6 +83,10 @@ public class DockableState<T extends Dockable> {
 
     public String getDockPos() {
         return dockPos;
+    }
+
+    public Properties getProperties() {
+        return properties;
     }
 
     /*    public Pane getDockPane(int state) {
@@ -121,19 +128,19 @@ public class DockableState<T extends Dockable> {
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (!newValue) {
-            getPaneDelegate().remove(getNode());
+            getPaneDelegate().remove(node());
         }
     }
 
-    public ReadOnlyObjectProperty<T> dockableProperty() {
+    public ReadOnlyObjectProperty<Dockable> dockableProperty() {
         return dockableProperty;
     }
 
-    public T getDockable() {
+    public Dockable dockable() {
         return this.dockableProperty.get();
     }
 
-    public Region getNode() {
+    public Region node() {
         return (Region) this.dockableProperty.get();
     }
 
@@ -182,12 +189,12 @@ public class DockableState<T extends Dockable> {
         }
         setDocked(false);
         /*        if (owner != null && (owner instanceof MultiTab)) {
-            ((MultiTab) owner).undock(getDockable());
+            ((MultiTab) owner).undock(dockable());
         } else {
-            parent.remove(getNode());
+            parent.remove(node());
         }
          */
-        getPaneDelegate().remove(getNode());
+        getPaneDelegate().remove(node());
 
         //!!!!!!!! must we assign null to owner ?????
     }
@@ -226,7 +233,7 @@ public class DockableState<T extends Dockable> {
             return false;
         }
         return true;
-        //return !isFloating() && parent.parentSplitPane(getNode()) != null;
+        //return !isFloating() && parent.parentSplitPane(node()) != null;
     }
 
     public void setDocked(boolean docked) {
@@ -240,7 +247,7 @@ public class DockableState<T extends Dockable> {
     }
      */
     public Region createDefaultTitleBar(String title) {
-        DockTitleBar tb = new DockTitleBar(getDockable());
+        DockTitleBar tb = new DockTitleBar(dockable());
         tb.setId("FIRST");
         tb.getLabel().textProperty().bind(titleProperty);
         titleProperty.set(title);
@@ -249,7 +256,7 @@ public class DockableState<T extends Dockable> {
     }
 
     public Dockable getImmediateParent(Node node) {
-        Dockable retval = getDockable();
+        Dockable retval = dockable();
         if (immediateParent != null) {
             retval = immediateParent.apply(node);
         }

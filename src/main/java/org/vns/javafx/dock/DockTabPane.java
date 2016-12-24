@@ -25,7 +25,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.MultiTab;
-import org.vns.javafx.dock.api.properties.DockableState;
+import org.vns.javafx.dock.api.DockableState;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 import org.vns.javafx.dock.api.properties.DockedProperty;
 
@@ -39,7 +39,7 @@ public class DockTabPane extends VBox implements Dockable, MultiTab {
 
     private final StringProperty titleProperty = new SimpleStringProperty();
 
-    private final DockableState<Dockable> dockState = new DockableState(this);
+    private final DockableState dockState = new DockableState(this);
 
     private Button menuButton;
 

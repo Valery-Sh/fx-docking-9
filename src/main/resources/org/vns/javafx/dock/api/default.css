@@ -26,6 +26,14 @@
  * DockPane                                                                    *
  *                                                                             *
  ******************************************************************************/
+/*.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+.split-pane-divider {
+   -fx-background-color: transparent;
+}
+*/
 .dock-node-title-label {   
   -fx-padding: 0 0 3 0;
   -fx-text-fill: blue;
