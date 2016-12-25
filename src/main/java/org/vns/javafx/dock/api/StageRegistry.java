@@ -162,11 +162,11 @@ public class StageRegistry {
             List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
                 Point2D p = node.screenToLocal(x, y);
                 return node.contains(p) && (node instanceof DockPaneTarget)
-                        && ((DockPaneTarget) node).getDelegate().zorder() == 0;
+                        && ((DockPaneTarget) node).paneHandler().zorder() == 0;
             });
             Node node = s.getScene().getRoot();
             Point2D p = node.screenToLocal(x, y);
-            if (node.contains(p) && (node instanceof DockPaneTarget && ((DockPaneTarget) node).getDelegate().zorder() == 0)) {
+            if (node.contains(p) && (node instanceof DockPaneTarget && ((DockPaneTarget) node).paneHandler().zorder() == 0)) {
                 ls.add(0, node);
             }
             if (!ls.isEmpty()) {

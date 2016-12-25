@@ -15,8 +15,8 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableState;
 
 /**
  *
@@ -25,7 +25,7 @@ import org.vns.javafx.dock.api.DockableState;
 public class DockToolBar extends ToolBar implements Dockable{
 
     StringProperty titleProperty = new SimpleStringProperty("Tool Bar Enabled");
-    DockableState dockState = new DockableState(this);
+    DockNodeHandler dockState = new DockNodeHandler(this);
     
     private Dockable dockTarget;
     
@@ -49,7 +49,16 @@ public class DockToolBar extends ToolBar implements Dockable{
 */        
         getItems().addAll(b1,b2, new Separator(), titleBar);
     }
-
+    public StringProperty titleProperty() {
+        return titleProperty;
+    }
+    public String getTitle() {
+        return titleProperty.get();
+    }
+    public void setTitle(String title) {
+        titleProperty.set(title);
+    }
+    
     public Dockable getDockTarget() {
         return dockTarget;
     }
@@ -58,31 +67,24 @@ public class DockToolBar extends ToolBar implements Dockable{
         this.dockTarget = dockTarget;
     }
     
-    @Override
-    public StringProperty titleProperty() {
-        return titleProperty;
-    }
-
-    @Override
-    public DockableState getDockState() {
-        return dockState;
-    }
-
-    @Override
-    public void dock(Node dockable, Side dockPos) {
-        dockState.getPaneDelegate().dock(dockable, dockPos, this);
-    }
-
-    @Override
     public String getDockPos() {
         return dockState.getDockPos();
     }
 
-    @Override
     public void setDockPos(String dockpos) {
         this.dockState.setDockPos(dockpos);
     }
     public void useAaTitleBar(Region titleBar) {
         dockState.setTitleBar(titleBar);
+    }
+
+    @Override
+    public Region node() {
+        return this;
+    }
+
+    @Override
+    public DockNodeHandler nodeHandler() {
+        return dockState;
     }
 }

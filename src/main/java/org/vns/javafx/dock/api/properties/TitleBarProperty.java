@@ -32,6 +32,11 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         ownerWrapper.set(owner);
         init();
     }
+    public TitleBarProperty(Region owner) {
+        super();
+        //ownerWrapper.set(owner);
+        init();
+    }
 
     public Region getTitleBar() {
         return get();
@@ -61,20 +66,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     }
 
     
-/*    protected void choosedPropertyInvalidated(Observable obsv) {
-        if (getOwner() == null || ! activeChoosedPseudoClass ) {
-            return;
-        }
-        get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, choosedProperty.get());
-
-        if (choosedProperty.get()) {
-            getOwner().getDockState().node().toFront();
-        }
-    }
-*/
     protected void turnOffChoosedPseudoClass() {
-        //choosedProperty.removeListener(this::choosedPropertyInvalidated);
-        //choosedProperty.set(false);
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
@@ -82,11 +74,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         if ( activeChoosedPseudoClass ) {
             return;
         }
-       // choosedProperty.set(false);
-        //choosedProperty.addListener(this::choosedPropertyInvalidated);
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                
-        //choosedProperty.set(true);
-        
    }
 
     @Override
@@ -99,40 +87,12 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         return "titleBar";
     }
 
-    public ReadOnlyObjectProperty<Dockable> ownerProperty() {
-        return ownerProperty;
-    }
 
-    public Dockable getOwner() {
-        return ownerProperty.get();
-    }
-
-    public void changeOwner(Dockable newOwner) {
-        ownerWrapper.set(newOwner);
-        //get().applyCss();
-
-    }
-
-/*    public BooleanProperty choosedProperty() {
-        return choosedProperty;
-    }
-*/
     public boolean isDefaultTitleBar() {
         return get() != null && (get() instanceof DockTitleBar);
     }
 
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-/*        if (oldValue != null && oldValue.getParent() != null && (oldValue.getParent() instanceof Pane)) {
-            int idx = ((Pane) oldValue.getParent()).getChildren().indexOf(oldValue);
-            if (idx >= 0) {
-                Pane pane = (Pane) oldValue.getParent();
-                ((Pane) oldValue.getParent()).getChildren().remove(oldValue);
-                if (newValue != null) {
-                    pane.getChildren().add(idx, newValue);
-                }
-            }
-        }
-*/
         if ( oldValue != null ) {
             //Node f = DockUtil.getFocusedDockable(oldValue);
             Node f = DockUtil.getImmediateParent(oldValue, nd -> {
@@ -140,7 +100,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                ((Dockable)f).getDockState().titleBarProperty().setActiveChoosedPseudoClass(false);
+                ((Dockable)f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
@@ -150,7 +110,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                ((Dockable)f).getDockState().titleBarProperty().setActiveChoosedPseudoClass(true);
+                ((Dockable)f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
 
             

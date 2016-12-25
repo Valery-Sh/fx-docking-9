@@ -38,7 +38,7 @@ public class TestForFXML01 extends Application {
         dockPane.dock(dtt, Side.TOP);
         TitledToolBar dtt01 = new TitledToolBar();
         dtt01.getChildren().add(b1);
-        dtt.dock(dtt01, Side.TOP);
+        //dtt.dock(dtt01, Side.TOP);
         List<Parent> chain = new ArrayList<>();
         chain = DockUtil.findNodes(dockPane, p -> {
             return (p instanceof Dockable) || (p instanceof SplitPane);
@@ -115,7 +115,7 @@ public class TestForFXML01 extends Application {
             
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             
-            dtt01.dock(dtt02,Side.LEFT);
+            //dtt01.dock(dtt02,Side.LEFT);
 
             
             

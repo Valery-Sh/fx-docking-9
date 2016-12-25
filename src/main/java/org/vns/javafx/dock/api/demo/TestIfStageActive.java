@@ -90,7 +90,7 @@ public class TestIfStageActive extends Application {
         dtt03.setId("ddt03");
         lb = new Label("id = dtt03");
         dtt03.getChildren().add(lb);
-        dtt01.dock(dtt03, Side.RIGHT);
+        dtt01.nodeHandler().getPaneHandler().dock(dtt03, Side.RIGHT, dtt01);
         
         
         /*        b1.setOnAction(ev ->{
@@ -139,13 +139,13 @@ public class TestIfStageActive extends Application {
         });
 
 
-        dtt03.dock(dtt01, Side.TOP);
+        dtt03.nodeHandler().getPaneHandler().dock(dtt01, Side.TOP, dtt03);
 
-        dtt01.getDockState().setFloating(false);
+        dtt01.nodeHandler().setFloating(false);
 
-        dtt01.getDockState().setFloating(true);
+        dtt01.nodeHandler().setFloating(true);
         ((Stage) ((Region) dtt01).getScene().getWindow()).close();
-        dtt01.getDockState().setFloating(false);
+        dtt01.nodeHandler().setFloating(false);
 
         dockPane.dock(dtt01, Side.LEFT);
         

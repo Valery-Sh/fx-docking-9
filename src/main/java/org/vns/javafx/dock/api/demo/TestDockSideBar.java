@@ -11,14 +11,14 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -26,7 +26,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestSeveralDockPanes extends Application {
+public class TestDockSideBar extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -40,8 +40,11 @@ public class TestSeveralDockPanes extends Application {
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
          */
-        //BorderPane rootPane = new BorderPane();
+        BorderPane borderPane = new BorderPane();
+        
         StackPane rootPane = new StackPane();
+        borderPane.setCenter(rootPane);
+        
         rootPane.setId("ROOT PANE");
         
         stage.setTitle("Tests Several DockPanes");
@@ -74,8 +77,11 @@ public class TestSeveralDockPanes extends Application {
         rootPane.getChildren().add(sp);
         //rootPane.setCenter(dpCenter);
         //rootPane.setRight(dpRight);
+        DockSideBar sideBar01 = new DockSideBar();
         
-        Scene scene = new Scene(rootPane);
+        
+        //sideBar01.setPrefWidth(24);
+        Scene scene = new Scene(borderPane);
 
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
@@ -100,6 +106,8 @@ public class TestSeveralDockPanes extends Application {
         Scene scene01 = new Scene(stg01dp01);
         stage01.setScene(scene01);
         stage01.show();
+        borderPane.setRight(sideBar01);
+        sideBar01.dock(dn02);
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

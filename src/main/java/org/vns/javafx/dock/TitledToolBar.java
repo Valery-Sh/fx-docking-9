@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -16,18 +11,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableState;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class TitledToolBar extends VBox implements Dockable, DockTarget{
+public class TitledToolBar extends VBox implements Dockable{
     
     StringProperty titleProperty = new SimpleStringProperty("Tool Bar Enabled");
-    DockableState dockState = new DockableState(this);
+    DockNodeHandler dockState = new DockNodeHandler(this);
     
     private ToolBar toolBar = new ToolBar();
     
@@ -66,30 +61,26 @@ public class TitledToolBar extends VBox implements Dockable, DockTarget{
         this.dockTarget = dockTarget;
     }
     
-    @Override
     public StringProperty titleProperty() {
-        return titleProperty;
+        return dockState.titleProperty();
     }
 
-    @Override
-    public DockableState getDockState() {
-        return dockState;
-    }
-
-    @Override
-    public void dock(Node dockable, Side dockPos) {
-        
-        dockState.getPaneDelegate().dock(dockable, dockPos, this);
-    }
-    //private String dockpos = "BOTTOM";
-
-    @Override
     public String getDockPos() {
         return dockState.getDockPos();
     }
 
     public void setDockPos(String dockpos) {
         this.dockState.setDockPos(dockpos);
+    }
+
+    @Override
+    public Region node() {
+        return this;
+    }
+
+    @Override
+    public DockNodeHandler nodeHandler() {
+        return dockState;
     }
     
 }

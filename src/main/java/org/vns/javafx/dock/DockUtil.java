@@ -13,12 +13,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.PaneDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
-import org.vns.javafx.dock.api.DockableState;
 
 /**
  *
@@ -95,11 +95,7 @@ public class DockUtil {
         return retval;
     }
     
-    public static void dock(DockTarget pane, Dockable... nodes) {
-        for ( Dockable d : nodes ) {
-            pane.dock((Node)d, d.getDockPos());            
-        }
-    }     
+
     public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
         if ( ! (root instanceof DockTarget) ) {
@@ -124,7 +120,7 @@ public class DockUtil {
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
             //((DockTarget)root).dock(root, d.getDockState().getDockPos());
-            ((DockTarget)root).dock((Node)d, d.getDockState().getDockPos());
+            // !!!! измкнить ((DockTarget)root).dock((Node)d, d.nodeHandler().getDockPos());
 
         } );
         return retval;
@@ -156,8 +152,8 @@ public class DockUtil {
             Point2D p = node.localToScreen(0,0);
             boolean b = false;
             if ( node instanceof Dockable ) {
-                PaneDelegate pd = ((Dockable)node).getDockState().getPaneDelegate();
-                DockableState st = ((Dockable)node).getDockState();
+                DockPaneHandler pd = ((Dockable)node).nodeHandler().getPaneHandler();
+                DockNodeHandler st = ((Dockable)node).nodeHandler();
                 b = pd.isUsedAsDockTarget() && pd.zorder() == 0 && st.isUsedAsDockTarget();    
             }
             return b && !( (screenX < p.getX() 
@@ -178,7 +174,7 @@ public class DockUtil {
             if ( node instanceof DockPaneTarget ) {
                 System.err.println("DockUtil.findDockPane pane.X=" + p.getX() + "; y="+ p.getY());
                 System.err.println("DockUtil.findDockPane " + node.getId());
-                PaneDelegate pd = ((DockPaneTarget)node).getDelegate();
+                DockPaneHandler pd = ((DockPaneTarget)node).paneHandler();
                 b = pd.isUsedAsDockTarget() && pd.zorder() == 0 ;    
                 System.err.println("DockUtil.findDockPane zorder=" + pd.zorder());
                 System.err.println("DockUtil.findDockPane isUsedAsDockTarget=" + pd.isUsedAsDockTarget());

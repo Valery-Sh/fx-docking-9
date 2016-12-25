@@ -15,12 +15,13 @@ import org.vns.javafx.dock.DockUtil;
  */
 public interface DockTarget {
     
-    default void dock(Node dockable, Side dockPos) {};
+    default Dockable dock(Node dockable, Side dockPos) { return null;};
+/*    
     default void dock(Node dockable) {};    
 
     default void dock(Node dockable, String dockPos) {
         dock(dockable, DockUtil.sideValue(dockPos));
     }
-    
+*/    
     
 }

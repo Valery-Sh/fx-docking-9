@@ -1,10 +1,8 @@
 package org.vns.javafx.dock.api.demo;
 
 import java.util.ArrayList;
-import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.event.EventType;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -19,10 +17,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.TitledToolBar;
-import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -58,7 +56,7 @@ public class TestDockToolBar extends Application {
         Pane p3 = new HBox(b3);
         dockPane.dock(p3, Side.BOTTOM);
 
-        DockNodeImpl dn01 = new DockNodeImpl();
+        DockNode dn01 = new DockNode();
         dn01.setId("Dn01");
         dn01.setFocusTraversable(true);
         dn01.getChildren().add(new Label("DOCK NODE IMPL"));
@@ -79,7 +77,7 @@ public class TestDockToolBar extends Application {
         DockTabPane tabPane01 = new DockTabPane();
         dockPane.dock(tabPane01, Side.BOTTOM);
         
-        DockNodeImpl dn03 = new DockNodeImpl();
+        DockNode dn03 = new DockNode();
         
         TextArea ta = new TextArea();
         Button bClick = new Button("testGet");

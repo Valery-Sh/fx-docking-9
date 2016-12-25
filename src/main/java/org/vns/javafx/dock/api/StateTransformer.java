@@ -29,12 +29,12 @@ public class StateTransformer {
     private ObjectProperty<Stage> stageProperty = new SimpleObjectProperty<>();
     private BorderPane borderPane;
 
-    private DockableState dockState;   
+    private DockNodeHandler dockState;   
 
     private ResizeTransformer resizer;
     
     
-    public StateTransformer(DockableState dockState) {
+    public StateTransformer(DockNodeHandler dockState) {
         this.dockState = dockState;
     }
 
@@ -76,12 +76,12 @@ public class StateTransformer {
         Region node = (Region)dockable;
 
         Point2D screenPoint = node.localToScreen(0, 0);
-        Node titleBar = dockable.getDockState().getTitleBar();
+        Node titleBar = dockable.nodeHandler().getTitleBar();
         titleBar.setVisible(true);
         titleBar.setManaged(true);
 
-        if (dockable.getDockState().isDocked()) {
-            dockable.getDockState().undock();
+        if (dockable.nodeHandler().isDocked()) {
+            dockable.nodeHandler().undock();
         }
 
         Stage newStage = new Stage();
@@ -90,7 +90,7 @@ public class StateTransformer {
 
         //newStage.titleProperty().bind(dockable.titleProperty());
         newStage.setTitle("FLOATING STAGE");
-        Pane dockPane = dockable.getDockState().getPaneDelegate().getDockPane();
+        Pane dockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
         
         //dockable.getDockState().setPriorPaneDelegate(dockable.getDockState().getPaneDelegate());
         //dockable.getDockState().getDragTransformer().setTargetDockPane(dockPane);        
@@ -99,7 +99,7 @@ public class StateTransformer {
                 && dockPane.getScene().getWindow() != null) {
             newStage.initOwner(dockPane.getScene().getWindow());
         }
-        //System.err.println("STATE TRANS isStage=" + (dockPane.getScene().getWindow() instanceof Stage));
+        System.err.println("STATE TRANS isStage=" + (dockPane.getScene().getWindow() instanceof Stage));
         //System.err.println("STATE TRANS newStage.getOwner=" + newStage.getOwner());        
         
         newStage.initStyle(stageStyle);
@@ -119,14 +119,14 @@ public class StateTransformer {
                 stagePosition = stagePosition.add(translation);
             }
          */
-        PaneDelegate  pn01 = dockState.getPaneDelegate();
+        DockPaneHandler  pn01 = dockState.getPaneHandler();
         
         borderPane = new BorderPane();
         dockPane = new DockPane();
         //
         // Prohibit to use as a dock target
         //
-        ((DockPaneTarget)dockPane).getDelegate().setUsedAsDockTarget(false);
+        ((DockPaneTarget)dockPane).paneHandler().setUsedAsDockTarget(false);
         
         ((DockPane)dockPane).dock((Node)dockable, Side.TOP);
         borderPane.getStyleClass().add("dock-node-border");
@@ -136,7 +136,7 @@ public class StateTransformer {
         borderPane.setCenter(dockPane);
 
         Scene scene = new Scene(borderPane);
-        PaneDelegate  pn02 = dockState.getPaneDelegate();
+        DockPaneHandler  pn02 = dockState.getPaneHandler();
         boolean b = pn01 == pn02;
         
         
@@ -166,7 +166,7 @@ public class StateTransformer {
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
-        newStage.setResizable(dockable.getDockState().isResizable());
+        newStage.setResizable(dockable.nodeHandler().isResizable());
         if (newStage.isResizable()) {
             newStage.addEventFilter(MouseEvent.MOUSE_PRESSED, this::pressedHandle);
             newStage.addEventFilter(MouseEvent.MOUSE_MOVED, this::movedHandle);

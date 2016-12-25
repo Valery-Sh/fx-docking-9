@@ -46,7 +46,7 @@ public class DockPaneTest {
     }
 
     /**
-     * Test of getDelegate method, of class DockPane.
+     * Test of paneHandler method, of class DockPane.
      */
     @Test
     public void testGetDelegate() {

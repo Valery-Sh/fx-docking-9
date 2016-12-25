@@ -7,8 +7,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableState;
 
 /**
  *
@@ -72,7 +72,8 @@ public class DockTitleBar extends HBox {
     private void init() {
 
         label = new Label("Dock Title Bar");
-        label.textProperty().bind(dockNode.titleProperty());
+        label.textProperty().bind(dockNode.nodeHandler().titleProperty());
+        
         stateButton = new Button();
         closeButton = new Button();
         pinButton = new Button();
@@ -89,11 +90,11 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            dockNode.getDockState().node().toFront();
+            dockNode.nodeHandler().node().toFront();
         });
         
         closeButton.setOnAction(a -> {
-                DockableState sp = dockNode.getDockState();
+                DockNodeHandler sp = dockNode.nodeHandler();
                 if (sp.isFloating() && ( getScene().getWindow() instanceof Stage)) {
                     ((Stage)getScene().getWindow()).close();
                 } else {

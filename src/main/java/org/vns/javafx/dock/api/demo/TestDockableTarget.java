@@ -5,32 +5,17 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.stage.StageHelper;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.event.ActionEvent;
 import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.TitledToolBar;
-import org.vns.javafx.dock.DockUtil;
-import static org.vns.javafx.dock.DockUtil.findNodes;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragPopup;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
@@ -76,7 +61,7 @@ public class TestDockableTarget extends Application {
         dtt03.setId("ddt03");
         lb = new Label("id = dtt03");
         dtt03.getChildren().add(lb);        
-        dtt01.dock(dtt03, Side.RIGHT);
+        dtt01.nodeHandler().getPaneHandler().dock(dtt03, Side.RIGHT, dtt01);
         
 /*        b1.setOnAction(ev ->{
 //            DockUtil.print(dockPane, 1, " ", p -> {

@@ -1,6 +1,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -19,7 +20,7 @@ import org.vns.javafx.dock.DockUtil;
  */
 public class DragTransformer implements EventHandler<MouseEvent> {
 
-    private final DockableState stateProperty;
+    private final Dockable dockable;
 
     private final DragPopup popup;
 
@@ -30,8 +31,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
     private Point2D startMousePos;
 
-    public DragTransformer(DockableState stateProperty) {
-        this.stateProperty = stateProperty;
+    public DragTransformer(Dockable nodeHandler) {
+        this.dockable = nodeHandler;
         this.popup = new DragPopup();
         //System.err.println("DragTransformer popup.isShowing()=" + popup.isShowing());
     }
@@ -42,9 +43,11 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
+            System.err.println("titlebarChanged old=" + oldValue);            
             removeEventHandlers(oldValue);
         }
         if (newValue != null) {
+            System.err.println("titlebarChanged new=" + newValue);            
             addEventHandlers(newValue);
         }
     }
@@ -74,27 +77,26 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     }
 
     protected void mousePressed(MouseEvent ev) {
-        Point2D p = stateProperty.node().localToScreen(0, 0);
+        System.err.println("MOUSE PRESSED isFloating=" + dockable.nodeHandler().isFloating());
+        Point2D p = dockable.node().localToScreen(0, 0);
         double x = p.getX() - ev.getScreenX();
         double y = p.getY() - ev.getScreenY();
         this.startMousePos = new Point2D(x, y);
     }
 
-    protected void mouseReleased_old(MouseEvent ev) {
-        ((Node) ev.getSource()).setMouseTransparent(false);
-        //System.err.println("************** this Mouse Released source.class=" + ev.getSource().getClass().getName());
-    }
-
     public void mouseDragged(MouseEvent ev) {
-        if (!stateProperty.isFloating()) {
+        
+        if (!dockable.nodeHandler().isFloating()) {
             return;
         }
-        Insets insets = ((BorderPane) stateProperty.node().getScene().getRoot()).getInsets();
+        System.err.println("mouseDragges ev.source=" +ev.getSource());                
+        System.err.println("mouseDragges dockable " + dockable.node().getScene().getRoot());        
+        Insets insets = ((BorderPane) dockable.node().getScene().getRoot()).getInsets();
 
-        Stage stage = (Stage) stateProperty.node().getScene().getWindow();
+        Stage stage = (Stage) dockable.node().getScene().getWindow();
         stage.setX(ev.getScreenX() + startMousePos.getX() - insets.getLeft());
         stage.setY(ev.getScreenY() + startMousePos.getY() - insets.getTop());
-        if (stateProperty.isFloating()) {
+        if (dockable.nodeHandler().isFloating()) {
             //System.err.println("1 MOUSE DRAGGED resultStage = " + resultStage);
             if (popup.isShowing()) {
                 popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
@@ -121,17 +123,17 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                     }
                     System.err.println("0 findDockPane = " + root);                    
                 }
-                if ( ! ((DockPaneTarget)root).getDelegate().isUsedAsDockTarget() ) {
+                if ( ! ((DockPaneTarget)root).paneHandler().isUsedAsDockTarget() ) {
                     return;
                 }
                 System.err.println("1 findDockPane = " + root);
-/*                if ((root instanceof DockPaneTarget) && ((DockPaneTarget) root).getDelegate().zorder() == 0) {
+/*                if ((root instanceof DockPaneTarget) && ((DockPaneTarget) root).paneHandler().zorder() == 0) {
                     //System.err.println("FIND DOCKPANE: id=" + resultStage.getScene().getRoot().getId());
                 } else {
                     List<Node> ls = DockUtil.findNodes(resultStage.getScene().getRoot(), (node) -> {
                         Point2D p = node.screenToLocal(ev.getScreenX(), ev.getScreenY());
                         return node.contains(p) && (node instanceof DockPaneTarget)
-                                && ((DockPaneTarget) node).getDelegate().zorder() == 0;
+                                && ((DockPaneTarget) node).paneHandler().zorder() == 0;
                     });
                     if (!ls.isEmpty()) {
                         //System.err.println("FIND DOCKPANE: size=" + ls.size());
@@ -142,7 +144,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                 }
                 //System.err.println("DOCKPANE  111111 " + root);
 */                
-                popup.show((Pane) root, stateProperty.node());
+                popup.show((Pane) root, dockable.node());
                 //MouseEvent me = ev.copyFor(popup.getRoot(), popup.btnTop);
                 // MouseEvent me = ev.copyFor(ev.getSource(), popup.btnTop);
                 //popup.getRoot().fireEvent(me);
@@ -155,15 +157,15 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     
     
     public void mouseDragged_new (MouseEvent ev) {
-        if (!stateProperty.isFloating()) {
+        if (!dockable.nodeHandler().isFloating()) {
             return;
         }
-        Insets insets = ((BorderPane) stateProperty.node().getScene().getRoot()).getInsets();
+        Insets insets = ((BorderPane) dockable.node().getScene().getRoot()).getInsets();
 
-        Stage stage = (Stage) stateProperty.node().getScene().getWindow();
+        Stage stage = (Stage) dockable.node().getScene().getWindow();
         stage.setX(ev.getScreenX() + startMousePos.getX() - insets.getLeft());
         stage.setY(ev.getScreenY() + startMousePos.getY() - insets.getTop());
-        if (stateProperty.isFloating()) {
+        if (dockable.nodeHandler().isFloating()) {
             //System.err.println("1 MOUSE DRAGGED resultStage = " + resultStage);
             if (popup.isShowing()) {
                 popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
@@ -184,17 +186,17 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                 if (root == null || !(root instanceof Pane)) {
                     return;
                 }
-                if ((root instanceof DockPaneTarget) && ((DockPaneTarget) root).getDelegate().zorder() == 0) {
+                if ((root instanceof DockPaneTarget) && ((DockPaneTarget) root).paneHandler().zorder() == 0) {
                     //System.err.println("FIND DOCKPANE: id=" + resultStage.getScene().getRoot().getId());
                 } else {
                     List<Node> ls = DockUtil.findNodes(resultStage.getScene().getRoot(), (node) -> {
                         Point2D p = node.screenToLocal(ev.getScreenX(), ev.getSceneY());
                         return node.contains(p) && (node instanceof DockPaneTarget)
-                                && ((DockPaneTarget) node).getDelegate().zorder() == 0;
+                                && ((DockPaneTarget) node).paneHandler().zorder() == 0;
                     });
                 }
                 //System.err.println("DOCKPANE  111111 " + root);
-                popup.show((Pane) root, stateProperty.node());
+                popup.show((Pane) root, dockable.node());
                 //MouseEvent me = ev.copyFor(popup.getRoot(), popup.btnTop);
                 // MouseEvent me = ev.copyFor(ev.getSource(), popup.btnTop);
                 //popup.getRoot().fireEvent(me);
@@ -208,6 +210,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     public void mouseReleased(MouseEvent ev) {
         System.err.println("1) ***************** mouseReleased SOURCE EVENT:" + ev.getSource().getClass().getName() + "; id = " + ((Node)ev.getSource()).getId());
         if (popup.isShowing()) {
+            System.err.println("2. popup.isShowing() ev.source.id=" + ((Node)ev.getSource()).getId());
             popup.handle(ev.getScreenX(), ev.getScreenY());
         }
 
@@ -215,19 +218,25 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
-        if (stateProperty.isFloating() && popup.getDockPos() != null && popup.getDragTarget() != null) {
+        if (dockable.nodeHandler().isFloating() && popup.getDockPos() != null && popup.getDragTarget() != null) {
             System.err.println("!!!!!!!!!!! " + popup.getDragTarget());            
             if (popup.getDragTarget() instanceof DockPaneTarget) {
-                System.err.println("!!!!!!!!!!!");
-                //((Stage) stateProperty.node().getScene().getWindow()).close();
+                
+                //((Stage) dockable.node().getScene().getWindow()).close();
                 //stateProperty.setFloating(false);
                 DockPaneTarget dpt = (DockPaneTarget) popup.getDragTarget();
-                dpt.dock(stateProperty.node(), popup.getDockPos());
-            } else if (popup.getDragTarget() instanceof DockTarget) {
-                //((Stage) stateProperty.node().getScene().getWindow()).close();
+                System.err.println("!!!!!!!!!!! isFloating=" + dockable.nodeHandler().isFloating());
+                dpt.paneHandler().dock(dockable, popup.getDockPos());
+                //dockable.nodeHandler().setFloating(false);                
+                Platform.runLater(() -> {
+                    System.err.println("afterDock isFloating=" + dockable.nodeHandler().isFloating());                    
+                });
+            } else if (popup.getDragTarget() instanceof Dockable) {
+                //((Stage) dockable.node().getScene().getWindow()).close();
                 //stateProperty.setFloating(false);
-                DockTarget dt = (DockTarget) popup.getDragTarget();
-                dt.dock(stateProperty.node(), popup.getDockPos());
+                Dockable dt = (Dockable) popup.getDragTarget();
+                dt.nodeHandler().getPaneHandler().dock(dockable, popup.getDockPos(), dt );
+                
             }
 
         }
@@ -235,9 +244,12 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     }
 
     protected void mouseDragDetected(MouseEvent ev) {
-        if (!stateProperty.isFloating()) {
+        System.err.println("DRAG DETECTED AFTER iFloating="+dockable.nodeHandler().isFloating());            
+        
+        if (!dockable.nodeHandler().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            stateProperty.setFloating(true);
+            dockable.nodeHandler().setFloating(true);
+            System.err.println("DRAG DETECTED AFTER setFloating(true)");            
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
             //targetDockPane.startFullDrag();
@@ -245,7 +257,6 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            //((Node) ev.getSource()).startFullDrag();
         }
     }
 
@@ -264,110 +275,4 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
     }
 
-    /*    public class MouseDragHandler implements EventHandler<MouseEvent> {
-
-        @Override
-        public void handle(MouseEvent ev) {
-            if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                mouseReleased(ev);
-            }
-            if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                mouseDragged(ev);
-            }
-
-        }
-
-        public void mouseDragged(MouseEvent ev) {
-            Insets insets = ((BorderPane) stateProperty.node().getScene().getRoot()).getInsets();
-
-            Stage stage = (Stage) stateProperty.node().getScene().getWindow();
-            stage.setX(ev.getScreenX() + startMousePos.getX() - insets.getLeft());
-            stage.setY(ev.getScreenY() + startMousePos.getY() - insets.getTop());
-            if (stateProperty.isFloating()) {
-                Stage result = StageRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
-            }
-        }
-
-        public void mouseReleased(MouseEvent ev) {
-            System.err.println("1) ***************** mouseReleased SOURCE EVENT:" + ev.getSource().getClass().getName());
-            //((Node)ev.getSource()).removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-            //((Node)ev.getSource()).removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-
-            if (targetDockPane != null) {
-                targetDockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-                targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            }
-
-        }
-
-    }
-     */
- /*    public static class DockInputEvent extends InputEvent {
-
-        private MouseEvent mouseEvent;
-
-        public static final EventType TYPE = new EventType("DOCK");
-
-        public DockInputEvent(EventType<? extends InputEvent> eventType) {
-            super(eventType);
-        }
-
-        public DockInputEvent() {
-            super(TYPE);
-        }
-
-        public DockInputEvent(MouseEvent ev) {
-            super(TYPE);
-            this.mouseEvent = ev;
-        }
-
-        public DockInputEvent(Object source, EventTarget target, EventType<? extends InputEvent> eventType) {
-            super(source, target, eventType);
-        }
-
-        public DockInputEvent(Object source, EventTarget target, MouseEvent ev) {
-            super(source, target, TYPE);
-            this.mouseEvent = ev;
-        }
-
-        public MouseEvent getMouseEvent() {
-            return mouseEvent;
-        }
-
-    }
-
-    public class DockInputEventHandler implements EventHandler<DockInputEvent> {
-
-        @Override
-        public void handle(DockInputEvent ev) {
-            //out("DockInputHandler source Id=" + ((Node)ev.getSource()).getId() );
-            out("===========================================");
-
-            MouseEvent me = ev.getMouseEvent();
-            StageRegistry.getInstance().getTarget(me.getScreenX(), me.getScreenY());
-
-            Node n = ((Node) ev.getSource());
-            String sep = System.lineSeparator();
-            //String s = "me.getX()=" + me.getX() + sep;
-            String s = "me.getScreenX()=" + me.getScreenX()
-                    + "; stg02.getX()=" + stg02.getX()
-                    + "; width=" + stg01.getWidth()
-                    + sep;
-            out(s);
-            //s = "me.getY()=" + me.getY() + sep;
-            s = "me.getScreenY()=" + me.getScreenY()
-                    + "; stg02.getY()=" + stg02.getY()
-                    + "; height=" + stg01.getHeight()
-                    + sep;
-
-            out(s);
-
-        }
-
-    }
-
-    public static void out(String s) {
-//        System.err.println(s);
-    }
-     */
 }

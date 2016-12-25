@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -26,20 +27,26 @@ public class TestDockPane extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
+        dockPane.setId("DOCK PANE");
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
         
-        dockPane.dock(p1, Side.TOP);
+        p1.setId("pane p1");
+        dockPane.dock(p1, Side.TOP).nodeHandler().setTitle("Pane p1");
         
         Button b2 = new Button("b02");
         Pane p2 = new HBox(b2);
-        dockPane.dock(p2, Side.RIGHT);
+        dockPane.dock(p2, Side.RIGHT).nodeHandler().setTitle("Pane p2");;
+        p2.setId("pane p2");
         
         Button b3 = new Button("b03");
         Pane p3 = new HBox(b3);
-        dockPane.dock(p3, Side.BOTTOM);
+        dockPane.dock(p3, Side.BOTTOM).nodeHandler().setTitle("Pane p3");;
+        p3.setId("pane p3");        
         
-        DockNodeImpl dn01 = new DockNodeImpl();
+        DockNode dn01 = new DockNode();
+        dn01.setTitle("DockNode dn01");
+        dn01.setId("dockNode dn01");        
         dn01.getChildren().add(new Label("DOCK NODE IMPL"));
         dockPane.dock(dn01, Side.TOP);
         

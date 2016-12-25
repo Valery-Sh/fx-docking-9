@@ -27,7 +27,10 @@ public class SplitDelegate {
         return targetIndex;
     }
 
-    public void dock(Node node, Side dockPos) {
+    public void dock(Dockable dockable, Side dockPos) {
+        dock(dockable.node(), dockPos);
+    }    
+    private void dock(Node node, Side dockPos) {
         targetIndex = -1;
 
         DockSplitPane rootSplitPane = root;
@@ -89,6 +92,67 @@ public class SplitDelegate {
         }
 
         Node targetNode = (Node) target;
+
+        DockSplitPane parentSplitPane = getTargetSplitPane(targetNode);
+
+        if (parentSplitPane == null) {
+            return;
+        }
+
+        Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
+                ? Orientation.HORIZONTAL : Orientation.VERTICAL;
+        Orientation oldOrientation = parentSplitPane.getOrientation();
+
+        int itemCount = parentSplitPane.getItems().size();
+        //
+        // If itemcount == 1 then can just change orientation
+        //
+        if (newOrientation != oldOrientation && itemCount == 1) {
+            parentSplitPane.setOrientation(newOrientation);
+            oldOrientation = newOrientation;
+        }
+        if (newOrientation != oldOrientation) {
+
+            DockSplitPane dp = new DockSplitPane();
+            dp.setOrientation(newOrientation);
+
+            int idx = parentSplitPane.getItems().indexOf((Node) targetNode);
+            if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
+                //++idx;
+            }
+            parentSplitPane.getItems().remove((Node) targetNode);
+            if (dockPos == Side.TOP || dockPos == Side.LEFT) {
+                dp.getItems().add(node);
+                dp.getItems().add((Node) targetNode);
+            } else {
+                dp.getItems().add((Node) targetNode);
+                dp.getItems().add(node);
+
+            }
+
+            //parentSplitPane.getItems().add(idx - 1, dp);
+            parentSplitPane.getItems().add(idx, dp);
+            //parentSplitPane.getItems().remove((Node) targetNode);
+            //parentSplitPane = dp;
+        } else {
+            int idx = parentSplitPane.getItems().indexOf(targetNode);
+            if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
+                ++idx;
+            }
+            parentSplitPane.getItems().add(idx, node);
+
+        }
+        parentSplitPane.setDividerPosition(node, dockPos);
+        //if (parentSplitPane != root) {
+            //root = parentSplitPane;
+        //}
+    }
+    public void dock(Node node, Side dockPos, Dockable target) {
+        if (target == null) {
+            dock(node, dockPos);
+        }
+
+        Node targetNode = target.node();
 
         DockSplitPane parentSplitPane = getTargetSplitPane(targetNode);
 
