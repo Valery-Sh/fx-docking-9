@@ -5,6 +5,7 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.Stack;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Side;
@@ -13,11 +14,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockTab;
 import org.vns.javafx.dock.api.Dockable;
@@ -26,7 +28,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestSeveralDockPanes extends Application {
+public class TestDockTabPane extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -92,20 +94,46 @@ public class TestSeveralDockPanes extends Application {
         stg01dp01.setId("stg01dp01");
         DockNode stg01dn01 = new DockNode();
         stg01dn01.setId("stg01dn01");
+        
         Button btn01 = new Button("Button of Tab 01");
-        stg01dn01.getChildren().add(btn01);
+        Pane pane01= new Pane(btn01);
+        stg01dn01.getChildren().add(pane01);
+        pane01.setStyle("-fx-background-color: aqua");
+        
+        //stg01dn01.getChildren().add(btn01);
+        
         stg01dp01.dock(stg01dn01, Side.TOP);
         
         DockNode stg01dn02 = new DockNode();
         stg01dn02.setTitle("stg01dn02" );
         stg01dn02.setId("stg01dn02");
         Button btn02 = new Button("Button of Tab 02");
-        //stg01dn02.getChildren().add(btn02);
+        stg01dn02.getChildren().add(btn02);
+                
+        DockNode stg01dn03 = new DockNode();
+        stg01dn03.setTitle("stg01dn03" );
+        stg01dn03.setId("stg01dn03");
+        Button btn03 = new Button("Button of Tab 03");
+
+        Pane stack02 = new Pane(btn02);
+        stg01dn02.getChildren().add(stack02);
+        stack02.setStyle("-fx-background-color: aqua");
+        
+        StackPane stack03 = new StackPane(btn03);
+        stg01dn03.getChildren().add(stack03);
+        stack03.setStyle("-fx-background-color: gray");
+        
         //stg01dp01.dock(stg01dn02, Side.TOP);
         
-        DockTab stg01tab01 = new DockTab(stg01dn02);
+        /*DockTab stg01tab01 = new DockTab(stg01dn02);
         stg01tab01.setTitle("DockTab 01");
         stg01dp01.dock(stg01tab01, Side.RIGHT);
+        */
+        DockTabPane tabPane01 = new DockTabPane();
+        tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
+        tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
+        stg01dp01.dock(tabPane01, Side.LEFT);
+        
         
         
         

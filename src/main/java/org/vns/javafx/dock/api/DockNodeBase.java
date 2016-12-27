@@ -1,7 +1,6 @@
 package org.vns.javafx.dock.api;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
@@ -23,6 +22,8 @@ public class DockNodeBase  extends VBox implements Dockable{
         Region titleBar = new DockTitleBar(this);
         getChildren().add(titleBar);
         nodeHandler.setTitleBar(titleBar);
+        nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
+        
     }
 
     public String getTitle() {
@@ -62,4 +63,16 @@ public class DockNodeBase  extends VBox implements Dockable{
     public DockNodeHandler nodeHandler() {
         return nodeHandler;
     }
+    
+    public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        System.err.println("DockNodeBase titlebarChanged new=" + newValue);                    
+        if (oldValue != null && newValue == null) {
+            getChildren().remove(0);            
+        } else if ( newValue != null ) {
+            System.err.println("titlebarChanged new=" + newValue);            
+            getChildren().remove(0);            
+            getChildren().add(newValue);
+        }
+    }
+    
 }

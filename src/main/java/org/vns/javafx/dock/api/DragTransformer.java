@@ -2,6 +2,8 @@ package org.vns.javafx.dock.api;
 
 import java.util.List;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,16 +33,40 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
     private Point2D startMousePos;
 
+    private ObjectProperty<Node> dragSourceProperty = new SimpleObjectProperty<>();
+    
     public DragTransformer(Dockable nodeHandler) {
         this.dockable = nodeHandler;
         this.popup = new DragPopup();
+        init();
+        
         //System.err.println("DragTransformer popup.isShowing()=" + popup.isShowing());
     }
-
-    public void initialize() {
-
+    
+    
+    private void init() {
+        dragSourceProperty.addListener(this::dragSourceChanged);
     }
-
+    public void dragSourceChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        if (oldValue != null) {
+            System.err.println("dragSourceChanged old=" + oldValue);            
+            removeEventHandlers(oldValue);
+        }
+        if (newValue != null) {
+            System.err.println("dragSourceChanged new=" + newValue);            
+            addEventHandlers(newValue);
+        }
+    }
+    public ObjectProperty<Node> dragSourceProperty() {
+        return dragSourceProperty;
+    }
+    public Node getDragSource() {
+        return dragSourceProperty.get();
+    }
+    public void setDragSource(Node dragSource) {
+        dragSourceProperty.set(dragSource);
+    }
+    
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
             System.err.println("titlebarChanged old=" + oldValue);            
@@ -52,23 +78,13 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
     }
 
-    private void removeEventHandlers_old(Node node) {
-        node.setOnMousePressed(null);
-        node.setOnDragDetected(null);
-    }
-
+    
     private void removeEventHandlers(Node titleBar) {
         titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
         titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
         titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
     }
-
-    private void addEventHandlers_OLD(Node titleBar) {
-        titleBar.setOnMousePressed(this::mousePressed);
-        titleBar.setOnDragDetected(this::mouseDragDetected);
-    }
-
     private void addEventHandlers(Node titleBar) {
         titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
@@ -79,13 +95,16 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     protected void mousePressed(MouseEvent ev) {
         System.err.println("MOUSE PRESSED isFloating=" + dockable.nodeHandler().isFloating());
         Point2D p = dockable.node().localToScreen(0, 0);
+        System.err.println("MOUSE PRESSED p=" + p);
+        System.err.println("MOUSE PRESSED ev=" + ev);
+        
         double x = p.getX() - ev.getScreenX();
         double y = p.getY() - ev.getScreenY();
         this.startMousePos = new Point2D(x, y);
     }
 
     public void mouseDragged(MouseEvent ev) {
-        
+        System.err.println("mouseDragges START");                
         if (!dockable.nodeHandler().isFloating()) {
             return;
         }
@@ -226,7 +245,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                 //stateProperty.setFloating(false);
                 DockPaneTarget dpt = (DockPaneTarget) popup.getDragTarget();
                 System.err.println("!!!!!!!!!!! isFloating=" + dockable.nodeHandler().isFloating());
-                dpt.paneHandler().dock(dockable, popup.getDockPos());
+                dpt.paneHandler().dock(dockable.node(), popup.getDockPos());
                 //dockable.nodeHandler().setFloating(false);                
                 Platform.runLater(() -> {
                     System.err.println("afterDock isFloating=" + dockable.nodeHandler().isFloating());                    
@@ -235,7 +254,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
                 //((Stage) dockable.node().getScene().getWindow()).close();
                 //stateProperty.setFloating(false);
                 Dockable dt = (Dockable) popup.getDragTarget();
-                dt.nodeHandler().getPaneHandler().dock(dockable, popup.getDockPos(), dt );
+                dt.nodeHandler().getPaneHandler().dock(dockable.node(), popup.getDockPos(), dt );
                 
             }
 
@@ -252,7 +271,6 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             System.err.println("DRAG DETECTED AFTER setFloating(true)");            
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            //targetDockPane.startFullDrag();
         } else {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);

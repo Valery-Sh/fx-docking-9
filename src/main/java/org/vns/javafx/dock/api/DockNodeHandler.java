@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.DockFloatingProperty;
 import org.vns.javafx.dock.api.properties.DockPaneHandlerProperty;
@@ -86,14 +87,6 @@ public class DockNodeHandler  {
         return properties;
     }
 
-    /*    public Pane getDockPane(int state) {
-        if ( isFloating() ) {
-            return getPaneHandler().getDockPane();
-        } else {
-            return getPaneHandler().getDockPane();
-        }
-    }
-     */
     public void setDockPos(String dockPos) {
         this.dockPos = dockPos;
     }
@@ -102,15 +95,6 @@ public class DockNodeHandler  {
         return originalPaneHandler;
     }
 
-
-    /*    public Dockable getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Dockable owner) {
-        this.owner = owner;
-    }
-     */
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
     }
@@ -200,7 +184,8 @@ public class DockNodeHandler  {
 
         //!!!!!!!! must we assign null to owner ?????
     }
-
+    
+    
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
             StateTransformer t = getStateTransformer();

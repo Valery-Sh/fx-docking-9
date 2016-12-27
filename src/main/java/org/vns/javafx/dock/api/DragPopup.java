@@ -166,7 +166,7 @@ public class DragPopup extends Popup {
         // (x,y) coordinates
         // The result may be null
         //
-        //System.err.println("DOCKPANE !!!!!!!!!! " + dockPane);
+        System.err.println("DOCKPANE !!!!!!!!!! " + dockPane);
         Region d = (Region) DockUtil.findDockable(dockPane, screenX, screenY);
         if (d != null) {
             Point2D p = d.localToScreen((d.getWidth() - dockNodePane.getWidth()) / 2, (d.getHeight() - dockNodePane.getHeight()) / 2);

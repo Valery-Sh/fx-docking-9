@@ -86,7 +86,7 @@ public class SplitDelegate {
         root = parentSplitPane;
     }
 
-    public void dock(Node node, Side dockPos, DockTarget target) {
+/*    public void dock(Node node, Side dockPos, DockTarget target) {
         if (target == null) {
             dock(node, dockPos);
         }
@@ -147,6 +147,7 @@ public class SplitDelegate {
             //root = parentSplitPane;
         //}
     }
+*/    
     public void dock(Node node, Side dockPos, Dockable target) {
         if (target == null) {
             dock(node, dockPos);

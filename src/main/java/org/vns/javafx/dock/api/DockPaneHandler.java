@@ -31,7 +31,7 @@ public class DockPaneHandler {
     private int zorder = 0;
     private boolean usedAsDockTarget = true;
 
-    private ObservableMap<Node,Dockable> notDockableItems = FXCollections.observableHashMap();
+    private ObservableMap<Node,Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
             
     public DockPaneHandler(Pane dockPane) {
         dockPaneProperty.set(dockPane);
@@ -40,13 +40,15 @@ public class DockPaneHandler {
     private void init() {
         inititialize();
     }
-    protected void inititialize() {
-        StageRegistry.start();
+    protected void initSplitDelegate() {
         rootSplitPane = new SplitDelegate.DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
 
-        splitDelegate = new SplitDelegate(rootSplitPane);
-
+        splitDelegate = new SplitDelegate(rootSplitPane);        
+    }
+    protected void inititialize() {
+        StageRegistry.start();
+        initSplitDelegate();
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
         });
@@ -55,11 +57,14 @@ public class DockPaneHandler {
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
                 return p instanceof Dockable;
             });
+            
+            System.err.println("FOCUSED " + newValue + "; newNode=" + newNode);            
             if (newNode != null) {
                 Dockable n = ((Dockable) newNode).nodeHandler().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
                     newNode = (Node) n;
                 }
+                System.err.println("1. FOCUSED " + newValue + "; newNode=" + newNode);            
                 ((Dockable) newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             //Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
@@ -80,7 +85,10 @@ public class DockPaneHandler {
         });
 
     }
-
+    protected ObservableMap<Node,Dockable> getNotDockableItems() {
+        return this.notDockableItemsProperty;
+    }
+    
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -110,7 +118,7 @@ public class DockPaneHandler {
         if ( node instanceof Dockable ) {
             retval = DockUtil.getParentSplitPane(rootSplitPane, node) != null;
         } else {
-            retval = notDockableItems.get(node) != null ;
+            retval = notDockableItemsProperty.get(node) != null ;
         }
         return retval;
     }
@@ -124,32 +132,42 @@ public class DockPaneHandler {
         }
     }
     
-    public Dockable dock(Dockable dockable, Side dockPos) {
+/*    public Dockable dock(Dockable dockable, Side dockPos) {
         return dock(dockable.node(), dockPos);
     }
+*/    
     public Dockable dock(Node node, Side dockPos) {
         Dockable d = null; 
         if (isDocked(node)) {
             if ( node instanceof Dockable ) {
                 d = (Dockable) node;
             } else {
-                d = notDockableItems.get(node);
+                d = notDockableItemsProperty.get(node);
             }
             return d;
         }
         
         if (node instanceof Dockable) {
+            
             d = (Dockable) node;
             d.nodeHandler().setFloating(false);
+            d = convert(d, DockConverter.BEFORE_DOCK);
         }  else {
             d = new DefaultDockable(node);
-            notDockableItems.put(node, d);
+            notDockableItemsProperty.put(node, d);
         }
         doDock(d.node(), dockPos);
         return d;
         
     }    
-    private void doDock(Node node, Side dockPos) {
+    protected Dockable convert(Dockable source, int when) {
+        Dockable retval = source;
+        if ( source instanceof DockConverter) {
+            retval = ((DockConverter)source).convert(source, when);
+        }
+        return retval;
+    }
+    protected void doDock(Node node, Side dockPos) {
         
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
             ((Stage) node.getScene().getWindow()).close();
@@ -173,17 +191,17 @@ public class DockPaneHandler {
         }
     }
 
-    public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
+/*    public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
         return this.dock(dockable.node(), dockPos, target);
     }    
-    
+*/    
     public Dockable dock(Node node, Side dockPos, Dockable target) {
         Dockable d = null; 
         if (isDocked(node)) {
             if ( node instanceof Dockable ) {
                 d = (Dockable) node;
             } else {
-                d = notDockableItems.get(node);
+                d = notDockableItemsProperty.get(node);
             }
             return d;
         }
@@ -193,17 +211,17 @@ public class DockPaneHandler {
             d.nodeHandler().setFloating(false);
         }  else {
             d = new DefaultDockable(node);
-            notDockableItems.put(node, d);
+            notDockableItemsProperty.put(node, d);
         }
         doDock(d.node(), dockPos, target);
         return d;
     }    
     
-    private void doDock(Node node, Side dockPos, Dockable target) {
+    private void doDock(Node node, Side dockPos, Dockable targetDockable) {
         if (isDocked(node)) {
             return;
         }
-        if (target == null) {
+        if (targetDockable == null) {
             dock(node, dockPos);
         } else {
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
@@ -212,10 +230,10 @@ public class DockPaneHandler {
             if (node instanceof Dockable) {
                 ((Dockable) node).nodeHandler().setFloating(false);
             }
-            if ( target instanceof DockTarget ) {
-                ((DockTarget)target).dock(node, dockPos);
+            if ( targetDockable instanceof DockTarget ) {
+                ((DockTarget)targetDockable).dock(node, dockPos);
             } else {
-                splitDelegate.dock(node, dockPos, target);
+                splitDelegate.dock(node, dockPos, targetDockable);
             }
         }
         if (node instanceof Dockable) {

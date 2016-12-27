@@ -151,7 +151,7 @@ public class TestIfStageActive extends Application {
         
         DockNode dockNode01 = new DockNode();
         dockNode01.setId("dockNode01");
-        dockNode01.titleProperty().set("Dock Node01");
+        dockNode01.setTitle("Dock Node01");
         dockPane.dock(dockNode01, Side.BOTTOM);
 
         DockToolBar dockToolBar01 = new DockToolBar();
@@ -205,13 +205,13 @@ public class TestIfStageActive extends Application {
         Scene scene05 = new Scene(pane05);
         stage05.setScene(scene05);
         stage05.initOwner(stage03);
-        //stage02.initOwner(stage);
+        stage02.initOwner(stage);
 
-        //stage02.setX(100);
-        //stage02.show();
-        //stage05.show();
-        //stage03.show();
-        //stage04.show();        
+        stage02.setX(100);
+        stage02.show();
+        stage05.show();
+        stage03.show();
+        stage04.show();        
         Platform.runLater(() -> {
 
             //StageHelper.getStages().remove(stage05);

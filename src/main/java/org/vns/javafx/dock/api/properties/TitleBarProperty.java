@@ -1,9 +1,11 @@
 package org.vns.javafx.dock.api.properties;
 
+import javafx.beans.property.BooleanProperty;
 import org.vns.javafx.dock.DockTitleBar;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
@@ -25,8 +27,10 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     private final ReadOnlyObjectProperty<Dockable> ownerProperty = ownerWrapper.getReadOnlyProperty();
 
-    private boolean activeChoosedPseudoClass;
-
+    //private boolean activeChoosedPseudoClass;
+    
+    private BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
+            
     public TitleBarProperty(Dockable owner) {
         super();
         ownerWrapper.set(owner);
@@ -45,11 +49,11 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     private void init() {
         addListener(this::titlebarChanged);
         //choosedProperty.addListener(this::choosedPropertyInvalidated);
-        activeChoosedPseudoClass = false;
+        activeChoosedPseudoClassProperty.set(false);
     }
 
     public boolean isActiveChoosedPseudoClass() {
-        return activeChoosedPseudoClass;
+        return activeChoosedPseudoClassProperty.get();
     }
 
     public void setActiveChoosedPseudoClass(boolean newValue) {
@@ -61,17 +65,19 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         } else {
             turnOffChoosedPseudoClass();
         }
-        this.activeChoosedPseudoClass = newValue;
+        this.activeChoosedPseudoClassProperty.set(newValue);
             
     }
 
-    
+    public BooleanProperty activeChoosedPseudoClassProperty() {
+        return activeChoosedPseudoClassProperty;
+    }
     protected void turnOffChoosedPseudoClass() {
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
     protected void turnOnChoosedPseudoClass() {
-        if ( activeChoosedPseudoClass ) {
+        if ( activeChoosedPseudoClassProperty.get() ) {
             return;
         }
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                

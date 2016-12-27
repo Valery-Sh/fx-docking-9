@@ -59,12 +59,14 @@ public class StateTransformer {
         if (node() == null) {
             return;
         }
-        if (node() instanceof MultiTab) {
+        makeFloating(dockable());
+        
+/*        if (node() instanceof MultiTab) {
             makeFloating((MultiTab) node());
         } else  {
             makeFloating(dockable());
         }
-
+*/
     }
 
     public final boolean isDecorated() {
@@ -90,6 +92,8 @@ public class StateTransformer {
 
         //newStage.titleProperty().bind(dockable.titleProperty());
         newStage.setTitle("FLOATING STAGE");
+        System.err.println("1 %%%%%%%%%%%%% " + dockable);
+        System.err.println("2 %%%%%%%%%%%%% " + dockable.nodeHandler().getPaneHandler());
         Pane dockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
         
         //dockable.getDockState().setPriorPaneDelegate(dockable.getDockState().getPaneDelegate());

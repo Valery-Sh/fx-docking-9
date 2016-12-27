@@ -7,7 +7,6 @@ import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.properties.DockPaneHandlerProperty;
 
 /**
  *
@@ -15,7 +14,6 @@ import org.vns.javafx.dock.api.properties.DockPaneHandlerProperty;
  */
 public class DockPane extends StackPane implements DockPaneTarget{
     
-    //private final DockPaneHandlerProperty<DockPaneHandler> delegeteProperty = new DockPaneHandlerProperty<>();
     private DockPaneHandler paneHandler;
             
     public DockPane() {
@@ -33,7 +31,7 @@ public class DockPane extends StackPane implements DockPaneTarget{
     public DockPaneHandler paneHandler() {
         return paneHandler;
     }
-    @Override
+
     public Dockable dock(Node node, Side dockPos) {
         return paneHandler.dock(node, dockPos);
     }

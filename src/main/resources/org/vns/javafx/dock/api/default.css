@@ -193,6 +193,13 @@
   -fx-border-width: 1;
   -fx-border-color: -fx-outer-border;
 }
+.dock-tab-title-bar {
+  -fx-background-color: -fx-background;
+  -fx-padding: 2;
+  -fx-spacing: 3;
+  -fx-border-width: 0;
+  -fx-border-color: -fx-outer-border;
+}
 
 /*-fx-accent: #0093ff;*/
 .dock-title-bar:choosed {

@@ -61,14 +61,13 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         this.orientation = orientation;
     }
     
-    @Override
-    public void dock(Node dockable, Side dockPos) {
+    public Dockable dock(Node dockable, Side dockPos) {
          //!!! inherit DockPaneTarget.super.dock(dockable, dockPos); 
-         dock(dockable);
+         return dock(dockable);
     }
 
-    public void dock(Node dockable) {
-        paneHandler.dock(dockable, null);
+    public Dockable dock(Node dockable) {
+        return paneHandler.dock(dockable, null);
         //!!! inherit DockPaneTarget.super.dock(dockable);
     }
 

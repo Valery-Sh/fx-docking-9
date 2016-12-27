@@ -1,14 +1,18 @@
 package org.vns.javafx.dock;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
+import static org.vns.javafx.dock.api.properties.TitleBarProperty.CHOOSED_PSEUDO_CLASS;
 
 /**
  *
@@ -16,7 +20,7 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public class DockTitleBar extends HBox {
 
-
+    
     public enum StyleClasses {
         TITLE_BAR,
         PIN_BUTTON,
@@ -59,21 +63,23 @@ public class DockTitleBar extends HBox {
     private Button stateButton;
     private Button pinButton;
 
+    private BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
+    
     public DockTitleBar(Dockable dockNode) {
         this.dockNode = dockNode;
         init();
     }
+
     public DockTitleBar(Dockable dockNode, String title) {
         this.dockNode = dockNode;
         init();
     }
 
-    
     private void init() {
 
         label = new Label("Dock Title Bar");
         label.textProperty().bind(dockNode.nodeHandler().titleProperty());
-        
+
         stateButton = new Button();
         closeButton = new Button();
         pinButton = new Button();
@@ -89,11 +95,14 @@ public class DockTitleBar extends HBox {
         pinButton.getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
+            System.err.println("Mouse Clicked ev.getSoource=" + ev.getSource());
             closeButton.requestFocus();
             dockNode.nodeHandler().node().toFront();
         });
-        
-        closeButton.setOnAction(a -> {
+        closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
+        /*        closeButton.setOnAction(a -> {
+            System.err.println("***************** Close BUTTON Mouse Clicked ");
+            
                 DockNodeHandler sp = dockNode.nodeHandler();
                 if (sp.isFloating() && ( getScene().getWindow() instanceof Stage)) {
                     ((Stage)getScene().getWindow()).close();
@@ -101,27 +110,38 @@ public class DockTitleBar extends HBox {
                     //sp.setFloating(true);
                 }
         });
-        
+         */
         stateButton.setTooltip(new Tooltip("Undock pane"));
-        closeButton.setTooltip(new Tooltip("Close pane"));        
-        pinButton.setTooltip(new Tooltip("Pin pane"));        
-        
+        closeButton.setTooltip(new Tooltip("Close pane"));
+        pinButton.setTooltip(new Tooltip("Pin pane"));
+
         //dockNode.getDockState().titleBarProperty().changeOwner(dockNode);
-        
+    }
+
+    protected void closeButtonClicked(MouseEvent ev) {
+        System.err.println("***************** Close BUTTON Mouse Clicked ");
+
+        DockNodeHandler sp = dockNode.nodeHandler();
+        if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
+            ((Stage) getScene().getWindow()).close();
+        } else {
+            //sp.setFloating(true);
+        }
+
     }
 
     //@Override
     public Dockable getOwner() {
-        if ( dockNode == null ) {
+        if (dockNode == null) {
             return null;
         }
         return dockNode;
     }
 
-/*    public DockDragboard getDockDragboard() {
+    /*    public DockDragboard getDockDragboard() {
         return dragboard;
     }
-*/
+     */
     //@Override
     public Label getLabel() {
         return label;
@@ -141,5 +161,32 @@ public class DockTitleBar extends HBox {
     public Button getPinButton() {
         return pinButton;
     }
+    public boolean isActiveChoosedPseudoClass() {
+        return activeChoosedPseudoClassProperty.get();
+    }
+
+    public void setActiveChoosedPseudoClass(boolean newValue) {
+        if ( newValue ) {
+            turnOnChoosedPseudoClass();
+        } else {
+            turnOffChoosedPseudoClass();
+        }
+        this.activeChoosedPseudoClassProperty.set(newValue);
+            
+    }
+
+    public BooleanProperty activeChoosedPseudoClassProperty() {
+        return activeChoosedPseudoClassProperty;
+    }
+    protected void turnOffChoosedPseudoClass() {
+        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
+    }
+
+    protected void turnOnChoosedPseudoClass() {
+        if ( activeChoosedPseudoClassProperty.get() ) {
+            return;
+        }
+        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                
+   }
 
 }

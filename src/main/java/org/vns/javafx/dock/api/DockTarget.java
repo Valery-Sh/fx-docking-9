@@ -7,7 +7,6 @@ package org.vns.javafx.dock.api;
 
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -15,7 +14,9 @@ import org.vns.javafx.dock.DockUtil;
  */
 public interface DockTarget {
     
-    default Dockable dock(Node dockable, Side dockPos) { return null;};
+    default Dockable dock(Node node, Side dockPos) { return null;};
+//    default void dock(Node dockable) {};        
+    
 /*    
     default void dock(Node dockable) {};    
 

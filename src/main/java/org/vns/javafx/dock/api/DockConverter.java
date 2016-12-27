@@ -5,13 +5,13 @@
  */
 package org.vns.javafx.dock.api;
 
-import javafx.scene.layout.Pane;
-
 /**
  *
  * @author Valery
  */
-public interface DockPaneTarget {//extends DockTarget{
-    Pane pane();
-    DockPaneHandler paneHandler();
+public interface DockConverter {
+    public static final int BEFORE_DOCK = 0;
+    public static final int AFTER_DOCK = 0;
+    
+    Dockable convert(Dockable source, int when);
 }
