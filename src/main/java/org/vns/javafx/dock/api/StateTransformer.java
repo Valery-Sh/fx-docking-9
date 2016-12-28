@@ -216,10 +216,7 @@ public class StateTransformer {
         // >>> node.getDockableState().setDocked(true);
     }
 
-    protected void makeFloating(MultiTab node) {
-
-    }
-
+  
     private BooleanProperty floatingProperty = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {

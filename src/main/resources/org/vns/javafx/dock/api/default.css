@@ -124,6 +124,29 @@
   -fx-padding: 4;
 }
 
+.dock-node-pos-top {
+  -fx-graphic: url(dock-popup-top-24x24.png);
+  -fx-padding: 4;
+}
+
+.dock-node-pos-top:tabover {
+  -fx-graphic: url(target-icon-32x32.png);
+  -fx-padding: 4;
+}
+
+.dock-node-pos-bottom {
+  -fx-graphic: url(dock-popup-bottom-24x24.png);
+  -fx-padding: 4;
+}
+.dock-node-pos-left {
+  -fx-graphic: url(dock-popup-left-24x24.png);
+  -fx-padding: 4;
+}
+
+.dock-node-pos-right {
+  -fx-graphic: url(dock-popup-right-24x24.png);
+  -fx-padding: 4;
+}
 
 /* Set the icons for the indicator buttons here. */
 .dock-center {

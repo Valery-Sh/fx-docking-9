@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Map;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -24,19 +25,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
-import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.api.DefaultDockable;
-import org.vns.javafx.dock.api.DockConverter;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
-import org.vns.javafx.dock.api.DockTab;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.MultiTab;
-import org.vns.javafx.dock.api.SplitDelegate;
-import org.vns.javafx.dock.api.properties.DockedProperty;
+import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
@@ -44,6 +39,8 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * @author Valery
  */
 public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
+
+    public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
     private final StringProperty titleProperty = new SimpleStringProperty();
 
@@ -66,6 +63,8 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         paneHandler = new TabPaneHandler(this);
 
         stackPane = new StackPane();
+        stackPane.setManaged(true);
+        
         menuButton = new Button();
         menuButton.focusTraversableProperty().set(false);
         menuButton.borderProperty().set(Border.EMPTY);
@@ -81,12 +80,15 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         getChildren().addAll(full, stackPane);
 
         stackPane.setStyle("-fx-background-color: white");
+        stackPane.setPrefHeight(getPrefHeight());
+        stackPane.setMaxHeight(Double.MAX_VALUE);
+        
         //DockTabPane.this.dockPaneProperty.set(dockPane);
 
         getTitleBars().addListener(DockTabPane.this::onChangeTitleBars);
 
         nodeHandler.titleBarProperty().activeChoosedPseudoClassProperty().addListener(this::focusChanged);
-        
+
         nodeHandler().setTitleBar(new DockTitleBar(this));
     }
 
@@ -168,8 +170,8 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
 
     protected void choose(Dockable choosed) {
         getTitleBars().forEach(tab -> {
-            Dockable d = ((TabTitleBar)tab).getOwner();
-            TabTitleBar tb = (TabTitleBar)tab;
+            Dockable d = ((TabTitleBar) tab).getOwner();
+            TabTitleBar tb = (TabTitleBar) tab;
             if (d != choosed) {
                 tb.setActiveChoosedPseudoClass(false);
                 d.node().toBack();
@@ -182,7 +184,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
 
     protected void focusChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         getTitleBars().forEach(tab -> {
-            Dockable d = ((TabTitleBar)tab).getOwner();
+            Dockable d = ((TabTitleBar) tab).getOwner();
             if (newValue && isFocused((Region) tab)) {
                 choose(d);
             } else if (!newValue) {
@@ -254,7 +256,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             getPinButton().setMouseTransparent(true);
 
             setOnMouseClicked(ev -> {
-                System.err.println("Mouse Clicked ev.getSoource=" + ev.getSource());
+                //System.err.println("Mouse Clicked ev.getSoource=" + ev.getSource());
                 getCloseButton().requestFocus();
                 tabPane.choose(getOwner());
                 ev.consume();
@@ -291,8 +293,11 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
 
         public TabPaneHandler(DockTabPane dockPane) {
             super(dockPane);
+            init();
         }
-
+        private void init() {
+            //setSidePointerModifier(this::modifyNodeSidePointer);
+        }
         @Override
         protected void initSplitDelegate() {
         }
@@ -357,7 +362,8 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         }
 
         @Override
-        protected void doDock(Node node, Side dockPos) {
+        protected void doDock(Point2D mousePos, Node node, Side dockPos) {
+
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
@@ -366,11 +372,17 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             tab.setId("TabTitleBar:" + node.getId());
 
             dockPane.getTitleBars().add(tab);
-            dockPane.getContents().forEach(n -> {
-            });
-            node.setManaged(true);
-
+            
+            //node.setManaged(true);
+            //StackPane p = new StackPane();
+            ((Region)node).prefHeightProperty().bind(dockPane.heightProperty());
+            ((Region)node).prefWidthProperty().bind(dockPane.widthProperty());
+            
+                    
+            
             dockPane.getContents().add(node);
+            
+            //StackPane.setAlignment(node, Pos.TOP_CENTER);
             if (node instanceof Dockable) {
                 DockNodeHandler state = ((Dockable) node).nodeHandler();
                 tab.hideContentTitleBar();
@@ -382,7 +394,20 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             }
         }
 
+        public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
+            //System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!!");            
+/*            popup.getSidePointerGrid().getChildren().remove(popup.getNodeSideButton(Side.BOTTOM));
+            popup.getSidePointerGrid().getChildren().remove(popup.getNodeSideButton(Side.LEFT));
+            popup.getSidePointerGrid().getChildren().remove(popup.getNodeSideButton(Side.RIGHT));
+           
+            Button btnTop = popup.getNodeSideButton(Side.TOP);
+            //btnTop.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+*/            
+            return null;
+        }
+
         private void doDock(Node node, Side dockPos, Dockable targetDockable) {
+            //System.err.println("1 doDock() !!!!!!!!!!!!!!!!!!!!!");
             if (isDocked(node)) {
                 return;
             }

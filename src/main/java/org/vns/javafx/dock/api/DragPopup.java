@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockPaneHandler.SidePointerModifier;
 
 /**
  *
@@ -21,8 +22,8 @@ public class DragPopup extends Popup {
 
     private Pane dockPane;
     private Pane popupPane;
-    private Popup dockNodePopup;
-    private GridPane dockNodePane;
+    private Popup nodeSidePointerPopup;
+    private GridPane sidePointerGrid;
 
     private Button btnTop;
     private Button btnBottom;
@@ -40,6 +41,9 @@ public class DragPopup extends Popup {
     private Node dragTarget;
     private Side dockPos;
 
+    private SidePointerModifier onModifySideIndicator;
+
+    
     public DragPopup() {
         init();
     }
@@ -82,27 +86,48 @@ public class DragPopup extends Popup {
         //
         // A popup to treat DockNode as dock target
         //
-        dockNodePopup = new Popup();
+        nodeSidePointerPopup = new Popup();
 
-        dockNodePane = new GridPane();
-        dockNodePane.getStyleClass().add("dock-target-pos");
+        sidePointerGrid = new GridPane();
+        sidePointerGrid.getStyleClass().add("dock-target-pos");
         nodeBtnTop = new Button();
-        nodeBtnTop.getStyleClass().add("dock-pos-top");
+        nodeBtnTop.getStyleClass().add("dock-node-pos-top");
         nodeBtnBottom = new Button();
-        nodeBtnBottom.getStyleClass().add("dock-pos-bottom");
+        nodeBtnBottom.getStyleClass().add("dock-node-pos-bottom");
         nodeBtnLeft = new Button();
-        nodeBtnLeft.getStyleClass().add("dock-pos-left");
-
+        nodeBtnLeft.getStyleClass().add("dock-node-pos-left");
         nodeBtnRight = new Button();
-        nodeBtnRight.getStyleClass().add("dock-pos-right");
+        nodeBtnRight.getStyleClass().add("dock-node-pos-right");
 
-        dockNodePane.add(nodeBtnTop, 1, 0);
-        dockNodePane.add(nodeBtnBottom, 1, 2);
-        dockNodePane.add(nodeBtnLeft, 0, 1);
-        dockNodePane.add(nodeBtnRight, 2, 1);
-        dockNodePopup.getContent().add(dockNodePane);
+        sidePointerGrid.add(nodeBtnTop, 1, 0);
+        sidePointerGrid.add(nodeBtnBottom, 1, 2);
+        sidePointerGrid.add(nodeBtnLeft, 0, 1);
+        sidePointerGrid.add(nodeBtnRight, 2, 1);
+        nodeSidePointerPopup.getContent().add(sidePointerGrid);
     }
+    public void initSidePointerGrid() {
+        
+        if ( sidePointerGrid != null ) {
+           nodeSidePointerPopup.getContent().remove(sidePointerGrid);
+        }
+        sidePointerGrid = new GridPane();
+        sidePointerGrid.getStyleClass().add("dock-target-pos");
+        
+        nodeBtnTop = new Button();
+        nodeBtnTop.getStyleClass().add("dock-node-pos-top");
+        nodeBtnBottom = new Button();
+        nodeBtnBottom.getStyleClass().add("dock-node-pos-bottom");
+        nodeBtnLeft = new Button();
+        nodeBtnLeft.getStyleClass().add("dock-node-pos-left");
+        nodeBtnRight = new Button();
+        nodeBtnRight.getStyleClass().add("dock-node-pos-right");
 
+        sidePointerGrid.add(nodeBtnTop, 1, 0);
+        sidePointerGrid.add(nodeBtnBottom, 1, 2);
+        sidePointerGrid.add(nodeBtnLeft, 0, 1);
+        sidePointerGrid.add(nodeBtnRight, 2, 1);
+        nodeSidePointerPopup.getContent().add(sidePointerGrid);
+    }
     public Pane getRoot() {
         return popupPane;
     }
@@ -115,6 +140,29 @@ public class DragPopup extends Popup {
         return dockPos;
     }
 
+    public GridPane getSidePointerGrid() {
+        return sidePointerGrid;
+    }
+    
+    public Button getNodeSideButton(Side side) {
+        Button retval = null;
+        if ( null != side ) switch (side) {
+            case TOP:
+                retval = nodeBtnTop;
+                break;
+            case BOTTOM:
+                retval =  nodeBtnBottom;
+                break;
+            case LEFT:
+                retval =  nodeBtnLeft;
+                break;
+            case RIGHT:
+                retval =  nodeBtnRight;
+                break;
+        }
+        return retval;
+    }
+    
     public void show(Pane dockPane, Node dockable) {
         setAutoFix(false);
         this.dockPane = dockPane;
@@ -154,29 +202,52 @@ public class DragPopup extends Popup {
     }
 
     public boolean contains(Button b, double x, double y) {
+        if ( b == null ) {
+            return false;
+        }
         Point2D p = b.localToScreen(0, 0);
+        if ( p == null ) {
+            return false;
+        }
+
         return !((x < p.getX() || x > p.getX() + b.getWidth()
                 || y < p.getY() || y > p.getY() + b.getHeight()));
 
     }
 
     public void handle(double screenX, double screenY) {
+        //initSidePointerGrid();
         //
         // Try to find a Dockable objects which contains the specifired 
         // (x,y) coordinates
         // The result may be null
         //
-        System.err.println("DOCKPANE !!!!!!!!!! " + dockPane);
+        //System.err.println("DOCKPOPUP handle  " + dockPane);
         Region d = (Region) DockUtil.findDockable(dockPane, screenX, screenY);
         if (d != null) {
-            Point2D p = d.localToScreen((d.getWidth() - dockNodePane.getWidth()) / 2, (d.getHeight() - dockNodePane.getHeight()) / 2);
-            dockNodePopup.show(this, p.getX(), p.getY());
+            System.err.println(" --- 1) DOCKPOPUP dockable=" + dockable);                            
+            Point2D p = null;// = d.localToScreen((d.getWidth() - sidePointerGrid.getWidth()) / 2, (d.getHeight() - sidePointerGrid.getHeight()) / 2);
+            SidePointerModifier pm = null;
+            if ( d instanceof DockPaneTarget ) {
+                //System.err.println(" --- 1) DOCKPOPUP handle  ((DockPaneTarget)d).paneHandler()=" + ((DockPaneTarget)d).paneHandler());                
+                pm = ((DockPaneTarget)d).paneHandler().getSidePointerModifier();
+            } else {
+                //System.err.println(" --- 2)DOCKPOPUP handle  ((DockPaneTarget)d).paneHandler()=" + ((Dockable)d).nodeHandler().getPaneHandler());                
+                pm = ((Dockable)d).nodeHandler().getPaneHandler().getSidePointerModifier();
+            }
+            if ( pm != null ) {
+                p = pm.modify(this, (Dockable) d, screenX, screenY);
+            } 
+            if ( p == null) {
+                p = d.localToScreen((d.getWidth() - sidePointerGrid.getWidth()) / 2, (d.getHeight() - sidePointerGrid.getHeight()) / 2);
+            }
+
+            nodeSidePointerPopup.show(this, p.getX(), p.getY());
+        } else {
+            System.err.println(" --- 1) DOCKPOPUP NULL dockable=" + dockable);                            
         }
         
-//        if ( (dockPane instanceof DockPaneTarget ) {
-            
-//        }
-        //System.err.println("handle DOCKABLE " + d);
+        
         dockPlace.setVisible(false);
         dragTarget = null;
 

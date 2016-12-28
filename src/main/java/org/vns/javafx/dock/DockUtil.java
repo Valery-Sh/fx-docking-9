@@ -169,23 +169,41 @@ public class DockUtil {
 
         return findNode(root, predicate);
     }
+    public static Node findTopDockPane(Parent root, double screenX, double screenY ) {
+        List<Node> list = new ArrayList<>();
+        Parent p = root;
+        while ( true ) {
+            Node node = findDockPane(p, screenX, screenY);
+            if ( node == null) {
+                break;
+            }
+            list.add(node);
+            p = (Parent) node;
+        }
+        if ( list.isEmpty() ) {
+            return null;
+        }
+        System.err.println("DockUtil foundDeep = " + (list.get(list.size() - 1)));
+        return list.get(list.size() - 1);
+    }    
     public static Node findDockPane(Parent root, double screenX, double screenY ) {
-        System.err.println("DockUtil.findDockPane param.X=" + screenX + "; y="+ screenY);
+        //System.err.println("DockUtil.findDockPane param.X=" + screenX + "; y="+ screenY);
         
         Predicate<Node> predicate =  (node) -> {
             Point2D p = node.localToScreen(0,0);
             boolean b = false;
             if ( node instanceof DockPaneTarget ) {
-                System.err.println("DockUtil.findDockPane pane.X=" + p.getX() + "; y="+ p.getY());
-                System.err.println("DockUtil.findDockPane " + node.getId());
+//                System.err.println("DockUtil.findDockPane pane.X=" + p.getX() + "; y="+ p.getY());
+//                System.err.println("DockUtil.findDockPane " + node.getId());
                 DockPaneHandler pd = ((DockPaneTarget)node).paneHandler();
                 if ( pd == null ) {
                     b = false;
                 } else {
                     b = pd.isUsedAsDockTarget() && pd.zorder() == 0 ;    
                 }
-                System.err.println("DockUtil.findDockPane zorder=" + pd.zorder());
-                System.err.println("DockUtil.findDockPane isUsedAsDockTarget=" + pd.isUsedAsDockTarget());
+                //b = b && node != root;
+                //System.err.println("DockUtil.findDockPane zorder=" + pd.zorder());
+                //System.err.println("DockUtil.findDockPane isUsedAsDockTarget=" + pd.isUsedAsDockTarget());
                 
             }
             
