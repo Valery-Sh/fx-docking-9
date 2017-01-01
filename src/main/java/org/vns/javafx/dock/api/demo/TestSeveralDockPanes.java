@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockTab;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -103,9 +102,6 @@ public class TestSeveralDockPanes extends Application {
         //stg01dn02.getChildren().add(btn02);
         //stg01dp01.dock(stg01dn02, Side.TOP);
         
-        DockTab stg01tab01 = new DockTab(stg01dn02);
-        stg01tab01.setTitle("DockTab 01");
-        stg01dp01.dock(stg01tab01, Side.RIGHT);
         
         
         

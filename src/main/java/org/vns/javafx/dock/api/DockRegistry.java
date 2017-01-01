@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import com.sun.glass.ui.Application;
 import com.sun.javafx.stage.StageHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +9,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
@@ -21,15 +21,18 @@ import org.vns.javafx.dock.DockUtil;
  *
  * @author Valery Shyshkin
  */
-public class StageRegistry {
+public class DockRegistry {
 
     private final ObservableList<Stage> stages = FXCollections.observableArrayList();
     private final Map<Stage, Window> owners = new HashMap<>();
+    private final ObservableMap<Node,Dockable> dockables = FXCollections.observableHashMap();
 
-    private StageRegistry() {
+    private boolean registerDone;
+    
+    private DockRegistry() {
     }
 
-    public static StageRegistry getInstance() {
+    public static DockRegistry getInstance() {
         return SingletonInstance.instance;
     }
 
@@ -37,7 +40,9 @@ public class StageRegistry {
         getInstance().doRegister(stage);
     }
 
-    private boolean registerDone;
+    public static ObservableMap<Node, Dockable> getDockables() {
+        return getInstance().dockables;
+    }
 
     public static void start() {
         if (!getInstance().registerDone) {
@@ -110,11 +115,6 @@ public class StageRegistry {
             if (newValue) {
                 stages.remove(stage);
                 stages.add(0, stage);
-/*                System.out.println("============================================");
-                stages.forEach(s -> {
-                    System.out.println("STAGE: " + s.getTitle());
-                });
-*/                
             }
         });
     }
@@ -156,7 +156,6 @@ public class StageRegistry {
         if (allStages.isEmpty()) {
             return null;
         }
-        //System.err.println("getTarget(x,y) allStages.sz=" + allStages.size());
         List<Stage> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
             List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
@@ -188,8 +187,6 @@ public class StageRegistry {
                 break;
             }
         }
-        System.err.println("3) retval=" + retval + "; title=" + (retval==null ? null: retval.getTitle()) );
-        
         return retval;
     }
 
@@ -201,27 +198,21 @@ public class StageRegistry {
         boolean b2 = s2.isAlwaysOnTop();
         if (isChild(s1, s2)) {
             //retval must be null s2 is a child window of s1
-            //System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
 
         } else if (isChild(s2, s1)) {
-            //System.err.println("!!!!!!!!!! isChild(s1, s2) s1.title=" + s1.getTitle() + "; s2.title=" + s2.getTitle());
             retval = s1;
         } else if (zorder(s1) < zorder(s2) && !b1 && !b2) {
-            //System.err.println("A.1");
             retval = s1;
         } else if (zorder(s1) < zorder(s2) && b1 && b2) {
             retval = s1;
         } else if (b1 && !b2) {
-            //System.err.println("A.2");
             retval = s1;
         } else if (!b1 && b2) {
-            //System.err.println("A.3");
         }
         String t = null;
         if ( retval != null ) {
             t = retval.getTitle();
         }
-        System.err.println("!!!!!!!!!! retval = " + retval + "; title=" + t);
 
         return retval;
     }
@@ -240,8 +231,62 @@ public class StageRegistry {
         });
         return retlist;
     }
+    protected boolean isNodeDockable(Node node ) {
+        boolean retval = node instanceof Dockable;
+        if ( ! retval && dockables.get(node) != null ) {
+            retval = true;
+        }
+        return retval;
+    }
 
+    public Dockable getDefaultDockable(Node node ) {
+        if ( node instanceof Dockable ) {
+            return (Dockable) node;
+        }
+        if (dockables.get(node) != null ) {
+            return dockables.get(node);
+        }
+        Dockable d = new DefaultDockable((Region) node);
+        dockables.put(node,d);
+        return d;
+    }
+    
+    public static boolean isDockable(Node node) {
+        return getInstance().isNodeDockable(node);
+    }
+    public static Dockable dockable(Node node) {
+        if ( node instanceof Dockable ) {
+            return (Dockable) node;
+        }
+        return getInstance().dockables.get(node);
+
+    }
+    
     private static class SingletonInstance {
-        private static final StageRegistry instance = new StageRegistry();
+        private static final DockRegistry instance = new DockRegistry();
+    }
+    
+    public static class DefaultDockable implements Dockable {
+
+        private Region node;
+        private DockNodeHandler nodeHandler;
+
+        public DefaultDockable(Region node) {
+            this.node = node;
+            init();
+        }
+        private void init() {
+            nodeHandler = new DockNodeHandler(this);
+        }
+        @Override
+        public Region node() {
+            return node;
+        }
+
+        @Override
+        public DockNodeHandler nodeHandler() {
+            return nodeHandler;
+        }
+        
     }
 }

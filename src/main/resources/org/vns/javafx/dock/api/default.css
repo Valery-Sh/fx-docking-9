@@ -216,19 +216,20 @@
   -fx-border-width: 1;
   -fx-border-color: -fx-outer-border;
 }
-.dock-tab-title-bar {
+/*.dock-tab-title-bar {
   -fx-background-color: -fx-background;
   -fx-padding: 2;
   -fx-spacing: 3;
   -fx-border-width: 0;
   -fx-border-color: -fx-outer-border;
 }
-
+*/
 /*-fx-accent: #0093ff;*/
 .dock-title-bar:choosed {
   -fx-background-color: #0093ff;
   -fx-font-color: white;
 }
+
 .dock-title-bar:choosed .dock-title-label{
   -fx-background-color: #0093ff;
   -fx-text-fill: white;
@@ -240,7 +241,121 @@
   -fx-text-fill: -fx-text-base-color;
   -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
 }
+/*.dock-tab-title-label {
+  -fx-graphic: url(docknode-8x8.png);
+  -fx-padding: 0 0 3 0;
+  -fx-text-fill: -fx-text-base-color;
+  -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
+}
+*/
+/*.dock-tab-title-button {
+  -fx-border-width: 1; 
+  -fx-border-color: -fx-outer-border;
+  -fx-padding: 1 2 1 2;
+}
+*/
+/* =============================================== */
 
+
+.dock-tab-pane .tab-hbox .dock-title-bar {
+  -fx-border-width: 0.5; 
+}
+.dock-tab-pane .tab-hbox .dock-title-bar .button {
+  -fx-border-width: 1; 
+  -fx-border-color: -fx-outer-border;
+  -fx-padding: 1 2 1 2;
+}
+.dock-tab-pane .tab-hbox .dock-title-bar .dock-title-label {
+  -fx-graphic: url(docknode-8x8.png);
+  -fx-padding: 0 0 3 0;
+  -fx-text-fill: -fx-text-base-color;
+  -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );    
+
+}
+.dock-tab-pane .tab-hbox .dock-title-bar:choosed .dock-title-label {
+  -fx-background-color: #0093ff;
+  -fx-text-fill: white;
+}
+
+.dock-tab-pane .tab-hbox .dock-title-bar:choosed .button {
+  -fx-border-width: 0; 
+}
+
+
+.dock-tab-pane .tab-hbox .drag-button {
+  -fx-graphic: url(drag-16x16-01.png);
+  -fx-padding:  0 0 0 0;
+}
+
+.dock-tab-pane .tab-hbox .hscroll-button {
+  -fx-background-color: transparent;  
+  -fx-padding: 4 1 4 1;
+}
+.dock-tab-pane .tab-hbox .left-scroll {
+  -fx-graphic: url(left-arrow-7x7.png);
+}
+.dock-tab-pane .tab-hbox .right-scroll {
+  -fx-graphic: url(right-arrow-7x7.png);
+}
+
+.dock-tab-pane .tab-hbox .menu-button {
+    -fx-graphic: url(title-menu-button-12x12.png);
+    -fx-background-color: transparent;  
+    -fx-padding: 4 1 4 1;    
+}
+
+.dock-title-menu-button:hover {
+  -fx-background-color: rgb(226,226,226);  
+  -fx-graphic: url(title-menu-button-12x12.png);
+}
+
+.dock-tab-pane .tab-hbox .separator:vertical .line {
+    -fx-background-color: transparent;
+    -fx-border-width:  0 1 0 0;
+    /*-fx-border-color:  transparent derive(-fx-background,-20%) transparent transparent;*/
+    
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: aqua;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+
+/*
+.tab-title-bar {
+  -fx-background-color: -fx-background;
+  -fx-padding: 2;
+  -fx-spacing: 3;
+  -fx-border-width: 0;
+  -fx-border-color: -fx-outer-border;
+    
+}
+*/
+/*.tab-title-bar .dock-title-label {
+  -fx-graphic: url(docknode-8x8.png);
+  -fx-padding: 0 0 3 0;
+  -fx-text-fill: -fx-text-base-color;
+  -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );    
+}
+*/
+.tab-title-bar .dock-title-state-button {
+  -fx-border-width: 1; 
+  -fx-border-color: -fx-outer-border;
+  -fx-padding: 1 2 1 2;
+
+}
+/* =============================================== */
 /* We want small buttons for our dock's title bar
  * but we have to make sure that the top and bottom
  * are a good ratio of the left and right padding.
@@ -250,6 +365,7 @@
  */
 .dock-title-bar .button {
   -fx-padding: 1 4 1 4;
+  -fx-border-width: 0; 
 }
 
 /* Set the icons for the dock title bar's buttons here. */

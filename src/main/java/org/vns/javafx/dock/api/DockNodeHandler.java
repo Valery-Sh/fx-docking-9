@@ -8,7 +8,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.DockFloatingProperty;
 import org.vns.javafx.dock.api.properties.DockPaneHandlerProperty;
@@ -38,7 +37,7 @@ public class DockNodeHandler  {
     /**
      * Last dock target pane
      */
-    private DockPaneHandler originalPaneHandler;
+    //private DockPaneHandler originalPaneHandler;
 
     private final DockPaneHandlerProperty<DockPaneHandler> paneHandler = new DockPaneHandlerProperty<>();
 
@@ -56,9 +55,15 @@ public class DockNodeHandler  {
         dockedProperty.addListener(this::dockedChanged);
         dragTransformer = getDragTransformer();
         titleBarProperty.addListener(this::titlebarChanged);
-        paneHandler.addListener(this::paneHandlerChanged);
+        //paneHandler.addListener(this::paneHandlerChanged);
     }
-    public DragTransformer getDragTransformer() {
+    public Node getDragSource() {
+        return getDragTransformer().getDragSource();
+    }
+    public void setDragSource(Node dragSource) {
+        getDragTransformer().setDragSource(dragSource);
+    }    
+    protected DragTransformer getDragTransformer() {
         if ( dragTransformer == null ) {
             dragTransformer = new DragTransformer(dockable);
         }
@@ -67,15 +72,15 @@ public class DockNodeHandler  {
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
-
+    
     public void setUsedAsDockTarget(boolean usedAsDockTarget) {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-    protected void paneHandlerChanged(ObservableValue<? extends DockPaneHandler> observable, DockPaneHandler oldValue, DockPaneHandler newValue) {
+/*    protected void paneHandlerChanged(ObservableValue<? extends DockPaneHandler> observable, DockPaneHandler oldValue, DockPaneHandler newValue) {
         originalPaneHandler = oldValue;
     }
-
+*/
     public String getDockPos() {
         return dockPos;
     }
@@ -91,10 +96,10 @@ public class DockNodeHandler  {
         this.dockPos = dockPos;
     }
 
-    public DockPaneHandler getOrigionalPaneDelegate() {
+/*    public DockPaneHandler getOrigionalPaneDelegate() {
         return originalPaneHandler;
     }
-
+*/
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
     }

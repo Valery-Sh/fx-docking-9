@@ -20,9 +20,7 @@ public class DockPane extends StackPane implements DockPaneTarget{
         init();
     }
 
-    public DockPane(Node... children) {
-        super(children);
-    }
+
     private void init() {
         paneHandler = new DockPaneHandler(this);
         //delegeteProperty.set(new DockPaneHandler(this));
@@ -32,7 +30,7 @@ public class DockPane extends StackPane implements DockPaneTarget{
         return paneHandler;
     }
 
-    public Dockable dock(Node node, Side dockPos) {
+    public Dockable dock(Dockable node, Side dockPos) {
         return paneHandler.dock(node, dockPos);
     }
 

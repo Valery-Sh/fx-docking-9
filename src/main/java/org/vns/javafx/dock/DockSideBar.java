@@ -15,7 +15,7 @@ import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StageRegistry;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
@@ -61,12 +61,12 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         this.orientation = orientation;
     }
     
-    public Dockable dock(Node dockable, Side dockPos) {
+    public Dockable dock(Dockable dockable, Side dockPos) {
          //!!! inherit DockPaneTarget.super.dock(dockable, dockPos); 
          return dock(dockable);
     }
 
-    public Dockable dock(Node dockable) {
+    public Dockable dock(Dockable dockable) {
         return paneHandler.dock(dockable, null);
         //!!! inherit DockPaneTarget.super.dock(dockable);
     }
@@ -97,7 +97,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
 
         @Override
         protected void inititialize() {
-            StageRegistry.start();
+            DockRegistry.start();
         }
 
         @Override
@@ -121,13 +121,14 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         }
         
         @Override
-        public Dockable dock(Node node, Side dockPos) {
+        public Dockable dock(Dockable node, Side dockPos) {
             if (true) return null;
-            if (isDocked(node)) {
+            if (isDocked(node.node())) {
                 return null;
             }
-            ((Dockable)node).nodeHandler().setFloating(true);
-            if ( (node instanceof Dockable)&& ((Dockable)node).nodeHandler().isDocked()) {
+            //31.12((Dockable)node).nodeHandler().setFloating(true);
+            node.nodeHandler().setFloating(true);
+            if ( (node instanceof Dockable)&& node.nodeHandler().isDocked()) {
                 //return;
             }
             //getDockPane().setVisible(false);
@@ -135,31 +136,28 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
                 ((Stage) node.getScene().getWindow()).close();
             }
 */            
-            if (node instanceof Dockable) {
-                //((Dockable) node).getDockState().setFloating(false);
-            }
             
-            if (node instanceof Dockable) {
+//31.12            if (node instanceof Dockable) {
                 Button btn = new Button();
-                btn.setText(getButtonText((Dockable) node));
-                Node grf = getButtonIcon((Dockable) node);
+                btn.setText(getButtonText(node));
+                Node grf = getButtonIcon(node);
                 if ( grf != null ) {
-                    btn.setGraphic(node);
+                    btn.setGraphic(node.node());
                 }
                 Group group = new Group(btn);
                 toolBar.getItems().add(group);
-                items.put(group,(Dockable)node);
+                items.put(group,node);
                 if ( toolBar.getOrientation() == Orientation.VERTICAL && ((DockSideBar)getDockPane()).getSide() == Side.RIGHT) {
                    btn.setRotate(90);
                 }
             
                 
-                DockNodeHandler state = ((Dockable) node).nodeHandler();
+                DockNodeHandler state = node.nodeHandler();
                 if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
                     state.setPaneHandler(this);
                 }
                 state.setDocked(true);
-            }
+//            }
             return null;
         }
         protected String getButtonText(Dockable d ) {

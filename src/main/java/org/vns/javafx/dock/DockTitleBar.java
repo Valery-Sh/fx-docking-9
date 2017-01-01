@@ -90,37 +90,27 @@ public class DockTitleBar extends HBox {
         getChildren().addAll(label, fillPane, pinButton, stateButton, closeButton);
 
         label.getStyleClass().add(StyleClasses.LABEL.cssClass());
+        
         closeButton.getStyleClass().add(StyleClasses.CLOSE_BUTTON.cssClass());
         stateButton.getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
         pinButton.getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
-            System.err.println("Mouse Clicked ev.getSoource=" + ev.getSource());
             closeButton.requestFocus();
             dockNode.nodeHandler().node().toFront();
         });
         closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
-        /*        closeButton.setOnAction(a -> {
-            System.err.println("***************** Close BUTTON Mouse Clicked ");
-            
-                DockNodeHandler sp = dockNode.nodeHandler();
-                if (sp.isFloating() && ( getScene().getWindow() instanceof Stage)) {
-                    ((Stage)getScene().getWindow()).close();
-                } else {
-                    //sp.setFloating(true);
-                }
-        });
-         */
         stateButton.setTooltip(new Tooltip("Undock pane"));
         closeButton.setTooltip(new Tooltip("Close pane"));
         pinButton.setTooltip(new Tooltip("Pin pane"));
-
-        //dockNode.getDockState().titleBarProperty().changeOwner(dockNode);
     }
-
+    
+    public void removeButtons(Button... btns) {
+        for ( Button b : btns) {
+            getChildren().remove(b);
+        }
+    }
     protected void closeButtonClicked(MouseEvent ev) {
-        System.err.println("***************** Close BUTTON Mouse Clicked ");
-
         DockNodeHandler sp = dockNode.nodeHandler();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
@@ -129,8 +119,6 @@ public class DockTitleBar extends HBox {
         }
 
     }
-
-    //@Override
     public Dockable getOwner() {
         if (dockNode == null) {
             return null;
@@ -138,26 +126,18 @@ public class DockTitleBar extends HBox {
         return dockNode;
     }
 
-    /*    public DockDragboard getDockDragboard() {
-        return dragboard;
-    }
-     */
-    //@Override
     public Label getLabel() {
         return label;
     }
 
-    //@Override
     public Button getCloseButton() {
         return closeButton;
     }
 
-    //@Override
     public Button getStateButton() {
         return stateButton;
     }
 
-    //@Override
     public Button getPinButton() {
         return pinButton;
     }

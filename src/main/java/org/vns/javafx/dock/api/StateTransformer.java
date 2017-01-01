@@ -29,7 +29,7 @@ public class StateTransformer {
     private ObjectProperty<Stage> stageProperty = new SimpleObjectProperty<>();
     private BorderPane borderPane;
 
-    private DockNodeHandler dockState;   
+    private final DockNodeHandler dockState;   
 
     private ResizeTransformer resizer;
     
@@ -75,8 +75,8 @@ public class StateTransformer {
 
     protected void makeFloating(Dockable dockable) {
 
-        Region node = (Region)dockable;
-
+        //31.12Region node = (Region)dockable;
+        Region node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         Node titleBar = dockable.nodeHandler().getTitleBar();
         titleBar.setVisible(true);
@@ -87,28 +87,20 @@ public class StateTransformer {
         }
 
         Stage newStage = new Stage();
-        StageRegistry.register(newStage);                        
+        DockRegistry.register(newStage);                        
         stageProperty.set(newStage);
 
         //newStage.titleProperty().bind(dockable.titleProperty());
         newStage.setTitle("FLOATING STAGE");
-        System.err.println("1 %%%%%%%%%%%%% " + dockable);
-        System.err.println("2 %%%%%%%%%%%%% " + dockable.nodeHandler().getPaneHandler());
         Pane dockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
-        
-        //dockable.getDockState().setPriorPaneDelegate(dockable.getDockState().getPaneDelegate());
-        //dockable.getDockState().getDragTransformer().setTargetDockPane(dockPane);        
         
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
             newStage.initOwner(dockPane.getScene().getWindow());
         }
-        System.err.println("STATE TRANS isStage=" + (dockPane.getScene().getWindow() instanceof Stage));
-        //System.err.println("STATE TRANS newStage.getOwner=" + newStage.getOwner());        
         
         newStage.initStyle(stageStyle);
 
-        //>>> stage.initStyle(stageStyle);
         // offset the new stage to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
@@ -132,11 +124,12 @@ public class StateTransformer {
         //
         ((DockPaneTarget)dockPane).paneHandler().setUsedAsDockTarget(false);
         
-        ((DockPane)dockPane).dock((Node)dockable, Side.TOP);
+        //31.12((DockPane)dockPane).dock((Node)dockable, Side.TOP);
+        ((DockPane)dockPane).dock(dockable, Side.TOP);        
+        
         borderPane.getStyleClass().add("dock-node-border");
         
         dock(dockPane, dockable);
-        //stateProperty.getPaneDelegate().setDockPane(dockPane);
         borderPane.setCenter(dockPane);
 
         Scene scene = new Scene(borderPane);
@@ -144,11 +137,6 @@ public class StateTransformer {
         boolean b = pn01 == pn02;
         
         
-/*        if (dockPane != null && dockPane.getScene() != null
-                && dockPane.getScene().getWindow() != null) {
-            newStage.initOwner(dockPane.getScene().getWindow());
-        }
-*/
         floatingProperty.set(true);
         
         node.applyCss();

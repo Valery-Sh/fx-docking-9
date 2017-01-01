@@ -37,7 +37,7 @@ public class TestDockToolBar extends Application {
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
 
-        dockPane.dock(p1, Side.TOP);
+        //dockPane.dock(p1, Side.TOP);
 
 //////////////////////////////////////////////////////////        
         Button b2 = new Button("b02");
@@ -50,11 +50,11 @@ public class TestDockToolBar extends Application {
         VBox vb01 = new VBox(sp01);
         vb01.setId("VBox vb01");
         p2.getChildren().addAll(new Label("lb1"));
-        dockPane.dock(vb01, Side.RIGHT);
+//        dockPane.dock(vb01, Side.RIGHT);
 ///////////////////////////////////////////////////////////////
         Button b3 = new Button("b03");
         Pane p3 = new HBox(b3);
-        dockPane.dock(p3, Side.BOTTOM);
+//        dockPane.dock(p3, Side.BOTTOM);
 
         DockNode dn01 = new DockNode();
         dn01.setId("Dn01");
@@ -83,7 +83,7 @@ public class TestDockToolBar extends Application {
         Button bClick = new Button("testGet");
         dn03.getChildren().add(bClick);
         dn03.getChildren().add(ta);
-        tabPane01.dock(0, dn03);
+        //tabPane01.dock(0, dn03);
 /*        bClick.setOnAction(value -> {
             List<Parent> list = new ArrayList<>();
             Node p = DockUtil.getImmediateParent(dockPane, b2, list);

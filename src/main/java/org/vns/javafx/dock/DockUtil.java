@@ -19,6 +19,7 @@ import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
@@ -96,27 +97,28 @@ public class DockUtil {
     }
     
 
-/*    public static ObservableList<Dockable> getAllDockable(Region root) {
+    public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
         if ( ! (root instanceof DockTarget) ) {
             return retval;
         }
         
-        List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+        //31.12List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+        List<Dockable> list = findNodes(root, p -> {return (DockRegistry.isDockable(p));});        
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
             //((DockTarget)root).dock(root, d.getDockState().getDockPos());
         } );
         return retval;
     }
-*/    
+    
     public static ObservableList<Dockable> initialize(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
         if ( ! (root instanceof DockPaneTarget) ) {
             return retval;
         }
         
-        List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+        List<Dockable> list = findNodes(root, p -> {return (DockRegistry.isDockable(p));});
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach( d -> {
             //((DockTarget)root).dock(root, d.getDockState().getDockPos());
@@ -134,7 +136,6 @@ public class DockUtil {
             }
             if (node instanceof Parent) {
                 retval.addAll(findNodes((Parent) node, predicate));
-                System.err.println("");
             }
         }
         return retval;
@@ -151,9 +152,10 @@ public class DockUtil {
         Predicate<Node> predicate =  (node) -> {
             Point2D p = node.localToScreen(0,0);
             boolean b = false;
-            if ( node instanceof Dockable ) {
-                DockPaneHandler pd = ((Dockable)node).nodeHandler().getPaneHandler();
-                DockNodeHandler st = ((Dockable)node).nodeHandler();
+//31.12            if ( node instanceof Dockable ) {
+            if ( DockRegistry.isDockable(node) ) {
+                DockPaneHandler pd = DockRegistry.dockable(node).nodeHandler().getPaneHandler();
+                DockNodeHandler st = DockRegistry.dockable(node).nodeHandler();
                 if ( pd == null ) {
                     b = false;
                 } else {
@@ -183,18 +185,13 @@ public class DockUtil {
         if ( list.isEmpty() ) {
             return null;
         }
-        System.err.println("DockUtil foundDeep = " + (list.get(list.size() - 1)));
         return list.get(list.size() - 1);
     }    
     public static Node findDockPane(Parent root, double screenX, double screenY ) {
-        //System.err.println("DockUtil.findDockPane param.X=" + screenX + "; y="+ screenY);
-        
         Predicate<Node> predicate =  (node) -> {
             Point2D p = node.localToScreen(0,0);
             boolean b = false;
             if ( node instanceof DockPaneTarget ) {
-//                System.err.println("DockUtil.findDockPane pane.X=" + p.getX() + "; y="+ p.getY());
-//                System.err.println("DockUtil.findDockPane " + node.getId());
                 DockPaneHandler pd = ((DockPaneTarget)node).paneHandler();
                 if ( pd == null ) {
                     b = false;
@@ -202,9 +199,6 @@ public class DockUtil {
                     b = pd.isUsedAsDockTarget() && pd.zorder() == 0 ;    
                 }
                 //b = b && node != root;
-                //System.err.println("DockUtil.findDockPane zorder=" + pd.zorder());
-                //System.err.println("DockUtil.findDockPane isUsedAsDockTarget=" + pd.isUsedAsDockTarget());
-                
             }
             
             return b && !( (screenX < p.getX() 
@@ -269,7 +263,25 @@ public class DockUtil {
                     && !(p.getClass().getName().startsWith("com.sun.javafx"));
         });        
     }
+    public static boolean contains(Region node, double x, double y) {
+        Point2D p = node.localToScreen(0, 0);
+        return !((x < p.getX() || x > p.getX() + node.getWidth()
+                || y < p.getY() || y > p.getY() + node.getHeight()));
+    }
     
+    public static Node findNode(List<Node> list,  double x, double y ) {
+        Node retval = null;
+        for ( Node node : list) {
+            if ( ! (node instanceof Region) ) {
+                continue;
+            }
+            if ( contains((Region) node, x, y)) {
+                retval = node;
+                break;
+            }
+        }
+        return retval;
+    }       
     public static void print(Parent root, int level, String indent, Predicate<Node> predicate ) {
         StringBuilder sb = new StringBuilder();
         print(sb, root, level, indent, predicate);

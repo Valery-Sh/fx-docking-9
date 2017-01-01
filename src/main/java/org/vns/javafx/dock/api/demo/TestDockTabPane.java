@@ -5,7 +5,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.Stack;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Side;
@@ -21,7 +20,6 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockTab;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -50,9 +48,11 @@ public class TestDockTabPane extends Application {
         DockPane dpCenter = new DockPane();
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
+        
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
         dpCenter.dock(dn01, Side.TOP);
+        dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
         dn01Btn.setOnAction((event) -> {
             DockUtil.print(dn01Btn.getScene().getRoot());
@@ -130,9 +130,12 @@ public class TestDockTabPane extends Application {
         stg01dp01.dock(stg01tab01, Side.RIGHT);
         */
         DockTabPane tabPane01 = new DockTabPane();
-        tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
-        tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
+        //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
+        //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
         stg01dp01.dock(tabPane01, Side.LEFT);
+        btn03.setOnAction(a -> {
+            System.err.println("SIZE = " + ((DockTabPane)tabPane01).getTabListPane().getChildren().size());
+        });
         
         
         
@@ -142,6 +145,8 @@ public class TestDockTabPane extends Application {
         Scene scene01 = new Scene(stg01dp01);
         stage01.setScene(scene01);
         stage01.show();
+        
+        tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

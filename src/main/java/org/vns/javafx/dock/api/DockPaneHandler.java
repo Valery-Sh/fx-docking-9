@@ -14,7 +14,6 @@ import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import static org.vns.javafx.dock.DockTabPane.TABOVER_PSEUDO_CLASS;
@@ -34,9 +33,9 @@ public class DockPaneHandler {
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
     private int zorder = 0;
     private boolean usedAsDockTarget = true;
-    
+
     private DragPopup dragPopup;
-    
+
     private ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
 
     private SidePointerModifier sidePointerModifier;
@@ -64,7 +63,7 @@ public class DockPaneHandler {
     }
 
     protected void inititialize() {
-        StageRegistry.start();
+        DockRegistry.start();
         initSplitDelegate();
         getDockPane().sceneProperty().addListener((Observable observable) -> {
             if (getDockPane().getScene() != null) {
@@ -74,19 +73,20 @@ public class DockPaneHandler {
 
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
-                return p instanceof Dockable;
+                //return p instanceof Dockable;
+                return DockRegistry.isDockable(p);
             });
 
-            //System.err.println("FOCUSED " + newValue + "; newNode=" + newNode);
             if (newNode != null) {
-                Dockable n = ((Dockable) newNode).nodeHandler().getImmediateParent(newValue);
+                //31.12 Dockable n = ((Dockable) newNode).nodeHandler().getImmediateParent(newValue);
+                Dockable n = DockRegistry.dockable(newNode).nodeHandler().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
                     newNode = (Node) n;
                 }
-                //System.err.println("1. FOCUSED " + newValue + "; newNode=" + newNode);
-                ((Dockable) newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                //31.12 ((Dockable) newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-            //Dockable oldNode = (Dockable) DockUtil.getDockableImmediateParent(oldValue);
+            /* 31.12
             Dockable oldNode = (Dockable) DockUtil.getImmediateParent(oldValue, (p) -> {
                 return p instanceof Dockable;
             });
@@ -96,10 +96,16 @@ public class DockPaneHandler {
                     oldNode = n;
                 }
             }
+            
+             */
+            Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
+                return DockRegistry.isDockable(p);
+            });
+
             if (oldNode != null && oldNode != newNode) {
-                oldNode.nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !oldNode.nodeHandler().titleBarProperty().isActiveChoosedPseudoClass()) {
-                oldNode.nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().isActiveChoosedPseudoClass()) {
+                DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -126,7 +132,7 @@ public class DockPaneHandler {
         return DockUtil.getParentSplitPane(rootSplitPane, node);
     }
      */
-    public ObjectProperty<Pane> dockPaneProperty() {
+    protected ObjectProperty<Pane> dockPaneProperty() {
         return dockPaneProperty;
     }
 
@@ -148,7 +154,8 @@ public class DockPaneHandler {
 
     protected boolean isDocked(Node node) {
         boolean retval;
-        if (node instanceof Dockable) {
+//31.12        if (node instanceof Dockable) {
+        if (DockRegistry.isDockable(node)) {
             retval = DockUtil.getParentSplitPane(rootSplitPane, node) != null;
         } else {
             retval = notDockableItemsProperty.get(node) != null;
@@ -160,43 +167,41 @@ public class DockPaneHandler {
         if (!isDocked(node)) {
             return;
         }
+        /*
         if (node instanceof Dockable) {
             ((Dockable) node).nodeHandler().undock();
         }
+         */
+        if (DockRegistry.isDockable(node)) {
+            DockRegistry.dockable(node).nodeHandler().undock();
+        }
     }
 
-    public Dockable dock(Point2D mousePos, Node node, Side dockPos, Dockable target) {
-        return dock(node, dockPos, target);
+    protected Dockable dock(Point2D mousePos, Node node, Side dockPos, Dockable target) {
+        //31.12return dock(node, dockPos, target);
+        return dock(DockRegistry.dockable(node), dockPos, target);
     }
 
-    public Dockable dock(Point2D mousePos, Node node, Side dockPos) {
+    protected Dockable dock(Point2D mousePos, Node node, Side dockPos) {
         Dockable d;
         if (isDocked(node)) {
-            if (node instanceof Dockable) {
-                d = (Dockable) node;
-            } else {
-                d = notDockableItemsProperty.get(node);
-            }
+//31.12            if (node instanceof Dockable) {
+//31.12            if (DockRegistry.isDockable(node)) {
+//31.12                d = (Dockable) node;
+            d = DockRegistry.dockable(node);
             return d;
         }
 
-        if (node instanceof Dockable) {
+//31.12        if (node instanceof Dockable) {
+//31.12        if (DockRegistry.isDockable(node)) {
+//31.12            d = (Dockable) node;
+        d = DockRegistry.dockable(node);
+        d.nodeHandler().setFloating(false);
+        d = convert(d, DockConverter.BEFORE_DOCK);
 
-            d = (Dockable) node;
-            d.nodeHandler().setFloating(false);
-            d = convert(d, DockConverter.BEFORE_DOCK);
-        } else {
-            d = new DefaultDockable(node);
-            notDockableItemsProperty.put(node, d);
-        }
         doDock(mousePos, d.node(), dockPos);
         return d;
     }
-
-    public Dockable dock(Node node, Side dockPos) {
-        return dock(null, node, dockPos);
-    }
-
     protected Dockable convert(Dockable source, int when) {
         Dockable retval = source;
         if (source instanceof DockConverter) {
@@ -205,12 +210,37 @@ public class DockPaneHandler {
         return retval;
     }
 
+    public Dockable dock(Dockable dockable, Side dockPos) {
+        return dock(null, dockable.node(), dockPos);
+    }
+
+    public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
+        
+        if (isDocked(dockable.node())) {
+//31.12            if (dockable instanceof Dockable) {
+            return dockable;
+        }
+
+//31.12        if (dockable instanceof Dockable) {
+//31.12        if (DockRegistry.isDockable(dockable)) {
+//31.12            d = (Dockable) dockable;
+        
+        if ( ! (dockable instanceof Node ) && ! DockRegistry.getDockables().containsKey(dockable.node())) {
+            DockRegistry.getDockables().put(dockable.node(), dockable);
+        }
+        dockable.nodeHandler().setFloating(false);
+
+        doDock(dockable.node(), dockPos, target);
+        return dockable;
+    }
+
     protected void doDock(Point2D mousePos, Node node, Side dockPos) {
 
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
             ((Stage) node.getScene().getWindow()).close();
         }
-        splitDelegate.dock((Dockable) node, dockPos);
+        //31.12splitDelegate.dock((Dockable) node, dockPos);
+        splitDelegate.dock(DockRegistry.dockable(node), dockPos);
 
         SplitDelegate.DockSplitPane save = rootSplitPane;
         if (rootSplitPane != splitDelegate.getRoot()) {
@@ -220,8 +250,10 @@ public class DockPaneHandler {
         int idx = getDockPane().getChildren().indexOf(save);
         getDockPane().getChildren().set(idx, rootSplitPane);
 
-        if (node instanceof Dockable) {
-            DockNodeHandler state = ((Dockable) node).nodeHandler();
+//31.12        if (node instanceof Dockable) {
+        if (DockRegistry.isDockable(node)) {
+//31.12            DockNodeHandler state = ((Dockable) node).nodeHandler();
+            DockNodeHandler state = DockRegistry.dockable(node).nodeHandler();
             if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
                 state.setPaneHandler(this);
             }
@@ -229,44 +261,20 @@ public class DockPaneHandler {
         }
     }
 
-    /*    public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
-        return this.dock(dockable.node(), dockPos, target);
-    }    
-     */
-    public Dockable dock(Node node, Side dockPos, Dockable target) {
-        Dockable d;
-        if (isDocked(node)) {
-            if (node instanceof Dockable) {
-                d = (Dockable) node;
-            } else {
-                d = notDockableItemsProperty.get(node);
-            }
-            return d;
-        }
-
-        if (node instanceof Dockable) {
-            d = (Dockable) node;
-            d.nodeHandler().setFloating(false);
-        } else {
-            d = new DefaultDockable(node);
-            notDockableItemsProperty.put(node, d);
-        }
-        doDock(d.node(), dockPos, target);
-        return d;
-    }
-
     private void doDock(Node node, Side dockPos, Dockable targetDockable) {
         if (isDocked(node)) {
             return;
         }
         if (targetDockable == null) {
-            dock(node, dockPos);
+            dock(DockRegistry.dockable(node), dockPos);
         } else {
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-            if (node instanceof Dockable) {
-                ((Dockable) node).nodeHandler().setFloating(false);
+//31/12            if (node instanceof Dockable) {
+            if (DockRegistry.isDockable(node)) {
+//31.12                ((Dockable) node).nodeHandler().setFloating(false);
+                DockRegistry.dockable(node).nodeHandler().setFloating(false);
             }
             if (targetDockable instanceof DockTarget) {
                 ((DockTarget) targetDockable).dock(node, dockPos);
@@ -274,8 +282,10 @@ public class DockPaneHandler {
                 splitDelegate.dock(node, dockPos, targetDockable);
             }
         }
-        if (node instanceof Dockable) {
-            DockNodeHandler state = ((Dockable) node).nodeHandler();
+//31.12        if (node instanceof Dockable) {
+        if (DockRegistry.isDockable(node)) {
+//31.12            DockNodeHandler state = ((Dockable) node).nodeHandler();
+            DockNodeHandler state = DockRegistry.dockable(node).nodeHandler();
             if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
                 state.setPaneHandler(this);
             }
@@ -292,20 +302,13 @@ public class DockPaneHandler {
         }
     }
 
-    /*    protected DockSplitPane getRootSplitPane() {
-        return rootSplitPane;
-    }
-     */
- /*    protected void setRootSplitPane(DockSplitPane rootSplitPane) {
-        this.rootSplitPane = rootSplitPane;
-    }
-     */
     public int zorder() {
         return zorder;
     }
 
     public void setZorder(int zorder) {
         this.zorder = zorder;
+
     }
 
     @FunctionalInterface
@@ -321,4 +324,13 @@ public class DockPaneHandler {
          */
         Point2D modify(DragPopup popup, Dockable target, double mouseX, double mouseY);
     }
-}
+
+    public interface DockConverter {
+
+        public static final int BEFORE_DOCK = 0;
+        public static final int AFTER_DOCK = 0;
+
+        Dockable convert(Dockable source, int when);
+    }//interface DockConverter
+
+}//class

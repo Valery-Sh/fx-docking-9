@@ -38,7 +38,7 @@ public class DockNodeBase  extends VBox implements Dockable{
         return nodeHandler;
     }
 
-    public void dock(Node dockable, Side dockPos) {
+    public void dock(Dockable dockable, Side dockPos) {
         nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
     }
 
@@ -50,8 +50,8 @@ public class DockNodeBase  extends VBox implements Dockable{
         this.nodeHandler.setDockPos(dockpos);
     }
     
-    public void assignDragRegion(Region dragRegion) {
-        nodeHandler.setTitleBar(dragRegion);
+    public void setDragSource(Node dragSource) {
+        nodeHandler.setDragSource(dragSource);
     }
 
     @Override
@@ -64,12 +64,10 @@ public class DockNodeBase  extends VBox implements Dockable{
         return nodeHandler;
     }
     
-    public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-        System.err.println("DockNodeBase titlebarChanged new=" + newValue);                    
+    protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null && newValue == null) {
             getChildren().remove(0);            
         } else if ( newValue != null ) {
-            System.err.println("titlebarChanged new=" + newValue);            
             getChildren().remove(0);            
             getChildren().add(newValue);
         }

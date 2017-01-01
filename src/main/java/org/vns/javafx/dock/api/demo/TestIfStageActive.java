@@ -16,7 +16,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -30,9 +29,8 @@ import org.vns.javafx.dock.DockToolBar;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StageRegistry;
-//import org.vns.javafx.dock.api.StageRegistry;
-
+import org.vns.javafx.dock.api.DockRegistry;
+//import org.vns.javafx.dock.api.DockRegistry;
 /**
  *
  * @author Valery
@@ -45,7 +43,7 @@ public class TestIfStageActive extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-//        StageRegistry.register(stage);
+//        DockRegistry.register(stage);
         //com.sun.javafx.scene.NodeHelper.
         Node dd;
 
@@ -221,7 +219,7 @@ public class TestIfStageActive extends Application {
             //stage05.toFront();
             //StageHelper.getStages().add(stage05);
             StageHelper.getStages().forEach(s -> {
-                //System.err.println("RUN LATER: stage.title=" + s.getTitle() + "; owner=" + StageRegistry.getOwner(s));
+                //System.err.println("RUN LATER: stage.title=" + s.getTitle() + "; owner=" + DockRegistry.getOwner(s));
 
             });
 
@@ -235,13 +233,13 @@ public class TestIfStageActive extends Application {
                 //System.out.println("2) On b1 Action: Stage title=" + StageHelper.getStages().get(i).getTitle());
             }
             //System.out.println("----------------------------------");
-            //System.out.println("3) On b1 Action Stages.size=" + StageRegistry.getStages().size());
+            //System.out.println("3) On b1 Action Stages.size=" + DockRegistry.getStages().size());
 
-            for (int i = 0; i < StageRegistry.getStages().size(); i++) {
-                Stage stg = StageRegistry.getStages().get(i);
+            for (int i = 0; i < DockRegistry.getStages().size(); i++) {
+                Stage stg = DockRegistry.getStages().get(i);
                 String tStg = stg.getTitle();
                 String tOwner = null;
-                Window w = StageRegistry.getOwner(stg);
+                Window w = DockRegistry.getOwner(stg);
                 if (w != null && (w instanceof Stage)) {
                     tOwner = ((Stage) w).getTitle();
                 }
