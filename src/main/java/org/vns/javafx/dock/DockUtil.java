@@ -2,6 +2,7 @@ package org.vns.javafx.dock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.Predicate;
 import javafx.collections.FXCollections;
@@ -265,8 +266,11 @@ public class DockUtil {
     }
     public static boolean contains(Region node, double x, double y) {
         Point2D p = node.localToScreen(0, 0);
-        return !((x < p.getX() || x > p.getX() + node.getWidth()
+/*        return !((x < p.getX() || x > p.getX() + node.getWidth()
                 || y < p.getY() || y > p.getY() + node.getHeight()));
+*/
+        return ((x >= p.getX() && x <= p.getX() + node.getWidth()
+                || y >= p.getY() || y <= p.getY() + node.getHeight()));
     }
     
     public static Node findNode(List<Node> list,  double x, double y ) {
@@ -282,6 +286,7 @@ public class DockUtil {
         }
         return retval;
     }       
+    
     public static void print(Parent root, int level, String indent, Predicate<Node> predicate ) {
         StringBuilder sb = new StringBuilder();
         print(sb, root, level, indent, predicate);
