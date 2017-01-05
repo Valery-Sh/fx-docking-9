@@ -1,30 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockSideBar;
-import org.vns.javafx.dock.DockSideBar.Rotation;
+import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class TestDockSideBar extends Application {
+public class TestDockableDockPane  extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -33,61 +31,35 @@ public class TestDockSideBar extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        BorderPane borderPane = new BorderPane();
-        
-        stage.setTitle("Test DockSideBar");
-
-        DockSideBar sideBar01 = new DockSideBar();
-        sideBar01.setOrientation(Orientation.VERTICAL);
-        //sideBar01.setSide(Side.RIGHT);
-        sideBar01.setRotation(Rotation.UP_DOWN);
-        sideBar01.setHideOnExit(true);
-        
-        borderPane.setRight(sideBar01);
-        borderPane.setPrefHeight(300);
-        borderPane.setPrefWidth(300);
         
         Button b01 = new Button("Change Rotate Angle");
+        DockableDockPane ddp = new DockableDockPane();
+        //VBox vb = new VBox();
         
+        //DockPane ddp = new DockPane();
+        Label lb = new Label("VALERA");
+        //vb.getChildren().addAll(lb,ddp);        
+        
+    
         //((Region)borderPane.getRight()).setMaxWidth(0);
-        Scene scene = new Scene(borderPane);
+        Scene scene = new Scene(ddp);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
         DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);
         dn01.nodeHandler().setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
-            if (sideBar01.getRotation()== Rotation.DEFAULT) {
-                sideBar01.setRotation(Rotation.UP_DOWN);
-            } else if (sideBar01.getRotation()== Rotation.UP_DOWN) {
-                sideBar01.setRotation(Rotation.DOWN_UP);
-            }  else if (sideBar01.getRotation()== Rotation.DOWN_UP) {
-                sideBar01.setRotation(Rotation.DEFAULT );
-            }
-            
         });
         Button b02 = new Button("Change Orientation");
-        VBox vb = new VBox();
-        vb.getChildren().addAll(b01,b02);
-        borderPane.setLeft(vb);
         
         b02.setOnAction(a -> {
-            if (sideBar01.getOrientation()== Orientation.VERTICAL) {
-                sideBar01.setOrientation(Orientation.HORIZONTAL);
-            } else if (sideBar01.getOrientation()== Orientation.HORIZONTAL) {
-                sideBar01.setOrientation(Orientation.VERTICAL);
-            } 
-            
         });        
-        
-        sideBar01.dock(dn01);
         
         DockNode dn02 = new DockNode();
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        
-        
-        sideBar01.dock(dn02);
-        //stage.setTitle("Main Dockable and Toolbar");
+        ddp.dock(dn01, Side.TOP);
+        ddp.dock(dn02, Side.BOTTOM);
         stage.setScene(scene);
         stage.show();
         

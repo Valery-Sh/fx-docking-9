@@ -30,10 +30,8 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragPopup;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
@@ -123,13 +121,13 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
     protected void initDragPane() {
         dragPane = new StackPane();
         dragPane.setMinWidth(16);
-        //dragPane.getStyleClass().add("dock-tab-drag-pane");
+        //dragPane.getStyleClass().add("insert-tab-drag-pane");
         dragPane.getStyleClass().add("drag-pane");
         dragButton = new Button();
         dragButton.setTooltip(new Tooltip("Drag Tab Pane"));
         //dragPane.getChildren().add(dragLabel);
         dragPane.getChildren().add(dragButton);
-        //dragButton.getStyleClass().add("dock-tab-drag-button");
+        //dragButton.getStyleClass().add("insert-tab-drag-button");
         dragButton.getStyleClass().add("drag-button");
         dragButton.setFocusTraversable(false);
         StackPane.setAlignment(dragButton, Pos.CENTER);
@@ -394,7 +392,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             for ( String s : getStateButton().getStyleClass() ) {
                 System.err.println("STYLE: " + s);
             }
-            //getLabel().getStyleClass().set(0, "dock-tab-title-label");
+            //getLabel().getStyleClass().set(0, "insert-tab-title-label");
             //getStateButton().getStyleClass().remove("button");
             for ( String s : getStateButton().getStyleClass() ) {
                 System.err.println("1 STYLE: " + s);
@@ -446,7 +444,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         protected void initSplitDelegate() {
         }
 
-        /*        public Dockable dock(Node node, Side dockPos) {
+        /*        public Dockable insert(Node node, Side dockPos) {
             Dockable d = null;
             if (isDocked(node)) {
                 if (node instanceof Dockable) {
@@ -528,7 +526,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         @Override
         public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
             if ( popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
-                System.err.println("2 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target);                            
+                //System.err.println("2 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target);                            
                 popup.removeNodeSideButtons(Side.BOTTOM);
                 popup.removeNodeSideButtons(Side.TOP);
                 popup.removeNodeSideButtons(Side.LEFT);
@@ -536,16 +534,16 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
                 
                 Pane pane = popup.getPaneSideButtons(Side.TOP);
                 popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
-                pane.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
-                
+                //pane.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+                popup.getPaneSideButton(Side.TOP).pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
                 popup.removePaneSideButtons(Side.LEFT);
                 popup.removePaneSideButtons(Side.RIGHT);
                 popup.removePaneSideButtons(Side.BOTTOM);
             }    
             Pane p = popup.getDockPane();
-            System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target + "; dockPane=" + p);            
+            //System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target + "; dockPane=" + p);            
             
-            DockTabPane tabPane = null;
+            DockTabPane tabPane;// = null;
             TabPaneHandler paneHandler;// = null; 
             Point2D retval = null; 
             if ( p instanceof DockTabPane) {
@@ -566,12 +564,12 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             return retval;
         }
 
-        private void doDock(Node node, Side dockPos, Dockable targetDockable) {
+/*        private void doDock(Node node, Side dockPos, Dockable targetDockable) {
             if (isDocked(node)) {
                 return;
             }
             if (targetDockable == null) {
-                //31.12 dock(node, dockPos);
+                //31.12 insert(node, dockPos);
                 dock(DockRegistry.dockable(node),dockPos);
             } else {
                 if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
@@ -582,11 +580,12 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
                     DockRegistry.dockable(node).nodeHandler().setFloating(false);
                 }
                 if (targetDockable instanceof DockTarget) {
-                    //((DockTarget)targetDockable).dock(node, dockPos);
+                    //((DockTarget)targetDockable).insert(node, dockPos);
                 } else {
-                    //splitDelegate.dock(node, dockPos, targetDockable);
+                    //splitDelegate.insert(node, dockPos, targetDockable);
                 }
-                ((DockTarget) targetDockable).dock(node, dockPos);
+                ((DockTarget) targetDockable).insert(node, dockPos);
+
             }
             //31.12if (node instanceof Dockable) {
             if ( DockRegistry.isDockable(node)) {
@@ -598,7 +597,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
             }
 
         }
-
+*/
         @Override
         public void remove(Node dockNode) {
             TabTitleBar tb = null;

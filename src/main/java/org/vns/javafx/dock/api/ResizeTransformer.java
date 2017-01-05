@@ -41,7 +41,7 @@ public class ResizeTransformer {
     
     public void resize(double x, double y) {
         if ( ! cursorTypes.contains(cursor) ) {
-            return;
+            //return;
         }
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
 
@@ -104,6 +104,10 @@ public class ResizeTransformer {
         resize(ev.getScreenX(), ev.getScreenY());
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public void start(MouseEvent ev, Stage stage, Cursor cursor, Cursor... supportedCursors) {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
@@ -121,6 +125,17 @@ public class ResizeTransformer {
         n = nodeY < top;
         s = nodeY > height - bottom;
 
+/*        System.err.println("!!! cursorBy: ins.getLeft()=" + left);        
+        System.err.println("!!! cursorBy: ins.getRight()=" + right);        
+        System.err.println("!!! cursorBy: ins.getTop()=" + top);        
+        System.err.println("!!! cursorBy: ins.getBotton()=" + bottom);        
+        System.err.println("!!! cursorBy: r.getWidth() =" + width);        
+        System.err.println("!!! cursorBy: r.getHeight()=" + height);                
+        System.err.println("!!! cursorBy: nodeX =" + nodeX);        
+        System.err.println("!!! cursorBy: nodeY =" + nodeY);        
+        
+        System.err.println("-------------------------------------------------");                
+*/        
         if (w) {
             if (n) {
                 cursor = Cursor.NW_RESIZE;
@@ -149,22 +164,40 @@ public class ResizeTransformer {
                 break;
             }
         }
-        
-        return retval;
+        return cursor;
     }
 
-    public static Cursor cursorBy(MouseEvent ev, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {
-        return cursorBy(ev.getX(), ev.getY(), width, height, left, right, top, bottom,supported);
+    public static Cursor cursorBy(MouseEvent ev, double width, double height, double left, double right, double top, double bottom) {
+        return cursorBy(ev.getX(), ev.getY(), width, height, left, right, top, bottom);
     }
-
-    public static Cursor cursorBy(MouseEvent ev, Region r, Cursor... supported) {
+    /**
+     * !!!!!!!!!
+     * @param ev
+     * @param r
+     * @return 
+     */
+    public static Cursor cursorBy(MouseEvent ev, Region r) {
         double x, y, w, h;
         
         Insets ins = r.getPadding();
         if (ins == Insets.EMPTY) {
             //return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 15, 15, 15);
-            return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5,supported);            
+            return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);            
         }
-        return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 2, ins.getRight() + 2, ins.getTop() + 2, ins.getBottom() + 2, supported);
+/*        System.err.println("cursorBy: ins.getLeft()=" + ins.getLeft());        
+        System.err.println("cursorBy: ins.getRight()=" + ins.getRight());        
+        System.err.println("cursorBy: ins.getTop()=" + ins.getTop());        
+        System.err.println("cursorBy: ins.getBotton()=" + ins.getBottom());        
+        System.err.println("cursorBy: r.getWidth() =" + r.getWidth());        
+        System.err.println("cursorBy: r.getHeight()=" + r.getHeight());                
+        System.err.println("cursorBy: nodeX =" + ev.getX());        
+        System.err.println("cursorBy: nodeY =" + ev.getY());        
+        System.err.println("cursorBy: r.getHeight()=" + r.getHeight());                
+        
+        System.err.println("-------------------------------------------------");                
+  */      
+        
+        
+        return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
     }
 }

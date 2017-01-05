@@ -16,11 +16,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockPane;
 
 /**
@@ -182,14 +180,14 @@ public class FloatStageBuilder {
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
 
-        Pane dockPane = new DockPane();
+        DockPane dockPane = new DockPane();
         //
         // Prohibit to use as a dock target
         //
-        ((DockPaneTarget) dockPane).paneHandler().setUsedAsDockTarget(false);
+        dockPane.paneHandler().setUsedAsDockTarget(false);
 
         //31.12((DockPane)dockPane).dock((Node)dockable, Side.TOP);
-        ((DockPane) dockPane).dock(dockable, Side.TOP);
+        dockPane.dock(dockable, Side.TOP);
 
         borderPane.getStyleClass().add("dock-node-border");
 
@@ -215,6 +213,7 @@ public class FloatStageBuilder {
         newStage.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
 
         borderPane.setPrefSize(node.getWidth() + insetsWidth, node.getHeight() + insetsHeight);
+        //borderPane.setMouseTransparent(true);
         newStage.setScene(scene);
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
@@ -233,7 +232,7 @@ public class FloatStageBuilder {
     }
 
     protected void addListeners(Stage stage) {
-        stage.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
+        stage.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         stage.addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
         stage.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
     }
@@ -299,28 +298,64 @@ public class FloatStageBuilder {
     };
 
     public class MouseResizeHandler implements EventHandler<MouseEvent> {
+        private boolean cursorSupported = false;
         @Override
         public void handle(MouseEvent ev) {
-            Cursor c = ResizeTransformer.cursorBy(ev, getRootPane(), getSupportedCursors());                
-            //Cursor c = getStage().getScene().getCursor();
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-                getStage().getScene().setCursor(c);
-
-                if (c == null || !c.equals(Cursor.DEFAULT)) {
+                Cursor c = ResizeTransformer.cursorBy(ev, getRootPane());                
+                if ( ! isCursorSupported(c) ) {
+                    getStage().getScene().setCursor(Cursor.DEFAULT);
+                } else {
+                    getStage().getScene().setCursor(c);
+                }
+                if ( !c.equals(Cursor.DEFAULT)) {
                     ev.consume();
                 }
 
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                System.err.println("FloatStage pressed");                
-                getResizer().start(ev, getStage(), getStage().sceneProperty().get().getCursor(), getSupportedCursors());
-            } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                System.err.println("FloatStage dragged");
-                if ( c == null || !c.equals(Cursor.DEFAULT)) {
-                    //ev.consume();
-                    
+                /*System.err.println("FloatStage pressed");            
+                System.err.println("Mouse pressed stage=" + getStage());            
+                System.err.println("Mouse pressed tb.width =" + nodeHandler.getTitleBar().getWidth());                
+                System.err.println("Mouse pressed tb.getX,Y =" + nodeHandler.getTitleBar().localToScene(0, 0));                                
+*/
+                nodeHandler.getTitleBar().getWidth();
+                Cursor c = ResizeTransformer.cursorBy(ev, getRootPane());                
+/*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
+                System.err.println("Mouse pressed stage.height=" + getStage().getHeight());                            
+                System.err.println("==============================================");                            
+*/                
+                cursorSupported = isCursorSupported(c);
+                if ( ! cursorSupported ) {
+                    getStage().getScene().setCursor(Cursor.DEFAULT);
+                    return;
                 }
-                getResizer().resize(ev);
+                
+                getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());
+            } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                //System.err.println("FloatStage dragged");
+                //Cursor c = ResizeTransformer.cursorBy(ev, getRootPane());                
+                if ( ! cursorSupported) {
+                    return;
+                }
+                if ( getResizer().getStage() == null ) {
+                    getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());                    
+                } else {
+                    getResizer().resize(ev);
+                }
             }
+        }
+        public boolean isCursorSupported(Cursor cursor) {
+            if ( cursor == null || cursor == Cursor.DEFAULT ) {
+                return false;
+            }
+            boolean retval = false;
+            for ( Cursor c : getSupportedCursors() ) {
+                if ( c == cursor ) {
+                    retval = true;
+                    break;
+                }
+            }
+            return retval;
         }
 
     }//class MouseResizeHandler

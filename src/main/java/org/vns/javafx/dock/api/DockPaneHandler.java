@@ -11,7 +11,6 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import static org.vns.javafx.dock.DockTabPane.TABOVER_PSEUDO_CLASS;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
@@ -173,7 +172,7 @@ public class DockPaneHandler {
     }
 
     protected Dockable dock(Point2D mousePos, Node node, Side dockPos, Dockable target) {
-        //31.12return dock(node, dockPos, target);
+        //31.12return insert(node, dockPos, target);
         return dock(DockRegistry.dockable(node), dockPos, target);
     }
 
@@ -234,7 +233,7 @@ public class DockPaneHandler {
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
             ((Stage) node.getScene().getWindow()).close();
         }
-        //31.12splitDelegate.dock((Dockable) node, dockPos);
+        //31.12splitDelegate.insert((Dockable) node, dockPos);
         splitDelegate.dock(DockRegistry.dockable(node), dockPos);
 
         SplitDelegate.DockSplitPane save = rootSplitPane;
@@ -271,11 +270,13 @@ public class DockPaneHandler {
 //31.12                ((Dockable) node).nodeHandler().setFloating(false);
                 DockRegistry.dockable(node).nodeHandler().setFloating(false);
             }
-            if (targetDockable instanceof DockTarget) {
-                ((DockTarget) targetDockable).dock(node, dockPos);
+/*            if (targetDockable instanceof DockTarget) {
+                ((DockTarget) targetDockable).insert(node, dockPos);
             } else {
-                splitDelegate.dock(node, dockPos, targetDockable);
+                
             }
+*/            
+            splitDelegate.dock(node, dockPos, targetDockable);
         }
 //31.12        if (node instanceof Dockable) {
         if (DockRegistry.isDockable(node)) {

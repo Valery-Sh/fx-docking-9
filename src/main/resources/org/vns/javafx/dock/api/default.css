@@ -35,17 +35,17 @@
 }
 */
 .dock-node-title-label {   
-  -fx-padding: 0 0 3 0;
-  -fx-text-fill: blue;
-  -fx-background-color: rgba(50, 50, 100, 0.4);
-  -fx-effect: dropshadow( gaussian, rgba(255,254,254,0.2), 0,0,0,1 );
+    -fx-padding: 0 0 3 0;
+    -fx-text-fill: blue;
+    -fx-background-color: rgba(50, 50, 100, 0.4);
+    -fx-effect: dropshadow( gaussian, rgba(255,254,254,0.2), 0,0,0,1 );
 }
 .dock-node:floating .dock-title-state-button {
-  -fx-graphic: url(maximize.png);
+    -fx-graphic: url(maximize.png);
 }
 
 .dock-node:maximized .dock-title-state-button {
-  -fx-graphic: url(restore.png);
+    -fx-graphic: url(restore.png);
 }
 
 .dock-place {
@@ -54,28 +54,28 @@
 }
 
 .dock-area-indicator {
-  -fx-fill: -fx-selection-bar;
-  -fx-opacity: 0.5;
-  -fx-stroke: rgba(50, 50, 100, 0.4);
-  -fx-stroke-width: 6;
-  -fx-stroke-type: inside;
-  -fx-stroke-dash-array: 8 4;
-  -fx-stroke-line-cap: butt;
+    -fx-fill: -fx-selection-bar;
+    -fx-opacity: 0.5;
+    -fx-stroke: rgba(50, 50, 100, 0.4);
+    -fx-stroke-width: 6;
+    -fx-stroke-type: inside;
+    -fx-stroke-dash-array: 8 4;
+    -fx-stroke-line-cap: butt;
 }
 
 .dock-pos-indicator {
-  -fx-padding: 10;
-  -fx-hgap: 30;
-  -fx-vgap: 30;
-  -fx-shape: "M0,10 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0";
-  -fx-background-color: rgba(50, 50, 100, 0.4);
-  -fx-border-width: 50;
-  -fx-border-color: rgba(50, 50, 100, 0.2);
+    -fx-padding: 10;
+    -fx-hgap: 30;
+    -fx-vgap: 30;
+    -fx-shape: "M0,10 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0";
+    -fx-background-color: rgba(50, 50, 100, 0.4);
+    -fx-border-width: 50;
+    -fx-border-color: rgba(50, 50, 100, 0.2);
 }
 
 /* JavaFX developers really seem to have fat fingers? */
 .dock-pos-indicator .button {
-  -fx-padding: 4;
+    -fx-padding: 4;
 }
 
 /* This stops the stack pane containing the aligned
@@ -84,105 +84,106 @@
  * It gives them just enough room to breathe from the border.
  */
 .dock-root-pane {
-  -fx-padding: 5;
+    -fx-padding: 5;
 }
 
 .dock-pos-button {
-  -fx-padding: 4;
+    -fx-padding: 4;
 } 
 
 /* JavaFX developers really seem to have fat fingers? */
 .dock-root-pane .button {
-  -fx-padding: 4;
+    -fx-padding: 4;
 }
 
 .dock-target-pos {
-  -fx-padding: 0;
-  -fx-hgap: 0;
-  -fx-vgap: 0;
-  -fx-shape: "M0,10 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0";
-  -fx-background-color: rgba(50, 50, 100, 0.4);
-  -fx-border-width: 10;
-  -fx-border-color: rgba(50, 50, 100, 0.2);
+    -fx-padding: 0;
+    -fx-hgap: 0;
+    -fx-vgap: 0;
+    -fx-shape: "M0,10 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0";
+    -fx-background-color: rgba(50, 50, 100, 0.4);
+    -fx-border-width: 10;
+    -fx-border-color: rgba(50, 50, 100, 0.2);
 }
 
 .dock-pos-top {
-  -fx-graphic: url(dock-popup-top-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 4;
 }
 .dock-pos-bottom {
-  -fx-graphic: url(dock-popup-bottom-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-bottom-24x24.png);
+    -fx-padding: 4;
 }
 .dock-pos-left {
-  -fx-graphic: url(dock-popup-left-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-left-24x24.png);
+    -fx-padding: 4;
 }
 
 .dock-pos-right {
-  -fx-graphic: url(dock-popup-right-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-right-24x24.png);
+    -fx-padding: 4;
 }
 
 .dock-node-pos-top {
-  -fx-graphic: url(dock-popup-top-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 4;
 }
 
-.dock-node-pos-top:tabover {
-  -fx-graphic: url(target-icon-32x32.png);
-  -fx-padding: 4;
+.dock-pos-top:tabover {
+    -fx-graphic: url(target-icon-16x16.png);
+
+    -fx-padding: 4;
 }
 
 .dock-node-pos-bottom {
-  -fx-graphic: url(dock-popup-bottom-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-bottom-24x24.png);
+    -fx-padding: 4;
 }
 .dock-node-pos-left {
-  -fx-graphic: url(dock-popup-left-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-left-24x24.png);
+    -fx-padding: 4;
 }
 
 .dock-node-pos-right {
-  -fx-graphic: url(dock-popup-right-24x24.png);
-  -fx-padding: 4;
+    -fx-graphic: url(dock-popup-right-24x24.png);
+    -fx-padding: 4;
 }
 
 /* Set the icons for the indicator buttons here. */
 .dock-center {
-  -fx-graphic: url(center.png);
+    -fx-graphic: url(center.png);
 }
 
 .dock-top {
-  -fx-graphic: url(top.png);
+    -fx-graphic: url(top.png);
 }
 
 .dock-right {
-  -fx-graphic: url(right.png);
+    -fx-graphic: url(right.png);
 }
 
 .dock-bottom {
-  -fx-graphic: url(bottom.png);
+    -fx-graphic: url(bottom.png);
 }
 
 .dock-left {
-  -fx-graphic: url(left.png);
+    -fx-graphic: url(left.png);
 }
 
 .dock-top-root {
-  -fx-graphic: url(top.png);
+    -fx-graphic: url(top.png);
 }
 
 .dock-right-root {
-  -fx-graphic: url(right.png);
+    -fx-graphic: url(right.png);
 }
 
 .dock-bottom-root {
-  -fx-graphic: url(bottom.png);
+    -fx-graphic: url(bottom.png);
 }
 
 .dock-left-root {
-  -fx-graphic: url(left.png);
+    -fx-graphic: url(left.png);
 }
 
 /*******************************************************************************
@@ -192,14 +193,14 @@
  ******************************************************************************/
 
 .dock-node-border {
-  -fx-padding: 10;
-  -fx-background-color: transparent;
-  -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
 }
 
 
 .dock-node-border:maximized {
-  -fx-padding: 0;
+    -fx-padding: 0;
 }
 
 /* It is necessary that dock node's have a background color
@@ -207,15 +208,15 @@
  * tabs will be fully transparent.
  */
 .dock-node {
-  -fx-background-color: -fx-background;
+    -fx-background-color: -fx-background;
 }
 
 .dock-title-bar {
-  -fx-background-color: -fx-background;
-  -fx-padding: 2;
-  -fx-spacing: 3;
-  -fx-border-width: 1;
-  -fx-border-color: -fx-outer-border;
+    -fx-background-color: -fx-background;
+    -fx-padding: 2;
+    -fx-spacing: 3;
+    -fx-border-width: 1;
+    -fx-border-color: -fx-outer-border;
 }
 /*.dock-tab-title-bar {
   -fx-background-color: -fx-background;
@@ -227,20 +228,20 @@
 */
 /*-fx-accent: #0093ff;*/
 .dock-title-bar:choosed {
-  -fx-background-color: #0093ff;
-  -fx-font-color: white;
+    -fx-background-color: #0093ff;
+    -fx-font-color: white;
 }
 
 .dock-title-bar:choosed .dock-title-label{
-  -fx-background-color: #0093ff;
-  -fx-text-fill: white;
+    -fx-background-color: #0093ff;
+    -fx-text-fill: white;
 }
 
 .dock-title-label {
-  -fx-graphic: url(docknode-16x16.png);
-  -fx-padding: 0 0 3 0;
-  -fx-text-fill: -fx-text-base-color;
-  -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
+    -fx-graphic: url(docknode-16x16.png);
+    -fx-padding: 0 0 3 0;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
 }
 /*.dock-tab-title-label {
   -fx-graphic: url(docknode-8x8.png);
@@ -257,46 +258,67 @@
 */
 /* =============================================== */
 
+.dock-side-bar {
+    -fx-border-width: 1;
+    -fx-border-color: red;
+    -fx-padding: 10;
+}
+.dock-side-bar .tool-bar {
+    -fx-padding: 3,3,3,3;
+    -fx-border-width: 2;
+    -fx-border-color: aquamarine;
+}
+
+.dock-side-bar .tool-bar .button {
+    -fx-background-insets: 0;
+    
+}
+.dock-side-bar .tool-bar .button:hover  {
+    -fx-text-fill: blue;
+    -fx-background-color: inherit;
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 3,2,1;
+}
 
 .dock-tab-pane .tab-hbox .dock-title-bar {
-  -fx-border-width: 0.5; 
+    -fx-border-width: 0.5; 
 }
 .dock-tab-pane .tab-hbox .dock-title-bar .button {
-  -fx-border-width: 1; 
-  -fx-border-color: -fx-outer-border;
-  -fx-padding: 1 2 1 2;
+    -fx-border-width: 1; 
+    -fx-border-color: -fx-outer-border;
+    -fx-padding: 1 2 1 2;
 }
 .dock-tab-pane .tab-hbox .dock-title-bar .dock-title-label {
-  -fx-graphic: url(docknode-8x8.png);
-  -fx-padding: 0 0 3 0;
-  -fx-text-fill: -fx-text-base-color;
-  -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );    
+    -fx-graphic: url(docknode-8x8.png);
+    -fx-padding: 0 0 3 0;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );    
 
 }
 .dock-tab-pane .tab-hbox .dock-title-bar:choosed .dock-title-label {
-  -fx-background-color: #0093ff;
-  -fx-text-fill: white;
+    -fx-background-color: #0093ff;
+    -fx-text-fill: white;
 }
 
 .dock-tab-pane .tab-hbox .dock-title-bar:choosed .button {
-  -fx-border-width: 0; 
+    -fx-border-width: 0; 
 }
 
 
 .dock-tab-pane .tab-hbox .drag-button {
-  -fx-graphic: url(drag-16x16-01.png);
-  -fx-padding:  0 0 0 0;
+    -fx-graphic: url(drag-16x16-01.png);
+    -fx-padding:  0 0 0 0;
 }
 
 .dock-tab-pane .tab-hbox .hscroll-button {
-  -fx-background-color: transparent;  
-  -fx-padding: 4 1 4 1;
+    -fx-background-color: transparent;  
+    -fx-padding: 4 1 4 1;
 }
 .dock-tab-pane .tab-hbox .left-scroll {
-  -fx-graphic: url(left-arrow-7x7.png);
+    -fx-graphic: url(left-arrow-7x7.png);
 }
 .dock-tab-pane .tab-hbox .right-scroll {
-  -fx-graphic: url(right-arrow-7x7.png);
+    -fx-graphic: url(right-arrow-7x7.png);
 }
 
 .dock-tab-pane .tab-hbox .menu-button {
@@ -306,15 +328,15 @@
 }
 
 .dock-title-menu-button:hover {
-  -fx-background-color: rgb(226,226,226);  
-  -fx-graphic: url(title-menu-button-12x12.png);
+    -fx-background-color: rgb(226,226,226);  
+    -fx-graphic: url(title-menu-button-12x12.png);
 }
 
 .dock-tab-pane .tab-hbox .separator:vertical .line {
     -fx-background-color: transparent;
     -fx-border-width:  0 1 0 0;
     /*-fx-border-color:  transparent derive(-fx-background,-20%) transparent transparent;*/
-    
+
 }
 
 .scroll-pane > .viewport {
@@ -351,9 +373,9 @@
 }
 */
 .tab-title-bar .dock-title-state-button {
-  -fx-border-width: 1; 
-  -fx-border-color: -fx-outer-border;
-  -fx-padding: 1 2 1 2;
+    -fx-border-width: 1; 
+    -fx-border-color: -fx-outer-border;
+    -fx-padding: 1 2 1 2;
 
 }
 /* =============================================== */
@@ -365,58 +387,58 @@
  * excessively wide buttons.
  */
 .dock-title-bar .button {
-  -fx-padding: 1 4 1 4;
-  -fx-border-width: 0; 
+    -fx-padding: 1 4 1 4;
+    -fx-border-width: 0; 
 }
 
 /* Set the icons for the dock title bar's buttons here. */
 .dock-title-state-button {
-  -fx-graphic: url(restore.png);
+    -fx-graphic: url(restore.png);
 }
 
 
 .dock-title-bar:choosed .dock-title-state-button {
-  -fx-graphic: url(restore-white.png);
-  -fx-background-color: #0093ff;
+    -fx-graphic: url(restore-white.png);
+    -fx-background-color: #0093ff;
 } 
 .dock-title-bar:choosed .dock-title-state-button:hover {
-  -fx-graphic: url(restore-white.png);
-  -fx-background-color: #1187ff;
+    -fx-graphic: url(restore-white.png);
+    -fx-background-color: #1187ff;
 } 
 
 .dock-title-bar:choosed .dock-title-close-button {
-  -fx-graphic: url(close-white.png);
-  -fx-background-color: #0093ff;
+    -fx-graphic: url(close-white.png);
+    -fx-background-color: #0093ff;
 } 
 .dock-title-bar:choosed .dock-title-close-button:hover {
-  -fx-graphic: url(close-white.png);
-  -fx-background-color: #1187ff;
+    -fx-graphic: url(close-white.png);
+    -fx-background-color: #1187ff;
 } 
 
 .dock-title-close-button {
-  -fx-graphic: url(close.png);
+    -fx-graphic: url(close.png);
 }
 .dock-title-menu-button {
-  -fx-background-color: transparent;  
-  -fx-graphic: url(title-menu-button-12x12.png);
+    -fx-background-color: transparent;  
+    -fx-graphic: url(title-menu-button-12x12.png);
 }
 .dock-title-menu-button:hover {
-  -fx-background-color: rgb(226,226,226);  
-  -fx-graphic: url(title-menu-button-12x12.png);
+    -fx-background-color: rgb(226,226,226);  
+    -fx-graphic: url(title-menu-button-12x12.png);
 }
 
 .dock-title-pin-button {
-  -fx-graphic: url(pin-black-8x8.png);
+    -fx-graphic: url(pin-black-8x8.png);
 }
 
 .dock-title-bar:choosed .dock-title-pin-button {
-  -fx-graphic: url(pin-white-12x12.png);
-  -fx-background-color: #0093ff;
-  -fx-padding: 0 0 0 0;
-  -fx-padding: 1px 1px 1px 1px;       
+    -fx-graphic: url(pin-white-12x12.png);
+    -fx-background-color: #0093ff;
+    -fx-padding: 0 0 0 0;
+    -fx-padding: 1px 1px 1px 1px;       
 } 
 .dock-title-bar:choosed .dock-title-pin-button:hover {
-  -fx-background-color: #1187ff;
+    -fx-background-color: #1187ff;
 } 
 
 

@@ -2,8 +2,6 @@ package org.vns.javafx.dock;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
@@ -12,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.DockNodeHandler;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
