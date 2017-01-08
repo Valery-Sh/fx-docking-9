@@ -8,6 +8,7 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
@@ -18,7 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.api.sample.DockTabPane2;
+import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -26,7 +27,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestDockTabPane extends Application {
+public class TestFxDockTabPane  extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -129,19 +130,16 @@ public class TestDockTabPane extends Application {
         stg01tab01.setTitle("DockTab 01");
         stg01dp01.dock(stg01tab01, Side.RIGHT);
         */
-        DockTabPane2 tabPane01 = new DockTabPane2();
+        DockTabPane tabPane01 = new DockTabPane();
         //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
         //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
         stg01dp01.dock(tabPane01, Side.LEFT);
         btn03.setOnAction(a -> {
-            System.err.println("SIZE = " + ((DockTabPane2)tabPane01).getTabListPane().getChildren().size());
+            
         });
         
-        
-        
-        
         stage.show();
-        
+
         Scene scene01 = new Scene(stg01dp01);
         stage01.setScene(scene01);
         stage01.show();
@@ -192,3 +190,4 @@ public class TestDockTabPane extends Application {
         });
     }
 }
+

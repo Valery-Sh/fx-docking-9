@@ -1,44 +1,38 @@
 package org.vns.javafx.dock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockNodeHandler;
-import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragPopup;
+import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
+public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
@@ -46,248 +40,51 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
 
     private final DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
-    private Button menuButton;
-
-    private final HBox tabListPane = new HBox();
-    private final HBox tabHBox = new HBox();    
-    
-    private Button leftScrollButton = new Button();    
-    private Button rightScrollButton = new Button();    
-    
-    private StackPane stackPane;
-    
-    private Pane dragPane;
     private Button dragButton;
-    
+    private Tab dragTab;
+
     private final Map<Dockable, Object> listeners = new HashMap<>();
 
     private TabPaneHandler paneHandler;
-    private final ScrollPane scrollPane = new ScrollPane();
-    
+
     public DockTabPane() {
         init();
     }
+    @Override
+    public ObservableList<Node> getChildren() {
+        return super.getChildren();
+    }
     private void init() {
-        
+
         getStyleClass().add("dock-tab-pane");
+        getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
         
         paneHandler = new TabPaneHandler(this);
 
-        stackPane = new StackPane();
-        stackPane.setManaged(true);
-        
-        initTitleBarMenu();
         initDragPane();
-        initScrollPane();
-        
-        Pane fillPane = new Pane();
-        HBox.setHgrow(fillPane, Priority.ALWAYS);
-        
-        //titleBox.getChildren().addAll(dragPane,tabListPane, fillPane, menuButton);
-        tabHBox.getChildren().addAll(dragPane,scrollPane, fillPane,leftScrollButton, rightScrollButton, menuButton);
-        //titleBox.getChildren().addAll(scrollPane, fillPane,leftScrollButton, rightScrollButton, menuButton);        
-        tabHBox.getStyleClass().add("tab-hbox");
-        
-        getChildren().addAll(tabHBox, stackPane);
-
-        stackPane.setStyle("-fx-background-color: white");
-        stackPane.setPrefHeight(getPrefHeight());
-        stackPane.setMaxHeight(Double.MAX_VALUE);
-        
-
-        //getTitleBarList().addListener(DockTabPane.this::onChangeTitleBars);
-
-        nodeHandler.titleBarProperty().activeChoosedPseudoClassProperty().addListener(this::focusChanged);
 
         nodeHandler().setTitleBar(new DockTitleBar(this));
-        
-        //nodeHandler.setTitleBar(dragButton);
-        //dragButton.setMouseTransparent(true);
         nodeHandler.setDragSource(dragButton);
-        
+
     }
-    protected void initTitleBarMenu() {
-        menuButton = new Button();
-        menuButton.focusTraversableProperty().set(false);
-        menuButton.borderProperty().set(Border.EMPTY);
-        menuButton.getStyleClass().add("menu-button");
-        menuButton.setTooltip(new Tooltip("List items"));
-        menuButton.setContextMenu(new ContextMenu());
-        menuButton.setOnAction(ev -> {
-            menuButton.getContextMenu().show(menuButton, Side.BOTTOM, 0, 0);
-        });
-        
-    }    
+
     protected void initDragPane() {
-        dragPane = new StackPane();
-        dragPane.setMinWidth(16);
-        //dragPane.getStyleClass().add("insert-tab-drag-pane");
-        dragPane.getStyleClass().add("drag-pane");
         dragButton = new Button();
-        dragButton.setTooltip(new Tooltip("Drag Tab Pane"));
-        //dragPane.getChildren().add(dragLabel);
-        dragPane.getChildren().add(dragButton);
-        //dragButton.getStyleClass().add("insert-tab-drag-button");
         dragButton.getStyleClass().add("drag-button");
         dragButton.setFocusTraversable(false);
-        StackPane.setAlignment(dragButton, Pos.CENTER);
-        
-    }
-    protected void initScrollPane() {
-        scrollPane.getStyleClass().add("scroll-pane");
-        scrollPane.getStyleClass().add("edge-to-edge");
-        
-        //scrollPane.setBorder(Border.EMPTY);
-        scrollPane.setContent(tabListPane);
-        
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        //scrollPane.setPrefHeight(10);
-        //scrollPane.setMaxHeight(10); 
-        scrollPane.setMinHeight(0); 
-        scrollPane.setMinWidth(0); 
-        
-/*        scrollPane.minViewportHeightProperty().addListener((observable, oldValue, newValue) -> {
-            Separator s = new Separator();
-            s.setOrientation(Orientation.VERTICAL);
-            s.setMinSize(0,0);
-            s.setMaxSize(0,0);
-            
-            if ( tabListPane.getChildren().size() > 0 && (tabListPane.getChildren().get(0) instanceof Separator) ) {
-                //titleBarListPane.getChildren().set(0,s);
-            } else {
-                //titleBarListPane.getChildren().add(0,s);
-            }
-
-        });
-  */      
-
-/*        tabListPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            if ( ! newValue.equals(0d)) {
-                
-                scrollPane.minViewportHeightProperty().set((double) newValue);
-                if (leftScrollButton != null && leftScrollButton.isFocused() && rightScrollButton != null) {
-                    //rightScrollButton.requestFocus();
-                } else if ( rightScrollButton != null && ! rightScrollButton.isFocused() ){
-                    //rightScrollButton.requestFocus();
-                } else if ( ! tabListPane.getChildren().isEmpty() ) {
-                    for ( Node node : tabListPane.getChildren() ) {
-                        if ( (node instanceof Separator) && ! node.isFocused() ) {
-                            //node.requestFocus();
-                        }
-                    }
-                }
-            }
-        });
-*/
-        //
-        // We set the hmax property basing on the item count. We take into account
-        // that ther is a separator after each TabTitleBar instance.  
-        //
-        scrollPane.hmaxProperty().bind(Bindings.divide(Bindings.size(getTabListPane().getChildren()),2));
-        
-
-        leftScrollButton.setOnAction(a -> {
-            if ( scrollPane.getHvalue() != scrollPane.getHmin()) {
-                scrollPane.setHvalue(scrollPane.getHvalue() - 1);
-            }
-        });
-        
-        leftScrollButton.setFocusTraversable(false);
-        leftScrollButton.borderProperty().set(Border.EMPTY);
-        leftScrollButton.getStyleClass().addAll("hscroll-button","left-scroll");
-        leftScrollButton.setTooltip(new Tooltip("Scroll Left"));
-        
-        rightScrollButton.setFocusTraversable(false);
-        rightScrollButton.borderProperty().set(Border.EMPTY);
-        rightScrollButton.getStyleClass().addAll("hscroll-button","right-scroll");
-        rightScrollButton.setTooltip(new Tooltip("Scroll Right"));
-        
-        rightScrollButton.setOnAction(a -> {
-            if ( scrollPane.getHvalue() != scrollPane.getHmax()) {
-                scrollPane.setHvalue(scrollPane.getHvalue() + 1);
-            }
-        });
-        
-    }
-    public ScrollPane getScrollPane() {
-        return scrollPane;
+        dragTab = new Tab();
+        dragTab.setGraphic(dragButton);
+        getTabs().add(dragTab);
+        Label lb = new Label("drag content");
+        dragTab.setContent(lb);
     }
 
-    public HBox getTabListPane() {
-        return tabListPane;
-    }
-    
-    public void showTitleMenuButton(boolean show) {
-        if ( show && tabHBox.getChildren().indexOf(menuButton) < 0 ) {
-            tabHBox.getChildren().add(menuButton);
-        } else if ( ! show && tabHBox.getChildren().indexOf(menuButton) >= 0) {
-            tabHBox.getChildren().remove(menuButton);
-        }
+    public Button getDragButton() {
+        return dragButton;
     }
 
-    public Button getMenuButton() {
-        return menuButton;
-    }
-
-    public void setMenuButton(Button menuButton) {
-        this.menuButton = menuButton;
-    }
-
-    public Button getLeftScrollButton() {
-        return leftScrollButton;
-    }
-
-    public void setLeftScrollButton(Button leftScrollButton) {
-        this.leftScrollButton = leftScrollButton;
-    }
-
-    public Button getRightScrollButton() {
-        return rightScrollButton;
-    }
-
-    public void setRightScrollButton(Button rightScrollButton) {
-        this.rightScrollButton = rightScrollButton;
-    }
-
-
-    
-    public void showTitleScrollButtons(boolean show) {
-        int leftIdx = tabHBox.getChildren().indexOf(leftScrollButton);
-        int rightIdx = tabHBox.getChildren().indexOf(rightScrollButton);
-        
-        boolean leftOn = leftIdx >= 0;
-        boolean rightOn = rightIdx >= 0;
-
-        if ( show ) {
-            if ( !leftOn && rightOn ) {
-                tabHBox.getChildren().add(rightIdx,leftScrollButton); 
-            } else if (leftOn && ! rightOn) {
-                tabHBox.getChildren().add(rightScrollButton); 
-            } if ( !leftOn && !rightOn) {
-                tabHBox.getChildren().add(leftScrollButton); 
-                tabHBox.getChildren().add(rightScrollButton); 
-            }
-        } else {
-            if ( leftOn ) {
-                tabHBox.getChildren().remove(leftScrollButton);
-            }
-            if ( rightOn ) {
-                tabHBox.getChildren().remove(rightScrollButton);
-            }
-        }
-    }
-
-    public List<Node> getTabList() {
-        return tabListPane.getChildren().filtered( node -> { return (node instanceof TabTitleBar); } );
-    }
-
-    public HBox getTabHBox() {
-        return tabHBox;
-    }
-
-    public ObservableList<Node> getContents() {
-        return ((StackPane) getChildren().get(1)).getChildren();
+    public Tab getDragTab() {
+        return dragTab;
     }
 
     public TitleBarProperty titleBarProperty() {
@@ -302,10 +99,10 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         return nodeHandler;
     }
 
-    protected void choose(Dockable choosed) {
-        getTabList().forEach(tab -> {
-            Dockable d = ((TabTitleBar) tab).getOwner();
-            TabTitleBar tb = (TabTitleBar) tab;
+    /*    protected void choose(Dockable choosed) {
+        getTabList().forEach(tabGraphic -> {
+            Dockable d = ((TitleBarSafe) tabGraphic).getOwner();
+            TitleBarSafe tb = (TitleBarSafe) tabGraphic;
             if (d != choosed) {
                 tb.setActiveChoosedPseudoClass(false);
                 d.node().toBack();
@@ -317,9 +114,9 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
     }
 
     protected void focusChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        getTabList().forEach(tab -> {
-            Dockable d = ((TabTitleBar) tab).getOwner();
-            if (newValue && isFocused((Region) tab)) {
+        getTabList().forEach(tabGraphic -> {
+            Dockable d = ((TitleBarSafe) tabGraphic).getOwner();
+            if (newValue && isFocused((Region) tabGraphic)) {
                 choose(d);
             } else if (!newValue) {
                 d.nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
@@ -339,8 +136,7 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
         }
         return retval;
     }
-
-
+     */
     @Override
     public Region node() {
         return this;
@@ -352,59 +148,66 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
     }
 
     @Override
-    public Pane pane() {
+    public Region pane() {
         return this;
     }
 
     @Override
-    public DockPaneHandler paneHandler() {
+    public PaneHandler paneHandler() {
         return paneHandler;
     }
 
-    public static class TabTitleBar extends DockTitleBar {
+    public static class TabGraphic extends DockTitleBar {
 
-        private final DockTabPane tabPane;
-
+        //private final DockTabPane tabPane;
         private double titleBarMinHeight;
         private double titleBarPrefHeight;
         private boolean titleBarVisible;
-        private Separator separator;
 
-        public TabTitleBar(Dockable dockNode, DockTabPane tabPane) {
+        public TabGraphic(Dockable dockNode, DockTabPane tabPane) {
             super(dockNode);
-            this.tabPane = tabPane;
-            //setMouseTransparent(true);
+            //this.tabPane = tabPane;
             init();
         }
 
         private void init() {
             saveContentTitleBar();
             getStateButton().setMouseTransparent(true);
-//            getCloseButton().setMouseTransparent(true);
-//            getPinButton().setMouseTransparent(true);
-            removeButtons(getCloseButton(),getPinButton());
+            removeButtons(getCloseButton(), getPinButton(), getStateButton());
+
+            String txt = getButtonText(getOwner());
+            if (txt.trim().isEmpty()) {
+                txt = " ... ";
+            }
+
+            getChildren().remove(getLabel());
+            Label newLabel = new Label(txt);
+
+            setLabel(newLabel);
+            getChildren().add(0, getLabel());
+
             setOnMouseClicked(ev -> {
                 getStateButton().requestFocus();
-                tabPane.choose(getOwner());
+//                tabPane.choose(getOwner());
                 ev.consume();
             });
-            //getStyleClass().add("tab-title-bar");
-            for ( String s : getStateButton().getStyleClass() ) {
-                System.err.println("STYLE: " + s);
-            }
-            //getLabel().getStyleClass().set(0, "insert-tab-title-label");
-            //getStateButton().getStyleClass().remove("button");
-            for ( String s : getStateButton().getStyleClass() ) {
-                System.err.println("1 STYLE: " + s);
-            }
-            
-            separator = new Separator();
-            separator.setOrientation(Orientation.VERTICAL);
-            
+            getStyleClass().add("dock-tab-graphic");
+
         }
 
-        public Separator getSeparator() {
-            return separator;
+        protected String getButtonText(Dockable d) {
+            String txt = d.nodeHandler().getTitle();
+            if (d.nodeHandler().getProperties().getProperty("user-title") != null) {
+                txt = d.nodeHandler().getProperties().getProperty("user-title");
+            } else if (d.nodeHandler().getProperties().getProperty("short-title") != null) {
+                txt = d.nodeHandler().getProperties().getProperty("short-title");
+            } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
+                txt = d.node().getId();
+            }
+            if (txt == null || txt.trim().isEmpty()) {
+                txt = "";
+            }
+            return txt;
         }
 
         public void saveContentTitleBar() {
@@ -431,107 +234,164 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
 
     }
 
-    public static class TabPaneHandler extends DockPaneHandler {
+    public static class TabPaneHandler extends PaneHandler {
 
-        public TabPaneHandler(DockTabPane dockPane) {
-            super(dockPane);
+        public TabPaneHandler(DockTabPane tabPane) {
+            super((Region) tabPane);
             init();
         }
+
         private void init() {
             setSidePointerModifier(this::modifyNodeSidePointer);
         }
+
+        @Override
+        public TabPane getDockPane() {
+            return (TabPane) super.getDockPane();
+        }
+
         @Override
         protected void initSplitDelegate() {
         }
 
-        /*        public Dockable insert(Node node, Side dockPos) {
-            Dockable d = null;
-            if (isDocked(node)) {
-                if (node instanceof Dockable) {
-                    d = (Dockable) node;
-                } else {
-                    d = getNotDockableItems().get(node);
-                }
-                return d;
-            }
-
-            if (node instanceof Dockable) {
-
-                d = (Dockable) node;
-                d.nodeHandler().setFloating(false);
-                d = convert(d, DockConverter.BEFORE_DOCK);
-            } else {
-                d = new DefaultDockable(node);
-                getNotDockableItems().put(node, d);
-            }
-            doDock(d.node(), dockPos);
-            return d;
-
-        }
-         */
         @Override
         protected boolean isDocked(Node node) {
-            boolean retval;
-            retval = getNotDockableItems().get(node) != null;
+            boolean retval = false;
+            for (Tab tb : getDockPane().getTabs()) {
+                if (tb.getContent() == node) {
+                    retval = true;
+                    break;
+                }
+            }
 
             return retval;
         }
 
         @Override
         public Dockable dock(Dockable node, Side dockPos, Dockable target) {
-                return null;
+            return null;
         }
 
         @Override
         protected void doDock(Point2D mousePos, Node node, Side dockPos) {
-
+            Dockable dockable = DockRegistry.dockable(node);
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-            DockTabPane dockPane = (DockTabPane) getDockPane();
-            TabTitleBar tab = new TabTitleBar((Dockable) node, dockPane);
-            tab.setId("TabTitleBar:" + node.getId());
+            DockTabPane tabPane = (DockTabPane) getDockPane();
+            //TabGraphic tabGraphic = new TabGraphic(dockable, tabPane);
             int idx = -1;
-            if ( mousePos != null ) {
-               Node tb = DockUtil.findNode(dockPane.getTabList(), mousePos.getX(), mousePos.getY());
-               if ( tb != null ) {
-                   idx = dockPane.getTabListPane().getChildren().indexOf(tb);
-               }
-            }
-            if ( idx >= 0 ) {
-                dockPane.getTabListPane().getChildren().add(idx,tab);
-                dockPane.getTabListPane().getChildren().add(idx+1,tab.getSeparator());
-            } else {
-                dockPane.getTabListPane().getChildren().add(tab);
-                dockPane.getTabListPane().getChildren().add(tab.getSeparator());
+            if (mousePos != null) {
+                System.err.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+/*                List<Node> list = new ArrayList<>();
+                tabPane.getTabs().forEach(tb -> {
+                    if (tb.getGraphic() != null) {
+                        list.add(tb.getGraphic());
+                    } else {
+                        list.add(new Button());
+                    }
+                });
+                Node tb = DockUtil.findNode(list, mousePos.getX(), mousePos.getY());
+*/                
+                idx = tabPane.indexOf(mousePos.getX(), mousePos.getY());
+                if ( idx == 0 ) {
+                    if ( tabPane.getTabs().get(0).getGraphic() == tabPane.getDragButton() ) {
+                        idx++;
+                    }
+                }
+                
+                System.err.println("moX = " + mousePos.getX() + "; moY = " + mousePos.getY());
+                System.err.println("idx = " + idx);
+                for ( double d : tabPane.getTabBoundaries()) {
+                    System.err.println("idx = " + idx + "; d = " + d);
+                }
+                
                 
             }
+            String txt = getButtonText(dockable);
+            if ( txt.isEmpty() ) {
+                txt = " ... ";
+            }
+            Rectangle r = new Rectangle();
+            r.setWidth(1);
             
-            ((Region)node).prefHeightProperty().bind(dockPane.heightProperty());
-            ((Region)node).prefWidthProperty().bind(dockPane.widthProperty());
-             
-            dockPane.getContents().add(node);
-            
-            if (node instanceof Dockable) {
+            Tab newTab = new Tab(txt);
+            newTab.setGraphic(r);
+            if (idx >= 0) {
+                tabPane.getTabs().add(idx, newTab);
+                tabPane.getTabs().get(idx).setContent(node);
+            } else {
+                tabPane.getTabs().add(newTab);
+                tabPane.getTabs().get(tabPane.getTabs().indexOf(newTab)).setContent(node);
+            }
+            hideContentTitleBar(dockable);
+            tabPane.getSelectionModel().select(newTab);
+            ((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
+            ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
+
+//            tabPane.getContents().add(node);
+            if (DockRegistry.isDockable(node)) {
                 DockNodeHandler nodeHandler = ((Dockable) node).nodeHandler();
-                tab.hideContentTitleBar();
-                nodeHandler.setDragSource(tab);
+                nodeHandler.setDragSource(newTab.getGraphic());
                 if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                     nodeHandler.setPaneHandler(this);
                 }
-                nodeHandler.setDocked(true);
             }
+        }
+        protected String getButtonText(Dockable d) {
+            String txt = d.nodeHandler().getTitle();
+            if (d.nodeHandler().getProperties().getProperty("user-title") != null) {
+                txt = d.nodeHandler().getProperties().getProperty("user-title");
+            } else if (d.nodeHandler().getProperties().getProperty("short-title") != null) {
+                txt = d.nodeHandler().getProperties().getProperty("short-title");
+            } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
+                txt = d.node().getId();
+            }
+            if (txt == null || txt.trim().isEmpty()) {
+                txt = "";
+            }
+            return txt;
+        }
+
+        public void saveContentTitleBar(Dockable dockable) {
+            Region tb = dockable.nodeHandler().getTitleBar();
+            if ( tb == null ) {
+                return;
+            }
+            tb.getProperties().put("titleBarVisible", tb.isVisible());
+            tb.getProperties().put("titleBarMinHeight", tb.getMinHeight());
+            tb.getProperties().put("titleBarPrefHeight", tb.getPrefHeight());            
+        }
+
+        protected void hideContentTitleBar(Dockable dockable) {
+            Region tb = dockable.nodeHandler().getTitleBar();
+            if ( tb == null ) {
+                return;
+            }
+            tb.setVisible(false);
+            tb.setMinHeight(0);
+            tb.setPrefHeight(0);
+        }
+
+        public void showContentTitleBar(Dockable dockable) {
+            Region tb = dockable.nodeHandler().getTitleBar();
+            if ( tb == null) {
+                return;
+            }
+            tb.setVisible((boolean) tb.getProperties().get("titleBarVisible"));
+            tb.setMinHeight((double) tb.getProperties().get("titleBarMinHeight"));
+            tb.setPrefHeight((double) tb.getProperties().get("titleBarPrefHeight"));
         }
 
         @Override
         public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
-            if ( popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
+            if (popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
                 //System.err.println("2 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target);                            
                 popup.removeNodeSideButtons(Side.BOTTOM);
                 popup.removeNodeSideButtons(Side.TOP);
                 popup.removeNodeSideButtons(Side.LEFT);
-                popup.removeNodeSideButtons(Side.RIGHT);           
-                
+                popup.removeNodeSideButtons(Side.RIGHT);
+
                 Pane pane = popup.getPaneSideButtons(Side.TOP);
                 popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
                 //pane.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
@@ -539,81 +399,147 @@ public class DockTabPane extends VBox implements Dockable, DockPaneTarget {
                 popup.removePaneSideButtons(Side.LEFT);
                 popup.removePaneSideButtons(Side.RIGHT);
                 popup.removePaneSideButtons(Side.BOTTOM);
-            }    
-            Pane p = popup.getDockPane();
-            //System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target + "; dockPane=" + p);            
-            
+            }
+            Region p = popup.getDockPane();
+            //System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target + "; tabPane=" + p);            
+
             DockTabPane tabPane;// = null;
             TabPaneHandler paneHandler;// = null; 
-            Point2D retval = null; 
-            if ( p instanceof DockTabPane) {
-                paneHandler = ((DockTabPane)p).paneHandler;
-                tabPane = (DockTabPane)p;
-                Node node = DockUtil.findNode(tabPane.getTabList(), mouseX, mouseY);
-                if ( node != null ) {
-                    retval =  new Point2D(mouseX-5,mouseY-5);
-                } else if (DockUtil.contains(tabPane.getTabHBox(), mouseX, mouseY)) {    
-                    retval =  new Point2D(mouseX-5,mouseY-5);
+            Point2D retval = null;
+            if (p instanceof DockTabPane) {
+                paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                tabPane = (DockTabPane) p;
+                List<Node> list = new ArrayList<>();
+                tabPane.getTabs().forEach(tb -> {
+                    if (tb.getGraphic() != null) {
+                        list.add(tb.getGraphic());
+                    } else {
+                        list.add(new Button());
+                    }
+                });
+                Node node = DockUtil.findNode(list, mouseX, mouseY);
+                int idx = tabPane.indexOf(mouseX, mouseY);
+                System.err.println("MMMMMMMMMMMMMMMMMMMMM idx=" + idx);                
+                if (idx >= 0 ) {
+                    retval = new Point2D(mouseX - 5, mouseY - 5);
                 } else {
                     retval = tabPane.localToScreen(
-                                    (tabPane.getWidth()  - popup.getSidePointerGrid().getWidth()) / 2, 
-                                    (tabPane.getHeight() - popup.getSidePointerGrid().getHeight()) / 2);
+                            (tabPane.getWidth() - popup.getSidePointerGrid().getWidth()) / 2,
+                            (tabPane.getHeight() - popup.getSidePointerGrid().getHeight()) / 2);
                 }
+
+            }
+
+            return retval;
+        }
+        
+      
+        public Point2D modifyNodeSidePointer__OLD(DragPopup popup, Dockable target, double mouseX, double mouseY) {
+            if (popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
+                //System.err.println("2 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target);                            
+                popup.removeNodeSideButtons(Side.BOTTOM);
+                popup.removeNodeSideButtons(Side.TOP);
+                popup.removeNodeSideButtons(Side.LEFT);
+                popup.removeNodeSideButtons(Side.RIGHT);
+
+                Pane pane = popup.getPaneSideButtons(Side.TOP);
+                popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
+                //pane.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+                popup.getPaneSideButton(Side.TOP).pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+                popup.removePaneSideButtons(Side.LEFT);
+                popup.removePaneSideButtons(Side.RIGHT);
+                popup.removePaneSideButtons(Side.BOTTOM);
+            }
+            Region p = popup.getDockPane();
+            //System.err.println("1 modifyNodeSidePointer !!!!!!!!!!!!!!!!!!!!! target=" + target + "; tabPane=" + p);            
+
+            DockTabPane tabPane;// = null;
+            TabPaneHandler paneHandler;// = null; 
+            Point2D retval = null;
+            if (p instanceof DockTabPane) {
+                paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                tabPane = (DockTabPane) p;
+                List<Node> list = new ArrayList<>();
+                tabPane.getTabs().forEach(tb -> {
+                    if (tb.getGraphic() != null) {
+                        list.add(tb.getGraphic());
+                    } else {
+                        list.add(new Button());
+                    }
+                });
+                Node node = DockUtil.findNode(list, mouseX, mouseY);
+                if (node != null) {
+                    retval = new Point2D(mouseX - 5, mouseY - 5);
+                } else {
+                    retval = tabPane.localToScreen(
+                            (tabPane.getWidth() - popup.getSidePointerGrid().getWidth()) / 2,
+                            (tabPane.getHeight() - popup.getSidePointerGrid().getHeight()) / 2);
+                }
+
             }
 
             return retval;
         }
 
-/*        private void doDock(Node node, Side dockPos, Dockable targetDockable) {
-            if (isDocked(node)) {
-                return;
+        @Override
+        public void remove(Node dockNode) {
+            Tab tab = null;
+            for (Tab tb : getDockPane().getTabs()) {
+                if (tb.getGraphic() != null && (tb.getGraphic() instanceof TabGraphic)) {
+                    if (((TabGraphic) tb.getGraphic()).getOwner() == dockNode) {
+                        tab = tb;
+                        break;
+                    }
+                }
             }
-            if (targetDockable == null) {
-                //31.12 insert(node, dockPos);
-                dock(DockRegistry.dockable(node),dockPos);
-            } else {
-                if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                    ((Stage) node.getScene().getWindow()).close();
-                }
-                //31.12 if (node instanceof Dockable) {
-                if ( DockRegistry.isDockable(node)) {
-                    DockRegistry.dockable(node).nodeHandler().setFloating(false);
-                }
-                if (targetDockable instanceof DockTarget) {
-                    //((DockTarget)targetDockable).insert(node, dockPos);
-                } else {
-                    //splitDelegate.insert(node, dockPos, targetDockable);
-                }
-                ((DockTarget) targetDockable).insert(node, dockPos);
 
-            }
-            //31.12if (node instanceof Dockable) {
-            if ( DockRegistry.isDockable(node)) {
-                DockNodeHandler state = DockRegistry.dockable(node).nodeHandler();
-                if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
-                    state.setPaneHandler(this);
-                }
-                state.setDocked(true);
+            if (tab != null) {
+                showContentTitleBar(DockRegistry.dockable(dockNode));
+                getDockPane().getTabs().remove(tab);
             }
 
         }
-*/
-        @Override
-        public void remove(Node dockNode) {
-            TabTitleBar tb = null;
-            for (Node tbNode : ((DockTabPane) getDockPane()).getTabList()) {
-                if (((TabTitleBar) tbNode).getOwner() == dockNode) {
-                    tb = (TabTitleBar) tbNode;
+    }//class TabPaneHandler
+    
+    protected int indexOf(double x, double y) {
+        List<Double> list = getTabBoundaries();
+        int retval = -1;
+        if ( list.isEmpty() ) {
+            return retval;
+        }
+        Tab tab = getTabs().get(0);
+        double h = ((Region)tab.getGraphic()).getHeight();
+        double upper = localToScreen(0, 0).getY();
+        double lower = getTabs().get(0).getContent().localToScreen(0, 0).getY();
+        System.err.println("upper=" + upper + "; lower=" + lower);
+        
+        for ( int i=0; i < list.size() - 1; i++) {
+            if ( x >= list.get(i) && x < list.get(i+1)) {
+                if ( y >= upper && y <= lower) {
+                    retval = i;
                     break;
                 }
             }
-            if (tb != null) {
-                tb.showContentTitleBar();
-                ((DockTabPane) getDockPane()).getTabListPane().getChildren().remove(tb);
-                ((DockTabPane) getDockPane()).getTabListPane().getChildren().remove(tb.getSeparator());
-            }
-            ((DockTabPane) getDockPane()).getContents().remove(dockNode);
         }
-
-    }//class TabPaneHandler
+        return retval;
+    }
+    protected List<Double> getTabBoundaries() {
+        List<Double> list = new ArrayList<>();
+        for ( int  i= 0; i < getTabs().size(); i++) {
+            Node n = getTabs().get(i).getGraphic();
+            double x = n.localToScreen(0,0).getX();
+            list.add(x);
+            if ( i == getTabs().size()-1) {
+                Node g = getTabs().get(i).getGraphic();
+                double w = 0;
+                if ( g instanceof Region ) {
+                    w = ((Region)g).getWidth();
+                } else  if (g instanceof Rectangle) {
+                    w = ((Rectangle)g).getWidth();
+                }
+                list.add(x + w);
+            }
+        }
+        return list;
+    }
 }//DockTabPane

@@ -19,7 +19,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.api.sample.DockTabPane2;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -74,7 +74,7 @@ public class TestDockToolBar extends Application {
         tb2.setId("Tb2");
         dtt02.getToolBar().getItems().add(0, tb2);
 
-        DockTabPane tabPane01 = new DockTabPane();
+        DockTabPane2 tabPane01 = new DockTabPane2();
         dockPane.dock(tabPane01, Side.BOTTOM);
         
         DockNode dn03 = new DockNode();

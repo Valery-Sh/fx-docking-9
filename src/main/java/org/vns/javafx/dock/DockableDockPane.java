@@ -1,55 +1,100 @@
 package org.vns.javafx.dock;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
-import org.vns.javafx.dock.api.DockPaneHandler;
-import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class DockableDockPane extends VBox implements DockPaneTarget{
+public class DockableDockPane extends VBox implements Dockable {
 
-    private DockPaneHandler paneHandler;
     private HBox headerPane;
-    private StackPane dockRootPane;
+    private DockPane dockPane;
+    DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
     public DockableDockPane() {
         init();
     }
 
     private void init() {
-        headerPane = new HBox();
-        //headerPane.setMaxHeight(30);
-        headerPane.getChildren().add(new Button("Test Button"));
-        dockRootPane = new StackPane();
-        dockRootPane.setStyle("-fx-border-width: 2; -fx-border-color: red");
-        getChildren().addAll(headerPane, dockRootPane);
+/*        headerPane = new HBox();
+        Pane fillPane = new Pane();
+        HBox.setHgrow(fillPane, Priority.ALWAYS);        
+        headerPane.getChildren().addAll(fillPane);
+        headerPane.getStyleClass().add("dockable-dock-pane");        
+        headerPane.getStyleClass().add("header-pane");
+*/
+        
+        Region titleBar = new DockTitleBar(this);
+        //getChildren().add(titleBar);
+        nodeHandler.setTitleBar(titleBar);
+        nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
+        
+        dockPane = new DockPane();
+        dockPane.setStyle("-fx-border-width: 2; -fx-border-color: red");
+        getChildren().addAll(titleBar, dockPane);
         this.autosize();
-        paneHandler = new DockPaneHandler(this.dockRootPane);
-        Platform.runLater(() -> dockRootPane.prefHeightProperty().bind(heightProperty()));
+        
+        Platform.runLater(() -> dockPane.prefHeightProperty().bind(heightProperty()));
     }
 
     public Dockable dock(Dockable node, Side dockPos) {
-        return paneHandler.dock(node, dockPos);
+        return dockPane.dock(node, dockPos);
+    }
+
+    public String getTitle() {
+        return nodeHandler.getTitle();
+    }
+
+    public void setTitle(String title) {
+        nodeHandler.setTitle(title);
+    }
+
+    public DockNodeHandler getDockNodeHandler() {
+        return nodeHandler;
+    }
+
+/*    public void dock(Dockable dockable, Side dockPos) {
+        nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
+    }
+*/
+    public String getDockPos() {
+        return nodeHandler.getDockPos();
+    }
+
+    public void setDockPos(String dockpos) {
+        this.nodeHandler.setDockPos(dockpos);
+    }
+    
+    public void setDragSource(Node dragSource) {
+        nodeHandler.setDragSource(dragSource);
     }
 
     @Override
-    public Pane pane() {
-        return dockRootPane;
+    public Region node() {
+        return this;
     }
 
     @Override
-    public DockPaneHandler paneHandler() {
-        return paneHandler;
+    public DockNodeHandler nodeHandler() {
+        return nodeHandler;
     }
-
+    
+    protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        if (oldValue != null && newValue == null) {
+            getChildren().remove(0);            
+        } else if ( newValue != null ) {
+            getChildren().remove(0);            
+            getChildren().add(newValue);
+        }
+    }
+    
 }

@@ -142,24 +142,25 @@ public class FloatStageBuilder {
                 rootPane = (Pane) dockable.node().getScene().getRoot();
                 stageProperty.set((Stage) dockable.node().getScene().getWindow());
                 addResizer((Stage) dockable.node().getScene().getWindow(), dockable);
-                dockable.nodeHandler().undock();
+                dockable.nodeHandler().getPaneHandler().undock(dockable.node());
                 return;
             }
         }
         if (dockable.nodeHandler().isDocked()) {
-            dockable.nodeHandler().undock();
+            dockable.nodeHandler().getPaneHandler().undock(dockable.node());
         }
-
+        
         Stage newStage = new Stage();
         DockRegistry.register(newStage);
         stageProperty.set(newStage);
 
         newStage.setTitle("FLOATING STAGE");
-        Pane lastDockPane = dockable.nodeHandler().getLastDockPane();
-        if (lastDockPane != null && lastDockPane.getScene() != null
+        Region lastDockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
+        if (lastDockPane != null && lastDockPane.getScene() != null        
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());
         }
+        
         newStage.initStyle(stageStyle);
 
         // offset the new stage to cover exactly the area the dock was local to the scene
@@ -186,9 +187,7 @@ public class FloatStageBuilder {
         //
         dockPane.paneHandler().setUsedAsDockTarget(false);
 
-        //31.12((DockPane)dockPane).dock((Node)dockable, Side.TOP);
         dockPane.dock(dockable, Side.TOP);
-
         borderPane.getStyleClass().add("dock-node-border");
 
         dock(dockPane, dockable);
@@ -220,6 +219,7 @@ public class FloatStageBuilder {
         }
         addResizer(newStage, dockable);
         newStage.sizeToScene();
+        newStage.setAlwaysOnTop(true);
         newStage.show();
     }
 

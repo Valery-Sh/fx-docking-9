@@ -1,12 +1,12 @@
 package org.vns.javafx.dock;
 
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.PaneHandler;
 
 /**
  *
@@ -14,7 +14,7 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public class DockPane extends StackPane implements DockPaneTarget{
     
-    private DockPaneHandler paneHandler;
+    private PaneHandler paneHandler;
             
     public DockPane() {
         init();
@@ -26,7 +26,7 @@ public class DockPane extends StackPane implements DockPaneTarget{
         //delegeteProperty.set(new DockPaneHandler(this));
     }
     @Override
-    public DockPaneHandler paneHandler() {
+    public PaneHandler paneHandler() {
         return paneHandler;
     }
 

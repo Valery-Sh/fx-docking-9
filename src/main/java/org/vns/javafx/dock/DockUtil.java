@@ -15,11 +15,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockNodeHandler;
-import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.PaneHandler;
 
 /**
  *
@@ -98,11 +98,7 @@ public class DockUtil {
 
     public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
-/*        if (!(root instanceof DockTarget)) {
-            return retval;
-        }
-*/
-        //31.12List<Dockable> list = findNodes(root, p -> {return (p instanceof Dockable);});
+
         List<Dockable> list = findNodes(root, p -> {
             return (DockRegistry.isDockable(p));
         });
@@ -157,9 +153,8 @@ public class DockUtil {
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
-//31.12            if ( node instanceof Dockable ) {
             if (DockRegistry.isDockable(node)) {
-                DockPaneHandler pd = DockRegistry.dockable(node).nodeHandler().getPaneHandler();
+                PaneHandler pd = DockRegistry.dockable(node).nodeHandler().getPaneHandler();
                 DockNodeHandler st = DockRegistry.dockable(node).nodeHandler();
                 if (pd == null) {
                     b = false;
@@ -197,14 +192,14 @@ public class DockUtil {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
             if (node instanceof DockPaneTarget) {
-                DockPaneHandler pd = ((DockPaneTarget) node).paneHandler();
+                PaneHandler pd = ((DockPaneTarget) node).paneHandler();
                 if (pd == null) {
                     b = false;
                 } else {
                     b = pd.isUsedAsDockTarget() && pd.zorder() == 0;
                 }
-                System.err.println("------- findDockPane  b = " + b);
-                System.err.println("------- findDockPane  root = " + b);
+                //System.err.println("------- findDockPane  b = " + b);
+                //System.err.println("------- findDockPane  root = " + b);
                 //b = b && node != root;
             }
 
@@ -247,26 +242,7 @@ public class DockUtil {
 
     }
 
-    /*    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof Parent) {
-                addAllDescendents((Parent) node, nodes);
-            }
-        }
-    }
 
-    public static void addAllDockable(Parent parent, List<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            if (node instanceof Dockable) {
-                nodes.add(node);
-            }
-            if (node instanceof Parent) {
-                addAllDockable((Parent) node, nodes);
-            }
-        }
-    }
-     */
     public static void print(Parent root) {
         print(root, 1, " ", p -> {
             return ((p instanceof Control) || (p instanceof Pane))
@@ -375,28 +351,34 @@ public class DockUtil {
         }
         return retval;
     }
-
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
         if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
             return null;
         }
-        Parent root = child.getScene().getRoot();
         Parent retval = null;
-        Node p = child;
+        Parent p = child.getParent();
         while (true) {
-            Parent p1 = getImmediateParent(root, p);
-            if (p1 != null) {
-                p = p1;
-                if (predicate.test(p1)) {
-                    //retval.add(0, p1);
-                    retval = p1;
-                }
-            } else {
+            if ( p == null ) {
                 break;
             }
+            if ( predicate.test(p)) {
+                retval = p;
+                break;
+            }
+            p = p.getParent();
         }
-        if (retval == root) {
-            root = null;
+        
+        return retval;
+    }
+    public static Parent getImmediateParent_old(Node child, Predicate<Parent> predicate) {
+        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
+            return null;
+        }
+        Parent root = child.getScene().getRoot();
+        List<Parent> list = getParentChain(root, child, predicate);
+        Parent retval = null;
+        if ( ! list.isEmpty() ) {
+            retval = list.get(list.size() - 1);
         }
         return retval;
     }

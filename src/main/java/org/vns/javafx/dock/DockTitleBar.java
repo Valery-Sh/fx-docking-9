@@ -90,6 +90,7 @@ public class DockTitleBar extends HBox {
         getChildren().addAll(label, fillPane, pinButton, stateButton, closeButton);
 
         label.getStyleClass().add(StyleClasses.LABEL.cssClass());
+        label.getStyleClass().add("title-bar-label");
         
         closeButton.getStyleClass().add(StyleClasses.CLOSE_BUTTON.cssClass());
         stateButton.getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
@@ -128,6 +129,22 @@ public class DockTitleBar extends HBox {
 
     public Label getLabel() {
         return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public void setCloseButton(Button closeButton) {
+        this.closeButton = closeButton;
+    }
+
+    public void setStateButton(Button stateButton) {
+        this.stateButton = stateButton;
+    }
+
+    public void setPinButton(Button pinButton) {
+        this.pinButton = pinButton;
     }
 
     public Button getCloseButton() {

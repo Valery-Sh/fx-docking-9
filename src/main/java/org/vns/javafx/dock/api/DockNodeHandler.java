@@ -7,7 +7,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.DockFloatingProperty;
@@ -33,16 +32,17 @@ public class DockNodeHandler  {
     private boolean usedAsDockTarget = true;
     
     private DragTransformer dragTransformer;
-    
+
+    PaneHandler scenePaneHandler;
     //private PaneDelegate paneDelegate;
     /**
      * Last dock target pane
      */
     //private DockPaneHandler originalPaneHandler;
 
-    private final DockPaneHandlerProperty<DockPaneHandler> paneHandler = new DockPaneHandlerProperty<>();
+    private final DockPaneHandlerProperty<PaneHandler> paneHandlerProperty = new DockPaneHandlerProperty<>();
 
-    private Pane lastDockPane;
+//    private Pane lastDockPane;
     
 
     private String dockPos;
@@ -59,7 +59,9 @@ public class DockNodeHandler  {
         dockedProperty.addListener(this::dockedChanged);
         dragTransformer = getDragTransformer();
         titleBarProperty.addListener(this::titlebarChanged);
-        paneHandler.addListener(this::paneHandlerChanged);
+        scenePaneHandler = new ScenePaneHandler(dockable);
+        paneHandlerProperty.set(scenePaneHandler);
+        paneHandlerProperty.addListener(this::paneHandlerChanged);
     }
     
     public Node getDragSource() {
@@ -82,13 +84,17 @@ public class DockNodeHandler  {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-    public Pane getLastDockPane() {
+/*    public Pane getLastDockPane() {
         return lastDockPane;
     }
-    
-    protected void paneHandlerChanged(ObservableValue<? extends DockPaneHandler> observable, DockPaneHandler oldValue, DockPaneHandler newValue) {
-        if ( newValue != null ) {
-            lastDockPane = newValue.getDockPane();
+*/    
+    protected void paneHandlerChanged(ObservableValue<? extends PaneHandler> observable, PaneHandler oldValue, PaneHandler newValue) {
+//06.01        if ( newValue != null ) {
+//            lastDockPane = newValue.getDockPane();
+//        }
+        if ( newValue == null ) {
+            //lastDockPane = newValue.getDockPane();
+            paneHandlerProperty.set(scenePaneHandler);
         }
     }
 
@@ -124,18 +130,16 @@ public class DockNodeHandler  {
     public void setTitle(String title) {
         this.titleProperty.set(title);
     }
-    public DockPaneHandler getPaneHandler() {
-        return paneHandler.get();
+    public PaneHandler getPaneHandler() {
+        return paneHandlerProperty.get();
     }
 
-    public void setPaneHandler(DockPaneHandler paneHandler) {
-        this.paneHandler.set(paneHandler);
+    public void setPaneHandler(PaneHandler paneHandler) {
+        this.paneHandlerProperty.set(paneHandler);
     }
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        System.err.println("nodeHandler DockedChanged newValue=" + newValue);
         if (!newValue) {
-            System.err.println("nodeHandler DockedChanged paneHandler=" + paneHandler);
             getPaneHandler().remove(node());
             setPaneHandler(null);
         }
@@ -189,19 +193,11 @@ public class DockNodeHandler  {
         return this.floatingProperty.get();
     }
 
-    public void undock() {
-/*        if (!isDocked()) {
-            return;
-        }
-*/        
+/*    public void undock() {
         System.err.println("nodeHandler Undock()");
         setDocked(false);
-
-//        getPaneHandler().remove(node());
-//        setPaneHandler(null);
-
     }
-
+*/
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
             FloatStageBuilder t = getStateTransformer();
@@ -241,7 +237,7 @@ public class DockNodeHandler  {
         return true;
 */        
     }
-    public void setDocked(boolean docked) {
+    protected void setDocked(boolean docked) {
         this.dockedProperty.set(docked);
     }
     public Region createDefaultTitleBar(String title) {
@@ -253,6 +249,7 @@ public class DockNodeHandler  {
         return tb;
     }
     public Dockable getImmediateParent(Node node) {
+        
         Dockable retval = dockable();
         if (immediateParent != null) {
             retval = immediateParent.apply(node);

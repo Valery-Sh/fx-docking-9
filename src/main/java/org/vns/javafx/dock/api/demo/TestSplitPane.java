@@ -1,7 +1,13 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventType;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
@@ -19,7 +26,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestDockableDockPane  extends Application {
+public class TestSplitPane  extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -32,9 +39,22 @@ public class TestDockableDockPane  extends Application {
         root.setId("root StackPane");
         //SplitPane sp = new SplitPane();
         Button b01 = new Button("Change Rotate Angle");
-        DockableDockPane ddp = new DockableDockPane();
-        ddp.setId("DockableDockPane: dpp");
-        root.getChildren().add(ddp);
+        
+        SplitPane sp01 = new SplitPane();
+        root.getChildren().add(sp01);
+        SplitPane sp01_1 = new SplitPane();
+        sp01.getItems().add(sp01_1);
+        Button spBtn01 = new Button("spBtn01");
+        Button spBtn02 = new Button("spBtn02");
+        sp01_1.getItems().addAll(spBtn01,spBtn02);
+        spBtn01.setOnAction(a -> {
+            System.err.println("spBtn02.parent " + spBtn02.getParent());
+            System.err.println("spBtn02.parent.parent " + spBtn02.getParent().getParent());
+            System.err.println("spBtn02.parent.parent.parent " + spBtn02.getParent().getParent().getParent());
+            ((Pane)spBtn02.getParent()).getChildren().remove(spBtn02);
+        });
+        
+        
         //root.getChildren().add(sp);
         //sp.getItems().add(ddp);
         //DockPane ddp = new DockPane();
@@ -61,8 +81,6 @@ public class TestDockableDockPane  extends Application {
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        
-        ddp.dock(dn01, Side.TOP);
-        ddp.dock(dn02, Side.BOTTOM);
         stage.setScene(scene);
         stage.show();
         

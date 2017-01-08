@@ -23,7 +23,6 @@ public class DockNodeBase  extends VBox implements Dockable{
         getChildren().add(titleBar);
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
-        
     }
 
     public String getTitle() {

@@ -18,7 +18,6 @@ import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
@@ -28,14 +27,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.DockTabPane.TABOVER_PSEUDO_CLASS;
+import static org.vns.javafx.dock.api.sample.DockTabPane2.TABOVER_PSEUDO_CLASS;
 import org.vns.javafx.dock.api.DockNodeHandler;
-import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.FloatStageBuilder;
+import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.StageBuilder;
 
 /**
@@ -173,7 +172,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     @Override
-    public DockPaneHandler paneHandler() {
+    public PaneHandler paneHandler() {
         return this.paneHandler;
     }
 
@@ -232,7 +231,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         return this;
     }
 
-    public static class SidePaneHandler extends DockPaneHandler {
+    public static class SidePaneHandler extends PaneHandler {
 
         private final ObservableMap<Group, Container> items = FXCollections.observableHashMap();
 
@@ -311,7 +310,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             Container container = new Container(dockable);
             getItems().put(item, container);
 
-            //DockTabPane.TabTitleBar tab = new DockTabPane.TabTitleBar((Dockable) node, dockPane);
+            //DockTabPane.TabTitleBar tab = new DockTabPane2.TabTitleBar((Dockable) node, dockPane);
             //tab.setId("TabTitleBar:" + node.getId());
             int idx = -1;
             if (mousePos != null) {
@@ -356,7 +355,8 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null && getDockPane().getScene().getWindow().isShowing()) {
                 container.adjustScreenPos();
             }
-            nodeHandler.setDocked(true);
+            //nodeHandler.setDocked(true);
+            //changeDockedState(dockable, true);
             container.setDocked(true);
 
         }
@@ -444,7 +444,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
                 popup.removePaneSideButtons(Side.RIGHT);
                 popup.removePaneSideButtons(Side.BOTTOM);
             }
-            Pane p = popup.getDockPane();
+            Region p = popup.getDockPane();
 
             DockSideBar sideBar;// = null;
             Point2D retval = null;

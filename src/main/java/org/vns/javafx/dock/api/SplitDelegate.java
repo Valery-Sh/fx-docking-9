@@ -4,7 +4,9 @@ import java.util.Stack;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
+import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -149,6 +151,7 @@ public class SplitDelegate {
     }
 */    
     public void dock(Node node, Side dockPos, Dockable target) {
+        System.err.println("@@@@@@@@@@@@ dock");        
         if (target == null) {
             dock(node, dockPos);
         }
@@ -216,6 +219,27 @@ public class SplitDelegate {
      *
      * @return
      */
+    protected DockSplitPane getTargetSplitPane_new(Node target) {
+        if (target == null) {
+            return null;
+        }
+        DockSplitPane split = root;
+        
+        DockSplitPane retval = null;
+        Parent p = target.getParent();
+        while (true) {
+            if ( p == null ) {
+                break;
+            }
+            if ( p instanceof DockSplitPane ) {
+                retval = (DockSplitPane)p;
+                break;
+            }
+            p = p.getParent();
+        }
+        System.err.println("RETVAL = " + retval);
+        return retval;
+    }
     protected DockSplitPane getTargetSplitPane(Node target) {
         DockSplitPane retval = null;
         DockSplitPane split = root;
@@ -238,6 +262,7 @@ public class SplitDelegate {
 
     }
 
+    
     public static class DockSplitPane extends SplitPane {
 
         public DockSplitPane() {

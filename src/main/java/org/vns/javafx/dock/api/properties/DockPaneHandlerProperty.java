@@ -6,13 +6,14 @@
 package org.vns.javafx.dock.api.properties;
 
 import javafx.beans.property.ObjectPropertyBase;
-import org.vns.javafx.dock.api.DockPaneHandler;
+import org.vns.javafx.dock.api.PaneHandler;
 
 /**
  *
  * @author Valery
+ * @param <T>
  */
-public class DockPaneHandlerProperty<T extends DockPaneHandler> extends ObjectPropertyBase<T> {
+public class DockPaneHandlerProperty<T extends PaneHandler> extends ObjectPropertyBase<T> {
 
     public DockPaneHandlerProperty() {
     }

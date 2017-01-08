@@ -30,7 +30,8 @@ public class StageBuilder extends FloatStageBuilder {
         double nodeHeight = dockable.node().getHeight();
         setDefaultCursors();
         
-        dockable.nodeHandler().undock();
+        dockable.nodeHandler().getPaneHandler().undock(dockable.node());
+        
         BorderPane borderPane = (BorderPane) dockable.node().getScene().getRoot();
         
         borderPane.getStyleClass().add("dock-node-border");    
@@ -53,11 +54,14 @@ public class StageBuilder extends FloatStageBuilder {
         titleBar.setManaged(true);
 
         Stage newStage = new Stage();
+        
         DockRegistry.register(newStage);
         stageProperty().set(newStage);
 
         newStage.setTitle("NEW STAGE");
-        Pane lastDockPane = dockable.nodeHandler().getLastDockPane();
+        //06.01Pane lastDockPane = dockable.nodeHandler().getLastDockPane();
+        //06.01if (lastDockPane != null && lastDockPane.getScene() != null
+        Region lastDockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());
