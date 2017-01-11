@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -40,7 +41,7 @@ public class TestForFXML01 extends Application {
         dtt01.getChildren().add(b1);
         //dtt.dock(dtt01, Side.TOP);
         List<Parent> chain = new ArrayList<>();
-        chain = DockUtil.findNodes(dockPane, p -> {
+        chain = findNodes(dockPane, p -> {
             return (p instanceof Dockable) || (p instanceof SplitPane);
         });
         
@@ -138,6 +139,18 @@ public class TestForFXML01 extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+    public static List findNodes(Parent root, Predicate<Node> predicate) {
+        List retval = new ArrayList();
+        for (Node node : root.getChildrenUnmodifiable()) {
+            if (predicate.test(node)) {
+                retval.add(node);
+            }
+            if (node instanceof Parent) {
+                retval.addAll(findNodes((Parent) node, predicate));
+            }
+        }
+        return retval;
     }
 
 }

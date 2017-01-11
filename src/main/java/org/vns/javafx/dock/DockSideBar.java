@@ -27,7 +27,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.api.sample.DockTabPane2.TABOVER_PSEUDO_CLASS;
+import static org.vns.javafx.dock.DockTabPane2.TABOVER_PSEUDO_CLASS;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
@@ -158,11 +158,11 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     protected void stageClicked(MouseEvent ev) {
-        System.err.println("STAGE CLICKED");
-        if (DockUtil.contains(toolBar, ev.getScreenX(), ev.getScreenY())) {
+        //11.01if (DockUtil.contains(toolBar, ev.getScreenX(), ev.getScreenY())) {
+        if (toolBar.localToScreen(toolBar.getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY()) ) {
             return;
         }
-        System.err.println("!!! STAGE CLICKED");
+
         paneHandler.getItems().forEach((g, d) -> {
             Window w = d.getDockable().node().getScene().getWindow();
             if (w instanceof Stage) {

@@ -369,15 +369,17 @@ public class DragPopup extends Popup {
         SidePointerModifier pm = paneHandler.getSidePointerModifier();
         if (pm != null) {
             newPos = pm.modify(this, DockRegistry.dockable(d), screenX, screenY);
+            System.err.println("DragPopup newPos=" + newPos);                        
+            System.err.println("Dockable=" + d);                        
         }
 
-        if (d != null) {
+        if (newPos != null) {
+            nodeSidePointerPopup.show(this, newPos.getX(), newPos.getY());
+        } else if (d != null) {
             newPos = d.localToScreen((d.getWidth() - sidePointerGrid.getWidth()) / 2, (d.getHeight() - sidePointerGrid.getHeight()) / 2);
             nodeSidePointerPopup.show(this, newPos.getX(), newPos.getY());
-        } else if (newPos != null) {
-            nodeSidePointerPopup.show(this, newPos.getX(), newPos.getY());
-        }
-
+        } 
+            
         dockPlace.setVisible(false);
         dragTarget = null;
         targetNodeSidePos = null;

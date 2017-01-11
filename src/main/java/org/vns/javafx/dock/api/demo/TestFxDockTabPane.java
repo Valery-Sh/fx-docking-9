@@ -7,20 +7,24 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -130,12 +134,53 @@ public class TestFxDockTabPane  extends Application {
         stg01tab01.setTitle("DockTab 01");
         stg01dp01.dock(stg01tab01, Side.RIGHT);
         */
+        
         DockTabPane tabPane01 = new DockTabPane();
+        tabPane01.setSide(Side.TOP);
+        DockableDockPane dockPane = new DockableDockPane(tabPane01);
+        //tabPane01.openDragTag();
+        Button tbButton = new Button("VALERA");
+        //Rectangle tbIv = new Rectangle(20, 20);
+        //ImageView tbIv = new ImageView();
+        //tbRect.setFill(new ImageView());
+        //tbIv.setOpacity(50);
+        
+        //tbRect.getStyleClass().add("drag-button");
+        //tbIv.getStyleClass().add("drag-image-view");
+        
+        //tabPane01.nodeHandler().setDragNode(tbIv);
+        //tabPane01.getChildren().add(tbIv);
+        //tbIv.toFront();
+        //tbIv.setTranslateX(-5);
+        //tbIv.setTranslateY(-5);
+        
+        
         //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
         //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
-        stg01dp01.dock(tabPane01, Side.LEFT);
+        //stg01dp01.dock(tabPane01, Side.LEFT);
+        stg01dp01.dock(dockPane, Side.LEFT);
+        
+        //tabPane01.setSide(Side.RIGHT);
         btn03.setOnAction(a -> {
-            
+            System.err.println("tabPane01.getChildren().size()=" + tabPane01.getChildren().size());
+            tabPane01.getChildren().forEach(n -> {
+                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
+                
+                Bounds bnd = n.getBoundsInParent();
+                if ( n instanceof Button ) {
+                System.err.println("isRes=" + n.isResizable());                                    
+                System.err.println("minx=" + bnd.getMinX());
+                System.err.println("maxx=" + bnd.getMaxX());
+                System.err.println("miny=" + bnd.getMinY());
+                System.err.println("maxy=" + bnd.getMaxY());
+                System.err.println("w=" + bnd.getWidth());
+                System.err.println("h=" + bnd.getHeight());
+                }
+                
+                
+                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
+                
+            });
         });
         
         stage.show();
@@ -149,6 +194,11 @@ public class TestFxDockTabPane  extends Application {
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
+        Platform.runLater(()->{  
+            
+            //tbIv.setManaged(false);
+            //tbIv.toFront();
+        });
 
     }
 

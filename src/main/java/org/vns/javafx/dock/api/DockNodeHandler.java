@@ -67,7 +67,7 @@ public class DockNodeHandler  {
     public Node getDragSource() {
         return getDragTransformer().getDragSource();
     }
-    public void setDragSource(Node dragSource) {
+    public void setDragNode(Node dragSource) {
         getDragTransformer().setDragSource(dragSource);
     }    
     protected DragTransformer getDragTransformer() {

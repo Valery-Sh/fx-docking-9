@@ -6,6 +6,7 @@ import java.util.Stack;
 import java.util.function.Predicate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -13,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
@@ -20,6 +22,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.TopNodeFinder;
 
 /**
  *
@@ -96,7 +99,7 @@ public class DockUtil {
         return retval;
     }
 
-    public static ObservableList<Dockable> getAllDockable(Region root) {
+/*    public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
 
         List<Dockable> list = findNodes(root, p -> {
@@ -108,26 +111,9 @@ public class DockUtil {
         });
         return retval;
     }
+*/
 
-    public static ObservableList<Dockable> initialize(Region root) {
-        ObservableList<Dockable> retval = FXCollections.observableArrayList();
-        if (!(root instanceof DockPaneTarget)) {
-            return retval;
-        }
-
-        List<Dockable> list = findNodes(root, p -> {
-            return (DockRegistry.isDockable(p));
-        });
-        retval.addAll(list.toArray(new Dockable[0]));
-        list.forEach(d -> {
-            //((DockTarget)root).dock(root, d.getDockState().getDockPos());
-            // !!!! измкнить ((DockTarget)root).dock((Node)d, d.nodeHandler().getDockPos());
-
-        });
-        return retval;
-    }
-
-    public static List findNodes(Parent root, Predicate<Node> predicate) {
+/*11.01    public static List findNodes(Parent root, Predicate<Node> predicate) {
         List retval = new ArrayList();
         for (Node node : root.getChildrenUnmodifiable()) {
             if (predicate.test(node)) {
@@ -139,15 +125,15 @@ public class DockUtil {
         }
         return retval;
     }
-
-    public static Node findNode(Parent root, Predicate<Node> predicate) {
+*/
+/*11.01    public static Node findNode(Parent root, Predicate<Node> predicate) {
         List<Node> ls = findNodes(root, predicate);
         if (ls.isEmpty()) {
             return null;
         }
         return ls.get(0);
     }
-
+*/
     public static Node findDockable(Parent root, double screenX, double screenY) {
 
         Predicate<Node> predicate = (node) -> {
@@ -159,18 +145,28 @@ public class DockUtil {
                 if (pd == null) {
                     b = false;
                 } else {
-                    b = pd.isUsedAsDockTarget() && pd.zorder() == 0 && st.isUsedAsDockTarget();
+        //            b = pd.isUsedAsDockTarget() && pd.zorder() == 0 && st.isUsedAsDockTarget();
+                    b = pd.isUsedAsDockTarget() && st.isUsedAsDockTarget();
                 }
             }
-            return b && !((screenX < p.getX()
-                    || screenX > p.getX() + ((Region) node).getWidth()
-                    || screenY < p.getY() || screenY > p.getY() + ((Region) node).getHeight()));
+            return b;
+            //return b && !((screenX < p.getX()
+            //        || screenX > p.getX() + ((Region) node).getWidth()
+            //        || screenY < p.getY() || screenY > p.getY() + ((Region) node).getHeight()));
         };
-
-        return findNode(root, predicate);
+        
+        return TopNodeFinder.getTopNode((Stage)root.getScene().getWindow(), screenX,screenY, predicate);
+        //return findNode(root, predicate);
     }
 
-    public static Node findTopDockPane(Parent root, double screenX, double screenY) {
+    /**
+     * Deprecated use ToNodeFinder
+     * @param root
+     * @param screenX
+     * @param screenY
+     * @return 
+     */
+/*    public static Node findTopDockPane(Parent root, double screenX, double screenY) {
         List<Node> list = new ArrayList<>();
         Parent p = root;
         while (true) {
@@ -186,8 +182,8 @@ public class DockUtil {
         }
         return list.get(list.size() - 1);
     }
-
-    public static Node findDockPane(Parent root, double screenX, double screenY) {
+*/
+/*    public static Node findDockPane(Parent root, double screenX, double screenY) {
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
@@ -203,12 +199,6 @@ public class DockUtil {
                 //b = b && node != root;
             }
 
-            /*            return b && !( (screenX < p.getX() 
-                      || screenX > p.getX() + ((Region)node).getWidth()
-                      || screenY < p.getY() || screenY > p.getY() + ((Region)node).getHeight()
-                    ));
-            };
-             */
             return b
                     && ((screenX >= p.getX() && screenX <= p.getX() + ((Region) node).getWidth()
                     && screenY >= p.getY() && screenY <= p.getY() + ((Region) node).getHeight()));
@@ -216,7 +206,7 @@ public class DockUtil {
         };
         return findNode(root, predicate);
     }
-
+*/
     /**
      *
      * @param root
@@ -251,9 +241,7 @@ public class DockUtil {
     }
 
     public static boolean contains(Region node, double x, double y) {
-        Point2D p = node.localToScreen(0, 0);
-        return ((x >= p.getX() && x <= p.getX() + node.getWidth()
-                && y >= p.getY() && y <= p.getY() + node.getHeight()));
+        return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
     }
 
     public static boolean contains(Window w, double x, double y) {

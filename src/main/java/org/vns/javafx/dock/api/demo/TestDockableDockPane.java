@@ -12,6 +12,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -30,9 +31,12 @@ public class TestDockableDockPane  extends Application {
         
         StackPane root = new StackPane();
         root.setId("root StackPane");
-        //SplitPane sp = new SplitPane();
+        //SplitPane
+        
+        //p = new SplitPane();
         Button b01 = new Button("Change Rotate Angle");
-        DockableDockPane ddp = new DockableDockPane();
+        
+        DockableDockPane ddp = new DockableDockPane(new DockPane());
         ddp.setId("DockableDockPane: dpp");
         root.getChildren().add(ddp);
         //root.getChildren().add(sp);

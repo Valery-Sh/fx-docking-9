@@ -6,14 +6,19 @@
 package org.vns.javafx.dock.api.demo;
 
 import com.sun.javafx.stage.StageHelper;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -130,8 +135,8 @@ public class TestIfStageActive extends Application {
 
         stage.show();
         //stage01.show();
-        List<Dockable> ls = DockUtil.getAllDockable(dockPane);
-
+        List<Dockable> ls = getAllDockable(dockPane);
+        
         ls.forEach(s -> {
             //System.err.println("++++ DOCKABLE LIST: " + ((Node) s).getId());
         });
@@ -267,6 +272,18 @@ public class TestIfStageActive extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    public static ObservableList<Dockable> getAllDockable(Region root) {
+        ObservableList<Dockable> retval = FXCollections.observableArrayList();
+
+        List<Dockable> list = findNodes(root, p -> {
+            return (DockRegistry.isDockable(p));
+        });
+        retval.addAll(list.toArray(new Dockable[0]));
+        list.forEach(d -> {
+            //((DockTarget)root).dock(root, d.getDockState().getDockPos());
+        });
+        return retval;
+    }
 
     private void initSceneDragAndDrop(Scene scene) {
         scene.setOnDragOver(event -> {
@@ -293,4 +310,17 @@ public class TestIfStageActive extends Application {
             event.consume();
         });
     }
+    public static List findNodes(Parent root, Predicate<Node> predicate) {
+        List retval = new ArrayList();
+        for (Node node : root.getChildrenUnmodifiable()) {
+            if (predicate.test(node)) {
+                retval.add(node);
+            }
+            if (node instanceof Parent) {
+                retval.addAll(findNodes((Parent) node, predicate));
+            }
+        }
+        return retval;
+    }
+    
 }

@@ -103,6 +103,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     protected void mousePressed(MouseEvent ev) {
         Point2D p = dockable.node().localToScreen(0, 0);
         eventSourceOffset = new Point2D(ev.getX(), ev.getY());
+        System.err.println("MOUSE pressed x=" + ev.getX() + "; y=" + ev.getY());
     }
 
     public void mouseDragged(MouseEvent ev) {
@@ -136,7 +137,12 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         if (root == null || !(root instanceof Pane)) {
             return;
         }
-        Node topPane = DockUtil.findTopDockPane((Pane) root, ev.getScreenX(), ev.getScreenY());
+        //Node topPane = DockUtil.findTopDockPane((Pane) root, ev.getScreenX(), ev.getScreenY());
+        Node topPane = TopNodeFinder.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+            return (n instanceof DockPaneTarget);
+        });
+        System.err.println("DragTransforner: topNode=" + topPane);
+
         if (topPane != null) {
             root = topPane;
         } else if (!(root instanceof DockPaneTarget)) {

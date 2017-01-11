@@ -50,7 +50,7 @@ public class DockNodeBase  extends VBox implements Dockable{
     }
     
     public void setDragSource(Node dragSource) {
-        nodeHandler.setDragSource(dragSource);
+        nodeHandler.setDragNode(dragSource);
     }
 
     @Override

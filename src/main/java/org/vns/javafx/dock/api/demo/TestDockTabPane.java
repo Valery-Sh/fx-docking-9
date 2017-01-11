@@ -18,7 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.api.sample.DockTabPane2;
+import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -83,15 +83,16 @@ public class TestDockTabPane extends Application {
         stage.setScene(scene);
         
         Stage stage01 = new Stage();
-        StackPane rootPane01 = new StackPane();
-        rootPane01.setId("ROOT PANE 01");
+        //StackPane rootAsDockPane = new StackPane();
+        //rootPane01.setId("ROOT PANE 01");
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
-        DockPane stg01dp01 = new DockPane();
+        
+        DockPane rootAsDockPane = new DockPane();
         //stg01dp01.paneHandler().setUsedAsDockTarget(false);
-        stg01dp01.setPrefHeight(200);
-        stg01dp01.setPrefWidth(200);
-        stg01dp01.setId("stg01dp01");
+        rootAsDockPane.setPrefHeight(200);
+        rootAsDockPane.setPrefWidth(200);
+        rootAsDockPane.setId("stg01dp01");
         DockNode stg01dn01 = new DockNode();
         stg01dn01.setId("stg01dn01");
         
@@ -102,7 +103,7 @@ public class TestDockTabPane extends Application {
         
         //stg01dn01.getChildren().add(btn01);
         
-        stg01dp01.dock(stg01dn01, Side.TOP);
+        rootAsDockPane.dock(stg01dn01, Side.TOP);
         
         DockNode stg01dn02 = new DockNode();
         stg01dn02.setTitle("stg01dn02" );
@@ -127,14 +128,14 @@ public class TestDockTabPane extends Application {
         
         /*DockTab stg01tab01 = new DockTab(stg01dn02);
         stg01tab01.setTitle("DockTab 01");
-        stg01dp01.dock(stg01tab01, Side.RIGHT);
+        rootAsDockPane.dock(stg01tab01, Side.RIGHT);
         */
-        DockTabPane2 tabPane01 = new DockTabPane2();
+        DockTabPane2 dockTabPane = new DockTabPane2();
         //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
         //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
-        stg01dp01.dock(tabPane01, Side.LEFT);
+        rootAsDockPane.dock(dockTabPane, Side.LEFT);
         btn03.setOnAction(a -> {
-            System.err.println("SIZE = " + ((DockTabPane2)tabPane01).getTabListPane().getChildren().size());
+            System.err.println("SIZE = " + ((DockTabPane2)dockTabPane).getTabListPane().getChildren().size());
         });
         
         
@@ -142,11 +143,11 @@ public class TestDockTabPane extends Application {
         
         stage.show();
         
-        Scene scene01 = new Scene(stg01dp01);
+        Scene scene01 = new Scene(rootAsDockPane);
         stage01.setScene(scene01);
         stage01.show();
         
-        tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
+        dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

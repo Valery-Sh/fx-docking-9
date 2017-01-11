@@ -19,7 +19,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.api.sample.DockTabPane2;
+import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
 

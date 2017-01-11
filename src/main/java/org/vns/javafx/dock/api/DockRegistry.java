@@ -158,17 +158,23 @@ public class DockRegistry {
         }
         List<Stage> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
-            List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
+            Node topNode = TopNodeFinder.getTopNode(s,x,y, n -> {return (n instanceof DockPaneTarget);});
+/* 11.01            List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
                 Point2D p = node.screenToLocal(x, y);
                 return node.contains(p) && (node instanceof DockPaneTarget)
                         && ((DockPaneTarget) node).paneHandler().zorder() == 0;
             });
+            
             Node node = s.getScene().getRoot();
             Point2D p = node.screenToLocal(x, y);
             if (node.contains(p) && (node instanceof DockPaneTarget && ((DockPaneTarget) node).paneHandler().zorder() == 0)) {
                 ls.add(0, node);
             }
             if (!ls.isEmpty()) {
+                targetStages.add(s);
+            }
+*/
+            if ( topNode != null ) {
                 targetStages.add(s);
             }
         });

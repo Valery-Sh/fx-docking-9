@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.sample;
+package org.vns.javafx.dock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +107,7 @@ public class DockTabPane2 extends VBox implements Dockable, DockPaneTarget {
         
         //nodeHandler.setTitleBar(dragButton);
         //dragButton.setMouseTransparent(true);
-        nodeHandler.setDragSource(dragButton);
+        nodeHandler.setDragNode(dragButton);
         
     }
     protected void initTitleBarMenu() {
@@ -492,7 +492,7 @@ public class DockTabPane2 extends VBox implements Dockable, DockPaneTarget {
             if (DockRegistry.isDockable(node)) {
                 DockNodeHandler nodeHandler = ((Dockable) node).nodeHandler();
                 tab.hideContentTitleBar();
-                nodeHandler.setDragSource(tab);
+                nodeHandler.setDragNode(tab);
                 if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                     nodeHandler.setPaneHandler(this);
                 }

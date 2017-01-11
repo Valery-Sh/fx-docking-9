@@ -8,6 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -17,10 +18,15 @@ import org.vns.javafx.dock.api.Dockable;
 public class DockableDockPane extends VBox implements Dockable {
 
     private HBox headerPane;
-    private DockPane dockPane;
+    private DockPaneTarget dockPane;
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
     public DockableDockPane() {
+        dockPane = new DockPane();
+        init();
+    }
+    public DockableDockPane(DockPaneTarget dockPane) {
+        this.dockPane = dockPane;
         init();
     }
 
@@ -38,16 +44,16 @@ public class DockableDockPane extends VBox implements Dockable {
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
         
-        dockPane = new DockPane();
-        dockPane.setStyle("-fx-border-width: 2; -fx-border-color: red");
-        getChildren().addAll(titleBar, dockPane);
+        //dockPane = new DockPane();
+        //dockPane.pane().setStyle("-fx-border-width: 2; -fx-border-color: red");
+        getChildren().addAll(titleBar, dockPane.pane());
         this.autosize();
         
-        Platform.runLater(() -> dockPane.prefHeightProperty().bind(heightProperty()));
+        Platform.runLater(() -> dockPane.pane().prefHeightProperty().bind(heightProperty()));
     }
 
     public Dockable dock(Dockable node, Side dockPos) {
-        return dockPane.dock(node, dockPos);
+        return dockPane.paneHandler().dock(node, dockPos);
     }
 
     public String getTitle() {
@@ -75,7 +81,7 @@ public class DockableDockPane extends VBox implements Dockable {
     }
     
     public void setDragSource(Node dragSource) {
-        nodeHandler.setDragSource(dragSource);
+        nodeHandler.setDragNode(dragSource);
     }
 
     @Override

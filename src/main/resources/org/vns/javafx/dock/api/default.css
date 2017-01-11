@@ -268,18 +268,40 @@
     -fx-padding: 5;
 }
 
-.drag-button {
-    -fx-graphic: url(drag-16x16-01.png);
-    -fx-padding:  0 0 0 0;
+.drag-label {
     -fx-border-width: 0;
     -fx-spacing: 0;
-    
 }
 
+.tab-pane .drag-image-view {
+    -fx-image: url(drag-14x14.png);
+    
+}
+.drag-button {
+    -fx-graphic: url(drag-12x12-02.png);
+    -fx-border-width: 0;
+    -fx-spacing: 0;
+    -fx-background-insets: 1 0 0 0;
+}
 
+/*.tab-pane:top *.tab-header-area {
+    -fx-background-insets: 0;
+ 
+    -fx-padding: 0;
+    -fx-spacing: 0;
+        
+}
+*/
+/*.drag-tab{
+        -fx-background-insets: 0, 1, 2;
+	-fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+        -fx-padding: 1 0 0 0;
+
+}
+*/
 .dock-side-bar {
     -fx-border-width: 1;
-    -fx-border-color: red;
+    /*-fx-border-color: red;*/
     -fx-padding: 10;
 }
 .dock-side-bar .tool-bar {

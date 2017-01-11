@@ -1,6 +1,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.Stack;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -271,7 +272,10 @@ public class SplitDelegate {
         public DockSplitPane(Node... items) {
             super(items);
         }
-
+        @Override
+        public ObservableList<Node> getChildren() {
+            return super.getChildren();
+        }
         public void setDividerPosition(Node node, Side dockPos) {
             setDividerPosition(node, this, dockPos);
         }
