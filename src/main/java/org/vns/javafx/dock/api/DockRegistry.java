@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -252,8 +253,13 @@ public class DockRegistry {
         }
         Dockable d = new DefaultDockable((Region) node);
         dockables.put(node,d);
+        if ( d.node().getParent() != null ) {
+            d.nodeHandler().getPaneHandler().changeDockedState(d, true);
+            d.nodeHandler().getPaneHandler().setDockPane((Pane)d.node().getParent());
+        }
         return d;
     }
+    
     
     public static boolean isDockable(Node node) {
         return getInstance().isNodeDockable(node);

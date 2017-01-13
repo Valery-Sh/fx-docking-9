@@ -24,6 +24,7 @@ public class ScenePaneHandler extends PaneHandler{
     }
     private void init() {
         parentListener  = this::parentChanged;
+//        if ( isDocked(dockable.node()) || dockable.node().getParent() != null ) {
         if ( isDocked(dockable.node()) ) {
             changeDockedState(dockable, true);
             setDockPane((Pane) dockable.node().getParent());
@@ -47,6 +48,7 @@ public class ScenePaneHandler extends PaneHandler{
     
     @Override
     protected boolean isDocked(Node node) {
+        System.err.println("DDD isDocked");
         boolean retval = false;
         if (DockRegistry.isDockable(node)) {
             if ( node.getParent() != null && (node.getParent() instanceof Pane)) {
@@ -57,7 +59,9 @@ public class ScenePaneHandler extends PaneHandler{
     }
     @Override
     public void remove(Node dockNode) {
+        System.err.println("DDD remove");
         if ( dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
+            System.err.println("DDD removed !!!!!!!!!!!!");
             ((Pane)dockNode.getParent()).getChildren().remove(dockNode);
         }
     }

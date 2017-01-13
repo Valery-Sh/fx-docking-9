@@ -23,9 +23,10 @@ public class StageBuilder extends FloatStageBuilder {
     protected void makeFloating(Dockable dockable) {
 
         Node titleBar = dockable.nodeHandler().getTitleBar();
-        
-        titleBar.setVisible(true);
-        titleBar.setManaged(true);
+        if ( titleBar != null ) {
+            titleBar.setVisible(true);
+            titleBar.setManaged(true);
+        }
         
         double nodeHeight = dockable.node().getHeight();
         setDefaultCursors();
@@ -50,8 +51,10 @@ public class StageBuilder extends FloatStageBuilder {
 
         Region node = dockable.node();
         Node titleBar = dockable.nodeHandler().getTitleBar();
-        titleBar.setVisible(true);
-        titleBar.setManaged(true);
+        if ( titleBar != null ) {
+            titleBar.setVisible(true);
+            titleBar.setManaged(true);
+        }
 
         Stage newStage = new Stage();
         

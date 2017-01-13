@@ -15,6 +15,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
@@ -31,7 +32,9 @@ public class TestDockTabPane2 extends Application {
     public static Stage frontStage;
     public static Stage stg01;
     public static Stage stg02;
-
+    public boolean scrollBarShowing = true;
+    public boolean menuButtonShowing = true;
+    
     @Override
     public void start(Stage stage) throws Exception {
         Button b1 = new Button("b01 - DOCK");
@@ -116,13 +119,13 @@ public class TestDockTabPane2 extends Application {
         DockNode stg01dn03 = new DockNode();
         stg01dn03.setTitle("stg01dn03" );
         stg01dn03.setId("stg01dn03");
-        Button btn03 = new Button("Button of Tab 03");
-
         Pane stack02 = new Pane(btn02);
         stg01dn02.getChildren().add(stack02);
         stack02.setStyle("-fx-background-color: aqua");
+        Button btn03 = new Button("Button 03 of Tab 03");
+        Button btn04 = new Button("Button 04 of Tab 03");
         
-        StackPane stack03 = new StackPane(btn03);
+        VBox stack03 = new VBox(btn03, btn04);
         stg01dn03.getChildren().add(stack03);
         stack03.setStyle("-fx-background-color: gray");
         
@@ -133,12 +136,21 @@ public class TestDockTabPane2 extends Application {
         rootAsDockPane.dock(stg01tab01, Side.RIGHT);
         */
         DockTabPane2 dockTabPane = new DockTabPane2();
-        //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
-        //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
-        rootAsDockPane.dock(dockTabPane, Side.LEFT);
-        btn03.setOnAction(a -> {
-            //System.err.println("SIZE = " + ((DockTabPane2)dockTabPane).getTabsPane().getChildren().size());
+        btn03.setOnAction(a->{
+           System.err.println("SHOW " + scrollBarShowing); 
+           dockTabPane.showScrollBar(! scrollBarShowing);
+           scrollBarShowing = ! scrollBarShowing;
         });
+           //dockTabPane.showScrollBar(false);
+           //scrollBarShowing = false;
+        
+        btn04.setOnAction(a->{
+           dockTabPane.showMenuButton(! menuButtonShowing);
+           menuButtonShowing = ! menuButtonShowing;
+        });
+           //dockTabPane.showMenuButton(false);
+           //menuButtonShowing = false;
+        rootAsDockPane.dock(dockTabPane, Side.LEFT);
         
         stage.show();
         

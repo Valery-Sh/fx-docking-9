@@ -133,10 +133,12 @@ public class FloatStageBuilder {
         Region node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         Node titleBar = dockable.nodeHandler().getTitleBar();
-        titleBar.setVisible(true);
-        titleBar.setManaged(true);
+        if ( titleBar != null ) {
+            titleBar.setVisible(true);
+            titleBar.setManaged(true);
+        }
 
-        if (dockable.nodeHandler().isDocked()) {
+        if (dockable.nodeHandler().isDocked() && dockable.nodeHandler().getPaneHandler().getDockPane() != null) {
             Window w = dockable.nodeHandler().getPaneHandler().getDockPane().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 rootPane = (Pane) dockable.node().getScene().getRoot();
@@ -266,7 +268,7 @@ public class FloatStageBuilder {
     }
      */
     protected void dock(Pane dockPane, Dockable dockable) {
-        Node node = (Node) dockable;
+        Node node = dockable.node();
         SplitDelegate.DockSplitPane rootSplitPane = null;
         rootSplitPane = new SplitDelegate.DockSplitPane();
 
@@ -317,8 +319,8 @@ public class FloatStageBuilder {
                 System.err.println("Mouse pressed stage=" + getStage());            
                 System.err.println("Mouse pressed tb.width =" + nodeHandler.getTitleBar().getWidth());                
                 System.err.println("Mouse pressed tb.getX,Y =" + nodeHandler.getTitleBar().localToScene(0, 0));                                
-*/
-                nodeHandler.getTitleBar().getWidth();
+*/              
+                //nodeHandler.getTitleBar().getWidth();
                 Cursor c = ResizeTransformer.cursorBy(ev, getRootPane());                
 /*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
                 System.err.println("Mouse pressed stage.height=" + getStage().getHeight());                            

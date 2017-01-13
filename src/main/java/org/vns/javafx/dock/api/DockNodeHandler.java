@@ -211,7 +211,7 @@ public class DockNodeHandler  {
     public FloatStageBuilder getStateTransformer() {
         return getPaneHandler().getStageBuilder(dockable);
     }
-    public DockedProperty dockedProperty() {
+    protected DockedProperty dockedProperty() {
         return dockedProperty;
     }
 
@@ -225,17 +225,6 @@ public class DockNodeHandler  {
 
     public boolean isDocked() {
         return dockedProperty.get();
-/*        if (!isFloating() && getPaneHandler() == null) {
-            return false;
-        }
-        if (isFloating()) {
-            return false;
-        }
-        if (!dockedProperty.get()) {
-            return false;
-        }
-        return true;
-*/        
     }
     protected void setDocked(boolean docked) {
         this.dockedProperty.set(docked);
@@ -249,7 +238,6 @@ public class DockNodeHandler  {
         return tb;
     }
     public Dockable getImmediateParent(Node node) {
-        
         Dockable retval = dockable();
         if (immediateParent != null) {
             retval = immediateParent.apply(node);
