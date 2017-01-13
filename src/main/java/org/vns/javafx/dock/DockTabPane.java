@@ -171,10 +171,10 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             Dockable d = ((TitleBarSafe) tabGraphic).getOwner();
             TitleBarSafe tb = (TitleBarSafe) tabGraphic;
             if (d != choosed) {
-                tb.setActiveChoosedPseudoClass(false);
+                tb.setSelectedPseudoClass(false);
                 d.node().toBack();
             } else {
-                tb.setActiveChoosedPseudoClass(true);
+                tb.setSelectedPseudoClass(true);
                 d.node().toFront();
             }
         });
@@ -186,7 +186,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             if (newValue && isFocused((Region) tabGraphic)) {
                 choose(d);
             } else if (!newValue) {
-                d.nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
+                d.nodeHandler().titleBarProperty().setSelectedPseudoClass(false);
             }
         });
     }
@@ -380,7 +380,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
 
             if (DockRegistry.isDockable(node)) {
-                DockNodeHandler nodeHandler = ((Dockable) node).nodeHandler();
+                DockNodeHandler nodeHandler = DockRegistry.dockable(node).nodeHandler();
                 nodeHandler.setDragNode(newTab.getGraphic());
                 if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                     nodeHandler.setPaneHandler(this);

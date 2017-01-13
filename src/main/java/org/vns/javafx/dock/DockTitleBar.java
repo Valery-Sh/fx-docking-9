@@ -63,7 +63,7 @@ public class DockTitleBar extends HBox {
     private Button stateButton;
     private Button pinButton;
 
-    private BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
+    private BooleanProperty selectedPseudoClassProperty = new SimpleBooleanProperty();
     
     public DockTitleBar(Dockable dockNode) {
         this.dockNode = dockNode;
@@ -158,29 +158,29 @@ public class DockTitleBar extends HBox {
     public Button getPinButton() {
         return pinButton;
     }
-    public boolean isActiveChoosedPseudoClass() {
-        return activeChoosedPseudoClassProperty.get();
+    public boolean isSelectedPseudoClass() {
+        return selectedPseudoClassProperty.get();
     }
 
-    public void setActiveChoosedPseudoClass(boolean newValue) {
+    public void setSelectedPseudoClass(boolean newValue) {
         if ( newValue ) {
-            turnOnChoosedPseudoClass();
+            turnOnSelectedPseudoClass();
         } else {
-            turnOffChoosedPseudoClass();
+            turnOffSelectedPseudoClass();
         }
-        this.activeChoosedPseudoClassProperty.set(newValue);
+        this.selectedPseudoClassProperty.set(newValue);
             
     }
 
-    public BooleanProperty activeChoosedPseudoClassProperty() {
-        return activeChoosedPseudoClassProperty;
+    public BooleanProperty selectedPseudoClassProperty() {
+        return selectedPseudoClassProperty;
     }
-    protected void turnOffChoosedPseudoClass() {
+    protected void turnOffSelectedPseudoClass() {
         pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
-    protected void turnOnChoosedPseudoClass() {
-        if ( activeChoosedPseudoClassProperty.get() ) {
+    protected void turnOnSelectedPseudoClass() {
+        if ( selectedPseudoClassProperty.get() ) {
             return;
         }
         pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                

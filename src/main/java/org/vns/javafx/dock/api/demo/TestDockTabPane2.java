@@ -26,7 +26,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestDockTabPane extends Application {
+public class TestDockTabPane2 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -51,6 +51,8 @@ public class TestDockTabPane extends Application {
         
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
+        Button btn = new Button("BOTTON FROM STG");
+        dn01.getChildren().add(btn);
         dpCenter.dock(dn01, Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
@@ -135,11 +137,8 @@ public class TestDockTabPane extends Application {
         //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
         rootAsDockPane.dock(dockTabPane, Side.LEFT);
         btn03.setOnAction(a -> {
-            System.err.println("SIZE = " + ((DockTabPane2)dockTabPane).getTabListPane().getChildren().size());
+            //System.err.println("SIZE = " + ((DockTabPane2)dockTabPane).getTabsPane().getChildren().size());
         });
-        
-        
-        
         
         stage.show();
         

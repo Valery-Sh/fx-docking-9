@@ -1,27 +1,16 @@
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.stage.StageHelper;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.SplitPane;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.TopNodeFinder;
@@ -169,6 +158,24 @@ public class TestCommon extends Application {
         stage2.setScene(sc02);
         stage2.setY(500);
         stage2.show();
+        
+        Stage stage3 = new Stage();
+        
+        Button b3 = new Button("B111111111111 3");
+        Button b4 = new Button("B111111111111 4");
+        HBox hb3 = new HBox(b3,b4);
+        HBox hb4 = new HBox();
+        VBox vb3 = new VBox(hb3,hb4);
+        stage3.setTitle("STAGE 3");
+        StackPane sp3 = new StackPane();
+        sp3.getChildren().add(vb3);
+        Scene sc3 = new Scene(sp3);
+        stage3.setScene(sc3);
+        stage3.setY(300);
+        stage3.setX(300);
+        stage3.show();
+        
+        
 
     }
 

@@ -11,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -27,7 +28,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.DockTabPane2.TABOVER_PSEUDO_CLASS;
+
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
@@ -42,6 +43,8 @@ import org.vns.javafx.dock.api.StageBuilder;
  * @author Valery Shyshkin
  */
 public class DockSideBar extends StackPane implements DockPaneTarget {
+    
+    public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
     public enum Rotation {
         DEFAULT(0),
@@ -314,17 +317,17 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             //tab.setId("TabTitleBar:" + node.getId());
             int idx = -1;
             if (mousePos != null) {
-                // Node sb = DockUtil.findNode(dockPane.getTabList(), mousePos.getX(), mousePos.getY());
+                // Node sb = DockUtil.findNode(dockPane.getTabs(), mousePos.getX(), mousePos.getY());
                 //if ( sb != null ) {
-                //    idx = dockPane.getTabListPane().getChildren().indexOf(sb);
+                //    idx = dockPane.getTabsPane().getChildren().indexOf(sb);
                 //}
             }
             if (idx >= 0) {
-                //  dockPane.getTabListPane().getChildren().add(idx,tab);
-                //  dockPane.getTabListPane().getChildren().add(idx+1,tab.getSeparator());
+                //  dockPane.getTabsPane().getChildren().add(idx,tab);
+                //  dockPane.getTabsPane().getChildren().add(idx+1,tab.getSeparator());
             } else {
-                //dockPane.getTabListPane().getChildren().add(tab);
-                //dockPane.getTabListPane().getChildren().add(tab.getSeparator());
+                //dockPane.getTabsPane().getChildren().add(tab);
+                //dockPane.getTabsPane().getChildren().add(tab.getSeparator());
 
             }
             itemButton.setRotate(((DockSideBar) getDockPane()).getRotation().getAngle());
@@ -450,7 +453,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             Point2D retval = null;
             if (p instanceof DockSideBar) {
                 sideBar = (DockSideBar) p;
-                /*                Node node = DockUtil.findNode(sideBar.getTabList(), mouseX, mouseY);
+                /*                Node node = DockUtil.findNode(sideBar.getTabs(), mouseX, mouseY);
                 if ( node != null ) {
                     retval =  new Point2D(mouseX-5,mouseY-5);
                 } else if (DockUtil.contains(sideBar.getTabHBox(), mouseX, mouseY)) {    

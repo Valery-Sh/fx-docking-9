@@ -10,12 +10,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -274,7 +272,7 @@ public class DockRegistry {
     
     public static class DefaultDockable implements Dockable {
 
-        private Region node;
+        private final Region node;
         private DockNodeHandler nodeHandler;
 
         public DefaultDockable(Region node) {

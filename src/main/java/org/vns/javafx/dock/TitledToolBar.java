@@ -33,15 +33,15 @@ public class TitledToolBar extends VBox implements Dockable{
         Region titleBar = new DockTitleBar(this);
         
         dockState.setTitleBar(titleBar);
-        //stateProperty.titleBarProperty().setActiveChoosedPseudoClass(false);
+        //stateProperty.titleBarProperty().setSelectedPseudoClass(false);
         Button b1 = new Button("",new Circle(0, 0, 4));
 /*        b1.setOnAction(value -> {
-            getDockState.titleBarProperty().setActiveChoosedPseudoClass(true); 
+            getDockState.titleBarProperty().setSelectedPseudoClass(true); 
         });
 */
         Button b2 = new Button("", new Rectangle(0,0,8,8));
 /*        b2.setOnAction(value -> {
-            getDockState.titleBarProperty().setActiveChoosedPseudoClass(false); 
+            getDockState.titleBarProperty().setSelectedPseudoClass(false); 
         });        
 */        
         toolBar.getItems().addAll(b1,b2, new Separator(), titleBar);

@@ -307,7 +307,6 @@ public class DragPopup extends Popup {
             return false;
         }
         Point2D p = popupPane.localToScreen(0, 0);
-        //System.err.println("CONTAINS p=" + p);
         return !((x < p.getX() || x > p.getX() + popupPane.getWidth()
                 || y < p.getY() || y > p.getY() + popupPane.getHeight()));
     }
@@ -363,14 +362,11 @@ public class DragPopup extends Popup {
         //
         dragTarget = null;
         Region d = (Region) DockUtil.findDockable(dockPane, screenX, screenY);
-        //System.err.println("DragPopup region findDockable = " + d);
         Point2D newPos = null;// = d.localToScreen((d.getWidth() - sidePointerGrid.getWidth()) / 2, (d.getHeight() - sidePointerGrid.getHeight()) / 2);
 
         SidePointerModifier pm = paneHandler.getSidePointerModifier();
         if (pm != null) {
             newPos = pm.modify(this, DockRegistry.dockable(d), screenX, screenY);
-            System.err.println("DragPopup newPos=" + newPos);                        
-            System.err.println("Dockable=" + d);                        
         }
 
         if (newPos != null) {
@@ -399,7 +395,6 @@ public class DragPopup extends Popup {
             targetNodeSidePos = dockPos;
             return;
         }
-        //System.err.println("DragPopup dragTarget = " + dragTarget);
         if (contains(topButtons, screenX, screenY)) {
             showDockPlace(Side.TOP);
         } else if (contains(leftButtons, screenX, screenY)) {

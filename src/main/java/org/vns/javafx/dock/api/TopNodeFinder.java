@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 /**
@@ -234,7 +233,6 @@ public class TopNodeFinder {
                 retval.addAll(getNodes((Parent) node, screenX, screenY, predicate));
             }
         }
-
         return retval;
     }
 

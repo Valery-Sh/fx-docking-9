@@ -11,6 +11,7 @@ import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -100,26 +101,22 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if ( oldValue != null ) {
-            //Node f = DockUtil.getFocusedDockable(oldValue);
             Node f = DockUtil.getImmediateParent(oldValue, nd -> {
                 return (nd instanceof Dockable);
             });
             
             if ( f != null ) {
-                ((Dockable)f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
+                DockRegistry.dockable(f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
-            //Node f = DockUtil.getFocusedDockable(newValue);
             Node f = DockUtil.getImmediateParent(newValue, nd -> {
                 return (nd instanceof Dockable);
             });
             
             if ( f != null ) {
-                ((Dockable)f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(f).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-
-            
         }
     }
 }

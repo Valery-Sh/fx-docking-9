@@ -23,7 +23,7 @@ public class PaneHandler {
     private Region dockPane;
     
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
-    private int zorder = 0;
+
     private boolean usedAsDockTarget = true;
 
     private DragPopup dragPopup;
@@ -208,14 +208,6 @@ public class PaneHandler {
         return new FloatStageBuilder(dockable.nodeHandler());
     }
 
-    public int zorder() {
-        return zorder;
-    }
-
-    public void setZorder(int zorder) {
-        this.zorder = zorder;
-
-    }
 
     @FunctionalInterface
     public interface SidePointerModifier {
