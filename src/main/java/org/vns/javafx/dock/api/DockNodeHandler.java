@@ -19,8 +19,8 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  *
  * @author Valery
  */
-public class DockNodeHandler  {
-    
+public class DockNodeHandler {
+
     private final TitleBarProperty<Region> titleBarProperty;
 
     private final StringProperty titleProperty = new SimpleStringProperty("");
@@ -30,7 +30,7 @@ public class DockNodeHandler  {
     private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
 
     private boolean usedAsDockTarget = true;
-    
+
     private DragTransformer dragTransformer;
 
     PaneHandler scenePaneHandler;
@@ -43,10 +43,8 @@ public class DockNodeHandler  {
     private final DockPaneHandlerProperty<PaneHandler> paneHandlerProperty = new DockPaneHandlerProperty<>();
 
 //    private Pane lastDockPane;
-    
-
     private String dockPos;
-    
+
     private Properties properties;
 
     public DockNodeHandler(Dockable dockable) {
@@ -63,48 +61,42 @@ public class DockNodeHandler  {
         paneHandlerProperty.set(scenePaneHandler);
         paneHandlerProperty.addListener(this::paneHandlerChanged);
     }
-    
-    public Node getDragSource() {
+
+    public Node getDragNode() {
         return getDragTransformer().getDragSource();
     }
+
     public void setDragNode(Node dragSource) {
         getDragTransformer().setDragSource(dragSource);
-    }    
+    }
+
     protected DragTransformer getDragTransformer() {
-        if ( dragTransformer == null ) {
+        if (dragTransformer == null) {
             dragTransformer = new DragTransformer(dockable);
         }
         return dragTransformer;
     }
+
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
-    
+
     public void setUsedAsDockTarget(boolean usedAsDockTarget) {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-/*    public Pane getLastDockPane() {
-        return lastDockPane;
-    }
-*/    
     protected void paneHandlerChanged(ObservableValue<? extends PaneHandler> observable, PaneHandler oldValue, PaneHandler newValue) {
-//06.01        if ( newValue != null ) {
-//            lastDockPane = newValue.getDockPane();
-//        }
-        if ( newValue == null ) {
-            //lastDockPane = newValue.getDockPane();
+        if (newValue == null) {
             paneHandlerProperty.set(scenePaneHandler);
         }
     }
-
 
     public String getDockPos() {
         return dockPos;
     }
 
     public Properties getProperties() {
-        if ( properties == null ) {
+        if (properties == null) {
             properties = new Properties();
         }
         return properties;
@@ -114,22 +106,22 @@ public class DockNodeHandler  {
         this.dockPos = dockPos;
     }
 
-/*    public DockPaneHandler getOrigionalPaneDelegate() {
-        return originalPaneHandler;
-    }
-*/
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
     }
+
     public StringProperty titleProperty() {
         return titleProperty;
     }
+
     public String getTitle() {
         return titleProperty.get();
     }
+
     public void setTitle(String title) {
         this.titleProperty.set(title);
     }
+
     public PaneHandler getPaneHandler() {
         return paneHandlerProperty.get();
     }
@@ -144,7 +136,6 @@ public class DockNodeHandler  {
             setPaneHandler(null);
         }
     }
-
 
     public Dockable dockable() {
         return this.dockable;
@@ -193,24 +184,20 @@ public class DockNodeHandler  {
         return this.floatingProperty.get();
     }
 
-/*    public void undock() {
-        System.err.println("nodeHandler Undock()");
-        setDocked(false);
-    }
-*/
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
             FloatStageBuilder t = getStateTransformer();
             t.makeFloating();
             floatingProperty.set(floating);
-        } else if ( ! floating ) {
+        } else if (!floating) {
             floatingProperty.set(floating);
         }
     }
-    
+
     public FloatStageBuilder getStateTransformer() {
         return getPaneHandler().getStageBuilder(dockable);
     }
+
     protected DockedProperty dockedProperty() {
         return dockedProperty;
     }
@@ -226,9 +213,11 @@ public class DockNodeHandler  {
     public boolean isDocked() {
         return dockedProperty.get();
     }
+
     protected void setDocked(boolean docked) {
         this.dockedProperty.set(docked);
     }
+
     public Region createDefaultTitleBar(String title) {
         DockTitleBar tb = new DockTitleBar(dockable());
         tb.setId("FIRST");
@@ -237,6 +226,7 @@ public class DockNodeHandler  {
         titleBarProperty().set(tb);
         return tb;
     }
+
     public Dockable getImmediateParent(Node node) {
         Dockable retval = dockable();
         if (immediateParent != null) {
@@ -252,15 +242,42 @@ public class DockNodeHandler  {
     }
 
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        getProperties().remove("nodeHandler-titlebar-minheight");
+        getProperties().remove("nodeHandler-titlebar-minwidth");
         dragTransformer.titlebarChanged(ov, oldValue, newValue);
-        /*        if ( oldValue != null && newValue == null ) {
-           // getChildren().remove(oldValue);
-        } else if ( oldValue != null && newValue != null ) {
-            //getChildren().set(0,newValue);
-        } else if ( oldValue == null && newValue != null ) {
-            //getChildren().add(0,newValue);
+    }
+    
+    public boolean isTitleBarHidden() {
+        return getTitleBar() == null || (getTitleBar().getMinHeight() == 0 && getTitleBar().getMinWidth() == 0);
+    }
+    
+    protected void saveTitleBar() {
+        if ( getTitleBar() == null ) {
+            getProperties().remove("nodeHandler-titlebar-minheight");
+            getProperties().remove("nodeHandler-titlebar-minwidth");
+            return;
         }
-         */
+        getProperties().put("nodeHandler-titlebar-minheight", getTitleBar().getMinHeight());
+        getProperties().put("nodeHandler-titlebar-minwidth", getTitleBar().getMinWidth());
+    }
+
+    public void hideTitleBar() {
+        saveTitleBar();
+        if ( getTitleBar() == null ) {
+            return;
+        }
+        getTitleBar().setMinHeight(0);
+        getTitleBar().setPrefHeight(0);
+    }
+    
+    public void showTitleBar() {
+        if ( getTitleBar() == null ) {
+            return;
+        }
+        if ( isTitleBarHidden() ) {
+            getTitleBar().setMinHeight((double) getProperties().get("nodeHandler-titlebar-minheight"));
+            getTitleBar().setMinWidth((double) getProperties().get("nodeHandler-titlebar-minwidth"));            
+        }
     }
 
 }

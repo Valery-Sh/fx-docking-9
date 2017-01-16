@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -17,12 +14,10 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockNodeHandler;
-import org.vns.javafx.dock.api.DockPaneTarget;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PaneHandler;
-import org.vns.javafx.dock.api.TopNodeFinder;
+import org.vns.javafx.dock.api.TopNodeHelper;
 
 /**
  *
@@ -140,23 +135,19 @@ public class DockUtil {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
             if (DockRegistry.isDockable(node)) {
+                b = true;
                 PaneHandler pd = DockRegistry.dockable(node).nodeHandler().getPaneHandler();
                 DockNodeHandler st = DockRegistry.dockable(node).nodeHandler();
                 if (pd == null) {
                     b = false;
                 } else {
-        //            b = pd.isUsedAsDockTarget() && pd.zorder() == 0 && st.isUsedAsDockTarget();
                     b = pd.isUsedAsDockTarget() && st.isUsedAsDockTarget();
                 }
+                
             }
             return b;
-            //return b && !((screenX < p.getX()
-            //        || screenX > p.getX() + ((Region) node).getWidth()
-            //        || screenY < p.getY() || screenY > p.getY() + ((Region) node).getHeight()));
         };
-        
-        return TopNodeFinder.getTopNode((Stage)root.getScene().getWindow(), screenX,screenY, predicate);
-        //return findNode(root, predicate);
+        return TopNodeHelper.getTopNode((Stage)root.getScene().getWindow(), screenX,screenY, predicate);
     }
 
     /**

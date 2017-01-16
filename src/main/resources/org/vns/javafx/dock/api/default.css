@@ -48,12 +48,20 @@
     -fx-graphic: url(restore.png);
 }
 
-.dock-place {
-    -fx-fill: -fx-selection-bar;
-    -fx-opacity: 0.3;
+
+.drag-top-indicator .target-node:tabover {
+    -fx-graphic: url(no-image);
+    -fx-background-radius: 5em;
+    -fx-min-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-width: 10px;
+    -fx-max-height: 10px;
+    -fx-background-color: red;
+    -fx-opacity: 0.5;
 }
 
-.dock-pos-top {
+
+/*.dock-pos-top {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
@@ -70,15 +78,110 @@
     -fx-graphic: url(dock-popup-right-24x24.png);
     -fx-padding: 4;
 }
-
-.dock-node-pos-top {
-    -fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 4;
-}
+*/
 
 .dock-pos-top:tabover {
     -fx-graphic: url(target-icon-16x16.png);
 
+    -fx-padding: 4;
+}
+
+.dock-place {
+    -fx-fill: -fx-selection-bar;
+    -fx-opacity: 0.3;
+}
+
+
+/*.drag-tr-top-indicator .target-node {
+    -fx-graphic: url(no-image);
+    -fx-background-radius: 5em;
+    -fx-min-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-width: 10px;
+    -fx-max-height: 10px;
+    -fx-background-color: red;
+    -fx-opacity: 0.5;
+}
+*/
+
+.drag-top-indicator-small > .target-node  {
+    -fx-graphic: url(no-image);
+    -fx-padding: 4;
+    -fx-min-height: 10;
+    -fx-max-height: 10;
+    -fx-min-width: 24;
+    -fx-max-width: 24;
+
+}
+.drag-right-indicator-small > .target-node  {
+    -fx-graphic: url(no-image);
+    -fx-padding: 4;
+    -fx-min-width: 10;
+    -fx-max-width: 10;
+
+}
+
+.tttt {
+    -fx-max-width: 130;
+}
+
+.drag-bottom-indicator-small > .target-node  {
+    -fx-graphic: url(no-image);
+    -fx-padding: 4;
+    -fx-min-height: 10;
+    -fx-max-height: 10;
+    -fx-min-width: 24;
+    -fx-max-width: 24;
+
+}
+.drag-left-indicator-small > .target-node  {
+    -fx-graphic: url(no-image);
+    -fx-padding: 4;
+    -fx-min-width: 10;
+    -fx-max-width: 10;
+
+}
+
+.drag-top-indicator  .target-node {
+    -fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-bottom-indicator  .target-node {
+    -fx-graphic: url(dock-popup-bottom-24x24.png);
+    -fx-padding: 4;
+}
+.drag-left-indicator  .target-node { 
+    -fx-graphic: url(dock-popup-left-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-right-indicator  .target-node {
+    -fx-graphic: url(dock-popup-right-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-top-indicator  .target-pane {
+    -fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-bottom-indicator  .target-pane {
+    -fx-graphic: url(dock-popup-bottom-24x24.png);
+    -fx-padding: 4;
+}
+.drag-left-indicator  .target-pane { 
+    -fx-graphic: url(dock-popup-left-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-right-indicator  .target-pane {
+    -fx-graphic: url(dock-popup-right-24x24.png);
+    -fx-padding: 4;
+}
+
+/*.dock-node-pos-top {
+    -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
 
@@ -95,7 +198,7 @@
     -fx-graphic: url(dock-popup-right-24x24.png);
     -fx-padding: 4;
 }
-
+*/
 
 /*.dock-center {
     -fx-graphic: url(center.png);
@@ -216,9 +319,9 @@
 }
 .dock-side-bar .tool-bar {
     -fx-padding: 3 3 3 3;
-/*    -fx-border-width: 2;
-    -fx-border-color: aquamarine;
-*/
+    /*    -fx-border-width: 2;
+        -fx-border-color: aquamarine;
+    */
 }
 
 .dock-side-bar .tool-bar .button {
@@ -236,7 +339,7 @@
  */   
 .dock-tab-pane2 .tab-area .dock-title-bar {
     -fx-border-width: 0.5; 
- 
+
 }
 .dock-tab-pane2 .tab-area .dock-title-bar .button {
     -fx-border-width: 1; 
@@ -246,12 +349,12 @@
 
 .dock-tab-pane2 .tab-area .dock-title-bar .dock-title-label {
     -fx-graphic: url(docknode-8x8.png);
-/*    -fx-padding: 0 0 0 0;
-    -fx-text-fill: -fx-text-base-color;
-    -fx-border-width: 1;
-    -fx-border-color: red;
-    -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
-*/    
+    /*    -fx-padding: 0 0 0 0;
+        -fx-text-fill: -fx-text-base-color;
+        -fx-border-width: 1;
+        -fx-border-color: red;
+        -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
+    */    
 }
 .dock-tab-pane2 .tab-area .dock-title-bar:choosed .dock-title-label {
     -fx-background-color: #0093ff;
@@ -277,11 +380,11 @@
     -fx-background-color: transparent;  
     -fx-min-width: 13;
     -fx-max-width: 13;
-    
+
 }
 .dock-tab-pane2 .tab-area .left-scroll {
     -fx-graphic: url(left-arrow-7x7.png);
-    
+
 }
 .dock-tab-pane2 .tab-area .right-scroll {
     -fx-graphic: url(right-arrow-7x7.png);

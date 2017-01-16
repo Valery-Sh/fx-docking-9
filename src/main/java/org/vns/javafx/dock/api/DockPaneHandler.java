@@ -26,20 +26,14 @@ public class DockPaneHandler extends PaneHandler{
     public Pane getDockPane() {
         return (Pane) super.getDockPane();
     }
-/*    private void init() {
-        setSidePointerModifier(this::modifyNodeSidePointer);
-        dragPopup = new DragPopup();
-        inititialize();
-    }
-*/
     @Override
     protected void initSplitDelegate() {
         rootSplitPane = new SplitDelegate.DockSplitPane();
         getDockPane().getChildren().add(rootSplitPane);
-
         splitDelegate = new SplitDelegate(rootSplitPane);
     }
     
+    @Override
     protected boolean isDocked(Node node) {
         boolean retval;
         if (DockRegistry.isDockable(node)) {
@@ -82,7 +76,6 @@ public class DockPaneHandler extends PaneHandler{
             if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
                 state.setPaneHandler(this);
             }
-            //state.setDocked(true);
         }
     }
 
@@ -109,9 +102,9 @@ public class DockPaneHandler extends PaneHandler{
             }
             state.setDocked(true);
         }
-
     }
 
+    @Override
     public void remove(Node dockNode) {
         SplitDelegate.DockSplitPane dsp = getParentSplitPane(rootSplitPane, dockNode);
         if (dsp != null) {
@@ -119,6 +112,4 @@ public class DockPaneHandler extends PaneHandler{
             clearEmptySplitPanes(rootSplitPane, dsp);
         }
     }
-    
-
 }//class

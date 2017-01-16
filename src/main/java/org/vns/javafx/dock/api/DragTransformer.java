@@ -137,7 +137,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             return;
         }
         //Node topPane = DockUtil.findTopDockPane((Pane) root, ev.getScreenX(), ev.getScreenY());
-        Node topPane = TopNodeFinder.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+        Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return (n instanceof DockPaneTarget);
         });
 
@@ -153,6 +153,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         DragPopup newPopup = ((DockPaneTarget) root).paneHandler().getDragPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
+            
 
         }
         popup = newPopup;

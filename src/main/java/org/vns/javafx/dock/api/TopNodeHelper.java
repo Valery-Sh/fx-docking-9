@@ -18,15 +18,13 @@ import javafx.stage.Stage;
  *
  * @author Valery
  */
-public class TopNodeFinder {
+public class TopNodeHelper {
 
     public static Node getTopNode(List<Node> nodes) {
         List<Node> visNodes = new ArrayList<>();
-        for (Node n : nodes) {
-            if (n.isVisible()) {
-                visNodes.add(n);
-            }
-        }
+        nodes.stream().filter((n) -> (n.isVisible())).forEachOrdered((n) -> {
+            visNodes.add(n);
+        });
         if (visNodes.isEmpty()) {
             return null;
         }
@@ -55,9 +53,7 @@ public class TopNodeFinder {
     }
 
     public static Node getHigherNode(Node node1, Node node2) {
-        //System.err.println("++++++++++++++ getHigher ++++++++++++++++++++++++++++");        
         if (node1 == node2) {
-            //System.err.println("+++ getHigher node1= node2");
             return node1;
         }
         
@@ -83,8 +79,6 @@ public class TopNodeFinder {
         }
         
         int idx2 = chain2.indexOf(chain1.get(idx1));
-        //System.err.println("+++ getHigher idx1=" + idx1);
-        //System.err.println("+++ getHigher idx2=" + idx2);
         
         if (idx1 == 0) {
             retval = node2;
@@ -107,11 +101,6 @@ public class TopNodeFinder {
                 retval = node2;
             }
         }
-/*        System.err.println("+++ getHigher node1 = " + node1);
-        System.err.println("+++ getHigher node2 = " + node2);
-        
-        System.err.println("+++ getHigher retval = " + retval);
-*/        
         return retval;
     }
 
@@ -149,7 +138,6 @@ public class TopNodeFinder {
     public static Node getTopNode(Stage stage, double screenX, double screenY, Predicate<Node> predicate) {
         Node retval = null;
         Node node = getTopNode(getNodes(stage, screenX, screenY));
-        //System.err.println("TopNodeFinder: node=" + node);
         while (node != null) {
             if (predicate.test(node)) {
                 retval = node;
@@ -157,7 +145,6 @@ public class TopNodeFinder {
             }
             node = node.getParent();
         }
-        //System.err.println("TopNodeFinder: retval=" + retval);
         return retval;
     }
 
@@ -199,25 +186,15 @@ public class TopNodeFinder {
      * @return a list of nodes
      */
     public static List<Node> getNodes(Stage stage, double screenX, double screenY, Predicate<Node> predicate) {
-        //List<Node> retval = new ArrayList<>();
         if (stage == null || stage.getScene() == null || stage.getScene().getRoot() == null) {
             return new ArrayList<>();
         }
         List<Node> retval = getNodes(stage.getScene().getRoot(), screenX, screenY, predicate);
         Parent root = stage.getScene().getRoot();
-        //System.err.println("RRRRRRRRRR oot=" + root);
-        //System.err.println("RRRRRRRRRR stage=" + stage.getTitle());
         boolean inside = root.localToScreen(root.getBoundsInLocal()).contains(screenX, screenY);
         if (inside && predicate.test(root)) {
-            //System.err.println("ADDED RRRRRRRRRR stage=" + stage.getTitle());
             retval.add(0,root);
         }
-/*        System.err.println("==========================================");
-        retval.forEach(n -> {
-            System.err.println("TaNodeFinder.getNodes node=" + n);
-        });
-        System.err.println("*******************************************");
-*/        
         return retval;
     }
 

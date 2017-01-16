@@ -7,13 +7,14 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
-import org.vns.javafx.dock.api.TopNodeFinder;
+import org.vns.javafx.dock.api.TopNodeHelper;
 
 /**
  *
@@ -61,7 +62,15 @@ public class TestCommon extends Application {
         });
 
         pn02.getChildren().add(pn02Btn);
+        Label lb01 = new Label("VVVV");
+        lb01.getStyleClass().add("tttt");
+        pn02.getChildren().add(lb01);
         pn01Btn.setOnAction(a -> {
+            System.err.println("=== SIZE=" + lb01.getCssMetaData().size());
+            lb01.getCssMetaData().forEach(s -> {
+                System.err.println("==== s=" + s.getProperty());
+            });
+            
 /*            System.err.println("--- in pn01");
             Platform.runLater(() -> {
                 System.err.println("(0) id = " + root.getChildren().get(0).getId());
@@ -109,7 +118,7 @@ public class TestCommon extends Application {
         });
         
         sp2Btn01.setOnAction(a -> {
-            //System.err.println("TOP NODE: " + TopNodeFinder.getHigherNode(pn01, pn02));
+            //System.err.println("TOP NODE: " + TopNodeHelper.getHigherNode(pn01, pn02));
             Platform.runLater(() -> {
 /*                System.err.println(" --- MY STAGE CLICKED");
                 List<Stage> stgList = StageHelper.getStages();
@@ -127,7 +136,7 @@ public class TestCommon extends Application {
                 Point2D pt1 = btn01.localToScreen(3,5);
                 Point2D pt2 = pn01Btn.localToScreen(2,4);
                 Point2D pt3 = pn02Btn.localToScreen(1,3);
-                List<Node> ls = TopNodeFinder.getNodes(stage,pt1);
+                List<Node> ls = TopNodeHelper.getNodes(stage,pt1);
                 
                 System.err.println("==========================================");
                 
@@ -136,7 +145,7 @@ public class TestCommon extends Application {
                 ls.forEach(n -> {
                     System.err.println(" --- node: " + n);
                 });
-                System.err.println("Top Node:  " + TopNodeFinder.getTopNode(stage, pt1));
+                System.err.println("Top Node:  " + TopNodeHelper.getTopNode(stage, pt1));
                 System.err.println("==========================================");
                 
                 System.err.println("******* only SplitPanes (predicate) *********");
@@ -146,7 +155,7 @@ public class TestCommon extends Application {
                 ls.forEach(n -> {
                     System.err.println(" --- node: " + n);
                 });
-                System.err.println("Top Node:  " + TopNodeFinder.getTopNode(stage, pt1, n -> {return (n instanceof SplitPane);}));
+                System.err.println("Top Node:  " + TopNodeHelper.getTopNode(stage, pt1, n -> {return (n instanceof SplitPane);}));
                 System.err.println("==========================================");
                         
                 

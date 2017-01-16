@@ -161,7 +161,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     protected void stageClicked(MouseEvent ev) {
-        //11.01if (DockUtil.contains(toolBar, ev.getScreenX(), ev.getScreenY())) {
+        //11.01if (DockUtil.paneIndicatorContains(toolBar, ev.getScreenX(), ev.getScreenY())) {
         if (toolBar.localToScreen(toolBar.getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY()) ) {
             return;
         }
@@ -456,7 +456,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
                 /*                Node node = DockUtil.findNode(sideBar.getTabs(), mouseX, mouseY);
                 if ( node != null ) {
                     retval =  new Point2D(mouseX-5,mouseY-5);
-                } else if (DockUtil.contains(sideBar.getTabHBox(), mouseX, mouseY)) {    
+                } else if (DockUtil.paneIndicatorContains(sideBar.getTabHBox(), mouseX, mouseY)) {    
                     retval =  new Point2D(mouseX-5,mouseY-5);
                 } else {
                     retval = sideBar.localToScreen(
