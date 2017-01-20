@@ -19,6 +19,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -111,9 +112,8 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         return c;
     }
 
-
     public void closeDragTag() {
-        if ( dragTab != null ) {
+        if (dragTab != null) {
             getTabs().remove(dragTab);
         }
     }
@@ -224,9 +224,8 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         return paneHandler;
     }
 
-    public static class TabGraphic extends DockTitleBar {
+/*    public static class TabGraphic extends DockTitleBar {
 
-        //private final DockTabPane tabPane;
         private double titleBarMinHeight;
         private double titleBarPrefHeight;
         private boolean titleBarVisible;
@@ -300,7 +299,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
     }
-
+*/
     public static class TabPaneHandler extends PaneHandler {
 
         public TabPaneHandler(DockTabPane tabPane) {
@@ -436,52 +435,146 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         @Override
-        public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
-            if (popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
-                System.err.println("REMOVE!!!!!!!!!!!!!!!!!!!!!!");
-                popup.removeNodeSideButtons(Side.BOTTOM);
-                popup.removeNodeSideButtons(Side.TOP);
-                popup.removeNodeSideButtons(Side.LEFT);
-                popup.removeNodeSideButtons(Side.RIGHT);
+        protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
+            return new TabSideIndicatorTransformer(this);
+        }
 
-                Pane pane = popup.getPaneSideButtons(Side.TOP);
-                popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
-                popup.getPaneSideButton(Side.TOP).pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
-                popup.removePaneSideButtons(Side.LEFT);
-                popup.removePaneSideButtons(Side.RIGHT);
-                popup.removePaneSideButtons(Side.BOTTOM);
+        public static class TabSideIndicatorTransformer extends PaneHandler.NodeIndicatorTransformer {
+
+            public TabSideIndicatorTransformer(PaneHandler paneHandler) {
+                super(paneHandler);
             }
-            Region p = popup.getDockPane();
-            DockTabPane tabPane;// = null;
-            TabPaneHandler paneHandler;// = null; 
-            Point2D retval = null;
-            if (p instanceof DockTabPane) {
-                paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
-                tabPane = (DockTabPane) p;
-                paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
-                tabPane = (DockTabPane) p;
-                if (tabPane.getTabs().size() == 0 && DockUtil.contains(tabPane, mouseX, mouseY)) {
-                    retval = centerPosOf(tabPane, popup.getPaneSideButton(Side.TOP));
+
+            /**
+             * The method does nothing. It overrides the method of the subclass
+             * to escape scaling of an indicator pane.
+             *
+             * @param node the dockable node
+             */
+            @Override
+            public void sideIndicatorShown(Region node) {
+            }
+
+            @Override
+            public Point2D mousePos() {
+                Point2D retval = null;// = super.mousePos();
+
+                SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
+                Pane topBtns;//= null;
+                Button topPaneButton = null;
+                if (paneIndicator != null) {
+                    topBtns = paneIndicator.getTopButtons();
+                    topPaneButton = (Button) topBtns.getChildren().get(0);
+                }
+
+                if (getIndicator().getIndicatorPane().getChildren().contains(getBottomButtons())) {
+                    getIndicator().getIndicatorPane().getChildren().clear();
+                    if (paneIndicator != null) {
+                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
+                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());
+                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());
+                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());
+                        topBtns = paneIndicator.getTopButtons();
+                        ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
+                    }
+                }
+
+                DockTabPane tabPane = (DockTabPane) getTargetPaneHandler().getDockPane();
+
+                double mouseX = getMousePos().getX();
+                double mouseY = getMousePos().getY();
+                
+                System.err.println("tabPane.getTabs().isEmpty()=" + tabPane.getTabs().isEmpty());
+                System.err.println("DockUtil.contains(tabPane, mouseX, mouseY)=" + DockUtil.contains(tabPane, mouseX, mouseY));
+                //if (tabPane.getTabs().isEmpty() && DockUtil.contains(tabPane, mouseX, mouseY)) {
+                if (tabPane.getTabs().isEmpty() && DockUtil.contains(tabPane, mouseX, mouseY)) {                
+                    System.err.println(" 1. topPaneButton");
+                    retval = centerPosOf(tabPane, topPaneButton);
+                    topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
                 } else {
+                    System.err.println(" 2. topPaneButton");
+                    System.err.println("x=" + mouseX + "; y=" + mouseY);
                     int idx = tabPane.indexOf(mouseX, mouseY);
                     if (idx == 0) {
                         if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
                         }
                     }
                     if (idx >= 0) {
+                        System.err.println(" 3. topPaneButton");
                         retval = new Point2D(mouseX - 5, mouseY - 5);
+                        topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);                        
+                    } else {
+                        topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
+                        retval = centerPosOf(tabPane, topPaneButton);
                     }
                 }
+                return retval;
             }
-            return retval;
-        }
 
-        private Point2D centerPosOf(DockTabPane tabPane, Region r)  {
-            double x = tabPane.localToScreen(tabPane.getBoundsInLocal()).getMinX();
-            double y = tabPane.localToScreen(tabPane.getBoundsInLocal()).getMinY();
-            return new Point2D(x + (tabPane.getWidth() - r.getWidth())/2, y + (tabPane.getHeight() - r.getHeight())/2);
-        }
+            private Point2D centerPosOf(DockTabPane tabPane, Region r) {
+                double x = tabPane.localToScreen(tabPane.getBoundsInLocal()).getMinX();
+                double y = tabPane.localToScreen(tabPane.getBoundsInLocal()).getMinY();
+                return new Point2D(x + (tabPane.getWidth() - r.getWidth()) / 2, y + (tabPane.getHeight() - r.getHeight()) / 2);
+            }
 
+        }//TabSideIndicatorTransformer
+
+
+        /*            Node node = DockUtil.findNode(tabPane.tabArea.getTitleBars(), x, y);
+            if (node != null) {
+                retval = new Point2D(x - 5, y - 5);
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+            } else if (DockUtil.contains(tabPane.tabArea.getPane(), x, y)) {
+                retval = new Point2D(x - 5, y - 5);
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+            } else {
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
+                retval = tabPane.localToScreen(
+                        (tabPane.getWidth() - getIndicator().getIndicatorPane().getWidth()) / 2,
+                        (tabPane.getHeight() - getIndicator().getIndicatorPane().getHeight()) / 2);
+            }
+         */
+ /*            @Override
+            public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
+                if (popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
+                    System.err.println("REMOVE!!!!!!!!!!!!!!!!!!!!!!");
+                    popup.removeNodeSideButtons(Side.BOTTOM);
+                    popup.removeNodeSideButtons(Side.TOP);
+                    popup.removeNodeSideButtons(Side.LEFT);
+                    popup.removeNodeSideButtons(Side.RIGHT);
+
+                    Pane pane = popup.getPaneSideButtons(Side.TOP);
+                    popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
+                    popup.getPaneSideButton(Side.TOP).pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+                    popup.removePaneSideButtons(Side.LEFT);
+                    popup.removePaneSideButtons(Side.RIGHT);
+                    popup.removePaneSideButtons(Side.BOTTOM);
+                }
+                Region p = popup.getDockPane();
+                DockTabPane tabPane;// = null;
+                TabPaneHandler paneHandler;// = null; 
+                Point2D retval = null;
+                if (p instanceof DockTabPane) {
+                    paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                    tabPane = (DockTabPane) p;
+                    paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                    tabPane = (DockTabPane) p;
+                    if (tabPane.getTabs().size() == 0 && DockUtil.contains(tabPane, mouseX, mouseY)) {
+                        retval = centerPosOf(tabPane, popup.getPaneSideButton(Side.TOP));
+                    } else {
+                        int idx = tabPane.indexOf(mouseX, mouseY);
+                        if (idx == 0) {
+                            if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
+                            }
+                        }
+                        if (idx >= 0) {
+                            retval = new Point2D(mouseX - 5, mouseY - 5);
+                        }
+                    }
+                }
+                return retval;
+            }
+         */
         @Override
         public void remove(Node dockNode
         ) {
@@ -518,11 +611,14 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 }
             }
         }
+        System.err.println("1. indexOf retval=" + retval);
         if (retval < 0
                 && localToScreen(getBoundsInLocal()).contains(x, y)
                 && contentIndexOf(x, y) < 0) {
+            System.err.println("2. indexOf retval=" + retval);
             retval = getTabs().size();
         }
+        System.err.println("3. indexOf retval=" + retval);
         return retval;
     }
 

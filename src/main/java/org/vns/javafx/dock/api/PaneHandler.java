@@ -8,20 +8,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 import org.vns.javafx.dock.DockUtil;
-import static org.vns.javafx.dock.api.PaneHandler.SideIndicator.NODE_POINTER;
-import static org.vns.javafx.dock.api.PaneHandler.SideIndicator.NODE_STYLE;
-import static org.vns.javafx.dock.api.PaneHandler.SideIndicator.PANE_POINTER;
-import static org.vns.javafx.dock.api.PaneHandler.SideIndicator.PANE_STYLE;
 
 /**
  *
@@ -31,9 +29,9 @@ public class PaneHandler {
 
     //private final ObjectProperty<Region> dockPaneProperty = new SimpleObjectProperty<>();
     private Region dockPane;
-
-    private SideIndicatorTransformer paneTransformer;
-    private SideIndicatorTransformer nodeTransformer;
+    private String title;
+    private PaneIndicatorTransformer paneTransformer;
+    private NodeIndicatorTransformer nodeTransformer;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -51,14 +49,29 @@ public class PaneHandler {
     }
 
     protected PaneHandler(Dockable dockable) {
-        //dockPaneProperty.set(dockPane);
+        //dockPaneProperty.initIndicatorPane(dockPane);
         init();
     }
 
     private void init() {
         setSidePointerModifier(this::modifyNodeSidePointer);
-        dragPopup = new DragPopup(new SideIndicator(SideIndicator.PANE_POINTER), new SideIndicator(SideIndicator.NODE_POINTER));
+        dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
         inititialize();
+    }
+
+    public String getTitle() {
+        if ( title != null ) {
+            return title;
+        }
+        title = getDockPane().getId();
+        if ( title == null ) {
+            title = getDockPane().getClass().getName();
+        }
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     protected ObservableMap<Node, Dockable> notDockableItemsProperty() {
@@ -129,22 +142,34 @@ public class PaneHandler {
         return null;
     }
 
-    public SideIndicatorTransformer getPaneTransformer() {
-        if (paneTransformer == null) {
-            paneTransformer = new SideIndicatorTransformer(SideIndicator.PANE_POINTER);
-        }
-        return paneTransformer;
+    protected void setPaneTransformer(PaneIndicatorTransformer paneTransformer) {
+        this.paneTransformer = paneTransformer;
     }
 
-    public SideIndicatorTransformer getNodeTransformer() {
+    protected void setNodeTransformer(NodeIndicatorTransformer nodeTransformer) {
+        this.nodeTransformer = nodeTransformer;
+    }
+
+    public NodeIndicatorTransformer getNodeTransformer() {
         if (nodeTransformer == null) {
-            nodeTransformer = new SideIndicatorTransformer(SideIndicator.NODE_POINTER);
+            nodeTransformer = createNodeIndicatorTransformer();
         }
         return nodeTransformer;
     }
 
-    protected void createSideIndicatorTransformers() {
-        //nodeTransformer = new SideIndicatorTransformer(indicator, style, Point2D.ZERO, topButtons, bottomButtons, leftButtons, rightButtons)
+    protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
+        return new NodeIndicatorTransformer(this);
+    }
+
+    public PaneIndicatorTransformer getPaneTransformer() {
+        if (paneTransformer == null) {
+            paneTransformer = createPaneIndicatorTransformer();
+        }
+        return paneTransformer;
+    }
+
+    protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
+        return new PaneIndicatorTransformer(this);
     }
 
     public SidePointerModifier getSidePointerModifier() {
@@ -267,98 +292,41 @@ public class PaneHandler {
     public void remove(Node dockNode) {
     }
 
-    public static class SideIndicator {
-
-        public static int NODE_POINTER = 0;
-        public static int PANE_POINTER = 2;
-        public static final String NODE_STYLE = "target-node";
-        public static final String PANE_STYLE = "target-pane";
-        public static final String TOP_INDICATOR_STYLE = "drag-top-indicator";
-        public static final String RIGHT_INDICATOR_STYLE = "drag-right-indicator";
-        public static final String BOTTOM_INDICATOR_STYLE = "drag-bottom-indicator";
-        public static final String LEFT_INDICATOR_STYLE = "drag-left-indicator";
-
-        private String style;
+    public abstract static class SideIndicator {
 
         private Pane topButtons;
         private Pane bottomButtons;
         private Pane leftButtons;
         private Pane rightButtons;
-        private int indicatorType;
+        private Pane centerButtons;
 
+        private Button selectedButton;
+        
         private Pane indicatorPane;
-
+        
         private SideIndicatorTransformer transformer;
 
-        public SideIndicator(int indicatorType) {
-            this.indicatorType = indicatorType;
+        public SideIndicator() {
             init();
         }
 
         private void init() {
-            getStyle();
-            createIndicatorPane();
-            //transformer = new SideIndicatorTransformer(indicatorType);
-            //transformer.initialize(this, null, topButtons, bottomButtons, leftButtons, rightButtons);
+            indicatorPane = createIndicatorPane();
         }
 
-        protected void createIndicatorPane() {
-            if (indicatorType == NODE_POINTER) {
-                indicatorPane = new GridPane();
-                indicatorPane.getStyleClass().add("dock-target-pos");
-            } else {
-                indicatorPane = new BorderPane();
-                indicatorPane.getStyleClass().add("dock-target-pos");
-            }
-            set(indicatorPane);
-            
-            indicatorPane.setMouseTransparent(true);
-        }
+        protected abstract Pane createIndicatorPane();
 
         public Pane getIndicatorPane() {
             return indicatorPane;
         }
 
-        protected String getStyle() {
-            if (style == null) {
-                style = indicatorType == NODE_POINTER ? NODE_STYLE : PANE_STYLE;
-            }
-            return style;
-        }
-
-        protected void set(Pane targetPane) {
-            if (targetPane instanceof BorderPane) {
-                topButtons = createSideButtons(Side.TOP);
-                ((BorderPane) targetPane).setTop(topButtons);
-                rightButtons = createSideButtons(Side.RIGHT);
-                ((BorderPane) targetPane).setRight(rightButtons);
-                bottomButtons = createSideButtons(Side.BOTTOM);
-                ((BorderPane) targetPane).setBottom(bottomButtons);
-                leftButtons = createSideButtons(Side.LEFT);
-                ((BorderPane) targetPane).setLeft(leftButtons);
-            } else if (targetPane instanceof GridPane) {
-                topButtons = createSideButtons(Side.TOP);
-                ((GridPane) targetPane).add(topButtons, 1, 0);
-                System.err.println("GRIDPANE isMouseTrans=" + topButtons.isMouseTransparent());
-                bottomButtons = createSideButtons(Side.BOTTOM);
-                ((GridPane) targetPane).add(bottomButtons, 1, 2);
-                bottomButtons.setId("bottomButtonsPane");
-                //bottomButtons.setMouseTransparent(true);                
-                leftButtons = createSideButtons(Side.LEFT);
-                leftButtons.setId("leftButtonsPane");
-                ((GridPane) targetPane).add(leftButtons, 0, 1);
-                leftButtons.setStyle("-fx-border-width: 2.0; -fx-border-color: green;");
-                //leftButtons.setMouseTransparent(true);
-                rightButtons = createSideButtons(Side.RIGHT);
-                ((GridPane) targetPane).add(rightButtons, 2, 1);
-                rightButtons.setId("rightButtonsPane");               
-                //rightButtons.setMouseTransparent(true);                
-            }
+        public Button getSelectedButton() {
+            return selectedButton;
         }
 
         public Pane getTopButtons() {
             Pane retval;// = null;
-            if ( transformer == null ) {
+            if (transformer == null) {
                 retval = topButtons;
             } else {
                 retval = transformer.getTopButtons();
@@ -366,13 +334,9 @@ public class PaneHandler {
             return retval;
         }
 
-        protected void setTopButtons(Pane topButtons) {
-            this.topButtons = topButtons;
-        }
-
         public Pane getBottomButtons() {
             Pane retval;// = null;
-            if ( transformer == null ) {
+            if (transformer == null) {
                 retval = bottomButtons;
             } else {
                 retval = transformer.getBottomButtons();
@@ -381,13 +345,9 @@ public class PaneHandler {
 
         }
 
-        protected void setBottomButtons(Pane bottomButtons) {
-            this.bottomButtons = bottomButtons;
-        }
-
         public Pane getLeftButtons() {
             Pane retval;// = null;
-            if ( transformer == null ) {
+            if (transformer == null) {
                 retval = leftButtons;
             } else {
                 retval = transformer.getLeftButtons();
@@ -396,13 +356,9 @@ public class PaneHandler {
 
         }
 
-        protected void setLeftButtons(Pane leftButtons) {
-            this.leftButtons = leftButtons;
-        }
-
         public Pane getRightButtons() {
             Pane retval;// = null;
-            if ( transformer == null ) {
+            if (transformer == null) {
                 retval = rightButtons;
             } else {
                 retval = transformer.getRightButtons();
@@ -410,61 +366,137 @@ public class PaneHandler {
             return retval;
         }
 
-        protected void setRightButtons(Pane rightButtons) {
-            this.rightButtons = rightButtons;
+        public Pane getCenterButtons() {
+            Pane retval;// = null;
+            if (transformer == null) {
+                retval = centerButtons;
+            } else {
+                retval = transformer.getCenterButtons();
+            }
+            return retval;
         }
+
+        protected abstract String getStylePrefix();
 
         protected void restoreButtonsStyle() {
-            restoreButtonsStyle(topButtons, TOP_INDICATOR_STYLE);
-            restoreButtonsStyle(rightButtons, RIGHT_INDICATOR_STYLE);
-            restoreButtonsStyle(bottomButtons, BOTTOM_INDICATOR_STYLE);
-            restoreButtonsStyle(leftButtons, LEFT_INDICATOR_STYLE);
+            restoreButtonsStyle(topButtons, getStylePrefix() + "-top-button");
+            restoreButtonsStyle(rightButtons, getStylePrefix() + "-right-button");
+            restoreButtonsStyle(bottomButtons, getStylePrefix() + "-bottom-button");
+            restoreButtonsStyle(leftButtons, getStylePrefix() + "-left-button");
+            restoreButtonsStyle(centerButtons, getStylePrefix() + "-center-button");
         }
 
-        protected void restoreButtonsStyle(Pane pane, String paneStyle) {
-
-            pane.getStyleClass().clear();
-            pane.getStyleClass().add(paneStyle);
-
+        protected void restoreButtonsStyle(Pane pane, String style) {
+            if (pane == null) {
+                return;
+            }
             pane.getChildren().forEach(node -> {
                 node.getStyleClass().clear();
                 node.getStyleClass().add("button");
-                node.getStyleClass().add(getStyle());
+                node.getStyleClass().add(style);
             });
         }
 
-        protected Pane createSideButtons(Side side) {
-            Button b = new Button();
-            //b.setMouseTransparent(false);
-            StackPane p = new StackPane(b);
-
-            switch (side) {
-                case TOP:
-                    p.getStyleClass().add(TOP_INDICATOR_STYLE);
-                    b.getStyleClass().add(getStyle());
-                    break;
-                case BOTTOM:
-                    p.getStyleClass().add(BOTTOM_INDICATOR_STYLE);
-                    b.getStyleClass().add(getStyle());
-                    break;
-                case LEFT:
-                    p.getStyleClass().add(LEFT_INDICATOR_STYLE);
-                    b.getStyleClass().add(getStyle());
-                    if ( indicatorType == NODE_POINTER ){
-                        b.setId("NODE: Button Of LeftButtonsPane");
-                    } else {
-                        b.setId("PANE: Button Of LeftButtonsPane");
-                    }
-                    break;
-                case RIGHT:
-                    p.getStyleClass().add(RIGHT_INDICATOR_STYLE);
-                    b.getStyleClass().add(getStyle());
-                    break;
-            }
-            return p;
+        protected String getCenterButonPaneStyle() {
+            return getStylePrefix() + "-" + "center-button-pane";
         }
 
-        public Pane getButtons(Side side) {
+        protected String getButonPaneStyle(Side side) {
+            String style = null;
+            String prefix = getStylePrefix();
+            switch (side) {
+                case TOP:
+                    style = prefix + "-" + "top-button-pane";
+                    break;
+                case RIGHT:
+                    style = prefix + "-" + "right-button-pane";
+                    break;
+                case BOTTOM:
+                    style = prefix + "-" + "bottom-button-pane";
+                    break;
+                case LEFT:
+                    style = prefix + "-" + "laft-button-pane";
+                    break;
+            }
+            return style;
+        }
+
+        protected String getCenterButtonStyle() {
+            return getStylePrefix() + "-" + "center-button";
+        }
+
+        protected String getButtonStyle(Side side) {
+            String style = null;
+            String prefix = getStylePrefix();
+            switch (side) {
+                case TOP:
+                    style = prefix + "-" + "top-button";
+                    break;
+                case RIGHT:
+                    style = prefix + "-" + "right-button";
+                    break;
+                case BOTTOM:
+                    style = prefix + "-" + "bottom-button";
+                    break;
+                case LEFT:
+                    style = prefix + "-" + "left-button";
+                    break;
+            }
+            return style;
+        }
+        protected Pane createCenterButtons() {
+            Button btn = new Button();
+            centerButtons = new StackPane(btn);
+            centerButtons.getStyleClass().add(getCenterButonPaneStyle());
+            btn.getStyleClass().add(getCenterButtonStyle());
+            return centerButtons;
+        }
+        
+        protected Pane createSideButtons_OLD(Side side) {
+            Button btn = new Button();
+            StackPane retval = new StackPane(btn);
+            retval.getStyleClass().add(getButonPaneStyle(side));
+            btn.getStyleClass().add(getButtonStyle(side));
+            
+            return retval;
+        }        
+        protected Pane createSideButtons(Side side) {
+            
+            Button btn = new Button();
+            //Button btn1 = new Button();
+            //btn1.getStyleClass().add(getButtonStyle(side));
+            StackPane retval = new StackPane();
+            //GridPane retval = new GridPane();
+            
+            //retval.add(btn1, 2, 0);
+            //retval.add(btn, 1, 0);
+            retval.getChildren().add(btn);
+            //retval.getChildren().add(btn1);
+            retval.setAlignment(Pos.CENTER);
+            //HBox retval = new HBox(btn);
+            retval.getStyleClass().add(getButonPaneStyle(side));
+            btn.getStyleClass().add(getButtonStyle(side));
+            switch (side) {
+                case TOP:
+                    topButtons = retval;
+                    //btn1.setTranslateX(-10);
+                    //btn1.setTranslateY(3);
+                    break;
+                case RIGHT:
+                    rightButtons = retval;
+                    break;
+                case BOTTOM:
+                    bottomButtons = retval;
+                    break;
+                case LEFT:
+                    leftButtons = retval;
+                    break;
+            }
+
+            return retval;
+        }
+
+        /*        public Pane getButtons(Side side) {
             Pane retval = null;
             if (null != side) {
                 switch (side) {
@@ -484,94 +516,255 @@ public class PaneHandler {
             }
             return retval;
         }
-        
-        
+         */
         public void targetNodeChanged(PaneHandler paneHandler, Region node, double x, double y) {
-            transform(paneHandler, node, x,y);
+            transform(paneHandler, node, x, y);
             transformer.targetNodeChanged(node);
         }
 
+        public void showDockPlace(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
+            transform(targetPaneHandler, targetNode, screenX, screenY);
+            transformer.showDockPlace();
+        }
+        
         public Point2D mousePosBy(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
             transform(targetPaneHandler, targetNode, screenX, screenY);
-            return transformer.getMousePos();
-        }                
-        protected void transform(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
-            if (indicatorType == NODE_POINTER) {
-                transformer = targetPaneHandler.getNodeTransformer();
-            } else {
-                transformer = targetPaneHandler.getPaneTransformer();
-            }
+            return transformer.mousePos();
+        }
 
-            if (transformer == null) {
-                transformer = new SideIndicatorTransformer(indicatorType);
-            }
-            
-            //restoreButtonsStyle();
+        public Point2D mousePosBy(PaneHandler targetPaneHandler, double screenX, double screenY) {
+            transform(targetPaneHandler, null, screenX, screenY);
+            return transformer.mousePosByPaneHandler();
+        }
+        public void sideButtonSelected(PaneHandler targetPaneHandler, Button selectedButton, double screenX, double screenY) {
+            transform(targetPaneHandler, null, screenX, screenY);
+            this.selectedButton = selectedButton;
+            transformer.sideButtonSelected();
+        }
+
+        
+        protected abstract SideIndicatorTransformer getTransformer(PaneHandler targetPaneHandler);
+
+        protected void transform(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
+            transformer = getTransformer(targetPaneHandler);
+
             transformer.initialize(this, new Point2D(screenX, screenY), topButtons, bottomButtons, leftButtons, rightButtons);
 
             transformer.setTargetNode(targetNode);
             transformer.setTargetPaneHandler(targetPaneHandler);
             transformer.transform();
-            /*            mousePos = new Point2D(screenX, screenY);
-            PaneHandler paneHandler = dragPopup.getTargetPaneHandler();
-            //System.err.println("!!!!!!!!!!!!!!!!!!!! NOT NULL " + paneHandler);                
-            SidePointerModifier pm = paneHandler.getSidePointerModifier();
-            if (pm != null) {
-                System.err.println("!!!!!!!!!!!!!!!!!!!! NOT NULL");
-                mousePos = pm.modify(dragPopup, target, screenX, screenY);
-                if (mousePos == null) {
-                    return null;
-                } else {
-                    return this;
-                }
-            }
-            return null;
-             */
         }
-        public void sideIndicatorShowing(PaneHandler paneHandler, Region node) {
+
+        public void sideIndicatorShown(PaneHandler paneHandler, Region node) {
             transform(paneHandler, node, 0, 0);
-            transformer.sideIndicatorShowing(node);
+            transformer.sideIndicatorShown(node);
         }
-        public void sideIndicatorHiding(PaneHandler paneHandler, Region node) {
+
+        public void sideIndicatorHidden(PaneHandler paneHandler, Region node) {
             transform(paneHandler, node, 0, 0);
-            transformer.sideIndicatorHiding(node);
+            transformer.sideIndicatorHidden(node);
         }
-        
+
         public Point2D getMousePos() {
-            return transformer.getMousePos();
+            return transformer.mousePos();
         }
 
     }//class SideIndicator
 
-    public static class SideIndicatorTransformer {
+    public static class NodeSideIndicator extends SideIndicator {
 
-        public static final String SMALL_NODE_STYLE = "target-node-small";
-        public static final String SMALL_PANE_STYLE = "target-pane-small";
-        public static final String SMALL_TOP_INDICATOR_STYLE = "drag-top-indicator-small";
-        public static final String SMALL_RIGHT_INDICATOR_STYLE = "drag-right-indicator-small";
-        public static final String SMALL_BOTTOM_INDICATOR_STYLE = "drag-bottom-indicator-small";
-        public static final String SMALL_LEFT_INDICATOR_STYLE = "drag-left-indicator-small";
+        public NodeSideIndicator() {
+        }
+
+        @Override
+        protected Pane createIndicatorPane() {
+            GridPane indicatorPane = new GridPane();
+            indicatorPane.getStyleClass().add(getStylePrefix());
+            indicatorPane.setMouseTransparent(true);
+
+            Pane buttons = createSideButtons(Side.TOP);
+            indicatorPane.add(buttons, 1, 0);
+            buttons = createSideButtons(Side.BOTTOM);
+            indicatorPane.add(buttons, 1, 2);
+            buttons = createSideButtons(Side.LEFT);
+            indicatorPane.add(buttons, 0, 1);
+            buttons = createSideButtons(Side.RIGHT);
+            indicatorPane.add(buttons, 2, 1);
+
+            buttons = createCenterButtons();
+            indicatorPane.add(buttons, 1, 1);
+            
+            return indicatorPane;
+        }
+
+        @Override
+        protected String getStylePrefix() {
+            return "drag-node-indicator";
+        }
+
+        @Override
+        protected NodeIndicatorTransformer getTransformer(PaneHandler targetPaneHandler) {
+            return targetPaneHandler.getNodeTransformer();
+        }
+    }//class SideIndicator
+
+    public static class PaneSideIndicator extends SideIndicator {
+
+        public PaneSideIndicator() {
+
+        }
+ 
+        @Override
+        protected Pane createIndicatorPane() {
+            BorderPane indicatorPane = new BorderPane();
+            indicatorPane.getStyleClass().add(getStylePrefix());
+            indicatorPane.setMouseTransparent(true);
+            Pane buttons = createSideButtons(Side.TOP);
+            indicatorPane.setTop(buttons);
+            buttons = createSideButtons(Side.RIGHT);
+            indicatorPane.setRight(buttons);
+            buttons = createSideButtons(Side.BOTTOM);
+            indicatorPane.setBottom(buttons);
+            buttons = createSideButtons(Side.LEFT);
+            indicatorPane.setLeft(buttons);
+       
+            buttons = createCenterButtons();
+            indicatorPane.setCenter(buttons);
+
+            return indicatorPane;
+        }
+
+        @Override
+        protected String getStylePrefix() {
+            return "drag-pane-indicator";
+        }
+
+        @Override
+        protected PaneIndicatorTransformer getTransformer(PaneHandler targetPaneHandler) {
+            return targetPaneHandler.getPaneTransformer();
+        }
+    }//class SideIndicator
+
+    public static class PaneIndicatorTransformer extends SideIndicatorTransformer {
+
+        public PaneIndicatorTransformer(PaneHandler targetPaneHandler) {
+            super(targetPaneHandler);
+        }
+
+        @Override
+        public void sideIndicatorShown(Region node) {
+        }
+
+        ;
+
+        @Override
+        public void sideIndicatorHidden(Region node) {
+        }
+
+        ;
+
+
+        @Override
+        public Point2D mousePos() {
+            return getMousePos();
+        }
+    ;
+
+    }//Transformer
+    public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
+
+        public NodeIndicatorTransformer(PaneHandler targetPaneHandler) {
+            super(targetPaneHandler);
+        }
+
+        @Override
+        public void sideIndicatorShown(Region node) {
+            if (getTargetPaneHandler() != null && node != null) {
+                resizeButtonPanes();
+            }
+        }
+
+        @Override
+        public void sideIndicatorHidden(Region node) {
+            if (getTargetPaneHandler() == null || node == null) {
+                resizeButtonPanes();
+            }
+
+        }
+
+        @Override
+        protected void resizeButtonPanes() {
+            if (getTargetPaneHandler() != null && getTargetNode() != null && intersects()) {
+                if (!getIndicator().getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
+                    getIndicator().getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
+
+                    double w = getIndicator().getIndicatorPane().getWidth() / 2;
+                    double h = getIndicator().getIndicatorPane().getHeight() / 2;
+                    Point2D p = getIndicator().getIndicatorPane().localToParent(w, h);
+                    getSmallbuttonsScale().setPivotX(w);
+                    getSmallbuttonsScale().setPivotY(h);
+                }
+            } else {
+                getIndicator().getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
+            }
+
+        }
+
+        protected boolean intersects() {
+            boolean retval = false;
+            Pane thisPane = getIndicator().getIndicatorPane();
+
+            if (getTargetPaneHandler() != null) {
+
+                Node node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getTopButtons();
+
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getRightButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getBottomButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getLeftButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Point2D mousePos() {
+            Point2D newPos = null;
+            if (getTargetNode() != null && getIndicator().getIndicatorPane() != null) {
+                newPos = getTargetNode().localToScreen((getTargetNode().getWidth() - getIndicator().getIndicatorPane().getWidth()) / 2, (getTargetNode().getHeight() - getIndicator().getIndicatorPane().getHeight()) / 2);
+            }
+            return newPos;
+        }
+
+    }//Transformer
+
+    public abstract static class SideIndicatorTransformer {
 
         private PaneHandler targetPaneHandler;
         private Region targetNode;
         private String style;
         private Point2D mousePos;
         private Pane topButtons;
+        private Pane rightButtons;
         private Pane bottomButtons;
         private Pane leftButtons;
-        private Pane rightButtons;
+        private Pane centerButtons;
         private SideIndicator indicator;
-        private int indicatorType;
 
         private Scale smallbuttonsScale;
 
-        public SideIndicatorTransformer(int indicatorType) {
-            this(null, indicatorType);
-        }
-
-        public SideIndicatorTransformer(PaneHandler targetPaneHandler, int indicaterType) {
+        public SideIndicatorTransformer(PaneHandler targetPaneHandler) {
             this.targetPaneHandler = targetPaneHandler;
-            this.indicatorType = indicaterType;
             this.smallbuttonsScale = new Scale(0.5, 0.5);
         }
 
@@ -595,77 +788,45 @@ public class PaneHandler {
             this.rightButtons = rightButtons;
         }
 
+        public PaneHandler getTargetPaneHandler() {
+            return targetPaneHandler;
+        }
+
+        public Region getTargetNode() {
+            return targetNode;
+        }
+
+        public SideIndicator getIndicator() {
+            return indicator;
+        }
+
+        public Scale getSmallbuttonsScale() {
+            return smallbuttonsScale;
+        }
+
         public void transform() {
-            if (targetPaneHandler != null ) {
-                //resizeButtonPanes();
-            }
         }
-        public void sideIndicatorShowing(Region node) {
-            if (targetPaneHandler != null && node != null) {
-                resizeButtonPanes();
-            }
-            
+
+        public void sideIndicatorShown(Region node) {
         }
-        public void sideIndicatorHiding(Region node) {
-            if (targetPaneHandler == null || node == null) {
-                resizeButtonPanes();
-            }
-            
+
+        ;
+
+        public void sideIndicatorHidden(Region node) {
         }
-        
+
+        ;
+
         public void targetNodeChanged(Region node) {
-            if ( targetNode != node ) {
-                
-            }
         }
-        
-        protected void restoreButtonsStyle() {
-            indicator.restoreButtonsStyle();
-        }
+
+        ;
 
         protected void resizeButtonPanes() {
-            if ( targetPaneHandler != null && targetNode != null && intersects()) { 
-                if (! indicator.indicatorPane.getTransforms().contains(smallbuttonsScale)) {
-                    indicator.indicatorPane.getTransforms().add(smallbuttonsScale);
-
-                    double w = indicator.indicatorPane.getWidth() / 2;
-                    double h = indicator.indicatorPane.getHeight() / 2;
-                    Point2D p = indicator.indicatorPane.localToParent(w,h);
-                    smallbuttonsScale.setPivotX(w);
-                    smallbuttonsScale.setPivotY(h);
-                }
-            } else {
-                indicator.getIndicatorPane().getTransforms().remove(smallbuttonsScale);
-            }
-
         }
 
-        protected boolean intersects() {
-            boolean retval = false;
-            Pane thisPane = indicator.getIndicatorPane();
+        ;
 
-            if (indicatorType == NODE_POINTER && targetPaneHandler != null) {
-
-                Node node = targetPaneHandler.getDragPopup().getPaneIndicator().getTopButtons();
-
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = targetPaneHandler.getDragPopup().getPaneIndicator().getRightButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = targetPaneHandler.getDragPopup().getPaneIndicator().getBottomButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = targetPaneHandler.getDragPopup().getPaneIndicator().getLeftButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         public Boolean intersects(Node node1, Node node2) {
             if (node1 == null || node2 == null) {
@@ -673,7 +834,6 @@ public class PaneHandler {
             }
             Bounds b1 = node1.localToScreen(node1.getBoundsInLocal());
             Bounds b2 = node2.localToScreen(node2.getBoundsInLocal());
-            //System.err.println("INTERSECTS !!!!!!!!!!! " + b1.intersects(b2));
             return b1.intersects(b2);
 
         }
@@ -683,48 +843,26 @@ public class PaneHandler {
             pane.getStyleClass().add(style);
         }
 
-        protected double getTargetHeight() {
-            double retval = Double.MAX_VALUE;
-            if (indicatorType == NODE_POINTER && targetNode != null) {
-                retval = targetNode.getHeight();
-            } else if (targetPaneHandler != null && indicatorType == PANE_POINTER) {
-                retval = targetPaneHandler.getDockPane().getHeight();
-            }
-            return retval;
+        protected Point2D getMousePos() {
+            return mousePos;
         }
 
-        protected double getTargetWidth() {
-            double retval = Double.MAX_VALUE;
-            if (indicatorType == NODE_POINTER && targetNode != null) {
-                retval = targetNode.getWidth();
-            } else if (targetPaneHandler != null && indicatorType == PANE_POINTER) {
-                retval = targetPaneHandler.getDockPane().getWidth();
-            }
-            return retval;
-
-        }
-
-        public String getStyle() {
-            if (style == null) {
-                style = indicatorType == NODE_POINTER ? NODE_STYLE : PANE_STYLE;
-            }
-            return style;
-        }
-
-        public void setStyle(String style) {
-            this.style = style;
-        }
-
-        public Point2D getMousePos() {
+        public Point2D mousePos() {
             Point2D newPos = null;
             if (targetNode != null && indicator.getIndicatorPane() != null) {
-                //System.err.println("getMousePos targetNode = " + targetNode);
                 newPos = targetNode.localToScreen((targetNode.getWidth() - indicator.getIndicatorPane().getWidth()) / 2, (targetNode.getHeight() - indicator.getIndicatorPane().getHeight()) / 2);
             }
-
             return newPos;
         }
-
+        
+        public void showDockPlace() {
+        }
+        
+        public Point2D mousePosByPaneHandler() {
+            return null;
+        }
+        public void sideButtonSelected() {
+        }
         public void setMousePos(Point2D mousePos) {
             this.mousePos = mousePos;
         }
@@ -765,9 +903,14 @@ public class PaneHandler {
             return rightButtons;
         }
 
+        public Pane getCenterButtons() {
+            return centerButtons;
+        }
+
         public void setRightButtons(Pane rightButtons) {
             this.rightButtons = rightButtons;
         }
+
     }//Transformer
 
 }//class

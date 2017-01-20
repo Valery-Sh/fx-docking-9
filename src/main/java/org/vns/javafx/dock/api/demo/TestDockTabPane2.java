@@ -1,7 +1,9 @@
 package org.vns.javafx.dock.api.demo;
 
+import com.sun.javafx.stage.WindowHelper;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,11 +14,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DragPopupDelegate;
 
 /**
  *
@@ -151,9 +155,28 @@ public class TestDockTabPane2 extends Application {
         
         Scene scene01 = new Scene(rootAsDockPane);
         stage01.setScene(scene01);
+        stage01.setTitle("TTTTTTTTTTTTTTTTTTTTTT");
+        
+        
+        DragPopupDelegate dpd = new DragPopupDelegate(rootAsDockPane.paneHandler());
+        //DragPopupDelegate dpd = new DragPopupDelegate(dockTabPane.paneHandler());        
+        stage01.setOnShown(e -> { 
+            Point2D p = rootAsDockPane.localToScreen(0, 0);
+            double w = rootAsDockPane.getWidth();
+            double h = rootAsDockPane.getHeight();
+            dpd.getRootPane().setPrefSize(w, h);
+            dpd.show(p.getX(),p.getY()); 
+            //dpd.show(50,50);
+        });
+        stage01.setX(150);
         stage01.show();
         
         dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
+        //Platform.runLater(()->{
+        
+            
+        //});
+        
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

@@ -1,26 +1,3 @@
-/**
-* @file Default.css
-* @brief Default styling for docking controls.
-*
-* @section License
-*
-* Copyright (C) 2015 Robert B. Colton
-* This file is a part of the DockFX Library.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-**/
-
 /*******************************************************************************
  *                                                                             *
  * DockPane                                                                    *
@@ -48,207 +25,82 @@
     -fx-graphic: url(restore.png);
 }
 
-
-.drag-top-indicator .target-node:tabover {
-    -fx-graphic: url(no-image);
-    -fx-background-radius: 5em;
-    -fx-min-width: 10px;
-    -fx-min-height: 10px;
-    -fx-max-width: 10px;
-    -fx-max-height: 10px;
-    -fx-background-color: red;
-    -fx-opacity: 0.5;
-}
-
-
-/*.dock-pos-top {
-    -fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 4;
-}
-.dock-pos-bottom {
-    -fx-graphic: url(dock-popup-bottom-24x24.png);
-    -fx-padding: 4;
-}
-.dock-pos-left {
-    -fx-graphic: url(dock-popup-left-24x24.png);
-    -fx-padding: 4;
-}
-
-.dock-pos-right {
-    -fx-graphic: url(dock-popup-right-24x24.png);
-    -fx-padding: 4;
-}
-*/
-
-.dock-pos-top:tabover {
-    -fx-graphic: url(target-icon-16x16.png);
-
-    -fx-padding: 4;
-}
-
+/*********************************************
+ *
+ *  Drag Indicator's Styles
+ *
+ *********************************************/
 .dock-place {
     -fx-fill: -fx-selection-bar;
     -fx-opacity: 0.3;
 }
 
-
-/*.drag-tr-top-indicator .target-node {
-    -fx-graphic: url(no-image);
-    -fx-background-radius: 5em;
-    -fx-min-width: 10px;
-    -fx-min-height: 10px;
-    -fx-max-width: 10px;
-    -fx-max-height: 10px;
-    -fx-background-color: red;
-    -fx-opacity: 0.5;
-}
-*/
-
-.drag-top-indicator-small > .target-node  {
-    -fx-graphic: url(no-image);
-    -fx-padding: 4;
-    -fx-min-height: 10;
-    -fx-max-height: 10;
-    -fx-min-width: 24;
-    -fx-max-width: 24;
-
-}
-.drag-right-indicator-small > .target-node  {
-    -fx-graphic: url(no-image);
-    -fx-padding: 4;
-    -fx-min-width: 10;
-    -fx-max-width: 10;
-
-}
-
-.tttt {
-    -fx-max-width: 130;
-}
-
-.drag-bottom-indicator-small > .target-node  {
-    -fx-graphic: url(no-image);
-    -fx-padding: 4;
-    -fx-min-height: 10;
-    -fx-max-height: 10;
-    -fx-min-width: 24;
-    -fx-max-width: 24;
-
-}
-.drag-left-indicator-small > .target-node  {
-    -fx-graphic: url(no-image);
-    -fx-padding: 4;
-    -fx-min-width: 10;
-    -fx-max-width: 10;
-
-}
-
-.drag-top-indicator  .target-node {
+.drag-node-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
 
-.drag-bottom-indicator  .target-node {
+.drag-node-indicator-bottom-button {
     -fx-graphic: url(dock-popup-bottom-24x24.png);
     -fx-padding: 4;
 }
-.drag-left-indicator  .target-node { 
+.drag-node-indicator-left-button { 
     -fx-graphic: url(dock-popup-left-24x24.png);
     -fx-padding: 4;
 }
 
-.drag-right-indicator  .target-node {
+.drag-node-indicator-right-button {
     -fx-graphic: url(dock-popup-right-24x24.png);
     -fx-padding: 4;
 }
 
-.drag-top-indicator  .target-pane {
+.drag-node-indicator-center-button {
+    -fx-graphic: url(target-icon-24x24.png);
+    -fx-padding: 4;
+}
+
+.drag-pane-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
-
-.drag-bottom-indicator  .target-pane {
-    -fx-graphic: url(dock-popup-bottom-24x24.png);
-    -fx-padding: 4;
-}
-.drag-left-indicator  .target-pane { 
-    -fx-graphic: url(dock-popup-left-24x24.png);
-    -fx-padding: 4;
+.drag-pane-indicator-top-button:tabover {
+    -fx-graphic: url(uparrow-blue-16x16.png);
+    -fx-padding: 0;
 }
 
-.drag-right-indicator  .target-pane {
+.drag-pane-indicator-right-button {
     -fx-graphic: url(dock-popup-right-24x24.png);
     -fx-padding: 4;
 }
 
-/*.dock-node-pos-top {
-    -fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 4;
-}
-
-.dock-node-pos-bottom {
+.drag-pane-indicator-bottom-button {
     -fx-graphic: url(dock-popup-bottom-24x24.png);
     -fx-padding: 4;
 }
-.dock-node-pos-left {
+.drag-pane-indicator-left-button { 
     -fx-graphic: url(dock-popup-left-24x24.png);
     -fx-padding: 4;
 }
 
-.dock-node-pos-right {
-    -fx-graphic: url(dock-popup-right-24x24.png);
+.drag-pane-indicator-center-button {
+    -fx-graphic: url(target-icon-24x24.png);
     -fx-padding: 4;
-}
-*/
-
-/*.dock-center {
-    -fx-graphic: url(center.png);
+/*    visibility: hidden;*/
 }
 
-.dock-top {
-    -fx-graphic: url(top.png);
+.drag-pane-indicator-center-button-pane {
+    visibility: hidden;
 }
-
-.dock-right {
-    -fx-graphic: url(right.png);
-}
-
-.dock-bottom {
-    -fx-graphic: url(bottom.png);
-}
-
-.dock-left {
-    -fx-graphic: url(left.png);
-}
-
-.dock-top-root {
-    -fx-graphic: url(top.png);
-}
-
-.dock-right-root {
-    -fx-graphic: url(right.png);
-}
-
-.dock-bottom-root {
-    -fx-graphic: url(bottom.png);
-}
-
-.dock-left-root {
-    -fx-graphic: url(left.png);
-}
-*/
 /*******************************************************************************
  *                                                                             *
  * DockNode                                                                    *
  *                                                                             *
  ******************************************************************************/
-
 .dock-node-border {
     -fx-padding: 10;
     -fx-background-color: transparent;
     -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
 }
-
-
 .dock-node-border:maximized {
     -fx-padding: 0;
 }
@@ -281,26 +133,6 @@
     -fx-text-fill: -fx-text-base-color;
     -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
 }
-/* =============================================== */
-
-.dock-tab-graphic {
-    -fx-background-color: -fx-background;
-    -fx-padding: 0;
-    -fx-spacing: 0;
-    -fx-border-width: 0;
-}
-.dock-tab-graphic .title-bar-label {
-    -fx-padding: 5;
-}
-
-.drag-label {
-    -fx-border-width: 0;
-    -fx-spacing: 0;
-}
-
-.tab-pane .drag-image-view {
-    -fx-image: url(drag-14x14.png);
-}
 
 .drag-button {
     -fx-graphic: url(drag-12x12-02.png);
@@ -310,18 +142,15 @@
 
 }
 
-/*
- *   ------  DockSideBar --------
- */   
+/*******************************************
+ *      ------  DockSideBar --------
+ *******************************************/   
 .dock-side-bar {
     -fx-border-width: 1;
     -fx-padding: 10;
 }
 .dock-side-bar .tool-bar {
     -fx-padding: 3 3 3 3;
-    /*    -fx-border-width: 2;
-        -fx-border-color: aquamarine;
-    */
 }
 
 .dock-side-bar .tool-bar .button {
@@ -334,9 +163,9 @@
     -fx-background-radius: 3,2,1;
 }
 
-/*
+/* ***********************************************
  *   ------  DockTabPane2 --------
- */   
+ * ***********************************************/   
 .dock-tab-pane2 .tab-area .dock-title-bar {
     -fx-border-width: 0.5; 
 
@@ -349,12 +178,6 @@
 
 .dock-tab-pane2 .tab-area .dock-title-bar .dock-title-label {
     -fx-graphic: url(docknode-8x8.png);
-    /*    -fx-padding: 0 0 0 0;
-        -fx-text-fill: -fx-text-base-color;
-        -fx-border-width: 1;
-        -fx-border-color: red;
-        -fx-effect: dropshadow( gaussian, rgba(255,255,255,0.2), 0,0,0,1 );
-    */    
 }
 .dock-tab-pane2 .tab-area .dock-title-bar:choosed .dock-title-label {
     -fx-background-color: #0093ff;
@@ -380,8 +203,8 @@
     -fx-background-color: transparent;  
     -fx-min-width: 13;
     -fx-max-width: 13;
-
 }
+
 .dock-tab-pane2 .tab-area .left-scroll {
     -fx-graphic: url(left-arrow-7x7.png);
 
@@ -397,7 +220,6 @@
     -fx-background-color: rgb(226,226,226); 
 }
 
-
 .dock-tab-pane2 .tab-area .tab-menu-button {
     -fx-graphic: url(title-menu-button-12x12.png);
     -fx-background-color: transparent; 
@@ -405,11 +227,6 @@
 .dock-tab-pane2 .tab-area .tab-menu-button:hover {
     -fx-graphic: url(title-menu-button-12x12.png);
     -fx-background-color: rgb(226,226,226);  
-}
-
-.dock-title-menu-button:hover {
-    -fx-background-color: rgb(226,226,226);  
-    -fx-graphic: url(title-menu-button-12x12.png);
 }
 
 .dock-tab-pane2 .tab-area .separator:vertical .line {
@@ -433,24 +250,17 @@
     -fx-background-insets: 0;
 }
 
-/*
-.tab-title-bar .dock-title-state-button {
-    -fx-border-width: 1; 
-    -fx-border-color: -fx-outer-border;
-    -fx-padding: 1 2 1 2;
-
-}
-*/
+/* ***********************************************
+ *      ------  DockTitleBar  --------
+ * ***********************************************/   
 .dock-title-bar .button {
     -fx-padding: 1 4 1 4;
     -fx-border-width: 0; 
 }
 
-
 .dock-title-state-button {
     -fx-graphic: url(restore.png);
 }
-
 
 .dock-title-bar:choosed .dock-title-state-button {
     -fx-graphic: url(restore-white.png);
@@ -473,6 +283,7 @@
 .dock-title-close-button {
     -fx-graphic: url(close.png);
 }
+
 .dock-title-menu-button {
     -fx-background-color: transparent;  
     -fx-graphic: url(title-menu-button-12x12.png);
@@ -495,5 +306,19 @@
 .dock-title-bar:choosed .dock-title-pin-button:hover {
     -fx-background-color: #1187ff;
 } 
+/* ***********************************************
+ *      ------  ParentChainPopup  --------
+ * ***********************************************/   
+.parent-chain-button {
+    -fx-graphic: url(docknode-16x16.png);   
+    -fx-padding: 4,4,4,2;
+/*    -fx-border-width: 0;
+    -fx-spacing: 0;
+    -fx-background-insets: 0;
+*/    
 
+}
+.parent-chain-root {
+    -fx-background-color: white;
+}
 

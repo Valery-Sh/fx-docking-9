@@ -24,7 +24,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     private final Dockable dockable;
 
     private DragPopup popup;
-
+    private DragPopupDelegate popupDelegate;
+    
     private Parent targetDockPane;
 
     private Stage resultStage;
@@ -121,10 +122,39 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         stage.setX(ev.getScreenX() - leftDelta - eventSourceOffset.getX());
         stage.setY(ev.getScreenY() - topDelta - eventSourceOffset.getY());
 
-        //if (dockable.nodeHandler().isFloating()) {
+        
         if (popup != null && popup.isShowing()) {
-            popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
+           popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
         }
+        //19.01
+        //
+        if ( ev.isControlDown() && popupDelegate != null && ! popupDelegate.contains(ev.getScreenX(), ev.getScreenY())) {
+        
+            System.err.println("NOT Contains************************");
+            return;
+        }
+        if ( ev.isControlDown() && popupDelegate == null) {
+            Region r = popup.getDockPane();
+            popup.hide();
+            popupDelegate = new DragPopupDelegate(((DockPaneTarget)r).paneHandler());            
+            Point2D p = r.localToScreen(0, 0);
+            double w = r.getWidth();
+            double h = r.getHeight();
+            popupDelegate.getRootPane().setPrefSize(w, h);
+            popupDelegate.show(p.getX(),p.getY()); 
+            popupDelegate.getStage().getScene().setOnKeyReleased(ke -> {
+            if( ! ke.isControlDown()) {
+                popupDelegate.getStage().close();
+            }
+         });        
+
+            //dpd.show(50,50);
+        } else if ( ! ev.isControlDown() && popupDelegate != null ) {
+            popupDelegate.close();
+            popupDelegate = null;
+        }
+        //
+        //
         if (popup == null || !popup.isShowing()) {
             resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
         }
@@ -153,12 +183,11 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         DragPopup newPopup = ((DockPaneTarget) root).paneHandler().getDragPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
-            
-
         }
         popup = newPopup;
         //popup.show((Pane) root, dockable.node());
         PaneHandler ph = ((DockPaneTarget) root).paneHandler();
+        
         popup.show(ph, dockable.node());
         popup.handle(ev.getScreenX(), ev.getScreenY());
         //}
@@ -220,6 +249,10 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
         if (popup != null) {
             popup.hide();
+        }
+        if ( popupDelegate != null ) {
+            popupDelegate.close();
+            popupDelegate = null;
         }
     }
 

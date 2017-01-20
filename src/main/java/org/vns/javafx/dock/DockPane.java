@@ -23,8 +23,8 @@ public class DockPane extends StackPane implements DockPaneTarget{
 
     private void init() {
         paneHandler = new DockPaneHandler(this);
-        //delegeteProperty.set(new DockPaneHandler(this));
     }
+    
     @Override
     public PaneHandler paneHandler() {
         return paneHandler;

@@ -119,6 +119,16 @@ public class TopNodeHelper {
         return chain;
     }
 
+    public static List<Node> getParentChain(Node node, Predicate<Node> predicate) {
+        List<Node> retval = new ArrayList<>();
+        getParentChain(node).forEach( p -> {
+            if ( predicate.test(p)) {
+                retval.add(p);
+            }
+        });
+        return retval;
+    }
+    
     public static Node getTopNode(Stage stage, double screenX, double screenY) {
         return getTopNode(stage, screenX, screenY, (n -> {
             return true;
