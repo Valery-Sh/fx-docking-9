@@ -21,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
+import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
 
 /**
@@ -34,6 +35,9 @@ public class PaneHandler {
     private String title;
     private PaneIndicatorTransformer paneTransformer;
     private NodeIndicatorTransformer nodeTransformer;
+    
+    private PaneSideIndicator paneIndicator;
+    private NodeSideIndicator nodeIndicator;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -47,6 +51,7 @@ public class PaneHandler {
 
     protected PaneHandler(Region dockPane) {
         this.dockPane = dockPane;
+        System.err.println("PaneHandler: dockPane=" + dockPane);        
         init();
     }
 
@@ -58,7 +63,7 @@ public class PaneHandler {
     private void init() {
         setSidePointerModifier(this::modifyNodeSidePointer);
         //dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
-        dragPopup = new DragPopup();        
+      
         inititialize();
     }
 
@@ -81,7 +86,18 @@ public class PaneHandler {
         return notDockableItemsProperty;
     }
 
+    protected void setDragPopup(DragPopup dragPopup) {
+        System.err.println("PaneHandler: setDragpopup=" + dragPopup.getTargetPaneHandler().getDockPane());
+        this.dragPopup = dragPopup;
+    }
+
     public DragPopup getDragPopup() {
+        if ( dragPopup != null ) {
+            return dragPopup;
+        }
+        if ( getDockPane() != null ) {
+            dragPopup = new DragPopup(this);
+        }
         return dragPopup;
     }
 
@@ -161,7 +177,7 @@ public class PaneHandler {
     }
 
     protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
-        return new NodeIndicatorTransformer(this);
+        return new NodeIndicatorTransformer();
     }
 
     public PaneIndicatorTransformer getPaneTransformer() {
@@ -172,9 +188,32 @@ public class PaneHandler {
     }
 
     protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
-        return new PaneIndicatorTransformer(this);
+        return new PaneIndicatorTransformer();
     }
 
+    ///
+    public NodeSideIndicator getNodeIndicator() {
+        if (nodeIndicator == null) {
+            nodeIndicator = createNodeIndicator();
+        }
+        return nodeIndicator;
+    }
+
+    protected NodeSideIndicator createNodeIndicator() {
+        return new NodeSideIndicator(this);
+    }
+
+    public PaneSideIndicator getPaneIndicator() {
+        if (paneIndicator == null) {
+            paneIndicator = createPaneIndicator();
+        }
+        return paneIndicator;
+    }
+
+    protected PaneSideIndicator createPaneIndicator() {
+        return new PaneSideIndicator(this);
+    }
+    
     public SidePointerModifier getSidePointerModifier() {
         return sidePointerModifier;
     }
@@ -189,6 +228,7 @@ public class PaneHandler {
 
     public void setDockPane(Region dockPane) {
         this.dockPane = dockPane;
+        System.err.println("PaneHandler setDockPane");
     }
 
     protected boolean isDocked(Node node) {
@@ -296,7 +336,9 @@ public class PaneHandler {
     }
 
     public abstract static class SideIndicator {
-
+        
+        private PaneHandler paneHandler;
+        
         private Pane topButtons;
         private Pane bottomButtons;
         private Pane leftButtons;
@@ -311,7 +353,8 @@ public class PaneHandler {
                 
         private SideIndicatorTransformer transformer;
 
-        public SideIndicator() {
+        protected SideIndicator(PaneHandler paneHandler) {
+            this.paneHandler = paneHandler;
             init();
         }
 
@@ -319,17 +362,12 @@ public class PaneHandler {
             indicatorPane = createIndicatorPane();
         }
 
+        public PaneHandler getPaneHandler() {
+            return paneHandler;
+        }
+
         protected abstract Pane createIndicatorPane();
 
-        public Map<Node, PaneHandler> getSideButtonMap() {
-            return sideButtonMap;
-        }
-
-        public void setSideButtonMap(Map<Node, PaneHandler> sideButtonMap) {
-            this.sideButtonMap = sideButtonMap;
-        }
-
-        
         public Pane getIndicatorPane() {
             return indicatorPane;
         }
@@ -339,7 +377,7 @@ public class PaneHandler {
         }
 
         public Pane getTopButtons() {
-            Pane retval;// = null;
+            Pane retval;
             if (transformer == null) {
                 retval = topButtons;
             } else {
@@ -349,7 +387,7 @@ public class PaneHandler {
         }
 
         public Pane getBottomButtons() {
-            Pane retval;// = null;
+            Pane retval;
             if (transformer == null) {
                 retval = bottomButtons;
             } else {
@@ -360,7 +398,7 @@ public class PaneHandler {
         }
 
         public Pane getLeftButtons() {
-            Pane retval;// = null;
+            Pane retval;
             if (transformer == null) {
                 retval = leftButtons;
             } else {
@@ -371,7 +409,7 @@ public class PaneHandler {
         }
 
         public Pane getRightButtons() {
-            Pane retval;// = null;
+            Pane retval;
             if (transformer == null) {
                 retval = rightButtons;
             } else {
@@ -381,7 +419,7 @@ public class PaneHandler {
         }
 
         public Pane getCenterButtons() {
-            Pane retval;// = null;
+            Pane retval;
             if (transformer == null) {
                 retval = centerButtons;
             } else {
@@ -466,35 +504,17 @@ public class PaneHandler {
             return centerButtons;
         }
         
-        protected Pane createSideButtons_OLD(Side side) {
-            Button btn = new Button();
-            StackPane retval = new StackPane(btn);
-            retval.getStyleClass().add(getButonPaneStyle(side));
-            btn.getStyleClass().add(getButtonStyle(side));
-            
-            return retval;
-        }        
         protected Pane createSideButtons(Side side) {
             
             Button btn = new Button();
-            //Button btn1 = new Button();
-            //btn1.getStyleClass().add(getButtonStyle(side));
             StackPane retval = new StackPane();
-            //GridPane retval = new GridPane();
-            
-            //retval.add(btn1, 2, 0);
-            //retval.add(btn, 1, 0);
             retval.getChildren().add(btn);
-            //retval.getChildren().add(btn1);
             retval.setAlignment(Pos.CENTER);
-            //HBox retval = new HBox(btn);
             retval.getStyleClass().add(getButonPaneStyle(side));
             btn.getStyleClass().add(getButtonStyle(side));
             switch (side) {
                 case TOP:
                     topButtons = retval;
-                    //btn1.setTranslateX(-10);
-                    //btn1.setTranslateY(3);
                     break;
                 case RIGHT:
                     rightButtons = retval;
@@ -509,86 +529,74 @@ public class PaneHandler {
 
             return retval;
         }
-
-        /*        public Pane getButtons(Side side) {
-            Pane retval = null;
-            if (null != side) {
-                switch (side) {
-                    case TOP:
-                        retval = getTopButtons();
-                        break;
-                    case BOTTOM:
-                        retval = getBottomButtons();
-                        break;
-                    case LEFT:
-                        retval = getLeftButtons();
-                        break;
-                    case RIGHT:
-                        retval = getRightButtons();
-                        break;
-                }
-            }
-            return retval;
-        }
-         */
-        public void targetNodeChanged(PaneHandler paneHandler, Region node, double x, double y) {
-            transform(paneHandler, node, x, y);
-            transformer.targetNodeChanged(node);
-        }
-
-        public void showDockPlace(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
-            transform(targetPaneHandler, targetNode, screenX, screenY);
+        public void showDockPlace(Region targetNode, double screenX, double screenY) {
+            transform(targetNode, screenX, screenY);
             transformer.showDockPlace();
         }
         
-        public Point2D mousePosBy(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
-            transform(targetPaneHandler, targetNode, screenX, screenY);
+        public Point2D mousePosBy(Region targetNode, double screenX, double screenY) {
+            transform(targetNode, screenX, screenY);
             return transformer.mousePos();
         }
 
-        public Point2D mousePosBy(PaneHandler targetPaneHandler, double screenX, double screenY) {
-            transform(targetPaneHandler, null, screenX, screenY);
+        public Point2D mousePosBy(double screenX, double screenY) {
+            transform(screenX, screenY);
             return transformer.mousePosByPaneHandler();
         }
-        public void sideButtonSelected(PaneHandler targetPaneHandler, Button selectedButton, double screenX, double screenY) {
-            transform(targetPaneHandler, null, screenX, screenY);
+        public void setSelectedButton(Button selectedButton) {
             this.selectedButton = selectedButton;
-            transformer.sideButtonSelected();
+        }
+        
+        protected abstract SideIndicatorTransformer getTransformer();
+
+        protected void transform() {
+            transform(null, 0, 0);
+        }
+        protected void transform(Region targetNode) {
+            transform(targetNode, 0, 0);
+        }
+        
+        protected void transform(double screenX, double screenY) {
+            transform(null, screenX, screenY);
         }
 
-        
-        protected abstract SideIndicatorTransformer getTransformer(PaneHandler targetPaneHandler);
-
-        protected void transform(PaneHandler targetPaneHandler, Region targetNode, double screenX, double screenY) {
-            transformer = getTransformer(targetPaneHandler);
-
+        protected void transform(Region targetNode, double screenX, double screenY) {
+            transformer = getTransformer();
             transformer.initialize(this, new Point2D(screenX, screenY), topButtons, bottomButtons, leftButtons, rightButtons);
 
             transformer.setTargetNode(targetNode);
-            transformer.setTargetPaneHandler(targetPaneHandler);
             transformer.transform();
         }
-        public void beginUpdateIndicator(PaneHandler paneHandler, Region node){
-            transform(paneHandler, node, 0, 0);
-            transformer.beginUpdateIndicator(node);
+        
+        public void windowBeforeShow(Region node){
+            transform(node);
+            transformer.windowBeforeShow(node);
         }
-        public void endUpdateIndicator(PaneHandler paneHandler, Region node){
-            transform(paneHandler, node, 0, 0);
-            transformer.endUpdateIndicator(node);
+        public void windowAfterShow(Region node){
+            transform(node);
+            transformer.windowAfterShow(node);
+        }
+        public void windowOnShown(WindowEvent ev, Region node){
+            transform(node);
+            transformer.windowOnShown(ev,node);
+        }
+        public void windowOnShowing(WindowEvent ev, Region node){
+            transform(node);
+            transformer.windowOnShowing(ev,node);
         }
 
         public void sideIndicatorShowing(PaneHandler paneHandler, Region node) {
-            transform(paneHandler, node, 0, 0);
+            transform(node);
             transformer.sideIndicatorShowing(node);
         }
         
         public void sideIndicatorShown(PaneHandler paneHandler, Region node) {
-            transform(paneHandler, node, 0, 0);
+            transform(node);
             transformer.sideIndicatorShown(node);
         }
 
         public void sideIndicatorHidden(PaneHandler paneHandler, Region node) {
-            transform(paneHandler, node, 0, 0);
+            transform(node);
             transformer.sideIndicatorHidden(node);
         }
 
@@ -600,7 +608,8 @@ public class PaneHandler {
 
     public static class NodeSideIndicator extends SideIndicator {
 
-        public NodeSideIndicator() {
+        public NodeSideIndicator(PaneHandler paneHandler) {
+            super(paneHandler);
         }
 
         @Override
@@ -630,15 +639,15 @@ public class PaneHandler {
         }
 
         @Override
-        protected NodeIndicatorTransformer getTransformer(PaneHandler targetPaneHandler) {
-            return targetPaneHandler.getNodeTransformer();
+        protected NodeIndicatorTransformer getTransformer() {
+            return getPaneHandler().getNodeTransformer();
         }
     }//class SideIndicator
 
     public static class PaneSideIndicator extends SideIndicator {
 
-        public PaneSideIndicator() {
-
+        public PaneSideIndicator(PaneHandler paneHandler) {
+            super(paneHandler);
         }
  
         @Override
@@ -667,15 +676,15 @@ public class PaneHandler {
         }
 
         @Override
-        protected PaneIndicatorTransformer getTransformer(PaneHandler targetPaneHandler) {
-            return targetPaneHandler.getPaneTransformer();
+        protected PaneIndicatorTransformer getTransformer() {
+            return getPaneHandler().getPaneTransformer();
         }
     }//class SideIndicator
 
     public static class PaneIndicatorTransformer extends SideIndicatorTransformer {
 
-        public PaneIndicatorTransformer(PaneHandler targetPaneHandler) {
-            super(targetPaneHandler);
+        public PaneIndicatorTransformer() {
+            super();
         }
         @Override
         public void sideIndicatorShown(Region node) {}
@@ -690,8 +699,7 @@ public class PaneHandler {
     }//Transformer
     public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
 
-        public NodeIndicatorTransformer(PaneHandler targetPaneHandler) {
-            super(targetPaneHandler);
+        public NodeIndicatorTransformer() {
         }
 
         @Override
@@ -767,9 +775,9 @@ public class PaneHandler {
 
     public abstract static class SideIndicatorTransformer {
 
-        private PaneHandler targetPaneHandler;
+        //private PaneHandler targetPaneHandler;
         private Region targetNode;
-        private String style;
+        //private String style;
         private Point2D mousePos;
         private Pane topButtons;
         private Pane rightButtons;
@@ -778,10 +786,10 @@ public class PaneHandler {
         private Pane centerButtons;
         private SideIndicator indicator;
 
-        private Scale smallbuttonsScale;
+        private final Scale smallbuttonsScale;
 
-        public SideIndicatorTransformer(PaneHandler targetPaneHandler) {
-            this.targetPaneHandler = targetPaneHandler;
+        public SideIndicatorTransformer() {
+            //this.targetPaneHandler = targetPaneHandler;
             this.smallbuttonsScale = new Scale(0.5, 0.5);
         }
 
@@ -806,11 +814,9 @@ public class PaneHandler {
         }
 
         public PaneHandler getTargetPaneHandler() {
-            return getSelectedButtonPaneHandler();
+            return getIndicator().getPaneHandler();
         }
-        protected PaneHandler getSelectedButtonPaneHandler() {
-            return targetPaneHandler;
-        }
+
         public Region getTargetNode() {
             return targetNode;
         }
@@ -825,8 +831,13 @@ public class PaneHandler {
 
         public void transform() {
         }
-        public void beginUpdateIndicator(Region node){}
-        public void endUpdateIndicator(Region node){}
+//        public void beginUpdateIndicator(Region node){}
+        public void windowBeforeShow(Region node){}
+        public void windowAfterShow(Region node){}        
+        public void windowOnShowing(WindowEvent ev, Region node){}                
+        public void windowOnShown(WindowEvent ev, Region node){}                
+        
+//        public void endUpdateIndicator(Region node){}
         
         public void sideIndicatorShowing(Region node) {}
 
@@ -870,14 +881,10 @@ public class PaneHandler {
         public Point2D mousePosByPaneHandler() {
             return null;
         }
-        public void sideButtonSelected() {
-        }
+        public void sideButtonSelected() {}
+        
         public void setMousePos(Point2D mousePos) {
             this.mousePos = mousePos;
-        }
-
-        protected void setTargetPaneHandler(PaneHandler targetPaneHandler) {
-            this.targetPaneHandler = targetPaneHandler;
         }
 
         protected void setTargetNode(Region targetNode) {

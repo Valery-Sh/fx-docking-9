@@ -37,6 +37,10 @@ public class ScenePaneHandler extends PaneHandler{
         }
         
         setDockPane((Pane) newValue);
+        if ( newValue != null ) {
+            System.err.println("ScenePaneHandler");
+            //setDragPopup(new DragPopup(this));
+        }
         if ( newValue != null  ) {
             changeDockedState(dockable, true);
 

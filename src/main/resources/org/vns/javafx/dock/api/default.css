@@ -100,6 +100,27 @@
     -fx-padding: 4,4,4,2;
     
 }
+.drag-redir-indicator-right-button {
+    /*-fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 0;*/
+    -fx-graphic: url(docknode-16x16.png);   
+    -fx-padding: 4,4,4,2;
+    
+}
+.drag-redir-indicator-bottom-button {
+    /*-fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 0;*/
+    -fx-graphic: url(docknode-16x16.png);   
+    -fx-padding: 4,4,4,2;
+    
+}
+.drag-redir-indicator-left-button {
+    /*-fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 0;*/
+    -fx-graphic: url(docknode-16x16.png);   
+    -fx-padding: 4,4,4,2;
+    
+}
 
 /*******************************************************************************
  *                                                                             *

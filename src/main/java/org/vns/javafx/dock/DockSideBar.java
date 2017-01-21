@@ -422,13 +422,12 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         }
         @Override
         protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
-            return new SideBarIndicatorTransformer(this);
+            return new SideBarIndicatorTransformer();
         }
 
         public static class SideBarIndicatorTransformer extends PaneHandler.NodeIndicatorTransformer {
 
-            public SideBarIndicatorTransformer(PaneHandler paneHandler) {
-                super(paneHandler);
+            public SideBarIndicatorTransformer() {
             }
 
             /**

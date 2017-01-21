@@ -295,7 +295,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
 
         @Override
         protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
-             return new TabSideIndicatorTransformer(this);
+             return new TabSideIndicatorTransformer();
         }
 
         /*
@@ -795,8 +795,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
 
     public static class TabSideIndicatorTransformer extends PaneHandler.NodeIndicatorTransformer {
 
-        public TabSideIndicatorTransformer(PaneHandler paneHandler) {
-            super(paneHandler);
+        public TabSideIndicatorTransformer() {
         }
 
         /**
