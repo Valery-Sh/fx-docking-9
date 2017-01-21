@@ -35,6 +35,7 @@
     -fx-opacity: 0.3;
 }
 
+
 .drag-node-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
@@ -91,6 +92,15 @@
 .drag-pane-indicator-center-button-pane {
     visibility: hidden;
 }
+
+.drag-redir-indicator-top-button {
+    /*-fx-graphic: url(dock-popup-top-24x24.png);
+    -fx-padding: 0;*/
+    -fx-graphic: url(docknode-16x16.png);   
+    -fx-padding: 4,4,4,2;
+    
+}
+
 /*******************************************************************************
  *                                                                             *
  * DockNode                                                                    *

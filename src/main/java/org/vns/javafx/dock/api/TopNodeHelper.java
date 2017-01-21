@@ -103,7 +103,14 @@ public class TopNodeHelper {
         }
         return retval;
     }
-
+    /**
+     * Returns a list of parent nodes for the given node.
+     * The first element of the list is the specified node, the second is
+     * the parent of the first, the third is the parent of the second etc.
+     * 
+     * @param node a top most node from witch the parent chain starts.
+     * @return a list of parent nodes for the given node.
+     */
     public static List<Node> getParentChain(Node node) {
 
         List<Node> chain = new ArrayList<>();

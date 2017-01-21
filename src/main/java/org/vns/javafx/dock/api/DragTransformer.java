@@ -14,6 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.PaneHandler.PaneSideIndicator;
+import org.vns.javafx.dock.api.PaneHandler.SideIndicator;
 
 /**
  *
@@ -24,7 +26,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     private final Dockable dockable;
 
     private DragPopup popup;
-    private DragPopupDelegate popupDelegate;
+    private DockRedirector popupDelegate;
     
     private Parent targetDockPane;
 
@@ -107,6 +109,7 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     }
 
     public void mouseDragged(MouseEvent ev) {
+        PaneSideIndicator paneSideIndicator = null;
         if (!dockable.nodeHandler().isFloating()) {
             return;
         }
@@ -129,19 +132,21 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         //19.01
         //
         if ( ev.isControlDown() && popupDelegate != null && ! popupDelegate.contains(ev.getScreenX(), ev.getScreenY())) {
-        
-            System.err.println("NOT Contains************************");
             return;
         }
-        if ( ev.isControlDown() && popupDelegate == null) {
+        if ( ev.isControlDown() && popupDelegate == null && popup != null)  {
+            
             Region r = popup.getDockPane();
             popup.hide();
-            popupDelegate = new DragPopupDelegate(((DockPaneTarget)r).paneHandler());            
+            popupDelegate = new DockRedirector(r);            
             Point2D p = r.localToScreen(0, 0);
             double w = r.getWidth();
             double h = r.getHeight();
             popupDelegate.getRootPane().setPrefSize(w, h);
-            popupDelegate.show(p.getX(),p.getY()); 
+            //popupDelegate.getStage().setOnShown(popupDelegate.);
+            
+            paneSideIndicator = new PaneSideIndicator();
+            popupDelegate.show(paneSideIndicator,p.getX(),p.getY()); 
             popupDelegate.getStage().getScene().setOnKeyReleased(ke -> {
             if( ! ke.isControlDown()) {
                 popupDelegate.getStage().close();
@@ -187,8 +192,11 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         popup = newPopup;
         //popup.show((Pane) root, dockable.node());
         PaneHandler ph = ((DockPaneTarget) root).paneHandler();
-        
-        popup.show(ph, dockable.node());
+        if ( ev.isControlDown() && paneSideIndicator != null ) {
+            popup.showRedirect(ph, paneSideIndicator,dockable.node());
+        } else {
+            popup.show(ph, dockable.node());
+        }
         popup.handle(ev.getScreenX(), ev.getScreenY());
         //}
     }

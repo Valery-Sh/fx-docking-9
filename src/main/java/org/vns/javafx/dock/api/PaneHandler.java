@@ -1,5 +1,7 @@
 package org.vns.javafx.dock.api;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -55,7 +57,8 @@ public class PaneHandler {
 
     private void init() {
         setSidePointerModifier(this::modifyNodeSidePointer);
-        dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
+        //dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
+        dragPopup = new DragPopup();        
         inititialize();
     }
 
@@ -304,6 +307,8 @@ public class PaneHandler {
         
         private Pane indicatorPane;
         
+        private Map<Node, PaneHandler> sideButtonMap = new HashMap<>();
+                
         private SideIndicatorTransformer transformer;
 
         public SideIndicator() {
@@ -316,6 +321,15 @@ public class PaneHandler {
 
         protected abstract Pane createIndicatorPane();
 
+        public Map<Node, PaneHandler> getSideButtonMap() {
+            return sideButtonMap;
+        }
+
+        public void setSideButtonMap(Map<Node, PaneHandler> sideButtonMap) {
+            this.sideButtonMap = sideButtonMap;
+        }
+
+        
         public Pane getIndicatorPane() {
             return indicatorPane;
         }
@@ -554,7 +568,20 @@ public class PaneHandler {
             transformer.setTargetPaneHandler(targetPaneHandler);
             transformer.transform();
         }
+        public void beginUpdateIndicator(PaneHandler paneHandler, Region node){
+            transform(paneHandler, node, 0, 0);
+            transformer.beginUpdateIndicator(node);
+        }
+        public void endUpdateIndicator(PaneHandler paneHandler, Region node){
+            transform(paneHandler, node, 0, 0);
+            transformer.endUpdateIndicator(node);
+        }
 
+        public void sideIndicatorShowing(PaneHandler paneHandler, Region node) {
+            transform(paneHandler, node, 0, 0);
+            transformer.sideIndicatorShowing(node);
+        }
+        
         public void sideIndicatorShown(PaneHandler paneHandler, Region node) {
             transform(paneHandler, node, 0, 0);
             transformer.sideIndicatorShown(node);
@@ -650,26 +677,16 @@ public class PaneHandler {
         public PaneIndicatorTransformer(PaneHandler targetPaneHandler) {
             super(targetPaneHandler);
         }
+        @Override
+        public void sideIndicatorShown(Region node) {}
 
         @Override
-        public void sideIndicatorShown(Region node) {
-        }
-
-        ;
-
-        @Override
-        public void sideIndicatorHidden(Region node) {
-        }
-
-        ;
-
-
+        public void sideIndicatorHidden(Region node) {}
+        
         @Override
         public Point2D mousePos() {
             return getMousePos();
         }
-    ;
-
     }//Transformer
     public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
 
@@ -789,9 +806,11 @@ public class PaneHandler {
         }
 
         public PaneHandler getTargetPaneHandler() {
+            return getSelectedButtonPaneHandler();
+        }
+        protected PaneHandler getSelectedButtonPaneHandler() {
             return targetPaneHandler;
         }
-
         public Region getTargetNode() {
             return targetNode;
         }
@@ -806,27 +825,17 @@ public class PaneHandler {
 
         public void transform() {
         }
+        public void beginUpdateIndicator(Region node){}
+        public void endUpdateIndicator(Region node){}
+        
+        public void sideIndicatorShowing(Region node) {}
 
-        public void sideIndicatorShown(Region node) {
-        }
+        public void sideIndicatorShown(Region node) {}
+        
+        public void sideIndicatorHidden(Region node) {}
+        public void targetNodeChanged(Region node) {}
 
-        ;
-
-        public void sideIndicatorHidden(Region node) {
-        }
-
-        ;
-
-        public void targetNodeChanged(Region node) {
-        }
-
-        ;
-
-        protected void resizeButtonPanes() {
-        }
-
-        ;
-
+        protected void resizeButtonPanes() {}
 
         public Boolean intersects(Node node1, Node node2) {
             if (node1 == null || node2 == null) {
