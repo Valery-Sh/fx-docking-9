@@ -25,6 +25,7 @@ public class DockRegistry {
     private final ObservableList<Stage> stages = FXCollections.observableArrayList();
     private final Map<Stage, Window> owners = new HashMap<>();
     private final ObservableMap<Node,Dockable> dockables = FXCollections.observableHashMap();
+    private final ObservableMap<Node,DockPaneTarget> dockTargets = FXCollections.observableHashMap();
 
     private boolean registerDone;
     
@@ -269,7 +270,23 @@ public class DockRegistry {
             return (Dockable) node;
         }
         return getInstance().dockables.get(node);
-
+    }
+    public static boolean isDockPaneTarget(Node node) {
+        return getInstance().isNodeDockPaneTarget(node);
+    }
+    protected boolean isNodeDockPaneTarget(Node node ) {
+        boolean retval = node instanceof DockPaneTarget;
+        if ( ! retval && dockTargets.get(node) != null ) {
+            retval = true;
+        }
+        return retval;
+    }
+    
+    public static DockPaneTarget dockPaneTarget(Node node) {
+        if ( node instanceof DockPaneTarget ) {
+            return (DockPaneTarget) node;
+        }
+        return getInstance().dockTargets.get(node);
     }
     
     private static class SingletonInstance {

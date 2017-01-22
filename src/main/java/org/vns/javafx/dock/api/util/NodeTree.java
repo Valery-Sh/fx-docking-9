@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.util;
 
 import java.util.List;
 import java.util.Stack;
@@ -13,6 +13,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Popup;
+import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.TopNodeHelper;
 
 /**
  *
@@ -28,7 +31,7 @@ public class NodeTree {
         //
         // Get a list of parent nodes
         //
-        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return (el instanceof DockPaneTarget);}  );
+        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return DockRegistry.isDockPaneTarget(node);}  );
         root.getChildren().add(getRegion(p));
         Popup popup = new Popup();
         popup.show(root,x,y);
@@ -50,7 +53,7 @@ public class NodeTree {
         return r;        
     }
     public Object getItem(Node node) {
-        String value = ((DockPaneTarget)node).paneHandler().getTitle();
+        String value = DockRegistry.dockPaneTarget(node).paneHandler().getTitle();
         TreeItem item = new TreeItem(value);
         return item;
     }

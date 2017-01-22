@@ -10,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.ParentChainPopup;
+import org.vns.javafx.dock.api.util.ParentChainPopup;
 
 /**
  *

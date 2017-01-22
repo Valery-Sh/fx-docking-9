@@ -29,6 +29,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
@@ -437,7 +438,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
              * @param node the dockable node
              */
             @Override
-            public void sideIndicatorShown(Region node) {
+            public void indicatorOnShown(WindowEvent ev,Region node) {
             }
 
             @Override

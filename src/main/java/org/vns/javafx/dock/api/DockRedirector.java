@@ -1,13 +1,10 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -15,13 +12,11 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.PaneHandler.PaneSideIndicator;
 
 /**
  *
@@ -36,12 +31,6 @@ public class DockRedirector {
     private final DoubleProperty xProperty = new SimpleDoubleProperty();
     private final DoubleProperty yProperty = new SimpleDoubleProperty();
 
-    /*    public DockRedirector(PaneHandler targetPaneHandler) {
-        rootPane = new DockPaneRedirector(targetPaneHandler,targetPaneHandler);
-        targetDockPane = (Pane) targetPaneHandler.getDockPane();
-        topDockPane = targetDockPane;
-    }
-     */
     public DockRedirector(Region topDockPane) {
         this.topDockPane = topDockPane;
         init();
@@ -49,36 +38,51 @@ public class DockRedirector {
 
     private void init() {
         targetDockPane = findTargetDockPane();
-        //System.err.println("DockRedirector targetDockPane = " + targetDockPane);
-        //System.err.println("DockRedirector topDockPane = " + topDockPane);
-
-        rootPane = new DockPaneRedirector(((DockPaneTarget) topDockPane).paneHandler(), ((DockPaneTarget) targetDockPane).paneHandler());
+        rootPane = new DockPaneRedirector(DockRegistry.dockPaneTarget(topDockPane).paneHandler(), DockRegistry.dockPaneTarget(targetDockPane).paneHandler());
     }
 
     public Region findTargetDockPane() {
-
         List<Node> nodes = TopNodeHelper.getParentChain(topDockPane, node -> {
-            return (node instanceof DockPaneTarget);
+            return DockRegistry.isDockPaneTarget(node);
         });
-
         return (Region) nodes.get(nodes.size() - 1);
     }
 
     public PaneHandler getPaneHandler() {
-        return ((DockPaneTarget) targetDockPane).paneHandler();
+        return DockRegistry.dockPaneTarget(targetDockPane).paneHandler();
     }
 
     public Stage getStage() {
         return stage;
     }
 
+    public static DockRedirector show(Region topDockPane) {
+        DockRedirector redir = new DockRedirector(topDockPane);
+        redir.show();
+        return redir;
+    }
+
+    public void show() {
+        Point2D p = topDockPane.localToScreen(0, 0);
+        double w = topDockPane.getWidth();
+        double h = topDockPane.getHeight();
+        getRootPane().setPrefSize(w, h);
+        show(p.getX(), p.getY());
+    }
+
     public void show(double x, double y) {
 
         rootPane.getStyleClass().clear();
-        rootPane.setStyle("-fx-background-color: transparent; -fx-border-width: 5px; -fx-border-color: red");
+        rootPane.getStyleClass().add("drag-redir-indicator");
+        //rootPane.setStyle("-fx-background-color: transparent; -fx-border-width: 5px; -fx-border-color: red");
 
         Scene scene = new Scene(rootPane);
-        //Scene scene = new Scene(sp);
+        scene.setOnKeyReleased(ke -> {
+            if (!ke.isControlDown()) {
+                stage.close();
+            }
+        });
+
         stage = new Stage();
         stage.setAlwaysOnTop(true);
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -104,10 +108,9 @@ public class DockRedirector {
         stage.setY(y);
         stage.setWidth(targetDockPane.getWidth());
         stage.setHeight(targetDockPane.getHeight());
-        PaneHandler ph = ((DockPaneTarget) rootPane).paneHandler();
+        PaneHandler ph = DockRegistry.dockPaneTarget(rootPane).paneHandler();
         ph.getPaneIndicator().windowBeforeShow(null);
-        //stage.setOnShown(ev -> ph.getPaneIndicator().windowOnShown(ev, null));
-
+     
         stage.show();
     }
 
@@ -116,17 +119,6 @@ public class DockRedirector {
     }
 
     public boolean contains(double x, double y) {
-        /*        Bounds b = rootPane.localToScreen(rootPane.getBoundsInLocal());
-        System.err.println("b.X=" + b.getMinX());
-        System.err.println("b.Y=" + b.getMinY());
-        System.err.println("b.W=" + b.getWidth());
-        System.err.println("b.H=" + b.getHeight());
-        System.err.println("x=" + x);
-        System.err.println("y=" + y);
-        System.err.println("=================================");
-         */
-
-        //rootPane.localToScreen(rootPane.getBoundsInLocal()).contains(x, y);            
         return DockUtil.contains(rootPane, x, y);
     }
 
@@ -201,17 +193,18 @@ public class DockRedirector {
 
         @Override
         protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
-            return new ParentChainTransformer();
+            return new RedirectorTransformer();
         }
     }
 
     /**
      *
      */
-    public static class ParentChainTransformer extends PaneHandler.PaneIndicatorTransformer {
+    public static class RedirectorTransformer extends PaneHandler.PaneIndicatorTransformer {
 
-        public ParentChainTransformer() {
+        public RedirectorTransformer() {
         }
+
         /**
          * Modifies SideButtons
          *
@@ -221,13 +214,9 @@ public class DockRedirector {
         public void windowBeforeShow(Region r) {
             PaneHandler topHandler = ((DockPaneRedirector) getTargetPaneHandler().getDockPane()).getTopHandler();
             Region topDockPane = topHandler.getDockPane();
-//            System.err.println("ParentChainTransformer sideIndicatorShowing targetDockPane=" + ((DockPaneRedirector)getTargetPaneHandler().getDockPane()));            
-//            System.err.println("ParentChainTransformer sideIndicatorShowing topDockPane=" + topDockPane);                        
-
             List<Node> chain = TopNodeHelper.getParentChain(topDockPane, node -> {
-                return (node instanceof DockPaneTarget);
+                return DockRegistry.isDockPaneTarget(node);
             });
-//            System.err.println("ParentChainTransformer sideIndicatorShowing chain.size()=" + chain.size());
             getTopButtons().getChildren().clear();
             getTopButtons().setId("topButtonsPane");
             getRightButtons().getChildren().clear();
@@ -235,7 +224,7 @@ public class DockRedirector {
             getLeftButtons().getChildren().clear();
 
             for (int i = chain.size() - 1; i >= 0; i--) {
-                PaneHandler ph = ((DockPaneTarget) chain.get(i)).paneHandler();
+                PaneHandler ph = DockRegistry.dockPaneTarget(chain.get(i)).paneHandler();
                 Button top = createSideButton(Side.TOP);
                 Button right = createSideButton(Side.RIGHT);
                 Button bottom = createSideButton(Side.BOTTOM);
@@ -257,23 +246,24 @@ public class DockRedirector {
                 left.setUserData(ph);
                 left.setId("left" + i);
             }
-//            System.err.println("ParentChainTransformer sideIndicatorShowing topButtons.sz=" + getTopButtons().getChildren().size());                        
         }
 
         @Override
-        public void windowOnShown(WindowEvent ev, Region r) {
-            //PaneHandler topHandler = ((DockPaneRedirector) getTargetPaneHandler().getDockPane()).getTopHandler();
-            //Region topDockPane = topHandler.getDockPane();
-            
+        public void indicatorOnShown(WindowEvent ev, Region r) {
             adjustWidths();
 
             topRight(getTopButtons());
             topRight(getRightButtons());
             bottom(getBottomButtons());
             left(getLeftButtons());
+            
+            Node dp = getIndicator().getDockPlace2();
+            getIndicator().getIndicatorPane().getChildren().remove(dp);
+            getIndicator().getIndicatorPane().getChildren().add(0,dp);
+            
         }
-        
-        protected void topRight(Pane buttons ) {
+
+        protected void topRight(Pane buttons) {
             for (int i = 0; i < buttons.getChildren().size(); i++) {
                 Button btn = (Button) buttons.getChildren().get(i);
 
@@ -286,9 +276,10 @@ public class DockRedirector {
                     btn.setTranslateX(-xOffset);
                     btn.setTranslateY(yOffset);
                 }
-            }            
+            }
         }
-        protected void bottom(Pane buttons ) {
+
+        protected void bottom(Pane buttons) {
             for (int i = 0; i < buttons.getChildren().size(); i++) {
 
                 Button btn = (Button) buttons.getChildren().get(i);
@@ -302,9 +293,10 @@ public class DockRedirector {
                     btn.setTranslateX(xOffset);
                     btn.setTranslateY(-yOffset);
                 }
-            }            
+            }
         }
-        protected void left(Pane buttons ) {
+
+        protected void left(Pane buttons) {
             for (int i = 0; i < buttons.getChildren().size(); i++) {
 
                 Button btn = (Button) buttons.getChildren().get(i);
@@ -314,14 +306,14 @@ public class DockRedirector {
 
                 int xOffset = i * 10;
                 int yOffset = (int) (i * (h - 10));
-                
+
                 if (i != 0) {
                     btn.setTranslateX(xOffset);
                     btn.setTranslateY(yOffset);
                 }
-            }            
+            }
         }
-        
+
         protected Button createSideButton(Side side) {
             Button btn = new Button();
             btn.getStyleClass().add(getButtonStyle(side));
@@ -357,7 +349,7 @@ public class DockRedirector {
             adjustWidths(getRightButtons());
             adjustWidths(getBottomButtons());
             adjustWidths(getLeftButtons());
-            
+
         }
 
         public void adjustWidths(Pane buttons) {
@@ -379,10 +371,6 @@ public class DockRedirector {
                 }
 
             }
-            Button b = (Button) buttons.getChildren().get(0);
-            Insets ins = b.getInsets();
-            System.err.println("ins.left=" + ins.getLeft());
-            System.err.println("ins.right=" + ins.getRight());
             if (idxW >= 0) {
                 for (int i = 0; i < buttons.getChildren().size(); i++) {
                     if (i != idxW) {
@@ -390,22 +378,6 @@ public class DockRedirector {
                     }
                 }
             }
-            System.err.println("btn width=" + ((Region) buttons.getChildren().get(0)).getWidth());
-            if (idxW >= 0) {
-
-                System.err.println("maxWidth=" + maxWidth + "; sum=" + (buttons.getChildren().size() - 1) * 5);
-                System.err.println("vb w =" + buttons.getWidth());
-                //vb.setPrefWidth(maxWidth + (vb.getChildren().size()-1) * 5 );
-                //popup.setWidth(maxWidth + 120);
-                //buttons.setPrefSize(100, 100);
-                Platform.runLater(() -> {
-                    System.err.println("btn  w =" + ((Button) buttons.getChildren().get(0)).getWidth());
-                    System.err.println("vb   w =" + buttons.getWidth());
-                });
-
-                //popup.setWidth(100);
-            }
-
         }
     }
 }//class DelegeateDragPopup

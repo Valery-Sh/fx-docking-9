@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +15,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import javafx.stage.WindowEvent;
+import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.TopNodeHelper;
 
 /**
  *
@@ -56,7 +55,7 @@ public class ParentChainPopup {
         // Get a list of parent nodes
         //
         Predicate<Node> predicate = el -> {
-            return (el instanceof DockPaneTarget);
+            return DockRegistry.isDockPaneTarget(el);
         };
         show(x, y, predicate);
     }
@@ -175,8 +174,8 @@ public class ParentChainPopup {
 
     protected String getText(Node node) {
         String txt;//
-        if (node instanceof DockPaneTarget) {
-            txt = ((DockPaneTarget) node).paneHandler().getTitle();
+        if (DockRegistry.isDockPaneTarget(node)) {
+            txt = DockRegistry.dockPaneTarget(node).paneHandler().getTitle();
             return txt;
 
         } else if (DockRegistry.isDockable(node)) {
@@ -202,7 +201,7 @@ public class ParentChainPopup {
 
     public ContextMenu createContextMenu(double x, double y) {
         Predicate<Node> predicate = el -> {
-            return (el instanceof DockPaneTarget);
+            return DockRegistry.isDockPaneTarget(el);
         };
 
         chain = TopNodeHelper.getParentChain(topNode, predicate);

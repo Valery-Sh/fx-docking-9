@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  *
  * @author Valery
  */
-public class ResizeTransformer {
+public class FloatStageResizer {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
@@ -23,10 +23,10 @@ public class ResizeTransformer {
     private Cursor cursor;
     private Stage stage;
     
-    private Set<Cursor> cursorTypes = new HashSet<>();
+    private final Set<Cursor> cursorTypes = new HashSet<>();
     
             
-    public ResizeTransformer() {
+    public FloatStageResizer() {
         Collections.addAll(cursorTypes,
         Cursor.S_RESIZE,Cursor.E_RESIZE,Cursor.N_RESIZE,Cursor.W_RESIZE,
         Cursor.SE_RESIZE,Cursor.NE_RESIZE,Cursor.SW_RESIZE,Cursor.NW_RESIZE);
@@ -124,17 +124,6 @@ public class ResizeTransformer {
         n = nodeY < top;
         s = nodeY > height - bottom;
 
-/*        System.err.println("!!! cursorBy: ins.getLeft()=" + left);        
-        System.err.println("!!! cursorBy: ins.getRight()=" + right);        
-        System.err.println("!!! cursorBy: ins.getTop()=" + top);        
-        System.err.println("!!! cursorBy: ins.getBotton()=" + bottom);        
-        System.err.println("!!! cursorBy: r.getWidth() =" + width);        
-        System.err.println("!!! cursorBy: r.getHeight()=" + height);                
-        System.err.println("!!! cursorBy: nodeX =" + nodeX);        
-        System.err.println("!!! cursorBy: nodeY =" + nodeY);        
-        
-        System.err.println("-------------------------------------------------");                
-*/        
         if (w) {
             if (n) {
                 cursor = Cursor.NW_RESIZE;
@@ -180,23 +169,8 @@ public class ResizeTransformer {
         
         Insets ins = r.getPadding();
         if (ins == Insets.EMPTY) {
-            //return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 15, 15, 15);
             return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);            
         }
-/*        System.err.println("cursorBy: ins.getLeft()=" + ins.getLeft());        
-        System.err.println("cursorBy: ins.getRight()=" + ins.getRight());        
-        System.err.println("cursorBy: ins.getTop()=" + ins.getTop());        
-        System.err.println("cursorBy: ins.getBotton()=" + ins.getBottom());        
-        System.err.println("cursorBy: r.getWidth() =" + r.getWidth());        
-        System.err.println("cursorBy: r.getHeight()=" + r.getHeight());                
-        System.err.println("cursorBy: nodeX =" + ev.getX());        
-        System.err.println("cursorBy: nodeY =" + ev.getY());        
-        System.err.println("cursorBy: r.getHeight()=" + r.getHeight());                
-        
-        System.err.println("-------------------------------------------------");                
-  */      
-        
-        
         return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
     }
 }

@@ -151,54 +151,6 @@ public class DockUtil {
     }
 
     /**
-     * Deprecated use ToNodeFinder
-     * @param root
-     * @param screenX
-     * @param screenY
-     * @return 
-     */
-/*    public static Node findTopDockPane(Parent root, double screenX, double screenY) {
-        List<Node> list = new ArrayList<>();
-        Parent p = root;
-        while (true) {
-            Node node = findDockPane(p, screenX, screenY);
-            if (node == null) {
-                break;
-            }
-            list.add(node);
-            p = (Parent) node;
-        }
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.get(list.size() - 1);
-    }
-*/
-/*    public static Node findDockPane(Parent root, double screenX, double screenY) {
-        Predicate<Node> predicate = (node) -> {
-            Point2D p = node.localToScreen(0, 0);
-            boolean b = false;
-            if (node instanceof DockPaneTarget) {
-                PaneHandler pd = ((DockPaneTarget) node).paneHandler();
-                if (pd == null) {
-                    b = false;
-                } else {
-                    b = pd.isUsedAsDockTarget() && pd.zorder() == 0;
-                }
-                //System.err.println("------- findDockPane  b = " + b);
-                //System.err.println("------- findDockPane  root = " + b);
-                //b = b && node != root;
-            }
-
-            return b
-                    && ((screenX >= p.getX() && screenX <= p.getX() + ((Region) node).getWidth()
-                    && screenY >= p.getY() && screenY <= p.getY() + ((Region) node).getHeight()));
-
-        };
-        return findNode(root, predicate);
-    }
-*/
-    /**
      *
      * @param root
      * @param toSearch

@@ -35,6 +35,16 @@
     -fx-opacity: 0.3;
 }
 
+.dock-place2 {
+    -fx-fill: gray;
+    -fx-opacity: 0.2;
+    -fx-stroke: -fx-selection-bar;
+    -fx-stroke-width: 1;
+    -fx-stroke-type: inside;
+}
+
+.drag-node-indicator {
+}
 
 .drag-node-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
@@ -58,6 +68,11 @@
 .drag-node-indicator-center-button {
     -fx-graphic: url(target-icon-24x24.png);
     -fx-padding: 4;
+}
+
+.drag-pane-indicator {
+    -fx-border-width: 1.0; 
+    -fx-border-color: -fx-selection-bar;    
 }
 
 .drag-pane-indicator-top-button {
@@ -92,7 +107,9 @@
 .drag-pane-indicator-center-button-pane {
     visibility: hidden;
 }
-
+.drag-redir-indicator {
+    -fx-background-color: transparent;
+}
 .drag-redir-indicator-top-button {
     /*-fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 0;*/

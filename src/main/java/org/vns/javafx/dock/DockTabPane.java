@@ -23,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -451,7 +452,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
              * @param node the dockable node
              */
             @Override
-            public void sideIndicatorShown(Region node) {
+            public void indicatorOnShown(WindowEvent ev,Region node) {
             }
 
             @Override

@@ -31,7 +31,7 @@ public class DockNodeHandler {
 
     private boolean usedAsDockTarget = true;
 
-    private DragTransformer dragTransformer;
+    private DragManager dragManager;
 
     PaneHandler scenePaneHandler;
     //private PaneDelegate paneDelegate;
@@ -55,7 +55,7 @@ public class DockNodeHandler {
 
     private void init() {
         dockedProperty.addListener(this::dockedChanged);
-        dragTransformer = getDragTransformer();
+        dragManager = getDragManager();
         titleBarProperty.addListener(this::titlebarChanged);
         scenePaneHandler = new ScenePaneHandler(dockable);
         paneHandlerProperty.set(scenePaneHandler);
@@ -63,18 +63,18 @@ public class DockNodeHandler {
     }
 
     public Node getDragNode() {
-        return getDragTransformer().getDragSource();
+        return getDragManager().getDragNode();
     }
 
     public void setDragNode(Node dragSource) {
-        getDragTransformer().setDragSource(dragSource);
+        getDragManager().setDragNode(dragSource);
     }
 
-    protected DragTransformer getDragTransformer() {
-        if (dragTransformer == null) {
-            dragTransformer = new DragTransformer(dockable);
+    protected DragManager getDragManager() {
+        if (dragManager == null) {
+            dragManager = new DragManager(dockable);
         }
-        return dragTransformer;
+        return dragManager;
     }
 
     public boolean isUsedAsDockTarget() {
@@ -186,7 +186,7 @@ public class DockNodeHandler {
 
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            FloatStageBuilder t = getStateTransformer();
+            FloatStageBuilder t = getStageBuilder();
             t.makeFloating();
             floatingProperty.set(floating);
         } else if (!floating) {
@@ -194,7 +194,7 @@ public class DockNodeHandler {
         }
     }
 
-    public FloatStageBuilder getStateTransformer() {
+    public FloatStageBuilder getStageBuilder() {
         return getPaneHandler().getStageBuilder(dockable);
     }
 
@@ -244,7 +244,7 @@ public class DockNodeHandler {
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         getProperties().remove("nodeHandler-titlebar-minheight");
         getProperties().remove("nodeHandler-titlebar-minwidth");
-        dragTransformer.titlebarChanged(ov, oldValue, newValue);
+        dragManager.titlebarChanged(ov, oldValue, newValue);
     }
     
     public boolean isTitleBarHidden() {

@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
@@ -35,7 +36,7 @@ public class PaneHandler {
     private String title;
     private PaneIndicatorTransformer paneTransformer;
     private NodeIndicatorTransformer nodeTransformer;
-    
+
     private PaneSideIndicator paneIndicator;
     private NodeSideIndicator nodeIndicator;
 
@@ -51,7 +52,7 @@ public class PaneHandler {
 
     protected PaneHandler(Region dockPane) {
         this.dockPane = dockPane;
-        System.err.println("PaneHandler: dockPane=" + dockPane);        
+        System.err.println("PaneHandler: dockPane=" + dockPane);
         init();
     }
 
@@ -63,16 +64,16 @@ public class PaneHandler {
     private void init() {
         setSidePointerModifier(this::modifyNodeSidePointer);
         //dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
-      
+
         inititialize();
     }
 
     public String getTitle() {
-        if ( title != null ) {
+        if (title != null) {
             return title;
         }
         title = getDockPane().getId();
-        if ( title == null ) {
+        if (title == null) {
             title = getDockPane().getClass().getName();
         }
         return title;
@@ -87,15 +88,15 @@ public class PaneHandler {
     }
 
     protected void setDragPopup(DragPopup dragPopup) {
-        System.err.println("PaneHandler: setDragpopup=" + dragPopup.getTargetPaneHandler().getDockPane());
+        System.err.println("PaneHandler: setDragpopup=" + dragPopup.getPaneHandler().getDockPane());
         this.dragPopup = dragPopup;
     }
 
     public DragPopup getDragPopup() {
-        if ( dragPopup != null ) {
+        if (dragPopup != null) {
             return dragPopup;
         }
-        if ( getDockPane() != null ) {
+        if (getDockPane() != null) {
             dragPopup = new DragPopup(this);
         }
         return dragPopup;
@@ -213,7 +214,7 @@ public class PaneHandler {
     protected PaneSideIndicator createPaneIndicator() {
         return new PaneSideIndicator(this);
     }
-    
+
     public SidePointerModifier getSidePointerModifier() {
         return sidePointerModifier;
     }
@@ -336,9 +337,12 @@ public class PaneHandler {
     }
 
     public abstract static class SideIndicator {
-        
-        private PaneHandler paneHandler;
-        
+
+        private final PaneHandler paneHandler;
+
+        private Rectangle dockPlace;
+        private Rectangle dockPlace2;
+
         private Pane topButtons;
         private Pane bottomButtons;
         private Pane leftButtons;
@@ -346,11 +350,10 @@ public class PaneHandler {
         private Pane centerButtons;
 
         private Button selectedButton;
-        
+
         private Pane indicatorPane;
-        
-        private Map<Node, PaneHandler> sideButtonMap = new HashMap<>();
-                
+
+        //private final Map<Node, PaneHandler> sideButtonMap = new HashMap<>();
         private SideIndicatorTransformer transformer;
 
         protected SideIndicator(PaneHandler paneHandler) {
@@ -360,6 +363,20 @@ public class PaneHandler {
 
         private void init() {
             indicatorPane = createIndicatorPane();
+            dockPlace = new Rectangle();
+            dockPlace.getStyleClass().add("dock-place");
+            indicatorPane.getChildren().add(dockPlace);
+            dockPlace2 = new Rectangle();
+            dockPlace2.getStyleClass().add("dock-place2");
+            indicatorPane.getChildren().add(0,dockPlace2);
+
+        }
+
+        public Rectangle getDockPlace() {
+            return dockPlace;
+        }
+        public Rectangle getDockPlace2() {
+            return dockPlace2;
         }
 
         public PaneHandler getPaneHandler() {
@@ -496,6 +513,7 @@ public class PaneHandler {
             }
             return style;
         }
+
         protected Pane createCenterButtons() {
             Button btn = new Button();
             centerButtons = new StackPane(btn);
@@ -503,9 +521,9 @@ public class PaneHandler {
             btn.getStyleClass().add(getCenterButtonStyle());
             return centerButtons;
         }
-        
+
         protected Pane createSideButtons(Side side) {
-            
+
             Button btn = new Button();
             StackPane retval = new StackPane();
             retval.getChildren().add(btn);
@@ -529,11 +547,22 @@ public class PaneHandler {
 
             return retval;
         }
+        public void hideDockPlace() {
+            getDockPlace().setVisible(false);
+            getDockPlace2().setVisible(false);
+        }
+
+        public void showDockPlace(Button selButton, Side side) {
+            setSelectedButton(selButton);
+            transform();
+            transformer.showDockPlace(side);
+        }
+        
         public void showDockPlace(Region targetNode, double screenX, double screenY) {
             transform(targetNode, screenX, screenY);
             transformer.showDockPlace();
         }
-        
+
         public Point2D mousePosBy(Region targetNode, double screenX, double screenY) {
             transform(targetNode, screenX, screenY);
             return transformer.mousePos();
@@ -543,19 +572,21 @@ public class PaneHandler {
             transform(screenX, screenY);
             return transformer.mousePosByPaneHandler();
         }
+
         public void setSelectedButton(Button selectedButton) {
             this.selectedButton = selectedButton;
         }
-        
+
         protected abstract SideIndicatorTransformer getTransformer();
 
         protected void transform() {
             transform(null, 0, 0);
         }
+
         protected void transform(Region targetNode) {
             transform(targetNode, 0, 0);
         }
-        
+
         protected void transform(double screenX, double screenY) {
             transform(null, screenX, screenY);
         }
@@ -567,25 +598,74 @@ public class PaneHandler {
             transformer.setTargetNode(targetNode);
             transformer.transform();
         }
-        
-        public void windowBeforeShow(Region node){
+
+        public void indicatorBeforeShow(Region node) {
+            transform(node);
+            transformer.indicatorBeforeShow(node);
+        }
+
+        public void windowBeforeShow(Region node) {
             transform(node);
             transformer.windowBeforeShow(node);
         }
-        public void windowAfterShow(Region node){
+
+        public void windowAfterShow(Region node) {
             transform(node);
             transformer.windowAfterShow(node);
         }
-        public void windowOnShown(WindowEvent ev, Region node){
+
+        public void windowOnShown(WindowEvent ev, Region node) {
             transform(node);
-            transformer.windowOnShown(ev,node);
-        }
-        public void windowOnShowing(WindowEvent ev, Region node){
-            transform(node);
-            transformer.windowOnShowing(ev,node);
+            transformer.windowOnShown(ev, node);
         }
 
-        public void sideIndicatorShowing(PaneHandler paneHandler, Region node) {
+        public void windowOnShowing(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.windowOnShowing(ev, node);
+        }
+
+        public void windowOnHidden(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.windowOnHidden(ev, node);
+        }
+
+        public void windowOnHiding(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.windowOnHiding(ev, node);
+        }
+
+        public void beforeShow(Region node) {
+            transform(node);
+            transformer.indicatorBeforeShow(node);
+        }
+
+        public void afterShow(Region node) {
+            transform(node);
+            transformer.indicatorAfterShow(node);
+        }
+
+        public void onShown(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.indicatorOnShown(ev, node);
+        }
+
+        public void onShowing(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.indicatorOnShowing(ev, node);
+        }
+
+        public void onHidden(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.indicatorOnHidden(ev, node);
+        }
+
+        public void onHiding(WindowEvent ev, Region node) {
+            transform(node);
+            transformer.indicatorOnHiding(ev, node);
+        }
+
+
+        /*        public void sideIndicatorShowing(PaneHandler paneHandler, Region node) {
             transform(node);
             transformer.sideIndicatorShowing(node);
         }
@@ -599,7 +679,7 @@ public class PaneHandler {
             transform(node);
             transformer.sideIndicatorHidden(node);
         }
-
+         */
         public Point2D getMousePos() {
             return transformer.mousePos();
         }
@@ -629,7 +709,7 @@ public class PaneHandler {
 
             buttons = createCenterButtons();
             indicatorPane.add(buttons, 1, 1);
-            
+
             return indicatorPane;
         }
 
@@ -649,7 +729,7 @@ public class PaneHandler {
         public PaneSideIndicator(PaneHandler paneHandler) {
             super(paneHandler);
         }
- 
+
         @Override
         protected Pane createIndicatorPane() {
             BorderPane indicatorPane = new BorderPane();
@@ -663,7 +743,7 @@ public class PaneHandler {
             indicatorPane.setBottom(buttons);
             buttons = createSideButtons(Side.LEFT);
             indicatorPane.setLeft(buttons);
-       
+
             buttons = createCenterButtons();
             indicatorPane.setCenter(buttons);
 
@@ -686,23 +766,36 @@ public class PaneHandler {
         public PaneIndicatorTransformer() {
             super();
         }
-        @Override
+
+        /*        @Override
         public void sideIndicatorShown(Region node) {}
 
         @Override
         public void sideIndicatorHidden(Region node) {}
-        
+         */
         @Override
         public Point2D mousePos() {
             return getMousePos();
         }
+        @Override
+        protected void showDockPlace2(Region pane, Side side) {
+            Rectangle dockPlace = getIndicator().getDockPlace2();
+            dockPlace.setWidth(pane.getWidth()-1);
+            dockPlace.setHeight(pane.getHeight()-1);
+            Point2D p = dockPlace.localToParent(0, 0);
+            dockPlace.setX(p.getX()+1);
+            dockPlace.setY(p.getY()+1);
+            dockPlace.setVisible(true);
+        }
+        
     }//Transformer
+
     public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
 
         public NodeIndicatorTransformer() {
         }
 
-        @Override
+        /*        @Override
         public void sideIndicatorShown(Region node) {
             if (getTargetPaneHandler() != null && node != null) {
                 resizeButtonPanes();
@@ -711,6 +804,21 @@ public class PaneHandler {
 
         @Override
         public void sideIndicatorHidden(Region node) {
+            if (getTargetPaneHandler() == null || node == null) {
+                resizeButtonPanes();
+            }
+
+        }
+         */
+        @Override
+        public void indicatorOnShown(WindowEvent ev, Region node) {
+            if (getTargetPaneHandler() != null && node != null) {
+                resizeButtonPanes();
+            }
+        }
+
+        @Override
+        public void indicatorOnHidden(WindowEvent ev, Region node) {
             if (getTargetPaneHandler() == null || node == null) {
                 resizeButtonPanes();
             }
@@ -832,21 +940,55 @@ public class PaneHandler {
         public void transform() {
         }
 //        public void beginUpdateIndicator(Region node){}
-        public void windowBeforeShow(Region node){}
-        public void windowAfterShow(Region node){}        
-        public void windowOnShowing(WindowEvent ev, Region node){}                
-        public void windowOnShown(WindowEvent ev, Region node){}                
-        
+
+        public void indicatorBeforeShow(Region node) {
+        }
+
+        public void indicatorAfterShow(Region node) {
+        }
+
+        public void indicatorOnShowing(WindowEvent ev, Region node) {
+        }
+
+        public void indicatorOnShown(WindowEvent ev, Region node) {
+        }
+
+        public void indicatorOnHiding(WindowEvent ev, Region node) {
+        }
+
+        public void indicatorOnHidden(WindowEvent ev, Region node) {
+        }
+
+        public void windowBeforeShow(Region node) {
+        }
+
+        public void windowAfterShow(Region node) {
+        }
+
+        public void windowOnShowing(WindowEvent ev, Region node) {
+        }
+
+        public void windowOnShown(WindowEvent ev, Region node) {
+        }
+
+        public void windowOnHiding(WindowEvent ev, Region node) {
+        }
+
+        public void windowOnHidden(WindowEvent ev, Region node) {
+        }
+
 //        public void endUpdateIndicator(Region node){}
-        
-        public void sideIndicatorShowing(Region node) {}
+        /*        public void sideIndicatorShowing(Region node) {}
 
         public void sideIndicatorShown(Region node) {}
         
         public void sideIndicatorHidden(Region node) {}
-        public void targetNodeChanged(Region node) {}
+         */
+        public void targetNodeChanged(Region node) {
+        }
 
-        protected void resizeButtonPanes() {}
+        protected void resizeButtonPanes() {
+        }
 
         public Boolean intersects(Node node1, Node node2) {
             if (node1 == null || node2 == null) {
@@ -877,12 +1019,59 @@ public class PaneHandler {
         
         public void showDockPlace() {
         }
-        
+        protected void showDockPlace2(Region forNode, Side side) {
+            
+        }
+        public void showDockPlace(Side side) {
+            Region pane = getTargetPaneHandler().getDockPane();
+            Button selected = getIndicator().getSelectedButton();
+            if (selected != null && selected.getUserData() != null) {
+                pane = ((PaneHandler) selected.getUserData()).getDockPane();
+            }
+            Rectangle dockPlace = getIndicator().getDockPlace();
+            showDockPlace2(pane, side);
+            
+            switch (side) {
+                case TOP:
+                    dockPlace.setWidth(pane.getWidth());
+                    dockPlace.setHeight(pane.getHeight() / 2);
+                    Point2D p = dockPlace.localToParent(0, 0);
+                    dockPlace.setX(p.getX());
+                    dockPlace.setY(p.getY());
+                    break;
+                case BOTTOM:
+                    dockPlace.setWidth(pane.getWidth());
+                    dockPlace.setHeight(pane.getHeight() / 2);
+                    p = dockPlace.localToParent(0, pane.getHeight() - dockPlace.getHeight());
+                    dockPlace.setX(p.getX());
+                    dockPlace.setY(p.getY());
+                    break;
+                case LEFT:
+                    dockPlace.setWidth(pane.getWidth() / 2);
+                    dockPlace.setHeight(pane.getHeight());
+                    p = dockPlace.localToParent(0, 0);
+                    dockPlace.setX(p.getX());
+                    dockPlace.setY(p.getY());
+                    break;
+                case RIGHT:
+                    dockPlace.setWidth(pane.getWidth() / 2);
+                    dockPlace.setHeight(pane.getHeight());
+                    p = dockPlace.localToParent(pane.getWidth() - dockPlace.getWidth(), 0);
+                    dockPlace.setX(p.getX());
+                    dockPlace.setY(p.getY());
+                    break;
+            }
+            dockPlace.setVisible(true);
+            dockPlace.toFront();
+        }
+
         public Point2D mousePosByPaneHandler() {
             return null;
         }
-        public void sideButtonSelected() {}
-        
+
+        public void sideButtonSelected() {
+        }
+
         public void setMousePos(Point2D mousePos) {
             this.mousePos = mousePos;
         }

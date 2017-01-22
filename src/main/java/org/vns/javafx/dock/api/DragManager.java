@@ -13,15 +13,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.PaneHandler.PaneSideIndicator;
-import org.vns.javafx.dock.api.PaneHandler.SideIndicator;
 
 /**
  *
  * @author Valery
  */
-public class DragTransformer implements EventHandler<MouseEvent> {
+public class DragManager implements EventHandler<MouseEvent> {
 
     private final Dockable dockable;
 
@@ -32,22 +29,21 @@ public class DragTransformer implements EventHandler<MouseEvent> {
     private Parent targetDockPane;
 
     private Stage resultStage;
-//    MouseDragHandler dragHandler = new MouseDragHandler();
 
-    private Point2D eventSourceOffset;
+    private Point2D startMousePos;
 
-    private ObjectProperty<Node> dragSourceProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Node> dragNodeProperty = new SimpleObjectProperty<>();
 
-    public DragTransformer(Dockable nodeHandler) {
+    public DragManager(Dockable nodeHandler) {
         this.dockable = nodeHandler;
         init();
     }
 
     private void init() {
-        dragSourceProperty.addListener(this::dragSourceChanged);
+        dragNodeProperty.addListener(this::dragNodeChanged);
     }
 
-    protected void dragSourceChanged(ObservableValue ov, Node oldValue, Node newValue) {
+    protected void dragNodeChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
             removeEventHandlers(oldValue);
         }
@@ -56,16 +52,16 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
     }
 
-    public ObjectProperty<Node> dragSourceProperty() {
-        return dragSourceProperty;
+    public ObjectProperty<Node> dragNodeProperty() {
+        return dragNodeProperty;
     }
 
-    public Node getDragSource() {
-        return dragSourceProperty.get();
+    public Node getDragNode() {
+        return dragNodeProperty.get();
     }
 
-    public void setDragSource(Node dragSource) {
-        dragSourceProperty.set(dragSource);
+    public void setDragNode(Node dragNode) {
+        dragNodeProperty.set(dragNode);
     }
 
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
@@ -93,24 +89,31 @@ public class DragTransformer implements EventHandler<MouseEvent> {
 
     boolean removed = false;
 
-    public boolean contains(Region node, double x, double y) {
-        Point2D p = node.localToScreen(0, 0);
-        if (p == null) {
-            return false;
-        }
-        Point2D p1 = new Point2D(p.getX() + 5, p.getY() + 5);
-
-        return ((x >= p1.getX() && x <= p1.getX() + node.getWidth() - 10
-                && y >= p1.getY() && y <= p1.getY() + node.getHeight() - 10));
-    }
-
+    /**
+     * The method is called when the user presses a primary mouse button.
+     * Saves the screen position of the mouse screen cursor.
+     * @param ev the event that describes the mouse events
+     */
     protected void mousePressed(MouseEvent ev) {
         Point2D p = dockable.node().localToScreen(0, 0);
-        eventSourceOffset = new Point2D(ev.getX(), ev.getY());
+        startMousePos = new Point2D(ev.getX(), ev.getY());
     }
-
+    /**
+     * The method is called when the user moves the mouse and the primary mouse 
+     * button is pressed.
+     * The method checks whether the {@literal  dockable} node is in the
+     * {@code floating} state and if not the method returns.<P>
+     * If the method encounters a {@literal dockable} node or a
+     * {@code dock target pane} then it shows a pop up window which 
+     * contains indicators to select a dock place on the target dock node or pane.
+     * <p> The method checks whether the {@code control key} of the keyboard 
+     * is pressed and if so then it shows a special indicator window witch
+     * allows to select a dock pane or one of it's parents.
+     * 
+     * @param ev the event that describes the mouse events
+     */
     public void mouseDragged(MouseEvent ev) {
-        PaneSideIndicator paneSideIndicator = null;
+
         if (!dockable.nodeHandler().isFloating()) {
             return;
         }
@@ -123,8 +126,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
 
         Stage stage = (Stage) dockable.node().getScene().getWindow();
-        stage.setX(ev.getScreenX() - leftDelta - eventSourceOffset.getX());
-        stage.setY(ev.getScreenY() - topDelta - eventSourceOffset.getY());
+        stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
+        stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
         
         
         if (popup != null && popup.isShowing()) {
@@ -135,24 +138,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             return;
         }
         if ( ev.isControlDown() && popupDelegate == null && popup != null)  {
-            
-            Region r = popup.getDockPane();
             popup.hide();
-            popupDelegate = new DockRedirector(r);            
-            Point2D p = r.localToScreen(0, 0);
-            double w = r.getWidth();
-            double h = r.getHeight();
-            popupDelegate.getRootPane().setPrefSize(w, h);
-            
-            //paneSideIndicator = ((DockPaneTarget)popupDelegate.getRootPane()).paneHandler().getPaneIndicator();
-            
-            popupDelegate.show(p.getX(),p.getY()); 
-            popupDelegate.getStage().getScene().setOnKeyReleased(ke -> {
-            if( ! ke.isControlDown()) {
-                popupDelegate.getStage().close();
-            }
-         });        
-
+            popupDelegate = DockRedirector.show(popup.getDockPane());
         } else if ( ! ev.isControlDown() && popupDelegate != null ) {
             popupDelegate.close();
             popupDelegate = null;
@@ -170,21 +157,20 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         if (root == null || !(root instanceof Pane)) {
             return;
         }
-        //Node topPane = DockUtil.findTopDockPane((Pane) root, ev.getScreenX(), ev.getScreenY());
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return (n instanceof DockPaneTarget);
+            return DockRegistry.isDockPaneTarget(n);
         });
 
         if (topPane != null) {
             root = topPane;
-        } else if (!(root instanceof DockPaneTarget)) {
+        } else if (!DockRegistry.isDockPaneTarget(root)) {
             return;
         }
-        if (!((DockPaneTarget) root).paneHandler().isUsedAsDockTarget()) {
+        if (! DockRegistry.dockPaneTarget(root).paneHandler().isUsedAsDockTarget()) {
             return;
         }
 
-        DragPopup newPopup = ((DockPaneTarget) root).paneHandler().getDragPopup();
+        DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneHandler().getDragPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -192,9 +178,9 @@ public class DragTransformer implements EventHandler<MouseEvent> {
             return;
         }
         popup = newPopup;
-        PaneHandler ph = ((DockPaneTarget) root).paneHandler();
+        PaneHandler ph = DockRegistry.dockPaneTarget(root).paneHandler();
         if ( ev.isControlDown() ) {
-            ph.getPaneIndicator().windowOnShown(null, null);
+            ph.getPaneIndicator().onShown(null, null);
         }
         popup.show(dockable.node());
         popup.handle(ev.getScreenX(), ev.getScreenY());
@@ -212,20 +198,8 @@ public class DragTransformer implements EventHandler<MouseEvent> {
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
 
-        //if (dockable.nodeHandler().isFloating() && popup != null && popup.getDockPos() != null && popup.getDragTarget() != null) {
-//            if (popup != null && (popup.getDragTarget() instanceof DockPaneTarget)) {
-//            if (popup != null && popup.getTargetPaneHandler() != null && ! DockRegistry.isDockable(popup.getDragTarget())) {
-/*            if (popup != null && popup.getTargetPaneHandler() != null) {
-                
-                popup.getTargetPaneHandler().dock(pt, dockable.node(), popup.getDockPos());
-            } else if (popup != null && DockRegistry.isDockable(popup.getDragTarget()) ) {
-                Dockable dt = DockRegistry.dockable(popup.getDragTarget());
-                dt.nodeHandler().getPaneHandler().dock(pt, dockable.node(), popup.getDockPos(), dt);
-            }
-         */
         if (dockable.nodeHandler().isFloating() && popup != null && popup.getDockPos() != null && popup.getDragTarget() != null) {
-System.err.println("popup.getTargetPaneHandler()=" + popup.getTargetPaneHandler());            
-            popup.getTargetPaneHandler().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
+            popup.getPaneHandler().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
         }
 
         if (popup != null && popup.isShowing()) {
@@ -238,18 +212,12 @@ System.err.println("popup.getTargetPaneHandler()=" + popup.getTargetPaneHandler(
     }
 
     protected void mouseDragDetected(MouseEvent ev) {
-
         if (!dockable.nodeHandler().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             dockable.nodeHandler().setFloating(true);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-
-        } //else {
-        //targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-        //targetDockPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-        //targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        //}
+        }
     }
 
     @Override
@@ -263,23 +231,6 @@ System.err.println("popup.getTargetPaneHandler()=" + popup.getTargetPaneHandler(
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
             mouseReleased(ev);
         }
-    }
-
-    /**
-     *
-     */
-    @FunctionalInterface
-    public interface SidePointerModifier {
-
-        /**
-         *
-         * @param mouseX
-         * @param mouseY
-         * @param target
-         * @return null than a default position of node indicator is used or a
-         * new position of node indicator
-         */
-        Point2D modify(DragPopup popup, Dockable target, double mouseX, double mouseY);
     }
 
 }
