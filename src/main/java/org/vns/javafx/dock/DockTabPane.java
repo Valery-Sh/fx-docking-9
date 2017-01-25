@@ -23,13 +23,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
@@ -225,7 +224,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         return paneHandler;
     }
 
-/*    public static class TabGraphic extends DockTitleBar {
+    /*    public static class TabGraphic extends DockTitleBar {
 
         private double titleBarMinHeight;
         private double titleBarPrefHeight;
@@ -300,7 +299,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
     }
-*/
+     */
     public static class TabPaneHandler extends PaneHandler {
 
         public TabPaneHandler(DockTabPane tabPane) {
@@ -310,7 +309,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         private void init() {
-            setSidePointerModifier(this::modifyNodeSidePointer);
+            //setSidePointerModifier(this::modifyNodeSidePointer);
         }
 
         @Override
@@ -448,15 +447,14 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             /**
              * The method does nothing. It overrides the method of the subclass
              * to escape scaling of an indicator pane.
-             *
-             * @param node the dockable node
              */
             @Override
-            public void indicatorOnShown(WindowEvent ev,Region node) {
+            public void notifyPopupShown() {
             }
 
             @Override
-            public Point2D mousePos() {
+            public Point2D getIndicatorPosition() {
+
                 Point2D retval = null;// = super.mousePos();
 
                 SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
@@ -483,26 +481,19 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
                 double mouseX = getMousePos().getX();
                 double mouseY = getMousePos().getY();
-                
-                System.err.println("tabPane.getTabs().isEmpty()=" + tabPane.getTabs().isEmpty());
-                System.err.println("DockUtil.contains(tabPane, mouseX, mouseY)=" + DockUtil.contains(tabPane, mouseX, mouseY));
-                //if (tabPane.getTabs().isEmpty() && DockUtil.contains(tabPane, mouseX, mouseY)) {
-                if (tabPane.getTabs().isEmpty() && DockUtil.contains(tabPane, mouseX, mouseY)) {                
-                    System.err.println(" 1. topPaneButton");
+
+                if (tabPane.getTabs().isEmpty() && DockUtil.contains(tabPane, mouseX, mouseY)) {
                     retval = centerPosOf(tabPane, topPaneButton);
                     topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
                 } else {
-                    System.err.println(" 2. topPaneButton");
-                    System.err.println("x=" + mouseX + "; y=" + mouseY);
                     int idx = tabPane.indexOf(mouseX, mouseY);
                     if (idx == 0) {
                         if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
                         }
                     }
                     if (idx >= 0) {
-                        System.err.println(" 3. topPaneButton");
                         retval = new Point2D(mouseX - 5, mouseY - 5);
-                        topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);                        
+                        topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
                     } else {
                         topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
                         retval = centerPosOf(tabPane, topPaneButton);

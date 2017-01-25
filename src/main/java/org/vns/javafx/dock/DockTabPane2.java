@@ -31,13 +31,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneHandler;
-import org.vns.javafx.dock.api.PaneHandler.SideIndicator;
+import org.vns.javafx.dock.api.SideIndicator;
 
 /**
  *
@@ -249,7 +248,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
         }
 
         private void init() {
-            setSidePointerModifier(this::modifyNodeSidePointer);
+            //setSidePointerModifier(this::modifyNodeSidePointer);
         }
 
         @Override
@@ -805,7 +804,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
          *
          * @param node the dockable node
          */
-        @Override
+/*        @Override
         public void indicatorOnShown(WindowEvent ev,Region node) {
         }
 
@@ -854,47 +853,57 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
 
             return retval;
         }
-
-    }
-    /*
+*/
+        
         @Override
-        public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
-            if (popup.getSidePointerGrid().getChildren().contains(popup.getNodeSideButtons(Side.BOTTOM))) {
-                popup.removeNodeSideButtons(Side.BOTTOM);
-                popup.removeNodeSideButtons(Side.TOP);
-                popup.removeNodeSideButtons(Side.LEFT);
-                popup.removeNodeSideButtons(Side.RIGHT);
+        public void notifyPopupShown() {
+        }
 
-                Pane pane = popup.getPaneSideButtons(Side.TOP);
-                popup.addNodeSideButtons(popup.getPaneSideButtons(Side.TOP), Side.TOP);
-                //pane.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
-                popup.getPaneSideButton(Side.TOP).pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
-                popup.removePaneSideButtons(Side.LEFT);
-                popup.removePaneSideButtons(Side.RIGHT);
-                popup.removePaneSideButtons(Side.BOTTOM);
+        @Override
+        public Point2D getIndicatorPosition() {
+            Point2D retval;// = super.mousePos();
+
+            SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
+            Pane topBtns;//= null;
+            Button topPaneButton = null;
+            if (paneIndicator != null) {
+                topBtns = paneIndicator.getTopButtons();
+                topPaneButton = (Button) topBtns.getChildren().get(0);
             }
-            Region p = popup.getDockPane();
-
-            DockTabPane2 tabPane;// = null;
-            TabPaneHandler paneHandler;// = null; 
-            Point2D retval = null;
-            if (p instanceof DockTabPane2) {
-                paneHandler = ((DockTabPane2) p).paneHandler;
-                tabPane = (DockTabPane2) p;
-                Node node = DockUtil.findNode(tabPane.tabArea.getTitleBars(), mouseX, mouseY);
-                if (node != null) {
-                    retval = new Point2D(mouseX - 5, mouseY - 5);
-                } else if (DockUtil.contains(tabPane.tabArea.getPane(), mouseX, mouseY)) {
-                    retval = new Point2D(mouseX - 5, mouseY - 5);
-                } else {
-                    retval = tabPane.localToScreen(
-                            (tabPane.getWidth() - popup.getSidePointerGrid().getWidth()) / 2,
-                            (tabPane.getHeight() - popup.getSidePointerGrid().getHeight()) / 2);
+            
+            if (getIndicator().getIndicatorPane().getChildren().contains(getBottomButtons())) {
+                getIndicator().getIndicatorPane().getChildren().clear();
+                if (paneIndicator != null) {
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());                    
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());                                        
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());                                                            
+                    topBtns = paneIndicator.getTopButtons();
+                    ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
                 }
+            }
+            
+            DockTabPane2 tabPane = (DockTabPane2) getTargetPaneHandler().getDockPane();
+
+            double x = getMousePos().getX();
+            double y = getMousePos().getY();
+
+            Node node = DockUtil.findNode(tabPane.tabArea.getTitleBars(), x, y);
+            if (node != null) {
+                retval = new Point2D(x - 5, y - 5);
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+            } else if (DockUtil.contains(tabPane.tabArea.getPane(), x, y)) {
+                retval = new Point2D(x - 5, y - 5);
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+            } else {
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
+                retval = tabPane.localToScreen(
+                        (tabPane.getWidth() - getIndicator().getIndicatorPane().getWidth()) / 2,
+                        (tabPane.getHeight() - getIndicator().getIndicatorPane().getHeight()) / 2);
             }
 
             return retval;
-        }
-     */
-
+        }        
+    }
+  
 }//DockTabPane
