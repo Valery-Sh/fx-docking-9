@@ -187,19 +187,14 @@ public class DragPopup extends Popup {
     }
 
     /**
-     * Shows this pop up window for the specified object to be docked.
-     * @param dockNode the node witch represents a dragging {@code dockable} node.  
+     * Shows this pop up window
      */
-    public void show(Node dockNode) {
+    //public void showPopup(Node dockNode) {
+    public void showPopup() {        
         setAutoFix(false);
         Point2D pos = getDockPane().localToScreen(0, 0);
         dragTarget = null;
-        getPaneIndicator().showIndicator(pos.getX(), pos.getY(), (Region)dockNode );
-/*        setOnShown(e -> {getPaneIndicator().onShown(e, (Region) targetNode);});
-        setOnShowing(e -> {getPaneIndicator().onShowing(e, (Region) targetNode);});
-        this.show(getDockPane(), pos.getX(), pos.getY());
-        getPaneIndicator().afterShow((Region) targetNode);
-*/        
+        getPaneIndicator().showIndicator(pos.getX(), pos.getY());
     }
 
     /**
@@ -323,13 +318,13 @@ public class DragPopup extends Popup {
         if (targetNode != null) {
             newPos = getNodeIndicator().mousePos(targetNode, screenX, screenY);
             //getNodeIndicator().beforeShow(targetNode);
-            nodeIndicatorPopup.show(this, newPos.getX(), newPos.getY());
+            nodeIndicatorPopup.showPopup(this, newPos.getX(), newPos.getY());
             getNodeIndicator().afterShow(targetNode);
         } else {
             newPos = getNodeIndicator().mousePos(null,screenX, screenY);
             if (newPos != null) {
                 //getNodeIndicator().beforeShow(targetNode);
-                nodeIndicatorPopup.show(this, newPos.getX(), newPos.getY());
+                nodeIndicatorPopup.showPopup(this, newPos.getX(), newPos.getY());
                 getNodeIndicator().afterShow(targetNode);
             } else {
                 nodeIndicatorPopup.hide();
@@ -417,9 +412,9 @@ public class DragPopup extends Popup {
 
     /**
      * Returns a shape of type {@code  Rectangle} to be displayed to
-     * show a proposed dock place
+ showPopup a proposed dock place
      * @return a shape of type {@code  Rectangle} to be displayed to
-     * show a proposed dock place
+ showPopup a proposed dock place
      */
     public Rectangle getDockPlace() {
         return paneHandler.getPaneIndicator().getDockPlace();

@@ -1,32 +1,20 @@
 package org.vns.javafx.dock.api;
 
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Scale;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.SideIndicator.NodeSideIndicator;
+import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
  *
@@ -34,7 +22,6 @@ import org.vns.javafx.dock.DockUtil;
  */
 public class PaneHandler {
 
-    //private final ObjectProperty<Region> dockPaneProperty = new SimpleObjectProperty<>();
     private Region dockPane;
     private String title;
     private PaneIndicatorTransformer paneTransformer;
@@ -61,9 +48,6 @@ public class PaneHandler {
     }
 
     private void init() {
-        //setSidePointerModifier(this::modifyNodeSidePointer);
-        //dragPopup = new DragPopup(new PaneSideIndicator(), new NodeSideIndicator());
-
         inititialize();
     }
 
@@ -156,10 +140,6 @@ public class PaneHandler {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-    /*    public Point2D modifyNodeSidePointer(DragPopup popup, Dockable target, double mouseX, double mouseY) {
-        return null;
-    }
-     */
     protected void setPaneTransformer(PaneIndicatorTransformer paneTransformer) {
         this.paneTransformer = paneTransformer;
     }
@@ -213,14 +193,6 @@ public class PaneHandler {
         return new PaneSideIndicator(this);
     }
 
-    /*    public SidePointerModifier getSidePointerModifier() {
-        return sidePointerModifier;
-    }
-
-    public void setSidePointerModifier(SidePointerModifier sidePointerModifier) {
-        this.sidePointerModifier = sidePointerModifier;
-    }
-     */
     public Region getDockPane() {
         return this.dockPane;
     }
@@ -308,7 +280,6 @@ public class PaneHandler {
         return new FloatStageBuilder(dockable.nodeHandler());
     }
 
-
     public interface DockConverter {
 
         public static final int BEFORE_DOCK = 0;
@@ -319,270 +290,5 @@ public class PaneHandler {
 
     public void remove(Node dockNode) {
     }
-
-
-    protected static class NodeSideIndicator extends SideIndicator {
-
-        public NodeSideIndicator(PaneHandler paneHandler) {
-            super(paneHandler);
-        }
-
-        @Override
-        protected Window getIndicatorPopup() {
-            return getPaneHandler().getDragPopup().getNodeIndicatorPopup();
-        }
-
-        @Override
-        public void showIndicator(double screenX, double screenY, Region dockNode) {
-
-            super.showIndicator(screenX, screenY, dockNode);
-
-            Point2D newPos;
-
-            getIndicatorPopup().setOnShowing(e -> {
-                getTransformer().notifyPopupShowing();
-            });
-            getIndicatorPopup().setOnShown(e -> getTransformer().notifyPopupShown());
-            getIndicatorPopup().setOnHiding(e -> getTransformer().notifyPopupHiding());
-            getIndicatorPopup().setOnHidden(e -> getTransformer().notifyPopupHidden());
-
-            if (dockNode != null) {
-                newPos = getTransformer().getIndicatorPosition();
-                getTransformer().notifyBeforeShow();
-                newPos = getTransformer().getIndicatorPosition();
-                ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
-                getTransformer().notifyAfterShow();
-            } else {
-                //newPos = mousePos(null, screenX, screenY);
-                newPos = getTransformer().getIndicatorPosition();
-                if (newPos != null) {
-                    //beforeShow(dockNode);
-                    getTransformer().notifyBeforeShow();
-                    ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
-                    getTransformer().notifyAfterShow();
-                } else {
-                    getIndicatorPopup().hide();
-                }
-            }
-
-        }
-
-        @Override
-        protected Pane createIndicatorPane() {
-            GridPane indicatorPane = new GridPane();
-            indicatorPane.getStyleClass().add(getStylePrefix());
-            indicatorPane.setMouseTransparent(true);
-
-            Pane buttons = createSideButtons(Side.TOP);
-            indicatorPane.add(buttons, 1, 0);
-            buttons = createSideButtons(Side.BOTTOM);
-            indicatorPane.add(buttons, 1, 2);
-            buttons = createSideButtons(Side.LEFT);
-            indicatorPane.add(buttons, 0, 1);
-            buttons = createSideButtons(Side.RIGHT);
-            indicatorPane.add(buttons, 2, 1);
-
-            buttons = createCenterButtons();
-            indicatorPane.add(buttons, 1, 1);
-
-            return indicatorPane;
-        }
-
-        @Override
-        protected String getStylePrefix() {
-            return "drag-node-indicator";
-        }
-
-        @Override
-        protected NodeIndicatorTransformer getTransformer() {
-            return getPaneHandler().getNodeTransformer();
-        }
-    }//class SideIndicator
-
-    protected static class PaneSideIndicator extends SideIndicator {
-
-        public PaneSideIndicator(PaneHandler paneHandler) {
-            super(paneHandler);
-        }
-        @Override
-        protected Popup getIndicatorPopup() {
-            return getPaneHandler().getDragPopup();
-        }
-        
-        @Override
-        public void showIndicator(double screenX, double screenY, Region dockNode) {
-            super.showIndicator(screenX, screenY, dockNode);
-            getIndicatorPopup().setOnShown(e -> {getTransformer().notifyPopupShown();});
-            getIndicatorPopup().setOnShowing(e -> {getTransformer().notifyPopupShowing();});
-            getIndicatorPopup().show(getPaneHandler().getDockPane(), screenX, screenY);
-            getTransformer().notifyAfterShow();
-        } 
-        @Override
-        protected Pane createIndicatorPane() {
-            BorderPane indicatorPane = new BorderPane();
-            indicatorPane.getStyleClass().add(getStylePrefix());
-            indicatorPane.setMouseTransparent(true);
-            Pane buttons = createSideButtons(Side.TOP);
-            indicatorPane.setTop(buttons);
-            buttons = createSideButtons(Side.RIGHT);
-            indicatorPane.setRight(buttons);
-            buttons = createSideButtons(Side.BOTTOM);
-            indicatorPane.setBottom(buttons);
-            buttons = createSideButtons(Side.LEFT);
-            indicatorPane.setLeft(buttons);
-
-            buttons = createCenterButtons();
-            indicatorPane.setCenter(buttons);
-
-            return indicatorPane;
-        }
-
-        @Override
-        protected String getStylePrefix() {
-            return "drag-pane-indicator";
-        }
-
-        @Override
-        protected PaneIndicatorTransformer getTransformer() {
-            return getPaneHandler().getPaneTransformer();
-        }
-    }//class SideIndicator
-
-    public static class PaneIndicatorTransformer extends SideIndicatorTransformer {
-
-        public PaneIndicatorTransformer() {
-            super();
-        }
-
-
-        @Override
-        protected void showDockPlace2(Region pane, Side side) {
-            Rectangle dockPlace = getIndicator().getDockPlace2();
-            dockPlace.setWidth(pane.getWidth() - 1);
-            dockPlace.setHeight(pane.getHeight() - 1);
-            Point2D p = dockPlace.localToParent(0, 0);
-            dockPlace.setX(p.getX() + 1);
-            dockPlace.setY(p.getY() + 1);
-            dockPlace.setVisible(true);
-        }
-
-    }//Transformer
-
-    public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
-
-        public NodeIndicatorTransformer() {
-        }
-
-        @Override
-        public void showDockPlace(Side side) {
-            if (getTargetNode() == null) {
-                return;
-            }
-            PaneHandler paneHandler = getIndicator().getPaneHandler();
-            PaneSideIndicator paneIndicator = paneHandler.getPaneIndicator();
-
-            Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getDockPane().localToScreen(0, 0));
-            Rectangle dockPlace = paneIndicator.getDockPlace();
-            //showDockPlace2(pane, side);
-
-            dockPlace.setX(p.getX());
-            dockPlace.setY(p.getY());
-
-            switch (side) {
-                case TOP:
-                    dockPlace.setWidth(getTargetNode().getWidth());
-                    dockPlace.setHeight(getTargetNode().getHeight() / 2);
-                    break;
-                case BOTTOM:
-                    dockPlace.setWidth(getTargetNode().getWidth());
-                    dockPlace.setHeight(getTargetNode().getHeight() / 2);
-                    dockPlace.setY(p.getY() + dockPlace.getHeight());
-                    break;
-                case LEFT:
-                    dockPlace.setWidth(getTargetNode().getWidth() / 2);
-                    dockPlace.setHeight(getTargetNode().getHeight());
-                    break;
-                case RIGHT:
-                    dockPlace.setWidth(getTargetNode().getWidth() / 2);
-                    dockPlace.setHeight(getTargetNode().getHeight());
-                    dockPlace.setX(p.getX() + dockPlace.getWidth());
-                    break;
-            }
-            dockPlace.setVisible(true);
-            dockPlace.toFront();
-        }
-
-
-        @Override
-        public void notifyPopupShown() {
-            if (getTargetPaneHandler() != null && getTargetNode() != null) {
-                resizeButtonPanes();
-            }
-        }
-
-        @Override
-        public void notifyPopupHidden() {
-            if (getTargetPaneHandler() == null || getTargetNode() == null) {
-                resizeButtonPanes();
-            }
-
-        }
-
-        @Override
-        protected void resizeButtonPanes() {
-            if (getTargetPaneHandler() != null && getTargetNode() != null && intersects()) {
-                if (!getIndicator().getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
-                    getIndicator().getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
-
-                    double w = getIndicator().getIndicatorPane().getWidth() / 2;
-                    double h = getIndicator().getIndicatorPane().getHeight() / 2;
-                    Point2D p = getIndicator().getIndicatorPane().localToParent(w, h);
-                    getSmallbuttonsScale().setPivotX(w);
-                    getSmallbuttonsScale().setPivotY(h);
-                }
-            } else {
-                getIndicator().getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
-            }
-
-        }
-
-        protected boolean intersects() {
-            boolean retval = false;
-            Pane thisPane = getIndicator().getIndicatorPane();
-
-            if (getTargetPaneHandler() != null) {
-
-                Node node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getTopButtons();
-
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getRightButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getBottomButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getLeftButtons();
-                if (intersects(thisPane, node)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public Point2D getIndicatorPosition() {
-            Point2D newPos = null;
-            if (getTargetNode() != null && getIndicator().getIndicatorPane() != null) {
-                newPos = getTargetNode().localToScreen((getTargetNode().getWidth() - getIndicator().getIndicatorPane().getWidth()) / 2, (getTargetNode().getHeight() - getIndicator().getIndicatorPane().getHeight()) / 2);
-            }
-            return newPos;
-        }
-
-    }//Transformer
-
 
 }//class

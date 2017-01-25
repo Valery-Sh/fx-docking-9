@@ -37,6 +37,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.SideIndicator;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 
 /**
  *
@@ -793,7 +794,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
         }
     }
 
-    public static class TabSideIndicatorTransformer extends PaneHandler.NodeIndicatorTransformer {
+    public static class TabSideIndicatorTransformer extends NodeIndicatorTransformer {
 
         public TabSideIndicatorTransformer() {
         }

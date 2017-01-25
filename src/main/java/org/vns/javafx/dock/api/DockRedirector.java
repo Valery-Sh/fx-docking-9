@@ -9,7 +9,6 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -17,8 +16,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
  *
@@ -202,7 +201,7 @@ public class DockRedirector {
     /**
      *
      */
-    public static class RedirectorTransformer extends PaneHandler.PaneIndicatorTransformer {
+    public static class RedirectorTransformer extends PaneIndicatorTransformer {
 
         public RedirectorTransformer() {
         }

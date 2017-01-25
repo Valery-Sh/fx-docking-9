@@ -37,6 +37,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.FloatStageBuilder;
 import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.SideIndicator;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 import org.vns.javafx.dock.api.StageBuilder;
 
 /**
@@ -429,7 +430,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             return new SideBarIndicatorTransformer();
         }
 
-        public static class SideBarIndicatorTransformer extends PaneHandler.NodeIndicatorTransformer {
+        public static class SideBarIndicatorTransformer extends NodeIndicatorTransformer {
 
             public SideBarIndicatorTransformer() {
             }

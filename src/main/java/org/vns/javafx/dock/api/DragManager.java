@@ -251,7 +251,8 @@ public class DragManager implements EventHandler<MouseEvent> {
             //!!!!!!!!!! 2501 ph.getPaneIndicator().notifyPopupShown();
         }
         if ( ! popup.isShowing()) {
-            popup.show(dockable.node());
+            //popup.showPopup(dockable.node());
+            popup.showPopup();
         }
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }

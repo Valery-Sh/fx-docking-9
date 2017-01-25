@@ -10,6 +10,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
 
 /**
  *
@@ -241,5 +242,139 @@ public abstract class SideIndicatorTransformer {
     public void setRightButtons(Pane rightButtons) {
         this.rightButtons = rightButtons;
     }
+    public static class NodeIndicatorTransformer extends SideIndicatorTransformer {
+
+        public NodeIndicatorTransformer() {
+        }
+
+        @Override
+        public void showDockPlace(Side side) {
+            if (getTargetNode() == null) {
+                return;
+            }
+            PaneHandler paneHandler = getIndicator().getPaneHandler();
+            PaneSideIndicator paneIndicator = paneHandler.getPaneIndicator();
+
+            Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getDockPane().localToScreen(0, 0));
+            Rectangle dockPlace = paneIndicator.getDockPlace();
+            //showDockPlace2(pane, side);
+
+            dockPlace.setX(p.getX());
+            dockPlace.setY(p.getY());
+
+            switch (side) {
+                case TOP:
+                    dockPlace.setWidth(getTargetNode().getWidth());
+                    dockPlace.setHeight(getTargetNode().getHeight() / 2);
+                    break;
+                case BOTTOM:
+                    dockPlace.setWidth(getTargetNode().getWidth());
+                    dockPlace.setHeight(getTargetNode().getHeight() / 2);
+                    dockPlace.setY(p.getY() + dockPlace.getHeight());
+                    break;
+                case LEFT:
+                    dockPlace.setWidth(getTargetNode().getWidth() / 2);
+                    dockPlace.setHeight(getTargetNode().getHeight());
+                    break;
+                case RIGHT:
+                    dockPlace.setWidth(getTargetNode().getWidth() / 2);
+                    dockPlace.setHeight(getTargetNode().getHeight());
+                    dockPlace.setX(p.getX() + dockPlace.getWidth());
+                    break;
+            }
+            dockPlace.setVisible(true);
+            dockPlace.toFront();
+        }
+
+
+        @Override
+        public void notifyPopupShown() {
+            if (getTargetPaneHandler() != null && getTargetNode() != null) {
+                resizeButtonPanes();
+            }
+        }
+
+        @Override
+        public void notifyPopupHidden() {
+            if (getTargetPaneHandler() == null || getTargetNode() == null) {
+                resizeButtonPanes();
+            }
+
+        }
+
+        @Override
+        protected void resizeButtonPanes() {
+            if (getTargetPaneHandler() != null && getTargetNode() != null && intersects()) {
+                if (!getIndicator().getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
+                    getIndicator().getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
+
+                    double w = getIndicator().getIndicatorPane().getWidth() / 2;
+                    double h = getIndicator().getIndicatorPane().getHeight() / 2;
+                    Point2D p = getIndicator().getIndicatorPane().localToParent(w, h);
+                    getSmallbuttonsScale().setPivotX(w);
+                    getSmallbuttonsScale().setPivotY(h);
+                }
+            } else {
+                getIndicator().getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
+            }
+
+        }
+
+        protected boolean intersects() {
+            boolean retval = false;
+            Pane thisPane = getIndicator().getIndicatorPane();
+
+            if (getTargetPaneHandler() != null) {
+
+                Node node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getTopButtons();
+
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getRightButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getBottomButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getLeftButtons();
+                if (intersects(thisPane, node)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Point2D getIndicatorPosition() {
+            Point2D newPos = null;
+            if (getTargetNode() != null && getIndicator().getIndicatorPane() != null) {
+                newPos = getTargetNode().localToScreen((getTargetNode().getWidth() - getIndicator().getIndicatorPane().getWidth()) / 2, (getTargetNode().getHeight() - getIndicator().getIndicatorPane().getHeight()) / 2);
+            }
+            return newPos;
+        }
+
+    }//NodeTransformer
+    public static class PaneIndicatorTransformer extends SideIndicatorTransformer {
+
+        public PaneIndicatorTransformer() {
+            super();
+        }
+
+
+        @Override
+        protected void showDockPlace2(Region pane, Side side) {
+            Rectangle dockPlace = getIndicator().getDockPlace2();
+            dockPlace.setWidth(pane.getWidth() - 1);
+            dockPlace.setHeight(pane.getHeight() - 1);
+            Point2D p = dockPlace.localToParent(0, 0);
+            dockPlace.setX(p.getX() + 1);
+            dockPlace.setY(p.getY() + 1);
+            dockPlace.setVisible(true);
+        }
+
+    }//Pane Transformer
 
 }//Transformer
