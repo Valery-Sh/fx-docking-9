@@ -16,10 +16,12 @@ import org.vns.javafx.dock.DockUtil;
 public class SplitDelegate {
 
     private DockSplitPane root;
+    private PaneHandler paneHandler;
     private int targetIndex;
 
-    public SplitDelegate(DockSplitPane root) {
+    public SplitDelegate(DockSplitPane root, PaneHandler paneHandler) {
         this.root = root;
+        this.paneHandler = paneHandler;
     }
 
     public DockSplitPane getRoot() {
@@ -32,10 +34,11 @@ public class SplitDelegate {
 
     public void dock(Dockable dockable, Side dockPos) {
         dock(dockable.node(), dockPos);
-    }    
+    }
+
     private void dock(Node node, Side dockPos) {
         targetIndex = -1;
-
+        System.err.println("dock(Node node, Side dockPos)");
         DockSplitPane rootSplitPane = root;
         if (rootSplitPane == null) {
             rootSplitPane = new DockSplitPane();
@@ -49,7 +52,7 @@ public class SplitDelegate {
             return;
         }
         DockSplitPane parentSplitPane = root;
-
+        DockSplitPane oldParentSplitPane = root;
         Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
                 ? Orientation.HORIZONTAL : Orientation.VERTICAL;
         Orientation oldOrientation = parentSplitPane.getOrientation();
@@ -86,10 +89,27 @@ public class SplitDelegate {
             targetIndex = idx;
             parentSplitPane.getItems().add(idx, node);
         }
+        Dockable d = DockRegistry.dockable(node);
+//        System.err.println("0. SplitDelegate: divPos=" + d.nodeHandler().getDividerPos());
+/*        if (d.nodeHandler().getDividerPos() >= 0) {
+            System.err.println("0.1. SplitDelegate: divPos=" + d.nodeHandler().getDividerPos());
+            rootSplitPane.setDividerPosition(targetIndex, d.nodeHandler().getDividerPos());
+        }
+*/        
+        //parentSplitPane.getItems()
+        //parentSplitPane.setDividerPosition(node, dockPos);
+        if ( oldParentSplitPane == parentSplitPane ) {
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, parentSplitPane);
+        } else {
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, oldParentSplitPane);
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, parentSplitPane);            
+        }
+        
+        //parentSplitPane.setDividerPosition(node, dockPos);        
         root = parentSplitPane;
     }
 
-/*    public void dock(Node node, Side dockPos, DockTarget target) {
+    /*    public void dock(Node node, Side dockPos, DockTarget target) {
         if (target == null) {
             dock(node, dockPos);
         }
@@ -150,21 +170,25 @@ public class SplitDelegate {
             //root = parentSplitPane;
         //}
     }
-*/    
+     */
     public void dock(Node node, Side dockPos, Dockable target) {
-        System.err.println("@@@@@@@@@@@@ dock");        
+        System.err.println("@@@@@@@@@@@@ dock " + node);
         if (target == null) {
             dock(node, dockPos);
+            return;  //added 26.01
         }
 
         Node targetNode = target.node();
 
         DockSplitPane parentSplitPane = getTargetSplitPane(targetNode);
+        DockSplitPane targetSplitPane = parentSplitPane;
 
         if (parentSplitPane == null) {
             return;
         }
-
+        
+        Dockable d = DockRegistry.dockable(node);
+        
         Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
                 ? Orientation.HORIZONTAL : Orientation.VERTICAL;
         Orientation oldOrientation = parentSplitPane.getOrientation();
@@ -193,11 +217,11 @@ public class SplitDelegate {
             } else {
                 dp.getItems().add((Node) targetNode);
                 dp.getItems().add(node);
-
             }
 
             //parentSplitPane.getItems().add(idx - 1, dp);
             parentSplitPane.getItems().add(idx, dp);
+            targetSplitPane = dp;
             //parentSplitPane.getItems().remove((Node) targetNode);
             //parentSplitPane = dp;
         } else {
@@ -208,32 +232,35 @@ public class SplitDelegate {
             parentSplitPane.getItems().add(idx, node);
 
         }
-        parentSplitPane.setDividerPosition(node, dockPos);
-        //if (parentSplitPane != root) {
-            //root = parentSplitPane;
-        //}
+        if ( targetSplitPane == parentSplitPane ) {
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, targetSplitPane);            
+        } else {
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, targetSplitPane);            
+            paneHandler.updateDividers(d.nodeHandler().getDividerPos(), targetIndex, d, parentSplitPane);            
+        }
+        
     }
-
 
     /**
      * An immediate parent object of type DockSplitPane
      *
+     * @param target
      * @return
      */
-    protected DockSplitPane getTargetSplitPane_new(Node target) {
+/*    protected DockSplitPane getTargetSplitPane_new(Node target) {
         if (target == null) {
             return null;
         }
         DockSplitPane split = root;
-        
+
         DockSplitPane retval = null;
         Parent p = target.getParent();
         while (true) {
-            if ( p == null ) {
+            if (p == null) {
                 break;
             }
-            if ( p instanceof DockSplitPane ) {
-                retval = (DockSplitPane)p;
+            if (p instanceof DockSplitPane) {
+                retval = (DockSplitPane) p;
                 break;
             }
             p = p.getParent();
@@ -241,6 +268,7 @@ public class SplitDelegate {
         System.err.println("RETVAL = " + retval);
         return retval;
     }
+*/
     protected DockSplitPane getTargetSplitPane(Node target) {
         DockSplitPane retval = null;
         DockSplitPane split = root;
@@ -263,7 +291,6 @@ public class SplitDelegate {
 
     }
 
-    
     public static class DockSplitPane extends SplitPane {
 
         public DockSplitPane() {
@@ -272,14 +299,29 @@ public class SplitDelegate {
         public DockSplitPane(Node... items) {
             super(items);
         }
+        public static DockSplitPane create(Orientation o) {
+            if ( o == Orientation.HORIZONTAL) {
+                return new HSplit();
+            } else {
+                return new VSplit();
+            }
+        }
+        public static DockSplitPane create(Orientation o, Node... items) {
+            if ( o == Orientation.HORIZONTAL) {
+                return new HSplit(items);
+            } else {
+                return new VSplit(items);
+            }
+        }
+        
         @Override
         public ObservableList<Node> getChildren() {
             return super.getChildren();
         }
+
         public void setDividerPosition(Node node, Side dockPos) {
             setDividerPosition(node, this, dockPos);
         }
-
 
         public static void setDividerPosition(Node node, DockSplitPane split, Side dockPos) {
             if (split.getItems().size() <= 1) {
@@ -287,6 +329,15 @@ public class SplitDelegate {
             }
 
             int idx = split.getItems().indexOf(node);
+            Dockable d = DockRegistry.dockable(node);
+            //System.err.println("1. SplitDelegate: divPos=" + d.nodeHandler().getDividerPos());
+/*            if (d.nodeHandler().getDividerPos() >= 0) {
+                System.err.println("2. SplitDelegate: divPos=" + d.nodeHandler().getDividerPos());
+                split.setDividerPosition(idx, d.nodeHandler().getDividerPos());
+                return;
+            }
+*/      
+            //d.nodeHandler().updateDividers(idx, split);
             double sizeSum = 0;
             for (int i = 0; i < split.getItems().size(); i++) {
                 if (i == idx) {

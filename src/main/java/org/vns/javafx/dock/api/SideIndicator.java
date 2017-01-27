@@ -323,39 +323,6 @@ public abstract class SideIndicator {
         transformer.transform();
     }
 
-    /*        public void windowBeforeShow(Region node) {
-            transform(node);
-            transformer.windowBeforeShow(node);
-        }
-
-        public void windowAfterShow(Region node) {
-            transform(node);
-            transformer.windowAfterShow(node);
-        }
-
-        public void windowOnShown(WindowEvent ev, Region node) {
-            transform(node);
-            transformer.windowOnShown(ev, node);
-        }
-
-        public void windowOnShowing(WindowEvent ev, Region node) {
-            transform(node);
-            transformer.windowOnShowing(ev, node);
-        }
-
-        public void windowOnHidden(WindowEvent ev, Region node) {
-            transform(node);
-            transformer.windowOnHidden(ev, node);
-        }
-
-        public void windowOnHiding(WindowEvent ev, Region node) {
-            transform(node);
-            transformer.windowOnHiding(ev, node);
-        }
-     */
-    public Point2D getMousePos() {
-        return transformer.getIndicatorPosition();
-    }
 
     protected static class NodeSideIndicator extends SideIndicator {
 
@@ -385,7 +352,7 @@ public abstract class SideIndicator {
             if (dockNode != null) {
                 newPos = getTransformer().getIndicatorPosition();
                 getTransformer().notifyBeforeShow();
-                newPos = getTransformer().getIndicatorPosition();
+                //newPos = getTransformer().getIndicatorPosition();
                 ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
                 getTransformer().notifyAfterShow();
             } else {
@@ -450,20 +417,20 @@ public abstract class SideIndicator {
         public void showIndicator(double screenX, double screenY) {
             super.showIndicator(screenX, screenY);
             
-            //getTransformer().notifyBeforeShow();            
+            getTransformer().notifyBeforeShow();            
             getIndicatorPopup().setOnShown(e -> {
                 getTransformer().notifyPopupShown();
             });
             getIndicatorPopup().setOnShowing(e -> {
                 getTransformer().notifyPopupShowing();
             });
-/*            getIndicatorPopup().setOnHiding(e -> {
+            getIndicatorPopup().setOnHiding(e -> {
                 getTransformer().notifyPopupHiding();
             });
             getIndicatorPopup().setOnHidden(e -> {
                 getTransformer().notifyPopupHidden();
             });
-  */          
+
             getIndicatorPopup().show(getPaneHandler().getDockPane(), screenX, screenY);
             getTransformer().notifyAfterShow();
         }

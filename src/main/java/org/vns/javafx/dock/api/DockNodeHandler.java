@@ -2,11 +2,14 @@ package org.vns.javafx.dock.api;
 
 import java.util.Properties;
 import java.util.function.Function;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.DockFloatingProperty;
@@ -20,7 +23,9 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * @author Valery
  */
 public class DockNodeHandler {
-
+    
+    private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
+    
     private final TitleBarProperty<Region> titleBarProperty;
 
     private final StringProperty titleProperty = new SimpleStringProperty("");
@@ -43,7 +48,7 @@ public class DockNodeHandler {
     private final DockPaneHandlerProperty<PaneHandler> paneHandlerProperty = new DockPaneHandlerProperty<>();
 
 //    private Pane lastDockPane;
-    private String dockPos;
+    private StringProperty dockPosProperty = new SimpleStringProperty(null);
 
     private Properties properties;
 
@@ -62,6 +67,29 @@ public class DockNodeHandler {
         paneHandlerProperty.addListener(this::paneHandlerChanged);
     }
 
+    
+    public DoubleProperty dividerPosProperty() {
+        return dividerPosProperty;
+    }
+    
+    public double getDividerPos() {
+        return dividerPosProperty.get();
+    }
+
+    public void setDividerPos(double dividerPos) {
+        this.dividerPosProperty.set(dividerPos);
+    }
+    public void setDividerPos(int divIndex, Parent parent) {
+        System.err.println("1. DockNodeHandler: setDividerPos");
+        if ( getPaneHandler() != null && getDividerPos() >= 0 ) {
+            System.err.println("2. DockNodeHandler: setDividerPos(getDivPos())=" + getDividerPos());            
+            getPaneHandler().updateDividers(getDividerPos(), divIndex, dockable(), parent);
+        }
+        //this.dividerPosProperty.set(dividerPos);
+    }
+
+    
+    
     public Node getDragNode() {
         return getDragManager().getDragNode();
     }
@@ -86,13 +114,19 @@ public class DockNodeHandler {
     }
 
     protected void paneHandlerChanged(ObservableValue<? extends PaneHandler> observable, PaneHandler oldValue, PaneHandler newValue) {
+        System.err.println("DockNodeHandler: paneHandlerChanged oldValue=" + oldValue);
+        System.err.println("DockNodeHandler: paneHandlerChanged newValue=" + newValue);
         if (newValue == null) {
             paneHandlerProperty.set(scenePaneHandler);
         }
+        
     }
 
+    public StringProperty dockPosProperty() {
+        return dockPosProperty;
+    }
     public String getDockPos() {
-        return dockPos;
+        return dockPosProperty.get();
     }
 
     public Properties getProperties() {
@@ -103,7 +137,7 @@ public class DockNodeHandler {
     }
 
     public void setDockPos(String dockPos) {
-        this.dockPos = dockPos;
+        this.dockPosProperty.set(dockPos);
     }
 
     public TitleBarProperty<Region> titleBarProperty() {
@@ -134,6 +168,8 @@ public class DockNodeHandler {
         if (!newValue) {
             getPaneHandler().remove(node());
             setPaneHandler(null);
+            setDividerPos(-1);
+            setDockPos("TOP");
         }
     }
 

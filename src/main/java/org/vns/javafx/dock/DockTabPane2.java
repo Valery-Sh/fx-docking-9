@@ -835,8 +835,8 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
             
             DockTabPane2 tabPane = (DockTabPane2) getTargetPaneHandler().getDockPane();
 
-            double x = getMousePos().getX();
-            double y = getMousePos().getY();
+            double x = getIndicatorPosition().getX();
+            double y = getIndicatorPosition().getY();
 
             Node node = DockUtil.findNode(tabPane.tabArea.getTitleBars(), x, y);
             if (node != null) {

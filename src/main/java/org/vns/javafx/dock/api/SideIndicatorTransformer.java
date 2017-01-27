@@ -199,10 +199,10 @@ public abstract class SideIndicatorTransformer {
     public void sideButtonSelected() {
     }
 
-    public void setMousePos(Point2D mousePos) {
+/*    public void setMousePos(Point2D mousePos) {
         this.mousePos = mousePos;
     }
-
+*/
     protected void setTargetNode(Region targetNode) {
         this.targetNode = targetNode;
     }

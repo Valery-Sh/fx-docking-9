@@ -462,6 +462,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 Pane topBtns;//= null;
                 Button topPaneButton = null;
                 if (paneIndicator != null) {
+   
                     topBtns = paneIndicator.getTopButtons();
                     topPaneButton = (Button) topBtns.getChildren().get(0);
                 }

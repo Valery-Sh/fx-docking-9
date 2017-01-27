@@ -472,8 +472,8 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
 
                 DockSideBar sideBar = (DockSideBar) getTargetPaneHandler().getDockPane();
 
-//                double mouseX = getMousePos().getX();
-//                double mouseY = getMousePos().getY();
+//                double mouseX = getIndicatorPosition().getX();
+//                double mouseY = getIndicatorPosition().getY();
                 retval = centerPosOf(sideBar, topPaneButton);
                 return retval;
             }

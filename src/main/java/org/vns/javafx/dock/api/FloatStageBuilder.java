@@ -270,8 +270,8 @@ public class FloatStageBuilder {
     protected void dock(Pane dockPane, Dockable dockable) {
         Node node = dockable.node();
         SplitDelegate.DockSplitPane rootSplitPane = null;
+        //2701rootSplitPane = new SplitDelegate.DockSplitPane();
         rootSplitPane = new SplitDelegate.DockSplitPane();
-
         //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
         rootSplitPane.getItems().add(node);
 

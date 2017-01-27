@@ -3,6 +3,7 @@ package org.vns.javafx.dock.api.demo;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -166,6 +167,14 @@ public class TestCommon extends Application {
         stage2.setTitle("MY ATAGE");
         stage2.setScene(sc02);
         stage2.setY(500);
+        CustomButton cb = new CustomButton("Custom Btn");
+        
+        cb.setOnAction(a -> {
+            System.err.println("cb.getChildren().size()=" + cb.getChildren().size()); 
+            System.err.println("c = " + cb.getChildren().get(0));
+        });
+        sp2.getChildren().add(cb);
+        
         stage2.show();
         
         Stage stage3 = new Stage();
@@ -190,5 +199,24 @@ public class TestCommon extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
+    }
+    
+    public static class CustomButton extends Button {
+
+        public CustomButton() {
+        }
+
+        public CustomButton(String text) {
+            super(text);
+        }
+
+        public CustomButton(String text, Node graphic) {
+            super(text, graphic);
+        }
+        
+        @Override
+        public ObservableList<Node> getChildren() {
+            return super.getChildren();
+        }
     }
 }
