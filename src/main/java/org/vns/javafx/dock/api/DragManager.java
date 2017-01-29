@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  * The class manages the process of dragging of the object of type {@link Dockable}} 
@@ -186,6 +187,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         if (!dockable.nodeHandler().isFloating()) {
             return;
         }
+        
         double leftDelta = 0;
         double topDelta = 0;
         if (dockable.node().getScene().getRoot() instanceof BorderPane) {
@@ -254,6 +256,11 @@ public class DragManager implements EventHandler<MouseEvent> {
             //popup.showPopup(dockable.node());
             popup.showPopup();
         }
+            //System.err.println("1 popup.getPaneHandler()=" + popup.getPaneHandler().getDockPane());
+            //DockSplitPane dsp = ((DockPaneHandler)popup.getPaneHandler()).getRoot();
+            //System.err.println("1 getItems.sz=" + dsp.getItems().get(0));
+            //System.err.println("1 ((DockPaneHandler)popup.getPaneHandler()).getRoot()" + ((DockPaneHandler)popup.getPaneHandler()).getRoot());
+        
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
     /**
@@ -274,8 +281,13 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
-
+//        System.err.println("DragManager isFloa=" + dockable.nodeHandler().isFloating());
         if (dockable.nodeHandler().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
+            //DockPane dp = pa
+//            System.err.println("popup.getPaneHandler()=" + popup.getPaneHandler().getDockPane());
+//            DockSplitPane dsp = ((DockPaneHandler)popup.getPaneHandler()).getRoot();
+//            System.err.println("getItems.sz=" + dsp.getItems().get(0));
+//            System.err.println("((DockPaneHandler)popup.getPaneHandler()).getRoot()" + ((DockPaneHandler)popup.getPaneHandler()).getRoot());
             popup.getPaneHandler().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
         }
 
@@ -303,6 +315,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
         if (!dockable.nodeHandler().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
+//            System.err.println("targetDockPane = " + targetDockPane);            
             dockable.nodeHandler().setFloating(true);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);

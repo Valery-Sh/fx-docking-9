@@ -17,8 +17,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockNode2;
+import org.vns.javafx.dock.DockPaneBase;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
@@ -33,7 +33,7 @@ public class TestDockToolBar extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        DockPane dockPane = new DockPane();
+        DockPaneBase dockPane = new DockPaneBase();
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
 
@@ -56,7 +56,7 @@ public class TestDockToolBar extends Application {
         Pane p3 = new HBox(b3);
 //        dockPane.dock(p3, Side.BOTTOM);
 
-        DockNode dn01 = new DockNode();
+        DockNode2 dn01 = new DockNode2();
         dn01.setId("Dn01");
         dn01.setFocusTraversable(true);
         dn01.getChildren().add(new Label("DOCK NODE IMPL"));
@@ -77,7 +77,7 @@ public class TestDockToolBar extends Application {
         DockTabPane2 tabPane01 = new DockTabPane2();
         dockPane.dock(tabPane01, Side.BOTTOM);
         
-        DockNode dn03 = new DockNode();
+        DockNode2 dn03 = new DockNode2();
         
         TextArea ta = new TextArea();
         Button bClick = new Button("testGet");

@@ -57,7 +57,7 @@ public class DockPaneTest {//extends Application{
         DockSplitPane dsp = new DockSplitPane(b1,new Button("b2"));
         
         SplitPane sp = new SplitPane();        
-        DockPane pane = new DockPane();
+        DockPaneBase pane = new DockPaneBase();
         Scene scene = new Scene(pane);
         pane.getChildren().add(dsp);
         Node p1 = b1.getParent();  

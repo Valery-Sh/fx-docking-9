@@ -13,7 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockPaneBase;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -25,7 +25,7 @@ public class TestDockableTarget extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        DockPane dockPane = new DockPane();
+        DockPaneBase dockPane = new DockPaneBase();
         dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
         b1.setOnAction(a -> { 

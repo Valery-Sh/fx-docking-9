@@ -11,8 +11,8 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockNode2;
+import org.vns.javafx.dock.DockPaneBase;
 import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -36,12 +36,12 @@ public class TestDockableDockPane  extends Application {
         //p = new SplitPane();
         Button b01 = new Button("Change Rotate Angle");
         
-        DockableDockPane ddp = new DockableDockPane(new DockPane());
+        DockableDockPane ddp = new DockableDockPane(new DockPaneBase());
         ddp.setId("DockableDockPane: dpp");
         root.getChildren().add(ddp);
         //root.getChildren().add(sp);
         //sp.getItems().add(ddp);
-        //DockPane ddp = new DockPane();
+        //DockPane ddp = new DockPaneBase();
         Label lb = new Label("VALERA");
         //vb.getChildren().addAll(lb,ddp);        
         
@@ -50,7 +50,7 @@ public class TestDockableDockPane  extends Application {
         Scene scene = new Scene(root);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode dn01 = new DockNode();
+        DockNode2 dn01 = new DockNode2();
         dn01.setId("DockNode: dn01");
         dn01.setPrefHeight(100);
         dn01.nodeHandler().setTitle("DockNode: dn01");
@@ -61,7 +61,7 @@ public class TestDockableDockPane  extends Application {
         b02.setOnAction(a -> {
         });        
         
-        DockNode dn02 = new DockNode();
+        DockNode2 dn02 = new DockNode2();
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        

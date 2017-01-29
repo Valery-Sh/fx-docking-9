@@ -28,8 +28,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockNode2;
+import org.vns.javafx.dock.DockPaneBase;
 import org.vns.javafx.dock.DockToolBar;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
@@ -55,7 +55,7 @@ public class TestIfStageActive extends Application {
         Node nn;
         //nn.
         stage.setTitle("Tests If Stage Active");
-        DockPane dockPane = new DockPane();
+        DockPaneBase dockPane = new DockPaneBase();
         dockPane.setPrefHeight(200);
         dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
@@ -152,7 +152,7 @@ public class TestIfStageActive extends Application {
 
         dockPane.dock(dtt01, Side.LEFT);
         
-        DockNode dockNode01 = new DockNode();
+        DockNode2 dockNode01 = new DockNode2();
         dockNode01.setId("dockNode01");
         dockNode01.setTitle("Dock Node01");
         dockPane.dock(dockNode01, Side.BOTTOM);

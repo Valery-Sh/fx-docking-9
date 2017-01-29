@@ -2,10 +2,10 @@ package org.vns.javafx.dock;
 
 import org.vns.javafx.dock.api.DockNodeBase;
 
-public class DockNode  extends DockNodeBase{
+public class DockNode2  extends DockNodeBase{
     
-    public DockNode() {
+    public DockNode2() {
     }
     
-}//class DockNode
+}//class DockNode2
 

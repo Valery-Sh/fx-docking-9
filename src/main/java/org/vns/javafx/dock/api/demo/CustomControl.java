@@ -1,12 +1,10 @@
 package org.vns.javafx.dock.api.demo;
 
 import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockPaneBase;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -15,9 +13,9 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public class CustomControl extends Control {
 
-    private DockPane delegate = new DockPane();
+    private DockPaneBase delegate = new DockPaneBase();
 
-    public DockPane getDelegate() {
+    public DockPaneBase getDelegate() {
         return delegate;
     }
     

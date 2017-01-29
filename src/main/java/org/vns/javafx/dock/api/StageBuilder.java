@@ -7,7 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockPaneBase;
 
 /**
  *
@@ -73,7 +73,7 @@ public class StageBuilder extends FloatStageBuilder {
 
         setRootPane(new BorderPane());
 
-        Pane dockPane = new DockPane();
+        Pane dockPane = new DockPaneBase();
         dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
 
         ((BorderPane) getRootPane()).setCenter(dockPane);

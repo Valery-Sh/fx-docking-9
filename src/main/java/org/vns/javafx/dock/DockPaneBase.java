@@ -7,22 +7,30 @@ import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
  * @author Valery
  */
-public class DockPane extends StackPane implements DockPaneTarget{
+public class DockPaneBase extends StackPane implements DockPaneTarget{
     
     private PaneHandler paneHandler;
-            
-    public DockPane() {
+    
+    public DockPaneBase() {
         init();
     }
 
-
+    public DockPaneBase(DockSplitPane rootSplitPane) {
+        init(rootSplitPane);
+    }
     private void init() {
-        paneHandler = new DockPaneHandler(this);
+        paneHandler = paneHandler = new DockPaneHandler(this);
+    }
+    
+
+    private void init(DockSplitPane rootSplitPane) {
+        paneHandler = new DockPaneHandler(this,rootSplitPane);
     }
     
     @Override

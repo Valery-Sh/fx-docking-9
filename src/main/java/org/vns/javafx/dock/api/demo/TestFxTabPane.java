@@ -21,7 +21,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -55,7 +55,7 @@ public class TestFxTabPane  extends Application {
         Scene scene = new Scene(root);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode dn01 = new DockNode();
+        DockNode2 dn01 = new DockNode2();
         dn01.setId("DockNode: dn01");
         dn01.setPrefHeight(100);
         dn01.nodeHandler().setTitle("DockNode: dn01");
@@ -66,7 +66,7 @@ public class TestFxTabPane  extends Application {
         b02.setOnAction(a -> {
         });        
         
-        DockNode dn02 = new DockNode();
+        DockNode2 dn02 = new DockNode2();
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02"); 

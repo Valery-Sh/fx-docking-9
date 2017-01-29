@@ -22,7 +22,7 @@ public class DockableDockPane extends VBox implements Dockable {
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
     public DockableDockPane() {
-        dockPane = new DockPane();
+        dockPane = new DockPaneBase();
         init();
     }
     public DockableDockPane(DockPaneTarget dockPane) {
@@ -44,7 +44,7 @@ public class DockableDockPane extends VBox implements Dockable {
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
         
-        //dockPane = new DockPane();
+        //dockPane = new DockPaneBase();
         //dockPane.pane().setStyle("-fx-border-width: 2; -fx-border-color: red");
         getChildren().addAll(titleBar, dockPane.pane());
         this.autosize();

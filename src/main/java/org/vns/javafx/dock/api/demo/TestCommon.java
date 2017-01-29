@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.TopNodeHelper;
 
@@ -29,7 +30,7 @@ public class TestCommon extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("PRIMARY");
-        DockSplitPane sp = new DockSplitPane();
+        DockSplitPane sp = new HPane();
         Button btn01 = new Button("sp btn01");
         sp.getItems().addAll(btn01);
         

@@ -54,13 +54,11 @@ public class PaneHandler {
     /**
      * Does nothing. 
      * Subclasses can change behavior.
-     * @param dividerPos the position of the divider
-     * @param divIndex the position of the node in the specified parent
-     * @param dockable a dock node witch divider pos is to be set
+     * @param node a node witch divider position is to be set
      * @param parent a parent the given dock node of th
      */
-    public void updateDividers(double dividerPos, int divIndex, Dockable dockable, Parent parent) {
-        System.err.println("PaneHandler setDividerPos() paneHandler = " + this);
+    public void updateDividers(Node node, Parent parent) {
+//        System.err.println("PaneHandler setDividerPos() paneHandler = " + this);
     }
     
     public String getTitle() {
@@ -96,12 +94,12 @@ public class PaneHandler {
         return dragPopup;
     }
 
-    protected void initSplitDelegate() {
+/*    protected void initSplitDelegate() {
     }
-
+*/
     protected void inititialize() {
         DockRegistry.start();
-        initSplitDelegate();
+        //initSplitDelegate();
         initListeners();
 
     }
@@ -222,9 +220,11 @@ public class PaneHandler {
     }
 
     public void undock(Node node) {
-        if (!isDocked(node)) {
+/*        if (!isDocked(node)) {
             return;
         }
+*/
+//        System.err.println("PaneHandler isDocked=" + isDocked(node));
         if (DockRegistry.isDockable(node)) {
             DockRegistry.dockable(node).nodeHandler().setDocked(false);
         }

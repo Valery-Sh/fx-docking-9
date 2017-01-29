@@ -318,9 +318,6 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             return (TabPane) super.getDockPane();
         }
 
-        @Override
-        protected void initSplitDelegate() {
-        }
 
         @Override
         protected boolean isDocked(Node node) {

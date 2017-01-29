@@ -23,9 +23,9 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * @author Valery
  */
 public class DockNodeHandler {
-    
+
     private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
-    
+
     private final TitleBarProperty<Region> titleBarProperty;
 
     private final StringProperty titleProperty = new SimpleStringProperty("");
@@ -67,29 +67,6 @@ public class DockNodeHandler {
         paneHandlerProperty.addListener(this::paneHandlerChanged);
     }
 
-    
-    public DoubleProperty dividerPosProperty() {
-        return dividerPosProperty;
-    }
-    
-    public double getDividerPos() {
-        return dividerPosProperty.get();
-    }
-
-    public void setDividerPos(double dividerPos) {
-        this.dividerPosProperty.set(dividerPos);
-    }
-    public void setDividerPos(int divIndex, Parent parent) {
-        System.err.println("1. DockNodeHandler: setDividerPos");
-        if ( getPaneHandler() != null && getDividerPos() >= 0 ) {
-            System.err.println("2. DockNodeHandler: setDividerPos(getDivPos())=" + getDividerPos());            
-            getPaneHandler().updateDividers(getDividerPos(), divIndex, dockable(), parent);
-        }
-        //this.dividerPosProperty.set(dividerPos);
-    }
-
-    
-    
     public Node getDragNode() {
         return getDragManager().getDragNode();
     }
@@ -114,19 +91,29 @@ public class DockNodeHandler {
     }
 
     protected void paneHandlerChanged(ObservableValue<? extends PaneHandler> observable, PaneHandler oldValue, PaneHandler newValue) {
-        System.err.println("DockNodeHandler: paneHandlerChanged oldValue=" + oldValue);
-        System.err.println("DockNodeHandler: paneHandlerChanged newValue=" + newValue);
         if (newValue == null) {
             paneHandlerProperty.set(scenePaneHandler);
         }
-        
     }
 
     public StringProperty dockPosProperty() {
         return dockPosProperty;
     }
+
     public String getDockPos() {
         return dockPosProperty.get();
+    }
+
+    public DoubleProperty dividerPosProperty() {
+        return dividerPosProperty;
+    }
+
+    public double getDividerPos() {
+        return dividerPosProperty.get();
+    }
+
+    public void setDividerPos(double dividerPos) {
+        this.dividerPosProperty.set(dividerPos);
     }
 
     public Properties getProperties() {
@@ -161,14 +148,16 @@ public class DockNodeHandler {
     }
 
     public void setPaneHandler(PaneHandler paneHandler) {
+        //System.err.println("setPaneHandler = " + paneHandler);
         this.paneHandlerProperty.set(paneHandler);
     }
 
     protected void dockedChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (!newValue) {
+            //System.err.println("DockNodeHandler : dockedChanged");
             getPaneHandler().remove(node());
             setPaneHandler(null);
-            setDividerPos(-1);
+            //setDividerPos(-1);
             setDockPos("TOP");
         }
     }
@@ -282,13 +271,13 @@ public class DockNodeHandler {
         getProperties().remove("nodeHandler-titlebar-minwidth");
         dragManager.titlebarChanged(ov, oldValue, newValue);
     }
-    
+
     public boolean isTitleBarHidden() {
         return getTitleBar() == null || (getTitleBar().getMinHeight() == 0 && getTitleBar().getMinWidth() == 0);
     }
-    
+
     protected void saveTitleBar() {
-        if ( getTitleBar() == null ) {
+        if (getTitleBar() == null) {
             getProperties().remove("nodeHandler-titlebar-minheight");
             getProperties().remove("nodeHandler-titlebar-minwidth");
             return;
@@ -299,20 +288,20 @@ public class DockNodeHandler {
 
     public void hideTitleBar() {
         saveTitleBar();
-        if ( getTitleBar() == null ) {
+        if (getTitleBar() == null) {
             return;
         }
         getTitleBar().setMinHeight(0);
         getTitleBar().setPrefHeight(0);
     }
-    
+
     public void showTitleBar() {
-        if ( getTitleBar() == null ) {
+        if (getTitleBar() == null) {
             return;
         }
-        if ( isTitleBarHidden() ) {
+        if (isTitleBarHidden()) {
             getTitleBar().setMinHeight((double) getProperties().get("nodeHandler-titlebar-minheight"));
-            getTitleBar().setMinWidth((double) getProperties().get("nodeHandler-titlebar-minwidth"));            
+            getTitleBar().setMinWidth((double) getProperties().get("nodeHandler-titlebar-minwidth"));
         }
     }
 

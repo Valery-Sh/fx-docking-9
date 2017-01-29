@@ -6,27 +6,28 @@
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.HPane;
+import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.SplitDelegate;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.controls.DockNode;
+import org.vns.javafx.dock.api.controls.DockPane;
 
 /**
  *
  * @author Valery
  */
-public class TestCustomControl extends Application {
+public class TestDockPaneControl extends Application {
 
     Stage stage;
     Scene scene;
@@ -35,11 +36,10 @@ public class TestCustomControl extends Application {
     public void start(Stage stage) {
         stage.setTitle("PRIMARY");
         Button btn01 = new Button("sp btn01");
-        //DockSplitPane ddd = new DockSplitPane(btn01);
+        
         StackPane root = new StackPane();
-        CustomControl cc = new CustomControl();
+        DockPane cc = new DockPane();
         DockNode2 dn1 = new DockNode2();
- 
         dn1.setId("dn01");
         Button btn1 = new Button("BUTTON 1");
         dn1.getChildren().add(btn1);
@@ -67,28 +67,19 @@ public class TestCustomControl extends Application {
         dn2.nodeHandler().setDividerPos(0.713);                
         dn3.nodeHandler().setDividerPos(0.608);                
         
-        SplitPane spsp = new SplitPane();
-        System.err.println("sp.Orient=" + spsp.getOrientation());
         
-        Platform.runLater(() -> {
-        SplitPane sp1 = (SplitPane) DockUtil.getImmediateParent(cc, dn2, nd-> {return  (nd instanceof SplitPane);});
-        //System.err.println("sp.getDividers().size=" + sp1.getDividers().size());
-        //Divider d1 = sp1.getDividers().get(0);
-        
-        //System.err.println("divider.pos=" + d1.getPosition());        
-        });
-        //dn2.setPrefHeight(188);
-        //dn2.setMinHeight(188);
         Button btn2 = new Button("BOTTON 2");
         
         btn1.setOnAction(a-> {
             SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn1, nd-> {return  (nd instanceof SplitPane);});
             System.err.println("DN1: sp.getDividers().size=" + sp.getDividers().size());
-            Divider d = sp.getDividers().get(0);
-            System.err.println("divider.pos=" + d.getPosition());
+            //SplitPane.Divider d = sp.getDividers().get(0);
+            /*System.err.println("divider.pos=" + d.getPosition());
             sp.getDividers().forEach(di -> {
                 System.err.println(" --- pos=" + di.getPosition());
             });
+            */
+            DockUtil.print(root);
         });
         
         btn2.setOnAction(a-> {
@@ -119,13 +110,33 @@ public class TestCustomControl extends Application {
         });
         
         dn2.getChildren().add(btn2);
-        dn2.setTitle("DockNode: dn2");        
-
-        cc.addItem(dn1,Side.TOP);
-        //cc.addItem(dn2,Side.TOP);
-        //cc.addItem(dn2,Side.BOTTOM);
-        cc.addItem(dn3,Side.TOP);
-        cc.addItem(dn3_1, Side.RIGHT, dn3);
+        dn2.setTitle("DockNode: dn2");  
+        
+        DockNode dnc1 = new DockNode("DockNodeControl dnc1");
+        DockNode dnc2 = new DockNode("DockNodeControl dnc2");
+        DockNode dnc3 = new DockNode("DockNodeControl dnc3");
+        
+        VPane vs1 = new VPane();
+        
+        HPane hs1 = new HPane(dnc1,dnc2);
+        vs1.getItems().addAll(hs1,dnc3);
+        
+        cc.setRoot(vs1);
+//        cc.dock(dn1, Side.TOP);
+//        cc.dock(dn2, Side.RIGHT);
+        
+        //dn1.nodeHandler().setPaneHandler(cc.getDelegate().paneHandler());
+        System.err.println("dn1 isDocked()=" + dn1.nodeHandler().isDocked());
+        //cc.getDelegate().paneHandler().i
+        //dn1.nodeHandler().setDocked(true);
+        //cc.addItem(dn1,Side.RIGHT);
+        //hs1.getItems().add(dn3);
+        
+        //cc.addItem(dn3,Side.RIGHT);
+//        cc.addItem(dn2,Side.RIGHT);
+//        cc.addItem(dn3,Side.RIGHT);
+//        cc.addItem(dn3,Side.TOP);
+//        cc.addItem(dn3_1, Side.RIGHT, dn3);
 
         
         root.getChildren().add(cc);
@@ -136,7 +147,7 @@ public class TestCustomControl extends Application {
 
         stage.setScene(scene);
         stage.show();
-        DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(dn3);
+        SplitDelegate.DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(dn3);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);

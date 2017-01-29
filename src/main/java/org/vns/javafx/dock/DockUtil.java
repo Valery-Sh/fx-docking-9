@@ -14,6 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PaneHandler;
@@ -301,17 +302,10 @@ public class DockUtil {
         
         return retval;
     }
-    public static Parent getImmediateParent_old(Node child, Predicate<Parent> predicate) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-            return null;
+        public static DockPaneTarget getParentDockPane(Node dockNode) {
+            return (DockPaneTarget) DockUtil.getImmediateParent(dockNode, p -> {
+                return (p instanceof DockPaneTarget);
+            });
         }
-        Parent root = child.getScene().getRoot();
-        List<Parent> list = getParentChain(root, child, predicate);
-        Parent retval = null;
-        if ( ! list.isEmpty() ) {
-            retval = list.get(list.size() - 1);
-        }
-        return retval;
-    }
 
 }

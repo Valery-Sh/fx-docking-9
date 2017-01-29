@@ -18,9 +18,10 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
@@ -66,23 +67,47 @@ public class TestSplitPane  extends Application {
         Scene scene = new Scene(root);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode dn01 = new DockNode();
+        DockNode2 dn01 = new DockNode2();
         dn01.setId("DockNode: dn01");
         dn01.setPrefHeight(100);
+        sp01.getItems().add(dn01);
         dn01.nodeHandler().setTitle("DockNode: dn01");
-        b01.setOnAction(a -> {
-        });
         Button b02 = new Button("Change Orientation");
         
         b02.setOnAction(a -> {
         });        
         
-        DockNode dn02 = new DockNode();
+        DockNode2 dn02 = new DockNode2();
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
-        dn02.nodeHandler().setTitle("DockNode: dn02");        
+        dn02.nodeHandler().setTitle("DockNode: dn02");   
+        
         stage.setScene(scene);
         stage.show();
+        
+        Stage stage1 = new Stage();
+        StackPane sp1 = new StackPane();
+        SplitPane dsp1 = new SplitPane();
+        sp1.getChildren().add(dsp1);
+        Scene sc1 = new Scene(sp1);
+        stage1.setScene(sc1);
+        stage1.setWidth(100);
+        stage1.setHeight(100);
+        stage1.show();
+        spBtn01.setOnAction(a -> {
+            System.err.println("b01 clicked");
+            System.err.println("b01 sp01.size()=" + sp01.getItems().size());
+            dsp1.getItems().add(dn01);
+        });
+        spBtn02.setOnAction(a -> {
+            System.err.println("b02 clicked");
+            System.err.println("b02 sp01.size()=" + sp01.getItems().size());
+            sp01.getItems().forEach(n -> {
+                System.err.println("sp01.item = " + n);
+            });
+            System.err.println("b02 sp01.size()=" + sp01.getItems().size());
+            
+        });
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

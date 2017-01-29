@@ -257,10 +257,6 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget 
             return (DockTabPane2) super.getDockPane();
         }
 
-        @Override
-        protected void initSplitDelegate() {
-        }
-
         private StackPane getContents() {
             return ((StackPane) getDockPane().rootPane.getChildren().get(1));
         }

@@ -23,6 +23,7 @@ public interface Dockable {
         }
 
         StyleManager.getInstance()
-                .addUserAgentStylesheet(Dockable.class.getResource("default.css").toExternalForm());
+                //.addUserAgentStylesheet(Dockable.class.getResource("default.css").toExternalForm());
+                .addUserAgentStylesheet(Dockable.class.getResource("/resources/org/vns/javafx/dock/api/default.css").toExternalForm());                
     }
 }

@@ -19,7 +19,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockPaneBase;
 
 /**
  *
@@ -148,7 +148,9 @@ public class FloatStageBuilder {
                 return;
             }
         }
+        System.err.println("FloatStageBuilder isDocked = "  + dockable.nodeHandler().isDocked());
         if (dockable.nodeHandler().isDocked()) {
+            System.err.println("FloatStageBuilder " + dockable.nodeHandler().getPaneHandler());
             dockable.nodeHandler().getPaneHandler().undock(dockable.node());
         }
         
@@ -183,7 +185,7 @@ public class FloatStageBuilder {
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
 
-        DockPane dockPane = new DockPane();
+        DockPaneBase dockPane = new DockPaneBase();
         //
         // Prohibit to use as a dock target
         //
@@ -270,8 +272,8 @@ public class FloatStageBuilder {
     protected void dock(Pane dockPane, Dockable dockable) {
         Node node = dockable.node();
         SplitDelegate.DockSplitPane rootSplitPane = null;
-        //2701rootSplitPane = new SplitDelegate.DockSplitPane();
         rootSplitPane = new SplitDelegate.DockSplitPane();
+        //-rootSplitPane = new HSplit();
         //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
         rootSplitPane.getItems().add(node);
 

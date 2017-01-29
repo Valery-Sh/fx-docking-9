@@ -15,7 +15,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockSideBar.Rotation;
 import org.vns.javafx.dock.api.Dockable;
@@ -53,7 +53,7 @@ public class TestDockSideBar extends Application {
         Scene scene = new Scene(borderPane);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode dn01 = new DockNode();
+        DockNode2 dn01 = new DockNode2();
         dn01.setPrefHeight(100);
         dn01.nodeHandler().setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
@@ -82,7 +82,7 @@ public class TestDockSideBar extends Application {
         
         sideBar01.dock(dn01);
         
-        DockNode dn02 = new DockNode();
+        DockNode2 dn02 = new DockNode2();
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        
         
