@@ -194,17 +194,26 @@
  *      ------  DockSideBar --------
  *******************************************/   
 .dock-side-bar {
-    -fx-border-width: 1;
-    -fx-padding: 10;
-}
-.dock-side-bar .tool-bar {
-    -fx-padding: 3 3 3 3;
+    /*-fx-padding: 0;*/
+    -fx-border-width: 0;
+    -fx-border-color: blue;
+    
 }
 
-.dock-side-bar .tool-bar .button {
+
+.dock-side-bar > .tool-bar {
+    /* -fx-spacing: 30; */
+}
+.dock-side-bar > .tool-bar:vertical {
+     /*-fx-spacing: 30;*/ 
+}
+.dock-side-bar > .tool-bar:horizontal {
+     /*-fx-spacing: 30; */
+}
+.dock-side-bar .button {
     -fx-background-insets: 0;
 }
-.dock-side-bar .tool-bar .button:hover  {
+.dock-side-bar .button:hover  {
     -fx-text-fill: blue;
     -fx-background-color: inherit;
     -fx-background-insets: 0,1,2;

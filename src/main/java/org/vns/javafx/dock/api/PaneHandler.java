@@ -301,6 +301,7 @@ public class PaneHandler {
     }//interface DockConverter
 
     public void remove(Node dockNode) {
+        Region r;
     }
 
 }//class

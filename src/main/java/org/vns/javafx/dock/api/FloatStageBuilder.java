@@ -133,7 +133,7 @@ public class FloatStageBuilder {
         Region node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         Node titleBar = dockable.nodeHandler().getTitleBar();
-        if ( titleBar != null ) {
+        if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
@@ -148,23 +148,21 @@ public class FloatStageBuilder {
                 return;
             }
         }
-        System.err.println("FloatStageBuilder isDocked = "  + dockable.nodeHandler().isDocked());
         if (dockable.nodeHandler().isDocked()) {
-            System.err.println("FloatStageBuilder " + dockable.nodeHandler().getPaneHandler());
             dockable.nodeHandler().getPaneHandler().undock(dockable.node());
         }
-        
+
         Stage newStage = new Stage();
         DockRegistry.register(newStage);
         stageProperty.set(newStage);
 
         newStage.setTitle("FLOATING STAGE");
         Region lastDockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
-        if (lastDockPane != null && lastDockPane.getScene() != null        
+        if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());
         }
-        
+
         newStage.initStyle(stageStyle);
 
         // offset the new stage to cover exactly the area the dock was local to the scene
@@ -224,13 +222,14 @@ public class FloatStageBuilder {
         addResizer(newStage, dockable);
         newStage.sizeToScene();
         newStage.setAlwaysOnTop(true);
+
         newStage.show();
     }
 
     protected void addResizer(Stage stage, Dockable dockable) {
         stage.setResizable(dockable.nodeHandler().isResizable());
         if (stage.isResizable()) {
-            addListeners(stage);        
+            addListeners(stage);
         }
         resizer = new FloatStageResizer();
     }
@@ -243,13 +242,13 @@ public class FloatStageBuilder {
 
     public void removeListeners(Dockable dockable) {
         ((Stage) dockable.node().getScene().getWindow()).removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        ((Stage) dockable.node().getScene().getWindow()).removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);        
+        ((Stage) dockable.node().getScene().getWindow()).removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         ((Stage) dockable.node().getScene().getWindow()).removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
         ((Stage) dockable.node().getScene().getWindow()).removeEventHandler(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-        
+
         ((Stage) dockable.node().getScene().getWindow()).removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
         ((Stage) dockable.node().getScene().getWindow()).removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-        
+
     }
 
     /*    public void pressedHandle(MouseEvent ev) {
@@ -302,17 +301,19 @@ public class FloatStageBuilder {
     };
 
     public class MouseResizeHandler implements EventHandler<MouseEvent> {
+
         private boolean cursorSupported = false;
+
         @Override
         public void handle(MouseEvent ev) {
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-                Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());                
-                if ( ! isCursorSupported(c) ) {
+                Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());
+                if (!isCursorSupported(c)) {
                     getStage().getScene().setCursor(Cursor.DEFAULT);
                 } else {
                     getStage().getScene().setCursor(c);
                 }
-                if ( !c.equals(Cursor.DEFAULT)) {
+                if (!c.equals(Cursor.DEFAULT)) {
                     ev.consume();
                 }
 
@@ -321,40 +322,41 @@ public class FloatStageBuilder {
                 System.err.println("Mouse pressed stage=" + getStage());            
                 System.err.println("Mouse pressed tb.width =" + nodeHandler.getTitleBar().getWidth());                
                 System.err.println("Mouse pressed tb.getX,Y =" + nodeHandler.getTitleBar().localToScene(0, 0));                                
-*/              
+                 */
                 //nodeHandler.getTitleBar().getWidth();
-                Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());                
-/*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
+                Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());
+                /*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
                 System.err.println("Mouse pressed stage.height=" + getStage().getHeight());                            
                 System.err.println("==============================================");                            
-*/                
+                 */
                 cursorSupported = isCursorSupported(c);
-                if ( ! cursorSupported ) {
+                if (!cursorSupported) {
                     getStage().getScene().setCursor(Cursor.DEFAULT);
                     return;
                 }
-                
+
                 getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());
             } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                 //System.err.println("FloatStage dragged");
                 //Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());                
-                if ( ! cursorSupported) {
+                if (!cursorSupported) {
                     return;
                 }
-                if ( getResizer().getStage() == null ) {
-                    getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());                    
+                if (getResizer().getStage() == null) {
+                    getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());
                 } else {
                     getResizer().resize(ev);
                 }
             }
         }
+
         public boolean isCursorSupported(Cursor cursor) {
-            if ( cursor == null || cursor == Cursor.DEFAULT ) {
+            if (cursor == null || cursor == Cursor.DEFAULT) {
                 return false;
             }
             boolean retval = false;
-            for ( Cursor c : getSupportedCursors() ) {
-                if ( c == cursor ) {
+            for (Cursor c : getSupportedCursors()) {
+                if (c == cursor) {
                     retval = true;
                     break;
                 }

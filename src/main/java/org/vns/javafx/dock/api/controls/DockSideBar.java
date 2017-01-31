@@ -1,8 +1,10 @@
-package org.vns.javafx.dock;
+package org.vns.javafx.dock.api.controls;
 
+import org.vns.javafx.dock.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,6 +12,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
@@ -21,12 +25,14 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -44,7 +50,8 @@ import org.vns.javafx.dock.api.StageBuilder;
  *
  * @author Valery Shyshkin
  */
-public class DockSideBar extends StackPane implements DockPaneTarget {
+@DefaultProperty(value = "items")
+public class DockSideBar extends Control implements DockPaneTarget, ListChangeListener {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
@@ -66,55 +73,124 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
     private SidePaneHandler paneHandler;
 
-    private ObjectProperty<Side> sideProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Side> sideProperty = new SimpleObjectProperty<>();
 
-    private ToolBar toolBar;
-
-    private ObjectProperty<Rotation> rotationProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Rotation> rotationProperty = new SimpleObjectProperty<>();
 
     private final BooleanProperty hideOnExitProperty = new SimpleBooleanProperty(false);
 
+    private final CustomToolBar delegate = new CustomToolBar();
+
+    private final ObservableList<Dockable> items = FXCollections.observableArrayList();
+
     public DockSideBar() {
         init();
+
+    }
+
+    public DockSideBar(Dockable... items) {
+        super();
+        this.items.addAll(items);
     }
 
     private void init() {
         paneHandler = new SidePaneHandler(this);
-        toolBar = new ToolBar();
-        //toolBar.setStyle("-fx-background-color: aqua");
+        setOrientation(Orientation.HORIZONTAL);
+        getStyleClass().clear();
+        //delegate.getStyleClass().clear();
         getStyleClass().add("dock-side-bar");
-        toolBar.getStyleClass().add("tool-bar");
-
-        getChildren().add(toolBar);
-        toolBar.setOrientation(getOrientation());
+        //getStyleClass().add("tool-bar");
+        //delegate.getStyleClass().add("tool-bar");
+        //delegate.applyCss();
 
         sceneProperty().addListener((v, ov, nv) -> {
             sceneChanged(ov, nv);
         });
 
         sideProperty.addListener((v, ov, nv) -> {
-            paneHandler.getItems().values().forEach(d -> {
+            paneHandler.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
         rotationProperty.addListener((v, ov, nv) -> {
-            paneHandler.getItems().values().forEach(d -> {
+            paneHandler.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
-        toolBar.orientationProperty().addListener((v, ov, nv) -> {
-            paneHandler.getItems().values().forEach(d -> {
+        getDelegate().orientationProperty().addListener((v, ov, nv) -> {
+            paneHandler.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
 
-        setSide(Side.RIGHT);
-        setRotation(Rotation.UP_DOWN);
+        setSide(Side.TOP);
+        setRotation(Rotation.DEFAULT);
+
+        items.addListener(this);
     }
 
+    public ObservableList<Dockable> getItems() {
+        return items;
+    }
+
+////////////////////////////////////////////////////
+    @Override
+    public void onChanged(Change change) {
+        itemsChanged(change);
+
+    }
+
+    protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {
+        while (change.next()) {
+            if (change.wasRemoved()) {
+                List<? extends Dockable> list = change.getRemoved();
+                for (Dockable d : list) {
+                    paneHandler.undock(d.node());
+                }
+
+            } else if (change.wasAdded()) {
+                List<? extends Dockable> list = change.getAddedSubList();
+                for (Dockable d : list) {
+                    dock(d);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected double computePrefHeight(double h) {
+        return delegate.computePrefHeight(h);
+    }
+
+    @Override
+    protected double computePrefWidth(double w) {
+        return delegate.computePrefWidth(w);
+    }
+
+    @Override
+    protected double computeMinHeight(double h) {
+        return delegate.computeMinHeight(h);
+    }
+
+    @Override
+    protected double computeMinWidth(double w) {
+        return delegate.computeMinWidth(w);
+    }
+
+    @Override
+    protected double computeMaxHeight(double h) {
+        return delegate.computeMaxHeight(h);
+    }
+
+    @Override
+    protected double computeMaxWidth(double w) {
+        return delegate.computeMaxWidth(w);
+    }
+
+////////////////////////////////////////////////////    
     public ObjectProperty<Rotation> rotationProperty() {
         return rotationProperty;
     }
@@ -136,7 +212,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     public void setRotation(Rotation rotation) {
-        paneHandler.getItems().keySet().forEach(g -> {
+        paneHandler.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(rotation.getAngle());
         });
@@ -148,7 +224,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         newValue.windowProperty().addListener((v, ov, nv) -> {
             stageChanged(ov, nv);
         });
-        Stage parent = (Stage) newValue.getWindow();
+        //Stage parent = (Stage) newValue.getWindow();
     }
 
     protected void stageChanged(Window oldValue, Window newValue) {
@@ -157,20 +233,23 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         }
         Stage stage = (Stage) newValue;
         stage.addEventFilter(MouseEvent.MOUSE_CLICKED, this::stageClicked);
-        getItems().values().forEach(d -> {
+        stage.setTitle("owner");
+        getSideItems().values().forEach(d -> {
             d.adjustScreenPos();
         });
     }
 
     protected void stageClicked(MouseEvent ev) {
-        if (toolBar.localToScreen(toolBar.getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY())) {
+        if (localToScreen(getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY())) {
             return;
         }
 
-        paneHandler.getItems().forEach((g, d) -> {
-            Window w = d.getDockable().node().getScene().getWindow();
-            if (w instanceof Stage) {
-                ((Stage) w).close();
+        paneHandler.getItemMap().forEach((g, d) -> {
+            if (d.getDockable().node().getScene() != null && d.getDockable().node().getScene().getWindow() != null) {
+                Window w = d.getDockable().node().getScene().getWindow();
+                if (w instanceof Stage) {
+                    ((Stage) w).close();
+                }
             }
         });
     }
@@ -180,13 +259,13 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         return this.paneHandler;
     }
 
-    protected ObservableMap<Group, Container> getItems() {
-        return paneHandler.getItems();
+    protected ObservableMap<Group, Container> getSideItems() {
+        return paneHandler.getItemMap();
     }
 
     public Button getButton(Dockable dockable) {
         Button retval = null;
-        for (Map.Entry<Group, Container> en : getItems().entrySet()) {
+        for (Map.Entry<Group, Container> en : getSideItems().entrySet()) {
             if (en.getValue().getDockable() == dockable) {
                 retval = (Button) en.getKey().getChildren().get(0);
                 break;
@@ -197,7 +276,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
 
     public List<Button> getButtons() {
         List<Button> retval = new ArrayList<>();
-        for (Group g : getItems().keySet()) {
+        for (Group g : getSideItems().keySet()) {
             retval.add((Button) g.getChildren().get(0));
         }
         return retval;
@@ -212,11 +291,11 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     public Orientation getOrientation() {
-        return toolBar.getOrientation();
+        return getDelegate().getOrientation();
     }
 
     public void setOrientation(Orientation orientation) {
-        toolBar.setOrientation(orientation);
+        getDelegate().setOrientation(orientation);
     }
 
     public Button dock(Dockable dockable) {
@@ -233,13 +312,30 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
     }
 
     @Override
-    public Pane pane() {
+    public Region pane() {
         return this;
+    }
+
+    public CustomToolBar getDelegate() {
+        return delegate;
+    }
+
+    @Override
+    protected Skin<?> createDefaultSkin() {
+        return new DockSideBarSkin(this);
+    }
+
+    public static class DockSideBarSkin extends SkinBase<DockSideBar> {
+
+        public DockSideBarSkin(DockSideBar control) {
+            super(control);
+            getChildren().add(control.getDelegate());
+        }
     }
 
     public static class SidePaneHandler extends PaneHandler {
 
-        private final ObservableMap<Group, Container> items = FXCollections.observableHashMap();
+        private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
 
         public SidePaneHandler(DockSideBar dockPane) {
             super(dockPane);
@@ -262,7 +358,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
 
         protected Container getItem(Dockable d) {
             Container retval = null;
-            for (Container c : items.values()) {
+            for (Container c : itemMap.values()) {
                 if (c.getDockable() == d) {
                     retval = c;
                     break;
@@ -274,7 +370,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         @Override
         protected boolean isDocked(Node node) {
             boolean retval = false;
-            for (Container c : items.values()) {
+            for (Container c : itemMap.values()) {
                 if (c.getDockable().node() == node) {
                     retval = true;
                     break;
@@ -301,10 +397,21 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             return null;
         }
 
+        public boolean hasWindow(Dockable d) {
+            boolean retval = false;
+            if (d.node().getScene() != null && d.node().getScene().getWindow() != null) {
+                retval = true;
+            }
+            return retval;
+        }
+
         @Override
         protected void doDock(Point2D mousePos, Node node, Side dockPos) {
             Dockable dockable = DockRegistry.dockable(node);
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
+                if (node.getScene().getWindow().isShowing()) {
+                    ((Region) node).setPrefHeight(node.getScene().getWindow().getHeight());
+                }
                 ((Stage) node.getScene().getWindow()).close();
             }
             Button itemButton = new Button(getButtonText(dockable));
@@ -312,7 +419,7 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             itemButton.getStyleClass().add("item-button");
             Group item = new Group(itemButton);
             Container container = new Container(dockable);
-            getItems().put(item, container);
+            getItemMap().put(item, container);
 
             int idx = -1;
             if (mousePos != null) {
@@ -336,27 +443,32 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
                     dockable.node().getScene().getWindow().hide();
                     return;
                 }
-                getItems().values().forEach(d -> {
+                getItemMap().values().forEach(d -> {
                     d.getDockable().node().getScene().getWindow().hide();
                 });
                 show(itemButton);
                 container.changeSize();
             });
-
-            ((DockSideBar) getDockPane()).toolBar.getItems().add(item);
+            ((DockSideBar) getDockPane()).getDelegate().getItems().add(item);
             DockNodeHandler nodeHandler = dockable.nodeHandler();
             if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                 nodeHandler.setPaneHandler(this);
             }
-
             container.getStageBuilder().setSupportedCursors(getSupportedCursors());
+            Stage stage = container.getStageBuilder().createStage(dockable);
+            stage.setAlwaysOnTop(true);
+            stage.setOnShowing(e -> {
+                if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null) {
+                    if ( stage.getOwner() == null ) {
+                        stage.initOwner(getDockPane().getScene().getWindow());
+                    }
+                }
+            });
 
-            container.getStageBuilder().createStage(dockable).setAlwaysOnTop(true);
             if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null && getDockPane().getScene().getWindow().isShowing()) {
                 container.adjustScreenPos();
             }
             container.setDocked(true);
-
         }
 
         public Cursor[] getSupportedCursors() {
@@ -401,27 +513,40 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         @Override
         public void remove(Node dockNode) {
             Group r = null;
-            for (Map.Entry<Group, Container> en : items.entrySet()) {
+            for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
                 if (en.getValue().getDockable().node() == dockNode) {
                     r = en.getKey();
                     break;
                 }
             }
             if (r != null) {
-                items.get(r).removeListeners();
-                items.remove(r);
-                ((DockSideBar) getDockPane()).toolBar.getItems().remove(r);
+                itemMap.get(r).removeListeners();
+                itemMap.remove(r);
+                ((DockSideBar) getDockPane()).getDelegate().getItems().remove(r);
+                ((DockSideBar) getDockPane()).getItems().remove(DockRegistry.dockable(dockNode));
+
             }
         }
 
-        protected ObservableMap<Group, Container> getItems() {
-            return items;
+        protected ObservableMap<Group, Container> getItemMap() {
+            return itemMap;
         }
 
         public void show(Button btn) {
             Group group = (Group) btn.getParent();
-            Dockable dockable = getItems().get(group).getDockable();
-            getItems().get(group).changeSize();
+
+            //container.getStageBuilder().createStage(dockable).setAlwaysOnTop(true);
+            Dockable dockable = getItemMap().get(group).getDockable();
+            /*            if (!hasWindow(dockable)) {
+                getItemMap().get(group).getStageBuilder().createStage(dockable).setAlwaysOnTop(true);
+                if (!dockable.node().getScene().getWindow().isShowing()) {
+                    if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null) {
+                        ((Stage) dockable.node().getScene().getWindow()).initOwner(getDockPane().getScene().getWindow());
+                    }
+                }
+            }
+             */
+            getItemMap().get(group).changeSize();
             ((Stage) dockable.node().getScene().getWindow()).show();
         }
 
@@ -533,6 +658,9 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         }
 
         public void removeMouseExitListener() {
+            if (mouseExitEventListener == null) {
+                return;
+            }
             dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
             dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
         }
@@ -554,12 +682,19 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         public void adjustScreenPos() {
             SidePaneHandler handler = (SidePaneHandler) dockable.nodeHandler().getPaneHandler();
             Stage ownerStage = (Stage) ((DockSideBar) handler.getDockPane()).getScene().getWindow();
+
+            /*            ownerStage.xProperty().removeListener(this);
+            ownerStage.yProperty().removeListener(this);
+            ownerStage.widthProperty().removeListener(this);
+            ownerStage.heightProperty().removeListener(this);            
+             */
             ownerStage.xProperty().addListener(this);
             ownerStage.yProperty().addListener(this);
             ownerStage.widthProperty().addListener(this);
-
             ownerStage.heightProperty().addListener(this);
+
             changeSize();
+
         }
 
         public void removeListeners() {
@@ -578,15 +713,23 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
         }
 
         protected void changeSize() {
+            /*            if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
+                return;
+            }
+             */
             Stage stage = (Stage) dockable.node().getScene().getWindow();
             DockSideBar sb = (DockSideBar) dockable.nodeHandler().getPaneHandler().getDockPane();
-            ToolBar tb = sb.toolBar;
+            if (!stage.isShowing()) {
+                return;
+            }
             Point2D pos = sb.localToScreen(0, 0);
             switch (sb.getSide()) {
                 case TOP:
                     stage.setX(pos.getX());
                     stage.setY(pos.getY() + sb.getHeight());
                     stage.setWidth(sb.getWidth());
+//                    stage.setHeight(dockable.node().getHeight());
+
                     break;
                 case BOTTOM:
                     stage.setX(pos.getX());
@@ -616,4 +759,46 @@ public class DockSideBar extends StackPane implements DockPaneTarget {
             return stageBuilder;
         }
     }
+
+    public static class CustomToolBar extends ToolBar {
+
+        public CustomToolBar() {
+
+        }
+
+        public CustomToolBar(Node... items) {
+            super(items);
+        }
+
+        @Override
+        protected double computePrefHeight(double h) {
+            return super.computePrefHeight(h);
+        }
+
+        @Override
+        protected double computePrefWidth(double w) {
+            return super.computePrefWidth(w);
+        }
+
+        @Override
+        protected double computeMinHeight(double h) {
+            return super.computeMinHeight(h);
+        }
+
+        @Override
+        protected double computeMinWidth(double w) {
+            return super.computeMinWidth(w);
+        }
+
+        @Override
+        protected double computeMaxHeight(double h) {
+            return super.computeMaxHeight(h);
+        }
+
+        @Override
+        protected double computeMaxWidth(double w) {
+            return super.computeMaxWidth(w);
+        }
+    }
+
 }//class

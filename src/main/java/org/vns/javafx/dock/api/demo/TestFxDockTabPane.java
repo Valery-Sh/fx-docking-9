@@ -22,7 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.DockPaneBase;
-import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.api.controls.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;

@@ -8,23 +8,25 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.DockSideBar;
-import org.vns.javafx.dock.DockSideBar.Rotation;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.controls.DockNode;
+import org.vns.javafx.dock.api.controls.DockSideBar;
+import org.vns.javafx.dock.api.controls.DockSideBar.Rotation;
 
 /**
  *
  * @author Valery
  */
-public class TestDockSideBar extends Application {
+public class TestDockSideBar1 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -33,17 +35,18 @@ public class TestDockSideBar extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        BorderPane borderPane = new BorderPane();
+        StackPane borderPane = new StackPane();
         
         stage.setTitle("Test DockSideBar");
 
         DockSideBar sideBar01 = new DockSideBar();
-        sideBar01.setOrientation(Orientation.VERTICAL);
-        //sideBar01.setSide(Side.RIGHT);
+/*        sideBar01.setOrientation(Orientation.VERTICAL);
         sideBar01.setRotation(Rotation.UP_DOWN);
-        sideBar01.setHideOnExit(true);
+        sideBar01.setSide(Side.RIGHT);
+*/        
+        //sideBar01.setHideOnExit(true);
         
-        borderPane.setRight(sideBar01);
+        //borderPane.getChildren().add(sideBar01);
         borderPane.setPrefHeight(300);
         borderPane.setPrefWidth(300);
         
@@ -51,9 +54,9 @@ public class TestDockSideBar extends Application {
         
         //((Region)borderPane.getRight()).setMaxWidth(0);
         Scene scene = new Scene(borderPane);
-        scene.getRoot().setStyle("-fx-background-color: yellow");
+        //scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode2 dn01 = new DockNode2();
+        DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);
         dn01.nodeHandler().setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
@@ -66,10 +69,31 @@ public class TestDockSideBar extends Application {
             }
             
         });
+        
         Button b02 = new Button("Change Orientation");
+        Button b03 = new Button("Change Side");
+        b03.setOnAction(a -> {
+            
+            if (sideBar01.getSide()== Side.RIGHT) {
+                sideBar01.setSide(Side.LEFT);
+            } else if (sideBar01.getSide()== Side.LEFT) {
+                sideBar01.setSide(Side.TOP);
+            } else if (sideBar01.getSide()== Side.TOP) {
+                sideBar01.setSide(Side.BOTTOM);
+            } else if (sideBar01.getSide()== Side.BOTTOM) {
+                sideBar01.setSide(Side.RIGHT);
+            }
+            
+        });
+        
         VBox vb = new VBox();
-        vb.getChildren().addAll(b01,b02);
-        borderPane.setLeft(vb);
+        vb.getChildren().addAll(b01,b02,b03);
+        borderPane.getChildren().add(vb);
+        //borderPane.getChildren().add(b02);
+        //StackPane.setAlignment(vb,Pos.CENTER_LEFT);
+
+        borderPane.getChildren().add(sideBar01);
+        StackPane.setAlignment(sideBar01, Pos.CENTER_RIGHT);
         
         b02.setOnAction(a -> {
             if (sideBar01.getOrientation()== Orientation.VERTICAL) {
@@ -80,15 +104,44 @@ public class TestDockSideBar extends Application {
             
         });        
         
-        sideBar01.dock(dn01);
-        
-        DockNode2 dn02 = new DockNode2();
-        dn02.setPrefHeight(100);
+        //sideBar01.dock(dn01);
+
+        DockNode dn02 = new DockNode();
+        dn02.setId("dn02");
+        dn02.setContent(new Button("dn02 button"));
+        //dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        
         
-        sideBar01.dock(dn02);
+        //sideBar01.dock(dn02);
+   
+        
+        //scene.getRoot().setStyle("-fx-background-color: yellow");
+        //sideBar01.getDelegate().setStyle("-fx-padding: 0;");
+        //sideBar01.setStyle("-fx-padding: 0; -fx-border-width: 0; -fx-border-insets: 0,0,0,0; -fx-border-color: transparent");
+        //sideBar01.getDelegate().setStyle("-fx-padding: 0; -fx-border-width: 0;  -fx-border-insets: 0,0,0,0;-fx-border-color: transparent");
+        DockNode dn03 = new DockNode();
+        
+        //dn03.setPrefHeight(100);
+        dn03.nodeHandler().setTitle("DockNode: dn03");        
+        
+//        sideBar01.getItems().add(dn03);
+        //sideBar01.dock(dn02);
+        //sideBar01.dock(dn03);     
+        sideBar01.getItems().addAll(dn02,dn03);
+//        sideBar01.setMaxSize(sideBar01.getDelegate().getMaxWidth(), sideBar01.getDelegate().getMaxHeight());
+//        sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
+        
+        stage.setOnShown(e -> {
+            
+//        sideBar01.setPrefSize(sideBar01.getDelegate().getWidth(), sideBar01.getDelegate().getHeight());
+        //sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
+            
+            //System.err.println("sideBar01.getWidth()=" + sideBar01.getWidth());
+//            System.err.println("sideBar01.toolBar.getWidth()=" + sideBar01.getDelegate().getWidth());
+
+        });
         stage.show();
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);

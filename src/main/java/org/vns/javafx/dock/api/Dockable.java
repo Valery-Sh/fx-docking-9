@@ -19,11 +19,11 @@ public interface Dockable {
     static void initDefaultStylesheet(URL cssURL) {
         URL u = cssURL;
         if ( u == null) {
-            u = Dockable.class.getResource("default.css");
+            u = Dockable.class.getResource("resources/default.css");
         }
 
         StyleManager.getInstance()
-                //.addUserAgentStylesheet(Dockable.class.getResource("default.css").toExternalForm());
-                .addUserAgentStylesheet(Dockable.class.getResource("/resources/org/vns/javafx/dock/api/default.css").toExternalForm());                
+                .addUserAgentStylesheet(u.toExternalForm());
+                //.addUserAgentStylesheet(Dockable.class.getResource("/resources/org/vns/javafx/dock/api/default.css").toExternalForm());                
     }
 }

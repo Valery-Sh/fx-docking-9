@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.controls;
 
 import javafx.beans.DefaultProperty;
@@ -20,15 +15,15 @@ import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 @DefaultProperty(value = "content")
 public class DockNode extends Control implements Dockable {
 
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
-    private DockNodeBase delegate1;// = new DockPane();
-    //private Node root;
+    private DockNodeBase delegate1;
+
     private VBox delegate;// = new DockPane();
 
     public DockNode() {
@@ -49,6 +44,7 @@ public class DockNode extends Control implements Dockable {
     private void init(String title) {
         Region titleBar = new DockTitleBar(this);
         getDelegate().getChildren().add(titleBar);
+        getDelegate().getStyleClass().add("delegate");
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
         setTitle(title);
@@ -60,10 +56,6 @@ public class DockNode extends Control implements Dockable {
 
     public void setTitle(String title) {
         nodeHandler.setTitle(title);
-    }
-
-    public DockNodeHandler getDockNodeHandler() {
-        return nodeHandler;
     }
 
     public String getDockPos() {
@@ -104,20 +96,16 @@ public class DockNode extends Control implements Dockable {
 
     public Region getContent() {
         if (getDelegate().getChildren().size() > 1) {
-            System.err.println("1. getContent()");
             return (Region) getDelegate().getChildren().get(1);
         } else {
-            System.err.println("2. getContent()");
             return null;
         }
     }
 
     public void setContent(Region content) {
         if (getDelegate().getChildren().size() > 1) {
-            System.err.println("1. setContent()");
             return;
         }
-        System.err.println("1. setContent() = " + content);
         getDelegate().getChildren().add(content);
     }
 

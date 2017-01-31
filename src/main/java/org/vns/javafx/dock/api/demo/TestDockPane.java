@@ -46,7 +46,9 @@ public class TestDockPane extends Application {
         
         DockNode2 dn01 = new DockNode2();
         dn01.setTitle("DockNode dn01");
-        dn01.setId("dockNode dn01");        
+        dn01.setId("dockNode dn01");     
+        //dn01.setStyle("-fx-background-color:red");
+        dn01.getStyleClass().add("delegate");
         dn01.getChildren().add(new Label("DOCK NODE IMPL"));
         dockPane.dock(dn01, Side.TOP);
         

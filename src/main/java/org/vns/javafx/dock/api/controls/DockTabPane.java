@@ -1,4 +1,4 @@
-package org.vns.javafx.dock;
+package org.vns.javafx.dock.api.controls;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +23,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;

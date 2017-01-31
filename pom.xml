@@ -58,14 +58,14 @@
     </project>
     -->
     <build>
-        <resources>
+        <!--resources>
             <resource>
                 <directory>${basedir}/src/main</directory>
                 <includes>
                     <include>**/org/vns/javafx/dock/api/**/*</include>
                 </includes>
             </resource>
-        </resources>
+        </resources-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
