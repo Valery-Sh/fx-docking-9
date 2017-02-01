@@ -19,7 +19,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockPaneBase;
 
 /**
  *

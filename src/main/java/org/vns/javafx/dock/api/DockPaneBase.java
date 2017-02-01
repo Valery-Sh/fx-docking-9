@@ -1,4 +1,4 @@
-package org.vns.javafx.dock;
+package org.vns.javafx.dock.api;
 
 import javafx.geometry.Side;
 import javafx.scene.layout.Pane;

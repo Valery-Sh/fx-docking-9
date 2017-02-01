@@ -9,7 +9,6 @@ import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.SideIndicator.NodeSideIndicator;
@@ -51,15 +50,6 @@ public class PaneHandler {
     private void init() {
         inititialize();
     }
-    /**
-     * Does nothing. 
-     * Subclasses can change behavior.
-     * @param node a node witch divider position is to be set
-     * @param parent a parent the given dock node of th
-     */
-    public void updateDividers(Node node, Parent parent) {
-//        System.err.println("PaneHandler setDividerPos() paneHandler = " + this);
-    }
     
     public String getTitle() {
         if (title != null) {
@@ -71,7 +61,9 @@ public class PaneHandler {
         }
         return title;
     }
-
+    
+    protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
+            
     public void setTitle(String title) {
         this.title = title;
     }
@@ -273,6 +265,7 @@ public class PaneHandler {
         }
         return retval;
     }
+    
 
     public Dockable dock(Dockable dockable, Side dockPos) {
         return dock(null, dockable, dockPos);

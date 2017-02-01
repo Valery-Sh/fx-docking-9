@@ -151,13 +151,14 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
                     paneHandler.undock(d.node());
                 }
 
-            } else if (change.wasAdded()) {
+            } 
+            if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
                 for (Dockable d : list) {
                     dock(d);
                 }
             }
-        }
+        }//while
     }
 
     @Override
@@ -410,7 +411,7 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
             Dockable dockable = DockRegistry.dockable(node);
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 if (node.getScene().getWindow().isShowing()) {
-                    ((Region) node).setPrefHeight(node.getScene().getWindow().getHeight());
+                    //((Region) node).setPrefHeight(node.getScene().getWindow().getHeight());
                 }
                 ((Stage) node.getScene().getWindow()).close();
             }

@@ -1,15 +1,16 @@
 package org.vns.javafx.dock.api;
 
+import com.sun.javafx.property.adapter.PropertyDescriptor;
 import java.util.Properties;
 import java.util.function.Function;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.DockFloatingProperty;
@@ -65,6 +66,13 @@ public class DockNodeHandler {
         scenePaneHandler = new ScenePaneHandler(dockable);
         paneHandlerProperty.set(scenePaneHandler);
         paneHandlerProperty.addListener(this::paneHandlerChanged);
+        dividerPosProperty.addListener(this::dividerPosChanged);
+    }
+
+    protected void dividerPosChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        if ( getPaneHandler() != null ) {
+            getPaneHandler().dividerPosChanged(dockable().node(),(Double)oldValue, (Double)newValue);
+        }
     }
 
     public Node getDragNode() {

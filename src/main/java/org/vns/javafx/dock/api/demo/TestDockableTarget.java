@@ -13,7 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
 

@@ -4,7 +4,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.api.Dockable;
 
 /**

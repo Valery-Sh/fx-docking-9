@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;

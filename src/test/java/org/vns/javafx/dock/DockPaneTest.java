@@ -5,6 +5,7 @@
  */
 package org.vns.javafx.dock;
 
+import org.vns.javafx.dock.api.DockPaneBase;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

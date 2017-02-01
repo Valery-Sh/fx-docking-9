@@ -1,5 +1,6 @@
 package org.vns.javafx.dock;
 
+import org.vns.javafx.dock.api.DockPaneBase;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;

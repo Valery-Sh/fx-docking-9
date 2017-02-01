@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 

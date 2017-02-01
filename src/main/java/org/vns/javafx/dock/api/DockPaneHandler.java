@@ -52,6 +52,16 @@ public class DockPaneHandler extends PaneHandler {
         getDockPane().getChildren().add(rootSplitPane);
         splitDelegate = new SplitDelegate(rootSplitPane, this);
     }
+    @Override
+    public void dividerPosChanged(Node node, double oldValue, double newValue) {
+        if ( DockRegistry.isDockable(node)) {
+            DockSplitPane dsp = DockSplitPane.getParentSplitPane(node);
+            if ( dsp != null ) {
+                dsp.updateDividers(dsp);
+            }
+            
+        }
+    }
 
     public DoubleProperty dividerPosProperty() {
         return dividerPosProperty;
@@ -140,65 +150,18 @@ public class DockPaneHandler extends PaneHandler {
     @Override
     public void remove(Node dockNode) {
         SplitDelegate.DockSplitPane dsp = getParentSplitPane(rootSplitPane, dockNode);
+        System.err.println("1. DockPaneHandler remove(dockNode " + dockNode.getId());
+        System.err.println("1. DockPaneHandler remove from dockPane " + dsp.getId());        
         if (dsp != null) {
             PaneHandler ph = DockRegistry.dockable(dockNode).nodeHandler().getPaneHandler();
+            System.err.println("1. DockPaneHandler remove(dockNode) dockPane id= " + ph.getDockPane().getId());
+            
             dsp.getItems().remove(dockNode);
             DockRegistry.dockable(dockNode).nodeHandler().setPaneHandler(ph);
             clearEmptySplitPanes(rootSplitPane, dsp);
         }
     }
 
-    /**
-     * Does nothing. Subclasses can change behavior.
-     *
-     * @param dockable a dock node witch divider pos is to be set
-     * @param parent a parent the given dock node of th
-     */
-    @Override
-    public void updateDividers(Node dockable, Parent parent) {
-//        System.err.println("111. DockPaneHandler: dockable=" + dockable);
-        if (parent instanceof DockSplitPane) {
-            DockSplitPane split = (DockSplitPane) parent;
-//            System.err.println("split.getDividers().sz=" + split.getDividers().size());
-            for (int i = 0; i < split.getItems().size(); i++) {
-                Node node = split.getItems().get(i);
-                if (DockRegistry.isDockable(node)) {
-                    Dockable d = DockRegistry.dockable(node);
-                    if (i < split.getDividers().size() && d.nodeHandler().getDividerPos() >= 0) {
-                        split.getDividers().get(i).setPosition(d.nodeHandler().getDividerPos());
-                    }
-                }
-                if (node instanceof DockSplitPane) {
-                    DockSplitPane dsp = (DockSplitPane) node;
-                    if (i < split.getDividers().size() && dsp.getDividerPos() >= 0) {
-                        split.getDividers().get(i).setPosition(dsp.getDividerPos());
-                    }
-                }
 
-            }
-        }
-
-    }
-
-    //public void updateDividers(double dividerPos, int divIndex, Dockable dockable, Parent parent) {
-    public void updateDividers___(double dividerPos, int divIndex, Dockable dockable, Parent parent) {
-//        System.err.println("111. DockPaneHandler: dockable=" + dockable);
-        if (parent instanceof DockSplitPane) {
-            DockSplitPane split = (DockSplitPane) parent;
-//            System.err.println("split.getDividers().sz=" + split.getDividers().size());
-            for (int i = 0; i < split.getItems().size(); i++) {
-                Node node = split.getItems().get(i);
-                if (DockRegistry.isDockable(node)) {
-                    Dockable d = DockRegistry.dockable(node);
-                    if (i > 0 && i < split.getItems().size() && d.nodeHandler().getDividerPos() >= 0) {
-//                        System.err.println("DockPaneHandler: setDividerPos() i=" + i + "; d=" + d);
-                        split.setDividerPosition(i - 1, d.nodeHandler().getDividerPos());
-//                        System.err.println("DockPaneHandler: setDividerPos()  ; split.getItems().get(i-1).pos=" + split.getDividers().get(i-1).getPosition());
-                    }
-                }
-            }
-        }
-
-    }
 
 }//class

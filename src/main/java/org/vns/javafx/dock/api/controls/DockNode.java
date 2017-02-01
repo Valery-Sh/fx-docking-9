@@ -65,6 +65,13 @@ public class DockNode extends Control implements Dockable {
     public void setDockPos(String dockpos) {
         this.nodeHandler.setDockPos(dockpos);
     }
+    public double getDividerPos() {
+        return nodeHandler.getDividerPos();
+    }
+
+    public void setDividerPos(double divpos) {
+        this.nodeHandler.setDividerPos(divpos);
+    }
 
     public void setDragSource(Node dragSource) {
         nodeHandler.setDragNode(dragSource);

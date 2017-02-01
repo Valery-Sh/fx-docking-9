@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;

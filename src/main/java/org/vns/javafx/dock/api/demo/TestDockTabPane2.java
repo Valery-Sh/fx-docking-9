@@ -14,7 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBase;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
@@ -168,7 +168,18 @@ public class TestDockTabPane2 extends Application {
         stage01.setX(150);
         stage01.show();
         
-        dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
+        
+        //dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
+        dockTabPane.getItems().add(stg01dn03);
+        DockNode2 stg01dn04 = new DockNode2();
+        stg01dn04.setTitle("stg01dn04" );
+        stg01dn04.setId("stg01dn04");
+        dockTabPane.getItems().add(0,stg01dn04);
+
+        DockNode2 stg01dn05 = new DockNode2();
+        stg01dn05.setTitle("stg01dn05" );
+        stg01dn05.setId("stg01dn05");
+        dockTabPane.getItems().set(0,stg01dn05);
         //Platform.runLater(()->{
         
             
