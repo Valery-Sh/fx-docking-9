@@ -37,6 +37,7 @@ public class TestDockPaneControl extends Application {
         
         StackPane root = new StackPane();
         DockPane cc = new DockPane();
+        
         DockNode dn1 = new DockNode();
         dn1.setId("dn01");
         Button btn1 = new Button("BUTTON 1");
@@ -125,6 +126,7 @@ public class TestDockPaneControl extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
+        cc.setRoot(vs1);        
         //HPane hs1 = new HPane(dnc1,dnc2);
         HPane hs1 = new HPane(dnc1,dnc2);
         
@@ -161,7 +163,7 @@ public class TestDockPaneControl extends Application {
             
         });
         
-        cc.setRoot(vs1);
+        //cc.setRoot(vs1);
         //System.err.println("dn1 isDocked()=" + dn1.nodeHandler().isDocked());
         
         root.getChildren().add(cc);

@@ -8,14 +8,13 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import org.vns.javafx.dock.api.DockPaneBox;
-import org.vns.javafx.dock.api.DockPaneHandler;
+import org.vns.javafx.dock.api.DockPaneBoxHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.SplitDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
@@ -30,9 +29,11 @@ public class DockPane extends Control {
 
     public DockPane() {
     }
+
     public DockPane(VPane root) {
         init(root);
     }
+
     public DockPane(HPane root) {
         init(root);
     }
@@ -55,31 +56,30 @@ public class DockPane extends Control {
     }
 
     public void setRoot(DockSplitPane splitPane) {
-        System.err.println("1. SET ROOT %%%%%%%%%%%%%%%% " + splitPane);
-        ///delegate = new DockPaneBox(splitPane);
         getDelegate().getChildren().add(splitPane);
-        ((DockPaneHandler)delegate.paneHandler()).setRootSplitPane(splitPane);
-        update();
-        System.err.println("2. SET ROOT %%%%%%%%%%%%%%%% " + ((DockPaneHandler)delegate.paneHandler()).getRootSplitPane() );
-        splitPane.updateDividers(splitPane);
+        ((DockPaneHandler) delegate.paneHandler()).setRootSplitPane(splitPane);
+        splitPane.setRoot(splitPane); // assign root to root to be consistent
+        //update();
+        splitPane.update();
     }
 
-    public void dock(Dockable dockNode, Side side) {
+    /*    public void dock(Dockable dockNode, Side side) {
         getDelegate().dock(dockNode, side);
     }
 
     public void dock(Dockable dockNode, Side side, Dockable target) {
         getDelegate().paneHandler().dock(dockNode, side, target);
     }
-
+     */
     protected void update(DockSplitPane dsp) {
         SplitPane sp = dsp;
         PaneHandler ph = getDelegate().paneHandler();
         for (Node node : dsp.getItems()) {
-            if ( DockRegistry.isDockable(node)) {
+            if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.nodeHandler().setPaneHandler(ph);
-            } else if ( node instanceof DockSplitPane ) {
+            } else if (node instanceof DockSplitPane) {
+                ((DockSplitPane)node).setRoot(getRoot());
                 update((DockSplitPane) node);
             }
         }
@@ -109,6 +109,7 @@ public class DockPane extends Control {
         }
 
     }
+
     public boolean isUsedAsDockTarget() {
         return getDelegate().paneHandler().isUsedAsDockTarget();
     }
@@ -117,7 +118,7 @@ public class DockPane extends Control {
         getDelegate().paneHandler().setUsedAsDockTarget(usedAsDockTarget);
     }
 
-/*    @Override
+    /*    @Override
     public Region pane() {
         return this;
     }
@@ -126,7 +127,7 @@ public class DockPane extends Control {
     public PaneHandler paneHandler() {
         return delegate.paneHandler();
     }
-*/
+     */
     public static class DockPaneSkin extends SkinBase<DockPane> {
 
         public DockPaneSkin(DockPane control) {
@@ -160,7 +161,32 @@ public class DockPane extends Control {
         public Pane pane() {
             return this;
         }
-
     }
-    
+
+    public static class DockPaneHandler extends DockPaneBoxHandler {
+
+        public DockPaneHandler(Pane dockPane) {
+            super(dockPane);
+        }
+
+        @Override
+        public Pane getDockPane() {
+            return (Pane) super.getDockPane();
+        }
+
+        @Override
+        public void setRootSplitPane(SplitDelegate.DockSplitPane rootSplitPane) {
+            super.setRootSplitPane(rootSplitPane);
+        }
+
+        @Override
+        public DockSplitPane getRootSplitPane() {
+            return super.getRootSplitPane();
+        }
+
+        @Override
+        protected void addRootSplitPane() {
+
+        }
+    }
 }

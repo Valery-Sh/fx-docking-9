@@ -17,7 +17,7 @@ public class DockPaneBox extends StackPane implements DockPaneTarget{
     }
 
     private void init() {
-        paneHandler = paneHandler = new DockPaneHandlerBase(this);
+        paneHandler = paneHandler = new DockPaneBoxHandler(this);
     }
     
 
