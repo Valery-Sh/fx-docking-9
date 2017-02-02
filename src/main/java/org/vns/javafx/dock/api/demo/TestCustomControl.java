@@ -16,11 +16,11 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
@@ -38,27 +38,27 @@ public class TestCustomControl extends Application {
         //DockSplitPane ddd = new DockSplitPane(btn01);
         StackPane root = new StackPane();
         CustomControl cc = new CustomControl();
-        DockNode2 dn1 = new DockNode2();
+        DockNode dn1 = new DockNode();
  
         dn1.setId("dn01");
         Button btn1 = new Button("BUTTON 1");
-        dn1.getChildren().add(btn1);
+        dn1.setContent(btn1);
         dn1.setTitle("DockNode: dn1");        
         
-        DockNode2 dn2 = new DockNode2();
+        DockNode dn2 = new DockNode();
         dn2.setId("dn02");
         
-        DockNode2 dn3 = new DockNode2();
+        DockNode dn3 = new DockNode();
         
         dn3.setId("dn03");
         Button btn3 = new Button("BUTTON 3");
-        dn3.getChildren().add(btn3);
+        dn3.setContent(btn3);
         dn3.setTitle("DockNode: dn3");        
 
-        DockNode2 dn3_1 = new DockNode2();
+        DockNode dn3_1 = new DockNode();
         dn3_1.setId("dn03_1");
         Button btn3_1 = new Button("BUTTON 3_1");
-        dn3_1.getChildren().add(btn3_1);
+        dn3_1.setContent(btn3_1);
         dn3_1.setTitle("DockNode: dn3_1");       
         
         dn3_1.nodeHandler().setDividerPos(0.608);                
@@ -118,7 +118,7 @@ public class TestCustomControl extends Application {
             
         });
         
-        dn2.getChildren().add(btn2);
+        dn2.setContent(btn2);
         dn2.setTitle("DockNode: dn2");        
 
         cc.addItem(dn1,Side.TOP);

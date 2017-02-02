@@ -13,8 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockPaneBase;
-import org.vns.javafx.dock.TitledToolBar;
+import org.vns.javafx.dock.DockToolBar;
+import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -25,26 +25,27 @@ public class TestDockableTarget extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        DockPaneBase dockPane = new DockPaneBase();
+        DockPaneBox dockPane = new DockPaneBox();
         dockPane.setId("MAIN DOCK PANE");
         Button b1 = new Button("b01 - DOCK");
         b1.setOnAction(a -> { 
             //new DragPopup(dockPane);
 //            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
         });
-        TitledToolBar dtt01 = new TitledToolBar();
+        DockToolBar dtt01 = new DockToolBar();
+        
         dtt01.setId("ddt01");
         Label lb = new Label("id = dtt01");
-        dtt01.getChildren().add(lb);
+        dtt01.getItems().add(lb);
         
         dockPane.dock(dtt01, Side.BOTTOM);
 
-        TitledToolBar dtt02 = new TitledToolBar();
+        DockToolBar dtt02 = new DockToolBar();
         dtt02.setId("ddt02");
-        dtt02.getChildren().add(b1);
+        dtt02.getItems().add(b1);
         dockPane.dock(dtt02, Side.RIGHT);
         lb = new Label("id = dtt02");
-        dtt02.getChildren().add(lb);      
+        dtt02.getItems().add(lb);      
         
         dtt02.setOnMouseDragEntered(ev -> {
             System.err.println("%%%%%%%%%%%% ENTERED");
@@ -57,10 +58,10 @@ public class TestDockableTarget extends Application {
             System.err.println("%%%%%%%%%%%% RELEASED");
         });
         
-        TitledToolBar dtt03 = new TitledToolBar();
+        DockToolBar dtt03 = new DockToolBar();
         dtt03.setId("ddt03");
         lb = new Label("id = dtt03");
-        dtt03.getChildren().add(lb);        
+        dtt03.getItems().add(lb);        
         dtt01.nodeHandler().getPaneHandler().dock(dtt03, Side.RIGHT, dtt01);
         
 /*        b1.setOnAction(ev ->{

@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.controls;
+package org.vns.javafx.dock;
 
 import javafx.beans.DefaultProperty;
 import javafx.beans.value.ObservableValue;
@@ -8,8 +8,6 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.DockNodeBase;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -22,16 +20,16 @@ public class DockNode extends Control implements Dockable {
 
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
-    private DockNodeBase delegate1;
 
     private VBox delegate;// = new DockPane();
 
     public DockNode() {
         init(null);
     }
+
     public DockNode(String title) {
         init(title);
-        
+
     }
 
     protected VBox getDelegate() {
@@ -47,7 +45,14 @@ public class DockNode extends Control implements Dockable {
         getDelegate().getStyleClass().add("delegate");
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
+        nodeHandler.removeTitleBarProperty().addListener(this::removeTitleBarPropertyChanged);
         setTitle(title);
+    }
+
+    protected void removeTitleBarPropertyChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        if (newValue && getTitleBar() != null) {
+            getDelegate().getChildren().remove(getTitleBar());
+        }
     }
 
     public String getTitle() {
@@ -58,13 +63,33 @@ public class DockNode extends Control implements Dockable {
         nodeHandler.setTitle(title);
     }
 
-    public String getDockPos() {
+    public Region getTitleBar() {
+        return nodeHandler().getTitleBar();
+    }
+
+    public void setTitleBar(Region node) {
+        System.err.println("setTitleBar.DockNode=" + this + "; tb=" + node);
+        nodeHandler().setTitleBar(node);
+    }
+
+    public boolean isRemoveTitleBar() {
+        return getTitleBar() == null;
+    }
+
+    public void setRemoveTitleBar(boolean remove) {
+        if (remove) {
+            setTitleBar(null);
+        }
+    }
+
+    /*    public String getDockPos() {
         return nodeHandler.getDockPos();
     }
 
     public void setDockPos(String dockpos) {
         this.nodeHandler.setDockPos(dockpos);
     }
+     */
     public double getDividerPos() {
         return nodeHandler.getDividerPos();
     }
@@ -73,7 +98,11 @@ public class DockNode extends Control implements Dockable {
         this.nodeHandler.setDividerPos(divpos);
     }
 
-    public void setDragSource(Node dragSource) {
+    public Node getDragNode() {
+        return nodeHandler.getDragNode();
+    }
+
+    public void setDragNode(Node dragSource) {
         nodeHandler.setDragNode(dragSource);
     }
 
@@ -88,11 +117,13 @@ public class DockNode extends Control implements Dockable {
     }
 
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        //Node oldTb = nodeHandler().getTitleBar();
+
         if (oldValue != null && newValue == null) {
-            getChildren().remove(0);
+            getDelegate().getChildren().remove(0);
         } else if (newValue != null) {
-            getChildren().remove(0);
-            getChildren().add(newValue);
+            getDelegate().getChildren().remove(0);
+            getDelegate().getChildren().add(0, newValue);
         }
     }
 

@@ -1,15 +1,14 @@
 package org.vns.javafx.dock.api;
 
-import com.sun.javafx.property.adapter.PropertyDescriptor;
 import java.util.Properties;
 import java.util.function.Function;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockTitleBar;
@@ -28,7 +27,8 @@ public class DockNodeHandler {
     private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
 
     private final TitleBarProperty<Region> titleBarProperty;
-
+    private final BooleanProperty removeTitleBarProperty = new SimpleBooleanProperty(true);
+    
     private final StringProperty titleProperty = new SimpleStringProperty("");
     private final Dockable dockable;
     private final DockFloatingProperty floatingProperty = new DockFloatingProperty(false);
@@ -39,7 +39,7 @@ public class DockNodeHandler {
 
     private DragManager dragManager;
 
-    PaneHandler scenePaneHandler;
+    private PaneHandler scenePaneHandler;
     //private PaneDelegate paneDelegate;
     /**
      * Last dock target pane
@@ -185,8 +185,19 @@ public class DockNodeHandler {
     public void setTitleBar(Region node) {
         titleBarProperty.set(node);
     }
+    public BooleanProperty removeTitleBarProperty() {
+        return removeTitleBarProperty;
+    }
+    
+    public boolean getRemoveTitleBar() {
+        return removeTitleBarProperty.get();
+    }
 
-    public boolean addTitleBar(int idx, Region newTitleBar, ObservableList children) {
+    public void setRemoveTitleBar(boolean value) {
+        removeTitleBarProperty.set(value);
+    }
+
+/*    public boolean addTitleBar(int idx, Region newTitleBar, ObservableList children) {
         if (titleBarProperty.get() != null) {
             return false;
         }
@@ -194,8 +205,8 @@ public class DockNodeHandler {
         titleBarProperty.set(newTitleBar);
         return true;
     }
-
-    public boolean replaceTitleBar(int idx, Region newTitleBar, ObservableList children) {
+*/
+/*    public boolean replaceTitleBar(int idx, Region newTitleBar, ObservableList children) {
         if (titleBarProperty.get() == null) {
             return false;
         }
@@ -208,7 +219,8 @@ public class DockNodeHandler {
         titleBarProperty.set(newTitleBar);
         return true;
     }
-
+*/
+    
     public DockFloatingProperty floatingProperty() {
         return floatingProperty;
     }
@@ -253,7 +265,7 @@ public class DockNodeHandler {
 
     public Region createDefaultTitleBar(String title) {
         DockTitleBar tb = new DockTitleBar(dockable());
-        tb.setId("FIRST");
+        tb.setId("titleBar");
         tb.getLabel().textProperty().bind(titleProperty);
         titleProperty.set(title);
         titleBarProperty().set(tb);

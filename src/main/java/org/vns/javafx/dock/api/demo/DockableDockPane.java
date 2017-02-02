@@ -1,6 +1,6 @@
-package org.vns.javafx.dock;
+package org.vns.javafx.dock.api.demo;
 
-import org.vns.javafx.dock.api.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBox;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
@@ -18,12 +19,11 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public class DockableDockPane extends VBox implements Dockable {
 
-    private HBox headerPane;
     private DockPaneTarget dockPane;
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
     public DockableDockPane() {
-        dockPane = new DockPaneBase();
+        dockPane = new DockPaneBox();
         init();
     }
     public DockableDockPane(DockPaneTarget dockPane) {
@@ -32,21 +32,9 @@ public class DockableDockPane extends VBox implements Dockable {
     }
 
     private void init() {
-/*        headerPane = new HBox();
-        Pane fillPane = new Pane();
-        HBox.setHgrow(fillPane, Priority.ALWAYS);        
-        headerPane.getChildren().addAll(fillPane);
-        headerPane.getStyleClass().add("dockable-dock-pane");        
-        headerPane.getStyleClass().add("header-pane");
-*/
-        
         Region titleBar = new DockTitleBar(this);
-        //getChildren().add(titleBar);
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
-        
-        //dockPane = new DockPaneBase();
-        //dockPane.pane().setStyle("-fx-border-width: 2; -fx-border-color: red");
         getChildren().addAll(titleBar, dockPane.pane());
         this.autosize();
         
@@ -68,11 +56,6 @@ public class DockableDockPane extends VBox implements Dockable {
     public DockNodeHandler getDockNodeHandler() {
         return nodeHandler;
     }
-
-/*    public void dock(Dockable dockable, Side dockPos) {
-        nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
-    }
-*/
     public String getDockPos() {
         return nodeHandler.getDockPos();
     }

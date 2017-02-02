@@ -34,17 +34,8 @@ public class DockToolBar extends ToolBar implements Dockable{
         Separator titleBar = new Separator();
         titleBar.setPrefWidth(USE_PREF_SIZE);
         dockState.setTitleBar(titleBar);
-        //stateProperty.titleBarProperty().setActiveChoosedPseudoClass(false);
         Button b1 = new Button("",new Circle(0, 0, 4));
-/*        b1.setOnAction(value -> {
-            getDockState.titleBarProperty().setActiveChoosedPseudoClass(true); 
-        });
-*/
         Button b2 = new Button("", new Rectangle(0,0,8,8));
-/*        b2.setOnAction(value -> {
-            getDockState.titleBarProperty().setActiveChoosedPseudoClass(false); 
-        });        
-*/        
         getItems().addAll(b1,b2, new Separator(), titleBar);
     }
     public StringProperty titleProperty() {

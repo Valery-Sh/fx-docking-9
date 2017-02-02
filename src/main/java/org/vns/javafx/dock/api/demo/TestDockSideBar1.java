@@ -18,9 +18,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.controls.DockNode;
-import org.vns.javafx.dock.api.controls.DockSideBar;
-import org.vns.javafx.dock.api.controls.DockSideBar.Rotation;
+import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockSideBar;
+import org.vns.javafx.dock.DockSideBar.Rotation;
 
 /**
  *

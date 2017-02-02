@@ -11,11 +11,11 @@ import org.vns.javafx.dock.DockTitleBar;
  *
  * @author Valery
  */
-public class DockNodeBase  extends VBox implements Dockable{
+public class DockNodeBox  extends VBox implements Dockable{
     
     DockNodeHandler nodeHandler = new DockNodeHandler(this);
     
-    public DockNodeBase() {
+    public DockNodeBox() {
         init();
     }
     private void init() {

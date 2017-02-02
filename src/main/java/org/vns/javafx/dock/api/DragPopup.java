@@ -307,30 +307,12 @@ public class DragPopup extends Popup {
         // The result may be null
         //
         dragTarget = null;
+        //
+        // if the node exists but its property usedAsDockTarge==false then 
+        // findDockable returns null
+        //
         Region targetNode = (Region) DockUtil.findDockable(getDockPane(), screenX, screenY);
-/*        Point2D newPos;
-
-        nodeIndicatorPopup.setOnShowing(e -> {getNodeIndicator().onShowing(e, targetNode);});
-        nodeIndicatorPopup.setOnShown(e -> getNodeIndicator().onShown(e, targetNode));
-        nodeIndicatorPopup.setOnHiding(e -> getNodeIndicator().onHiding(e, null));        
-        nodeIndicatorPopup.setOnHidden(e -> getNodeIndicator().onHidden(e, null));        
-
-        if (targetNode != null) {
-            newPos = getNodeIndicator().mousePos(targetNode, screenX, screenY);
-            //getNodeIndicator().beforeShow(targetNode);
-            nodeIndicatorPopup.showPopup(this, newPos.getX(), newPos.getY());
-            getNodeIndicator().afterShow(targetNode);
-        } else {
-            newPos = getNodeIndicator().mousePos(null,screenX, screenY);
-            if (newPos != null) {
-                //getNodeIndicator().beforeShow(targetNode);
-                nodeIndicatorPopup.showPopup(this, newPos.getX(), newPos.getY());
-                getNodeIndicator().afterShow(targetNode);
-            } else {
-                nodeIndicatorPopup.hide();
-            }
-        }
-*/
+        System.err.println("findDockable: targetNode=" + targetNode);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
         
         getPaneIndicator().hideDockPlace();

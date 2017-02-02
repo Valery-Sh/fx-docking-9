@@ -17,9 +17,12 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
@@ -32,6 +35,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -45,7 +50,7 @@ import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer
  * @author Valery
  */
 @DefaultProperty(value = "items")
-public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget, ListChangeListener {
+public class DockTabPane2 extends Control implements Dockable, DockPaneTarget, ListChangeListener {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
@@ -58,6 +63,8 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
     private final TabArea tabArea = new TabArea();
 
     private TabPaneHandler paneHandler;
+
+    private final CustomStackPane delegate = new CustomStackPane(rootPane);
 
     public DockTabPane2() {
         init();
@@ -72,7 +79,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
         StackPane stackPane = new StackPane();
         stackPane.setManaged(true);
 
-        getChildren().add(rootPane);
+        //getChildren().add(rootPane);
         rootPane.getChildren().addAll(tabArea.getPane(), stackPane);
         stackPane.setStyle("-fx-background-color: white");
         stackPane.setPrefHeight(getPrefHeight());
@@ -82,6 +89,10 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
         nodeHandler().setTitleBar(new DockTitleBar(this));
         nodeHandler.setDragNode(tabArea.getDragButton());
         items.addListener(this);
+    }
+
+    public StackPane getDelegate() {
+        return delegate;
     }
 
     @Override
@@ -98,9 +109,9 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
                     paneHandler.undock(d.node());
                 }
 
-            }  
+            }
             if (change.wasAdded()) {
-                for ( int i= change.getFrom(); i < change.getTo(); i++ ) {
+                for (int i = change.getFrom(); i < change.getTo(); i++) {
                     paneHandler.dock(i, change.getList().get(i));
                 }
             }
@@ -135,7 +146,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
 
         return tab;
     }
-    
+
     protected Tab addTab(Point2D mousePos, Node content) {
 
         Tab tab = new Tab(this, content);
@@ -173,34 +184,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
         return nodeHandler;
     }
 
-    /*    protected void select(Dockable selected) {
-        tabArea.select(selected.node());
-        tabArea.getTitleBars().forEach(tab -> {
-            Dockable d = ((TitleBar) tab).getOwner();
-            TitleBar tb = (TitleBar) tab;
-            if (d != selected) {
-                tb.setSelectedPseudoClass(false);
-                d.node().toBack();
-                d.node().setVisible(false);
-            } else {
-                tb.setSelectedPseudoClass(true);
-                d.node().setVisible(true);
-                d.node().toFront();
-            }
-        });
-        
-    }
-     */
     protected void focusChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        /*        tabArea.getTitleBars().forEach(tab -> {
-            Dockable d = ((TitleBar) tab).getOwner();
-            if (newValue && isFocused((Region) tab)) {
-                tabArea.select(d.node());
-            } else if (!newValue) {
-                d.nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
-            }
-        });
-         */
         getTabs().forEach(tab -> {
             Dockable d = DockRegistry.dockable(tab.getContent());
             if (newValue && isFocused(tab.getTitleBar())) {
@@ -244,6 +228,49 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
     @Override
     public PaneHandler paneHandler() {
         return paneHandler;
+    }
+
+    @Override
+    protected Skin<?> createDefaultSkin() {
+        return new DockTabPaneSkin(this);
+    }
+
+    public static class DockTabPaneSkin extends SkinBase<DockTabPane2> {
+
+        public DockTabPaneSkin(DockTabPane2 control) {
+            super(control);
+            getChildren().add(control.getDelegate());
+        }
+    }
+
+    @Override
+    protected double computePrefHeight(double h) {
+        return delegate.computePrefHeight(h);
+    }
+
+    @Override
+    protected double computePrefWidth(double w) {
+        return delegate.computePrefWidth(w);
+    }
+
+    @Override
+    protected double computeMinHeight(double h) {
+        return delegate.computeMinHeight(h);
+    }
+
+    @Override
+    protected double computeMinWidth(double w) {
+        return delegate.computeMinWidth(w);
+    }
+
+    @Override
+    protected double computeMaxHeight(double h) {
+        return delegate.computeMaxHeight(h);
+    }
+
+    @Override
+    protected double computeMaxWidth(double w) {
+        return delegate.computeMaxWidth(w);
     }
 
     public static class TitleBar extends DockTitleBar implements EventHandler<MouseEvent> {
@@ -314,12 +341,12 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
         public Dockable dock(Dockable node, Side dockPos, Dockable target) {
             return null;
         }
-        
+
         protected void dock(int idx, Dockable d) {
             if (d.node().getScene() != null && d.node().getScene().getWindow() != null && (d.node().getScene().getWindow() instanceof Stage)) {
                 ((Stage) d.node().getScene().getWindow()).close();
             }
-            
+
             Tab tab = getDockPane().addTab(idx, d.node());
 
             DockNodeHandler nodeHandler = d.nodeHandler();
@@ -327,9 +354,9 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
             if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                 nodeHandler.setPaneHandler(this);
             }
-            
+
         }
-        
+
         @Override
         protected void doDock(Point2D mousePos, Node node, Side dockPos) {
             if (!DockRegistry.isDockable(node)) {
@@ -338,7 +365,7 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-            
+
             Tab tab = getDockPane().addTab(mousePos, node);
 
             DockNodeHandler nodeHandler = DockRegistry.dockable(node).nodeHandler();
@@ -844,22 +871,22 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
 
             SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
             Pane topBtns;//= null;
-            Button topPaneButton = null;
-            if (paneIndicator != null) {
-                topBtns = paneIndicator.getTopButtons();
-                topPaneButton = (Button) topBtns.getChildren().get(0);
-            }
+            //Button topPaneButton = null;
+            //if (paneIndicator != null) {
+            topBtns = paneIndicator.getTopButtons();
+            Button topPaneButton = (Button) topBtns.getChildren().get(0);
+            //}
 
             if (getIndicator().getIndicatorPane().getChildren().contains(getBottomButtons())) {
                 getIndicator().getIndicatorPane().getChildren().clear();
-                if (paneIndicator != null) {
-                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
-                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());
-                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());
-                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());
-                    topBtns = paneIndicator.getTopButtons();
-                    ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
-                }
+                //if (paneIndicator != null) {
+                paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
+                paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());
+                paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());
+                paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());
+                topBtns = paneIndicator.getTopButtons();
+                ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
+                //}
             }
 
             DockTabPane2 tabPane = (DockTabPane2) getTargetPaneHandler().getDockPane();
@@ -869,10 +896,11 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
 
             Node node = DockUtil.findNode(tabPane.tabArea.getTitleBars(), x, y);
             if (node != null) {
-                retval = new Point2D(x - 5, y - 5);
+
+                retval = new Point2D(x - 15, y - 3);
                 topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
             } else if (DockUtil.contains(tabPane.tabArea.getPane(), x, y)) {
-                retval = new Point2D(x - 5, y - 5);
+                retval = new Point2D(x - 15, y - 3);
                 topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
             } else {
                 topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, false);
@@ -882,6 +910,47 @@ public class DockTabPane2 extends StackPane implements Dockable, DockPaneTarget,
             }
 
             return retval;
+        }
+    }
+
+    public static class CustomStackPane extends StackPane {
+
+        public CustomStackPane() {
+
+        }
+
+        public CustomStackPane(Node... items) {
+            super(items);
+        }
+
+        @Override
+        protected double computePrefHeight(double h) {
+            return super.computePrefHeight(h);
+        }
+
+        @Override
+        protected double computePrefWidth(double w) {
+            return super.computePrefWidth(w);
+        }
+
+        @Override
+        protected double computeMinHeight(double h) {
+            return super.computeMinHeight(h);
+        }
+
+        @Override
+        protected double computeMinWidth(double w) {
+            return super.computeMinWidth(w);
+        }
+
+        @Override
+        protected double computeMaxHeight(double h) {
+            return super.computeMaxHeight(h);
+        }
+
+        @Override
+        protected double computeMaxWidth(double w) {
+            return super.computeMaxWidth(w);
         }
     }
 

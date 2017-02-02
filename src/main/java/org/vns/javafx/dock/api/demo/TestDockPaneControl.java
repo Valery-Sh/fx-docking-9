@@ -18,8 +18,8 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.controls.DockNode;
-import org.vns.javafx.dock.api.controls.DockPane;
+import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 
 /**
  *

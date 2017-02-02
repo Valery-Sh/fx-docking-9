@@ -5,30 +5,28 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
  * @author Valery
  */
-public class DockPaneHandler extends PaneHandler {
+public class DockPaneHandlerBase extends PaneHandler {
 
-    private final DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
+    private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
 
     private SplitDelegate splitDelegate;
     private SplitDelegate.DockSplitPane rootSplitPane;
 
-    public DockSplitPane getRootSplitPane() {
+    public SplitDelegate.DockSplitPane getRoot() {
         return rootSplitPane;
     }
 
-    public DockPaneHandler(Pane dockPane) {
+    public DockPaneHandlerBase(Pane dockPane) {
         super(dockPane);
         init();
     }
@@ -39,26 +37,24 @@ public class DockPaneHandler extends PaneHandler {
     }
 
     private void init() {
-/*        if (rootSplitPane == null) {
-            rootSplitPane = new SplitDelegate.DockSplitPane();
-        }
-        getDockPane().getChildren().add(rootSplitPane);
-        splitDelegate = new SplitDelegate(rootSplitPane, this);
-*/
+        setRootSplitPane(new SplitDelegate.DockSplitPane());
     }
 
-    public void setRootSplitPane(DockSplitPane rootSplitPane) {
+
+    protected void setRootSplitPane(SplitDelegate.DockSplitPane rootSplitPane) {
         this.rootSplitPane = rootSplitPane;
+        getDockPane().getChildren().add(rootSplitPane);
         splitDelegate = new SplitDelegate(rootSplitPane, this);
     }
     
     @Override
     public void dividerPosChanged(Node node, double oldValue, double newValue) {
         if ( DockRegistry.isDockable(node)) {
-            DockSplitPane dsp = DockSplitPane.getParentSplitPane(node);
+            SplitDelegate.DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(node);
             if ( dsp != null ) {
                 dsp.updateDividers(dsp);
             }
+            
         }
     }
 

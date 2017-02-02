@@ -323,7 +323,6 @@ public abstract class SideIndicator {
         transformer.transform();
     }
 
-
     protected static class NodeSideIndicator extends SideIndicator {
 
         public NodeSideIndicator(PaneHandler paneHandler) {
@@ -352,14 +351,11 @@ public abstract class SideIndicator {
             if (dockNode != null) {
                 newPos = getTransformer().getIndicatorPosition();
                 getTransformer().notifyBeforeShow();
-                //newPos = getTransformer().getIndicatorPosition();
                 ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
                 getTransformer().notifyAfterShow();
             } else {
-                //newPos = mousePos(null, screenX, screenY);
                 newPos = getTransformer().getIndicatorPosition();
                 if (newPos != null) {
-                    //beforeShow(dockNode);
                     getTransformer().notifyBeforeShow();
                     ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
                     getTransformer().notifyAfterShow();
@@ -367,7 +363,6 @@ public abstract class SideIndicator {
                     getIndicatorPopup().hide();
                 }
             }
-
         }
 
         @Override
@@ -416,8 +411,8 @@ public abstract class SideIndicator {
         @Override
         public void showIndicator(double screenX, double screenY) {
             super.showIndicator(screenX, screenY);
-            
-            getTransformer().notifyBeforeShow();            
+
+            getTransformer().notifyBeforeShow();
             getIndicatorPopup().setOnShown(e -> {
                 getTransformer().notifyPopupShown();
             });
@@ -434,8 +429,8 @@ public abstract class SideIndicator {
             getIndicatorPopup().show(getPaneHandler().getDockPane(), screenX, screenY);
             getTransformer().notifyAfterShow();
         }
-        
-/*        @Override
+
+        /*        @Override
         public void showIndicator(double screenX, double screenY, Region dockNode) {
             super.showIndicator(screenX, screenY, dockNode);
             getIndicatorPopup().setOnShown(e -> {
@@ -447,7 +442,7 @@ public abstract class SideIndicator {
             getIndicatorPopup().showPopup(getPaneHandler().getDockPane(), screenX, screenY);
             getTransformer().notifyAfterShow();
         }
-*/
+         */
         @Override
         protected Pane createIndicatorPane() {
             BorderPane indicatorPane = new BorderPane();

@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.controls;
+package org.vns.javafx.dock;
 
 import java.util.ArrayList;
 import java.util.HashMap;

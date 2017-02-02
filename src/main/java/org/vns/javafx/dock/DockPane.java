@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.controls;
+package org.vns.javafx.dock;
 
 import javafx.beans.DefaultProperty;
 import javafx.geometry.Side;
@@ -7,9 +7,10 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.SplitPane;
-import org.vns.javafx.dock.api.DockPaneBase;
-import org.vns.javafx.dock.HPane;
-import org.vns.javafx.dock.VPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.api.DockPaneHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -24,7 +25,7 @@ import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 @DefaultProperty(value = "root")
 public class DockPane extends Control {
 
-    private DockPaneBase delegate;// = new DockPaneBase();
+    private final ControlDockPane delegate = new ControlDockPane();
     //private Node root;
 
     public DockPane() {
@@ -40,10 +41,7 @@ public class DockPane extends Control {
         setRoot(root);
     }
 
-    protected DockPaneBase getDelegate() {
-        if (delegate == null) {
-            delegate = new DockPaneBase();
-        }
+    protected ControlDockPane getDelegate() {
         return delegate;
     }
 
@@ -53,12 +51,17 @@ public class DockPane extends Control {
     }
 
     public DockSplitPane getRoot() {
-        return ((DockPaneHandler) getDelegate().paneHandler()).getRoot();
+        return ((DockPaneHandler) getDelegate().paneHandler()).getRootSplitPane();
     }
 
     public void setRoot(DockSplitPane splitPane) {
-        delegate = new DockPaneBase(splitPane);
+        System.err.println("1. SET ROOT %%%%%%%%%%%%%%%% " + splitPane);
+        ///delegate = new DockPaneBox(splitPane);
+        getDelegate().getChildren().add(splitPane);
+        ((DockPaneHandler)delegate.paneHandler()).setRootSplitPane(splitPane);
         update();
+        System.err.println("2. SET ROOT %%%%%%%%%%%%%%%% " + ((DockPaneHandler)delegate.paneHandler()).getRootSplitPane() );
+        splitPane.updateDividers(splitPane);
     }
 
     public void dock(Dockable dockNode, Side side) {
@@ -83,7 +86,7 @@ public class DockPane extends Control {
     }
 
     protected void update() {
-        update(((DockPaneHandler) getDelegate().paneHandler()).getRoot());
+        update(((DockPaneHandler) getDelegate().paneHandler()).getRootSplitPane());
     }
 
     protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
@@ -106,7 +109,24 @@ public class DockPane extends Control {
         }
 
     }
+    public boolean isUsedAsDockTarget() {
+        return getDelegate().paneHandler().isUsedAsDockTarget();
+    }
 
+    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
+        getDelegate().paneHandler().setUsedAsDockTarget(usedAsDockTarget);
+    }
+
+/*    @Override
+    public Region pane() {
+        return this;
+    }
+
+    @Override
+    public PaneHandler paneHandler() {
+        return delegate.paneHandler();
+    }
+*/
     public static class DockPaneSkin extends SkinBase<DockPane> {
 
         public DockPaneSkin(DockPane control) {
@@ -115,4 +135,32 @@ public class DockPane extends Control {
         }
     }
 
+    public class ControlDockPane extends StackPane implements DockPaneTarget {
+
+        private PaneHandler paneHandler;
+
+        public ControlDockPane() {
+            init();
+        }
+
+        private void init() {
+            paneHandler = paneHandler = new DockPaneHandler(this);
+        }
+
+        @Override
+        public PaneHandler paneHandler() {
+            return paneHandler;
+        }
+
+        public Dockable dock(Dockable node, Side dockPos) {
+            return paneHandler.dock(node, dockPos);
+        }
+
+        @Override
+        public Pane pane() {
+            return this;
+        }
+
+    }
+    
 }

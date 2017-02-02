@@ -17,8 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockPaneBase;
-import org.vns.javafx.dock.TitledToolBar;
+import org.vns.javafx.dock.DockToolBar;
+import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -30,15 +30,15 @@ public class TestForFXML01 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        DockPaneBase dockPane = new DockPaneBase();
+        DockPaneBox dockPane = new DockPaneBox();
         Button b1 = new Button("b01");
-        TitledToolBar dtt = new TitledToolBar();
+        DockToolBar dtt = new DockToolBar();
 
         b1.setLayoutX(126);
         b1.setLayoutY(90);
         dockPane.dock(dtt, Side.TOP);
-        TitledToolBar dtt01 = new TitledToolBar();
-        dtt01.getChildren().add(b1);
+        DockToolBar dtt01 = new DockToolBar();
+        dtt01.getItems().add(b1);
         //dtt.dock(dtt01, Side.TOP);
         List<Parent> chain = new ArrayList<>();
         chain = findNodes(dockPane, p -> {
@@ -52,7 +52,7 @@ public class TestForFXML01 extends Application {
         for (Parent p : chain) {
             //System.err.println("1. " + p.getClass().getName());
         }
-        TitledToolBar dtt02 = new TitledToolBar();
+        DockToolBar dtt02 = new DockToolBar();
 
         //dockPane.getChildren().add(b1);
         Scene scene = new Scene(dockPane);

@@ -13,12 +13,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.api.DockPaneBase;
+//import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockRedirector;
+import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.api.DockPaneBox;
 
 /**
  *
@@ -45,14 +45,14 @@ public class TestDockTabPane2 extends Application {
         rootPane.setId("ROOT PANE");
         
         stage.setTitle("Tests Several DockPanes");
-        DockPaneBase dpCenter = new DockPaneBase();
+        DockPaneBox dpCenter = new DockPaneBox();
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
         
-        DockNode2 dn01 = new DockNode2();
+        DockNode dn01 = new DockNode();
         dn01.setId("dn01");
         Button btn = new Button("BOTTON FROM STG");
-        dn01.getChildren().add(btn);
+        dn01.setContent(btn);
         dpCenter.dock(dn01, Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
@@ -61,10 +61,10 @@ public class TestDockTabPane2 extends Application {
         });
         dpCenter.getChildren().add(dn01Btn);
         
-        DockPaneBase dpRight = new DockPaneBase();
+        DockPaneBox dpRight = new DockPaneBox();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
-        DockNode2 dn02 = new DockNode2();
+        DockNode dn02 = new DockNode();
         dn02.setId("dn02");
         dpRight.dock(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
@@ -90,40 +90,41 @@ public class TestDockTabPane2 extends Application {
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         
-        DockPaneBase rootAsDockPane = new DockPaneBase();
+        DockPaneBox rootAsDockPane = new DockPaneBox();
         //stg01dp01.paneHandler().setUsedAsDockTarget(false);
         rootAsDockPane.setPrefHeight(200);
         rootAsDockPane.setPrefWidth(200);
         rootAsDockPane.setId("stg01dp01");
-        DockNode2 stg01dn01 = new DockNode2();
+        DockNode stg01dn01 = new DockNode();
         stg01dn01.setId("stg01dn01");
         
         Button btn01 = new Button("Button of Tab 01");
         Pane pane01= new Pane(btn01);
-        stg01dn01.getChildren().add(pane01);
+        stg01dn01.setContent(pane01);
         pane01.setStyle("-fx-background-color: aqua");
         
         //stg01dn01.getChildren().add(btn01);
         
         rootAsDockPane.dock(stg01dn01, Side.TOP);
         
-        DockNode2 stg01dn02 = new DockNode2();
+        DockNode stg01dn02 = new DockNode();
         stg01dn02.setTitle("stg01dn02" );
         stg01dn02.setId("stg01dn02");
         Button btn02 = new Button("Button of Tab 02");
-        stg01dn02.getChildren().add(btn02);
+        VBox vb2 = new VBox(btn02);
+        stg01dn02.setContent(vb2);
                 
-        DockNode2 stg01dn03 = new DockNode2();
+        DockNode stg01dn03 = new DockNode();
         stg01dn03.setTitle("stg01dn03" );
         stg01dn03.setId("stg01dn03");
         Pane stack02 = new Pane(btn02);
-        stg01dn02.getChildren().add(stack02);
+        vb2.getChildren().add(stack02);
         stack02.setStyle("-fx-background-color: aqua");
         Button btn03 = new Button("Button 03 of Tab 03");
         Button btn04 = new Button("Button 04 of Tab 03");
         
         VBox stack03 = new VBox(btn03, btn04);
-        stg01dn03.getChildren().add(stack03);
+        stg01dn03.setContent(stack03);
         stack03.setStyle("-fx-background-color: gray");
         
         //stg01dp01.dock(stg01dn02, Side.TOP);
@@ -171,12 +172,12 @@ public class TestDockTabPane2 extends Application {
         
         //dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
         dockTabPane.getItems().add(stg01dn03);
-        DockNode2 stg01dn04 = new DockNode2();
+        DockNode stg01dn04 = new DockNode();
         stg01dn04.setTitle("stg01dn04" );
         stg01dn04.setId("stg01dn04");
         dockTabPane.getItems().add(0,stg01dn04);
 
-        DockNode2 stg01dn05 = new DockNode2();
+        DockNode stg01dn05 = new DockNode();
         stg01dn05.setTitle("stg01dn05" );
         stg01dn05.setId("stg01dn05");
         dockTabPane.getItems().set(0,stg01dn05);

@@ -55,7 +55,6 @@ public class ScenePaneHandler extends PaneHandler {
 
     @Override
     protected boolean isDocked(Node node) {
-        System.err.println("DDD isDocked");
         boolean retval = false;
         if (DockRegistry.isDockable(node)) {
             if (node.getParent() != null && (node.getParent() instanceof Pane)) {

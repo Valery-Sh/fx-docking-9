@@ -1,6 +1,5 @@
-package org.vns.javafx.dock.api.controls;
+package org.vns.javafx.dock;
 
-import org.vns.javafx.dock.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import static org.vns.javafx.dock.DockTabPane2.TABOVER_PSEUDO_CLASS;
+import static org.vns.javafx.dock.DockUtil.contains;
 
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
@@ -44,6 +45,7 @@ import org.vns.javafx.dock.api.FloatStageBuilder;
 import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
+import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 import org.vns.javafx.dock.api.StageBuilder;
 
 /**
@@ -51,9 +53,19 @@ import org.vns.javafx.dock.api.StageBuilder;
  * @author Valery Shyshkin
  */
 @DefaultProperty(value = "items")
-public class DockSideBar extends Control implements DockPaneTarget, ListChangeListener {
+public class DockSideBar extends Control implements Dockable, DockPaneTarget, ListChangeListener {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
+
+    private DockNodeHandler nodeHandler = new DockNodeHandler(this);
+
+    public Region node() {
+        return this;
+    }
+
+    public DockNodeHandler nodeHandler() {
+        return this.nodeHandler;
+    }
 
     public enum Rotation {
         DEFAULT(0),
@@ -130,6 +142,7 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
         setRotation(Rotation.DEFAULT);
 
         items.addListener(this);
+        //nodeHandler.setUsedAsDockTarget(false);
     }
 
     public ObservableList<Dockable> getItems() {
@@ -151,7 +164,7 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
                     paneHandler.undock(d.node());
                 }
 
-            } 
+            }
             if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
                 for (Dockable d : list) {
@@ -338,7 +351,7 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
 
         private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
 
-        public SidePaneHandler(DockSideBar dockPane) {
+        public SidePaneHandler(Region dockPane) {
             super(dockPane);
             init();
         }
@@ -423,19 +436,16 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
             getItemMap().put(item, container);
 
             int idx = -1;
+            ToolBar tb = ((DockSideBar) getDockPane()).getDelegate();
             if (mousePos != null) {
-                // Node sb = DockUtil.findNode(dockPane.getTabs(), mousePos.getX(), mousePos.getY());
-                //if ( sb != null ) {
-                //    idx = dockPane.getTabsPane().getChildren().indexOf(sb);
-                //}
+                Node sb = findNode(tb.getItems(), mousePos.getX(), mousePos.getY());
+                if (sb != null && (sb instanceof Group)   ) {
+                    idx = tb.getItems().indexOf(sb);
+                }
             }
-            if (idx >= 0) {
-                //  dockPane.getTabsPane().getChildren().add(idx,tab);
-                //  dockPane.getTabsPane().getChildren().add(idx+1,tab.getSeparator());
-            } else {
-                //dockPane.getTabsPane().getChildren().add(tab);
-                //dockPane.getTabsPane().getChildren().add(tab.getSeparator());
-
+            System.err.println("INDEX == " + idx);
+            if (idx >= 0 ) {
+                System.err.println("INSEX == " + tb.getItems().get(idx));
             }
             itemButton.setRotate(((DockSideBar) getDockPane()).getRotation().getAngle());
             itemButton.setOnAction(a -> {
@@ -450,7 +460,11 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
                 show(itemButton);
                 container.changeSize();
             });
-            ((DockSideBar) getDockPane()).getDelegate().getItems().add(item);
+            if ( idx >=0 ) {
+                ((DockSideBar) getDockPane()).getDelegate().getItems().add(idx,item);
+            } else {
+                ((DockSideBar) getDockPane()).getDelegate().getItems().add(item);
+            }
             DockNodeHandler nodeHandler = dockable.nodeHandler();
             if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
                 nodeHandler.setPaneHandler(this);
@@ -460,7 +474,7 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
             stage.setAlwaysOnTop(true);
             stage.setOnShowing(e -> {
                 if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null) {
-                    if ( stage.getOwner() == null ) {
+                    if (stage.getOwner() == null) {
                         stage.initOwner(getDockPane().getScene().getWindow());
                     }
                 }
@@ -470,6 +484,21 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
                 container.adjustScreenPos();
             }
             container.setDocked(true);
+        }
+
+        public Node findNode(List<Node> list, double x, double y) {
+            Node retval = null;
+            for (Node node : list) {
+                if (!(node instanceof Group)) {
+                    continue;
+                }
+                Region r = (Region) ((Group)node).getChildren().get(0);
+                if (DockUtil.contains(r, x, y)) {
+                    retval = node;
+                    break;
+                }
+            }
+            return retval;
         }
 
         public Cursor[] getSupportedCursors() {
@@ -556,6 +585,11 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
             return new SideBarIndicatorTransformer();
         }
 
+        /*        @Override
+        protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
+            return null;
+        }
+         */
         public static class SideBarIndicatorTransformer extends NodeIndicatorTransformer {
 
             public SideBarIndicatorTransformer() {
@@ -572,35 +606,43 @@ public class DockSideBar extends Control implements DockPaneTarget, ListChangeLi
             @Override
             public Point2D getIndicatorPosition() {
 
-                if (getTargetNode() != null) {
-                    return null;
-                }
+                //if (getTargetNode() != null) {
+                //    return getMousePos(); // source data
+                //return null;
+                //}
                 Point2D retval;// = null;// = super.mousePos();
 
                 SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
-                Pane topBtns;//= null;
-                Button topPaneButton = null;
-                if (paneIndicator != null) {
-                    topBtns = paneIndicator.getTopButtons();
-                    topPaneButton = (Button) topBtns.getChildren().get(0);
-                }
-                if (getIndicator().getIndicatorPane().getChildren().contains(getBottomButtons())) {
+                //Pane topBtns;//= null;
+                //Button topPaneButton = null;
+                //if (paneIndicator != null) {
+                Pane topBtns = paneIndicator.getTopButtons();
+                Button topPaneButton = (Button) topBtns.getChildren().get(0);
+                //}
+                if (getIndicator().getIndicatorPane().getChildren().contains(getBottomButtons())
+                        || getIndicator().getIndicatorPane().getChildren().contains(getLeftButtons())
+                        || getIndicator().getIndicatorPane().getChildren().contains(getRightButtons())) {
                     getIndicator().getIndicatorPane().getChildren().clear();
-                    if (paneIndicator != null) {
-                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
-                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());
-                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());
-                        paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());
-                        topBtns = paneIndicator.getTopButtons();
-                        ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
-                    }
+                    //if (paneIndicator != null) {
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getTopButtons());
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getRightButtons());
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getBottomButtons());
+                    paneIndicator.getIndicatorPane().getChildren().remove(paneIndicator.getLeftButtons());
+                    topBtns = paneIndicator.getTopButtons();
+                    ((GridPane) getIndicator().getIndicatorPane()).add(topBtns, 0, 1);
+                    //}
                 }
 
-                DockSideBar sideBar = (DockSideBar) getTargetPaneHandler().getDockPane();
-
+                //DockSideBar sideBar = (DockSideBar) getTargetPaneHandler().getDockPane();
 //                double mouseX = getIndicatorPosition().getX();
 //                double mouseY = getIndicatorPosition().getY();
-                retval = centerPosOf(sideBar, topPaneButton);
+                double x = getMousePos().getX();
+                double y = getMousePos().getY();
+
+                //retval = centerPosOf(sideBar, topPaneButton);
+                retval = new Point2D(x - 15, y - 3);
+                topPaneButton.pseudoClassStateChanged(TABOVER_PSEUDO_CLASS, true);
+
                 return retval;
             }
 

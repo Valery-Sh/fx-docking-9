@@ -284,7 +284,8 @@ public class DockUtil {
         return retval;
     }
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
-        if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
+        //if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
+        if (child == null) {        
             return null;
         }
         Parent retval = null;

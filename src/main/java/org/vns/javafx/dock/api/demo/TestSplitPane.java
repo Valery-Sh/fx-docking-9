@@ -7,8 +7,6 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.event.EventType;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,10 +16,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.DockableDockPane;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
@@ -67,7 +63,7 @@ public class TestSplitPane  extends Application {
         Scene scene = new Scene(root);
         scene.getRoot().setStyle("-fx-background-color: yellow");
 
-        DockNode2 dn01 = new DockNode2();
+        DockNode dn01 = new DockNode();
         dn01.setId("DockNode: dn01");
         dn01.setPrefHeight(100);
         sp01.getItems().add(dn01);
@@ -77,7 +73,7 @@ public class TestSplitPane  extends Application {
         b02.setOnAction(a -> {
         });        
         
-        DockNode2 dn02 = new DockNode2();
+        DockNode dn02 = new DockNode();
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");   

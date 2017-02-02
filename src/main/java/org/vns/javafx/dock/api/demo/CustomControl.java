@@ -4,7 +4,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import org.vns.javafx.dock.api.DockPaneBase;
+import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -13,9 +13,9 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public class CustomControl extends Control {
 
-    private DockPaneBase delegate = new DockPaneBase();
+    private DockPaneBox delegate = new DockPaneBox();
 
-    public DockPaneBase getDelegate() {
+    public DockPaneBox getDelegate() {
         return delegate;
     }
     

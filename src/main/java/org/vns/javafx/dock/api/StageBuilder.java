@@ -77,7 +77,7 @@ public class StageBuilder extends FloatStageBuilder {
 
         setRootPane(new BorderPane());
 
-        Pane dockPane = new DockPaneBase();
+        Pane dockPane = new DockPaneBox();
         dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
 
         ((BorderPane) getRootPane()).setCenter(dockPane);

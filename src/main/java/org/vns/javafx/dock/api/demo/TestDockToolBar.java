@@ -17,11 +17,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
-import org.vns.javafx.dock.api.DockPaneBase;
+import org.vns.javafx.dock.DockToolBar;
+
+import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.DockTabPane2;
-import org.vns.javafx.dock.TitledToolBar;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
@@ -33,7 +34,7 @@ public class TestDockToolBar extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        DockPaneBase dockPane = new DockPaneBase();
+        DockPaneBox dockPane = new DockPaneBox();
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
 
@@ -56,33 +57,31 @@ public class TestDockToolBar extends Application {
         Pane p3 = new HBox(b3);
 //        dockPane.dock(p3, Side.BOTTOM);
 
-        DockNode2 dn01 = new DockNode2();
+        DockNode dn01 = new DockNode();
         dn01.setId("Dn01");
         dn01.setFocusTraversable(true);
-        dn01.getChildren().add(new Label("DOCK NODE IMPL"));
+        dn01.setContent(new Label("DOCK NODE IMPL"));
         dockPane.dock(dn01, Side.TOP);
 
-        TitledToolBar dtt = new TitledToolBar();
+        DockToolBar dtt = new DockToolBar();
         dn01.setId("Dtt");
         dtt.setFocusTraversable(true);
         dockPane.dock(dtt, Side.TOP);
 
-        TitledToolBar dtt02 = new TitledToolBar();
+        DockToolBar dtt02 = new DockToolBar();
         dtt02.setId(" Dtt02");
-        dn01.dock(dtt02, Side.BOTTOM);
+        //dn01.dock(dtt02, Side.BOTTOM);
         Button tb2 = new Button("", new Ellipse(8, 8, 8, 6));
         tb2.setId("Tb2");
-        dtt02.getToolBar().getItems().add(0, tb2);
+        //dtt02.getToolBar().getItems().add(0, tb2);
 
         DockTabPane2 tabPane01 = new DockTabPane2();
         dockPane.dock(tabPane01, Side.BOTTOM);
         
-        DockNode2 dn03 = new DockNode2();
-        
+        DockNode dn03 = new DockNode();
         TextArea ta = new TextArea();
         Button bClick = new Button("testGet");
-        dn03.getChildren().add(bClick);
-        dn03.getChildren().add(ta);
+        VBox vb = new VBox(bClick,ta);
         //tabPane01.dock(0, dn03);
 /*        bClick.setOnAction(value -> {
             List<Parent> list = new ArrayList<>();

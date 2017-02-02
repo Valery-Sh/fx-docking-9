@@ -13,9 +13,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode2;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
@@ -39,9 +39,11 @@ public class TestRegistryDock extends Application {
         Button btn2_1 = new Button("Button: btn2_1");
         pn01.getChildren().add(btn2_1);
         
-        DockNode2 dn1 = new DockNode2();
+        DockNode dn1 = new DockNode();
+        VBox dn1c = new VBox();
+        dn1.setContent(dn1c);
         dn1.setTitle("New DockNode dn1");
-        dn1.getChildren().add( new Label("Valery"));
+        dn1c.getChildren().add( new Label("Valery"));
         pn01.getChildren().add(dn1);
         
         
