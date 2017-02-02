@@ -24,12 +24,26 @@ public class DockNode extends Control implements Dockable {
     private VBox delegate;// = new DockPane();
 
     public DockNode() {
-        init(null);
+        init(null, null, -1);
+    }
+    public DockNode(double dividerPos) {
+        init(null, null, dividerPos);
     }
 
     public DockNode(String title) {
-        init(title);
+        init(null,title, -1);
 
+    }
+    public DockNode(String title, double dividerPos ) {
+        init(null,title, dividerPos);
+
+    }
+    
+    public DockNode(String id, String title) {
+        init(null,title, -1);
+    }
+    public DockNode(String id, String title, double dividerPos) {
+        init(null,title, dividerPos);
     }
 
     protected VBox getDelegate() {
@@ -39,7 +53,7 @@ public class DockNode extends Control implements Dockable {
         return delegate;
     }
 
-    private void init(String title) {
+    private void init(String id, String title, double dividerPos) {
         Region titleBar = new DockTitleBar(this);
         getDelegate().getChildren().add(titleBar);
         getDelegate().getStyleClass().add("delegate");
@@ -47,6 +61,10 @@ public class DockNode extends Control implements Dockable {
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
         nodeHandler.removeTitleBarProperty().addListener(this::removeTitleBarPropertyChanged);
         setTitle(title);
+        if ( id != null ) {
+            setId(id);
+        }
+        setDividerPos(dividerPos);
     }
 
     protected void removeTitleBarPropertyChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {

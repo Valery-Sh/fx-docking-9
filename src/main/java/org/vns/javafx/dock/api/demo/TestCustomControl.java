@@ -136,7 +136,7 @@ public class TestCustomControl extends Application {
 
         stage.setScene(scene);
         stage.show();
-        DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(dn3);
+        
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);

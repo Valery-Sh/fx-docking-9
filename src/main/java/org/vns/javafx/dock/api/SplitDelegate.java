@@ -279,6 +279,8 @@ public class SplitDelegate {
         /**
          * Does nothing. Subclasses can change behavior.
          *
+         * @param sp
+         * @param dpt
          * @param split
          */
 /*        public void updateDividers() {
@@ -309,22 +311,22 @@ public class SplitDelegate {
         }
 */
         protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
-            for (Node node : sp.getItems()) {
+            sp.getItems().forEach((node) -> {
                 if (DockRegistry.isDockable(node)) {
                     DockRegistry.dockable(node).nodeHandler().setPaneHandler(dpt.paneHandler());
                 } else if (node instanceof SplitPane) {
                     splitPaneAdded(((SplitPane) node), dpt);
                 }
-            }
+            });
         }
 
         protected void splitPaneRemoved(SplitPane sp, DockPaneTarget dpt) {
-            for (Node node : sp.getItems()) {
+            sp.getItems().forEach((node) -> {
                 if (DockRegistry.isDockable(node)) {
                 } else if (node instanceof SplitPane) {
                     splitPaneRemoved(((SplitPane) node), dpt);
                 }
-            }
+            });
         }
 
         public DoubleProperty dividerPosProperty() {
@@ -339,27 +341,6 @@ public class SplitDelegate {
             this.dividerPosProperty.set(dividerPos);
         }
 
-        public static DockSplitPane getParentSplitPane(Node dockNode) {
-            return (DockSplitPane) DockUtil.getImmediateParent(dockNode, p -> {
-                return (p instanceof DockSplitPane);
-            });
-        }
-
-        /*        public static DockSplitPane create(Orientation o) {
-            if ( o == Orientation.HORIZONTAL) {
-                return new HSplit();
-            } else {
-                return new VSplit();
-            }
-        }
-        public static DockSplitPane create(Orientation o, Node... items) {
-            if ( o == Orientation.HORIZONTAL) {
-                return new HSplit(items);
-            } else {
-                return new VSplit(items);
-            }
-        }
-         */
         @Override
         public ObservableList<Node> getChildren() {
             return super.getChildren();
