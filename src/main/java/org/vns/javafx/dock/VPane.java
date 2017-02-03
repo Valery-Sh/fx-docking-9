@@ -38,18 +38,6 @@ public class VPane extends DockSplitPane {
     private void init() {
         setOrientation(Orientation.VERTICAL);
     }
-    public VPane append(Dockable d ) {
-        getItems().add(d.node());
-        return this;
-    }
-    public HPane append(HPane hp ) {
-        getItems().add(hp);
-        return hp;
-    }
-    public VPane append(VPane vp ) {
-        getItems().add(vp);
-        return vp;
-    }
     public VPane vert(Node... nodes ) {
         getItems().addAll(nodes);
         return this;

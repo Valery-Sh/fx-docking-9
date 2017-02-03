@@ -111,10 +111,11 @@ public class PaneHandler {
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
-                Dockable n = DockRegistry.dockable(newNode).nodeHandler().getImmediateParent(newValue);
+/*                Dockable n = DockRegistry.dockable(newNode).nodeHandler().getImmediateParent(newValue);
                 if (n != null && n != newNode) {
                     newNode = (Node) n;
                 }
+*/                
                 DockRegistry.dockable(newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {

@@ -23,7 +23,7 @@ import org.vns.javafx.dock.api.Dockable;
 public class DockToolBar extends ToolBar implements Dockable{
 
     StringProperty titleProperty = new SimpleStringProperty("Tool Bar Enabled");
-    DockNodeHandler dockState = new DockNodeHandler(this);
+    DockNodeHandler nodeHandler = new DockNodeHandler(this);
     
     private Dockable dockTarget;
     
@@ -33,7 +33,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     private void init() {
         Separator titleBar = new Separator();
         titleBar.setPrefWidth(USE_PREF_SIZE);
-        dockState.setTitleBar(titleBar);
+        nodeHandler.setTitleBar(titleBar);
         Button b1 = new Button("",new Circle(0, 0, 4));
         Button b2 = new Button("", new Rectangle(0,0,8,8));
         getItems().addAll(b1,b2, new Separator(), titleBar);
@@ -56,15 +56,9 @@ public class DockToolBar extends ToolBar implements Dockable{
         this.dockTarget = dockTarget;
     }
     
-    public String getDockPos() {
-        return dockState.getDockPos();
-    }
 
-    public void setDockPos(String dockpos) {
-        this.dockState.setDockPos(dockpos);
-    }
-    public void useAaTitleBar(Region titleBar) {
-        dockState.setTitleBar(titleBar);
+    public void useAsTitleBar(Region titleBar) {
+        nodeHandler.setTitleBar(titleBar);
     }
 
     @Override
@@ -74,6 +68,6 @@ public class DockToolBar extends ToolBar implements Dockable{
 
     @Override
     public DockNodeHandler nodeHandler() {
-        return dockState;
+        return nodeHandler;
     }
 }

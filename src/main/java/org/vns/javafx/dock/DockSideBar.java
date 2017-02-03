@@ -34,8 +34,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.DockTabPane2.TABOVER_PSEUDO_CLASS;
-import static org.vns.javafx.dock.DockUtil.contains;
 
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
@@ -45,7 +43,6 @@ import org.vns.javafx.dock.api.FloatStageBuilder;
 import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
-import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 import org.vns.javafx.dock.api.StageBuilder;
 
 /**
@@ -59,10 +56,12 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
 
     private DockNodeHandler nodeHandler = new DockNodeHandler(this);
 
+    @Override
     public Region node() {
         return this;
     }
 
+    @Override
     public DockNodeHandler nodeHandler() {
         return this.nodeHandler;
     }

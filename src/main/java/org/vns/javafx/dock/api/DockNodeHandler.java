@@ -4,18 +4,16 @@ import java.util.Properties;
 import java.util.function.Function;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockTitleBar;
-import org.vns.javafx.dock.api.properties.DockFloatingProperty;
-import org.vns.javafx.dock.api.properties.DockPaneHandlerProperty;
-import org.vns.javafx.dock.api.properties.DockResizableProperty;
-import org.vns.javafx.dock.api.properties.DockedProperty;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
@@ -24,16 +22,21 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  */
 public class DockNodeHandler {
 
-    private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
+    private final DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
 
     private final TitleBarProperty<Region> titleBarProperty;
+    //private ObjectProperty<Region> titleBarProperty;
+    
     private final BooleanProperty removeTitleBarProperty = new SimpleBooleanProperty(true);
     
     private final StringProperty titleProperty = new SimpleStringProperty("");
     private final Dockable dockable;
-    private final DockFloatingProperty floatingProperty = new DockFloatingProperty(false);
-    private final DockedProperty dockedProperty = new DockedProperty(false);
-    private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
+    //private final DockFloatingProperty floatingProperty = new DockFloatingProperty(false);
+    private final BooleanProperty floatingProperty = new SimpleBooleanProperty(false);
+    //private final DockedProperty dockedProperty = new DockedProperty(false);
+    private final BooleanProperty dockedProperty = new SimpleBooleanProperty(false);
+    //private final DockResizableProperty resizableProperty = new DockResizableProperty(true);
+    private final BooleanProperty resizableProperty = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockTarget = true;
 
@@ -46,7 +49,8 @@ public class DockNodeHandler {
      */
     //private DockPaneHandler originalPaneHandler;
 
-    private final DockPaneHandlerProperty<PaneHandler> paneHandlerProperty = new DockPaneHandlerProperty<>();
+    //private final DockPaneHandlerProperty<PaneHandler> paneHandlerProperty = new DockPaneHandlerProperty<>();
+    private final ObjectProperty<PaneHandler> paneHandlerProperty = new SimpleObjectProperty<>();    
 
 //    private Pane lastDockPane;
     private StringProperty dockPosProperty = new SimpleStringProperty(null);
@@ -104,14 +108,14 @@ public class DockNodeHandler {
         }
     }
 
-    public StringProperty dockPosProperty() {
+/*    public StringProperty dockPosProperty() {
         return dockPosProperty;
     }
 
     public String getDockPos() {
         return dockPosProperty.get();
     }
-
+*/
     public DoubleProperty dividerPosProperty() {
         return dividerPosProperty;
     }
@@ -131,10 +135,10 @@ public class DockNodeHandler {
         return properties;
     }
 
-    public void setDockPos(String dockPos) {
+/*    public void setDockPos(String dockPos) {
         this.dockPosProperty.set(dockPos);
     }
-
+*/
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBarProperty;
     }
@@ -166,7 +170,7 @@ public class DockNodeHandler {
             getPaneHandler().remove(node());
             setPaneHandler(null);
             //setDividerPos(-1);
-            setDockPos("TOP");
+            //setDockPos("TOP");
         }
     }
 
@@ -221,7 +225,7 @@ public class DockNodeHandler {
     }
 */
     
-    public DockFloatingProperty floatingProperty() {
+    public BooleanProperty floatingProperty() {
         return floatingProperty;
     }
 
@@ -243,10 +247,13 @@ public class DockNodeHandler {
         return getPaneHandler().getStageBuilder(dockable);
     }
 
-    protected DockedProperty dockedProperty() {
+    protected BooleanProperty dockedProperty() {
         return dockedProperty;
     }
 
+    public BooleanProperty resizableProperty() {
+        return resizableProperty;
+    }
     public boolean isResizable() {
         return resizableProperty.get();
     }
@@ -272,7 +279,7 @@ public class DockNodeHandler {
         return tb;
     }
 
-    public Dockable getImmediateParent(Node node) {
+/*    public Dockable getImmediateParent(Node node) {
         Dockable retval = dockable();
         if (immediateParent != null) {
             retval = immediateParent.apply(node);
@@ -285,18 +292,18 @@ public class DockNodeHandler {
     public void setImmediateParentFunction(Function<Node, Dockable> f) {
         immediateParent = f;
     }
-
+*/
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         getProperties().remove("nodeHandler-titlebar-minheight");
         getProperties().remove("nodeHandler-titlebar-minwidth");
         dragManager.titlebarChanged(ov, oldValue, newValue);
     }
 
-    public boolean isTitleBarHidden() {
+ /*   private boolean isTitleBarHidden() {
         return getTitleBar() == null || (getTitleBar().getMinHeight() == 0 && getTitleBar().getMinWidth() == 0);
     }
 
-    protected void saveTitleBar() {
+    private void saveTitleBar() {
         if (getTitleBar() == null) {
             getProperties().remove("nodeHandler-titlebar-minheight");
             getProperties().remove("nodeHandler-titlebar-minwidth");
@@ -324,5 +331,5 @@ public class DockNodeHandler {
             getTitleBar().setMinWidth((double) getProperties().get("nodeHandler-titlebar-minwidth"));
         }
     }
-
+*/
 }

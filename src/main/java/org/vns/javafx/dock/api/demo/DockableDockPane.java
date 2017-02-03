@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockTitleBar;
@@ -55,13 +54,6 @@ public class DockableDockPane extends VBox implements Dockable {
 
     public DockNodeHandler getDockNodeHandler() {
         return nodeHandler;
-    }
-    public String getDockPos() {
-        return nodeHandler.getDockPos();
-    }
-
-    public void setDockPos(String dockpos) {
-        this.nodeHandler.setDockPos(dockpos);
     }
     
     public void setDragSource(Node dragSource) {

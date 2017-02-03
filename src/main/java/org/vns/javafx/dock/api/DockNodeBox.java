@@ -41,15 +41,15 @@ public class DockNodeBox  extends VBox implements Dockable{
         nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
     }
 
-    public String getDockPos() {
+/*    public String getDockPos() {
         return nodeHandler.getDockPos();
     }
 
     public void setDockPos(String dockpos) {
         this.nodeHandler.setDockPos(dockpos);
     }
-    
-    public void setDragSource(Node dragSource) {
+*/    
+    public void setDragNode(Node dragSource) {
         nodeHandler.setDragNode(dragSource);
     }
 

@@ -2,6 +2,7 @@ package org.vns.javafx.dock;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -12,7 +13,6 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
-import static org.vns.javafx.dock.api.properties.TitleBarProperty.CHOOSED_PSEUDO_CLASS;
 
 /**
  *
@@ -20,6 +20,7 @@ import static org.vns.javafx.dock.api.properties.TitleBarProperty.CHOOSED_PSEUDO
  */
 public class DockTitleBar extends HBox {
 
+    public static final PseudoClass CHOOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("choosed");
     
     public enum StyleClasses {
         TITLE_BAR,
