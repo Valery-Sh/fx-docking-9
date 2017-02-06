@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api;
 
 import javafx.beans.property.DoubleProperty;
@@ -5,7 +10,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
@@ -16,45 +20,31 @@ import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
  *
  * @author Valery
  */
-public class DockPaneBoxHandler extends PaneHandler {
+public class DockPaneSplitBoxHandler  extends PaneHandler {
 
     private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
 
-    private SplitDelegate splitDelegate;
-    private SplitDelegate.DockSplitPane rootSplitPane;
 
-    public SplitDelegate.DockSplitPane getRootSplitPane() {
-        return rootSplitPane;
-    }
-
-    public DockPaneBoxHandler(Region dockPane) {
+    public DockPaneSplitBoxHandler(Region dockPane) {
         super(dockPane);
         init();
     }
 
     @Override
-    public Pane getDockPane() {
-        return (Pane) super.getDockPane();
+    public DockSplitPane getDockPane() {
+        return (DockSplitPane) super.getDockPane();
     }
 
     private void init() {
-        setRootSplitPane(new SplitDelegate.DockSplitPane());
+        //setRootSplitPane(new SplitDelegate.DockSplitPane());
+        
     }
 
-
-    public void setRootSplitPane(SplitDelegate.DockSplitPane rootSplitPane) {
-        this.rootSplitPane = rootSplitPane;
-        addRootSplitPane();
-        splitDelegate = new SplitDelegate(rootSplitPane, this);
-    }
-    protected void addRootSplitPane() {
-        getDockPane().getChildren().add(rootSplitPane);
-    }
     
     @Override
     public void dividerPosChanged(Node node, double oldValue, double newValue) {
-        if ( DockRegistry.isDockable(node) && getRootSplitPane() != null ) {
-            getRootSplitPane().update();
+        if ( DockRegistry.isDockable(node) ) {
+            //splitDelegate.update();
         }
     }
 
@@ -74,7 +64,7 @@ public class DockPaneBoxHandler extends PaneHandler {
     protected boolean isDocked(Node node) {
         boolean retval;
         if (DockRegistry.isDockable(node)) {
-            retval = DockUtil.getParentSplitPane(rootSplitPane, node) != null;
+            retval = DockUtil.getParentSplitPane(getDockPane(), node) != null;
         } else {
             retval = null != notDockableItemsProperty().get(node);
         }
@@ -93,27 +83,16 @@ public class DockPaneBoxHandler extends PaneHandler {
 
     @Override
     protected void doDock(Point2D mousePos, Node node, Side dockPos) {
-        if ( splitDelegate == null ) {
-            return;
-        }
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
             ((Stage) node.getScene().getWindow()).close();
         }
         splitDelegate.dock(DockRegistry.dockable(node), dockPos);
 
-        SplitDelegate.DockSplitPane save = rootSplitPane;
-        if (rootSplitPane != splitDelegate.getRoot()) {
-            rootSplitPane = splitDelegate.getRoot();
-        }
-
-        int idx = getDockPane().getChildren().indexOf(save);
-
-        getDockPane().getChildren().set(idx, rootSplitPane);
 
         if (DockRegistry.isDockable(node)) {
-            DockNodeHandler state = DockRegistry.dockable(node).nodeHandler();
-            if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
-                state.setPaneHandler(this);
+            DockNodeHandler nodeHandler = DockRegistry.dockable(node).nodeHandler();
+            if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
+                nodeHandler.setPaneHandler(this);
             }
         }
     }
@@ -148,7 +127,7 @@ public class DockPaneBoxHandler extends PaneHandler {
 
     @Override
     public void remove(Node dockNode) {
-        SplitDelegate.DockSplitPane dsp = getParentSplitPane(rootSplitPane, dockNode);
+        DockSplitPane dsp = getParentSplitPane(getDockPane(), dockNode);
         System.err.println("1. DockPaneHandler remove(dockNode " + dockNode.getId());
         System.err.println("1. DockPaneHandler remove from dockPane " + dsp.getId());        
         if (dsp != null) {
@@ -157,7 +136,7 @@ public class DockPaneBoxHandler extends PaneHandler {
             
             dsp.getItems().remove(dockNode);
             DockRegistry.dockable(dockNode).nodeHandler().setPaneHandler(ph);
-            clearEmptySplitPanes(rootSplitPane, dsp);
+            clearEmptySplitPanes(getDockPane(), dsp);
         }
     }
 

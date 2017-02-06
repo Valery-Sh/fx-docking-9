@@ -3,7 +3,6 @@ package org.vns.javafx.dock;
 import javafx.beans.DefaultProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
@@ -15,28 +14,28 @@ public class HPane extends DockSplitPane {
     
     
     public HPane() {
-        init();
+        init(-1);
     }
     public HPane(String id) {
-        init();
+        init(-1);
         setId(id);
     }
     public HPane(String id, double dividerPos) {
-        init();
+        init(dividerPos);
         setId(id);
-        setDividerPos(dividerPos);
     }
     public HPane(double dividerPos) {
-        init();
-        setDividerPos(dividerPos);
+        init(dividerPos);
     }
 
     public HPane(Node... items) {
         super(items);
-        init();
+        init(-1);
     }
-    private void init() {
+    private void init(double dividerPos) {
         setOrientation(Orientation.HORIZONTAL);
+        setDividerPos(dividerPos);
+        
     }
     
     public HPane hor(Node... nodes ) {

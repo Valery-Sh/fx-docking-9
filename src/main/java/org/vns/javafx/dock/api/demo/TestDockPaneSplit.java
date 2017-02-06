@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
@@ -9,18 +14,19 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.HPane;
-import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockPaneSplit;
+import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.HPane;
+import org.vns.javafx.dock.VPane;
+import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class TestDockPaneControl extends Application {
+public class TestDockPaneSplit extends Application {
 
     Stage stage;
     Scene scene;
@@ -31,7 +37,7 @@ public class TestDockPaneControl extends Application {
         Button btn01 = new Button("sp btn01");
         
         StackPane root = new StackPane();
-        DockPane cc = new DockPane();
+        DockPaneSplit cc = new DockPaneSplit();
         
         DockNode dn1 = new DockNode();
         dn1.setId("dn01");
@@ -121,7 +127,9 @@ public class TestDockPaneControl extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
-        cc.setRoot(vs1);        
+        //cc.setRoot(vs1);        
+        cc.getItems().add(vs1);
+        
         //HPane hs1 = new HPane(dnc1,dnc2);
         HPane hs1 = new HPane(dnc1,dnc2);
         

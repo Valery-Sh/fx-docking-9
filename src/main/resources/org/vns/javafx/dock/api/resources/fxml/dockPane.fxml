@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import org.vns.javafx.dock.*?>
+
+<fx:root type="org.vns.javafx.dock.DockPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.vns.javafx.dock.controller.DockPaneFXMLController" >
+    <items />
+</fx:root>
+
