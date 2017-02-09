@@ -21,9 +21,10 @@ public interface Dockable {
         if ( u == null) {
             u = Dockable.class.getResource("resources/default.css");
         }
-
+        System.err.println("TTTTTTTTTTT " + Dockable.class.getResource("resources/default.css").toExternalForm());
         StyleManager.getInstance()
                 .addUserAgentStylesheet(u.toExternalForm());
                 //.addUserAgentStylesheet(Dockable.class.getResource("/resources/org/vns/javafx/dock/api/default.css").toExternalForm());                
     }
+    
 }

@@ -88,8 +88,12 @@ public class DockTabPane2 extends Control implements Dockable, DockPaneTarget, L
         nodeHandler.setDragNode(tabArea.getDragButton());
         items.addListener(this);
     }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
+    }
 
-    public StackPane getDelegate() {
+    protected StackPane getDelegate() {
         return delegate;
     }
 

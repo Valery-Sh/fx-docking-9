@@ -1,7 +1,6 @@
 package org.vns.javafx.dock.api;
 
 import java.util.Properties;
-import java.util.function.Function;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -70,15 +69,15 @@ public class DockNodeHandler {
         scenePaneHandler = new ScenePaneHandler(dockable);
         paneHandlerProperty.set(scenePaneHandler);
         paneHandlerProperty.addListener(this::paneHandlerChanged);
-        dividerPosProperty.addListener(this::dividerPosChanged);
+        //dividerPosProperty.addListener(this::dividerPosChanged);
     }
 
-    protected void dividerPosChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+/*    protected void dividerPosChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         if ( getPaneHandler() != null ) {
             getPaneHandler().dividerPosChanged(dockable().node(),(Double)oldValue, (Double)newValue);
         }
     }
-
+*/
     public Node getDragNode() {
         return getDragManager().getDragNode();
     }
@@ -116,7 +115,7 @@ public class DockNodeHandler {
         return dockPosProperty.get();
     }
 */
-    public DoubleProperty dividerPosProperty() {
+/*    public DoubleProperty dividerPosProperty() {
         return dividerPosProperty;
     }
 
@@ -127,7 +126,7 @@ public class DockNodeHandler {
     public void setDividerPos(double dividerPos) {
         this.dividerPosProperty.set(dividerPos);
     }
-
+*/
     public Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
@@ -266,7 +265,7 @@ public class DockNodeHandler {
         return dockedProperty.get();
     }
 
-    protected void setDocked(boolean docked) {
+    public void setDocked(boolean docked) {
         this.dockedProperty.set(docked);
     }
 

@@ -11,12 +11,16 @@
    -fx-background-color: transparent;
 }
 */
-.dock-node-title-label {   
+.custom-control {
+    -fx-skin: "org.vns.javafx.dock.api.controls.CustomControlSkin";
+}
+/*.dock-node-title-label {   
     -fx-padding: 0 0 3 0;
     -fx-text-fill: blue;
     -fx-background-color: rgba(50, 50, 100, 0.4);
     -fx-effect: dropshadow( gaussian, rgba(255,254,254,0.2), 0,0,0,1 );
 }
+*/
 .dock-node:floating .dock-title-state-button {
     -fx-graphic: url(maximize.png);
 }
@@ -75,10 +79,12 @@
     -fx-border-color: -fx-selection-bar;    
 }
 
+
 .drag-pane-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
+
 .drag-pane-indicator-top-button:tabover {
     -fx-graphic: url(uparrow-blue-16x16.png);
     -fx-padding: 0;
@@ -101,7 +107,6 @@
 .drag-pane-indicator-center-button {
     -fx-graphic: url(target-icon-24x24.png);
     -fx-padding: 4;
-/*    visibility: hidden;*/
 }
 
 .drag-pane-indicator-center-button-pane {

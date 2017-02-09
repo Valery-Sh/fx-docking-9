@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.DockPaneTarget;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.PaneHandler;
 import org.vns.javafx.dock.api.TopNodeHelper;
 
@@ -71,7 +71,7 @@ public class DockUtil {
             }
         }
     }
-
+    
     public static Side sideValue(String dockPos) {
         Side retval = null;
         if (dockPos == null) {

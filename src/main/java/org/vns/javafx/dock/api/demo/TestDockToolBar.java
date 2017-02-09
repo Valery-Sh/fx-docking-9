@@ -19,9 +19,9 @@ import javafx.scene.shape.Ellipse;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockToolBar;
 
-import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
 
 /**
@@ -34,7 +34,7 @@ public class TestDockToolBar extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        DockPaneBox dockPane = new DockPaneBox();
+        DockPane dockPane = new DockPane();
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
 

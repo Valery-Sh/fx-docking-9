@@ -1,13 +1,17 @@
 package org.vns.javafx.dock.api;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -50,8 +54,12 @@ public class StageBuilder extends FloatStageBuilder {
         st.setMinHeight(borderPane.minHeight(dockable.node().getWidth()) + insetsHeight);
         st.setMinWidth(borderPane.minWidth(dockable.node().getHeight()) + insetsWidth);
     }
-
+    
     public Stage createStage(Dockable dockable) {
+        return this.createStage(dockable, null);
+    }
+    
+    public Stage createStage(Dockable dockable, Region parentPane) {
 
         Region node = dockable.node();
         Node titleBar = dockable.nodeHandler().getTitleBar();
@@ -76,11 +84,23 @@ public class StageBuilder extends FloatStageBuilder {
         newStage.initStyle(getStageStyle());
 
         setRootPane(new BorderPane());
-
-        Pane dockPane = new DockPaneBox();
-        dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
-
-        ((BorderPane) getRootPane()).setCenter(dockPane);
+        Region pane = parentPane;
+        if ( parentPane == null ) {
+            pane = new StackPane();
+        }
+        
+        pane.setStyle("-fx-background-color: aqua");
+        //dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
+        //PaneHandler ph = dockable.nodeHandler().getPaneHandler();
+        //ph.dock(dockable, Side.TOP);
+        if ( pane instanceof Pane) {
+            ((Pane)pane).getChildren().add(dockable.node());
+        } else if ( pane instanceof SplitPane) {
+            ((SplitPane)pane).getItems().add(dockable.node());
+        }
+        //dockPane.getItems().add(dockable.node()); // we do not apply dock() 
+        //dockable.nodeHandler().setPaneHandler(pp);
+        ((BorderPane) getRootPane()).setCenter(pane);
 
         Scene scene = new Scene(getRootPane());
 

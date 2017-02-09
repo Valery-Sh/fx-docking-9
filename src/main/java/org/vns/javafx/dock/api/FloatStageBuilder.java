@@ -6,10 +6,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -21,8 +19,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  *
@@ -188,12 +184,14 @@ public class FloatStageBuilder {
 
         DockPane dockPane = new DockPane();
         DockSplitPane dsp = new DockSplitPane();
-        dockPane.setRoot(dsp);
+        //dockPane.setRoot(dsp);
         //
         // Prohibit to use as a dock target
         //
         dockPane.setUsedAsDockTarget(false);
-        dsp.getItems().add(dockable.node());
+        //dsp.getItems().add(dockable.node());
+        dockPane.getItems().add(dockable.node());
+        System.err.println("FloatStageBuilder dockablenode()=" + dockable.node());
 //        dockPane.dock(dockable, Side.TOP);
         borderPane.getStyleClass().add("dock-node-border");
         
@@ -275,8 +273,8 @@ public class FloatStageBuilder {
      */
     protected void dock(Pane dockPane, Dockable dockable) {
         Node node = dockable.node();
-        SplitDelegate.DockSplitPane rootSplitPane = null;
-        rootSplitPane = new SplitDelegate.DockSplitPane();
+        DockSplitPane rootSplitPane = null;
+        rootSplitPane = new DockSplitPane();
         //-rootSplitPane = new HSplit();
         //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
         rootSplitPane.getItems().add(node);

@@ -23,6 +23,11 @@ public class DockNodeBox  extends VBox implements Dockable{
         getChildren().add(titleBar);
         nodeHandler.setTitleBar(titleBar);
         nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
+        getStyleClass().add("dock-node");
+    }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
     public String getTitle() {
@@ -33,26 +38,22 @@ public class DockNodeBox  extends VBox implements Dockable{
         nodeHandler.setTitle(title);
     }
 
-    public DockNodeHandler getDockNodeHandler() {
-        return nodeHandler;
-    }
 
     public void dock(Dockable dockable, Side dockPos) {
         nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
     }
 
-/*    public String getDockPos() {
-        return nodeHandler.getDockPos();
-    }
-
-    public void setDockPos(String dockpos) {
-        this.nodeHandler.setDockPos(dockpos);
-    }
-*/    
     public void setDragNode(Node dragSource) {
         nodeHandler.setDragNode(dragSource);
     }
+/*    public double getDividerPos() {
+        return nodeHandler.getDividerPos();
+    }
 
+    public void setDividerPos(double divpos) {
+        this.nodeHandler.setDividerPos(divpos);
+    }
+*/
     @Override
     public Region node() {
         return this;

@@ -56,15 +56,26 @@ public class DockTitleBar extends HBox {
             return retval;
         }
     }
-    private final Dockable dockNode;
+    private Dockable dockNode;
     //private DockDragboard dragboard;
 
     private Label label;
     private Button closeButton;
     private Button stateButton;
     private Button pinButton;
-
+    private String title;
+    
     private BooleanProperty selectedPseudoClassProperty = new SimpleBooleanProperty();
+
+    public DockTitleBar() {
+        this.title = "";
+        init();
+    }
+    
+    public DockTitleBar(String title) {
+        this.title = title;
+        init();
+    }
     
     public DockTitleBar(Dockable dockNode) {
         this.dockNode = dockNode;
@@ -73,13 +84,16 @@ public class DockTitleBar extends HBox {
 
     public DockTitleBar(Dockable dockNode, String title) {
         this.dockNode = dockNode;
+        this.title = title;
         init();
     }
 
     private void init() {
 
-        label = new Label("Dock Title Bar");
-        label.textProperty().bind(dockNode.nodeHandler().titleProperty());
+        label = new Label(title);
+        if ( dockNode != null ) {
+            label.textProperty().bind(dockNode.nodeHandler().titleProperty());
+        }
 
         stateButton = new Button();
         closeButton = new Button();
@@ -107,6 +121,11 @@ public class DockTitleBar extends HBox {
         pinButton.setTooltip(new Tooltip("Pin pane"));
     }
     
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
+    }
+
     public void removeButtons(Button... btns) {
         for ( Button b : btns) {
             getChildren().remove(b);

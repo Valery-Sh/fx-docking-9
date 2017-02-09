@@ -11,10 +11,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -55,12 +55,12 @@ public class TestDockPaneControl extends Application {
         dn3_1.setContent(btn3_1);
         dn3_1.setTitle("DockNode: dn3_1");       
         
-        dn3_1.nodeHandler().setDividerPos(0.608);                
+/*        dn3_1.nodeHandler().setDividerPos(0.608);                
         
         dn1.nodeHandler().setDividerPos(0.346);                
         dn2.nodeHandler().setDividerPos(0.713);                
         dn3.nodeHandler().setDividerPos(0.608);                
-        
+*/        
         
         Button btn2 = new Button("BOTTON 2");
         
@@ -110,10 +110,10 @@ public class TestDockPaneControl extends Application {
         DockNode dnc2 = new DockNode("DockNodeControl dnc2");
         DockNode dnc3 = new DockNode("DockNodeControl dnc3");
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
-        dnc1.nodeHandler().setDividerPos(0.346);                
+/*        dnc1.nodeHandler().setDividerPos(0.346);                
         dnc2.nodeHandler().setDividerPos(0.713);                
         dnc3.nodeHandler().setDividerPos(0.608);                
-        
+*/        
         dnc1.setId("dnc1");
         dnc2.setId("dnc2");
         dnc3.setId("dnc3");
@@ -121,11 +121,11 @@ public class TestDockPaneControl extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
-        cc.setRoot(vs1);        
-        //HPane hs1 = new HPane(dnc1,dnc2);
+        cc.getItems().add(vs1);
+        //HPane hs1 = new HPaneOld(dnc1,dnc2);
         HPane hs1 = new HPane(dnc1,dnc2);
         
-        hs1.setDividerPos(0.66);
+        //hs1.setDividerPos(0.66);
         hs1.setId("hs1");
         vs1.getItems().addAll(hs1,dnc3);
         //vs1.getItems().add(hs1);
@@ -150,12 +150,12 @@ public class TestDockPaneControl extends Application {
             hs1.getItems().remove(dnc4);
         });
         b4.setOnAction(a -> {
-          if ( dnc1.getDividerPos() > 0.4 )  {
+/*          if ( dnc1.getDividerPos() > 0.6 )  {
               dnc1.setDividerPos(0.346);
           } else {
               dnc1.setDividerPos(0.48);
           }
-            
+*/            
         });
         
         //cc.setRoot(vs1);

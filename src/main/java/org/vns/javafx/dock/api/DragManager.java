@@ -12,7 +12,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
 
 /**
  * The class manages the process of dragging of the object of type {@link Dockable}} 
@@ -190,6 +189,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         
         double leftDelta = 0;
         double topDelta = 0;
+
         if (dockable.node().getScene().getRoot() instanceof BorderPane) {
             Insets insets = ((BorderPane) dockable.node().getScene().getRoot()).getInsets();
             leftDelta = insets.getLeft();
@@ -224,9 +224,10 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
 
         Node root = resultStage.getScene().getRoot();
-        if (root == null || !(root instanceof Pane)) {
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockPaneTarget(root))) {
             return;
         }
+        
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.isDockPaneTarget(n);
         });
@@ -236,11 +237,13 @@ public class DragManager implements EventHandler<MouseEvent> {
         } else if (!DockRegistry.isDockPaneTarget(root)) {
             return;
         }
+        
         if (!DockRegistry.dockPaneTarget(root).paneHandler().isUsedAsDockTarget()) {
             return;
         }
 
         DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneHandler().getDragPopup();
+        
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -249,18 +252,10 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
         popup = newPopup;
         PaneHandler ph = DockRegistry.dockPaneTarget(root).paneHandler();
-        if (ev.isControlDown()) {
-            //!!!!!!!!!! 2501 ph.getPaneIndicator().notifyPopupShown();
-        }
+        
         if ( ! popup.isShowing()) {
-            //popup.showPopup(dockable.node());
             popup.showPopup();
         }
-            //System.err.println("1 popup.getPaneHandler()=" + popup.getPaneHandler().getDockPane());
-            //DockSplitPane dsp = ((DockPaneHandler)popup.getPaneHandler()).getRoot();
-            //System.err.println("1 getItems.sz=" + dsp.getItems().get(0));
-            //System.err.println("1 ((DockPaneHandler)popup.getPaneHandler()).getRoot()" + ((DockPaneHandler)popup.getPaneHandler()).getRoot());
-        
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
     /**
@@ -281,13 +276,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
-//        System.err.println("DragManager isFloa=" + dockable.nodeHandler().isFloating());
         if (dockable.nodeHandler().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
-            //DockPane dp = pa
-//            System.err.println("popup.getPaneHandler()=" + popup.getPaneHandler().getDockPane());
-//            DockSplitPane dsp = ((DockPaneHandler)popup.getPaneHandler()).getRoot();
-//            System.err.println("getItems.sz=" + dsp.getItems().get(0));
-//            System.err.println("((DockPaneHandler)popup.getPaneHandler()).getRoot()" + ((DockPaneHandler)popup.getPaneHandler()).getRoot());
             popup.getPaneHandler().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
         }
 

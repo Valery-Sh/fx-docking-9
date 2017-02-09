@@ -31,6 +31,7 @@ public class ScenePaneHandler extends PaneHandler {
             changeDockedState(dockable, true);
             setDockPane((Pane) dockable.node().getParent());
         }
+        System.err.println("ScenePaneHandler init " + dockable.node());
         dockable.node().parentProperty().addListener(parentListener);
     }
 

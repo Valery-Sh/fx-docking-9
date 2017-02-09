@@ -62,7 +62,7 @@ public class PaneHandler {
         return title;
     }
     
-    protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
+    //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
             
     public void setTitle(String title) {
         this.title = title;
@@ -86,14 +86,10 @@ public class PaneHandler {
         return dragPopup;
     }
 
-/*    protected void initSplitDelegate() {
-    }
-*/
+
     protected void inititialize() {
         DockRegistry.start();
-        //initSplitDelegate();
         initListeners();
-
     }
 
     protected void initListeners() {
@@ -111,11 +107,6 @@ public class PaneHandler {
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
-/*                Dockable n = DockRegistry.dockable(newNode).nodeHandler().getImmediateParent(newValue);
-                if (n != null && n != newNode) {
-                    newNode = (Node) n;
-                }
-*/                
                 DockRegistry.dockable(newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
@@ -213,11 +204,6 @@ public class PaneHandler {
     }
 
     public void undock(Node node) {
-/*        if (!isDocked(node)) {
-            return;
-        }
-*/
-//        System.err.println("PaneHandler isDocked=" + isDocked(node));
         if (DockRegistry.isDockable(node)) {
             DockRegistry.dockable(node).nodeHandler().setDocked(false);
         }
@@ -253,20 +239,20 @@ public class PaneHandler {
             return dockable;
         }
         dockable.nodeHandler().setFloating(false);
-        dockable = convert(dockable, DockConverter.BEFORE_DOCK);
+//        dockable = convert(dockable, DockConverter.BEFORE_DOCK);
 
         doDock(mousePos, dockable.node(), dockPos);
         return dockable;
     }
 
-    protected Dockable convert(Dockable source, int when) {
+/*    protected Dockable convert(Dockable source, int when) {
         Dockable retval = source;
         if (source instanceof DockConverter) {
             retval = ((DockConverter) source).convert(source, when);
         }
         return retval;
     }
-    
+*/    
 
     public Dockable dock(Dockable dockable, Side dockPos) {
         return dock(null, dockable, dockPos);
@@ -286,14 +272,14 @@ public class PaneHandler {
         return new FloatStageBuilder(dockable.nodeHandler());
     }
 
-    public interface DockConverter {
+  /*  public interface DockConverter {
 
         public static final int BEFORE_DOCK = 0;
         public static final int AFTER_DOCK = 0;
 
         Dockable convert(Dockable source, int when);
     }//interface DockConverter
-
+*/
     public void remove(Node dockNode) {
         Region r;
     }

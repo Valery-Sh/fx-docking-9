@@ -5,7 +5,6 @@
  */
 package org.vns.javafx.dock;
 
-import org.vns.javafx.dock.api.DockPaneBox;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,7 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.DockSplitPane;
 
 /**
  *
@@ -58,7 +57,7 @@ public class DockPaneTest {//extends Application{
         DockSplitPane dsp = new DockSplitPane(b1,new Button("b2"));
         
         SplitPane sp = new SplitPane();        
-        DockPaneBox pane = new DockPaneBox();
+        DockPane pane = new DockPane();
         Scene scene = new Scene(pane);
         pane.getChildren().add(dsp);
         Node p1 = b1.getParent();  

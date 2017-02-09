@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 /**

@@ -86,7 +86,6 @@ public class DragPopup extends Popup {
      */
     private Side targetPaneSidePos;
     
-//    private Side dockPos;
 
     /**
      * Creates a new instance for the specified pane handler. 

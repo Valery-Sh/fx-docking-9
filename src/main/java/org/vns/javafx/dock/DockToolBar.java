@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -38,6 +33,11 @@ public class DockToolBar extends ToolBar implements Dockable{
         Button b2 = new Button("", new Rectangle(0,0,8,8));
         getItems().addAll(b1,b2, new Separator(), titleBar);
     }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
+    }
+    
     public StringProperty titleProperty() {
         return titleProperty;
     }
@@ -55,7 +55,6 @@ public class DockToolBar extends ToolBar implements Dockable{
     public void setDockTarget(Dockable dockTarget) {
         this.dockTarget = dockTarget;
     }
-    
 
     public void useAsTitleBar(Region titleBar) {
         nodeHandler.setTitleBar(titleBar);

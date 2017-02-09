@@ -3,17 +3,14 @@ package org.vns.javafx.dock;
 import javafx.beans.DefaultProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.SplitDelegate.DockSplitPane;
+import org.vns.javafx.dock.api.DockSplitPane;
 
 /**
  *
- * @author Valery Shyshkin
+ * @author Valery
  */
 @DefaultProperty(value="items")
 public class VPane extends DockSplitPane {
-    
-    
     public VPane() {
         init();
     }
@@ -21,7 +18,7 @@ public class VPane extends DockSplitPane {
         init();
         setId(id);
     }
-    public VPane(String id, double dividerPos) {
+/*    public VPane(String id, double dividerPos) {
         init();
         setId(id);
         setDividerPos(dividerPos);
@@ -30,7 +27,7 @@ public class VPane extends DockSplitPane {
         init();
         setDividerPos(dividerPos);
     }
-
+*/
     public VPane(Node... items) {
         super(items);
         init();

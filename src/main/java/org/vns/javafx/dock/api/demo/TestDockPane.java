@@ -15,8 +15,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
 
 /**
@@ -26,7 +26,7 @@ import org.vns.javafx.dock.DockNode;
 public class TestDockPane extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        DockPaneBox dockPane = new DockPaneBox();
+        DockPane dockPane = new DockPane();
         dockPane.setId("DOCK PANE");
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
@@ -50,6 +50,7 @@ public class TestDockPane extends Application {
         //dn01.setStyle("-fx-background-color:red");
         dn01.getStyleClass().add("delegate");
         dn01.setContent(new Label("DOCK NODE IMPL"));
+        //dockPane.getItems().add(dn01);
         dockPane.dock(dn01, Side.TOP);
         
         Scene scene = new Scene(dockPane);

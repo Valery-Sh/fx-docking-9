@@ -64,24 +64,13 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     private void init() {
-
-        //dragImageView = new ImageView();
         dragShape = createDefaultDragNode();
-        //dragImageView.getStyleClass().add("drag-image-view");
-        //getChildren().add(dragImageView);
         getChildren().add(dragShape);
-        //dragImageView.setManaged(false);
-        //nodeHandler.setDragNode(dragImageView);
         nodeHandler.setDragNode(dragShape);
         dragShape.setLayoutX(4);
         dragShape.setLayoutY(4);
 
-        //dragImageView.setTranslateX(-5);
-        //dragImageView.setTranslateY(-5);
-        //dragImageView.setLayoutX(-4);
-        //dragImageView.setLayoutY(-4);
         Platform.runLater(() -> {
-            //dragImageView.toFront();
             dragShape.toFront();
         });
 
@@ -94,6 +83,10 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
         setRotateGraphic(true);
 
+    }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
     protected Node createDefaultDragNode() {

@@ -18,9 +18,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockSideBar.Rotation;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
@@ -108,7 +108,10 @@ public class TestDockSideBar1 extends Application {
 
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
+        VBox vb2 = new VBox();
         dn02.setContent(new Button("dn02 button"));
+        //dn02.setContent(vb2);
+        //vb2.getChildren().add(new Button("dn02 button"));
         //dn02.setPrefHeight(100);
         dn02.nodeHandler().setTitle("DockNode: dn02");        
         

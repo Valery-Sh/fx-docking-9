@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
@@ -19,10 +14,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockPaneBox;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
 
 /**
@@ -47,8 +42,8 @@ public class TestFxDockTabPane  extends Application {
         StackPane rootPane = new StackPane();
         rootPane.setId("ROOT PANE");
         
-        stage.setTitle("Tests Several DockPanes");
-        DockPaneBox dpCenter = new DockPaneBox();
+        stage.setTitle("Primary Tests Several DockPanes");
+        DockPane dpCenter = new DockPane();
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
         
@@ -62,7 +57,7 @@ public class TestFxDockTabPane  extends Application {
         });
         dpCenter.getChildren().add(dn01Btn);
         
-        DockPaneBox dpRight = new DockPaneBox();
+        DockPane dpRight = new DockPane();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
@@ -90,7 +85,7 @@ public class TestFxDockTabPane  extends Application {
         rootPane01.setId("ROOT PANE 01");
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
-        DockPaneBox stg01dp01 = new DockPaneBox();
+        DockPane stg01dp01 = new DockPane();
         //stg01dp01.paneHandler().setUsedAsDockTarget(false);
         stg01dp01.setPrefHeight(200);
         stg01dp01.setPrefWidth(200);
@@ -137,7 +132,7 @@ public class TestFxDockTabPane  extends Application {
         
         DockTabPane tabPane01 = new DockTabPane();
         tabPane01.setSide(Side.TOP);
-        DockableDockPane dockPane = new DockableDockPane(tabPane01);
+        //DockableDockPane dockPane = new DockableDockPane(tabPane01);
         //tabPane01.openDragTag();
         Button tbButton = new Button("VALERA");
         //Rectangle tbIv = new Rectangle(20, 20);
@@ -157,8 +152,8 @@ public class TestFxDockTabPane  extends Application {
         
         //tabPane01.paneHandler().dock(stg01dn02, Side.TOP);
         //tabPane01.paneHandler().dock(stg01dn03, Side.TOP);        
-        //stg01dp01.dock(tabPane01, Side.LEFT);
-        stg01dp01.dock(dockPane, Side.LEFT);
+        stg01dp01.dock(tabPane01, Side.TOP);
+        //stg01dp01.dock(dockPane, Side.T);
         
         //tabPane01.setSide(Side.RIGHT);
         btn03.setOnAction(a -> {

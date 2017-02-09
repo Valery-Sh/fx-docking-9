@@ -7,10 +7,8 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -20,21 +18,21 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.controls.CustomControl;
+import org.vns.javafx.dock.DockNode;
 
 /**
  *
  * @author Valery
  */
-public class TestCustomControl extends Application {
+public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        StackPane dockPane = new StackPane();
+        DockPane dockPane = new DockPane();
         dockPane.setId("DOCK PANE");
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);
-        CustomControl custom = new CustomControl();
-        dockPane.getChildren().add(custom);
+        DockNode custom = new DockNode();
+        dockPane.getItems().add(custom);
         //TitledPane tp = new TitledPane();
         //dockPane.getChildren().add(tp);
         //tp.setContent(p1);

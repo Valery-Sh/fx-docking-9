@@ -3,47 +3,68 @@ package org.vns.javafx.dock;
 import javafx.beans.DefaultProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.DockNodeHandler;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
- * @author Valery Shyshkin
+ * @author Valery
  */
 @DefaultProperty(value = "content")
-public class DockNode extends Control implements Dockable {
+public class DockNode extends TitledPane implements Dockable {
 
-    DockNodeHandler nodeHandler = new DockNodeHandler(this);
-
-
-    private VBox delegate;// = new DockPane();
+    DockNodeHandler nodeHandler;
+    
+    private VBox delegate;
 
     public DockNode() {
-        init(null, null, -1);
-    }
-    public DockNode(double dividerPos) {
-        init(null, null, dividerPos);
+        init(null, null);
+
     }
 
     public DockNode(String title) {
-        init(null,title, -1);
+        init(null, title);
 
     }
-    public DockNode(String title, double dividerPos ) {
-        init(null,title, dividerPos);
 
-    }
     
+
     public DockNode(String id, String title) {
-        init(null,title, -1);
+        init(null, title);
     }
-    public DockNode(String id, String title, double dividerPos) {
-        init(null,title, dividerPos);
+
+
+    private void init(String id, String title) {
+        this.setContent(new StackPane());
+        contentProperty().addListener(this::contentChanged);
+        getStyleClass().add("dock-node");
+        nodeHandler = new DockNodeHandler(this);
+        Region titleBar = new DockTitleBar(this);
+    
+        nodeHandler.setTitleBar(titleBar);
+
+        setTitle(title);
+        if (id != null) {
+            setId(id);
+        }
+    }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
+    }
+
+    protected void contentChanged(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
+        if (oldValue != null) {
+            getDelegate().getChildren().remove(oldValue);
+        } else if (newValue != null) {
+            getDelegate().getChildren().clear();
+        }
     }
 
     protected VBox getDelegate() {
@@ -51,26 +72,6 @@ public class DockNode extends Control implements Dockable {
             delegate = new VBox();
         }
         return delegate;
-    }
-
-    private void init(String id, String title, double dividerPos) {
-        Region titleBar = new DockTitleBar(this);
-        getDelegate().getChildren().add(titleBar);
-        getDelegate().getStyleClass().add("delegate");
-        nodeHandler.setTitleBar(titleBar);
-        nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
-        nodeHandler.removeTitleBarProperty().addListener(this::removeTitleBarPropertyChanged);
-        setTitle(title);
-        if ( id != null ) {
-            setId(id);
-        }
-        setDividerPos(dividerPos);
-    }
-
-    protected void removeTitleBarPropertyChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        if (newValue && getTitleBar() != null) {
-            getDelegate().getChildren().remove(getTitleBar());
-        }
     }
 
     public String getTitle() {
@@ -86,7 +87,6 @@ public class DockNode extends Control implements Dockable {
     }
 
     public void setTitleBar(Region node) {
-        System.err.println("setTitleBar.DockNode=" + this + "; tb=" + node);
         nodeHandler().setTitleBar(node);
     }
 
@@ -100,22 +100,14 @@ public class DockNode extends Control implements Dockable {
         }
     }
 
-    /*    public String getDockPos() {
-        return nodeHandler.getDockPos();
-    }
-
-    public void setDockPos(String dockpos) {
-        this.nodeHandler.setDockPos(dockpos);
-    }
-     */
-    public double getDividerPos() {
+/*    public double getDividerPos() {
         return nodeHandler.getDividerPos();
     }
 
     public void setDividerPos(double divpos) {
         this.nodeHandler.setDividerPos(divpos);
     }
-
+*/
     public Node getDragNode() {
         return nodeHandler.getDragNode();
     }
@@ -125,7 +117,7 @@ public class DockNode extends Control implements Dockable {
     }
 
     @Override
-    public Control node() {
+    public Region node() {
         return this;
     }
 
@@ -134,43 +126,24 @@ public class DockNode extends Control implements Dockable {
         return nodeHandler;
     }
 
-    protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-        //Node oldTb = nodeHandler().getTitleBar();
-
-        if (oldValue != null && newValue == null) {
-            getDelegate().getChildren().remove(0);
-        } else if (newValue != null) {
-            getDelegate().getChildren().remove(0);
-            getDelegate().getChildren().add(0, newValue);
-        }
-    }
-
+    
     @Override
     protected Skin<?> createDefaultSkin() {
         return new DockNodeSkin(this);
-    }
-
-    public Region getContent() {
-        if (getDelegate().getChildren().size() > 1) {
-            return (Region) getDelegate().getChildren().get(1);
-        } else {
-            return null;
-        }
-    }
-
-    public void setContent(Region content) {
-        if (getDelegate().getChildren().size() > 1) {
-            return;
-        }
-        getDelegate().getChildren().add(content);
     }
 
     public static class DockNodeSkin extends SkinBase<DockNode> {
 
         public DockNodeSkin(DockNode control) {
             super(control);
+            if (!getChildren().isEmpty()) {
+                getChildren().clear();
+            }
             getChildren().add(control.getDelegate());
+            if ( control.getTitleBar() != null ) {
+                control.getDelegate().getChildren().add(control.getTitleBar());
+            }
+            control.getDelegate().getChildren().add(control.getContent());
         }
     }
-
 }

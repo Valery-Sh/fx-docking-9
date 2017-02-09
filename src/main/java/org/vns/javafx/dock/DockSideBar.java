@@ -108,11 +108,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         paneHandler = new SidePaneHandler(this);
         setOrientation(Orientation.HORIZONTAL);
         getStyleClass().clear();
-        //delegate.getStyleClass().clear();
         getStyleClass().add("dock-side-bar");
-        //getStyleClass().add("tool-bar");
-        //delegate.getStyleClass().add("tool-bar");
-        //delegate.applyCss();
 
         sceneProperty().addListener((v, ov, nv) -> {
             sceneChanged(ov, nv);
@@ -141,7 +137,10 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         setRotation(Rotation.DEFAULT);
 
         items.addListener(this);
-        //nodeHandler.setUsedAsDockTarget(false);
+    }
+    @Override
+    public String getUserAgentStylesheet() {
+        return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
     public ObservableList<Dockable> getItems() {
@@ -759,6 +758,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                 return;
             }
              */
+            System.err.println("dockable.node().getScene()=" + dockable.node().getScene());
             Stage stage = (Stage) dockable.node().getScene().getWindow();
             DockSideBar sb = (DockSideBar) dockable.nodeHandler().getPaneHandler().getDockPane();
             if (!stage.isShowing()) {
