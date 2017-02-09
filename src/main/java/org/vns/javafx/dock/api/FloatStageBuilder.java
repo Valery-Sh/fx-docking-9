@@ -28,11 +28,11 @@ public class FloatStageBuilder {
 
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
-    private ObjectProperty<Stage> stageProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Stage> stage = new SimpleObjectProperty<>();
 
     private Pane rootPane;
 
-    private final DockNodeHandler nodeHandler;
+    private final DockNodeController nodeController;
 
     private FloatStageResizer resizer;
 
@@ -48,8 +48,8 @@ public class FloatStageBuilder {
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
 
-    public FloatStageBuilder(DockNodeHandler nodeHandler) {
-        this.nodeHandler = nodeHandler;
+    public FloatStageBuilder(DockNodeController nodeController) {
+        this.nodeController = nodeController;
         mouseResizeHanler = new MouseResizeHandler();
     }
 
@@ -73,8 +73,8 @@ public class FloatStageBuilder {
         this.rootPane = rootPane;
     }
 
-    public DockNodeHandler getNodeHandler() {
-        return nodeHandler;
+    public DockNodeController getNodeController() {
+        return nodeController;
     }
 
     public FloatStageResizer getResizer() {
@@ -98,19 +98,19 @@ public class FloatStageBuilder {
     }
 
     public ObjectProperty<Stage> stageProperty() {
-        return this.stageProperty;
+        return this.stage;
     }
 
     public Stage getStage() {
-        return stageProperty.get();
+        return stage.get();
     }
 
     protected Region node() {
-        return nodeHandler.node();
+        return nodeController.dockable().node();
     }
 
     protected Dockable dockable() {
-        return nodeHandler.dockable();
+        return nodeController.dockable();
     }
 
     //==========================
@@ -131,32 +131,32 @@ public class FloatStageBuilder {
 
         Region node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
-        Node titleBar = dockable.nodeHandler().getTitleBar();
+        Node titleBar = dockable.nodeController().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
 
-        if (dockable.nodeHandler().isDocked() && dockable.nodeHandler().getPaneHandler().getDockPane() != null) {
-            Window w = dockable.nodeHandler().getPaneHandler().getDockPane().getScene().getWindow();
+        if (dockable.nodeController().isDocked() && dockable.nodeController().getPaneController().getDockPane() != null) {
+            Window w = dockable.nodeController().getPaneController().getDockPane().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 rootPane = (Pane) dockable.node().getScene().getRoot();
-                stageProperty.set((Stage) dockable.node().getScene().getWindow());
+                stage.set((Stage) dockable.node().getScene().getWindow());
                 addResizer((Stage) dockable.node().getScene().getWindow(), dockable);
-                dockable.nodeHandler().getPaneHandler().undock(dockable.node());
+                dockable.nodeController().getPaneController().undock(dockable.node());
                 return;
             }
         }
-        if (dockable.nodeHandler().isDocked()) {
-            dockable.nodeHandler().getPaneHandler().undock(dockable.node());
+        if (dockable.nodeController().isDocked()) {
+            dockable.nodeController().getPaneController().undock(dockable.node());
         }
 
         Stage newStage = new Stage();
         DockRegistry.register(newStage);
-        stageProperty.set(newStage);
+        stage.set(newStage);
 
         newStage.setTitle("FLOATING STAGE");
-        Region lastDockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
+        Region lastDockPane = dockable.nodeController().getPaneController().getDockPane();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());
@@ -230,7 +230,7 @@ public class FloatStageBuilder {
     }
 
     protected void addResizer(Stage stage, Dockable dockable) {
-        stage.setResizable(dockable.nodeHandler().isResizable());
+        stage.setResizable(dockable.nodeController().isResizable());
         if (stage.isResizable()) {
             addListeners(stage);
         }
@@ -323,10 +323,10 @@ public class FloatStageBuilder {
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 /*System.err.println("FloatStage pressed");            
                 System.err.println("Mouse pressed stage=" + getStage());            
-                System.err.println("Mouse pressed tb.width =" + nodeHandler.getTitleBar().getWidth());                
-                System.err.println("Mouse pressed tb.getX,Y =" + nodeHandler.getTitleBar().localToScene(0, 0));                                
+                System.err.println("Mouse pressed tb.width =" + nodeController.getTitleBar().getWidth());                
+                System.err.println("Mouse pressed tb.getX,Y =" + nodeController.getTitleBar().localToScene(0, 0));                                
                  */
-                //nodeHandler.getTitleBar().getWidth();
+                //nodeController.getTitleBar().getWidth();
                 Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());
                 /*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
                 System.err.println("Mouse pressed stage.height=" + getStage().getHeight());                            

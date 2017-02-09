@@ -5,14 +5,11 @@
  */
 package org.vns.javafx.dock.api.controls;
 
-import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -51,10 +48,10 @@ public class CustomControl extends TitledPane {
     }
 
     /*    public String getDockPos() {
-        return nodeHandler.getDockPos();
+        return nodeController.getDockPos();
     }
     public void setDockPos(String dockpos) {
-        this.nodeHandler.setDockPos(dockpos);
+        this.nodeController.setDockPos(dockpos);
     }
      */
     @Override

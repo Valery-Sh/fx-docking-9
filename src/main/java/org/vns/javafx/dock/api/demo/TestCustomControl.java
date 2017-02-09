@@ -35,16 +35,16 @@ public class TestCustomControl extends Application {
         Pane p1 = new HBox(b1);
         CustomControl custom = new CustomControl();
         dockPane.getChildren().add(custom);
-        //TitledPane tp = new TitledPane();
+        TitledPane tp = new TitledPane();
         //dockPane.getChildren().add(tp);
         //tp.setContent(p1);
-//        p1.getChildren().add(b1);
+        //p1.getChildren().add(b1);
         //custom.setPrefSize(100, 100);
         custom.setContent(p1);
         
         p1.setId("pane p1");
         DockUtil.print(dockPane);
-        //dockPane.dock(p1, Side.TOP).nodeHandler().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).nodeController().setTitle("Pane p1");
         Scene scene = new Scene(dockPane);
         
         stage.setTitle("JavaFX and Maven");
@@ -52,8 +52,8 @@ public class TestCustomControl extends Application {
         
         stage.setOnShown(s -> {
             //((Pane)custom.getContent()).getChildren().forEach(n -> {System.err.println("custom node=" + n);});
-            //System.err.println("tp.lookup(arrowRegion)" + tp.);
-           // DockUtil.print(dockPane);
+            //System.err.println("tp.lookup(arrowRegion)" + tp.lookup("#arrowRegion"));
+            DockUtil.print(dockPane);
         });
         stage.show();
         

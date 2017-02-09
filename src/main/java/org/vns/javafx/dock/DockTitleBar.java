@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -65,7 +65,7 @@ public class DockTitleBar extends HBox {
     private Button pinButton;
     private String title;
     
-    private BooleanProperty selectedPseudoClassProperty = new SimpleBooleanProperty();
+    private BooleanProperty selectedPseudoClass = new SimpleBooleanProperty();
 
     public DockTitleBar() {
         this.title = "";
@@ -92,7 +92,7 @@ public class DockTitleBar extends HBox {
 
         label = new Label(title);
         if ( dockNode != null ) {
-            label.textProperty().bind(dockNode.nodeHandler().titleProperty());
+            label.textProperty().bind(dockNode.nodeController().titleProperty());
         }
 
         stateButton = new Button();
@@ -113,7 +113,7 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            dockNode.nodeHandler().node().toFront();
+            dockNode.nodeController().dockable().node().toFront();
         });
         closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
         stateButton.setTooltip(new Tooltip("Undock pane"));
@@ -132,7 +132,7 @@ public class DockTitleBar extends HBox {
         }
     }
     protected void closeButtonClicked(MouseEvent ev) {
-        DockNodeHandler sp = dockNode.nodeHandler();
+        DockNodeController sp = dockNode.nodeController();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
         } else {
@@ -179,7 +179,7 @@ public class DockTitleBar extends HBox {
         return pinButton;
     }
     public boolean isSelectedPseudoClass() {
-        return selectedPseudoClassProperty.get();
+        return selectedPseudoClass.get();
     }
 
     public void setSelectedPseudoClass(boolean newValue) {
@@ -188,19 +188,19 @@ public class DockTitleBar extends HBox {
         } else {
             turnOffSelectedPseudoClass();
         }
-        this.selectedPseudoClassProperty.set(newValue);
+        this.selectedPseudoClass.set(newValue);
             
     }
 
     public BooleanProperty selectedPseudoClassProperty() {
-        return selectedPseudoClassProperty;
+        return selectedPseudoClass;
     }
     protected void turnOffSelectedPseudoClass() {
         pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
     protected void turnOnSelectedPseudoClass() {
-        if ( selectedPseudoClassProperty.get() ) {
+        if ( selectedPseudoClass.get() ) {
             return;
         }
         pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                

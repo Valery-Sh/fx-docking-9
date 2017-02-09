@@ -12,7 +12,7 @@ import javafx.stage.Popup;
 import org.vns.javafx.dock.DockUtil;
 
 /**
- * An instance of the class is created for each object of type {@link PaneHandler}
+ * An instance of the class is created for each object of type {@link DockTargetController}
  * when the last is created.
  * 
  * The instance of the class is used by the object of type {@link DragManager}
@@ -29,7 +29,7 @@ import org.vns.javafx.dock.DockUtil;
  * panes of position indicators:
  * <ul>
  *   <li>The pane of indicators for the {@code dockable} node</li>
- *   <li>The pane of indicators for the {@code DockPaneTarget} object witch is
+ *   <li>The pane of indicators for the {@code DockPaneTarget} object which is
  *       a parent of the {@code dockable node} mentioned above
  *   </li>
  * </ul>
@@ -37,7 +37,7 @@ import org.vns.javafx.dock.DockUtil;
  * If the mouse cursor resides above the {@code DockPaneTarget} then 
  * {@code DragPoup} provides a single pane of position indicators.
  * <p>
- * Each pane generally comprises four indicators witch are objects of type
+ * Each pane generally comprises four indicators which are objects of type
  * Button. Every button is located on the top, right, bottom side of the
  * indicator pane. As noted above, the position of the button is determined 
  * in terms of {@code enum Side} type.
@@ -65,13 +65,13 @@ public class DragPopup extends Popup {
     /**
      * The owner of this object
      */
-    private final PaneHandler paneHandler;
+    private final DockTargetController paneController;
     /**
      * The pop up window for dock nodes
      */
     private Popup nodeIndicatorPopup;
     /**
-     * The current target to witch the mouse cursor points
+     * The current target to which the mouse cursor points
      */
     private Node dragTarget;
   
@@ -89,10 +89,10 @@ public class DragPopup extends Popup {
 
     /**
      * Creates a new instance for the specified pane handler. 
-     * @param paneHandler the owner of the object to be created
+     * @param paneController the owner of the object to be created
      */
-    public DragPopup(PaneHandler paneHandler) {
-        this.paneHandler = paneHandler;
+    public DragPopup(DockTargetController paneController) {
+        this.paneController = paneController;
         init();
 
     }
@@ -101,19 +101,19 @@ public class DragPopup extends Popup {
         initContent();
     }
     /**
-     * Returns an object of type {@code Region} witch corresponds to the 
-     * pane handler witch used to create this object. 
+     * Returns an object of type {@code Region} which corresponds to the 
+     * pane handler which used to create this object. 
      * 
      * @return Returns an object of type {@code Region}
      */
     public Region getDockPane() {
-        return paneHandler.getDockPane();
+        return paneController.getDockPane();
     }
 
     protected void initContent() {
-        Pane paneIndicatorPane = paneHandler.getPaneIndicator().getIndicatorPane();
+        Pane paneIndicatorPane = paneController.getPaneIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        Pane nodeIndicatorPane = paneHandler.getNodeIndicator().getIndicatorPane();
+        Pane nodeIndicatorPane = paneController.getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
 
         nodeIndicatorPopup = new Popup();
@@ -133,7 +133,7 @@ public class DragPopup extends Popup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getPaneIndicator() {
-        return paneHandler.getPaneIndicator();
+        return paneController.getPaneIndicator();
     }
     /**
      * Returns an object of type {@link SideIndicator} to display
@@ -142,11 +142,11 @@ public class DragPopup extends Popup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getNodeIndicator() {
-        return paneHandler.getNodeIndicator();
+        return paneController.getNodeIndicator();
     }
     /**
-     * Returns a pop up window witch is used to display a doc node side indicators.
-     * @return a pop up window witch is used to display a doc node side indicators.
+     * Returns a pop up window which is used to display a doc node side indicators.
+     * @return a pop up window which is used to display a doc node side indicators.
      */
     public Popup getNodeIndicatorPopup() {
         return nodeIndicatorPopup;
@@ -165,8 +165,8 @@ public class DragPopup extends Popup {
      * 
      * @return the owner of this object used when the instance created.
      */
-    public PaneHandler getPaneHandler() {
-        return this.paneHandler;
+    public DockTargetController getPaneController() {
+        return this.paneController;
     }
     /**
      * Returns a side position of the selected dock node if any.
@@ -257,12 +257,12 @@ public class DragPopup extends Popup {
 
     }
     /**
-     * Returns the button witch from the specified pane witch contains the given
+     * Returns the button which from the specified pane which contains the given
      *   screen coordinates
-     * @param buttonPane the pane witch resides on the indicator pane
+     * @param buttonPane the pane which resides on the indicator pane
      * @param x a screen x coordinate
      * @param y a screen y coordinate
-     * @return the button witch contains the specified screen coordinate or null if
+     * @return the button which contains the specified screen coordinate or null if
      *  no such button found
      */
     public Button getSelectedButton(Pane buttonPane, double x, double y) {
@@ -358,7 +358,7 @@ public class DragPopup extends Popup {
     
     /**
      * Displays a rectangle that shows a proposed place to dock a dragged node.
-     * @param selected the selected button witch resides on the pane indicate pane.
+     * @param selected the selected button which resides on the pane indicate pane.
      * 
      * @param side the position of the button on the pane indicator pane
      */
@@ -368,15 +368,15 @@ public class DragPopup extends Popup {
         getPaneIndicator().showDockPlace(selected, side);
         Region pane = getDockPane();
         if ( selected != null && selected.getUserData() != null ) {
-             pane = ((PaneHandler) selected.getUserData()).getDockPane();
+             pane = ((DockTargetController) selected.getUserData()).getDockPane();
         }             
         dragTarget = pane;
     }
     /**
      * Displays a rectangle that shows a proposed place to dock a dragged node.
-     * @param selected the selected button witch resides on the node indicate pane.
+     * @param selected the selected button which resides on the node indicate pane.
      * 
-     * @param target a dock node witch is used as a target to dock
+     * @param target a dock node which is used as a target to dock
      * @param side the position of the button on the node indicator pane
      */
     public void showDockPlace(Button selected,Region target, Side side) {
@@ -398,7 +398,7 @@ public class DragPopup extends Popup {
  showPopup a proposed dock place
      */
     public Rectangle getDockPlace() {
-        return paneHandler.getPaneIndicator().getDockPlace();
+        return paneController.getPaneIndicator().getDockPlace();
     }
 
 }

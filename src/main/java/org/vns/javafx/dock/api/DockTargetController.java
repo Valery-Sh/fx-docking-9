@@ -4,8 +4,6 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -20,7 +18,7 @@ import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer
  *
  * @author Valery
  */
-public class PaneHandler {
+public class DockTargetController {
 
     private Region dockPane;
     private String title;
@@ -36,14 +34,14 @@ public class PaneHandler {
 
     private DragPopup dragPopup;
 
-    private final ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
+    //09.02private final ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
 
-    protected PaneHandler(Region dockPane) {
+    protected DockTargetController(Region dockPane) {
         this.dockPane = dockPane;
         init();
     }
 
-    protected PaneHandler(Dockable dockable) {
+    protected DockTargetController(Dockable dockable) {
         init();
     }
 
@@ -68,9 +66,6 @@ public class PaneHandler {
         this.title = title;
     }
 
-    protected ObservableMap<Node, Dockable> notDockableItemsProperty() {
-        return notDockableItemsProperty;
-    }
 
     protected void setDragPopup(DragPopup dragPopup) {
         this.dragPopup = dragPopup;
@@ -107,25 +102,29 @@ public class PaneHandler {
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
-                DockRegistry.dockable(newNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(newNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
                 return DockRegistry.isDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
-                DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().isActiveChoosedPseudoClass()) {
-                DockRegistry.dockable(oldNode).nodeHandler().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(oldNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !DockRegistry.dockable(oldNode).nodeController().titleBarProperty().isActiveChoosedPseudoClass()) {
+                DockRegistry.dockable(oldNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
     }
 
-    protected ObservableMap<Node, Dockable> getNotDockableItems() {
+/*09.02    protected ObservableMap<Node, Dockable> getNotDockableItems() {
         return this.notDockableItemsProperty;
     }
-
+    protected ObservableMap<Node, Dockable> notDockableItemsProperty() {
+        return notDockableItemsProperty;
+    }
+    
+*/
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -199,13 +198,11 @@ public class PaneHandler {
         return false;
     }
 
-    protected void changeDockedState(Dockable dockable, boolean docked) {
-        dockable.nodeHandler().setDocked(docked);
-    }
-
     public void undock(Node node) {
         if (DockRegistry.isDockable(node)) {
-            DockRegistry.dockable(node).nodeHandler().setDocked(false);
+            DockNodeController dc = DockRegistry.dockable(node).nodeController();
+            dc.getPaneController().remove(node);
+            dc.setPaneController(null);
         }
     }
 
@@ -227,10 +224,10 @@ public class PaneHandler {
         if (!(dockable instanceof Node) && !DockRegistry.getDockables().containsKey(dockable.node())) {
             DockRegistry.getDockables().put(dockable.node(), dockable);
         }
-        dockable.nodeHandler().setFloating(false);
+        dockable.nodeController().setFloating(false);
 
         doDock(mousePos, dockable.node(), dockPos, target);
-        changeDockedState(dockable, true);
+        //09.02changeDockedState(dockable, true);
         return dockable;
     }
 
@@ -238,7 +235,7 @@ public class PaneHandler {
         if (isDocked(dockable.node())) {
             return dockable;
         }
-        dockable.nodeHandler().setFloating(false);
+        dockable.nodeController().setFloating(false);
 //        dockable = convert(dockable, DockConverter.BEFORE_DOCK);
 
         doDock(mousePos, dockable.node(), dockPos);
@@ -269,7 +266,7 @@ public class PaneHandler {
     }
 
     public FloatStageBuilder getStageBuilder(Dockable dockable) {
-        return new FloatStageBuilder(dockable.nodeHandler());
+        return new FloatStageBuilder(dockable.nodeController());
     }
 
   /*  public interface DockConverter {

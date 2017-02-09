@@ -5,26 +5,45 @@ import java.net.URL;
 import javafx.scene.layout.Region;
 
 /**
- *
- * @author Valery
+ * The interface comprises the minimal requirements for an object to 
+ * be docked to any object which implements {@link DockPaneTarget}.
+ * The classes which implement the interface are not forced to be of type
+ * {@code javafx.scene.Node} and  rather are wrappers around the nodes.
+ * @see DockNodeBox
+ * @see org.vns.javafx.dock.DockNode
+ * @see org.vns.javafx.dock.DockSideBar
+ * 
+ * @author Valery Shyshkin
  */
 public interface Dockable {
-    public static int DOCKED = 0;
-    public static int FLOAT = 2;    
-    
+    /**
+     * Returns a node of type {@code Region} that implements this interface or
+     * another node wrapped by a class that implements this interface.
+     * 
+     * @return an object of type {@code javafx.scene.layout.Region}
+     */
     Region node();
-    DockNodeHandler nodeHandler();
+    /**
+     * Returns an object which provides a state and behavior during 
+     * docking process.
+     * 
+     * @return an object of type {@link DockNodeController}
+     */
+    DockNodeController nodeController();
     
-    
+    /**
+     * Initialize default {@code css} styles for all components of the docking api.
+     * 
+     * @param cssURL an {@literal url} which points to a a file containing
+     *  style sheets
+     */
     static void initDefaultStylesheet(URL cssURL) {
         URL u = cssURL;
         if ( u == null) {
             u = Dockable.class.getResource("resources/default.css");
         }
-        System.err.println("TTTTTTTTTTT " + Dockable.class.getResource("resources/default.css").toExternalForm());
         StyleManager.getInstance()
                 .addUserAgentStylesheet(u.toExternalForm());
-                //.addUserAgentStylesheet(Dockable.class.getResource("/resources/org/vns/javafx/dock/api/default.css").toExternalForm());                
     }
     
 }

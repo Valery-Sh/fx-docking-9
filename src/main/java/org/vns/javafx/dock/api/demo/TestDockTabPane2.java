@@ -91,7 +91,7 @@ public class TestDockTabPane2 extends Application {
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         
         DockPane rootAsDockPane = new DockPane();
-        //stg01dp01.paneHandler().setUsedAsDockTarget(false);
+        //stg01dp01.paneController().setUsedAsDockTarget(false);
         rootAsDockPane.setPrefHeight(200);
         rootAsDockPane.setPrefWidth(200);
         rootAsDockPane.setId("stg01dp01");
@@ -157,7 +157,7 @@ public class TestDockTabPane2 extends Application {
         
         
         //DockRedirector dpd = new DockRedirector(rootAsDockPane);
-        //DragPopupDelegate dpd = new DockRedirector(dockTabPane.paneHandler());        
+        //DragPopupDelegate dpd = new DockRedirector(dockTabPane.paneController());        
         stage01.setOnShown(e -> { 
             Point2D p = rootAsDockPane.localToScreen(0, 0);
             double w = rootAsDockPane.getWidth();
@@ -170,7 +170,7 @@ public class TestDockTabPane2 extends Application {
         stage01.show();
         
         
-        //dockTabPane.paneHandler().dock(stg01dn03, Side.TOP);        
+        //dockTabPane.paneController().dock(stg01dn03, Side.TOP);        
         dockTabPane.getItems().add(stg01dn03);
         DockNode stg01dn04 = new DockNode();
         stg01dn04.setTitle("stg01dn04" );

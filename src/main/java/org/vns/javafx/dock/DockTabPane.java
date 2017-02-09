@@ -23,11 +23,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 
@@ -39,9 +39,9 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
-    private final StringProperty titleProperty = new SimpleStringProperty();
+    private final StringProperty title = new SimpleStringProperty();
 
-    private final DockNodeHandler nodeHandler = new DockNodeHandler(this);
+    private final DockNodeController nodeController = new DockNodeController(this);
 
     private Label dragLabel;
     private Button dragButton;
@@ -52,7 +52,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
     private final Map<Dockable, Object> listeners = new HashMap<>();
 
-    private TabPaneHandler paneHandler;
+    private TabPaneController paneController;
 
     public DockTabPane() {
         init();
@@ -66,7 +66,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     private void init() {
         dragShape = createDefaultDragNode();
         getChildren().add(dragShape);
-        nodeHandler.setDragNode(dragShape);
+        nodeController.setDragNode(dragShape);
         dragShape.setLayoutX(4);
         dragShape.setLayoutY(4);
 
@@ -77,9 +77,9 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         getStyleClass().add("dock-tab-pane");
         getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 
-        paneHandler = new TabPaneHandler(this);
+        paneController = new TabPaneController(this);
 
-        nodeHandler().setTitleBar(new DockTitleBar(this));
+        nodeController().setTitleBar(new DockTitleBar(this));
 
         setRotateGraphic(true);
 
@@ -112,7 +112,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     public void setDragNode(Node dragNode) {
-        nodeHandler.setDragNode(dragNode);
+        nodeController.setDragNode(dragNode);
     }
 
     public void openDragTag() {
@@ -148,11 +148,11 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     public StringProperty titleProperty() {
-        return nodeHandler().titleProperty();
+        return nodeController().titleProperty();
     }
 
-    public DockNodeHandler getDockNodeHandler() {
-        return nodeHandler;
+    public DockNodeController getNodeController() {
+        return nodeController;
     }
 
     /*    protected void choose(Dockable choosed) {
@@ -175,7 +175,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             if (newValue && isFocused((Region) tabGraphic)) {
                 choose(d);
             } else if (!newValue) {
-                d.nodeHandler().titleBarProperty().setSelectedPseudoClass(false);
+                d.nodeController().titleBarProperty().setSelectedPseudoClass(false);
             }
         });
     }
@@ -199,8 +199,8 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     @Override
-    public DockNodeHandler nodeHandler() {
-        return this.nodeHandler;
+    public DockNodeController nodeController() {
+        return this.nodeController;
     }
 
     @Override
@@ -209,8 +209,8 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     @Override
-    public PaneHandler paneHandler() {
-        return paneHandler;
+    public DockTargetController paneController() {
+        return paneController;
     }
 
     /*    public static class TabGraphic extends DockTitleBar {
@@ -251,11 +251,11 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         protected String getButtonText(Dockable d) {
-            String txt = d.nodeHandler().getTitle();
-            if (d.nodeHandler().getProperties().getProperty("user-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("user-title");
-            } else if (d.nodeHandler().getProperties().getProperty("short-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("short-title");
+            String txt = d.nodeController().getTitle();
+            if (d.nodeController().getProperties().getProperty("user-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("user-title");
+            } else if (d.nodeController().getProperties().getProperty("short-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("short-title");
             } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
                 txt = d.node().getId();
             }
@@ -266,7 +266,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void saveContentTitleBar() {
-            Region tb = getOwner().nodeHandler().getTitleBar();
+            Region tb = getOwner().nodeController().getTitleBar();
             titleBarVisible = tb.isVisible();
             titleBarMinHeight = tb.getMinHeight();
             titleBarPrefHeight = tb.getPrefHeight();
@@ -274,14 +274,14 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void hideContentTitleBar() {
-            Region tb = getOwner().nodeHandler().getTitleBar();
+            Region tb = getOwner().nodeController().getTitleBar();
             tb.setVisible(false);
             tb.setMinHeight(0);
             tb.setPrefHeight(0);
         }
 
         public void showContentTitleBar() {
-            Region tb = getOwner().nodeHandler().getTitleBar();
+            Region tb = getOwner().nodeController().getTitleBar();
             tb.setVisible(titleBarVisible);
             tb.setMinHeight(titleBarMinHeight);
             tb.setPrefHeight(titleBarPrefHeight);
@@ -289,9 +289,9 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
     }
      */
-    public static class TabPaneHandler extends PaneHandler {
+    public static class TabPaneController extends DockTargetController {
 
-        public TabPaneHandler(DockTabPane tabPane) {
+        public TabPaneController(DockTabPane tabPane) {
             super((Region) tabPane);
             init();
 
@@ -365,20 +365,20 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
 
             if (DockRegistry.isDockable(node)) {
-                DockNodeHandler nodeHandler = DockRegistry.dockable(node).nodeHandler();
+                DockNodeController nodeHandler = DockRegistry.dockable(node).nodeController();
                 nodeHandler.setDragNode(newTab.getGraphic());
-                if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
-                    nodeHandler.setPaneHandler(this);
+                if (nodeHandler.getPaneController() == null || nodeHandler.getPaneController() != this) {
+                    nodeHandler.setPaneController(this);
                 }
             }
         }
 
         protected String getButtonText(Dockable d) {
-            String txt = d.nodeHandler().getTitle();
-            if (d.nodeHandler().getProperties().getProperty("user-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("user-title");
-            } else if (d.nodeHandler().getProperties().getProperty("short-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("short-title");
+            String txt = d.nodeController().getTitle();
+            if (d.nodeController().getProperties().getProperty("user-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("user-title");
+            } else if (d.nodeController().getProperties().getProperty("short-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("short-title");
             } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
                 txt = d.node().getId();
             }
@@ -389,7 +389,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void saveContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeHandler().getTitleBar();
+            Region tb = dockable.nodeController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -400,7 +400,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         protected void hideContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeHandler().getTitleBar();
+            Region tb = dockable.nodeController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -411,7 +411,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void showContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeHandler().getTitleBar();
+            Region tb = dockable.nodeController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -443,7 +443,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
                 Point2D retval = null;// = super.mousePos();
 
-                SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
+                SideIndicator paneIndicator = getTargetPaneController().getDragPopup().getPaneIndicator();
                 Pane topBtns;//= null;
                 Button topPaneButton = null;
                 if (paneIndicator != null) {
@@ -464,7 +464,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                     }
                 }
 
-                DockTabPane tabPane = (DockTabPane) getTargetPaneHandler().getDockPane();
+                DockTabPane tabPane = (DockTabPane) getTargetPaneController().getDockPane();
 
                 double mouseX = getMousePos().getX();
                 double mouseY = getMousePos().getY();
@@ -530,12 +530,12 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 }
                 Region p = popup.getDockPane();
                 DockTabPane tabPane;// = null;
-                TabPaneHandler paneHandler;// = null; 
+                TabPaneController paneController;// = null; 
                 Point2D retval = null;
                 if (p instanceof DockTabPane) {
-                    paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                    paneController = (TabPaneController) ((DockTabPane) p).paneController();
                     tabPane = (DockTabPane) p;
-                    paneHandler = (TabPaneHandler) ((DockTabPane) p).paneHandler();
+                    paneController = (TabPaneController) ((DockTabPane) p).paneController();
                     tabPane = (DockTabPane) p;
                     if (tabPane.getTabs().size() == 0 && DockUtil.contains(tabPane, mouseX, mouseY)) {
                         retval = centerPosOf(tabPane, popup.getPaneSideButton(Side.TOP));
@@ -568,7 +568,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 getDockPane().getTabs().remove(tab);
             }
         }
-    }//class TabPaneHandler
+    }//class TabPaneController
 
     protected int indexOf(double x, double y) {
         List<Node> list = getTabGraphics();

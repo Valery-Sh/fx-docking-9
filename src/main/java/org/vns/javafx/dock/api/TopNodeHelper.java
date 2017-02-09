@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api;
 
 import java.util.ArrayList;
@@ -16,7 +11,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 public class TopNodeHelper {
 
@@ -108,7 +103,7 @@ public class TopNodeHelper {
      * The first element of the list is the specified node, the second is
      * the parent of the first, the third is the parent of the second etc.
      * 
-     * @param node a top most node from witch the parent chain starts.
+     * @param node a top most node from which the parent chain starts.
      * @return a list of parent nodes for the given node.
      */
     public static List<Node> getParentChain(Node node) {

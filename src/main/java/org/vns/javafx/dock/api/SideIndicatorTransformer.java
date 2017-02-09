@@ -30,7 +30,6 @@ public abstract class SideIndicatorTransformer {
     private final Scale smallbuttonsScale;
 
     public SideIndicatorTransformer() {
-        //this.targetPaneHandler = targetPaneHandler;
         this.smallbuttonsScale = new Scale(0.5, 0.5);
     }
 
@@ -54,8 +53,8 @@ public abstract class SideIndicatorTransformer {
         this.rightButtons = rightButtons;
     }
 
-    public PaneHandler getTargetPaneHandler() {
-        return getIndicator().getPaneHandler();
+    public DockTargetController getTargetPaneController() {
+        return getIndicator().getPaneController();
     }
 
     public Region getTargetNode() {
@@ -154,10 +153,10 @@ public abstract class SideIndicatorTransformer {
     }
 
     public void showDockPlace(Side side) {
-        Region pane = getTargetPaneHandler().getDockPane();
+        Region pane = getTargetPaneController().getDockPane();
         Button selected = getIndicator().getSelectedButton();
         if (selected != null && selected.getUserData() != null) {
-            pane = ((PaneHandler) selected.getUserData()).getDockPane();
+            pane = ((DockTargetController) selected.getUserData()).getDockPane();
         }
         Rectangle dockPlace = getIndicator().getDockPlace();
         showDockPlace2(pane, side);
@@ -252,7 +251,7 @@ public abstract class SideIndicatorTransformer {
             if (getTargetNode() == null) {
                 return;
             }
-            PaneHandler paneHandler = getIndicator().getPaneHandler();
+            DockTargetController paneHandler = getIndicator().getPaneController();
             PaneSideIndicator paneIndicator = paneHandler.getPaneIndicator();
 
             Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getDockPane().localToScreen(0, 0));
@@ -289,14 +288,14 @@ public abstract class SideIndicatorTransformer {
 
         @Override
         public void notifyPopupShown() {
-            if (getTargetPaneHandler() != null && getTargetNode() != null) {
+            if (getTargetPaneController() != null && getTargetNode() != null) {
                 resizeButtonPanes();
             }
         }
 
         @Override
         public void notifyPopupHidden() {
-            if (getTargetPaneHandler() == null || getTargetNode() == null) {
+            if (getTargetPaneController() == null || getTargetNode() == null) {
                 resizeButtonPanes();
             }
 
@@ -304,7 +303,7 @@ public abstract class SideIndicatorTransformer {
 
         @Override
         protected void resizeButtonPanes() {
-            if (getTargetPaneHandler() != null && getTargetNode() != null && intersects()) {
+            if (getTargetPaneController() != null && getTargetNode() != null && intersects()) {
                 if (!getIndicator().getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
                     getIndicator().getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
 
@@ -324,22 +323,22 @@ public abstract class SideIndicatorTransformer {
             boolean retval = false;
             Pane thisPane = getIndicator().getIndicatorPane();
 
-            if (getTargetPaneHandler() != null) {
+            if (getTargetPaneController() != null) {
 
-                Node node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getTopButtons();
+                Node node = getTargetPaneController().getDragPopup().getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getRightButtons();
+                node = getTargetPaneController().getDragPopup().getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getBottomButtons();
+                node = getTargetPaneController().getDragPopup().getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneHandler().getDragPopup().getPaneIndicator().getLeftButtons();
+                node = getTargetPaneController().getDragPopup().getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }

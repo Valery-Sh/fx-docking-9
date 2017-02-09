@@ -1,8 +1,6 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -20,7 +18,19 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
- *
+ * This class is designed to solve the problem that arises during docking operation when one dock pane overlaps 
+ * the other one.
+ * Indeed, when in the process of dragging of a {@code dockable} object, 
+ * the mouse cursor is over the target panels, overlapping each other then the 
+ * indicators of dock positions correspond only to the target which if in front.
+ * An example is when we docked an object of type {@link org.vns.javafx.dock.DockTabPane ) to the
+ * target pane of type {@link org.vns.javafx.dock.DockPane ). We are able to do
+ * this way because of the fact that the {@code DockTabPane} implements both 
+ * {@code Dockable} and {@DockPaneTarget} interfaces. 
+ * 
+ * This class solves the problem allowing to show the hierarchy of targets and 
+ * select the needed one.
+ * 
  * @author Valery Shyshkin
  */
 public class DockRedirector {
@@ -29,9 +39,12 @@ public class DockRedirector {
     private Region targetDockPane;
     private final Region topDockPane;
     private Stage stage;
-    private final DoubleProperty xProperty = new SimpleDoubleProperty();
-    private final DoubleProperty yProperty = new SimpleDoubleProperty();
-
+    /**
+     * Create a new instance of the class for the specified dock target which is 
+     * in front.
+     * 
+     * @param topDockPane the dock target which is in front of overlapping targets. 
+     */
     public DockRedirector(Region topDockPane) {
         this.topDockPane = topDockPane;
         init();
@@ -39,7 +52,7 @@ public class DockRedirector {
 
     private void init() {
         targetDockPane = findTargetDockPane();
-        rootPane = new RedirectorDockPane(DockRegistry.dockPaneTarget(topDockPane).paneHandler(), DockRegistry.dockPaneTarget(targetDockPane).paneHandler());
+        rootPane = new RedirectorDockPane(DockRegistry.dockPaneTarget(topDockPane).paneController(), DockRegistry.dockPaneTarget(targetDockPane).paneController());
     }
 
     public Region findTargetDockPane() {
@@ -49,8 +62,8 @@ public class DockRedirector {
         return (Region) nodes.get(nodes.size() - 1);
     }
 
-    public PaneHandler getPaneHandler() {
-        return DockRegistry.dockPaneTarget(targetDockPane).paneHandler();
+    public DockTargetController getPaneController() {
+        return DockRegistry.dockPaneTarget(targetDockPane).paneController();
     }
 
     public Stage getStage() {
@@ -108,7 +121,7 @@ public class DockRedirector {
         stage.setY(y);
         stage.setWidth(targetDockPane.getWidth());
         stage.setHeight(targetDockPane.getHeight());
-        PaneHandler ph = DockRegistry.dockPaneTarget(rootPane).paneHandler();
+        DockTargetController ph = DockRegistry.dockPaneTarget(rootPane).paneController();
         
         //ph.getPaneIndicator().windowBeforeShow(null);
         ph.getPaneIndicator().showWindow(stage);
@@ -140,54 +153,54 @@ public class DockRedirector {
 
     public static class RedirectorDockPane extends StackPane implements DockPaneTarget {
 
-        private PaneHandler paneHandler;
-        private final PaneHandler targetPaneHandler;
-        private final PaneHandler topPaneHandler;
+        private DockTargetController paneController;
+        private final DockTargetController targetPaneController;
+        private final DockTargetController topPaneController;
 
-        public RedirectorDockPane(PaneHandler topPaneHandler, PaneHandler targetPaneHandler) {
-            this.targetPaneHandler = targetPaneHandler;
-            this.topPaneHandler = topPaneHandler;
+        public RedirectorDockPane(DockTargetController topPaneController, DockTargetController targetPaneController) {
+            this.targetPaneController = targetPaneController;
+            this.topPaneController = topPaneController;
             init();
         }
 
-        public PaneHandler getTargetHandler() {
-            return targetPaneHandler;
+        public DockTargetController getTargetController() {
+            return targetPaneController;
         }
 
-        public PaneHandler getTopHandler() {
-            return topPaneHandler;
+        public DockTargetController getTopController() {
+            return topPaneController;
         }
 
         private void init() {
-            paneHandler = new RedirectorPaneHandler(this, targetPaneHandler);
+            paneController = new RedirectorPaneController(this, targetPaneController);
         }
 
         @Override
-        public PaneHandler paneHandler() {
-            return paneHandler;
+        public DockTargetController paneController() {
+            return paneController;
         }
 
         @Override
         public Pane pane() {
             return this;
         }
-    }//DelegatePaneHandler
+    }//DelegatePaneController
 
-    public static class RedirectorPaneHandler extends PaneHandler {
+    public static class RedirectorPaneController extends DockTargetController {
 
-        private final PaneHandler targetPaneHandler;
+        private final DockTargetController targetPaneController;
 
-        public RedirectorPaneHandler(Region dockPane, PaneHandler targetPaneHandler) {
+        public RedirectorPaneController(Region dockPane, DockTargetController targetPaneController) {
             super((Pane) dockPane);
-            this.targetPaneHandler = targetPaneHandler;
+            this.targetPaneController = targetPaneController;
         }
 
         @Override
         protected void doDock(Point2D mousePos, Node node, Side dockPos) {
-            PaneHandler ph = targetPaneHandler;
+            DockTargetController ph = targetPaneController;
             Button btn = getPaneIndicator().getSelectedButton();
             if (btn != null) {
-                ph = (PaneHandler) btn.getUserData();
+                ph = (DockTargetController) btn.getUserData();
             }
             ph.doDock(null, node, dockPos);
         }
@@ -212,7 +225,7 @@ public class DockRedirector {
          */
         @Override
         public void windowBeforeShow(Window win) {
-            PaneHandler topHandler = ((RedirectorDockPane) getTargetPaneHandler().getDockPane()).getTopHandler();
+            DockTargetController topHandler = ((RedirectorDockPane) getTargetPaneController().getDockPane()).getTopController();
             Region topDockPane = topHandler.getDockPane();
             List<Node> chain = TopNodeHelper.getParentChain(topDockPane, node -> {
                 return DockRegistry.isDockPaneTarget(node);
@@ -224,15 +237,8 @@ public class DockRedirector {
             getLeftButtons().getChildren().clear();
 
             for (int i = chain.size() - 1; i >= 0; i--) {
-                PaneHandler ph = DockRegistry.dockPaneTarget(chain.get(i)).paneHandler();
+                DockTargetController ph = DockRegistry.dockPaneTarget(chain.get(i)).paneController();
                 Button top = createSideButton(Side.TOP);
-/*                if ( i != 0 ) {
-                    top.setTooltip(new Tooltip("Parent-" + i));
-                } else {
-                    top.setTooltip(new Tooltip("In Front Node"));
-                }
-*/
-
                 Button right = createSideButton(Side.RIGHT);
                 Button bottom = createSideButton(Side.BOTTOM);
                 Button left = createSideButton(Side.LEFT);

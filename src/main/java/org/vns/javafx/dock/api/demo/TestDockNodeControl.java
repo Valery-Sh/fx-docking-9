@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
@@ -29,10 +22,22 @@ public class TestDockNodeControl extends Application {
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
         dockPane.setId("DOCK PANE");
-        Button b1 = new Button("b01");
+        Button b1 = new Button("Add or Remove TitleBar");
+        b1.setOnAction(a->{
+            
+        });
         Pane p1 = new HBox(b1);
         DockNode custom = new DockNode();
         dockPane.getItems().add(custom);
+        b1.setOnAction(a->{
+            if ( custom.getTitleBar() == null ) {
+                custom.nodeController().createDefaultTitleBar("Now Not Null");
+            } else {
+                custom.setTitleBar(null);
+                //custom.setRemoveTitleBar(true);
+            }
+        });
+        
         //TitledPane tp = new TitledPane();
         //dockPane.getChildren().add(tp);
         //tp.setContent(p1);
@@ -42,7 +47,7 @@ public class TestDockNodeControl extends Application {
         
         p1.setId("pane p1");
         DockUtil.print(dockPane);
-        //dockPane.dock(p1, Side.TOP).nodeHandler().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).nodeController().setTitle("Pane p1");
         Scene scene = new Scene(dockPane);
         
         stage.setTitle("JavaFX and Maven");

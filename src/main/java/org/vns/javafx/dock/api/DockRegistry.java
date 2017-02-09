@@ -255,8 +255,8 @@ public class DockRegistry {
         Dockable d = new DefaultDockable((Region) node);
         dockables.put(node,d);
         if ( d.node().getParent() != null ) {
-            d.nodeHandler().getPaneHandler().changeDockedState(d, true);
-            d.nodeHandler().getPaneHandler().setDockPane((Pane)d.node().getParent());
+            //09.02d.nodeController().getPaneController().changeDockedState(d, true);
+            d.nodeController().getPaneController().setDockPane((Pane)d.node().getParent());
         }
         return d;
     }
@@ -296,14 +296,14 @@ public class DockRegistry {
     public static class DefaultDockable implements Dockable {
 
         private final Region node;
-        private DockNodeHandler nodeHandler;
+        private DockNodeController nodeHandler;
 
         public DefaultDockable(Region node) {
             this.node = node;
             init();
         }
         private void init() {
-            nodeHandler = new DockNodeHandler(this);
+            nodeHandler = new DockNodeController(this);
         }
         @Override
         public Region node() {
@@ -311,7 +311,7 @@ public class DockRegistry {
         }
 
         @Override
-        public DockNodeHandler nodeHandler() {
+        public DockNodeController nodeController() {
             return nodeHandler;
         }
         

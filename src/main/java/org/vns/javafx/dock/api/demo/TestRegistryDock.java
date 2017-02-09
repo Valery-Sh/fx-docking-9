@@ -64,13 +64,13 @@ public class TestRegistryDock extends Application {
         
         btn1.setOnAction(a->{
             Dockable d = DockRegistry.getInstance().getDefaultDockable(btn2_1);
-            d.nodeHandler().setDragNode(d.node());
-            d.nodeHandler().setFloating(true);
+            d.nodeController().setDragNode(d.node());
+            d.nodeController().setFloating(true);
         });
         btn2.setOnAction(a->{
             
-            //dn1.nodeHandler().dockedProperty().set(true);
-            dn1.nodeHandler().setFloating(true);
+            //dn1.nodeController().dockedProperty().set(true);
+            dn1.nodeController().setFloating(true);
         });        
           Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

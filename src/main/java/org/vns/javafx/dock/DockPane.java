@@ -13,12 +13,12 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane.ControlDockPane;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.DockTargetController;
 
 /**
  *
@@ -43,7 +43,7 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     
     protected ControlDockPane getDelegate() {
         if (delegate == null) {
-            delegate = new ControlDockPane(new DockPaneHandler(this));
+            delegate = new ControlDockPane(new DockPaneController(this));
             //delegate = this;
             setRoot(this);
 
@@ -65,8 +65,8 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     @Override
-    public PaneHandler paneHandler() {
-        return getDelegate().paneHandler();
+    public DockTargetController paneController() {
+        return getDelegate().paneController();
     }
 
     public void dock(Dockable dockNode, Side side) {
@@ -74,16 +74,16 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     public void dock(Dockable dockNode, Side side, Dockable target) {
-        getDelegate().paneHandler().dock(dockNode, side, target);
+        getDelegate().paneController().dock(dockNode, side, target);
     }
 
     protected void update(DockSplitPane dsp) {
         SplitPane sp = dsp;
-        PaneHandler ph = getDelegate().paneHandler();
+        DockTargetController ph = getDelegate().paneController();
         for (Node node : dsp.getItems()) {
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeHandler().setPaneHandler(ph);
+                d.nodeController().setPaneController(ph);
             } else if (node instanceof DockSplitPane) {
                 //((SplitDelegate.DockSplitPaneTarget) node).setRoot(getRoot());
                 update((DockSplitPane) node);
@@ -91,14 +91,14 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         }
     }
 
-    protected void update(DockSplitPane split, PaneHandler ph) {
+    protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeHandler().setPaneHandler(ph);
-/*                if (i < split.getDividers().size() && d.nodeHandler().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.nodeHandler().getDividerPos());
+                d.nodeController().setPaneController(ph);
+/*                if (i < split.getDividers().size() && d.nodeController().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.nodeController().getDividerPos());
                 }
 */                
             } else if (node instanceof DockSplitPane) {
@@ -114,16 +114,16 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     public void update() {
-        //update(((DockPaneHandler) getDelegate().paneHandler()).getRootSplitPane());
-        System.err.println("getDelegate().paneHandler()=" + getDelegate());
+        //update(((DockPaneController) getDelegate().paneController()).getRootSplitPane());
+        System.err.println("getDelegate().paneController()=" + getDelegate());
         update(this);
-        update(this, getDelegate().paneHandler());
+        update(this, getDelegate().paneController());
     }
 
     protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
-                DockRegistry.dockable(node).nodeHandler().setPaneHandler(dpt.paneHandler());
+                DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }
@@ -133,7 +133,7 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     protected void splitPaneRemoved(SplitPane sp, DockPaneTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
-                //DockRegistry.dockable(node).nodeHandler().setPaneHandler(dpt.paneHandler());
+                //DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
             } else if (node instanceof SplitPane) {
                 splitPaneRemoved(((SplitPane) node), dpt);
             }
@@ -142,11 +142,11 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     public boolean isUsedAsDockTarget() {
-        return getDelegate().paneHandler().isUsedAsDockTarget();
+        return getDelegate().paneController().isUsedAsDockTarget();
     }
 
     public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        getDelegate().paneHandler().setUsedAsDockTarget(usedAsDockTarget);
+        getDelegate().paneController().setUsedAsDockTarget(usedAsDockTarget);
     }
 
     @Override
@@ -160,8 +160,8 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     @Override
-    public PaneHandler paneHandler() {
-        return delegate.paneHandler();
+    public DockTargetController paneController() {
+        return delegate.paneController();
     }
      */
  /*    public static class DockPaneSplitSkin extends SkinBase<DockPane> {
@@ -181,40 +181,40 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
      */
     public class ControlDockPane implements DockPaneTarget {
 
-        private PaneHandler paneHandler;
+        private DockTargetController paneController;
 
-        public ControlDockPane(PaneHandler paneHandler) {
-            this.paneHandler = paneHandler;
+        public ControlDockPane(DockTargetController paneController) {
+            this.paneController = paneController;
             init();
 
         }
 
         private void init() {
-            //paneHandler = new DockPaneHandler(this);
+            //paneController = new DockPaneController(this);
         }
 
         @Override
         public DockSplitPane pane() {
-            return (DockSplitPane) paneHandler.getDockPane();
+            return (DockSplitPane) paneController.getDockPane();
         }
 
         @Override
-        public PaneHandler paneHandler() {
-            return paneHandler;
+        public DockTargetController paneController() {
+            return paneController;
         }
 
         public Dockable dock(Dockable node, Side dockPos) {
-            return paneHandler.dock(node, dockPos);
+            return paneController.dock(node, dockPos);
         }
 
     }
 
-    public static class DockPaneHandler extends PaneHandler {
+    public static class DockPaneController extends DockTargetController {
 
         //private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
         private DockDelegete dockDelegate;
 
-        public DockPaneHandler(Region dockPane) {
+        public DockPaneController(Region dockPane) {
             super(dockPane);
             init();
         }
@@ -250,12 +250,14 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
 */
         @Override
         protected boolean isDocked(Node node) {
-            boolean retval;
+            boolean retval = false;
             if (DockRegistry.isDockable(node)) {
                 retval = DockUtil.getParentSplitPane(getDockPane(), node) != null;
-            } else {
+            } 
+            /*else {
                 retval = null != notDockableItemsProperty().get(node);
             }
+            */
             return retval;
         }
 
@@ -277,9 +279,9 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
             dockDelegate.dock(DockRegistry.dockable(node), dockPos);
 
             if (DockRegistry.isDockable(node)) {
-                DockNodeHandler nodeHandler = DockRegistry.dockable(node).nodeHandler();
-                if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
-                    nodeHandler.setPaneHandler(this);
+                DockNodeController nodeController = DockRegistry.dockable(node).nodeController();
+                if (nodeController.getPaneController() == null || nodeController.getPaneController() != this) {
+                    nodeController.setPaneController(this);
                 }
             }
         }
@@ -299,16 +301,16 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
                     ((Stage) node.getScene().getWindow()).close();
                 }
                 if (DockRegistry.isDockable(node)) {
-                    DockRegistry.dockable(node).nodeHandler().setFloating(false);
+                    DockRegistry.dockable(node).nodeController().setFloating(false);
                 }
                 dockDelegate.dock(node, dockPos, targetDockable);
             }
             if (DockRegistry.isDockable(node)) {
-                DockNodeHandler state = DockRegistry.dockable(node).nodeHandler();
-                if (state.getPaneHandler() == null || state.getPaneHandler() != this) {
-                    state.setPaneHandler(this);
+                DockNodeController state = DockRegistry.dockable(node).nodeController();
+                if (state.getPaneController() == null || state.getPaneController() != this) {
+                    state.setPaneController(this);
                 }
-                state.setDocked(true);
+                //09.02state.setDocked(true);
             }
         }
 
@@ -316,23 +318,23 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         public void remove(Node dockNode) {
             DockSplitPane dsp = getParentSplitPane(getDockPane(), dockNode);
             if (dsp != null) {
-                PaneHandler ph = DockRegistry.dockable(dockNode).nodeHandler().getPaneHandler();
+                DockTargetController ph = DockRegistry.dockable(dockNode).nodeController().getPaneController();
                 dsp.getItems().remove(dockNode);
-                DockRegistry.dockable(dockNode).nodeHandler().setPaneHandler(ph);
+                DockRegistry.dockable(dockNode).nodeController().setPaneController(ph);
                 clearEmptySplitPanes(getDockPane(), dsp);
             }
         }
 
-    }//class DockPaneHandler
+    }//class DockPaneController
 
     public static class DockDelegete {
 
         private DockSplitPane root;
-        private DockPaneHandler paneHandler;
+        private DockPaneController paneController;
 
-        public DockDelegete(DockSplitPane root, DockPaneHandler paneHandler) {
+        public DockDelegete(DockSplitPane root, DockPaneController paneController) {
             this.root = root;
-            this.paneHandler = paneHandler;
+            this.paneController = paneController;
             //System.err.println("Constr SplitDelegate ");
         }
 

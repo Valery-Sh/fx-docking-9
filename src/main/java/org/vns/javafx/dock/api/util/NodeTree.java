@@ -53,7 +53,7 @@ public class NodeTree {
         return r;        
     }
     public Object getItem(Node node) {
-        String value = DockRegistry.dockPaneTarget(node).paneHandler().getTitle();
+        String value = DockRegistry.dockPaneTarget(node).paneController().getTitle();
         TreeItem item = new TreeItem(value);
         return item;
     }

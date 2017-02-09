@@ -3,13 +3,10 @@ package org.vns.javafx.dock.api;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import org.vns.javafx.dock.DockUtil;
@@ -20,7 +17,6 @@ import org.vns.javafx.dock.DockUtil;
  */
 public class DockSplitPane extends SplitPane implements ListChangeListener {
 
-    private final DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
     private EventHandler<ActionEvent> root;
 
     public DockSplitPane() {
@@ -45,7 +41,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         if (dpt != null && getItems().size() > 0) {
             getItems().forEach(it -> {
                 if (DockRegistry.isDockable(it)) {
-                    DockRegistry.dockable(it).nodeHandler().setPaneHandler(dpt.paneHandler());
+                    DockRegistry.dockable(it).nodeController().setPaneController(dpt.paneController());
                 }
             });
         }
@@ -53,18 +49,10 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             update();
         }
         getItems().addListener(this);
-        //dividerPosProperty.addListener(this::dividerPosChanged);
     }
 
-/*    protected void dividerPosChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-        if (getRoot() != null) {
-            update();
-        }
-    }
-*/
     @Override
     public void onChanged(ListChangeListener.Change change) {
-        
         itemsChanged(change);
     }
 
@@ -91,7 +79,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                 }
                 for (Node node : list) {
                     if (dpt != null && DockRegistry.isDockable(node)) {
-                        DockRegistry.dockable(node).nodeHandler().setPaneHandler(dpt.paneHandler());
+                        DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneAdded((SplitPane) node, dpt);
                     } else if (node instanceof DockSplitPane) {
@@ -103,14 +91,14 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         update();
     }
 
-    protected void update(DockSplitPane split, PaneHandler ph) {
+    protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeHandler().setPaneHandler(ph);
-/*                if (i < split.getDividers().size() && d.nodeHandler().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.nodeHandler().getDividerPos());
+                d.nodeController().setPaneController(ph);
+/*                if (i < split.getDividers().size() && d.nodeController().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.nodeController().getDividerPos());
                 }
 */                
             } else if (node instanceof DockSplitPane) {
@@ -134,7 +122,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
         sp.getItems().forEach((node) -> {
             if (DockRegistry.isDockable(node)) {
-                DockRegistry.dockable(node).nodeHandler().setPaneHandler(dpt.paneHandler());
+                DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }

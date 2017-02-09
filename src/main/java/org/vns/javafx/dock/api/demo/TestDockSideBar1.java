@@ -58,7 +58,7 @@ public class TestDockSideBar1 extends Application {
 
         DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);
-        dn01.nodeHandler().setTitle("DockNode: dn01");
+        dn01.nodeController().setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
             if (sideBar01.getRotation()== Rotation.DEFAULT) {
                 sideBar01.setRotation(Rotation.UP_DOWN);
@@ -113,7 +113,7 @@ public class TestDockSideBar1 extends Application {
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));
         //dn02.setPrefHeight(100);
-        dn02.nodeHandler().setTitle("DockNode: dn02");        
+        dn02.nodeController().setTitle("DockNode: dn02");        
         
         //sideBar01.dock(dn02);
    
@@ -125,7 +125,7 @@ public class TestDockSideBar1 extends Application {
         DockNode dn03 = new DockNode();
         
         //dn03.setPrefHeight(100);
-        dn03.nodeHandler().setTitle("DockNode: dn03");        
+        dn03.nodeController().setTitle("DockNode: dn03");        
         
 //        sideBar01.getItems().add(dn03);
         //sideBar01.dock(dn02);

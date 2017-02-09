@@ -20,8 +20,8 @@ import javafx.stage.Stage;
  * 
  * The objects of typo {@code Dockable}  can have a title bar. It is an object of type 
  * {@code Region}, which is assigned by calling the method 
- * {@link DockNodeHandler#setTitleBar(javafx.scene.layout.Region) } or by
- * applying the method {@link DockNodeHandler#createDefaultTitleBar(java.lang.String)  }.
+ * {@link DockNodeController#setTitleBar(javafx.scene.layout.Region) } or by
+ * applying the method {@link DockNodeController#createDefaultTitleBar(java.lang.String)  }.
  * The title bar object automatically becomes a listener of mouse events by 
  * executing the code below:
  * <pre>
@@ -33,8 +33,8 @@ import javafx.stage.Stage;
  * Thus, if the object of type {@code Dockable} has a title bar and it is visible on
  * screen, then it can be used to perform mouse dragging.
  * <p>
- * The object of type {@code Dockable} has a method {@link DockNodeHandler#setDragNode(javafx.scene.Node) }.
- * The {@code Node } witch has been set by the method may be used to drag the 
+ * The object of type {@code Dockable} has a method {@link DockNodeController#setDragNode(javafx.scene.Node) }.
+ * The {@code Node } which has been set by the method may be used to drag the 
  * {@literal dockable> in the same manner as the title bar is used. Thus, both 
  * objects, such as a title bar and a drag node can be used to perform dragging.
  * 
@@ -47,7 +47,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      */
     private final Dockable dockable;
     /**
-     * Pop up window witch provides indicators to choose a place of the 
+     * Pop up window which provides indicators to choose a place of the 
      * target object
      */
     private DragPopup popup;
@@ -68,7 +68,7 @@ public class DragManager implements EventHandler<MouseEvent> {
     /**
      * The property that defines a node that can be used to start dragging.
      */
-    private final ObjectProperty<Node> dragNodeProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
     /**
      * Create a new instance for the given dock node.
@@ -80,10 +80,10 @@ public class DragManager implements EventHandler<MouseEvent> {
     }
 
     private void init() {
-        dragNodeProperty.addListener(this::dragNodeChanged);
+        dragNode.addListener(this::dragNodeChanged);
     }
     /**
-     * Is called when a new value of {@link #dragNodeProperty } is detected. 
+     * Is called when a new value of {@link #dragNode } is detected. 
      * Removes mouse listeners of the old drag node and assigns listeners to 
      * the new drag node.
      * @param ov doesn't used
@@ -103,28 +103,28 @@ public class DragManager implements EventHandler<MouseEvent> {
      * @return the property object that represents a drag node.
      */
     public ObjectProperty<Node> dragNodeProperty() {
-        return dragNodeProperty;
+        return dragNode;
     }
     /**
-     * Returns an object of type {@code Node} witch is used as a drag node.
+     * Returns an object of type {@code Node} which is used as a drag node.
      * @return an object of type {@code Node} 
      */
     public Node getDragNode() {
-        return dragNodeProperty.get();
+        return dragNode.get();
     }
     /**
-     * Sets an object of type {@code Node} witch can be used as a drag node.
-     * @param dragNode aa node witch becomes a drag node
+     * Sets an object of type {@code Node} which can be used as a drag node.
+     * @param dragNode a node which becomes a drag node
      */
     public void setDragNode(Node dragNode) {
-        dragNodeProperty.set(dragNode);
+        this.dragNode.set(dragNode);
     }
     /**
      * A handler function with is called when the title bar of the 
      * {@code dockable} object changes.
      * @param ov doesn't used
-     * @param oldValue the old value of the object witch represents a title bar
-     * @param newValue the new value of the object witch represents a title bar
+     * @param oldValue the old value of the object which represents a title bar
+     * @param newValue the new value of the object which represents a title bar
      */
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
@@ -173,7 +173,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      * indicators to select a dock place on the target dock node or pane.
      * <p>
      * The method checks whether the {@code control key} of the keyboard is
-     * pressed and if so then it shows a special indicator window witch allows
+     * pressed and if so then it shows a special indicator window which allows
      * to select a dock pane or one of it's parents.
      *
      * @param ev the event that describes the mouse events
@@ -183,7 +183,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             ev.consume();
             return;
         }
-        if (!dockable.nodeHandler().isFloating()) {
+        if (!dockable.nodeController().isFloating()) {
             return;
         }
         
@@ -238,11 +238,11 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
         
-        if (!DockRegistry.dockPaneTarget(root).paneHandler().isUsedAsDockTarget()) {
+        if (!DockRegistry.dockPaneTarget(root).paneController().isUsedAsDockTarget()) {
             return;
         }
 
-        DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneHandler().getDragPopup();
+        DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneController().getDragPopup();
         
         if (popup != newPopup && popup != null) {
             popup.hide();
@@ -251,7 +251,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
         popup = newPopup;
-        PaneHandler ph = DockRegistry.dockPaneTarget(root).paneHandler();
+        DockTargetController ph = DockRegistry.dockPaneTarget(root).paneController();
         
         if ( ! popup.isShowing()) {
             popup.showPopup();
@@ -276,8 +276,8 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
-        if (dockable.nodeHandler().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
-            popup.getPaneHandler().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
+        if (dockable.nodeController().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
+            popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
         }
 
         if (popup != null && popup.isShowing()) {
@@ -292,7 +292,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once 
      * after the mouse is dragged.
      * The method checks whether the {@code dockable} objects is in a floating state
-     * and if not invokes the method {@link DockNodeHandler#setFloating(boolean) } whith
+     * and if not invokes the method {@link DockNodeController#setFloating(boolean) } whith
      * an argument set to {@code true}.
      * 
      * @param ev the event that describes the mouse events.
@@ -302,10 +302,10 @@ public class DragManager implements EventHandler<MouseEvent> {
             ev.consume();
             return;
         }
-        if (!dockable.nodeHandler().isFloating()) {
+        if (!dockable.nodeController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
 //            System.err.println("targetDockPane = " + targetDockPane);            
-            dockable.nodeHandler().setFloating(true);
+            dockable.nodeController().setFloating(true);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }

@@ -1,7 +1,6 @@
 package org.vns.javafx.dock.api;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -11,7 +10,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -19,14 +17,14 @@ import org.vns.javafx.dock.DockPane;
  */
 public class StageBuilder extends FloatStageBuilder {
 
-    public StageBuilder(DockNodeHandler nodeHandler) {
-        super(nodeHandler);
+    public StageBuilder(DockNodeController nodeController) {
+        super(nodeController);
     }
 
     @Override
     protected void makeFloating(Dockable dockable) {
 
-        Node titleBar = dockable.nodeHandler().getTitleBar();
+        Node titleBar = dockable.nodeController().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
@@ -35,7 +33,7 @@ public class StageBuilder extends FloatStageBuilder {
         //double nodeHeight = dockable.node().getHeight();
         setDefaultCursors();
 
-        dockable.nodeHandler().getPaneHandler().undock(dockable.node());
+        dockable.nodeController().getPaneController().undock(dockable.node());
 
         BorderPane borderPane = (BorderPane) dockable.node().getScene().getRoot();
 
@@ -62,7 +60,7 @@ public class StageBuilder extends FloatStageBuilder {
     public Stage createStage(Dockable dockable, Region parentPane) {
 
         Region node = dockable.node();
-        Node titleBar = dockable.nodeHandler().getTitleBar();
+        Node titleBar = dockable.nodeController().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
@@ -74,7 +72,7 @@ public class StageBuilder extends FloatStageBuilder {
         stageProperty().set(newStage);
 
         newStage.setTitle("NEW STAGE");
-        Region lastDockPane = dockable.nodeHandler().getPaneHandler().getDockPane();
+        Region lastDockPane = dockable.nodeController().getPaneController().getDockPane();
         System.err.println("LAST DOCK PANE");
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
@@ -91,7 +89,7 @@ public class StageBuilder extends FloatStageBuilder {
         
         pane.setStyle("-fx-background-color: aqua");
         //dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
-        //PaneHandler ph = dockable.nodeHandler().getPaneHandler();
+        //PaneHandler ph = dockable.nodeController().getPaneController();
         //ph.dock(dockable, Side.TOP);
         if ( pane instanceof Pane) {
             ((Pane)pane).getChildren().add(dockable.node());
@@ -99,7 +97,7 @@ public class StageBuilder extends FloatStageBuilder {
             ((SplitPane)pane).getItems().add(dockable.node());
         }
         //dockPane.getItems().add(dockable.node()); // we do not apply dock() 
-        //dockable.nodeHandler().setPaneHandler(pp);
+        //dockable.nodeController().setPaneController(pp);
         ((BorderPane) getRootPane()).setCenter(pane);
 
         Scene scene = new Scene(getRootPane());

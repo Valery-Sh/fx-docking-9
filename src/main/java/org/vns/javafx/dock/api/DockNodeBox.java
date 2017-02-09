@@ -5,7 +5,6 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.DockTitleBar;
 
 /**
  *
@@ -13,16 +12,17 @@ import org.vns.javafx.dock.DockTitleBar;
  */
 public class DockNodeBox  extends VBox implements Dockable{
     
-    DockNodeHandler nodeHandler = new DockNodeHandler(this);
+    DockNodeController nodeController = new DockNodeController(this);
     
     public DockNodeBox() {
         init();
     }
     private void init() {
-        Region titleBar = new DockTitleBar(this);
+        //09.02Region titleBar = new DockTitleBar(this);
+        Region titleBar = nodeController.createDefaultTitleBar("");
         getChildren().add(titleBar);
-        nodeHandler.setTitleBar(titleBar);
-        nodeHandler.titleBarProperty().addListener(this::titlebarChanged);
+        nodeController.setTitleBar(titleBar);
+        nodeController.titleBarProperty().addListener(this::titlebarChanged);
         getStyleClass().add("dock-node");
     }
     @Override
@@ -31,27 +31,27 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     public String getTitle() {
-        return nodeHandler.getTitle();
+        return nodeController.getTitle();
     }
 
     public void setTitle(String title) {
-        nodeHandler.setTitle(title);
+        nodeController.setTitle(title);
     }
 
 
     public void dock(Dockable dockable, Side dockPos) {
-        nodeHandler.getPaneHandler().dock(dockable, dockPos, this);
+        nodeController.getPaneController().dock(dockable, dockPos, this);
     }
 
     public void setDragNode(Node dragSource) {
-        nodeHandler.setDragNode(dragSource);
+        nodeController.setDragNode(dragSource);
     }
 /*    public double getDividerPos() {
-        return nodeHandler.getDividerPos();
+        return nodeController.getDividerPos();
     }
 
     public void setDividerPos(double divpos) {
-        this.nodeHandler.setDividerPos(divpos);
+        this.nodeController.setDividerPos(divpos);
     }
 */
     @Override
@@ -60,8 +60,8 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     @Override
-    public DockNodeHandler nodeHandler() {
-        return nodeHandler;
+    public DockNodeController nodeController() {
+        return nodeController;
     }
     
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {

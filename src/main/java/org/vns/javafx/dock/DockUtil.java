@@ -13,11 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
-import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.TopNodeHelper;
 
 /**
@@ -137,8 +137,8 @@ public class DockUtil {
             boolean b = false;
             if (DockRegistry.isDockable(node)) {
                 b = true;
-                PaneHandler pd = DockRegistry.dockable(node).nodeHandler().getPaneHandler();
-                DockNodeHandler st = DockRegistry.dockable(node).nodeHandler();
+                DockTargetController pd = DockRegistry.dockable(node).nodeController().getPaneController();
+                DockNodeController st = DockRegistry.dockable(node).nodeController();
                 if (pd == null) {
                     b = false;
                 } else {

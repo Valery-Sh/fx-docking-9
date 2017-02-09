@@ -35,12 +35,12 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.FloatStageBuilder;
-import org.vns.javafx.dock.api.PaneHandler;
+import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 import org.vns.javafx.dock.api.StageBuilder;
@@ -54,7 +54,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
-    private DockNodeHandler nodeHandler = new DockNodeHandler(this);
+    private DockNodeController nodeController = new DockNodeController(this);
 
     @Override
     public Region node() {
@@ -62,8 +62,8 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
     }
 
     @Override
-    public DockNodeHandler nodeHandler() {
-        return this.nodeHandler;
+    public DockNodeController nodeController() {
+        return this.nodeController;
     }
 
     public enum Rotation {
@@ -82,7 +82,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
     }
-    private SidePaneHandler paneHandler;
+    private SidePaneController paneController;
 
     private final ObjectProperty<Side> sideProperty = new SimpleObjectProperty<>();
 
@@ -105,7 +105,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
     }
 
     private void init() {
-        paneHandler = new SidePaneHandler(this);
+        paneController = new SidePaneController(this);
         setOrientation(Orientation.HORIZONTAL);
         getStyleClass().clear();
         getStyleClass().add("dock-side-bar");
@@ -115,19 +115,19 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         });
 
         sideProperty.addListener((v, ov, nv) -> {
-            paneHandler.getItemMap().values().forEach(d -> {
+            paneController.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
         rotationProperty.addListener((v, ov, nv) -> {
-            paneHandler.getItemMap().values().forEach(d -> {
+            paneController.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
         getDelegate().orientationProperty().addListener((v, ov, nv) -> {
-            paneHandler.getItemMap().values().forEach(d -> {
+            paneController.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
@@ -159,7 +159,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
                 for (Dockable d : list) {
-                    paneHandler.undock(d.node());
+                    paneController.undock(d.node());
                 }
 
             }
@@ -224,7 +224,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
     }
 
     public void setRotation(Rotation rotation) {
-        paneHandler.getItemMap().keySet().forEach(g -> {
+        paneController.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(rotation.getAngle());
         });
@@ -256,7 +256,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             return;
         }
 
-        paneHandler.getItemMap().forEach((g, d) -> {
+        paneController.getItemMap().forEach((g, d) -> {
             if (d.getDockable().node().getScene() != null && d.getDockable().node().getScene().getWindow() != null) {
                 Window w = d.getDockable().node().getScene().getWindow();
                 if (w instanceof Stage) {
@@ -267,12 +267,12 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
     }
 
     @Override
-    public PaneHandler paneHandler() {
-        return this.paneHandler;
+    public DockTargetController paneController() {
+        return this.paneController;
     }
 
     protected ObservableMap<Group, Container> getSideItems() {
-        return paneHandler.getItemMap();
+        return paneController.getItemMap();
     }
 
     public Button getButton(Dockable dockable) {
@@ -316,9 +316,9 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
 
     public Button dock(Dockable dockable, String btnText) {
         if (btnText != null) {
-            dockable.nodeHandler().getProperties().setProperty("user-title", btnText);
+            dockable.nodeController().getProperties().setProperty("user-title", btnText);
         }
-        paneHandler.dock(dockable, null);
+        paneController.dock(dockable, null);
         return getButton(dockable);
 
     }
@@ -345,11 +345,11 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
     }
 
-    public static class SidePaneHandler extends PaneHandler {
+    public static class SidePaneController extends DockTargetController {
 
         private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
 
-        public SidePaneHandler(Region dockPane) {
+        public SidePaneController(Region dockPane) {
             super(dockPane);
             init();
         }
@@ -392,11 +392,11 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         protected String getButtonText(Dockable d) {
-            String txt = d.nodeHandler().getTitle();
-            if (d.nodeHandler().getProperties().getProperty("user-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("user-title");
-            } else if (d.nodeHandler().getProperties().getProperty("short-title") != null) {
-                txt = d.nodeHandler().getProperties().getProperty("short-title");
+            String txt = d.nodeController().getTitle();
+            if (d.nodeController().getProperties().getProperty("user-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("user-title");
+            } else if (d.nodeController().getProperties().getProperty("short-title") != null) {
+                txt = d.nodeController().getProperties().getProperty("short-title");
             }
             if (txt == null || txt.trim().isEmpty()) {
                 txt = "Dockable";
@@ -463,9 +463,9 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             } else {
                 ((DockSideBar) getDockPane()).getDelegate().getItems().add(item);
             }
-            DockNodeHandler nodeHandler = dockable.nodeHandler();
-            if (nodeHandler.getPaneHandler() == null || nodeHandler.getPaneHandler() != this) {
-                nodeHandler.setPaneHandler(this);
+            DockNodeController nodeHandler = dockable.nodeController();
+            if (nodeHandler.getPaneController() == null || nodeHandler.getPaneController() != this) {
+                nodeHandler.setPaneController(this);
             }
             container.getStageBuilder().setSupportedCursors(getSupportedCursors());
             Stage stage = container.getStageBuilder().createStage(dockable);
@@ -610,7 +610,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                 //}
                 Point2D retval;// = null;// = super.mousePos();
 
-                SideIndicator paneIndicator = getTargetPaneHandler().getDragPopup().getPaneIndicator();
+                SideIndicator paneIndicator = getTargetPaneController().getDragPopup().getPaneIndicator();
                 //Pane topBtns;//= null;
                 //Button topPaneButton = null;
                 //if (paneIndicator != null) {
@@ -631,7 +631,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                     //}
                 }
 
-                //DockSideBar sideBar = (DockSideBar) getTargetPaneHandler().getDockPane();
+                //DockSideBar sideBar = (DockSideBar) getTargetPaneController().getDockPane();
 //                double mouseX = getIndicatorPosition().getX();
 //                double mouseY = getIndicatorPosition().getY();
                 double x = getMousePos().getX();
@@ -665,7 +665,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
 
         public Container(Dockable dockable) {
             this.dockable = dockable;
-            stageBuilder = new StageBuilder(dockable.nodeHandler());
+            stageBuilder = new StageBuilder(dockable.nodeController());
         }
 
         public void setDocked(boolean docked) {
@@ -674,7 +674,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                 addMouseExitListener();
             }
             hideOnExitProperty.bind(sb.hideOnExitProperty());
-            floatingProperty.bind(dockable.nodeHandler().floatingProperty());
+            floatingProperty.bind(dockable.nodeController().floatingProperty());
             floatingProperty.addListener((v, oldValue, newValue) -> {
                 if (newValue) {
                     removeMouseExitListener();
@@ -690,7 +690,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         public DockSideBar getSideBar() {
-            return (DockSideBar) dockable.nodeHandler().getPaneHandler().getDockPane();
+            return (DockSideBar) dockable.nodeController().getPaneController().getDockPane();
         }
 
         public void addMouseExitListener() {
@@ -714,14 +714,14 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             if ((ev.getSource() instanceof Window) && DockUtil.contains((Window) ev.getSource(), ev.getScreenX(), ev.getScreenY())) {
                 return;
             }
-            if (!ev.isPrimaryButtonDown() && !dockable.nodeHandler().isFloating()) {
+            if (!ev.isPrimaryButtonDown() && !dockable.nodeController().isFloating()) {
                 dockable.node().getScene().getWindow().hide();
             }
             ev.consume();
         }
 
         public void adjustScreenPos() {
-            SidePaneHandler handler = (SidePaneHandler) dockable.nodeHandler().getPaneHandler();
+            SidePaneController handler = (SidePaneController) dockable.nodeController().getPaneController();
             Stage ownerStage = (Stage) ((DockSideBar) handler.getDockPane()).getScene().getWindow();
 
             /*            ownerStage.xProperty().removeListener(this);
@@ -739,7 +739,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         public void removeListeners() {
-            SidePaneHandler handler = (SidePaneHandler) dockable.nodeHandler().getPaneHandler();
+            SidePaneController handler = (SidePaneController) dockable.nodeController().getPaneController();
             Stage ownerStage = (Stage) ((DockSideBar) handler.getDockPane()).getScene().getWindow();
             ownerStage.xProperty().removeListener(this);
             ownerStage.yProperty().removeListener(this);
@@ -749,7 +749,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         protected void changeSide() {
-            SidePaneHandler handler = (SidePaneHandler) dockable.nodeHandler().getPaneHandler();
+            SidePaneController handler = (SidePaneController) dockable.nodeController().getPaneController();
             stageBuilder.setSupportedCursors(handler.getSupportedCursors());
         }
 
@@ -760,7 +760,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
              */
             System.err.println("dockable.node().getScene()=" + dockable.node().getScene());
             Stage stage = (Stage) dockable.node().getScene().getWindow();
-            DockSideBar sb = (DockSideBar) dockable.nodeHandler().getPaneHandler().getDockPane();
+            DockSideBar sb = (DockSideBar) dockable.nodeController().getPaneController().getDockPane();
             if (!stage.isShowing()) {
                 return;
             }

@@ -9,7 +9,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.api.DockNodeHandler;
+import org.vns.javafx.dock.api.DockNodeController;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -19,8 +19,8 @@ import org.vns.javafx.dock.api.Dockable;
 @DefaultProperty(value = "content")
 public class DockNode extends TitledPane implements Dockable {
 
-    DockNodeHandler nodeHandler;
-    
+    private DockNodeController nodeController;
+
     private VBox delegate;
 
     public DockNode() {
@@ -33,27 +33,26 @@ public class DockNode extends TitledPane implements Dockable {
 
     }
 
-    
-
     public DockNode(String id, String title) {
         init(null, title);
     }
-
 
     private void init(String id, String title) {
         this.setContent(new StackPane());
         contentProperty().addListener(this::contentChanged);
         getStyleClass().add("dock-node");
-        nodeHandler = new DockNodeHandler(this);
-        Region titleBar = new DockTitleBar(this);
-    
-        nodeHandler.setTitleBar(titleBar);
+        nodeController = new DockNodeController(this);
+        //09.02Region titleBar = new DockTitleBar(this);
+        nodeController.createDefaultTitleBar(title);
+        nodeController.titleBarProperty().addListener(this::titlebarChanged);
+        //09.02nodeController.setTitleBar(titleBar);
 
-        setTitle(title);
+        ///setTitle(title);
         if (id != null) {
             setId(id);
         }
     }
+
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
@@ -75,19 +74,19 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     public String getTitle() {
-        return nodeHandler.getTitle();
+        return nodeController.getTitle();
     }
 
     public void setTitle(String title) {
-        nodeHandler.setTitle(title);
+        nodeController.setTitle(title);
     }
 
     public Region getTitleBar() {
-        return nodeHandler().getTitleBar();
+        return nodeController().getTitleBar();
     }
 
     public void setTitleBar(Region node) {
-        nodeHandler().setTitleBar(node);
+        nodeController().setTitleBar(node);
     }
 
     public boolean isRemoveTitleBar() {
@@ -100,20 +99,20 @@ public class DockNode extends TitledPane implements Dockable {
         }
     }
 
-/*    public double getDividerPos() {
-        return nodeHandler.getDividerPos();
+    /*    public double getDividerPos() {
+        return nodeController.getDividerPos();
     }
 
     public void setDividerPos(double divpos) {
-        this.nodeHandler.setDividerPos(divpos);
+        this.nodeController.setDividerPos(divpos);
     }
-*/
+     */
     public Node getDragNode() {
-        return nodeHandler.getDragNode();
+        return nodeController.getDragNode();
     }
 
     public void setDragNode(Node dragSource) {
-        nodeHandler.setDragNode(dragSource);
+        nodeController.setDragNode(dragSource);
     }
 
     @Override
@@ -122,11 +121,19 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     @Override
-    public DockNodeHandler nodeHandler() {
-        return nodeHandler;
+    public DockNodeController nodeController() {
+        return nodeController;
     }
 
-    
+    protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
+        if (oldValue != null) {
+            getDelegate().getChildren().remove(oldValue);
+        }
+        if (newValue != null) {
+            getDelegate().getChildren().add(0, newValue);
+        }
+    }
+
     @Override
     protected Skin<?> createDefaultSkin() {
         return new DockNodeSkin(this);
@@ -140,7 +147,7 @@ public class DockNode extends TitledPane implements Dockable {
                 getChildren().clear();
             }
             getChildren().add(control.getDelegate());
-            if ( control.getTitleBar() != null ) {
+            if (control.getTitleBar() != null) {
                 control.getDelegate().getChildren().add(control.getTitleBar());
             }
             control.getDelegate().getChildren().add(control.getContent());

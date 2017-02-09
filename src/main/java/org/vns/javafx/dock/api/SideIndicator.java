@@ -22,7 +22,7 @@ import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer
  */
 public abstract class SideIndicator {
 
-    private final PaneHandler paneHandler;
+    private final DockTargetController paneController;
 
     private Rectangle dockPlace;
     private Rectangle dockPlace2;
@@ -37,11 +37,11 @@ public abstract class SideIndicator {
 
     private Pane indicatorPane;
 
-    //private final Map<Node, PaneHandler> sideButtonMap = new HashMap<>();
+    //private final Map<Node, DockTargetController> sideButtonMap = new HashMap<>();
     private SideIndicatorTransformer transformer;
 
-    protected SideIndicator(PaneHandler paneHandler) {
-        this.paneHandler = paneHandler;
+    protected SideIndicator(DockTargetController paneController) {
+        this.paneController = paneController;
         init();
     }
 
@@ -54,7 +54,7 @@ public abstract class SideIndicator {
         dockPlace2.getStyleClass().add("dock-place2");
         indicatorPane.getChildren().add(0, dockPlace2);
 
-        //paneHandler.getDragPopup().getNodeIndicatorPopup().setOnShown(this);
+        //paneController.getDragPopup().getNodeIndicatorPopup().setOnShown(this);
     }
 
     protected Window getIndicatorPopup() {
@@ -101,8 +101,8 @@ public abstract class SideIndicator {
         return dockPlace2;
     }
 
-    public PaneHandler getPaneHandler() {
-        return paneHandler;
+    public DockTargetController getPaneController() {
+        return paneController;
     }
 
     protected abstract Pane createIndicatorPane();
@@ -325,13 +325,13 @@ public abstract class SideIndicator {
 
     protected static class NodeSideIndicator extends SideIndicator {
 
-        public NodeSideIndicator(PaneHandler paneHandler) {
-            super(paneHandler);
+        public NodeSideIndicator(DockTargetController paneController) {
+            super(paneController);
         }
 
         @Override
         protected Window getIndicatorPopup() {
-            return getPaneHandler().getDragPopup().getNodeIndicatorPopup();
+            return getPaneController().getDragPopup().getNodeIndicatorPopup();
         }
 
         @Override
@@ -351,13 +351,13 @@ public abstract class SideIndicator {
             if (dockNode != null) {
                 newPos = getTransformer().getIndicatorPosition();
                 getTransformer().notifyBeforeShow();
-                ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
+                ((Popup) getIndicatorPopup()).show(getPaneController().getDragPopup(), newPos.getX(), newPos.getY());
                 getTransformer().notifyAfterShow();
             } else {
                 newPos = getTransformer().getIndicatorPosition();
                 if (newPos != null) {
                     getTransformer().notifyBeforeShow();
-                    ((Popup) getIndicatorPopup()).show(getPaneHandler().getDragPopup(), newPos.getX(), newPos.getY());
+                    ((Popup) getIndicatorPopup()).show(getPaneController().getDragPopup(), newPos.getX(), newPos.getY());
                     getTransformer().notifyAfterShow();
                 } else {
                     getIndicatorPopup().hide();
@@ -393,19 +393,19 @@ public abstract class SideIndicator {
 
         @Override
         protected NodeIndicatorTransformer getTransformer() {
-            return getPaneHandler().getNodeTransformer();
+            return getPaneController().getNodeTransformer();
         }
     }//class NodeSideIndicator
 
     protected static class PaneSideIndicator extends SideIndicator {
 
-        public PaneSideIndicator(PaneHandler paneHandler) {
-            super(paneHandler);
+        public PaneSideIndicator(DockTargetController paneController) {
+            super(paneController);
         }
 
         @Override
         protected Popup getIndicatorPopup() {
-            return getPaneHandler().getDragPopup();
+            return getPaneController().getDragPopup();
         }
 
         @Override
@@ -426,7 +426,7 @@ public abstract class SideIndicator {
                 getTransformer().notifyPopupHidden();
             });
 
-            getIndicatorPopup().show(getPaneHandler().getDockPane(), screenX, screenY);
+            getIndicatorPopup().show(getPaneController().getDockPane(), screenX, screenY);
             getTransformer().notifyAfterShow();
         }
 
@@ -439,7 +439,7 @@ public abstract class SideIndicator {
             getIndicatorPopup().setOnShowing(e -> {
                 getTransformer().notifyPopupShowing();
             });
-            getIndicatorPopup().showPopup(getPaneHandler().getDockPane(), screenX, screenY);
+            getIndicatorPopup().showPopup(getPaneController().getDockPane(), screenX, screenY);
             getTransformer().notifyAfterShow();
         }
          */
@@ -470,7 +470,7 @@ public abstract class SideIndicator {
 
         @Override
         protected PaneIndicatorTransformer getTransformer() {
-            return getPaneHandler().getPaneTransformer();
+            return getPaneController().getPaneTransformer();
         }
     }//class SideIndicator
 

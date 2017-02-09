@@ -11,13 +11,13 @@ import javafx.scene.layout.Pane;
  *
  * @author Valery Shyshkin
  */
-public class ScenePaneHandler extends PaneHandler {
+public class ScenePaneController extends DockTargetController {
 
     private final Dockable dockable;
 
     private ChangeListener<? super Parent> parentListener;
 
-    public ScenePaneHandler(Dockable dockable) {
+    public ScenePaneController(Dockable dockable) {
         super(dockable);
         this.dockable = dockable;
         init();
@@ -26,12 +26,9 @@ public class ScenePaneHandler extends PaneHandler {
 
     private void init() {
         parentListener = this::parentChanged;
-//        if ( isDocked(dockable.node()) || dockable.node().getParent() != null ) {
         if (isDocked(dockable.node())) {
-            changeDockedState(dockable, true);
             setDockPane((Pane) dockable.node().getParent());
         }
-        System.err.println("ScenePaneHandler init " + dockable.node());
         dockable.node().parentProperty().addListener(parentListener);
     }
 
@@ -41,14 +38,7 @@ public class ScenePaneHandler extends PaneHandler {
         }
 
         setDockPane((Pane) newValue);
-        if (newValue != null) {
-            System.err.println("ScenePaneHandler");
-            //setDragPopup(new DragPopup(this));
-        }
-        if (newValue != null) {
-            changeDockedState(dockable, true);
 
-        }
         if (oldValue != null) {
             oldValue.parentProperty().removeListener(parentListener);
         }
@@ -67,21 +57,13 @@ public class ScenePaneHandler extends PaneHandler {
 
     @Override
     public void remove(Node dockNode) {
-/*        System.err.println("ScenePaneHandler DDD remove dockNode.getParent()=" + dockNode.getParent());
-        System.err.println("getParent().getParent=" + dockNode.getParent().getParent());
-        System.err.println("getParent().getParent.getParent=" + dockNode.getParent().getParent().getParent());
-*/        
         if (dockNode.getParent() != null && dockNode.getParent().getParent() != null
                 && (dockNode.getParent().getParent() instanceof SplitPane)) {
-//            System.err.println("DDD removed from splitPane");
             ((SplitPane) dockNode.getParent().getParent()).getItems().remove(dockNode);
         }
 
         if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
-//            System.err.println("DDD removed !!!!!!!!!!!! sz=" + ((Pane) dockNode.getParent()).getChildren().size());
             ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
-            //System.err.println("getParent().getParent=" + dockNode.getParent().getParent());
-            //System.err.println("getParent().getParent.getParent=" + dockNode.getParent().getParent().getParent());
         }
     }
 
