@@ -17,7 +17,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- *
+ * The class contains methods to manage all stages  
+ * 
  * @author Valery Shyshkin
  */
 public class DockRegistry {
@@ -58,7 +59,6 @@ public class DockRegistry {
 
             });
             StageHelper.getStages().addListener(getInstance()::onChangeStages);
-
         }
     }
 

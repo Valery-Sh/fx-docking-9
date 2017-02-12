@@ -22,7 +22,8 @@
 }
 */
 .dock-node:floating .dock-title-state-button {
-    -fx-graphic: url(maximize.png);
+    /*-fx-graphic: url(maximize.png);*/
+    -fx-graphic: url(restore.png);
 }
 
 .dock-node:maximized .dock-title-state-button {

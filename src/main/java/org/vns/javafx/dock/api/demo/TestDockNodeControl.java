@@ -22,7 +22,10 @@ public class TestDockNodeControl extends Application {
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
         dockPane.setId("DOCK PANE");
+        
         Button b1 = new Button("Add or Remove TitleBar");
+        Button b2 = new Button("b2r");
+        b1.setGraphic(b2);
         b1.setOnAction(a->{
             
         });
@@ -56,7 +59,7 @@ public class TestDockNodeControl extends Application {
         stage.setOnShown(s -> {
             //((Pane)custom.getContent()).getChildren().forEach(n -> {System.err.println("custom node=" + n);});
             //System.err.println("tp.lookup(arrowRegion)" + tp.);
-           // DockUtil.print(dockPane);
+            DockUtil.print(b1);
         });
         stage.show();
         

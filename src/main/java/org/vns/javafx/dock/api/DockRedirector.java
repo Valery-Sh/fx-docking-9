@@ -18,11 +18,11 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
- * This class is designed to solve the problem that arises during docking operation when one dock pane overlaps 
- * the other one.
- * Indeed, when in the process of dragging of a {@code dockable} object, 
- * the mouse cursor is over the target panels, overlapping each other then the 
- * indicators of dock positions correspond only to the target which if in front.
+ * This class is designed to solve the problem that arises during docking 
+ * operation when one dock pane overlaps  the other one.
+ * Indeed, when in the process of dragging of a {@code dockable} object 
+ * the mouse cursor is over the target panels that overlap each other then the 
+ * indicators of dock positions correspond only to the target which is in front.
  * An example is when we docked an object of type {@link org.vns.javafx.dock.DockTabPane ) to the
  * target pane of type {@link org.vns.javafx.dock.DockPane ). We are able to do
  * this way because of the fact that the {@code DockTabPane} implements both 
@@ -40,10 +40,11 @@ public class DockRedirector {
     private final Region topDockPane;
     private Stage stage;
     /**
-     * Create a new instance of the class for the specified dock target which is 
-     * in front.
+     * Creates a new instance of the class for the specified dock target.
+     * The constructor is called by the current {@link DragManager} object and the 
+     * mouse is positioned on the {@code topDockPane).
      * 
-     * @param topDockPane the dock target which is in front of overlapping targets. 
+     * @param topDockPane the dock target . 
      */
     public DockRedirector(Region topDockPane) {
         this.topDockPane = topDockPane;
@@ -54,37 +55,62 @@ public class DockRedirector {
         targetDockPane = findTargetDockPane();
         rootPane = new RedirectorDockPane(DockRegistry.dockPaneTarget(topDockPane).paneController(), DockRegistry.dockPaneTarget(targetDockPane).paneController());
     }
-
-    public Region findTargetDockPane() {
+    /**
+     * Returns the last parent of the {@code topDockPane}.
+     * We are going to show hierarchy of all dock targets starting from
+     * the top target and ending with the last parent.
+     * 
+     * @return the last parent of the {@code topDockPane}.
+     */
+    protected Region findTargetDockPane() {
         List<Node> nodes = TopNodeHelper.getParentChain(topDockPane, node -> {
             return DockRegistry.isDockPaneTarget(node);
         });
         return (Region) nodes.get(nodes.size() - 1);
     }
-
-    public DockTargetController getPaneController() {
+    /**
+     * Returns the pane controller of the last parent target node.
+     * @return the pane controller of the last parent target node.
+     */
+    protected DockTargetController getPaneController() {
         return DockRegistry.dockPaneTarget(targetDockPane).paneController();
     }
-
-    public Stage getStage() {
+    /**
+     * Returns the stage which is used to display indicator pane.
+     * The bounds of the stage are equal to the bounds of the last parent dock target.
+     * @return the stage which is used to display indicator pane.
+     */
+    protected Stage getStage() {
         return stage;
     }
-
+    /**
+     * Creates and shows a stage which is used to display an indicator pane.
+     * 
+     * @param topDockPane the dock target which is in front
+     * @return the object of type {@link DockRedirector}
+     */
     public static DockRedirector show(Region topDockPane) {
         DockRedirector redir = new DockRedirector(topDockPane);
         redir.show();
         return redir;
     }
-
-    public void show() {
+    
+    /**
+     * Calculates the position and bounds of the stage and then shows it. 
+     */
+    protected void show() {
         Point2D p = topDockPane.localToScreen(0, 0);
         double w = topDockPane.getWidth();
         double h = topDockPane.getHeight();
         getRootPane().setPrefSize(w, h);
         show(p.getX(), p.getY());
     }
-
-    public void show(double x, double y) {
+    /**
+     * Shows the indicator stage at the specified position on the screen.
+     * @param x the x coordinate of the upper left conner
+     * @param y the y coordinate of the upper left conner
+     */
+    protected void show(double x, double y) {
 
         rootPane.getStyleClass().clear();
         rootPane.getStyleClass().add("drag-redir-indicator");
@@ -127,15 +153,16 @@ public class DockRedirector {
         ph.getPaneIndicator().showWindow(stage);
         stage.show();
     }
-
-    public void close() {
+    /**
+     * Closes the indicator stage
+     */
+    protected void close() {
         stage.close();
     }
 
-    public boolean contains(double x, double y) {
+    protected boolean contains(double x, double y) {
         return DockUtil.contains(rootPane, x, y);
     }
-
     protected void delegateChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         stage.setX(targetDockPane.localToScreen(0, 0).getX());
         stage.setY(targetDockPane.localToScreen(0, 0).getY());
@@ -150,7 +177,10 @@ public class DockRedirector {
     public RedirectorDockPane getRootPane() {
         return rootPane;
     }
-
+    /**
+     * The pane which implements the interface {@link DockPaneTarget} and is used
+     * to display indicator buttons.
+     */
     public static class RedirectorDockPane extends StackPane implements DockPaneTarget {
 
         private DockTargetController paneController;
@@ -185,7 +215,11 @@ public class DockRedirector {
             return this;
         }
     }//DelegatePaneController
-
+    /**
+     * The pane controller of the target pane of type 
+     * {@link RedirectorDockPane}. 
+     * 
+     */
     public static class RedirectorPaneController extends DockTargetController {
 
         private final DockTargetController targetPaneController;
@@ -212,7 +246,7 @@ public class DockRedirector {
     }
 
     /**
-     *
+     * Builds and layouts indicator buttons. 
      */
     public static class RedirectorTransformer extends PaneIndicatorTransformer {
 
