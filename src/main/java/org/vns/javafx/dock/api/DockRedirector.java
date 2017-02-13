@@ -228,15 +228,27 @@ public class DockRedirector {
             super((Pane) dockPane);
             this.targetPaneController = targetPaneController;
         }
+        @Override
+        protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {
+            if (!(popup instanceof DragPopup)) {
+                return;
+            }
+            DragPopup dp = (DragPopup) popup; 
+            Dockable d = DockRegistry.dockable(node);
+            if (d.nodeController().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
+                dock(mousePos, node, dp.getTargetNodeSidePos(), dp.getTargetPaneSidePos(), dp.getDragTarget());
+            }
+
+        }
 
         @Override
-        protected void doDock(Point2D mousePos, Node node, Side dockPos) {
+        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
             DockTargetController ph = targetPaneController;
             Button btn = getPaneIndicator().getSelectedButton();
             if (btn != null) {
                 ph = (DockTargetController) btn.getUserData();
             }
-            ph.doDock(null, node, dockPos);
+            return ph.doDock(null, node, dockPos);
         }
 
         @Override

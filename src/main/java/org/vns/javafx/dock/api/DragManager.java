@@ -50,7 +50,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      * Pop up window which provides indicators to choose a place of the 
      * target object
      */
-    private DragPopup popup;
+    private IndicatorPopup popup;
 
     private DockRedirector popupDelegate;
     /**
@@ -242,7 +242,8 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
 
-        DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneController().getDragPopup();
+        //12.02DragPopup newPopup = DockRegistry.dockPaneTarget(root).paneController().getDragPopup();
+        IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).paneController().getDragPopup();
         
         if (popup != newPopup && popup != null) {
             popup.hide();
@@ -276,9 +277,12 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
-        if (dockable.nodeController().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
-            popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
+        if ( popup != null) {
+            popup.getPaneController().dock(pt, dockable.node(), popup);
         }
+        //if (dockable.nodeController().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
+        //    popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
+        //}
 
         if (popup != null && popup.isShowing()) {
             popup.hide();

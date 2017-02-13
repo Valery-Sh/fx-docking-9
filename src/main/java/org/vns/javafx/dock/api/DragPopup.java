@@ -12,60 +12,62 @@ import javafx.stage.Popup;
 import org.vns.javafx.dock.DockUtil;
 
 /**
- * An instance of the class is created for each object of type {@link DockTargetController}
- * when the last is created.
- * 
+ * An instance of the class is created for each object of type
+ * {@link DockTargetController} when the last is created.
+ *
  * The instance of the class is used by the object of type {@link DragManager}
- * and provides a pop up window in which the user can select a position on the 
- * screen where the dragged node will be placed. As a rule, the position is 
- * determined as a relative position to the target object, which 
- * can be an object of type {@link Dockable} or {@link DockPaneTarget}. 
- * The position of the target object is set as a value of type {@code javafx.geometry.Side} the object is given enum type Side 
- * and can take one of the values: Side.TOP, Side.RIGHT, Side.BOTTOM or Side.LEFT.
+ * and provides a pop up window in which the user can select a position on the
+ * screen where the dragged node will be placed. As a rule, the position is
+ * determined as a relative position to the target object, which can be an
+ * object of type {@link Dockable} or {@link DockPaneTarget}. The position of
+ * the target object is set as a value of type {@code javafx.geometry.Side} the
+ * object is given enum type Side and can take one of the values: Side.TOP,
+ * Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
- *  Most of the work with the object of the class is done in the method 
- * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the mouse cursor
- * resides above the {@code dockable node} then {@code DragPoup} provides two 
- * panes of position indicators:
+ * Most of the work with the object of the class is done in the method 
+ * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the
+ * mouse cursor resides above the {@code dockable node} then {@code DragPoup}
+ * provides two panes of position indicators:
  * <ul>
- *   <li>The pane of indicators for the {@code dockable} node</li>
- *   <li>The pane of indicators for the {@code DockPaneTarget} object which is
- *       a parent of the {@code dockable node} mentioned above
- *   </li>
+ * <li>The pane of indicators for the {@code dockable} node</li>
+ * <li>The pane of indicators for the {@code DockPaneTarget} object which is a
+ * parent of the {@code dockable node} mentioned above
+ * </li>
  * </ul>
  * </p>
- * If the mouse cursor resides above the {@code DockPaneTarget} then 
+ * If the mouse cursor resides above the {@code DockPaneTarget} then
  * {@code DragPoup} provides a single pane of position indicators.
  * <p>
  * Each pane generally comprises four indicators which are objects of type
  * Button. Every button is located on the top, right, bottom side of the
- * indicator pane. As noted above, the position of the button is determined 
- * in terms of {@code enum Side} type.
+ * indicator pane. As noted above, the position of the button is determined in
+ * terms of {@code enum Side} type.
  * </p>
  * When the user moves the mouse cursor and the cursor intersects one of the
- * buttons of the indicator pane, the rectangular area is displayed. This area points
- * to the position of the dragged object in case the user releases the mouse button.
+ * buttons of the indicator pane, the rectangular area is displayed. This area
+ * points to the position of the dragged object in case the user releases the
+ * mouse button.
  * <p>
- *   While dragging the object {@code Dockable} the  drag manager object defines the 
- *   cursor position and calculates the object type {@code DockPaneTarget},
- *   over which the mouse cursor is. For each recovered target it's own drag pop
- *   up is used to display an indicator pane.Such approach allows for different 
- *   implementations of {@code DockPaneTarget} to use different types of 
- *   indicator pane. For instance, the class {@code org.vns.javafx.dock.DockTabPane}
- *   uses an indicator pane containing a single button which moves with mouse cursor
- *   when the later is above the {@code tab area} of the {@code TabPane} control.
- *   This lets a user to insert a dragged object  in the desired position or even rearrange
- *   {@code Tab} objects.   
+ * While dragging the object {@code Dockable} the drag manager object defines
+ * the cursor position and calculates the object type {@code DockPaneTarget},
+ * over which the mouse cursor is. For each recovered target it's own drag pop
+ * up is used to display an indicator pane.Such approach allows for different
+ * implementations of {@code DockPaneTarget} to use different types of indicator
+ * pane. For instance, the class {@code org.vns.javafx.dock.DockTabPane} uses an
+ * indicator pane containing a single button which moves with mouse cursor when
+ * the later is above the {@code tab area} of the {@code TabPane} control. This
+ * lets a user to insert a dragged object in the desired position or even
+ * rearrange {@code Tab} objects.
  * </p>
- * 
+ *
  * @author Valery Shyshkin
  */
-public class DragPopup extends Popup {
-    
+public class DragPopup extends IndicatorPopup {
+
     /**
      * The owner of this object
      */
-    private final DockTargetController paneController;
+    //private final DockTargetController paneController;
     /**
      * The pop up window for dock nodes
      */
@@ -74,46 +76,43 @@ public class DragPopup extends Popup {
      * The current target to which the mouse cursor points
      */
     private Node dragTarget;
-  
+
     /**
-     * Current side position of the selected button 
-     * in the node indicator pane or null
+     * Current side position of the selected button in the node indicator pane
+     * or null
      */
     private Side targetNodeSidePos;
     /**
-     * Current side position of the selected button 
-     * in the pane indicator pane or null
+     * Current side position of the selected button in the pane indicator pane
+     * or null
      */
     private Side targetPaneSidePos;
-    
 
     /**
-     * Creates a new instance for the specified pane handler. 
+     * Creates a new instance for the specified pane handler.
+     *
      * @param paneController the owner of the object to be created
      */
     public DragPopup(DockTargetController paneController) {
-        this.paneController = paneController;
-        init();
-
+        super(paneController);
     }
 
-    private void init() {
-        initContent();
-    }
     /**
-     * Returns an object of type {@code Region} which corresponds to the 
-     * pane handler which used to create this object. 
-     * 
+     * Returns an object of type {@code Region} which corresponds to the pane
+     * handler which used to create this object.
+     *
      * @return Returns an object of type {@code Region}
      */
+    @Override
     public Region getDockPane() {
-        return paneController.getDockPane();
+        return getPaneController().getDockPane();
     }
 
+    @Override
     protected void initContent() {
-        Pane paneIndicatorPane = paneController.getPaneIndicator().getIndicatorPane();
+        Pane paneIndicatorPane = getPaneController().getPaneIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        Pane nodeIndicatorPane = paneController.getNodeIndicator().getIndicatorPane();
+        Pane nodeIndicatorPane = getPaneController().getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
 
         nodeIndicatorPopup = new Popup();
@@ -126,59 +125,63 @@ public class DragPopup extends Popup {
         nodeIndicatorPopup.getContent().add(nodeIndicatorPane);
         getContent().add(paneIndicatorPane);
     }
+
     /**
-     * Returns an object of type {@link SideIndicator} to display
-     * indicators for an object of type {@link DockPaneTarget}.
-     * 
+     * Returns an object of type {@link SideIndicator} to display indicators for
+     * an object of type {@link DockPaneTarget}.
+     *
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getPaneIndicator() {
-        return paneController.getPaneIndicator();
+        return getPaneController().getPaneIndicator();
     }
+
     /**
-     * Returns an object of type {@link SideIndicator} to display
-     * indicators for an object of type {@link Dockable}.
-     * 
+     * Returns an object of type {@link SideIndicator} to display indicators for
+     * an object of type {@link Dockable}.
+     *
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getNodeIndicator() {
-        return paneController.getNodeIndicator();
+        return getPaneController().getNodeIndicator();
     }
+
     /**
-     * Returns a pop up window which is used to display a doc node side indicators.
-     * @return a pop up window which is used to display a doc node side indicators.
+     * Returns a pop up window which is used to display a doc node side
+     * indicators.
+     *
+     * @return a pop up window which is used to display a doc node side
+     * indicators.
      */
     public Popup getNodeIndicatorPopup() {
         return nodeIndicatorPopup;
     }
+
     /**
-     * Returns an object of type {@link Dockable} or {@link DockPaneTarget} 
+     * Returns an object of type {@link Dockable} or {@link DockPaneTarget}
      * depending on the user selection or null if no object has been selected.
-     * 
+     *
      * @return a target object to dock to or null.
      */
     public Node getDragTarget() {
         return dragTarget;
     }
-    /**
-     * Returns the owner of this object used when the instance created.
-     * 
-     * @return the owner of this object used when the instance created.
-     */
-    public DockTargetController getPaneController() {
-        return this.paneController;
-    }
+
+
     /**
      * Returns a side position of the selected dock node if any.
-     * @return a side position of the selected dock node or null if no 
-     * selection has been done.
+     *
+     * @return a side position of the selected dock node or null if no selection
+     * has been done.
      */
     public Side getTargetNodeSidePos() {
         return targetNodeSidePos;
     }
+
     /**
      * Returns a side position of the selected dock pane target if any.
-     * @return a side position of the selected dock pane target or null if no 
+     *
+     * @return a side position of the selected dock pane target or null if no
      * selection has been done.
      */
     public Side getTargetPaneSidePos() {
@@ -189,7 +192,7 @@ public class DragPopup extends Popup {
      * Shows this pop up window
      */
     //public void showPopup(Node dockNode) {
-    public void showPopup() {        
+    public void showPopup() {
         setAutoFix(false);
         Point2D pos = getDockPane().localToScreen(0, 0);
         dragTarget = null;
@@ -197,17 +200,16 @@ public class DragPopup extends Popup {
     }
 
     /**
-     * Hides the pop up window when some condition are satisfied.
-     * If this pop up is hidden returns true. If the mouse cursor is still
-     * inside the pane indicator then return true. Otherwise hides the pop up 
-     * and returns false 
-     * 
+     * Hides the pop up window when some condition are satisfied. If this pop up
+     * is hidden returns true. If the mouse cursor is still inside the pane
+     * indicator then return true. Otherwise hides the pop up and returns false
+     *
      * @param x a screen x coordinate of the mouse cursor
-     * @param y a screen y coordinate  of the mouse cursor
-     * 
-     * @return If this pop up is hidden returns true. If the mouse cursor is still
-     * inside the pane indicator then return true. Otherwise hides the pop up 
-     * and returns false 
+     * @param y a screen y coordinate of the mouse cursor
+     *
+     * @return If this pop up is hidden returns true. If the mouse cursor is
+     * still inside the pane indicator then return true. Otherwise hides the pop
+     * up and returns false
      */
     public boolean hideWhenOut(double x, double y) {
         if (!isShowing()) {
@@ -221,10 +223,11 @@ public class DragPopup extends Popup {
         }
         return retval;
     }
+
     /**
-     * Checks whether the specified pane object contains the given screen 
+     * Checks whether the specified pane object contains the given screen
      * coordinates.
-     * 
+     *
      * @param buttonPane the pain object to be chacked
      * @param x a screen x coordinate
      * @param y a screen y coordinate
@@ -256,14 +259,16 @@ public class DragPopup extends Popup {
         return retval;
 
     }
+
     /**
-     * Returns the button which from the specified pane which contains the given
-     *   screen coordinates
+     * Returns the button from the specified pane which contains the given
+     * screen coordinates
+     *
      * @param buttonPane the pane which resides on the indicator pane
      * @param x a screen x coordinate
      * @param y a screen y coordinate
-     * @return the button which contains the specified screen coordinate or null if
-     *  no such button found
+     * @return the button which contains the specified screen coordinate or null
+     * if no such button found
      */
     public Button getSelectedButton(Pane buttonPane, double x, double y) {
         if (buttonPane == null) {
@@ -291,8 +296,10 @@ public class DragPopup extends Popup {
         return retval;
 
     }
+
     /**
      * The method is called when the the mouse moved during drag operation.
+     *
      * @param screenX a screen mouse position
      * @param screenY a screen mouse position
      */
@@ -311,26 +318,26 @@ public class DragPopup extends Popup {
         // findDockable returns null
         //
         Region targetNode = (Region) DockUtil.findDockable(getDockPane(), screenX, screenY);
-        System.err.println("findDockable: targetNode=" + targetNode);
+        //System.err.println("findDockable: targetNode=" + targetNode);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
-        
+
         getPaneIndicator().hideDockPlace();
-        
+
         dragTarget = null;
         targetNodeSidePos = null;
         targetPaneSidePos = null;
 
-        Button btn;  
+        Button btn;
         if (nodeIndicatorPopup.isShowing()) {
-            if ( (btn = getSelectedButton( getNodeIndicator().getTopButtons(), screenX, screenY)) != null )  {
-                showDockPlace(btn,targetNode, Side.TOP);
+            if ((btn = getSelectedButton(getNodeIndicator().getTopButtons(), screenX, screenY)) != null) {
+                showDockPlace(btn, targetNode, Side.TOP);
             } else if ((btn = getSelectedButton(getNodeIndicator().getLeftButtons(), screenX, screenY)) != null) {
-                showDockPlace(btn,targetNode, Side.LEFT);
+                showDockPlace(btn, targetNode, Side.LEFT);
             } else if ((btn = getSelectedButton(getNodeIndicator().getRightButtons(), screenX, screenY)) != null) {
-                showDockPlace(btn,targetNode, Side.RIGHT);
+                showDockPlace(btn, targetNode, Side.RIGHT);
             } else if ((btn = getSelectedButton(getNodeIndicator().getBottomButtons(), screenX, screenY)) != null) {
-                showDockPlace(btn,targetNode, Side.BOTTOM);
-            } else if ((btn = getSelectedButton(getNodeIndicator().getCenterButtons(), screenX, screenY)) != null ) {
+                showDockPlace(btn, targetNode, Side.BOTTOM);
+            } else if ((btn = getSelectedButton(getNodeIndicator().getCenterButtons(), screenX, screenY)) != null) {
                 getNodeIndicator().showDockPlace(targetNode, screenX, screenY);
             } else {
                 getDockPlace().setVisible(false);
@@ -340,46 +347,51 @@ public class DragPopup extends Popup {
                 return;
             }
         }
-        
-        if ( (btn = getSelectedButton(getPaneIndicator().getTopButtons(), screenX, screenY)) != null) {
-            showDockPlace(btn,Side.TOP);
+
+        if ((btn = getSelectedButton(getPaneIndicator().getTopButtons(), screenX, screenY)) != null) {
+            showDockPlace(btn, Side.TOP);
         } else if ((btn = getSelectedButton(getPaneIndicator().getLeftButtons(), screenX, screenY)) != null) {
-            showDockPlace(btn,Side.LEFT);
+            showDockPlace(btn, Side.LEFT);
         } else if ((btn = getSelectedButton(getPaneIndicator().getRightButtons(), screenX, screenY)) != null) {
-            showDockPlace(btn,Side.RIGHT);
+            showDockPlace(btn, Side.RIGHT);
         } else if ((btn = getSelectedButton(getPaneIndicator().getBottomButtons(), screenX, screenY)) != null) {
-            showDockPlace(btn,Side.BOTTOM);
+            showDockPlace(btn, Side.BOTTOM);
         } else if ((btn = getSelectedButton(getPaneIndicator().getCenterButtons(), screenX, screenY)) != null) {
             getPaneIndicator().showDockPlace(targetNode, screenX, screenY);
         } else {
             getDockPlace().setVisible(false);
         }
     }
-    
+
     /**
      * Displays a rectangle that shows a proposed place to dock a dragged node.
-     * @param selected the selected button which resides on the pane indicate pane.
-     * 
+     *
+     * @param selected the selected button which resides on the pane indicate
+     * pane.
+     *
      * @param side the position of the button on the pane indicator pane
      */
-    public void showDockPlace(Button selected,Side side) {
+    public void showDockPlace(Button selected, Side side) {
         //dockPos = side;           
         targetPaneSidePos = side;
         getPaneIndicator().showDockPlace(selected, side);
         Region pane = getDockPane();
-        if ( selected != null && selected.getUserData() != null ) {
-             pane = ((DockTargetController) selected.getUserData()).getDockPane();
-        }             
+        if (selected != null && selected.getUserData() != null) {
+            pane = ((DockTargetController) selected.getUserData()).getDockPane();
+        }
         dragTarget = pane;
     }
+
     /**
      * Displays a rectangle that shows a proposed place to dock a dragged node.
-     * @param selected the selected button which resides on the node indicate pane.
-     * 
+     *
+     * @param selected the selected button which resides on the node indicate
+     * pane.
+     *
      * @param target a dock node which is used as a target to dock
      * @param side the position of the button on the node indicator pane
      */
-    public void showDockPlace(Button selected,Region target, Side side) {
+    public void showDockPlace(Button selected, Region target, Side side) {
         targetNodeSidePos = null;
         if (target == null) {
             return;
@@ -392,13 +404,14 @@ public class DragPopup extends Popup {
     }
 
     /**
-     * Returns a shape of type {@code  Rectangle} to be displayed to
- showPopup a proposed dock place
-     * @return a shape of type {@code  Rectangle} to be displayed to
- showPopup a proposed dock place
+     * Returns a shape of type {@code  Rectangle} to be displayed to showPopup a
+     * proposed dock place
+     *
+     * @return a shape of type {@code  Rectangle} to be displayed to showPopup a
+     * proposed dock place
      */
     public Rectangle getDockPlace() {
-        return paneController.getPaneIndicator().getDockPlace();
+        return (Rectangle) getPaneController().getPaneIndicator().getDockPlace();
     }
 
 }

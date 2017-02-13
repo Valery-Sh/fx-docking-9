@@ -41,6 +41,8 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.FloatStageBuilder;
 import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.DragPopup;
+import org.vns.javafx.dock.api.IndicatorPopup;
 import org.vns.javafx.dock.api.SideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 import org.vns.javafx.dock.api.StageBuilder;
@@ -403,6 +405,18 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             }
             return txt;
         }
+        @Override
+        protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {
+            if (!(popup instanceof DragPopup)) {
+                return;
+            }
+            DragPopup dp = (DragPopup) popup; 
+            Dockable d = DockRegistry.dockable(node);
+            if (d.nodeController().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
+                dock(mousePos, node, dp.getTargetNodeSidePos(), dp.getTargetPaneSidePos(), dp.getDragTarget());
+            }
+
+        }
 
         @Override
         public Dockable dock(Dockable node, Side dockPos, Dockable target) {
@@ -418,7 +432,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         @Override
-        protected void doDock(Point2D mousePos, Node node, Side dockPos) {
+        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
             Dockable dockable = DockRegistry.dockable(node);
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 if (node.getScene().getWindow().isShowing()) {
@@ -482,6 +496,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                 container.adjustScreenPos();
             }
             container.setDocked(true);
+            return true;
         }
 
         public Node findNode(List<Node> list, double x, double y) {
@@ -610,7 +625,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
                 //}
                 Point2D retval;// = null;// = super.mousePos();
 
-                SideIndicator paneIndicator = getTargetPaneController().getDragPopup().getPaneIndicator();
+                SideIndicator paneIndicator = ((DragPopup)getTargetPaneController().getDragPopup()).getPaneIndicator();
                 //Pane topBtns;//= null;
                 //Button topPaneButton = null;
                 //if (paneIndicator != null) {

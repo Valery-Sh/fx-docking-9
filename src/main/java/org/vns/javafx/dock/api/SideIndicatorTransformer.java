@@ -158,7 +158,7 @@ public abstract class SideIndicatorTransformer {
         if (selected != null && selected.getUserData() != null) {
             pane = ((DockTargetController) selected.getUserData()).getDockPane();
         }
-        Rectangle dockPlace = getIndicator().getDockPlace();
+        Rectangle dockPlace = (Rectangle) getIndicator().getDockPlace();
         showDockPlace2(pane, side);
 
         switch (side) {
@@ -255,7 +255,7 @@ public abstract class SideIndicatorTransformer {
             PaneSideIndicator paneIndicator = paneHandler.getPaneIndicator();
 
             Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getDockPane().localToScreen(0, 0));
-            Rectangle dockPlace = paneIndicator.getDockPlace();
+            Rectangle dockPlace = (Rectangle) paneIndicator.getDockPlace();
             //showDockPlace2(pane, side);
 
             dockPlace.setX(p.getX());
@@ -325,20 +325,20 @@ public abstract class SideIndicatorTransformer {
 
             if (getTargetPaneController() != null) {
 
-                Node node = getTargetPaneController().getDragPopup().getPaneIndicator().getTopButtons();
+                Node node = ((DragPopup)getTargetPaneController().getDragPopup()).getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneController().getDragPopup().getPaneIndicator().getRightButtons();
+                node = ((DragPopup)getTargetPaneController().getDragPopup()).getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneController().getDragPopup().getPaneIndicator().getBottomButtons();
+                node = ((DragPopup)getTargetPaneController().getDragPopup()).getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = getTargetPaneController().getDragPopup().getPaneIndicator().getLeftButtons();
+                node = ((DragPopup)getTargetPaneController().getDragPopup()).getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }

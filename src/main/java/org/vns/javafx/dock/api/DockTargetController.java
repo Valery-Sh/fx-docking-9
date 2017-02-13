@@ -32,7 +32,8 @@ public class DockTargetController {
 
     private boolean usedAsDockTarget = true;
 
-    private DragPopup dragPopup;
+    //private DragPopup dragPopup;
+    private IndicatorPopup dragPopup;
 
     //09.02private final ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
 
@@ -67,11 +68,11 @@ public class DockTargetController {
     }
 
 
-    protected void setDragPopup(DragPopup dragPopup) {
+    protected void setDragPopup(IndicatorPopup dragPopup) {
         this.dragPopup = dragPopup;
     }
 
-    public DragPopup getDragPopup() {
+    public IndicatorPopup getDragPopup() {
         if (dragPopup != null) {
             return dragPopup;
         }
@@ -181,7 +182,11 @@ public class DockTargetController {
         }
         return paneIndicator;
     }
-
+    
+    public DockIndicator getDockIndicator() {
+        return getPaneIndicator();
+    }
+            
     protected PaneSideIndicator createPaneIndicator() {
         return new PaneSideIndicator(this);
     }
@@ -205,12 +210,17 @@ public class DockTargetController {
             dc.setPaneController(null);
         }
     }
-
+    //popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
+    protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {    
+        
+    }
     protected Dockable dock(Point2D mousePos, Node node, Side nodeDockPos, Side paneDockPos, Node target) {
         Dockable retval = null;
         if (paneDockPos != null) {
+            System.err.println("1 aaaaaaaaaaa");
             dock(mousePos, DockRegistry.dockable(node), paneDockPos);
         } else if (nodeDockPos != null) {
+            System.err.println("2 aaaaaaaaaaa");
             Dockable t = target == null ? null : DockRegistry.dockable(target);
             dock(mousePos, DockRegistry.dockable(node), nodeDockPos, t);
         }
@@ -235,10 +245,13 @@ public class DockTargetController {
         if (isDocked(dockable.node())) {
             return dockable;
         }
-        dockable.nodeController().setFloating(false);
+        
 //        dockable = convert(dockable, DockConverter.BEFORE_DOCK);
-
-        doDock(mousePos, dockable.node(), dockPos);
+System.err.println("44 aaaaaaaaaaa " + isDocked(dockable.node()));
+        if ( doDock(mousePos, dockable.node(), dockPos) ) {
+            System.err.println("set floatinfg FALSE");
+            dockable.nodeController().setFloating(false);
+        }
         return dockable;
     }
 
@@ -252,6 +265,7 @@ public class DockTargetController {
 */    
 
     public Dockable dock(Dockable dockable, Side dockPos) {
+        System.err.println("3 aaaaaaaaaaa");
         return dock(null, dockable, dockPos);
     }
 
@@ -259,10 +273,12 @@ public class DockTargetController {
         return dock(null, dockable, dockPos, target);
     }
 
-    protected void doDock(Point2D mousePos, Node node, Side dockPos) {
+    protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
+        return false;
     }
 
-    protected void doDock(Point2D mousePos, Node node, Side dockPos, Dockable targetDockable) {
+    protected boolean doDock(Point2D mousePos, Node node, Side dockPos, Dockable targetDockable) {
+        return false;
     }
 
     public FloatStageBuilder getStageBuilder(Dockable dockable) {

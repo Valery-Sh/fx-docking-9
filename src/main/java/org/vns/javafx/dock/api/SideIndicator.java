@@ -20,11 +20,8 @@ import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer
  *
  * @author Valery
  */
-public abstract class SideIndicator {
+public abstract class SideIndicator extends DockIndicator {
 
-    private final DockTargetController paneController;
-
-    private Rectangle dockPlace;
     private Rectangle dockPlace2;
 
     private Pane topButtons;
@@ -35,28 +32,25 @@ public abstract class SideIndicator {
 
     private Button selectedButton;
 
-    private Pane indicatorPane;
-
     //private final Map<Node, DockTargetController> sideButtonMap = new HashMap<>();
     private SideIndicatorTransformer transformer;
 
     protected SideIndicator(DockTargetController paneController) {
-        this.paneController = paneController;
+        super(paneController);
         init();
     }
 
     private void init() {
-        indicatorPane = createIndicatorPane();
-        dockPlace = new Rectangle();
-        dockPlace.getStyleClass().add("dock-place");
-        indicatorPane.getChildren().add(dockPlace);
+        System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " + this );
+        getDockPlace().getStyleClass().add("dock-place");
+        //addDockPlace();
         dockPlace2 = new Rectangle();
         dockPlace2.getStyleClass().add("dock-place2");
-        indicatorPane.getChildren().add(0, dockPlace2);
+        getIndicatorPane().getChildren().add(0, dockPlace2);
 
         //paneController.getDragPopup().getNodeIndicatorPopup().setOnShown(this);
     }
-
+    
     protected Window getIndicatorPopup() {
         return null;
     }
@@ -93,22 +87,9 @@ public abstract class SideIndicator {
 
     }
 
-    public Rectangle getDockPlace() {
-        return dockPlace;
-    }
 
     public Rectangle getDockPlace2() {
         return dockPlace2;
-    }
-
-    public DockTargetController getPaneController() {
-        return paneController;
-    }
-
-    protected abstract Pane createIndicatorPane();
-
-    public Pane getIndicatorPane() {
-        return indicatorPane;
     }
 
     public Button getSelectedButton() {
@@ -270,6 +251,7 @@ public abstract class SideIndicator {
         return retval;
     }
 
+    @Override
     public void hideDockPlace() {
         getDockPlace().setVisible(false);
         getDockPlace2().setVisible(false);
@@ -331,7 +313,7 @@ public abstract class SideIndicator {
 
         @Override
         protected Window getIndicatorPopup() {
-            return getPaneController().getDragPopup().getNodeIndicatorPopup();
+            return ((DragPopup)getPaneController().getDragPopup()).getNodeIndicatorPopup();
         }
 
         @Override
