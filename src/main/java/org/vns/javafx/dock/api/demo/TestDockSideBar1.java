@@ -40,10 +40,10 @@ public class TestDockSideBar1 extends Application {
         stage.setTitle("Test DockSideBar");
 
         DockSideBar sideBar01 = new DockSideBar();
-/*        sideBar01.setOrientation(Orientation.VERTICAL);
+        sideBar01.setOrientation(Orientation.VERTICAL);
         sideBar01.setRotation(Rotation.UP_DOWN);
         sideBar01.setSide(Side.RIGHT);
-*/        
+        
         //sideBar01.setHideOnExit(true);
         
         //borderPane.getChildren().add(sideBar01);
@@ -126,11 +126,14 @@ public class TestDockSideBar1 extends Application {
         
         //dn03.setPrefHeight(100);
         dn03.nodeController().setTitle("DockNode: dn03");        
+        DockNode dn04 = new DockNode();
+        dn04.nodeController().setTitle("DockNode: dn04");        
+
         
 //        sideBar01.getItems().add(dn03);
         //sideBar01.dock(dn02);
         //sideBar01.dock(dn03);     
-        sideBar01.getItems().addAll(dn02,dn03);
+        sideBar01.getItems().addAll(dn02,dn03, dn04);
 //        sideBar01.setMaxSize(sideBar01.getDelegate().getMaxWidth(), sideBar01.getDelegate().getMaxHeight());
 //        sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");

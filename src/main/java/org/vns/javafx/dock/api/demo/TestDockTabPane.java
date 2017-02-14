@@ -19,7 +19,6 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockTabPaneFX;
 
 /**
  *
@@ -185,17 +184,11 @@ public class TestDockTabPane  extends Application {
         stage01.setScene(scene01);
         stage01.show();
         
-        tabPane01.paneController().dock(stg01dn03, Side.TOP);        
+        tabPane01.dock(stg01dn03);        
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
-        Platform.runLater(()->{  
-            
-            //tbIv.setManaged(false);
-            //tbIv.toFront();
-        });
-
     }
 
     /**

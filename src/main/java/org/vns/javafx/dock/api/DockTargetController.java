@@ -5,7 +5,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
@@ -25,7 +24,7 @@ public class DockTargetController {
     private PaneIndicatorTransformer paneTransformer;
     private NodeIndicatorTransformer nodeTransformer;
 
-    private PaneSideIndicator paneIndicator;
+    private DockIndicator paneIndicator;
     private NodeSideIndicator nodeIndicator;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
@@ -34,7 +33,8 @@ public class DockTargetController {
 
     //private DragPopup dragPopup;
     private IndicatorPopup dragPopup;
-
+    
+    
     //09.02private final ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
 
     protected DockTargetController(Region dockPane) {
@@ -117,7 +117,27 @@ public class DockTargetController {
         });
 
     }
+    
 
+    protected void dock(Point2D mousePos, Dockable dockable) {
+        if (isDocked(dockable.node())) {
+            return;
+        }
+        
+        if ( doDock(mousePos, dockable.node()) ) {
+            dockable.nodeController().setFloating(false);
+        }
+        
+    }
+
+
+    protected void dock(Dockable dockable, Object pos)  {
+    }
+    
+    protected boolean doDock(Point2D mousePos, Node node) {
+        return false;
+    }
+    
 /*09.02    protected ObservableMap<Node, Dockable> getNotDockableItems() {
         return this.notDockableItemsProperty;
     }
@@ -176,20 +196,31 @@ public class DockTargetController {
         return new NodeSideIndicator(this);
     }
 
-    public PaneSideIndicator getPaneIndicator() {
+/*    public PaneSideIndicator getPaneIndicator() {
         if (paneIndicator == null) {
-            paneIndicator = createPaneIndicator();
+            paneIndicator = createDockIndicator();
+        }
+        return paneIndicator;
+    }
+*/
+    public DockIndicator getDockIndicator() {
+        if (paneIndicator == null) {
+            paneIndicator = createDockIndicator();
         }
         return paneIndicator;
     }
     
-    public DockIndicator getDockIndicator() {
-        return getPaneIndicator();
-    }
-            
-    protected PaneSideIndicator createPaneIndicator() {
+//    public DockIndicator getDockIndicator() {
+//        return getPaneIndicator();
+//    }
+
+    protected DockIndicator createDockIndicator() {
         return new PaneSideIndicator(this);
     }
+    
+//    protected PaneSideIndicator createPaneIndicator() {
+//        return new PaneSideIndicator(this);
+//    }
 
     public Region getDockPane() {
         return this.dockPane;
@@ -210,77 +241,26 @@ public class DockTargetController {
             dc.setPaneController(null);
         }
     }
-    //popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
-    protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {    
-        
+/*    public Dockable dock(Dockable dockable, Side dockPos) {
+        return dock(null, dockable, dockPos);
     }
-    protected Dockable dock(Point2D mousePos, Node node, Side nodeDockPos, Side paneDockPos, Node target) {
-        Dockable retval = null;
-        if (paneDockPos != null) {
-            System.err.println("1 aaaaaaaaaaa");
-            dock(mousePos, DockRegistry.dockable(node), paneDockPos);
-        } else if (nodeDockPos != null) {
-            System.err.println("2 aaaaaaaaaaa");
-            Dockable t = target == null ? null : DockRegistry.dockable(target);
-            dock(mousePos, DockRegistry.dockable(node), nodeDockPos, t);
-        }
-        return retval;
-    }
-
-    protected Dockable dock(Point2D mousePos, Dockable dockable, Side dockPos, Dockable target) {
-        if (isDocked(dockable.node())) {
-            return dockable;
-        }
-        if (!(dockable instanceof Node) && !DockRegistry.getDockables().containsKey(dockable.node())) {
-            DockRegistry.getDockables().put(dockable.node(), dockable);
-        }
-        dockable.nodeController().setFloating(false);
-
-        doDock(mousePos, dockable.node(), dockPos, target);
-        //09.02changeDockedState(dockable, true);
-        return dockable;
-    }
-
     protected Dockable dock(Point2D mousePos, Dockable dockable, Side dockPos) {
         if (isDocked(dockable.node())) {
             return dockable;
         }
         
-//        dockable = convert(dockable, DockConverter.BEFORE_DOCK);
-System.err.println("44 aaaaaaaaaaa " + isDocked(dockable.node()));
         if ( doDock(mousePos, dockable.node(), dockPos) ) {
-            System.err.println("set floatinfg FALSE");
             dockable.nodeController().setFloating(false);
         }
         return dockable;
     }
-
-/*    protected Dockable convert(Dockable source, int when) {
-        Dockable retval = source;
-        if (source instanceof DockConverter) {
-            retval = ((DockConverter) source).convert(source, when);
-        }
-        return retval;
+  */  
+    /////////////////////////
+/*    public void dock(Dockable dockable)  {
+        getDockExecutor().dock(dockable);
     }
 */    
-
-    public Dockable dock(Dockable dockable, Side dockPos) {
-        System.err.println("3 aaaaaaaaaaa");
-        return dock(null, dockable, dockPos);
-    }
-
-    public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
-        return dock(null, dockable, dockPos, target);
-    }
-
-    protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
-        return false;
-    }
-
-    protected boolean doDock(Point2D mousePos, Node node, Side dockPos, Dockable targetDockable) {
-        return false;
-    }
-
+///////////////////////////////////////////////////////////////////////
     public FloatStageBuilder getStageBuilder(Dockable dockable) {
         return new FloatStageBuilder(dockable.nodeController());
     }

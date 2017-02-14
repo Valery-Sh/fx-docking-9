@@ -120,7 +120,8 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
             }
             if (change.wasAdded()) {
                 for (int i = change.getFrom(); i < change.getTo(); i++) {
-                    paneController.dock(i, change.getList().get(i));
+                    ((TabPaneController)paneController()).getDockExecutor().dock(i, change.getList().get(i));
+                    //dock(i, change.getList().get(i));
                 }
             }
         }//while
@@ -145,7 +146,6 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
 
     public int getItemIndex(double x, double y) {
         int retval = -1;
-
 
         Node node = DockUtil.findNode(tabArea.getTitleBars(), x, y);
         if (node != null) {
@@ -333,6 +333,7 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
     }
 
     public static class TabPaneController extends DockTargetController {
+
         private DockIndicator dockIndicator;
 
         public TabPaneController(Region dockPane) {
@@ -361,17 +362,19 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
         }
 
         @Override
-        protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {
-            if (popup == null || getDockPane().getItemIndex(mousePos.getX(), mousePos.getY()) <  0 ) {
-                return;
-            }
-            Dockable d = DockRegistry.dockable(node);
-            if (d.nodeController().isFloating()) {
-                dock(mousePos, node, null, Side.TOP, null);
-            }
-
+        protected void dock(Point2D mousePos, Dockable dockable) {
+            getDockExecutor().dock(mousePos, dockable);
         }
 
+        @Override
+        protected void dock(Dockable dockable, Object pos) {
+            getDockExecutor().dock(dockable, pos);
+        }
+
+        @Override
+        protected boolean doDock(Point2D mousePos, Node node) {
+            return getDockExecutor().doDock(mousePos, node);
+        }
 
         @Override
         public DockIndicator getDockIndicator() {
@@ -380,11 +383,20 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
             }
             return dockIndicator;
         }
-
-        public void createDockIndicator() {
+        private DockExecutor dockExecutor;
+        
+        protected DockExecutor getDockExecutor() {
+            if ( dockExecutor == null ) {
+                dockExecutor = new DockExecutor(this);
+            }
+            return dockExecutor;
+        }
+        
+        
+        public DockIndicator createDockIndicator() {
             dockIndicator = new DockIndicator(this) {
                 private Rectangle tabDockPlace;
-                
+
                 @Override
                 public void showIndicator(double screenX, double screenY, Region targetNode) {
                     getDragPopup().show(getPaneController().getDockPane(), screenX, screenY);
@@ -401,8 +413,6 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
                 protected String getStylePrefix() {
                     return "dock-indicator";
                 }
-
-
 
                 protected Rectangle getTabDockPlace() {
                     if (tabDockPlace == null) {
@@ -474,46 +484,7 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
                 }
 
             };
-
-        }
-
-        @Override
-        public Dockable dock(Dockable node, Side dockPos, Dockable target) {
-            return null;
-        }
-
-        protected void dock(int idx, Dockable d) {
-            if (d.node().getScene() != null && d.node().getScene().getWindow() != null && (d.node().getScene().getWindow() instanceof Stage)) {
-                ((Stage) d.node().getScene().getWindow()).close();
-            }
-
-            Tab tab = getDockPane().addTab(idx, d.node());
-
-            DockNodeController nodeController = d.nodeController();
-            nodeController.setDragNode(tab.getTitleBar());
-            if (nodeController.getPaneController() == null || nodeController.getPaneController() != this) {
-                nodeController.setPaneController(this);
-            }
-
-        }
-
-        @Override
-        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
-            if (!DockRegistry.isDockable(node)) {
-                return false;
-            }
-            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                ((Stage) node.getScene().getWindow()).close();
-            }
-
-            Tab tab = getDockPane().addTab(mousePos, node);
-
-            DockNodeController nodeController = DockRegistry.dockable(node).nodeController();
-            nodeController.setDragNode(tab.getTitleBar());
-            if (nodeController.getPaneController() == null || nodeController.getPaneController() != this) {
-                nodeController.setPaneController(this);
-            }
-            return true;
+            return dockIndicator;
         }
 
         @Override
@@ -936,7 +907,6 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
         }
     }
 
-
     public static class CustomStackPane extends StackPane {
 
         public CustomStackPane() {
@@ -978,4 +948,70 @@ public class DockTabPane3 extends Control implements Dockable, DockPaneTarget, L
         }
     }
 
+    public static class DockExecutor {
+
+        private TabPaneController paneController;
+
+        public DockExecutor(TabPaneController paneController) {
+            this.paneController = paneController;
+        }
+
+        protected void dock(Point2D mousePos, Dockable dockable) {
+            Node node = dockable.node();
+            if (((DockTabPane3) paneController.getDockPane()).getItemIndex(mousePos.getX(), mousePos.getY()) < 0) {
+                return;
+            }
+            Dockable d = DockRegistry.dockable(node);
+            if (d.nodeController().isFloating()) {
+                if (doDock(mousePos, node)) {
+                    dockable.nodeController().setFloating(false);
+                }
+            }
+        }
+
+        protected void dock(int idx, Dockable d) {
+            if (d.node().getScene() != null && d.node().getScene().getWindow() != null && (d.node().getScene().getWindow() instanceof Stage)) {
+                ((Stage) d.node().getScene().getWindow()).close();
+            }
+
+            Tab tab = ((DockTabPane3) paneController.getDockPane()).addTab(idx, d.node());
+
+            DockNodeController nodeController = d.nodeController();
+            nodeController.setDragNode(tab.getTitleBar());
+            if (nodeController.getPaneController() == null || nodeController.getPaneController() != paneController) {
+                nodeController.setPaneController(paneController);
+            }
+            if (nodeController.isFloating()) {
+                nodeController.setFloating(false);
+            }
+
+        }
+
+        protected void dock(Dockable dockable, Object pos) {
+            if (pos instanceof Side) {
+                int idx = ((DockTabPane3) paneController.getDockPane()).getTabs().size();
+                dock(idx, dockable);
+            }
+        }
+
+        protected boolean doDock(Point2D mousePos, Node node) {
+            if (!DockRegistry.isDockable(node)) {
+                return false;
+            }
+            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
+                ((Stage) node.getScene().getWindow()).close();
+            }
+
+            Tab tab = ((DockTabPane3) paneController.getDockPane()).addTab(mousePos, node);
+
+            DockNodeController nodeController = DockRegistry.dockable(node).nodeController();
+            nodeController.setDragNode(tab.getTitleBar());
+            if (nodeController.getPaneController() == null || nodeController.getPaneController() != paneController) {
+                nodeController.setPaneController(paneController);
+            }
+            return true;
+        }
+
+    }
 }//DockTabPane
+

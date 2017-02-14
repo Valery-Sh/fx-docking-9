@@ -13,7 +13,7 @@ public abstract class DockIndicator {
     private Pane indicatorPane;
 
     //private final Map<Node, DockTargetController> sideButtonMap = new HashMap<>();
-    private SideIndicatorTransformer transformer;
+//    private SideIndicatorTransformer transformer;
 
     protected DockIndicator(DockTargetController paneController) {
         this.paneController = paneController;

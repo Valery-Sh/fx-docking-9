@@ -39,10 +39,6 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
 
-    public void dock(Dockable dockable, Side dockPos) {
-        nodeController.getPaneController().dock(dockable, dockPos, this);
-    }
-
     public void setDragNode(Node dragSource) {
         nodeController.setDragNode(dragSource);
     }

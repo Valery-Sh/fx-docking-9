@@ -252,7 +252,7 @@ public abstract class SideIndicatorTransformer {
                 return;
             }
             DockTargetController paneHandler = getIndicator().getPaneController();
-            PaneSideIndicator paneIndicator = paneHandler.getPaneIndicator();
+            PaneSideIndicator paneIndicator = (PaneSideIndicator) paneHandler.getDockIndicator();
 
             Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getDockPane().localToScreen(0, 0));
             Rectangle dockPlace = (Rectangle) paneIndicator.getDockPlace();

@@ -278,11 +278,8 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
         if ( popup != null) {
-            popup.getPaneController().dock(pt, dockable.node(), popup);
+            popup.getPaneController().dock(pt, dockable);            
         }
-        //if (dockable.nodeController().isFloating() && popup != null && (popup.getTargetNodeSidePos() != null || popup.getTargetPaneSidePos() != null)  && popup.getDragTarget() != null) {
-        //    popup.getPaneController().dock(pt, dockable.node(), popup.getTargetNodeSidePos(), popup.getTargetPaneSidePos(), popup.getDragTarget());
-        //}
 
         if (popup != null && popup.isShowing()) {
             popup.hide();

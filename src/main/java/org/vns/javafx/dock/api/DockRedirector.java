@@ -14,23 +14,25 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockTabPane3;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
 import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
- * This class is designed to solve the problem that arises during docking 
- * operation when one dock pane overlaps  the other one.
- * Indeed, when in the process of dragging of a {@code dockable} object 
- * the mouse cursor is over the target panels that overlap each other then the 
- * indicators of dock positions correspond only to the target which is in front.
- * An example is when we docked an object of type {@link org.vns.javafx.dock.DockTabPane ) to the
+ * This class is designed to solve the problem that arises during docking
+ * operation when one dock pane overlaps the other one. Indeed, when in the
+ * process of dragging of a {@code dockable} object the mouse cursor is over the
+ * target panels that overlap each other then the indicators of dock positions
+ * correspond only to the target which is in front. An example is when we docked
+ * an object of type {@link org.vns.javafx.dock.DockTabPane ) to the
  * target pane of type {@link org.vns.javafx.dock.DockPane ). We are able to do
- * this way because of the fact that the {@code DockTabPane} implements both 
- * {@code Dockable} and {@DockPaneTarget} interfaces. 
- * 
- * This class solves the problem allowing to show the hierarchy of targets and 
+ * this way because of the fact that the {@code DockTabPane} implements both
+ * {@code Dockable} and {@DockPaneTarget} interfaces.
+ *
+ * This class solves the problem allowing to show the hierarchy of targets and
  * select the needed one.
- * 
+ *
  * @author Valery Shyshkin
  */
 public class DockRedirector {
@@ -39,12 +41,13 @@ public class DockRedirector {
     private Region targetDockPane;
     private final Region topDockPane;
     private Stage stage;
+
     /**
-     * Creates a new instance of the class for the specified dock target.
-     * The constructor is called by the current {@link DragManager} object and the 
+     * Creates a new instance of the class for the specified dock target. The
+     * constructor is called by the current {@link DragManager} object and the
      * mouse is positioned on the {@code topDockPane).
-     * 
-     * @param topDockPane the dock target . 
+     *
+     * @param topDockPane the dock target .
      */
     public DockRedirector(Region topDockPane) {
         this.topDockPane = topDockPane;
@@ -55,11 +58,12 @@ public class DockRedirector {
         targetDockPane = findTargetDockPane();
         rootPane = new RedirectorDockPane(DockRegistry.dockPaneTarget(topDockPane).paneController(), DockRegistry.dockPaneTarget(targetDockPane).paneController());
     }
+
     /**
-     * Returns the last parent of the {@code topDockPane}.
-     * We are going to show hierarchy of all dock targets starting from
-     * the top target and ending with the last parent.
-     * 
+     * Returns the last parent of the {@code topDockPane}. We are going to show
+     * hierarchy of all dock targets starting from the top target and ending
+     * with the last parent.
+     *
      * @return the last parent of the {@code topDockPane}.
      */
     protected Region findTargetDockPane() {
@@ -68,24 +72,29 @@ public class DockRedirector {
         });
         return (Region) nodes.get(nodes.size() - 1);
     }
+
     /**
      * Returns the pane controller of the last parent target node.
+     *
      * @return the pane controller of the last parent target node.
      */
     protected DockTargetController getPaneController() {
         return DockRegistry.dockPaneTarget(targetDockPane).paneController();
     }
+
     /**
-     * Returns the stage which is used to display indicator pane.
-     * The bounds of the stage are equal to the bounds of the last parent dock target.
+     * Returns the stage which is used to display indicator pane. The bounds of
+     * the stage are equal to the bounds of the last parent dock target.
+     *
      * @return the stage which is used to display indicator pane.
      */
     protected Stage getStage() {
         return stage;
     }
+
     /**
      * Creates and shows a stage which is used to display an indicator pane.
-     * 
+     *
      * @param topDockPane the dock target which is in front
      * @return the object of type {@link DockRedirector}
      */
@@ -94,9 +103,9 @@ public class DockRedirector {
         redir.show();
         return redir;
     }
-    
+
     /**
-     * Calculates the position and bounds of the stage and then shows it. 
+     * Calculates the position and bounds of the stage and then shows it.
      */
     protected void show() {
         Point2D p = topDockPane.localToScreen(0, 0);
@@ -105,8 +114,10 @@ public class DockRedirector {
         getRootPane().setPrefSize(w, h);
         show(p.getX(), p.getY());
     }
+
     /**
      * Shows the indicator stage at the specified position on the screen.
+     *
      * @param x the x coordinate of the upper left conner
      * @param y the y coordinate of the upper left conner
      */
@@ -148,11 +159,12 @@ public class DockRedirector {
         stage.setWidth(targetDockPane.getWidth());
         stage.setHeight(targetDockPane.getHeight());
         DockTargetController ph = DockRegistry.dockPaneTarget(rootPane).paneController();
-        
+
         //ph.getPaneIndicator().windowBeforeShow(null);
-        ph.getPaneIndicator().showWindow(stage);
+        ((PaneSideIndicator)ph.getDockIndicator()).showWindow(stage);
         stage.show();
     }
+
     /**
      * Closes the indicator stage
      */
@@ -163,6 +175,7 @@ public class DockRedirector {
     protected boolean contains(double x, double y) {
         return DockUtil.contains(rootPane, x, y);
     }
+
     protected void delegateChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         stage.setX(targetDockPane.localToScreen(0, 0).getX());
         stage.setY(targetDockPane.localToScreen(0, 0).getY());
@@ -177,9 +190,10 @@ public class DockRedirector {
     public RedirectorDockPane getRootPane() {
         return rootPane;
     }
+
     /**
-     * The pane which implements the interface {@link DockPaneTarget} and is used
-     * to display indicator buttons.
+     * The pane which implements the interface {@link DockPaneTarget} and is
+     * used to display indicator buttons.
      */
     public static class RedirectorDockPane extends StackPane implements DockPaneTarget {
 
@@ -214,11 +228,15 @@ public class DockRedirector {
         public Pane pane() {
             return this;
         }
+        
+        
+        
     }//DelegatePaneController
+
     /**
-     * The pane controller of the target pane of type 
-     * {@link RedirectorDockPane}. 
-     * 
+     * The pane controller of the target pane of type
+     * {@link RedirectorDockPane}.
+     *
      */
     public static class RedirectorPaneController extends DockTargetController {
 
@@ -228,37 +246,29 @@ public class DockRedirector {
             super((Pane) dockPane);
             this.targetPaneController = targetPaneController;
         }
-        @Override
-        protected void dock(Point2D mousePos, Node node, IndicatorPopup popup) {
-            if (!(popup instanceof DragPopup)) {
-                return;
-            }
-            DragPopup dp = (DragPopup) popup; 
-            Dockable d = DockRegistry.dockable(node);
-            if (d.nodeController().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
-                dock(mousePos, node, dp.getTargetNodeSidePos(), dp.getTargetPaneSidePos(), dp.getDragTarget());
-            }
-
-        }
-
-        @Override
-        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
-            DockTargetController ph = targetPaneController;
-            Button btn = getPaneIndicator().getSelectedButton();
-            if (btn != null) {
-                ph = (DockTargetController) btn.getUserData();
-            }
-            return ph.doDock(null, node, dockPos);
-        }
 
         @Override
         protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
             return new RedirectorTransformer();
         }
+        
+        private DockExecutor dockExecutor;
+        
+        protected DockExecutor getDockExecutor() {
+            if ( dockExecutor == null ) {
+                dockExecutor = new DockExecutor(this);
+            }
+            return dockExecutor;
+        }
+        @Override
+        protected void dock(Point2D mousePos, Dockable dockable) {
+            getDockExecutor().dock(mousePos, dockable);
+        }
+
     }
 
     /**
-     * Builds and layouts indicator buttons. 
+     * Builds and layouts indicator buttons.
      */
     public static class RedirectorTransformer extends PaneIndicatorTransformer {
 
@@ -267,6 +277,7 @@ public class DockRedirector {
 
         /**
          * Modifies SideButtons
+         *
          * @param win a window to be shown
          */
         @Override
@@ -318,13 +329,12 @@ public class DockRedirector {
 
             Node dp = getIndicator().getDockPlace2();
             getIndicator().getIndicatorPane().getChildren().remove(dp);
-            getIndicator().getIndicatorPane().getChildren().add(0,dp);            
-            
+            getIndicator().getIndicatorPane().getChildren().add(0, dp);
+
             dp = getIndicator().getDockPlace2();
             getIndicator().getIndicatorPane().getChildren().remove(dp);
-            getIndicator().getIndicatorPane().getChildren().add(0,dp);
-            
-            
+            getIndicator().getIndicatorPane().getChildren().add(0, dp);
+
         }
 
         protected void topRight(Pane buttons) {
@@ -443,5 +453,57 @@ public class DockRedirector {
                 }
             }
         }
+
     }
+
+    public static class DockExecutor {
+        
+        private DockTargetController paneController;
+        
+        public DockExecutor(DockTargetController paneController) {
+            this.paneController = paneController;
+        }
+
+        protected void dock(Point2D mousePos, Dockable dockable) {
+            Node node = dockable.node();
+            IndicatorPopup popup = getPaneController().getDragPopup();
+            if (!(popup instanceof DragPopup)) {
+                return;
+            }
+
+            DragPopup dp = (DragPopup) popup;
+            Dockable d = DockRegistry.dockable(node);
+            if (d.nodeController().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
+//                dock(mousePos, node, dp.getTargetPaneSidePos());
+                DockTargetController ph = getTargetController();
+                Button btn = ((PaneSideIndicator)getPaneController().getDockIndicator()).getSelectedButton();
+                if (btn != null) {
+                    ph = (DockTargetController) btn.getUserData();
+                }
+                //ph.getDockExecutor().dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
+                ph.dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());                
+
+            }
+        }
+
+        public DockTargetController getPaneController() {
+            return paneController;
+        }
+
+        protected DockTargetController getTargetController() {
+            return ((RedirectorDockPane) getPaneController().getDockPane()).getTargetController();
+        }
+
+        /*        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
+            DockTargetController ph = getTargetController();
+            Button btn = getPaneController().getPaneIndicator().getSelectedButton();
+            if (btn != null) {
+                ph = (DockTargetController) btn.getUserData();
+            }
+            ph.getDockExecutor().dock(DockRegistry.dockable(node), dockPos);
+            return true;
+        }
+         */
+    }
+
 }//class DelegeateDragPopup
