@@ -1,7 +1,6 @@
 package org.vns.javafx.dock.api;
 
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;

@@ -167,18 +167,6 @@ public class IndicatorPopup extends Popup {
     public void handle(double screenX, double screenY) {
         setOnHiding(v -> {
         });
-        //
-        // Try to find a Dockable object which paneIndicator contains the specifired 
-        // (x,y) coordinates
-        // The result may be null
-        //
-        //
-        // if the node exists but its property usedAsDockTarge==false then 
-        // findDockable returns null
-        //
-        //Region targetNode = (Region) DockUtil.findDockable(getDockPane(), screenX, screenY);
-        //System.err.println("findDockable: targetNode=" + targetNode);
-        //getNodeIndicator().showIndicator(screenX, screenY, targetNode);
 
         getDockIndicator().hideDockPlace();
         getDockIndicator().showDockPlace(screenX,screenY);

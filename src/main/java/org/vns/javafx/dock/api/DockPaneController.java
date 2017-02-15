@@ -18,6 +18,12 @@ public class DockPaneController extends DockTargetController {
 
     //private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
     private DockDelegate dockDelegate;
+    private DockExecutor dockExecutor;
+    
+/*    private SideIndicatorTransformer.PaneIndicatorTransformer paneTransformer;
+    private SideIndicatorTransformer.NodeIndicatorTransformer nodeTransformer;
+*/    
+    private SideIndicator.NodeSideIndicator nodeIndicator;
 
     public DockPaneController(Region dockPane) {
         super(dockPane);
@@ -27,8 +33,50 @@ public class DockPaneController extends DockTargetController {
     private void init() {
         dockDelegate = new DockDelegate((DockSplitPane) getDockPane(), this);
     }
-    private DockExecutor dockExecutor;
+///////////////////////////
+    /*protected void setPaneTransformer(SideIndicatorTransformer.PaneIndicatorTransformer paneTransformer) {
+        this.paneTransformer = paneTransformer;
+    }
 
+    protected void setNodeTransformer(SideIndicatorTransformer.NodeIndicatorTransformer nodeTransformer) {
+        this.nodeTransformer = nodeTransformer;
+    }
+
+    public SideIndicatorTransformer.NodeIndicatorTransformer getNodeTransformer() {
+        if (nodeTransformer == null) {
+            nodeTransformer = createNodeIndicatorTransformer();
+        }
+        return nodeTransformer;
+    }
+
+    protected SideIndicatorTransformer.NodeIndicatorTransformer createNodeIndicatorTransformer() {
+        return new SideIndicatorTransformer.NodeIndicatorTransformer();
+    }
+
+    public SideIndicatorTransformer.PaneIndicatorTransformer getPaneTransformer() {
+        if (paneTransformer == null) {
+            paneTransformer = createPaneIndicatorTransformer();
+        }
+        return paneTransformer;
+    }
+
+    protected SideIndicatorTransformer.PaneIndicatorTransformer createPaneIndicatorTransformer() {
+        return new SideIndicatorTransformer.PaneIndicatorTransformer();
+    }
+*/
+    ///
+    public SideIndicator.NodeSideIndicator getNodeIndicator() {
+        if (nodeIndicator == null) {
+            nodeIndicator = createNodeIndicator();
+        }
+        return nodeIndicator;
+    }
+
+    protected SideIndicator.NodeSideIndicator createNodeIndicator() {
+        return new SideIndicator.NodeSideIndicator(this);
+    }
+    
+    //////////////////////
     protected DockExecutor getDockExecutor() {
         if (dockExecutor == null) {
             dockExecutor = new DockExecutor(this);
@@ -82,7 +130,6 @@ public class DockPaneController extends DockTargetController {
         public DockDelegate(DockSplitPane root, DockPaneController paneController) {
             this.root = root;
             this.paneController = paneController;
-            //System.err.println("Constr SplitDelegate ");
         }
 
         public DockSplitPane getRoot() {

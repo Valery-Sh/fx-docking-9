@@ -73,10 +73,8 @@ public class StageBuilder extends FloatStageBuilder {
 
         newStage.setTitle("NEW STAGE");
         Region lastDockPane = dockable.nodeController().getPaneController().getDockPane();
-        System.err.println("LAST DOCK PANE");
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
-            System.err.println("INIT OWNER");
             newStage.initOwner(lastDockPane.getScene().getWindow());
         }
         newStage.initStyle(getStageStyle());

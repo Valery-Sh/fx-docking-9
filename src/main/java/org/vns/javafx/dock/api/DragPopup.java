@@ -110,9 +110,9 @@ public class DragPopup extends IndicatorPopup {
 
     @Override
     protected void initContent() {
-        Pane paneIndicatorPane = getPaneController().getDockIndicator().getIndicatorPane();
+        Pane paneIndicatorPane = ((DockPaneController)getPaneController()).getDockIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        Pane nodeIndicatorPane = getPaneController().getNodeIndicator().getIndicatorPane();
+        Pane nodeIndicatorPane = ((DockPaneController)getPaneController()).getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
 
         nodeIndicatorPopup = new Popup();
@@ -143,7 +143,7 @@ public class DragPopup extends IndicatorPopup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getNodeIndicator() {
-        return getPaneController().getNodeIndicator();
+        return ((DockPaneController)getPaneController()).getNodeIndicator();
     }
 
     /**
@@ -191,7 +191,6 @@ public class DragPopup extends IndicatorPopup {
     /**
      * Shows this pop up window
      */
-    //public void showPopup(Node dockNode) {
     public void showPopup() {
         setAutoFix(false);
         Point2D pos = getDockPane().localToScreen(0, 0);
@@ -211,6 +210,7 @@ public class DragPopup extends IndicatorPopup {
      * still inside the pane indicator then return true. Otherwise hides the pop
      * up and returns false
      */
+    @Override
     public boolean hideWhenOut(double x, double y) {
         if (!isShowing()) {
             return true;
@@ -303,6 +303,7 @@ public class DragPopup extends IndicatorPopup {
      * @param screenX a screen mouse position
      * @param screenY a screen mouse position
      */
+    @Override
     public void handle(double screenX, double screenY) {
         setOnHiding(v -> {
             dragTarget = null;
@@ -318,7 +319,6 @@ public class DragPopup extends IndicatorPopup {
         // findDockable returns null
         //
         Region targetNode = (Region) DockUtil.findDockable(getDockPane(), screenX, screenY);
-        //System.err.println("findDockable: targetNode=" + targetNode);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
 
         getPaneIndicator().hideDockPlace();
@@ -410,6 +410,7 @@ public class DragPopup extends IndicatorPopup {
      * @return a shape of type {@code  Rectangle} to be displayed to showPopup a
      * proposed dock place
      */
+    @Override
     public Rectangle getDockPlace() {
         return (Rectangle) getPaneController().getDockIndicator().getDockPlace();
     }

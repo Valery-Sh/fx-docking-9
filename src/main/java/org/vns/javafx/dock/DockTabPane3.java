@@ -15,7 +15,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
@@ -28,7 +27,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -43,10 +41,7 @@ import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.DragPopup;
 import org.vns.javafx.dock.api.IndicatorPopup;
-import org.vns.javafx.dock.api.SideIndicator;
-import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
 
 /**
  *

@@ -5,7 +5,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-//import org.vns.javafx.dock.DockPane.ControlDockPane;
 import org.vns.javafx.dock.api.DockPaneController;
 import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -46,13 +45,6 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         return delegate;
     }
 
-    /*    @Override
-    protected Skin<?> createDefaultSkin() {
-        System.err.println("CREATE SKIN");
-        //delegate = new ControlDockPane();
-        return new DockPaneSplitSkin(this);
-    }
-     */
     @Override
     public DockSplitPane pane() {
         return this;
@@ -107,13 +99,13 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         }
     }
 
+    @Override
     public void update() {
-        //update(((DockPaneController) getDelegate().paneController()).getRootSplitPane());
-        System.err.println("getDelegate().paneController()=" + getDelegate());
         update(this);
         update(this, getDelegate().paneController());
     }
 
+    @Override
     protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
@@ -124,10 +116,10 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         }
     }
 
+    @Override
     protected void splitPaneRemoved(SplitPane sp, DockPaneTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
-                //DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
             } else if (node instanceof SplitPane) {
                 splitPaneRemoved(((SplitPane) node), dpt);
             }

@@ -476,10 +476,6 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             Container container = new Container(dockable);
             getItemMap().put(item, container);
 
-            System.err.println("INDEX == " + idx);
-            if (idx >= 0 && idx < tb.getItems().size()) {
-                System.err.println("INSEX == " + tb.getItems().get(idx));
-            }
             itemButton.setRotate(((DockSideBar) getDockPane()).getRotation().getAngle());
             itemButton.setOnAction(a -> {
                 a.consume();
@@ -506,7 +502,6 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
             Stage stage = container.getStageBuilder().createStage(dockable);
             stage.setAlwaysOnTop(true);
             stage.setOnShowing(e -> {
-                System.err.println("SHOWING");
                 if (getDockPane().getScene() != null && getDockPane().getScene().getWindow() != null) {
                     if (stage.getOwner() == null) {
                         stage.initOwner(getDockPane().getScene().getWindow());
@@ -821,11 +816,7 @@ public class DockSideBar extends Control implements Dockable, DockPaneTarget, Li
         }
 
         protected void changeSize() {
-            /*            if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
-                return;
-            }
-             */
-            System.err.println("dockable.node().getScene()=" + dockable.node().getScene());
+
             Stage stage = (Stage) dockable.node().getScene().getWindow();
             DockSideBar sb = (DockSideBar) dockable.nodeController().getPaneController().getDockPane();
             if (!stage.isShowing()) {

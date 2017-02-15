@@ -8,10 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.SideIndicator.NodeSideIndicator;
 import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
-import org.vns.javafx.dock.api.SideIndicatorTransformer.NodeIndicatorTransformer;
-import org.vns.javafx.dock.api.SideIndicatorTransformer.PaneIndicatorTransformer;
 
 /**
  *
@@ -21,11 +18,11 @@ public class DockTargetController {
 
     private Region dockPane;
     private String title;
-    private PaneIndicatorTransformer paneTransformer;
+/*    private PaneIndicatorTransformer paneTransformer;
     private NodeIndicatorTransformer nodeTransformer;
-
-    private DockIndicator paneIndicator;
     private NodeSideIndicator nodeIndicator;
+*/
+    private DockIndicator paneIndicator;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -154,7 +151,7 @@ public class DockTargetController {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-    protected void setPaneTransformer(PaneIndicatorTransformer paneTransformer) {
+/*    protected void setPaneTransformer(PaneIndicatorTransformer paneTransformer) {
         this.paneTransformer = paneTransformer;
     }
 
@@ -195,7 +192,8 @@ public class DockTargetController {
     protected NodeSideIndicator createNodeIndicator() {
         return new NodeSideIndicator(this);
     }
-
+    
+*/
 /*    public PaneSideIndicator getPaneIndicator() {
         if (paneIndicator == null) {
             paneIndicator = createDockIndicator();

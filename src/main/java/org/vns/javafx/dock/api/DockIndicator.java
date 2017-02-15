@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -29,6 +30,15 @@ public abstract class DockIndicator {
     
     protected void addDockPlace() {
        indicatorPane.getChildren().add(dockPlace);        
+    }
+    protected Boolean intersects(Node node1, Node node2) {
+        if (node1 == null || node2 == null) {
+            return false;
+        }
+        Bounds b1 = node1.localToScreen(node1.getBoundsInLocal());
+        Bounds b2 = node2.localToScreen(node2.getBoundsInLocal());
+        return b1.intersects(b2);
+
     }
 
     public abstract void showIndicator(double screenX, double screenY, Region targetNode);

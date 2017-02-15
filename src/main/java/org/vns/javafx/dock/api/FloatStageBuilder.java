@@ -189,13 +189,8 @@ public class FloatStageBuilder {
         // Prohibit to use as a dock target
         //
         dockPane.setUsedAsDockTarget(false);
-        //dsp.getItems().add(dockable.node());
         dockPane.getItems().add(dockable.node());
-        System.err.println("FloatStageBuilder dockablenode()=" + dockable.node());
-//        dockPane.dock(dockable, Side.TOP);
         borderPane.getStyleClass().add("dock-node-border");
-        
-        //dock(dockPane, dockable);
         borderPane.setCenter(dockPane);
 
         Scene scene = new Scene(borderPane);
@@ -321,17 +316,7 @@ public class FloatStageBuilder {
                 }
 
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                /*System.err.println("FloatStage pressed");            
-                System.err.println("Mouse pressed stage=" + getStage());            
-                System.err.println("Mouse pressed tb.width =" + nodeController.getTitleBar().getWidth());                
-                System.err.println("Mouse pressed tb.getX,Y =" + nodeController.getTitleBar().localToScene(0, 0));                                
-                 */
-                //nodeController.getTitleBar().getWidth();
                 Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());
-                /*                System.err.println("Mouse pressed stage.width =" + getStage().getWidth());
-                System.err.println("Mouse pressed stage.height=" + getStage().getHeight());                            
-                System.err.println("==============================================");                            
-                 */
                 cursorSupported = isCursorSupported(c);
                 if (!cursorSupported) {
                     getStage().getScene().setCursor(Cursor.DEFAULT);
@@ -340,8 +325,6 @@ public class FloatStageBuilder {
 
                 getResizer().start(ev, getStage(), getStage().getScene().getCursor(), getSupportedCursors());
             } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                //System.err.println("FloatStage dragged");
-                //Cursor c = FloatStageResizer.cursorBy(ev, getRootPane());                
                 if (!cursorSupported) {
                     return;
                 }

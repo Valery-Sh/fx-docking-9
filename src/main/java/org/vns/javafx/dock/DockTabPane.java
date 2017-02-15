@@ -10,7 +10,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -241,7 +240,6 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 }
             }
             if (idx < 0 && tabPane.getTabs().size() > 0) {
-                System.err.println("11111");
                 return false;
             }
             if (idx < 0 && mousePos != null && !tabPane.localToScreen(tabPane.getBoundsInLocal()).contains(mousePos.getX(), mousePos.getY())) {
@@ -412,7 +410,6 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             if (tb == null) {
                 return;
             }
-            System.err.println("save titlebar");
             tb.getProperties().put("titleBarVisible", tb.isVisible());
             tb.getProperties().put("titleBarMinHeight", tb.getMinHeight());
             tb.getProperties().put("titleBarPrefHeight", tb.getPrefHeight());
@@ -471,14 +468,11 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 }
             }
         }
-        System.err.println("1. indexOf retval=" + retval);
         if (retval < 0
                 && localToScreen(getBoundsInLocal()).contains(x, y)
                 && contentIndexOf(x, y) < 0) {
-            System.err.println("2. indexOf retval=" + retval);
             retval = getTabs().size();
         }
-        System.err.println("3. indexOf retval=" + retval);
         return retval;
     }
 
@@ -499,11 +493,9 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             }
         }
 
-        System.err.println("1. indexOf retval=" + idx);
         if (idx < 0
                 && localToScreen(getBoundsInLocal()).contains(x, y)
                 && contentIndexOf(x, y) < 0) {
-            System.err.println("2. indexOf retval=" + idx);
             idx = getTabs().size();
         }
         if (idx < 0 && getTabs().size() == 0 && localToScreen(getBoundsInLocal()).contains(x, y)) {
@@ -514,7 +506,6 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 retval = getHeight() - ch;
             }
         }
-        System.err.println("3. indexOf retval=" + idx);
         return retval;
 
     }
