@@ -168,7 +168,7 @@ public class IndicatorPopup extends Popup {
         setOnHiding(v -> {
         });
 
-        getDockIndicator().hideDockPlace();
+        //getDockIndicator().hideDockPlace();
         getDockIndicator().showDockPlace(screenX,screenY);
     }
     

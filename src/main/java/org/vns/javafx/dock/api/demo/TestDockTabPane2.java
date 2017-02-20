@@ -17,13 +17,13 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockTabPane3;
+import org.vns.javafx.dock.DockTabPane2;
 
 /**
  *
  * @author Valery
  */
-public class TestDockTabPane3 extends Application {
+public class TestDockTabPane2 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -132,7 +132,7 @@ public class TestDockTabPane3 extends Application {
         stg01tab01.setTitle("DockTab 01");
         rootAsDockPane.dock(stg01tab01, Side.RIGHT);
         */
-        DockTabPane3 dockTabPane = new DockTabPane3();
+        DockTabPane2 dockTabPane = new DockTabPane2();
         btn03.setOnAction(a->{
            System.err.println("SHOW " + scrollBarShowing); 
            dockTabPane.showScrollBar(! scrollBarShowing);

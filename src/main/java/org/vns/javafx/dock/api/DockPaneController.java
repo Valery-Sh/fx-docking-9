@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
-//import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 
@@ -70,6 +69,10 @@ public class DockPaneController extends DockTargetController {
             nodeIndicator = createNodeIndicator();
         }
         return nodeIndicator;
+    }
+    @Override
+    protected IndicatorPopup createIndicatorPopup() {
+        return new DragPopup(this);
     }
 
     protected SideIndicator.NodeSideIndicator createNodeIndicator() {

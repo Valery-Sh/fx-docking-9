@@ -8,6 +8,7 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
@@ -184,7 +185,7 @@ public class TestFxDockTabPane  extends Application {
         stage01.setScene(scene01);
         stage01.show();
         
-        tabPane01.paneController().dock(stg01dn03, Side.TOP);        
+        tabPane01.getTabs().add(new Tab("tab",stg01dn03));        
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

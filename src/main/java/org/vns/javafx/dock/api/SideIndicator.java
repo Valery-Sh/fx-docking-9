@@ -330,6 +330,9 @@ public abstract class SideIndicator extends DockIndicator {
         }
 
         protected Region getTargetNode() {
+            if ( nodeController == null ) {
+                return null;
+            }
             return nodeController.dockable().node();
         }
 
@@ -340,7 +343,7 @@ public abstract class SideIndicator extends DockIndicator {
 
         @Override
         public void showIndicator(double screenX, double screenY, Region dockNode) {
-
+            System.err.println("SidfeInd 1111111111111111");
             super.showIndicator(screenX, screenY, dockNode);
             if (dockNode != null) {
                 nodeController = DockRegistry.dockable(dockNode).nodeController();

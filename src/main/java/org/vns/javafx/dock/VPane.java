@@ -18,16 +18,6 @@ public class VPane extends DockSplitPane {
         init();
         setId(id);
     }
-/*    public VPane(String id, double dividerPos) {
-        init();
-        setId(id);
-        setDividerPos(dividerPos);
-    }
-    public VPane(double dividerPos) {
-        init();
-        setDividerPos(dividerPos);
-    }
-*/
     public VPane(Node... items) {
         super(items);
         init();
@@ -39,6 +29,4 @@ public class VPane extends DockSplitPane {
         getItems().addAll(nodes);
         return this;
     }
-    
-    
 }

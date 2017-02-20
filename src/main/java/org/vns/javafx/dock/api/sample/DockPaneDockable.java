@@ -39,7 +39,8 @@ public class DockPaneDockable extends VBox implements DockPaneTarget{
     }
 
     public Dockable dock(Dockable node, Side dockPos) {
-        return paneHandler.dock(node, dockPos);
+        return null;
+        //return paneHandler.dock(node, dockPos);
     }
 
     @Override

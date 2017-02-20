@@ -68,15 +68,21 @@ public class DockTargetController {
     protected void setDragPopup(IndicatorPopup dragPopup) {
         this.dragPopup = dragPopup;
     }
-
-    public IndicatorPopup getDragPopup() {
-        if (dragPopup != null) {
-            return dragPopup;
-        }
-        if (getDockPane() != null) {
-            dragPopup = new DragPopup(this);
+    protected IndicatorPopup createIndicatorPopup() {
+        if ( dragPopup == null ) {
+            dragPopup = new IndicatorPopup(this);
         }
         return dragPopup;
+    }
+    public IndicatorPopup getDragPopup() {
+        if (dragPopup == null) {
+            dragPopup = createIndicatorPopup();
+        }
+        return dragPopup;
+/*        if (getDockPane() != null) {
+            dragPopup = new DragPopup(this);
+        }
+*/
     }
 
 

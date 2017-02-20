@@ -201,7 +201,6 @@ public class DragManager implements EventHandler<MouseEvent> {
         Stage stage = (Stage) dockable.node().getScene().getWindow();
         stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
         stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
-
         if (popup != null && popup.isShowing()) {
             popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
         }

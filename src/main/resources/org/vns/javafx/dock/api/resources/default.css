@@ -11,6 +11,41 @@
    -fx-background-color: transparent;
 }
 */
+/* ---------------------------------
+    Original: -fx-padding: 4 6 4 8;
+  ----------------------------------*/
+.tree-cell > .tree-disclosure-node {
+    -fx-padding: 4 6 4 8;
+}
+
+
+/*.tree-cell .tree-disclosure-node {
+    -fx-translate-y: 4 ;
+}
+*/
+.tree-cell .tree-disclosure-node .arrow {
+    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(docknode-16x16.png);
+}
+
+.tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(docknode-16x16.png);
+    -fx-rotate: 0;
+}
+/*.tree-cell .tree-disclosure-node .arrow {
+-fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+-fx-shape: "M0 -0.5 h2 v2 h1 v-2 h2 v-1 h-2 v-2 h-1 v2 h-2 v1z";
+}
+
+.tree-cell:expanded .tree-disclosure-node .arrow {
+-fx-shape: "M0 -0.5 h5 v-1 h-5 v1z";
+-fx-padding: 4 0.25 4 0.25;
+}
+*/
 .custom-control {
     -fx-skin: "org.vns.javafx.dock.api.controls.CustomControlSkin";
 }
@@ -121,28 +156,28 @@
     -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-    
+
 }
 .drag-redir-indicator-right-button {
     /*-fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-    
+
 }
 .drag-redir-indicator-bottom-button {
     /*-fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-    
+
 }
 .drag-redir-indicator-left-button {
     /*-fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-    
+
 }
 
 /*******************************************************************************
@@ -203,7 +238,7 @@
     /*-fx-padding: 0;*/
     -fx-border-width: 0;
     -fx-border-color: blue;
-    
+
 }
 
 
@@ -211,10 +246,10 @@
     /* -fx-spacing: 30; */
 }
 .dock-side-bar > .tool-bar:vertical {
-     /*-fx-spacing: 30;*/ 
+    /*-fx-spacing: 30;*/ 
 }
 .dock-side-bar > .tool-bar:horizontal {
-     /*-fx-spacing: 30; */
+    /*-fx-spacing: 30; */
 }
 .dock-side-bar .button {
     -fx-background-insets: 0;
@@ -375,10 +410,10 @@
 .parent-chain-button {
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-/*    -fx-border-width: 0;
-    -fx-spacing: 0;
-    -fx-background-insets: 0;
-*/    
+    /*    -fx-border-width: 0;
+        -fx-spacing: 0;
+        -fx-background-insets: 0;
+    */    
 
 }
 .parent-chain-root {

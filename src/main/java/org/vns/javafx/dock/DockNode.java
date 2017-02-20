@@ -25,12 +25,10 @@ public class DockNode extends TitledPane implements Dockable {
 
     public DockNode() {
         init(null, null);
-
     }
 
     public DockNode(String title) {
         init(null, title);
-
     }
 
     public DockNode(String id, String title) {
@@ -42,12 +40,8 @@ public class DockNode extends TitledPane implements Dockable {
         contentProperty().addListener(this::contentChanged);
         getStyleClass().add("dock-node");
         nodeController = new DockNodeController(this);
-        //09.02Region titleBar = new DockTitleBar(this);
         nodeController.createDefaultTitleBar(title);
         nodeController.titleBarProperty().addListener(this::titlebarChanged);
-        //09.02nodeController.setTitleBar(titleBar);
-
-        ///setTitle(title);
         if (id != null) {
             setId(id);
         }
@@ -99,14 +93,6 @@ public class DockNode extends TitledPane implements Dockable {
         }
     }
 
-    /*    public double getDividerPos() {
-        return nodeController.getDividerPos();
-    }
-
-    public void setDividerPos(double divpos) {
-        this.nodeController.setDividerPos(divpos);
-    }
-     */
     public Node getDragNode() {
         return nodeController.getDragNode();
     }
@@ -147,7 +133,7 @@ public class DockNode extends TitledPane implements Dockable {
                 getChildren().clear();
             }
             getChildren().add(control.getDelegate());
-            if (control.getTitleBar() != null) {
+            if (control.getTitleBar() != null && ! control.getDelegate().getChildren().contains(control.getTitleBar())) {
                 control.getDelegate().getChildren().add(control.getTitleBar());
             }
             control.getDelegate().getChildren().add(control.getContent());
