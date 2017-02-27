@@ -25,8 +25,6 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.tmp.EditorTreeView;
-import org.vns.javafx.dock.api.editor.tmp.TreeItemEx;
-import org.vns.javafx.dock.api.editor.tmp.TreeItemRegistry;
 
 /**
  *
@@ -124,14 +122,12 @@ public class TestEditorTreeView extends Application {
         Label lb = new Label("label-graphic");
         Label paneLb = new Label("pane label");
         doAccept.setOnAction(a -> {
-            TreeCell cc = new TreeCell();
-            TreeItemRegistry.getInstance().getBuilder(cc);
-/*            TreeItemEx it = (TreeItemEx) tv.getTreeItem(2);
-            it.accept(lb);
-            System.err.println("vboxBtn=" + vboxBtn1.getGraphic());
-            TreeItemEx itPane = (TreeItemEx) tv.getTreeItem(0);
-            itPane.accept(paneLb);
-*/            
+            TreeItem item = tv.getTreeItem(2);
+            
+            System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[0]);
+            System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[1]);            
+            System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[2]);            
+            
         });
         stage.setOnShown(ev -> {
             DockUtil.print(rootTreeViewPane);

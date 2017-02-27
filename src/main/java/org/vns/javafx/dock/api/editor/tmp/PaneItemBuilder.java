@@ -6,11 +6,7 @@
 package org.vns.javafx.dock.api.editor.tmp;
 
 import javafx.scene.Node;
-import javafx.scene.control.Labeled;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import static org.vns.javafx.dock.api.editor.tmp.EditorTreeView.ANCHOR_OFFSET;
 
 /**
  *

@@ -64,15 +64,6 @@ public class TreeItemBuilder {
         return item;
     }
 
-    protected void registerDragDetected(TreeItemEx treeItem,AnchorPane ap) {
-        treeItem.getCell().setOnDragDetected(ev -> {
-            Dragboard dragboard = ap.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(CELL_UUID);
-            dragboard.setContent(content);
-            ev.consume();
-        });
-    }
 
     public String getStyle() {
         return "-fx-backGround-color: aqua";
@@ -98,21 +89,5 @@ public class TreeItemBuilder {
     public Node getGraphic() {
         return null;
     }
-        protected Object getDragTarget(DragEvent ev) {
-            Object o = ev.getGestureSource();
-            if ( o == null ) {
-                return null;
-            }
-            if ( ! (o instanceof TreeCell) ) {
-                return o;
-            }
-            Object retval = null;
-            TreeItem item = ((TreeCell)o).getTreeItem();
-            if ( item instanceof TreeItemEx) {
-                retval = ((TreeItemEx) item).getNode();
-            }
-            return retval;
-        }
-
     
 }// TreeItemBuilder

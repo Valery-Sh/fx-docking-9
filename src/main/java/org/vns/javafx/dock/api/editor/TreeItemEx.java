@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vns.javafx.dock.api.editor.tmp;
+package org.vns.javafx.dock.api.editor;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 
 /**
@@ -16,10 +15,7 @@ import javafx.scene.control.TreeItem;
  */
 public class TreeItemEx<T> extends TreeItem{
     
-    private TreeCell cell;
-    private Node node;
     private EventHandler eventHandler;
-    //private TreeItemEx dragSource;
             
     public TreeItemEx() {
     }
@@ -40,21 +36,25 @@ public class TreeItemEx<T> extends TreeItem{
         this.eventHandler = eventHandler;
     }
 
-    public Node getNode() {
-        return node;
+/*    public TreeCell getCell() {
+        return cell;
     }
 
-    public void setNode(Node node) {
-        this.node = node;
+    public void setCell(TreeCell cell) {
+        this.cell = cell;
     }
+*/
+
     public boolean isAcceptable(Object obj) {
         return TreeItemRegistry.getInstance().getBuilder(obj).isAcceptable(obj);
     }
-    public TreeItemEx accept(Object obj) {
-        return TreeItemRegistry.getInstance().getBuilder(getNode()).accept(this,obj);
+/*    public TreeItemEx accept(Object obj) {
+        Node node = ((ItemValue)getValue()).getTreeItemNode();
+        return TreeItemRegistry.getInstance().getBuilder(node).accept(this,obj);
     }  
     public TreeItemEx release(Object obj) {
-        return TreeItemRegistry.getInstance().getBuilder(getNode()).release(this,obj);
+        Node node = ((ItemValue)getValue()).getTreeItemNode();
+        return TreeItemRegistry.getInstance().getBuilder(node).release(this,obj);
     }  
-    
+*/    
 }
