@@ -16,6 +16,17 @@ import javafx.scene.layout.Pane;
 public class EditorUtil {
     
     public static final String GESTURE_SOURCE_KEY = "drag-gesture-source-key";
+
+    protected static TreeItem parentOfLevel(TreeView treeView, TreeItem item, int level) {
+        TreeItem it = item;
+        while (it != null) {
+            if (treeView.getTreeItemLevel(it) == level) {
+                break;
+            }
+            it = it.getParent();
+        }
+        return it;
+    }
     
     public static Bounds screenArrowBounds(TreeItem<ItemValue> item) {
         TreeCell cell = getCell(item);

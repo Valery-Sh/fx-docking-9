@@ -22,7 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.EditorTreeView;
+import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
 
 /**
@@ -134,18 +134,18 @@ public class TestEditorTreeView01 extends Application {
                 }
                 ev.acceptTransferModes(TransferMode.COPY);
             }
-            TreeItem ii;
-
             ev.consume();
         });
-        EditorTreeView edt = new EditorTreeView();
-        Pane editorPane = edt.createEditorPane(stackPane);
-
+        SceneGraphEditor edt = new SceneGraphEditor(stackPane);
+        //Pane editorPane = edt.initialize(stackPane);
+        Pane editorPane = edt.getEditorPane();
+        //stackPane.setStyle("-fx-background-color: yellow");   
         TreeView<ItemValue> tv = edt.getTreeView();
         vboxBtn1.setOnAction(a -> {
-            System.err.println("edt.findTreeItem=" + tv.getRow(edt.findTreeItem(vboxBtn1)));
+            //System.err.println("edt.findTreeItem=" + tv.getRow(edt.findTreeItem(vboxBtn1)));
         });
 
+        
 //        Pane editorPane = edt.getEditorPane();
         rootPane.getChildren().add(editorPane);
 
@@ -155,7 +155,7 @@ public class TestEditorTreeView01 extends Application {
         tv.getStyleClass().add("myTree");
         //rootTreeViewPane.getChildren().add(tv);
         tv.relocate(5, 0);
-        tv.getRoot().setExpanded(true);
+        //tv.getRoot().setExpanded(true);
  /*        tv.setOnMouseClicked(ev -> {
             TreeItem it = edt.getTreeItem(ev.getScreenX(), ev.getScreenY());
             //edt.drawRectangle(tv.getRoot());
@@ -186,9 +186,9 @@ public class TestEditorTreeView01 extends Application {
             });
 
             //System.err.println("tv.getChildren().size=" + tv.getRoot().getParent());            
-            //System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[0]);
-            //System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[1]);            
-            //System.err.println("BOUNDS[] = " + edt.getLevelBounds(item)[2]);            
+            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[0]);
+            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[1]);            
+            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[2]);            
         });
         stage.setOnShown(ev -> {
             //DockUtil.print(editorPane);

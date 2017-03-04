@@ -96,28 +96,11 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             }
 
             ItemValue v = (ItemValue) target.getValue();
-            //retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
+
             retval = (TreeItemEx) createPlaceHolders(value)[0];
             target.getChildren().add(retval);
 
-            /*            Pane p = (Pane) target.getParent().getValue().getTreeItemObject();
-            System.err.println("1). " + p);
-            p.getChildren().forEach(c-> {
-                System.err.println(" --- c=" + c);
-            });
-            System.err.println("((Labeled) v.getTreeItemObject()).getGraphic=" + ((Labeled) v.getTreeItemObject()).getGraphic());
-            System.err.println("((Labeled) v.getTreeItemObject())=" + v.getTreeItemObject());            
-             */
-            //((Labeled) v.getTreeItemObject()).setGraphic(null);
             ((Labeled) v.getTreeItemObject()).setGraphic((Node) value);
-//            System.err.println("((Node)value).getParent()=" + ((Node)value).getParent());
-            ///
-/*            p = (Pane) target.getParent().getValue().getTreeItemObject();
-            System.err.println("2). " + p);
-            p.getChildren().forEach(c-> {
-                System.err.println(" --- c=" + c);
-            });
-             */
         }
         return retval;
     }

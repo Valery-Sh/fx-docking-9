@@ -5,6 +5,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Pane;
+import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
 
 /**
  *
@@ -33,6 +34,9 @@ public class PaneItemBuilder extends TreeItemBuilder {
 
     @Override
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
+        if ( target.getValue().getTreeItemObject() == obj) {
+            return false;
+        }
         return isAcceptable(obj);
     }
 
@@ -48,7 +52,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
         Node value = (Node) dg.getGestureSourceObject();
 
         if (isAcceptable(target, value) && target != null && place != null) {
-            int idx = getIndex(target, place);
+            int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
             }
@@ -58,6 +62,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
                 System.err.println(" ---- c=" + c);
             });
             if (!p.getChildren().contains(value)) {
+                System.err.println("NOT CONTAINS value=" + value);
                 if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
@@ -67,6 +72,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
                 }
 
                 retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
+                System.err.println("target.getChildren().add(idx, retval) idx=" + idx + "; value=" + value);                
                 target.getChildren().add(idx, retval);
                 p.getChildren().add(idx, value);
             } else {
@@ -97,15 +103,31 @@ public class PaneItemBuilder extends TreeItemBuilder {
         return retval;
     }
 
-    protected int getIndex(TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
+    protected int getIndex(TreeView treeView,TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
         int idx = -1;
+        System.err.println("=== getIndex"); 
+        
         Pane p = (Pane) parent.getValue().getTreeItemObject();
         if (parent == target) {
-            idx = p.getChildren().size();
+            int q = target.getValue().getDragDroQualifier();
+            
+            if ( q == FIRST ) {
+                idx = 0;
+                System.err.println("getIndex q = FIRST ");
+            } else {
+                idx = p.getChildren().size();
+                System.err.println("getIndex q = LAST ");
+            }
+            
         } else {
+            System.err.println("=== getIndex parent != target");             
             if (parent.getValue().getTreeItemObject() instanceof Node) {
-                Node node = (Node) target.getValue().getTreeItemObject();
+                int level = treeView.getTreeItemLevel(parent);
+                TreeItem<ItemValue> it = EditorUtil.parentOfLevel(treeView, target, level + 1 );
+                Node node = (Node) it.getValue().getTreeItemObject();
+                System.err.println("=== getIndex parent != target idx ");                             
                 idx = p.getChildren().indexOf(node) + 1;
+                System.err.println("=== getIndex parent != target idx=" + idx + "; node=" + node);                                             
             }
         }
         return idx;

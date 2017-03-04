@@ -7,7 +7,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import static org.vns.javafx.dock.api.editor.EditorTreeView.ANCHOR_OFFSET;
+import static org.vns.javafx.dock.api.editor.SceneGraphEditor.ANCHOR_OFFSET;
 
 /**
  *
@@ -68,14 +68,13 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         TreeItemEx item = new TreeItemEx();
         ItemValue itv = new ItemValue(item);
-        if (obj != null && (obj instanceof Node)) {
-            itv.setTreeItemObject((Node) obj);
-        }
+
+        itv.setTreeItemObject(obj);
         itv.setCellGraphic(anchorPane);
+        
         item.setValue(itv);
-        Node n = createItemContent(obj);
-        System.err.println("createItem createItemContent node=" + n);
         box.getChildren().add(createItemContent(obj));
+        
         return item;
     }
 
@@ -110,14 +109,6 @@ public class TreeItemBuilder {
         return createDefaultContent(obj);
     }
 
-    protected Node createDefaultContent1(Object obj) {
-        Label label = new Label(obj.getClass().getSimpleName() + " " + getText());
-        if (getGraphic() != null) {
-            label.setGraphic(getGraphic());
-        }
-        //label.setStyle(getStyle());        
-        return label;
-    }
 
     protected Node createDefaultContent(Object obj) {
         String text = "";
