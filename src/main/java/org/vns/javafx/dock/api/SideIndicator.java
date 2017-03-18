@@ -21,8 +21,6 @@ import javafx.stage.Window;
  */
 public abstract class SideIndicator extends DockIndicator {
 
-    private Rectangle dockPlace2;
-
     private Pane topButtons;
     private Pane bottomButtons;
     private Pane leftButtons;

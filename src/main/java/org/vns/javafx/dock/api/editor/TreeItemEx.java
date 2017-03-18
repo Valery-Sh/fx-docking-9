@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.editor;
 
 import javafx.event.EventHandler;
@@ -12,6 +7,7 @@ import javafx.scene.control.TreeItem;
 /**
  *
  * @author Valery
+ * @param <T>
  */
 public class TreeItemEx<T> extends TreeItem{
     

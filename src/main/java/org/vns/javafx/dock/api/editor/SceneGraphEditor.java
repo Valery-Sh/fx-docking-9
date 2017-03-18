@@ -17,6 +17,8 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
@@ -68,6 +70,10 @@ public class SceneGraphEditor {
         vertLine.setMouseTransparent(true);
         horLine.setMouseTransparent(true);
         itemRect.setMouseTransparent(true);
+        
+       if (treeView.getScene() != null && treeView.getScene().getWindow() != null && treeView.getScene().getWindow().isShowing() ) {
+                windowShown(null);        
+       }
     }
 
     public Pane getEditorPane() {
@@ -114,7 +120,6 @@ public class SceneGraphEditor {
     }
 
     protected void windowShown(WindowEvent ev) {
-        //TreeItem old = treeView.getRoot();
         TreeItem it = createItem(rootNode);
         it.setExpanded(true);
         treeView.setRoot(it);

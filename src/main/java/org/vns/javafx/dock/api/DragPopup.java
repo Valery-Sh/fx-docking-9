@@ -191,6 +191,7 @@ public class DragPopup extends IndicatorPopup {
     /**
      * Shows this pop up window
      */
+    @Override
     public void showPopup() {
         setAutoFix(false);
         Point2D pos = getDockPane().localToScreen(0, 0);
