@@ -9,7 +9,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.api.DockNodeController;
+import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -19,7 +19,7 @@ import org.vns.javafx.dock.api.Dockable;
 @DefaultProperty(value = "content")
 public class DockNode extends TitledPane implements Dockable {
 
-    private DockNodeController nodeController;
+    private DockableController dockableController;
 
     private VBox delegate;
 
@@ -39,9 +39,9 @@ public class DockNode extends TitledPane implements Dockable {
         this.setContent(new StackPane());
         contentProperty().addListener(this::contentChanged);
         getStyleClass().add("dock-node");
-        nodeController = new DockNodeController(this);
-        nodeController.createDefaultTitleBar(title);
-        nodeController.titleBarProperty().addListener(this::titlebarChanged);
+        dockableController = new DockableController(this);
+        dockableController.createDefaultTitleBar(title);
+        dockableController.titleBarProperty().addListener(this::titlebarChanged);
         if (id != null) {
             setId(id);
         }
@@ -68,19 +68,19 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     public String getTitle() {
-        return nodeController.getTitle();
+        return dockableController.getTitle();
     }
 
     public void setTitle(String title) {
-        nodeController.setTitle(title);
+        dockableController.setTitle(title);
     }
 
     public Region getTitleBar() {
-        return nodeController().getTitleBar();
+        return dockableController().getTitleBar();
     }
 
     public void setTitleBar(Region node) {
-        nodeController().setTitleBar(node);
+        dockableController().setTitleBar(node);
     }
 
     public boolean isRemoveTitleBar() {
@@ -94,11 +94,11 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     public Node getDragNode() {
-        return nodeController.getDragNode();
+        return dockableController.getDragNode();
     }
 
     public void setDragNode(Node dragSource) {
-        nodeController.setDragNode(dragSource);
+        dockableController.setDragNode(dragSource);
     }
 
     @Override
@@ -107,8 +107,8 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     @Override
-    public DockNodeController nodeController() {
-        return nodeController;
+    public DockableController dockableController() {
+        return dockableController;
     }
 
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {

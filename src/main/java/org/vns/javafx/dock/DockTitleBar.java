@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockNodeController;
+import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -92,7 +92,7 @@ public class DockTitleBar extends HBox {
 
         label = new Label(title);
         if ( dockNode != null ) {
-            label.textProperty().bind(dockNode.nodeController().titleProperty());
+            label.textProperty().bind(dockNode.dockableController().titleProperty());
         }
 
         stateButton = new Button();
@@ -113,7 +113,7 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            dockNode.nodeController().dockable().node().toFront();
+            dockNode.dockableController().dockable().node().toFront();
         });
         closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
         stateButton.setTooltip(new Tooltip("Undock pane"));
@@ -132,7 +132,7 @@ public class DockTitleBar extends HBox {
         }
     }
     protected void closeButtonClicked(MouseEvent ev) {
-        DockNodeController sp = dockNode.nodeController();
+        DockableController sp = dockNode.dockableController();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
         } else {

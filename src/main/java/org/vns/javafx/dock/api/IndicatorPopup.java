@@ -63,15 +63,15 @@ public class IndicatorPopup extends Popup {
     /**
      * The owner of this object
      */
-    private final DockTargetController paneController;
+    private final DockTargetController targetController;
 
     /**
      * Creates a new instance for the specified pane handler.
      *
-     * @param paneController the owner of the object to be created
+     * @param targetController the owner of the object to be created
      */
-    public IndicatorPopup(DockTargetController paneController) {
-        this.paneController = paneController;
+    public IndicatorPopup(DockTargetController targetController) {
+        this.targetController = targetController;
         init();
 
     }
@@ -86,19 +86,19 @@ public class IndicatorPopup extends Popup {
      *
      * @return Returns an object of type {@code Region}
      */
-    public Region getDockPane() {
-        return paneController.getDockPane();
+    public Region getTargetNode() {
+        return targetController.getTargetNode();
     }
 
     protected void initContent() {
-        Pane indicatorPane = paneController.getDockIndicator().getIndicatorPane();
+        Pane indicatorPane = targetController.getDockIndicator().getIndicatorPane();
         indicatorPane.setMouseTransparent(true);
 
-        indicatorPane.prefHeightProperty().bind(getDockPane().heightProperty());
-        indicatorPane.prefWidthProperty().bind(getDockPane().widthProperty());
+        indicatorPane.prefHeightProperty().bind(getTargetNode().heightProperty());
+        indicatorPane.prefWidthProperty().bind(getTargetNode().widthProperty());
 
-        indicatorPane.minHeightProperty().bind(getDockPane().heightProperty());
-        indicatorPane.minWidthProperty().bind(getDockPane().widthProperty());
+        indicatorPane.minHeightProperty().bind(getTargetNode().heightProperty());
+        indicatorPane.minWidthProperty().bind(getTargetNode().widthProperty());
 
         getContent().add(indicatorPane);
     }
@@ -110,7 +110,7 @@ public class IndicatorPopup extends Popup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public DockIndicator getDockIndicator() {
-        return paneController.getDockIndicator();
+        return targetController.getDockIndicator();
     }
 
 
@@ -119,8 +119,8 @@ public class IndicatorPopup extends Popup {
      *
      * @return the owner of this object used when the instance created.
      */
-    public DockTargetController getPaneController() {
-        return this.paneController;
+    public DockTargetController getTargetController() {
+        return this.targetController;
     }
 
     /**
@@ -129,7 +129,7 @@ public class IndicatorPopup extends Popup {
     //public void showPopup(Node dockNode) {
     public void showPopup() {
         setAutoFix(false);
-        Point2D pos = getDockPane().localToScreen(0, 0);
+        Point2D pos = getTargetNode().localToScreen(0, 0);
         getDockIndicator().showIndicator(pos.getX(), pos.getY());
     }
 
@@ -181,7 +181,7 @@ public class IndicatorPopup extends Popup {
      * proposed dock place
      */
     public Node getDockPlace() {
-        return paneController.getDockIndicator().getDockPlace();
+        return targetController.getDockIndicator().getDockPlace();
     }
 
 }

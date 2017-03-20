@@ -6,17 +6,17 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import org.vns.javafx.dock.api.DockPaneController;
-import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
  * @author Valery
  */
-public class DockPane extends DockSplitPane implements DockPaneTarget, EventHandler<ActionEvent> {
+public class DockPane extends DockSplitPane implements DockTarget , EventHandler<ActionEvent> {
 
     private ControlDockPane delegate;
 
@@ -46,13 +46,13 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     @Override
-    public DockSplitPane pane() {
+    public DockSplitPane target() {
         return this;
     }
 
     @Override
-    public DockTargetController paneController() {
-        return getDelegate().paneController();
+    public DockTargetController targetController() {
+        return getDelegate().targetController();
     }
 
     public void dock(Dockable dockNode, Side side) {
@@ -60,17 +60,17 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     public void dock(Dockable dockNode, Side side, Dockable target) {
-        //((DockPaneExecutor) getDelegate().paneController().getDockExecutor()).dock(dockNode, side, target);
-        getDelegate().paneController().dock(dockNode, side, target);
+        //((DockPaneExecutor) getDelegate().targetController().getDockExecutor()).dock(dockNode, side, target);
+        getDelegate().targetController().dock(dockNode, side, target);
     }
 
     protected void update(DockSplitPane dsp) {
         SplitPane sp = dsp;
-        DockTargetController ph = getDelegate().paneController();
+        DockTargetController ph = getDelegate().targetController();
         for (Node node : dsp.getItems()) {
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeController().setPaneController(ph);
+                d.dockableController().setTargetController(ph);
             } else if (node instanceof DockSplitPane) {
                 update((DockSplitPane) node);
             }
@@ -82,9 +82,9 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
             Node node = split.getItems().get(i);
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeController().setPaneController(ph);
-                /*                if (i < split.getDividers().size() && d.nodeController().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.nodeController().getDividerPos());
+                d.dockableController().setTargetController(ph);
+                /*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.dockableController().getDividerPos());
                 }
                  */
             } else if (node instanceof DockSplitPane) {
@@ -102,14 +102,14 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     @Override
     public void update() {
         update(this);
-        update(this, getDelegate().paneController());
+        update(this, getDelegate().targetController());
     }
 
     @Override
-    protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
+    protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
-                DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
+                DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }
@@ -117,7 +117,7 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     @Override
-    protected void splitPaneRemoved(SplitPane sp, DockPaneTarget dpt) {
+    protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
             } else if (node instanceof SplitPane) {
@@ -128,11 +128,11 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
     }
 
     public boolean isUsedAsDockTarget() {
-        return getDelegate().paneController().isUsedAsDockTarget();
+        return getDelegate().targetController().isUsedAsDockTarget();
     }
 
     public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        getDelegate().paneController().setUsedAsDockTarget(usedAsDockTarget);
+        getDelegate().targetController().setUsedAsDockTarget(usedAsDockTarget);
     }
 
     @Override
@@ -140,9 +140,9 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         update();
     }
 
-    public class ControlDockPane implements DockPaneTarget {
+    public class ControlDockPane implements DockTarget {
 
-        private DockPaneController paneController;
+        private final DockPaneController paneController;
 
         public ControlDockPane(DockPaneController paneController) {
             this.paneController = paneController;
@@ -155,12 +155,12 @@ public class DockPane extends DockSplitPane implements DockPaneTarget, EventHand
         }
 
         @Override
-        public DockSplitPane pane() {
-            return (DockSplitPane) paneController.getDockPane();
+        public DockSplitPane target() {
+            return (DockSplitPane) paneController.getTargetNode();
         }
 
         @Override
-        public DockPaneController paneController() {
+        public DockPaneController targetController() {
             return paneController;
         }
 

@@ -27,7 +27,7 @@ public class ScenePaneController extends DockTargetController {
     private void init() {
         parentListener = this::parentChanged;
         if (isDocked(dockable.node())) {
-            setDockPane((Pane) dockable.node().getParent());
+            setTargetNode((Pane) dockable.node().getParent());
         }
         dockable.node().parentProperty().addListener(parentListener);
     }
@@ -37,7 +37,7 @@ public class ScenePaneController extends DockTargetController {
             return;
         }
 
-        setDockPane((Pane) newValue);
+        setTargetNode((Pane) newValue);
 
         if (oldValue != null) {
             oldValue.parentProperty().removeListener(parentListener);

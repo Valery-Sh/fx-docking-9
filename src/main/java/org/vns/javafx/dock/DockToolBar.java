@@ -8,7 +8,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import org.vns.javafx.dock.api.DockNodeController;
+import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -18,7 +18,7 @@ import org.vns.javafx.dock.api.Dockable;
 public class DockToolBar extends ToolBar implements Dockable{
 
     StringProperty title = new SimpleStringProperty("Tool Bar Enabled");
-    DockNodeController nodeController = new DockNodeController(this);
+    DockableController nodeController = new DockableController(this);
     
     private Dockable dockTarget;
     
@@ -66,7 +66,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     }
 
     @Override
-    public DockNodeController nodeController() {
+    public DockableController dockableController() {
         return nodeController;
     }
 }

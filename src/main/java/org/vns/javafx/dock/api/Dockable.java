@@ -27,9 +27,9 @@ public interface Dockable {
      * Returns an object which provides a state and behavior during 
      * docking process.
      * 
-     * @return an object of type {@link DockNodeController}
+     * @return an object of type {@link DockableController}
      */
-    DockNodeController nodeController();
+    DockableController dockableController();
     
     /**
      * Initialize default {@code css} styles for all components of the docking api.

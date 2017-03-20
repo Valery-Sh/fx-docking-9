@@ -44,7 +44,7 @@ public class TestCustomControl extends Application {
         
         p1.setId("pane p1");
         DockUtil.print(dockPane);
-        //dockPane.dock(p1, Side.TOP).nodeController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
         Scene scene = new Scene(dockPane);
         
         stage.setTitle("JavaFX and Maven");

@@ -11,17 +11,17 @@ import javafx.scene.layout.VBox;
  */
 public class DockNodeBox  extends VBox implements Dockable{
     
-    DockNodeController nodeController = new DockNodeController(this);
+    DockableController dockableController = new DockableController(this);
     
     public DockNodeBox() {
         init();
     }
     private void init() {
         //09.02Region titleBar = new DockTitleBar(this);
-        Region titleBar = nodeController.createDefaultTitleBar("");
+        Region titleBar = dockableController.createDefaultTitleBar("");
         getChildren().add(titleBar);
-        nodeController.setTitleBar(titleBar);
-        nodeController.titleBarProperty().addListener(this::titlebarChanged);
+        dockableController.setTitleBar(titleBar);
+        dockableController.titleBarProperty().addListener(this::titlebarChanged);
         getStyleClass().add("dock-node");
     }
     @Override
@@ -30,33 +30,25 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     public String getTitle() {
-        return nodeController.getTitle();
+        return dockableController.getTitle();
     }
 
     public void setTitle(String title) {
-        nodeController.setTitle(title);
+        dockableController.setTitle(title);
     }
 
 
     public void setDragNode(Node dragSource) {
-        nodeController.setDragNode(dragSource);
+        dockableController.setDragNode(dragSource);
     }
-/*    public double getDividerPos() {
-        return nodeController.getDividerPos();
-    }
-
-    public void setDividerPos(double divpos) {
-        this.nodeController.setDividerPos(divpos);
-    }
-*/
     @Override
     public Region node() {
         return this;
     }
 
     @Override
-    public DockNodeController nodeController() {
-        return nodeController;
+    public DockableController dockableController() {
+        return dockableController;
     }
     
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {

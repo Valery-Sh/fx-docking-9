@@ -16,14 +16,14 @@ import javafx.scene.layout.Region;
  * 
  * @author Valery Shyshkin
  */
-public interface DockPaneTarget {
+public interface DockTarget {
     /**
      * Returns a node of type {@code Region} that implements this interface or
      * another node wrapped by a class that implements this interface.
      * 
      * @return an object of type {@code javafx.scene.layout.Region}
      */
-    Region pane();
+    Region target();
     /**
      * Returns an object which provides a state and behavior of the target panel 
      * during a docking process. In contrast to the {@link Dockable} interface where
@@ -36,5 +36,5 @@ public interface DockPaneTarget {
      * 
      * @return an object of type {@link DockTargetController}
      */    
-    DockTargetController paneController();
+    DockTargetController targetController();
 }

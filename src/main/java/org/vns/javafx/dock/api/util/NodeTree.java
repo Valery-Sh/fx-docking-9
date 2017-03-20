@@ -13,9 +13,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Popup;
-import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
@@ -53,7 +53,7 @@ public class NodeTree {
         return r;        
     }
     public Object getItem(Node node) {
-        String value = DockRegistry.dockPaneTarget(node).paneController().getTitle();
+        String value = DockRegistry.dockPaneTarget(node).targetController().getTitle();
         TreeItem item = new TreeItem(value);
         return item;
     }

@@ -32,16 +32,16 @@ public class TestDockPane extends Application {
         Pane p1 = new HBox(b1);
         
         p1.setId("pane p1");
-        //dockPane.dock(p1, Side.TOP).nodeController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
         
         Button b2 = new Button("b02");
         Pane p2 = new HBox(b2);
-        //dockPane.dock(p2, Side.RIGHT).nodeController().setTitle("Pane p2");;
+        //dockPane.dock(p2, Side.RIGHT).dockableController().setTitle("Pane p2");;
         p2.setId("pane p2");
         
         Button b3 = new Button("b03");
         Pane p3 = new HBox(b3);
-        //dockPane.dock(p3, Side.BOTTOM).nodeController().setTitle("Pane p3");;
+        //dockPane.dock(p3, Side.BOTTOM).dockableController().setTitle("Pane p3");;
         p3.setId("pane p3");        
         
         DockNode dn01 = new DockNode();

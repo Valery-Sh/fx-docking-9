@@ -34,7 +34,7 @@ public class TestDockNodeControl extends Application {
         dockPane.getItems().add(custom);
         b1.setOnAction(a->{
             if ( custom.getTitleBar() == null ) {
-                custom.nodeController().createDefaultTitleBar("Now Not Null");
+                custom.dockableController().createDefaultTitleBar("Now Not Null");
             } else {
                 custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
@@ -50,7 +50,7 @@ public class TestDockNodeControl extends Application {
         
         p1.setId("pane p1");
         DockUtil.print(dockPane);
-        //dockPane.dock(p1, Side.TOP).nodeController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
         Scene scene = new Scene(dockPane);
         
         stage.setTitle("JavaFX and Maven");

@@ -106,7 +106,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                DockRegistry.dockable(f).nodeController().titleBarProperty().setActiveChoosedPseudoClass(false);
+                DockRegistry.dockable(f).dockableController().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
@@ -115,7 +115,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                //DockRegistry.dockable(f).nodeController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                //DockRegistry.dockable(f).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         }
     }

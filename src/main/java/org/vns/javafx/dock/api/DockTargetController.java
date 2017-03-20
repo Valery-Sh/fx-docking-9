@@ -16,26 +16,18 @@ import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
  */
 public class DockTargetController {
 
-    private Region dockPane;
+    private Region targetNode;
     private String title;
-/*    private PaneIndicatorTransformer paneTransformer;
-    private NodeIndicatorTransformer nodeTransformer;
-    private NodeSideIndicator nodeIndicator;
-*/
-    private DockIndicator paneIndicator;
+    private DockIndicator dockIndicator;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
     private boolean usedAsDockTarget = true;
 
-    //private DragPopup dragPopup;
-    private IndicatorPopup dragPopup;
+    private IndicatorPopup indicatorPopup;
     
-    
-    //09.02private final ObservableMap<Node, Dockable> notDockableItemsProperty = FXCollections.observableHashMap();
-
-    protected DockTargetController(Region dockPane) {
-        this.dockPane = dockPane;
+    protected DockTargetController(Region targetNode) {
+        this.targetNode = targetNode;
         init();
     }
 
@@ -51,9 +43,9 @@ public class DockTargetController {
         if (title != null) {
             return title;
         }
-        title = getDockPane().getId();
+        title = getTargetNode().getId();
         if (title == null) {
-            title = getDockPane().getClass().getName();
+            title = getTargetNode().getClass().getName();
         }
         return title;
     }
@@ -65,24 +57,20 @@ public class DockTargetController {
     }
 
 
-    protected void setDragPopup(IndicatorPopup dragPopup) {
-        this.dragPopup = dragPopup;
+    protected void setDragPopup(IndicatorPopup indicatorPopup) {
+        this.indicatorPopup = indicatorPopup;
     }
     protected IndicatorPopup createIndicatorPopup() {
-        if ( dragPopup == null ) {
-            dragPopup = new IndicatorPopup(this);
+        if ( indicatorPopup == null ) {
+            indicatorPopup = new IndicatorPopup(this);
         }
-        return dragPopup;
+        return indicatorPopup;
     }
-    public IndicatorPopup getDragPopup() {
-        if (dragPopup == null) {
-            dragPopup = createIndicatorPopup();
+    public IndicatorPopup getIndicatorPopup() {
+        if (indicatorPopup == null) {
+            indicatorPopup = createIndicatorPopup();
         }
-        return dragPopup;
-/*        if (getDockPane() != null) {
-            dragPopup = new DragPopup(this);
-        }
-*/
+        return indicatorPopup;
     }
 
 
@@ -92,12 +80,12 @@ public class DockTargetController {
     }
 
     protected void initListeners() {
-        if (getDockPane() == null) {
+        if (getTargetNode() == null) {
             return;
         }
-        getDockPane().sceneProperty().addListener((Observable observable) -> {
-            if (getDockPane().getScene() != null) {
-                focusedDockNode.bind(getDockPane().getScene().focusOwnerProperty());
+        getTargetNode().sceneProperty().addListener((Observable observable) -> {
+            if (getTargetNode().getScene() != null) {
+                focusedDockNode.bind(getTargetNode().getScene().focusOwnerProperty());
             }
         });
 
@@ -106,16 +94,16 @@ public class DockTargetController {
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
-                DockRegistry.dockable(newNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(newNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
                 return DockRegistry.isDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
-                DockRegistry.dockable(oldNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !DockRegistry.dockable(oldNode).nodeController().titleBarProperty().isActiveChoosedPseudoClass()) {
-                DockRegistry.dockable(oldNode).nodeController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(oldNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !DockRegistry.dockable(oldNode).dockableController().titleBarProperty().isActiveChoosedPseudoClass()) {
+                DockRegistry.dockable(oldNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -128,7 +116,7 @@ public class DockTargetController {
         }
         
         if ( doDock(mousePos, dockable.node()) ) {
-            dockable.nodeController().setFloating(false);
+            dockable.dockableController().setFloating(false);
         }
         
     }
@@ -141,14 +129,6 @@ public class DockTargetController {
         return false;
     }
     
-/*09.02    protected ObservableMap<Node, Dockable> getNotDockableItems() {
-        return this.notDockableItemsProperty;
-    }
-    protected ObservableMap<Node, Dockable> notDockableItemsProperty() {
-        return notDockableItemsProperty;
-    }
-    
-*/
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -157,81 +137,25 @@ public class DockTargetController {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-/*    protected void setPaneTransformer(PaneIndicatorTransformer paneTransformer) {
-        this.paneTransformer = paneTransformer;
-    }
 
-    protected void setNodeTransformer(NodeIndicatorTransformer nodeTransformer) {
-        this.nodeTransformer = nodeTransformer;
-    }
-
-    public NodeIndicatorTransformer getNodeTransformer() {
-        if (nodeTransformer == null) {
-            nodeTransformer = createNodeIndicatorTransformer();
-        }
-        return nodeTransformer;
-    }
-
-    protected NodeIndicatorTransformer createNodeIndicatorTransformer() {
-        return new NodeIndicatorTransformer();
-    }
-
-    public PaneIndicatorTransformer getPaneTransformer() {
-        if (paneTransformer == null) {
-            paneTransformer = createPaneIndicatorTransformer();
-        }
-        return paneTransformer;
-    }
-
-    protected PaneIndicatorTransformer createPaneIndicatorTransformer() {
-        return new PaneIndicatorTransformer();
-    }
-
-    ///
-    public NodeSideIndicator getNodeIndicator() {
-        if (nodeIndicator == null) {
-            nodeIndicator = createNodeIndicator();
-        }
-        return nodeIndicator;
-    }
-
-    protected NodeSideIndicator createNodeIndicator() {
-        return new NodeSideIndicator(this);
-    }
-    
-*/
-/*    public PaneSideIndicator getPaneIndicator() {
-        if (paneIndicator == null) {
-            paneIndicator = createDockIndicator();
-        }
-        return paneIndicator;
-    }
-*/
     public DockIndicator getDockIndicator() {
-        if (paneIndicator == null) {
-            paneIndicator = createDockIndicator();
+        if (dockIndicator == null) {
+            dockIndicator = createDockIndicator();
         }
-        return paneIndicator;
+        return dockIndicator;
     }
     
-//    public DockIndicator getDockIndicator() {
-//        return getPaneIndicator();
-//    }
 
     protected DockIndicator createDockIndicator() {
         return new PaneSideIndicator(this);
     }
-    
-//    protected PaneSideIndicator createPaneIndicator() {
-//        return new PaneSideIndicator(this);
-//    }
 
-    public Region getDockPane() {
-        return this.dockPane;
+    public Region getTargetNode() {
+        return this.targetNode;
     }
 
-    public void setDockPane(Region dockPane) {
-        this.dockPane = dockPane;
+    public void setTargetNode(Region targetNode) {
+        this.targetNode = targetNode;
     }
 
     protected boolean isDocked(Node node) {
@@ -240,43 +164,16 @@ public class DockTargetController {
 
     public void undock(Node node) {
         if (DockRegistry.isDockable(node)) {
-            DockNodeController dc = DockRegistry.dockable(node).nodeController();
-            dc.getPaneController().remove(node);
-            dc.setPaneController(null);
+            DockableController dc = DockRegistry.dockable(node).dockableController();
+            dc.getTargetController().remove(node);
+            dc.setTargetController(null);
         }
     }
-/*    public Dockable dock(Dockable dockable, Side dockPos) {
-        return dock(null, dockable, dockPos);
-    }
-    protected Dockable dock(Point2D mousePos, Dockable dockable, Side dockPos) {
-        if (isDocked(dockable.node())) {
-            return dockable;
-        }
-        
-        if ( doDock(mousePos, dockable.node(), dockPos) ) {
-            dockable.nodeController().setFloating(false);
-        }
-        return dockable;
-    }
-  */  
-    /////////////////////////
-/*    public void dock(Dockable dockable)  {
-        getDockExecutor().dock(dockable);
-    }
-*/    
-///////////////////////////////////////////////////////////////////////
+
     public FloatStageBuilder getStageBuilder(Dockable dockable) {
-        return new FloatStageBuilder(dockable.nodeController());
+        return new FloatStageBuilder(dockable.dockableController());
     }
 
-  /*  public interface DockConverter {
-
-        public static final int BEFORE_DOCK = 0;
-        public static final int AFTER_DOCK = 0;
-
-        Dockable convert(Dockable source, int when);
-    }//interface DockConverter
-*/
     public void remove(Node dockNode) {
         Region r;
     }

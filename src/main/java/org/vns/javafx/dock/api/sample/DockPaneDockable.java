@@ -8,15 +8,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.DockPaneController;
-import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
  * @author Valery
  */
-public class DockPaneDockable extends VBox implements DockPaneTarget{
+public class DockPaneDockable extends VBox implements DockTarget{
 
     private DockPaneController paneHandler;
     private HBox headerPane;
@@ -44,12 +44,12 @@ public class DockPaneDockable extends VBox implements DockPaneTarget{
     }
 
     @Override
-    public Pane pane() {
+    public Pane target() {
         return dockRootPane;
     }
 
     @Override
-    public DockTargetController paneController() {
+    public DockTargetController targetController() {
         return paneHandler;
     }
 

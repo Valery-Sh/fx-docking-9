@@ -17,24 +17,24 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * Allows to monitor the state of objects of {@link Dockable} type 
  * and also provides a means to change the state.
  * Any object that implements the {@link Dockable} interface provides 
- * {@link Dockable#nodeController() }* method that returns an object of this type.
+ * {@link Dockable#dockableController() } method that returns an object of this type.
  * <p>
  * To describe the state of an object using multiple properties and methods. 
  * An object of type {@code Dockable} is in a <i>docked</i> state, if the method
- * {@link DockNodeController#isDocked() } returns the true.
+ * {@link DockableController#isDocked() } returns the true.
  * </p>
  * <p>
  * In the <i>floating<i> state an object of type {@code Dockable} is transformed
- * when the method {@link DockNodeController#setFloating(boolean) }  
+ * when the method {@link DockableController#setFloating(boolean) }  
  * is applied to it with the parameter value equals to {#code true}.
  * </p>
  * <p>
  *   The {@literal dockable} node may have a title bar. The title bar may be an 
  * object of any type that extends {@code javafx.scene.layout.Region }. The class
- * provides the method {@link DockNodeController#createDefaultTitleBar(java.lang.String) }
+ * provides the method {@link DockableController#createDefaultTitleBar(java.lang.String) }
  * which create a default title bar of type {@link org.vns.javafx.dock.DockTitleBar).
  * You can replace it at any time by applying the method 
- * {@link DockNodeController#setTitleBar(javafx.scene.layout.Region) }. 
+ * {@link DockableController#setTitleBar(javafx.scene.layout.Region) }. 
  * If the parameter of the method equals to {@code null} then the title bar 
  * will be removed.
  * </p>
@@ -42,12 +42,12 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  *   By default if the {@literal dockable} node has a title bar then the title bar may be 
  * used to perform dragging. You can assign any node that is a children of the
  * the {@literal  dockable} node as a drag node by applying the method 
- * {@link DockNodeController#setDragNode(javafx.scene.Node) }
+ * {@link DockableController#setDragNode(javafx.scene.Node) }
  * </p>
  * 
  * @author Valery Shyshkin
  */
-public class DockNodeController {
+public class DockableController {
 
     private final TitleBarProperty<Region> titleBar;
     
@@ -65,7 +65,7 @@ public class DockNodeController {
     /**
      * dock target pane
      */
-    private final ObjectProperty<DockTargetController> paneController = new SimpleObjectProperty<>();    
+    private final ObjectProperty<DockTargetController> targetController = new SimpleObjectProperty<>();    
 
 
     private Properties properties;
@@ -73,7 +73,7 @@ public class DockNodeController {
      * Create a new object for the specified {@code dockable} object.
      * @param dockable  the object to create an instance for 
      */
-    public DockNodeController(Dockable dockable) {
+    public DockableController(Dockable dockable) {
         this.dockable = dockable;
         titleBar = new TitleBarProperty(dockable.node());
         init();
@@ -83,8 +83,8 @@ public class DockNodeController {
         dragManager = getDragManager();
         titleBar.addListener(this::titlebarChanged);
         scenePaneController = new ScenePaneController(dockable);
-        paneController.set(scenePaneController);
-        paneController.addListener(this::paneControllerChanged);
+        targetController.set(scenePaneController);
+        targetController.addListener(this::targetControllerChanged);
     }
 
     /**
@@ -136,9 +136,9 @@ public class DockNodeController {
         this.usedAsDockTarget = usedAsDockTarget;
     }
     
-    protected void paneControllerChanged(ObservableValue<? extends DockTargetController> observable, DockTargetController oldValue, DockTargetController newValue) {
+    protected void targetControllerChanged(ObservableValue<? extends DockTargetController> observable, DockTargetController oldValue, DockTargetController newValue) {
         if (newValue == null) {
-            paneController.set(scenePaneController);
+            targetController.set(scenePaneController);
         }
     }
     /**
@@ -187,17 +187,17 @@ public class DockNodeController {
      * 
      * @return  an instance of type {@link org.vns.javafx.dock.api.DockTargetController}.
      */
-    public DockTargetController getPaneController() {
-        return paneController.get();
+    public DockTargetController getTargetController() {
+        return targetController.get();
     }
     /**
      * Assigns the specified instance of type {@link DockTargetController } 
      * to this object.
      * 
-     * @param paneController the value to be assigned
+     * @param targetController the value to be assigned
      */
-    public void setPaneController(DockTargetController paneController) {
-        this.paneController.set(paneController);
+    public void setTargetController(DockTargetController targetController) {
+        this.targetController.set(targetController);
     }
     
     /**
@@ -266,7 +266,7 @@ public class DockNodeController {
      * @return the new instance of type {@link FloatStageBuilder}
      */
     public FloatStageBuilder getStageBuilder() {
-        return getPaneController().getStageBuilder(dockable);
+        return getTargetController().getStageBuilder(dockable);
     }
 
     /**
@@ -285,7 +285,7 @@ public class DockNodeController {
     }
     /**
      * Specifies whether a floating window of the node can be resized.
-     * The floating window appears when applying the method {@link DockNodeController#setFloating(boolean) 
+     * The floating window appears when applying the method {@link DockableController#setFloating(boolean) 
      * with the parameter value equals to {@code true}.
      * 
      * @param resizable if true the the window can be resized. false - otherwise.
@@ -296,16 +296,16 @@ public class DockNodeController {
     /**
      * The node considers to be in {@code docked} state when both conditions below are {@code true}.
      * <ul>
-     *   <li>getPaneController() != null</li>
-     *   <li>getPaneController().isDocked(node)</li>
+     *   <li>getTargetController() != null</li>
+     *   <li>getTargetController().isDocked(node)</li>
      * </ul>
      * @return true if the node is in docked state 
      */
     public boolean isDocked() {
-        if ( getPaneController() == null ) {
+        if ( getTargetController() == null ) {
             return false;
         }
-        return getPaneController().isDocked(dockable().node());
+        return getTargetController().isDocked(dockable().node());
         
     }
    

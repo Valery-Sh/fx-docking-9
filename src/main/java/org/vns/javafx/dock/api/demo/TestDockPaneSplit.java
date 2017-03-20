@@ -61,11 +61,11 @@ public class TestDockPaneSplit extends Application {
         dn3_1.setContent(btn3_1);
         dn3_1.setTitle("DockNode: dn3_1");       
         
-/*        dn3_1.nodeController().setDividerPos(0.608);                
+/*        dn3_1.dockableController().setDividerPos(0.608);                
         
-        dn1.nodeController().setDividerPos(0.346);                
-        dn2.nodeController().setDividerPos(0.713);                
-        dn3.nodeController().setDividerPos(0.608);                
+        dn1.dockableController().setDividerPos(0.346);                
+        dn2.dockableController().setDividerPos(0.713);                
+        dn3.dockableController().setDividerPos(0.608);                
 */        
         
         Button btn2 = new Button("BOTTON 2");
@@ -116,9 +116,9 @@ public class TestDockPaneSplit extends Application {
         DockNode dnc2 = new DockNode("DockNodeControl dnc2");
         DockNode dnc3 = new DockNode("DockNodeControl dnc3");
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
-/*        dnc1.nodeController().setDividerPos(0.346);                
-        dnc2.nodeController().setDividerPos(0.713);                
-        dnc3.nodeController().setDividerPos(0.608);                
+/*        dnc1.dockableController().setDividerPos(0.346);                
+        dnc2.dockableController().setDividerPos(0.713);                
+        dnc3.dockableController().setDividerPos(0.608);                
 */        
         dnc1.setId("dnc1");
         dnc2.setId("dnc2");
@@ -161,7 +161,7 @@ public class TestDockPaneSplit extends Application {
         });
         
         //cc.setRoot(vs1);
-        //System.err.println("dn1 isDocked()=" + dn1.nodeController().isDocked());
+        //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
         
         root.getChildren().add(cc);
         

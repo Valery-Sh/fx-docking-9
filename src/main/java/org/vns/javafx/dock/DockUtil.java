@@ -13,12 +13,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockNodeController;
-import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
@@ -137,8 +137,8 @@ public class DockUtil {
             boolean b = false;
             if (DockRegistry.isDockable(node)) {
                 b = true;
-                DockTargetController pd = DockRegistry.dockable(node).nodeController().getPaneController();
-                DockNodeController st = DockRegistry.dockable(node).nodeController();
+                DockTargetController pd = DockRegistry.dockable(node).dockableController().getTargetController();
+                DockableController st = DockRegistry.dockable(node).dockableController();
                 if (pd == null) {
                     b = false;
                 } else {
@@ -303,9 +303,9 @@ public class DockUtil {
         
         return retval;
     }
-        public static DockPaneTarget getParentDockPane(Node dockNode) {
-            return (DockPaneTarget) DockUtil.getImmediateParent(dockNode, p -> {
-                return (p instanceof DockPaneTarget);
+        public static DockTarget getParentDockPane(Node dockNode) {
+            return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {
+                return (p instanceof DockTarget);
             });
         }
 

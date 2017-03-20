@@ -52,7 +52,7 @@ public class TopNodeHelper {
             return node1;
         }
         
-        Node retval = null;
+        Node retval;// = null;
         List<Node> chain1 = getParentChain(node1);
         List<Node> chain2 = getParentChain(node2);
         if (chain1.isEmpty() && chain2.isEmpty()) {

@@ -15,10 +15,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import javafx.stage.WindowEvent;
-import org.vns.javafx.dock.api.DockPaneTarget;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
@@ -175,7 +175,7 @@ public class ParentChainPopup {
     protected String getText(Node node) {
         String txt;//
         if (DockRegistry.isDockPaneTarget(node)) {
-            txt = DockRegistry.dockPaneTarget(node).paneController().getTitle();
+            txt = DockRegistry.dockPaneTarget(node).targetController().getTitle();
             return txt;
 
         } else if (DockRegistry.isDockable(node)) {
@@ -187,11 +187,11 @@ public class ParentChainPopup {
     }
 
     protected String getButtonText(Dockable d) {
-        String txt = d.nodeController().getTitle();
-        if (d.nodeController().getProperties().getProperty("user-title") != null) {
-            txt = d.nodeController().getProperties().getProperty("user-title");
-        } else if (d.nodeController().getProperties().getProperty("short-title") != null) {
-            txt = d.nodeController().getProperties().getProperty("short-title");
+        String txt = d.dockableController().getTitle();
+        if (d.dockableController().getProperties().getProperty("user-title") != null) {
+            txt = d.dockableController().getProperties().getProperty("user-title");
+        } else if (d.dockableController().getProperties().getProperty("short-title") != null) {
+            txt = d.dockableController().getProperties().getProperty("short-title");
         }
         if (txt == null || txt.trim().isEmpty()) {
             txt = "Dockable";

@@ -8,7 +8,7 @@ import javafx.scene.shape.Rectangle;
 
 public abstract class DockIndicator {
 
-    private final DockTargetController paneController;
+    private final DockTargetController targetController;
 
     private Node dockPlace;
     private Pane indicatorPane;
@@ -16,8 +16,8 @@ public abstract class DockIndicator {
     //private final Map<Node, DockTargetController> sideButtonMap = new HashMap<>();
 //    private SideIndicatorTransformer transformer;
 
-    protected DockIndicator(DockTargetController paneController) {
-        this.paneController = paneController;
+    protected DockIndicator(DockTargetController targetController) {
+        this.targetController = targetController;
         init();
     }
 
@@ -57,7 +57,7 @@ public abstract class DockIndicator {
     }
 
     public DockTargetController getPaneController() {
-        return paneController;
+        return targetController;
     }
 
     protected abstract Pane createIndicatorPane();

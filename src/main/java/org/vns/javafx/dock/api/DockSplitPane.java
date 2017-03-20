@@ -35,11 +35,11 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     }
 
     private void init() {
-        DockPaneTarget dpt = DockUtil.getParentDockPane(this);
+        DockTarget dpt = DockUtil.getParentDockPane(this);
         if (dpt != null && getItems().size() > 0) {
             getItems().forEach(it -> {
                 if (DockRegistry.isDockable(it)) {
-                    DockRegistry.dockable(it).nodeController().setPaneController(dpt.paneController());
+                    DockRegistry.dockable(it).dockableController().setTargetController(dpt.targetController());
                 }
             });
         }
@@ -55,7 +55,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     }
 
     protected void itemsChanged(ListChangeListener.Change<? extends Node> change) {
-        DockPaneTarget dpt = null;
+        DockTarget dpt = null;
         while (change.next()) {
             if (change.wasRemoved()) {
                 List<? extends Node> list = change.getRemoved();
@@ -77,7 +77,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                 }
                 for (Node node : list) {
                     if (dpt != null && DockRegistry.isDockable(node)) {
-                        DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
+                        DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneAdded((SplitPane) node, dpt);
                     } else if (node instanceof DockSplitPane) {
@@ -94,9 +94,9 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             Node node = split.getItems().get(i);
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.nodeController().setPaneController(ph);
-/*                if (i < split.getDividers().size() && d.nodeController().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.nodeController().getDividerPos());
+                d.dockableController().setTargetController(ph);
+/*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.dockableController().getDividerPos());
                 }
 */                
             } else if (node instanceof DockSplitPane) {
@@ -117,17 +117,17 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         }
     }
 
-    protected void splitPaneAdded(SplitPane sp, DockPaneTarget dpt) {
+    protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
         sp.getItems().forEach((node) -> {
             if (DockRegistry.isDockable(node)) {
-                DockRegistry.dockable(node).nodeController().setPaneController(dpt.paneController());
+                DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }
         });
     }
 
-    protected void splitPaneRemoved(SplitPane sp, DockPaneTarget dpt) {
+    protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         sp.getItems().forEach((node) -> {
             if (DockRegistry.isDockable(node)) {
             } else if (node instanceof SplitPane) {

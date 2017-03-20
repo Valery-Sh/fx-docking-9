@@ -23,28 +23,27 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockIndicator;
-import org.vns.javafx.dock.api.DockNodeController;
-import org.vns.javafx.dock.api.DockPaneTarget;
+import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.IndicatorPopup;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
+public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
     private final StringProperty title = new SimpleStringProperty();
 
-    private final DockNodeController nodeController = new DockNodeController(this);
+    private final DockableController dockableController = new DockableController(this);
 
     private Label dragLabel;
     private Button dragButton;
-    //private ImageView dragImageView;
     private Node dragShape;
 
     private Tab dragTab;
@@ -65,7 +64,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     private void init() {
         dragShape = createDefaultDragNode();
         getChildren().add(dragShape);
-        nodeController.setDragNode(dragShape);
+        dockableController.setDragNode(dragShape);
         dragShape.setLayoutX(4);
         dragShape.setLayoutY(4);
 
@@ -78,7 +77,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
         paneController = new TabPaneController(this);
 
-        nodeController().setTitleBar(new DockTitleBar(this));
+        dockableController().setTitleBar(new DockTitleBar(this));
 
         setRotateGraphic(true);
 
@@ -112,7 +111,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     public void setDragNode(Node dragNode) {
-        nodeController.setDragNode(dragNode);
+        dockableController.setDragNode(dragNode);
     }
 
     public void openDragTag() {
@@ -148,11 +147,11 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     public StringProperty titleProperty() {
-        return nodeController().titleProperty();
+        return dockableController().titleProperty();
     }
 
-    public DockNodeController getNodeController() {
-        return nodeController;
+    public DockableController getNodeController() {
+        return dockableController;
     }
 
     @Override
@@ -161,17 +160,17 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
     }
 
     @Override
-    public DockNodeController nodeController() {
-        return this.nodeController;
+    public DockableController dockableController() {
+        return this.dockableController;
     }
 
     @Override
-    public Region pane() {
+    public Region target() {
         return this;
     }
 
     @Override
-    public DockTargetController paneController() {
+    public DockTargetController targetController() {
         return paneController;
     }
 
@@ -194,14 +193,14 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         @Override
-        public TabPane getDockPane() {
-            return (TabPane) super.getDockPane();
+        public TabPane getTargetNode() {
+            return (TabPane) super.getTargetNode();
         }
 
         @Override
         protected boolean isDocked(Node node) {
             boolean retval = false;
-            for (Tab tb : getDockPane().getTabs()) {
+            for (Tab tb : getTargetNode().getTabs()) {
                 if (tb.getContent() == node) {
                     retval = true;
                     break;
@@ -213,9 +212,9 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
         @Override
         protected void dock(Point2D mousePos, Dockable dockable) {
-            if (dockable.nodeController().isFloating()) {
+            if (dockable.dockableController().isFloating()) {
                 if (doDock(mousePos, dockable.node())) {
-                    dockable.nodeController().setFloating(false);
+                    dockable.dockableController().setFloating(false);
                 }
             }
         }
@@ -228,7 +227,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             }
 
             Dockable dockable = DockRegistry.dockable(node);
-            DockTabPane tabPane = (DockTabPane) getDockPane();
+            DockTabPane tabPane = (DockTabPane) getTargetNode();
             //TabGraphic tabGraphic = new TabGraphic(dockable, tabPane);
             int idx = -1;
             if (mousePos != null) {
@@ -271,10 +270,10 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
 
             if (DockRegistry.isDockable(node)) {
-                DockNodeController nodeHandler = DockRegistry.dockable(node).nodeController();
+                DockableController nodeHandler = DockRegistry.dockable(node).dockableController();
                 nodeHandler.setDragNode(newTab.getGraphic());
-                if (nodeHandler.getPaneController() == null || nodeHandler.getPaneController() != this) {
-                    nodeHandler.setPaneController(this);
+                if (nodeHandler.getTargetController() == null || nodeHandler.getTargetController() != this) {
+                    nodeHandler.setTargetController(this);
                 }
             }
             return true;
@@ -282,7 +281,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
         public void dock(Dockable dockable) {
             if (doDock(null, dockable.node())) {
-                dockable.nodeController().setFloating(false);
+                dockable.dockableController().setFloating(false);
             }
         }
 
@@ -300,7 +299,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
                 @Override
                 public void showIndicator(double screenX, double screenY, Region targetNode) {
-                    getDragPopup().show(getPaneController().getDockPane(), screenX, screenY);
+                    getIndicatorPopup().show(getPaneController().getTargetNode(), screenX, screenY);
                 }
 
                 @Override
@@ -333,7 +332,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
 
                 @Override
                 public void showDockPlace(double x, double y) {
-                    DockTabPane pane = (DockTabPane) getDockPane();
+                    DockTabPane pane = (DockTabPane) getTargetNode();
                     int idx = pane.indexOf(x, y);
                     if (idx < 0 && !pane.localToScreen(pane.getBoundsInLocal()).contains(x, y)) {
                         return;
@@ -391,11 +390,11 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         protected String getButtonText(Dockable d) {
-            String txt = d.nodeController().getTitle();
-            if (d.nodeController().getProperties().getProperty("user-title") != null) {
-                txt = d.nodeController().getProperties().getProperty("user-title");
-            } else if (d.nodeController().getProperties().getProperty("short-title") != null) {
-                txt = d.nodeController().getProperties().getProperty("short-title");
+            String txt = d.dockableController().getTitle();
+            if (d.dockableController().getProperties().getProperty("user-title") != null) {
+                txt = d.dockableController().getProperties().getProperty("user-title");
+            } else if (d.dockableController().getProperties().getProperty("short-title") != null) {
+                txt = d.dockableController().getProperties().getProperty("short-title");
             } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
                 txt = d.node().getId();
             }
@@ -406,7 +405,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void saveContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeController().getTitleBar();
+            Region tb = dockable.dockableController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -416,7 +415,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         protected void hideContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeController().getTitleBar();
+            Region tb = dockable.dockableController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -427,7 +426,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         }
 
         public void showContentTitleBar(Dockable dockable) {
-            Region tb = dockable.nodeController().getTitleBar();
+            Region tb = dockable.dockableController().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -440,7 +439,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         public void remove(Node dockNode
         ) {
             Tab tab = null;
-            for (Tab tb : getDockPane().getTabs()) {
+            for (Tab tb : getTargetNode().getTabs()) {
                 if (tb.getContent() == dockNode) {
                     tab = tb;
                     break;
@@ -448,7 +447,7 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
             }
             if (tab != null) {
                 showContentTitleBar(DockRegistry.dockable(dockNode));
-                getDockPane().getTabs().remove(tab);
+                getTargetNode().getTabs().remove(tab);
             }
         }
     }//class TabPaneController
@@ -572,21 +571,21 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
         return list;
     }
     /*    public static class TabPaneDockExecutor {
-        private TabPaneController  paneController;
-        public TabPaneDockExecutor(TabPaneController paneController) {
-            this.paneController = paneController;
+        private TabPaneController  targetController;
+        public TabPaneDockExecutor(TabPaneController targetController) {
+            this.targetController = targetController;
         }
         
         protected void dock(Point2D mousePos, Dockable dockable) {
             Node node = dockable.node();
-            if (((DockTabPane)paneController.getDockPane()).getItemIndex(mousePos.getX(), mousePos.getY()) < 0) {
+            if (((DockTabPane)targetController.getTargetNode()).getItemIndex(mousePos.getX(), mousePos.getY()) < 0) {
                 return;
             }
             Dockable d = DockRegistry.dockable(node);
-            if (d.nodeController().isFloating()) {
+            if (d.dockableController().isFloating()) {
                 //doDock(mousePos, DockRegistry.dockable(node));
                 if ( doDock(mousePos, node) ) {
-                    dockable.nodeController().setFloating(false);
+                    dockable.dockableController().setFloating(false);
                 }
             }
         }
@@ -596,22 +595,22 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 ((Stage) d.node().getScene().getWindow()).close();
             }
 
-            Tab tab = ((DockTabPane)paneController.getDockPane()).addTab(idx, d.node());
+            Tab tab = ((DockTabPane)targetController.getTargetNode()).addTab(idx, d.node());
 
-            DockNodeController nodeController = d.nodeController();
-            nodeController.setDragNode(tab.getTitleBar());
-            if (nodeController.getPaneController() == null || nodeController.getPaneController() != getPaneController()) {
-                nodeController.setPaneController(getPaneController());
+            DockableController dockableController = d.dockableController();
+            dockableController.setDragNode(tab.getTitleBar());
+            if (dockableController.getTargetController() == null || dockableController.getTargetController() != getTargetController()) {
+                dockableController.setTargetController(getTargetController());
             }
-            if ( nodeController.isFloating()) {
-                nodeController.setFloating(false);
+            if ( dockableController.isFloating()) {
+                dockableController.setFloating(false);
             }
 
         }
         @Override
         protected void dock(Dockable dockable, Object pos) {
             if ( pos instanceof Side) {
-                int idx = ((DockTabPane3)getPaneController().getDockPane()).getTabs().size();
+                int idx = ((DockTabPane3)getTargetController().getTargetNode()).getTabs().size();
                 dock(idx,dockable);
             }
         }
@@ -624,12 +623,12 @@ public class DockTabPane extends TabPane implements Dockable, DockPaneTarget {
                 ((Stage) node.getScene().getWindow()).close();
             }
 
-            Tab tab = ((DockTabPane3)getPaneController().getDockPane()).addTab(mousePos, node);
+            Tab tab = ((DockTabPane3)getTargetController().getTargetNode()).addTab(mousePos, node);
 
-            DockNodeController nodeController = DockRegistry.dockable(node).nodeController();
-            nodeController.setDragNode(tab.getTitleBar());
-            if (nodeController.getPaneController() == null || nodeController.getPaneController() != getPaneController()) {
-                nodeController.setPaneController(getPaneController());
+            DockableController dockableController = DockRegistry.dockable(node).dockableController();
+            dockableController.setDragNode(tab.getTitleBar());
+            if (dockableController.getTargetController() == null || dockableController.getTargetController() != getTargetController()) {
+                dockableController.setTargetController(getTargetController());
             }
             return true;
         }
