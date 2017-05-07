@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.editor;
 
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
@@ -11,7 +10,7 @@ import javafx.scene.control.TreeItem;
  */
 public class TreeItemEx<T> extends TreeItem{
     
-    private EventHandler eventHandler;
+    /* 10.04 private EventHandler eventHandler;*/
             
     public TreeItemEx() {
     }
@@ -24,14 +23,14 @@ public class TreeItemEx<T> extends TreeItem{
         super(value, graphic);
     }
 
-    public EventHandler getEventHandler() {
+/*10.04    public EventHandler getEventHandler() {
         return eventHandler;
     }
 
     public void setEventHandler(EventHandler eventHandler) {
         this.eventHandler = eventHandler;
     }
-
+*/
 /*    public TreeCell getCell() {
         return cell;
     }
@@ -41,9 +40,10 @@ public class TreeItemEx<T> extends TreeItem{
     }
 */
 
-    public boolean isAcceptable(Object obj) {
+/* 10.04    public boolean isAcceptable(Object obj) {
         return TreeItemRegistry.getInstance().getBuilder(obj).isAcceptable(obj);
     }
+*/    
 /*    public TreeItemEx accept(Object obj) {
         Node node = ((ItemValue)getValue()).getTreeItemNode();
         return TreeItemRegistry.getInstance().getBuilder(node).accept(this,obj);

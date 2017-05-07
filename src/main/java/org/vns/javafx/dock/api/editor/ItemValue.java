@@ -16,10 +16,10 @@ public class ItemValue {
     private boolean placeholder;
     private Node cellGraphic;
     
-    private int dragDroQualifier;
+    private int dragDropQualifier;
     
     public ItemValue(TreeItem treeItem) {
-        this.dragDroQualifier = FIRST;
+        this.dragDropQualifier = FIRST;
         this.treeItem = treeItem;
     }
 
@@ -31,12 +31,12 @@ public class ItemValue {
         return treeItemObject;
     }
 
-    public int getDragDroQualifier() {
-        return dragDroQualifier;
+    public int getDragDropQualifier() {
+        return dragDropQualifier;
     }
 
-    public void setDragDropQualifier(int dragDroQualifier) {
-        this.dragDroQualifier = dragDroQualifier;
+    public void setDragDropQualifier(int dragDropQualifier) {
+        this.dragDropQualifier = dragDropQualifier;
     }
     
 /*    public Object getTreeItemObject() {

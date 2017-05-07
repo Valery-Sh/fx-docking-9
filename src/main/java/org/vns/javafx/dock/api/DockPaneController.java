@@ -311,7 +311,9 @@ public class DockPaneController extends DockTargetController {
                 if (nodeController.getTargetController() == null || nodeController.getTargetController() != paneController) {
                     nodeController.setTargetController(paneController);
                 }
+                //nodeController.setTargetController(paneController); //06.05.2017
             }
+            
             return true;
         }
 

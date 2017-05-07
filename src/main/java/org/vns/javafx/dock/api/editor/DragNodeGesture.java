@@ -8,7 +8,7 @@ import javafx.scene.Node;
  */
 public class DragNodeGesture implements DragGesture {
     
-    private Node sourceGesture;
+    private final Node sourceGesture;
     private Object sourceGestureObject;
 
     public DragNodeGesture(Node sourceGesture) {

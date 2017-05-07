@@ -41,6 +41,7 @@ public class TestEditorTreeView01 extends Application {
 
         String s = java.util.UUID.randomUUID().toString();
         System.err.println("uidd-" + s);
+        
         HBox rootPane = new HBox();
         StackPane stackPane = new StackPane();
         VBox vbox = new VBox();

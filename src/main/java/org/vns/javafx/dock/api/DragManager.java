@@ -14,49 +14,47 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-
 /**
- * The class manages the process of dragging of the object of type {@link Dockable}} 
- * from the moment you press the mouse button and ending by initiation 
- * docking operations.
- * 
- * The objects of typo {@code Dockable}  can have a title bar. It is an object of type 
- * {@code Region}, which is assigned by calling the method 
+ * The class manages the process of dragging of the object of type
+ * {@link Dockable}} from the moment you press the mouse button and ending by
+ * initiation docking operations.
+ *
+ * The objects of typo {@code Dockable} can have a title bar. It is an object of
+ * type {@code Region}, which is assigned by calling the method 
  * {@link DockableController#setTitleBar(javafx.scene.layout.Region) } or by
- * applying the method {@link DockableController#createDefaultTitleBar(java.lang.String)  }.
- * The title bar object automatically becomes a listener of mouse events by 
+ * applying the method {@link DockableController#createDefaultTitleBar(java.lang.String)
+ * }. The title bar object automatically becomes a listener of mouse events by
  * executing the code below:
  * <pre>
  *   titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED,  this);
  *   titleBar.addEventHandler(MouseEvent.DRAG_DETECTED,  this);
  *   titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED,  this);
  *   titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
- * </pre>
- * Thus, if the object of type {@code Dockable} has a title bar and it is visible on
- * screen, then it can be used to perform mouse dragging.
+ * </pre> Thus, if the object of type {@code Dockable} has a title bar and it is
+ * visible on screen, then it can be used to perform mouse dragging.
  * <p>
- * The object of type {@code Dockable} has a method {@link DockableController#setDragNode(javafx.scene.Node) }.
- * The {@code Node } which has been set by the method may be used to drag the 
- * {@literal dockable> in the same manner as the title bar is used. Thus, both 
+ * The object of type {@code Dockable} has a method {@link DockableController#setDragNode(javafx.scene.Node)
+ * }. The {@code Node } which has been set by the method may be used to drag the  {@literal dockable> in the same manner as the title bar is used. Thus, both 
  * objects, such as a title bar and a drag node can be used to perform dragging.
- * 
+ *
  * </p>
  * @author Valery Shyshkin
  */
 public class DragManager implements EventHandler<MouseEvent> {
+
     /**
      * The object to be dragged
      */
     private final Dockable dockable;
     /**
-     * Pop up window which provides indicators to choose a place of the 
-     * target object
+     * Pop up window which provides indicators to choose a place of the target
+     * object
      */
     private IndicatorPopup popup;
 
     private Popup popupDelegate;
     /**
-     * The target dock target 
+     * The target dock target
      */
     private Parent targetDockPane;
     /**
@@ -74,7 +72,8 @@ public class DragManager implements EventHandler<MouseEvent> {
 
     /**
      * Create a new instance for the given dock node.
-     * @param dockNode the object to be dragged 
+     *
+     * @param dockNode the object to be dragged
      */
     public DragManager(Dockable dockNode) {
         this.dockable = dockNode;
@@ -84,13 +83,15 @@ public class DragManager implements EventHandler<MouseEvent> {
     private void init() {
         dragNode.addListener(this::dragNodeChanged);
     }
+
     /**
-     * Is called when a new value of {@link #dragNode } is detected. 
-     * Removes mouse listeners of the old drag node and assigns listeners to 
-     * the new drag node.
+     * Is called when a new value of {@link #dragNode } is detected. Removes
+     * mouse listeners of the old drag node and assigns listeners to the new
+     * drag node.
+     *
      * @param ov doesn't used
-     * @param oldValue the old drag node 
-     * @param newValue  the new drag node
+     * @param oldValue the old drag node
+     * @param newValue the new drag node
      */
     protected void dragNodeChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
@@ -100,30 +101,38 @@ public class DragManager implements EventHandler<MouseEvent> {
             addEventHandlers(newValue);
         }
     }
+
     /**
      * Returns the property object that represents a drag node.
+     *
      * @return the property object that represents a drag node.
      */
     public ObjectProperty<Node> dragNodeProperty() {
         return dragNode;
     }
+
     /**
      * Returns an object of type {@code Node} which is used as a drag node.
-     * @return an object of type {@code Node} 
+     *
+     * @return an object of type {@code Node}
      */
     public Node getDragNode() {
         return dragNode.get();
     }
+
     /**
      * Sets an object of type {@code Node} which can be used as a drag node.
+     *
      * @param dragNode a node which becomes a drag node
      */
     public void setDragNode(Node dragNode) {
         this.dragNode.set(dragNode);
     }
+
     /**
-     * A handler function with is called when the title bar of the 
+     * A handler function with is called when the title bar of the
      * {@code dockable} object changes.
+     *
      * @param ov doesn't used
      * @param oldValue the old value of the object which represents a title bar
      * @param newValue the new value of the object which represents a title bar
@@ -172,11 +181,11 @@ public class DragManager implements EventHandler<MouseEvent> {
      * is in the {@code floating} state and if not the method returns.<P>
      * If the method encounters a {@literal dockable} node or a
      * {@code dock target target} then it shows a pop up window which contains
- indicators to select a dock place on the target dock node or target.
- <p>
+     * indicators to select a dock place on the target dock node or target.
+     * <p>
      * The method checks whether the {@code control key} of the keyboard is
- pressed and if so then it shows a special indicator window which allows
- to select a dock target or one of it's parents.
+     * pressed and if so then it shows a special indicator window which allows
+     * to select a dock target or one of it's parents.
      *
      * @param ev the event that describes the mouse events
      */
@@ -188,7 +197,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         if (!dockable.dockableController().isFloating()) {
             return;
         }
-        
+
         double leftDelta = 0;
         double topDelta = 0;
 
@@ -228,7 +237,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockPaneTarget(root))) {
             return;
         }
-        
+
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.isDockPaneTarget(n);
         });
@@ -238,14 +247,14 @@ public class DragManager implements EventHandler<MouseEvent> {
         } else if (!DockRegistry.isDockPaneTarget(root)) {
             return;
         }
-        
+
         if (!DockRegistry.dockPaneTarget(root).targetController().isUsedAsDockTarget()) {
             return;
         }
 
         //12.02DragPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
         IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
-        
+
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -254,17 +263,19 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
         popup = newPopup;
         DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
-        
-        if ( ! popup.isShowing()) {
+
+        if (!popup.isShowing()) {
             popup.showPopup();
         }
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
+
     /**
      * The method is called when a user releases the mouse button.
-     * 
-     * Depending on whether or not the target object is detected during
-     * dragging the method initiates a dock operation or just returns. 
+     *
+     * Depending on whether or not the target object is detected during dragging
+     * the method initiates a dock operation or just returns.
+     *
      * @param ev the event that describes the mouse events.
      */
     public void mouseReleased(MouseEvent ev) {
@@ -278,8 +289,8 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
-        if ( popup != null && popup.isShowing() ) {
-            popup.getTargetController().dock(pt, dockable);            
+        if (popup != null && popup.isShowing()) {
+            popup.getTargetController().dock(pt, dockable);
         }
 
         if (popup != null && popup.isShowing()) {
@@ -290,13 +301,14 @@ public class DragManager implements EventHandler<MouseEvent> {
             popupDelegate = null;
         }
     }
+
     /**
-     * The method is called when the the drag-detected event is generated once 
-     * after the mouse is dragged.
-     * The method checks whether the {@code dockable} objects is in a floating state
-     * and if not invokes the method {@link DockableController#setFloating(boolean) } whith
-     * an argument set to {@code true}.
-     * 
+     * The method is called when the the drag-detected event is generated once
+     * after the mouse is dragged. The method checks whether the
+     * {@code dockable} objects is in a floating state and if not invokes the
+     * method {@link DockableController#setFloating(boolean) } whith an argument
+     * set to {@code true}.
+     *
      * @param ev the event that describes the mouse events.
      */
     protected void mouseDragDetected(MouseEvent ev) {
@@ -311,15 +323,17 @@ public class DragManager implements EventHandler<MouseEvent> {
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
     }
+
     /**
      * The implementation of the interface {@code EventHandler<MouseEvent> }.
      * Depending of the event type invokes one of the methods
      * <ul>
-     *  <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}<li>  
-     *  <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }  
-     *  <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)<li>  
-     *  <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)<li>  
+     * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}<li>
+     * <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }
+     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)<li>
+     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)<li>
      * </ul>
+     *
      * @param ev the event that describes the mouse events.
      */
     @Override

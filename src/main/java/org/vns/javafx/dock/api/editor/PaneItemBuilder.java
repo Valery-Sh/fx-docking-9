@@ -109,7 +109,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
         
         Pane p = (Pane) parent.getValue().getTreeItemObject();
         if (parent == target) {
-            int q = target.getValue().getDragDroQualifier();
+            int q = target.getValue().getDragDropQualifier();
             
             if ( q == FIRST ) {
                 idx = 0;

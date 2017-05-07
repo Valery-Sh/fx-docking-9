@@ -302,10 +302,15 @@ public abstract class SideIndicator extends DockIndicator {
 
         @Override
         public void showIndicator(double screenX, double screenY, Region dockNode) {
-            System.err.println("SidfeInd 1111111111111111");
+            //System.err.println("SidfeInd 111 " + dockNode);
+            if ( dockNode != null ) {
+                //System.err.println("SidfeInd 222 " + ((Button)dockNode).getText());            
+            }
             super.showIndicator(screenX, screenY, dockNode);
             if (dockNode != null) {
                 nodeController = DockRegistry.dockable(dockNode).dockableController();
+            } else {
+                nodeController = null; // 06.05.2017
             }
             Point2D newPos;
 
@@ -343,7 +348,8 @@ public abstract class SideIndicator extends DockIndicator {
             if (getPaneController() == null || getTargetNode() == null) {
                 resizeButtonPanes();
             }
-
+            //getIndicatorPopup().setOnShown(null); //06.05
+            //getIndicatorPopup().setOnHidden(null);
         }
 
         @Override

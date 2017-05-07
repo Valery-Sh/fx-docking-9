@@ -320,6 +320,7 @@ public class DragPopup extends IndicatorPopup {
         // findDockable returns null
         //
         Region targetNode = (Region) DockUtil.findDockable(getTargetNode(), screenX, screenY);
+        System.err.println("Dragpopup targetNode = " + targetNode);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
 
         getPaneIndicator().hideDockPlace();

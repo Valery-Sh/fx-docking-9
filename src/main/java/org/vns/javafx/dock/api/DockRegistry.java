@@ -51,6 +51,7 @@ public class DockRegistry {
             javafx.application.Platform.runLater(() -> {
                 getInstance().updateRegistry();
             });
+            
             StageHelper.getStages().forEach(s -> {
                 //
                 // Add in reverse order
@@ -256,7 +257,7 @@ public class DockRegistry {
         dockables.put(node,d);
         if ( d.node().getParent() != null ) {
             //09.02d.dockableController().getTargetController().changeDockedState(d, true);
-            d.dockableController().getTargetController().setTargetNode((Pane)d.node().getParent());
+            d.dockableController().getTargetController().setTargetNode((Region)d.node().getParent());
         }
         return d;
     }
