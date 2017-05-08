@@ -71,7 +71,7 @@ public class DockUtil {
             }
         }
     }
-    
+
     public static Side sideValue(String dockPos) {
         Side retval = null;
         if (dockPos == null) {
@@ -95,7 +95,7 @@ public class DockUtil {
         return retval;
     }
 
-/*    public static ObservableList<Dockable> getAllDockable(Region root) {
+    /*    public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
 
         List<Dockable> list = findNodes(root, p -> {
@@ -107,9 +107,9 @@ public class DockUtil {
         });
         return retval;
     }
-*/
+     */
 
-/*11.01    public static List findNodes(Parent root, Predicate<Node> predicate) {
+ /*11.01    public static List findNodes(Parent root, Predicate<Node> predicate) {
         List retval = new ArrayList();
         for (Node node : root.getChildrenUnmodifiable()) {
             if (predicate.test(node)) {
@@ -121,15 +121,15 @@ public class DockUtil {
         }
         return retval;
     }
-*/
-/*11.01    public static Node findNode(Parent root, Predicate<Node> predicate) {
+     */
+ /*11.01    public static Node findNode(Parent root, Predicate<Node> predicate) {
         List<Node> ls = findNodes(root, predicate);
         if (ls.isEmpty()) {
             return null;
         }
         return ls.get(0);
     }
-*/
+     */
     public static Node findDockable(Parent root, double screenX, double screenY) {
 
         Predicate<Node> predicate = (node) -> {
@@ -145,11 +145,11 @@ public class DockUtil {
                     b = pd.isUsedAsDockTarget() && st.isUsedAsDockTarget();
                     System.err.println("findDockable st.isUsedAsDockTarget() " + st.isUsedAsDockTarget());
                 }
-                
+
             }
             return b;
         };
-        return TopNodeHelper.getTopNode((Stage)root.getScene().getWindow(), screenX,screenY, predicate);
+        return TopNodeHelper.getTopNode((Stage) root.getScene().getWindow(), screenX, screenY, predicate);
     }
 
     /**
@@ -177,7 +177,6 @@ public class DockUtil {
 
     }
 
-
     public static void print(Parent root) {
         print(root, 1, " ", p -> {
             return ((p instanceof Control) || (p instanceof Pane))
@@ -187,6 +186,19 @@ public class DockUtil {
 
     public static boolean contains(Region node, double x, double y) {
         return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
+    }
+    public static boolean contains(Node node, double x, double y) {
+        return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
+    }    
+    public static Node findNode(Pane pane, double x, double y) {
+        Node retval = null;
+        for ( Node node : pane.getChildren() ) {
+            if ( contains(node, x, y) ) {
+                retval = node;
+                break;
+            }
+        }
+        return retval;
     }
 
     public static boolean contains(Window w, double x, double y) {
@@ -284,30 +296,37 @@ public class DockUtil {
         }
         return retval;
     }
+
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
         //if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
-        if (child == null) {        
+        if (child == null) {
             return null;
         }
         Parent retval = null;
         Parent p = child.getParent();
         while (true) {
-            if ( p == null ) {
+            if (p == null) {
                 break;
             }
-            if ( predicate.test(p)) {
+            if (predicate.test(p)) {
                 retval = p;
                 break;
             }
             p = p.getParent();
         }
-        
+
         return retval;
     }
-        public static DockTarget getParentDockPane(Node dockNode) {
-            return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {
-                return (p instanceof DockTarget);
-            });
-        }
 
+    public static DockTarget getParentDockPane(Node dockNode) {
+        return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {
+            return (DockRegistry.isDockPaneTarget(p));
+        });
+    }
+/*07.05    public static DockTarget getParentDockPane(Node dockNode) {
+        return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {
+            return (p instanceof DockTarget);
+        });
+    }
+*/
 }

@@ -97,7 +97,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
     public DockSideBar() {
         init();
-
     }
 
     public DockSideBar(Dockable... items) {
@@ -168,7 +167,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
                 for (Dockable d : list) {
-                    dock(d);
+                    //dock(d);
+                    targetController.dock(d);
                 }
             }
         }//while
@@ -312,11 +312,11 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         getDelegate().setOrientation(orientation);
     }
 
-    public Button dock(Dockable dockable) {
-        targetController.dock(dockable);
-        return getButton(dockable);
-
-    }
+    //public Button dock(Dockable dockable) {
+    //protected void dock(Dockable dockable) {        
+    //    targetController.dock(dockable);
+    //07.05return getButton(dockable);
+    //}
 
     /*    public Button dock(Dockable dockable, String btnText) {
         if (btnText != null) {
@@ -369,11 +369,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             DockRegistry.start();
         }
 
-        @Override
-        public FloatStageBuilder getStageBuilder(Dockable dockable) {
-            return getItem(dockable).getStageBuilder();
-        }
-
         protected Container getItem(Dockable d) {
             Container retval = null;
             for (Container c : itemMap.values()) {
@@ -397,7 +392,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             return retval;
         }
 
-        @Override
+        /*07.05        @Override
         protected void dock(Point2D mousePos, Dockable dockable) {
             if (isDocked(dockable.node())) {
                 return;
@@ -408,8 +403,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 }
             }
         }
-
-        public void dock(Dockable dockable) {
+         */
+        protected void dock(Dockable dockable) {
             if (doDock(null, dockable.node())) {
                 dockable.dockableController().setFloating(false);
             }
@@ -656,7 +651,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 @Override
                 public void showDockPlace(double x, double y) {
                     ToolBar tb = ((DockSideBar) getTargetNode()).getDelegate();
-                    
+
                     int idx = indexOf(x, y);
                     if (idx < 0) {
                         return;
@@ -664,9 +659,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     double tbHeight = tb.getHeight();
 
                     Rectangle dockPlace = (Rectangle) getDockPlace();
-                    
-                    
-                    if ( tb.getOrientation() == Orientation.HORIZONTAL) {
+
+                    if (tb.getOrientation() == Orientation.HORIZONTAL) {
                         dockPlace.setHeight(tb.getHeight());
                         dockPlace.setWidth(5);
                     } else {
@@ -677,10 +671,10 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     Point2D p = dockPlace.localToParent(0, 0);
 
                     dockPlace.setX(p.getX());
-                    
+
                     Node node = null;
                     boolean before = false;
-                    
+
                     if (idx == 0 && tb.getItems().isEmpty()) {
                         dockPlace.setWidth(5);
                     } else if (idx == tb.getItems().size()) {
@@ -708,8 +702,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                             }
                             dockPlace.setX(0);
                             dockPlace.setY(pos);
-                            
-                            
+
                         }
                     }
                     dockPlace.setVisible(true);

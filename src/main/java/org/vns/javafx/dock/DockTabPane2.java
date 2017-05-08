@@ -116,7 +116,6 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             if (change.wasAdded()) {
                 for (int i = change.getFrom(); i < change.getTo(); i++) {
                     ((TabPaneController) targetController()).getDockExecutor().dock(i, change.getList().get(i));
-                    //dock(i, change.getList().get(i));
                 }
             }
         }//while
@@ -361,11 +360,11 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             getDockExecutor().dock(mousePos, dockable);
         }
 
-        @Override
-        protected void dock(Dockable dockable, Object pos) {
+        //07.05 @Override
+        /*protected void dock(Dockable dockable, Object pos) {
             getDockExecutor().dock(dockable, pos);
         }
-
+         */
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             return getDockExecutor().doDock(mousePos, node);
@@ -394,10 +393,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
                 @Override
                 public void showIndicator(double screenX, double screenY, Region targetNode) {
-                    System.err.println("createDockIndicator nshoIndicator ");
                     getIndicatorPopup().show(getPaneController().getTargetNode(), screenX, screenY);
-                    System.err.println("createDockIndicator getDragPopup()=" + getIndicatorPopup());                    
-                    System.err.println("createDockIndicator ishoIndicator isShowing=" + getIndicatorPopup().isShowing());
                 }
 
                 @Override
@@ -421,6 +417,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                     return tabDockPlace;
                 }
 
+                @Override
                 public void hideDockPlace() {
                     getDockPlace().setVisible(false);
                     getTabDockPlace().setVisible(false);
@@ -985,13 +982,13 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
         }
 
-        protected void dock(Dockable dockable, Object pos) {
+        /*07.05        protected void dock(Dockable dockable, Object pos) {
             if (pos instanceof Side) {
                 int idx = ((DockTabPane2) paneController.getTargetNode()).getTabs().size();
                 dock(idx, dockable);
             }
         }
-
+         */
         protected boolean doDock(Point2D mousePos, Node node) {
             if (!DockRegistry.isDockable(node)) {
                 return false;

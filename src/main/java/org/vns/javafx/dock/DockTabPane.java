@@ -210,7 +210,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return retval;
         }
 
-        @Override
+/*07.05        @Override
         protected void dock(Point2D mousePos, Dockable dockable) {
             if (dockable.dockableController().isFloating()) {
                 if (doDock(mousePos, dockable.node())) {
@@ -218,7 +218,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                 }
             }
         }
-
+*/
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             Stage stage = null;

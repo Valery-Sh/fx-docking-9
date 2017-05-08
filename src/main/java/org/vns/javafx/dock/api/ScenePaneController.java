@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
@@ -30,6 +31,11 @@ public class ScenePaneController extends DockTargetController {
             setTargetNode((Pane) dockable.node().getParent());
         }
         dockable.node().parentProperty().addListener(parentListener);
+    }
+
+    @Override
+    protected DockIndicator createDockIndicator() {
+        return new SideIndicator.PaneSideIndicator(this);
     }
 
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
@@ -65,6 +71,11 @@ public class ScenePaneController extends DockTargetController {
         if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
             ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
         }
+    }
+
+    @Override
+    protected boolean doDock(Point2D mousePos, Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

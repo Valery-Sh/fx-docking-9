@@ -104,7 +104,7 @@ public class IndicatorPopup extends Popup {
     }
 
     /**
-     * Returns an object of type {@link SideIndicator} to display indicators for
+     * Returns an object of type {@link DockIndicator} to display indicators for
      * an object of type {@link DockPaneTarget}.
      *
      * @return Returns an object of type {@code SideIndicator}

@@ -76,11 +76,11 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     public Region getTitleBar() {
-        return dockableController().getTitleBar();
+        return dockableController.getTitleBar();
     }
 
     public void setTitleBar(Region node) {
-        dockableController().setTitleBar(node);
+        dockableController.setTitleBar(node);
     }
 
     public boolean isRemoveTitleBar() {

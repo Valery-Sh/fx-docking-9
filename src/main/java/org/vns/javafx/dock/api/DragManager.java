@@ -297,7 +297,6 @@ public class DragManager implements EventHandler<MouseEvent> {
             popup.hide();
         }
         if (popupDelegate != null) {
-            //popupDelegate.close();
             popupDelegate = null;
         }
     }

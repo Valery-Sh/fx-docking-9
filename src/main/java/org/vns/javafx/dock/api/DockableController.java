@@ -179,6 +179,19 @@ public class DockableController {
     public void setTitle(String title) {
         this.title.set(title);
     }
+
+    /**
+     * Specifies a DockTargetController currently assigned to this object.
+     * The controller is assigned to this object when the last is docked.
+     * When this object is created then the value of type {@link ScenePaneController}
+     * is assigned. 
+     * 
+     * @return an object of type {@link DockTargetController }
+     */
+    public ObjectProperty<DockTargetController> targetControllerProperty() {
+        return targetController;
+    }
+    
     /**
      * Returns an instance of type {@link org.vns.javafx.dock.api.DockTargetController}.
      * The pane controller is assigned to this object when the last is docked.
@@ -251,7 +264,8 @@ public class DockableController {
      */
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            FloatStageBuilder t = getStageBuilder();
+            //07.05 FloatStageBuilder t = getStageBuilder();
+            FloatStageBuilder t = new FloatStageBuilder(this);
             t.makeFloating();
             this.floating.set(floating);
         } else if (!floating) {
@@ -265,9 +279,10 @@ public class DockableController {
      * 
      * @return the new instance of type {@link FloatStageBuilder}
      */
-    public FloatStageBuilder getStageBuilder() {
-        return getTargetController().getStageBuilder(dockable);
-    }
+    //public FloatStageBuilder getStageBuilder() {
+        //07.05 return getTargetController().getStageBuilder(dockable);
+    //    return new FloatStageBuilder(this);
+    //}
 
     /**
      * Getter method of the {@code resizable} property
@@ -310,7 +325,7 @@ public class DockableController {
     }
    
     /**
-     * Creates and returns a new default instance of type {@link  org.vns.javafx.dock.DockTitleBar}
+     * Creates and returns a new instance of type {@link  org.vns.javafx.dock.DockTitleBar}
      * with the specified title.
      * 
      * @param title the string value of the title
@@ -328,6 +343,6 @@ public class DockableController {
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
-        dragManager.titlebarChanged(ov, oldValue, newValue);
+        getDragManager().titlebarChanged(ov, oldValue, newValue);
     }
 }

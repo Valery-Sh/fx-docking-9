@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -13,6 +14,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DockableController;
 
 /**
  *
@@ -25,6 +27,9 @@ public class DemoDockableButton extends Application {
 
     @Override
     public void start(Stage stage) {
+        MyClass mc = new MyClass();
+        mc.print();
+        
         stage.setTitle("PRIMARY");
         VBox root = new VBox();
         scene = new Scene(root, 200, 200);
@@ -36,9 +41,35 @@ public class DemoDockableButton extends Application {
         Button dockButton1 = new Button("To be docked 2");        
         Dockable dockableButton1 = DockRegistry.getInstance().getDefaultDockable(dockButton1);
         dockableButton1.dockableController().setDragNode(dockButton1);
-        
-        root.getChildren().addAll(dockButton, dockButton1);
+        //
+        // Dynamically created Dockable Button
+        //
+        Button dockButton2 = new Button("To be docked 3");
+        Dockable dockableButton2 = new Dockable() {
+            private DockableController c = new DockableController(this);
+            @Override
+            public Region node() {
+                return dockButton2;
+            }
 
+            @Override
+            public DockableController dockableController() {
+                return c;
+            }
+            
+        };
+        dockableButton2.dockableController().setDragNode(dockButton2);
+        DockRegistry.getInstance().register(dockableButton2);
+        //
+        //
+        //
+        root.getChildren().addAll(dockButton, dockButton1, dockButton2);
+        
+/*        if ( dockButton2.getParent() != null ) {
+            //09.02d.dockableController().getTargetController().changeDockedState(d, true);
+            dockableButton2.dockableController().getTargetController().setTargetNode((Region)dockableButton2.node().getParent());
+        }        
+*/
         Stage stage1 = new Stage();
         DockPane dockPane = new DockPane();
         dockPane.setStyle("-fx-border-width: 2px; -fx-border-color: red");
@@ -52,7 +83,7 @@ public class DemoDockableButton extends Application {
         stage.setScene(scene);
         stage.show();
         stage1.show();
-
+        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
