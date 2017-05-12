@@ -34,7 +34,7 @@ public class ScenePaneController extends DockTargetController {
     }
 
     @Override
-    protected DockIndicator createDockIndicator() {
+    protected PositionIndicator createPositionIndicator() {
         return new SideIndicator.PaneSideIndicator(this);
     }
 

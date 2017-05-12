@@ -35,7 +35,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockIndicator;
+import org.vns.javafx.dock.api.PositionIndicator;
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -328,7 +328,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
     public static class TabPaneController extends DockTargetController {
 
-        private DockIndicator dockIndicator;
+        private PositionIndicator positionIndicator;
 
         public TabPaneController(Region dockPane) {
             super(dockPane);
@@ -336,8 +336,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         private void init() {
-            //setSidePointerModifier(this::modifyNodeSidePointer);
-            setDragPopup(new IndicatorPopup(this));
+            //12.05setIndicatorPopup(new IndicatorPopup(this));
         }
 
         @Override
@@ -371,11 +370,11 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         @Override
-        public DockIndicator getDockIndicator() {
-            if (dockIndicator == null) {
-                createDockIndicator();
+        public PositionIndicator getPositionIndicator() {
+            if (positionIndicator == null) {
+                createPositionIndicator();
             }
-            return dockIndicator;
+            return positionIndicator;
         }
         private DockExecutor dockExecutor;
 
@@ -387,13 +386,13 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         @Override
-        public DockIndicator createDockIndicator() {
-            dockIndicator = new DockIndicator(this) {
+        public PositionIndicator createPositionIndicator() {
+            positionIndicator = new PositionIndicator(this) {
                 private Rectangle tabDockPlace;
 
                 @Override
-                public void showIndicator(double screenX, double screenY, Region targetNode) {
-                    getIndicatorPopup().show(getPaneController().getTargetNode(), screenX, screenY);
+                public void showIndicator(double screenX, double screenY) {
+                    getIndicatorPopup().show(getTargetController().getTargetNode(), screenX, screenY);
                 }
 
                 @Override
@@ -479,7 +478,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                 }
 
             };
-            return dockIndicator;
+            return positionIndicator;
         }
 
         @Override

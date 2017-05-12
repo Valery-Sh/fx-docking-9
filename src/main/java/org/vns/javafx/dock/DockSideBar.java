@@ -35,7 +35,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockIndicator;
+import org.vns.javafx.dock.api.PositionIndicator;
 
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
@@ -360,7 +360,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         private void init() {
             //setSidePointerModifier(this::modifyNodeSidePointer);
-            setDragPopup(new IndicatorPopup(this));
+            //12.05setIndicatorPopup(new IndicatorPopup(this));
 
         }
 
@@ -612,13 +612,13 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         }
 
         @Override
-        public DockIndicator createDockIndicator() {
-            DockIndicator dockIndicator = new DockIndicator(this) {
+        public PositionIndicator createPositionIndicator() {
+            PositionIndicator positionIndicator = new PositionIndicator(this) {
                 private Rectangle tabDockPlace;
 
                 @Override
-                public void showIndicator(double screenX, double screenY, Region targetNode) {
-                    getIndicatorPopup().show(getPaneController().getTargetNode(), screenX, screenY);
+                public void showIndicator(double screenX, double screenY) {
+                    getIndicatorPopup().show(getTargetController().getTargetNode(), screenX, screenY);
                 }
 
                 @Override
@@ -709,7 +709,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     dockPlace.toFront();
                 }
             };
-            return dockIndicator;
+            return positionIndicator;
         }
     }//class
 

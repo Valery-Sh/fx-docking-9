@@ -15,7 +15,7 @@ import org.vns.javafx.dock.DockUtil;
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link Dockable} or {@link DockPaneTarget}. The position of
+ * object of type {@link Dockable} or {@link DockTarget}. The position of
  * the target object is set as a value of type {@code javafx.geometry.Side} the
  * object is given enum type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
@@ -91,7 +91,12 @@ public class IndicatorPopup extends Popup {
     }
 
     protected void initContent() {
-        Pane indicatorPane = targetController.getDockIndicator().getIndicatorPane();
+        //12.05
+        if ( targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null ) {
+            return;
+        }
+        //end 12.05
+        Pane indicatorPane = targetController.getPositionIndicator().getIndicatorPane();
         indicatorPane.setMouseTransparent(true);
 
         indicatorPane.prefHeightProperty().bind(getTargetNode().heightProperty());
@@ -104,13 +109,13 @@ public class IndicatorPopup extends Popup {
     }
 
     /**
-     * Returns an object of type {@link DockIndicator} to display indicators for
-     * an object of type {@link DockPaneTarget}.
+     * Returns an object of type {@link PositionIndicator} to display indicators for
+     * an object of type {@link DockPaneController}.
      *
-     * @return Returns an object of type {@code SideIndicator}
+     * @return Returns an object of type {@code PositionIndicator}
      */
-    public DockIndicator getDockIndicator() {
-        return targetController.getDockIndicator();
+    public PositionIndicator getPositionIndicator() {
+        return targetController.getPositionIndicator();
     }
 
 
@@ -128,9 +133,12 @@ public class IndicatorPopup extends Popup {
      */
     //public void showPopup(Node dockNode) {
     public void showPopup() {
+        if ( getPositionIndicator() == null ) {
+            return;
+        }
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
-        getDockIndicator().showIndicator(pos.getX(), pos.getY());
+        getPositionIndicator().showIndicator(pos.getX(), pos.getY());
     }
 
     /**
@@ -150,7 +158,7 @@ public class IndicatorPopup extends Popup {
             return true;
         }
         boolean retval = false;
-        if (DockUtil.contains(getDockIndicator().getIndicatorPane(), x, y)) {
+        if (DockUtil.contains(getPositionIndicator().getIndicatorPane(), x, y)) {
             retval = true;
         } else if (isShowing()) {
             hide();
@@ -165,11 +173,10 @@ public class IndicatorPopup extends Popup {
      * @param screenY a screen mouse position
      */
     public void handle(double screenX, double screenY) {
-        setOnHiding(v -> {
-        });
-
-        //getDockIndicator().hideDockPlace();
-        getDockIndicator().showDockPlace(screenX,screenY);
+        if ( getPositionIndicator() == null ) {
+            return;
+        }
+        getPositionIndicator().showDockPlace(screenX,screenY);
     }
     
 
@@ -181,7 +188,7 @@ public class IndicatorPopup extends Popup {
      * proposed dock place
      */
     public Node getDockPlace() {
-        return targetController.getDockIndicator().getDockPlace();
+        return targetController.getPositionIndicator().getDockPlace();
     }
 
 }

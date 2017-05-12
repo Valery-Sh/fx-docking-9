@@ -159,7 +159,8 @@ public class DockRegistry {
         List<Stage> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
             Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
-                return (n instanceof DockTarget);
+                //12.05return (n instanceof DockTarget);
+                return isDockPaneTarget(n);
             });
             /* 11.01            List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
                 Point2D p = node.screenToLocal(x, y);
@@ -258,6 +259,19 @@ public class DockRegistry {
         dockables.put(dockable.node(), dockable);
         if (dockable.node().getParent() != null) {
             dockable.dockableController().getTargetController().setTargetNode((Region) dockable.node().getParent());
+        }
+        
+    }
+    public void register(DockTarget dockTarget) {
+        if (dockTarget.target() instanceof DockTarget) {
+            return;
+        }
+        if (dockTargets.get(dockTarget.target()) != null) {
+            return;
+        }
+        dockTargets.put(dockTarget.target(), dockTarget);
+        if (dockTarget.target().getParent() != null) {
+            //dockable.dockableController().getTargetController().setTargetNode((Region) dockTarget.node().getParent());
         }
         
     }

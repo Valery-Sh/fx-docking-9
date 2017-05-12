@@ -51,7 +51,7 @@ public class DockPaneController extends DockTargetController {
     }
 
     @Override
-    protected DockIndicator createDockIndicator() {
+    protected PositionIndicator createPositionIndicator() {
         return new PaneSideIndicator(this);
     }
 

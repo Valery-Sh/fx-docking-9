@@ -210,18 +210,15 @@ public class DragManager implements EventHandler<MouseEvent> {
         Stage stage = (Stage) dockable.node().getScene().getWindow();
         stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
         stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
+        
         if (popup != null && popup.isShowing()) {
             popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
         }
 
-//        if (ev.isControlDown() && popupDelegate != null && !popupDelegate.contains(ev.getScreenX(), ev.getScreenY())) {
-//            return;
-//        }
         if (ev.isControlDown() && popupDelegate == null && popup != null) {
             popup.hide();
             //popupDelegate = DockRedirector.show(popup.getTargetNode());
         } else if (!ev.isControlDown() && popupDelegate != null) {
-//            popupDelegate.close();
             popupDelegate = null;
         }
 
@@ -251,10 +248,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         if (!DockRegistry.dockPaneTarget(root).targetController().isUsedAsDockTarget()) {
             return;
         }
-
-        //12.02DragPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
         IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
-
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -266,6 +260,9 @@ public class DragManager implements EventHandler<MouseEvent> {
 
         if (!popup.isShowing()) {
             popup.showPopup();
+        }
+        if ( popup == null ) {
+            return;
         }
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
@@ -291,6 +288,11 @@ public class DragManager implements EventHandler<MouseEvent> {
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
         if (popup != null && popup.isShowing()) {
             popup.getTargetController().dock(pt, dockable);
+        } else if ( popup != null && popup.getPositionIndicator() == null) {
+            //
+            // We use default indicatorPopup without position indicator
+            //
+            popup.getTargetController().dock(pt, dockable);
         }
 
         if (popup != null && popup.isShowing()) {
@@ -305,7 +307,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once
      * after the mouse is dragged. The method checks whether the
      * {@code dockable} objects is in a floating state and if not invokes the
-     * method {@link DockableController#setFloating(boolean) } whith an argument
+     * method {@link DockableController#setFloating(boolean) } with an argument
      * set to {@code true}.
      *
      * @param ev the event that describes the mouse events.

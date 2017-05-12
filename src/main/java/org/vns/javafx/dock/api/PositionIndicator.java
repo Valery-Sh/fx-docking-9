@@ -6,17 +6,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
-public abstract class DockIndicator {
+public abstract class PositionIndicator {
 
     private final DockTargetController targetController;
 
     private Node dockPlace;
     private Pane indicatorPane;
 
-    //private final Map<Node, DockTargetController> sideButtonMap = new HashMap<>();
-//    private SideIndicatorTransformer transformer;
 
-    protected DockIndicator(DockTargetController targetController) {
+    protected PositionIndicator(DockTargetController targetController) {
         this.targetController = targetController;
         init();
     }
@@ -31,6 +29,7 @@ public abstract class DockIndicator {
     protected void addDockPlace() {
        indicatorPane.getChildren().add(dockPlace);        
     }
+    
     protected Boolean intersects(Node node1, Node node2) {
         if (node1 == null || node2 == null) {
             return false;
@@ -41,12 +40,16 @@ public abstract class DockIndicator {
 
     }
 
-    public abstract void showIndicator(double screenX, double screenY, Region targetNode);
+    protected void showIndicator(double screenX, double screenY, Region targetNode) {
+        //showIndicator(screenX, screenY);
+    }
     
-    public void showIndicator(double screenX, double screenY) {
+    public abstract void showIndicator(double screenX, double screenY);
+    
+    /*12.05public void showIndicator(double screenX, double screenY) {
         showIndicator(screenX, screenY, null);
     }
-
+    */
 
     public Node getDockPlace() {
         return dockPlace;
@@ -56,7 +59,7 @@ public abstract class DockIndicator {
         getDockPlace().setVisible(true);
     }
 
-    public DockTargetController getPaneController() {
+    public DockTargetController getTargetController() {
         return targetController;
     }
 
@@ -74,4 +77,4 @@ public abstract class DockIndicator {
         getDockPlace().setVisible(false);
     }
 
-}//DockIndicator
+}//PositionIndicator

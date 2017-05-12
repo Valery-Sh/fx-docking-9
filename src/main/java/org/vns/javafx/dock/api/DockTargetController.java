@@ -17,7 +17,7 @@ public abstract class DockTargetController {
 
     private Region targetNode;
     private String title;
-    private DockIndicator dockIndicator;
+    private PositionIndicator positionIndicator;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -66,14 +66,16 @@ public abstract class DockTargetController {
     }
 
 
-    protected void setDragPopup(IndicatorPopup indicatorPopup) {
+    /*12.05protected void setIndicatorPopup(IndicatorPopup indicatorPopup) {
         this.indicatorPopup = indicatorPopup;
     }
+    */
     protected IndicatorPopup createIndicatorPopup() {
-        if ( indicatorPopup == null ) {
-            indicatorPopup = new IndicatorPopup(this);
-        }
-        return indicatorPopup;
+        //if ( indicatorPopup == null ) {
+        //    indicatorPopup = new IndicatorPopup(this);
+        //}
+        //return indicatorPopup;
+        return new IndicatorPopup(this);
     }
     public IndicatorPopup getIndicatorPopup() {
         if (indicatorPopup == null) {
@@ -143,16 +145,16 @@ public abstract class DockTargetController {
     }
 
 
-    public DockIndicator getDockIndicator() {
-        if (dockIndicator == null) {
-            dockIndicator = createDockIndicator();
+    public PositionIndicator getPositionIndicator() {
+        if (positionIndicator == null) {
+            positionIndicator = createPositionIndicator();
         }
-        return dockIndicator;
+        return positionIndicator;
     }
     
-    protected abstract DockIndicator createDockIndicator();
+    protected abstract PositionIndicator createPositionIndicator();
 
-/*07.05    protected DockIndicator createDockIndicator() {
+/*07.05    protected PositionIndicator createPositionIndicator() {
         return new PaneSideIndicator(this);
     }
 */
@@ -181,8 +183,6 @@ public abstract class DockTargetController {
         return new FloatStageBuilder(dockable.dockableController());
     }
 */
-    public void remove(Node dockNode) {
-        Region r;
-    }
+    public abstract void remove(Node dockNode);
 
 }//class

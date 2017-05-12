@@ -128,7 +128,7 @@
 .custom-control {
     -fx-skin: "org.vns.javafx.dock.api.controls.CustomControlSkin";
 }
-/*.dock-node-title-label {   
+/*.dock-dock-indnode-title-label {   
     -fx-padding: 0 0 3 0;
     -fx-text-fill: blue;
     -fx-background-color: rgba(50, 50, 100, 0.4);

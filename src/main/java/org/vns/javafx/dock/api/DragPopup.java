@@ -110,7 +110,7 @@ public class DragPopup extends IndicatorPopup {
 
     @Override
     protected void initContent() {
-        Pane paneIndicatorPane = ((DockPaneController)getTargetController()).getDockIndicator().getIndicatorPane();
+        Pane paneIndicatorPane = ((DockPaneController)getTargetController()).getPositionIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
         Pane nodeIndicatorPane = ((DockPaneController)getTargetController()).getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
@@ -133,7 +133,7 @@ public class DragPopup extends IndicatorPopup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getPaneIndicator() {
-        return (SideIndicator) getTargetController().getDockIndicator();
+        return (SideIndicator) getTargetController().getPositionIndicator();
     }
 
     /**
@@ -414,7 +414,7 @@ public class DragPopup extends IndicatorPopup {
      */
     @Override
     public Rectangle getDockPlace() {
-        return (Rectangle) getTargetController().getDockIndicator().getDockPlace();
+        return (Rectangle) getTargetController().getPositionIndicator().getDockPlace();
     }
 
 }
