@@ -139,6 +139,8 @@ public class TestDockTabPane extends Application {
         stg01dp01.dock(stg01tab01, Side.RIGHT);
          */
         DockTabPane tabPane01 = new DockTabPane();
+//        tabPane01.setPrefSize(100, 100);
+//        tabPane01.setMinSize(100, 100);
         tabPane01.setSide(Side.TOP);
         //DockableDockPane dockPane = new DockableDockPane(tabPane01);
         //tabPane01.openDragTag();
@@ -157,8 +159,9 @@ public class TestDockTabPane extends Application {
         //tbIv.setTranslateY(-5);
         //tabPane01.targetController().dock(stg01dn02, Side.TOP);
         //tabPane01.targetController().dock(stg01dn03, Side.TOP);        
+        
         stg01dp01.dock(tabPane01, Side.TOP);
-        //stg01dp01.dock(dockPane, Side.T);
+        
 
         //tabPane01.setSide(Side.RIGHT);
         btn03.setOnAction(a -> {
@@ -191,8 +194,7 @@ public class TestDockTabPane extends Application {
         dockButton.setMaxHeight(dockButton.getHeight());
         dockButton.setMaxWidth(dockButton.getWidth());
 
-        tabPane01.dock(stg01dn03);
-
+//        tabPane01.dock(stg01dn03);
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

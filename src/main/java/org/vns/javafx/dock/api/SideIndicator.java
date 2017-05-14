@@ -80,7 +80,7 @@ public abstract class SideIndicator extends PositionIndicator {
         return centerButtons;
     }
 
-    @Override
+    //@Override
     protected abstract String getStylePrefix();
 
     protected void restoreButtonsStyle(Pane pane, String style) {

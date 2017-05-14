@@ -52,7 +52,7 @@ public class DragManager implements EventHandler<MouseEvent> {
      */
     private IndicatorPopup popup;
 
-    private Popup popupDelegate;
+    //private Popup popupDelegate;
     /**
      * The target dock target
      */
@@ -200,6 +200,81 @@ public class DragManager implements EventHandler<MouseEvent> {
 
         double leftDelta = 0;
         double topDelta = 0;
+        //
+        // The stage where the floating dockable resides may have a root node as a Borderpane
+        //
+        if (dockable.node().getScene().getRoot() instanceof BorderPane) {
+            Insets insets = ((BorderPane) dockable.node().getScene().getRoot()).getInsets();
+            leftDelta = insets.getLeft();
+            topDelta = insets.getTop();
+        }
+
+        Stage stage = (Stage) dockable.node().getScene().getWindow();
+        stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
+        stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
+        
+        if (popup != null && popup.isShowing()) {
+            popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());
+        }
+
+
+        if (popup == null || !popup.isShowing()) {
+            resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
+        }
+
+        if (resultStage == null) {
+            return;
+        }
+
+        Node root = resultStage.getScene().getRoot();
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockPaneTarget(root))) {
+            return;
+        }
+
+        Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+            return DockRegistry.isDockPaneTarget(n);
+        });
+
+        if (topPane != null) {
+            root = topPane;
+        } else if (!DockRegistry.isDockPaneTarget(root)) {
+            return;
+        }
+
+        if (!DockRegistry.dockPaneTarget(root).targetController().isUsedAsDockTarget()) {
+            return;
+        }
+        IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
+        if (popup != newPopup && popup != null) {
+            popup.hide();
+        }
+        if (newPopup == null) {
+            return;
+        }
+        popup = newPopup;
+        //14.05 DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
+
+        if (!popup.isShowing()) {
+            popup.showPopup();
+        }
+        if ( popup == null ) {
+            return;
+        }
+        popup.handle(ev.getScreenX(), ev.getScreenY());
+    }
+    
+/*    public void mouseDragged1(MouseEvent ev) {
+        if (!ev.isPrimaryButtonDown()) {
+            ev.consume();
+            return;
+        }
+        
+        if (!dockable.dockableController().isFloating()) {
+            return;
+        }
+
+        double leftDelta = 0;
+        double topDelta = 0;
 
         if (dockable.node().getScene().getRoot() instanceof BorderPane) {
             Insets insets = ((BorderPane) dockable.node().getScene().getRoot()).getInsets();
@@ -256,7 +331,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
         popup = newPopup;
-        DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
+        //14.05 DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
 
         if (!popup.isShowing()) {
             popup.showPopup();
@@ -266,7 +341,7 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
-
+*/
     /**
      * The method is called when a user releases the mouse button.
      *
@@ -298,9 +373,10 @@ public class DragManager implements EventHandler<MouseEvent> {
         if (popup != null && popup.isShowing()) {
             popup.hide();
         }
-        if (popupDelegate != null) {
+/*14.04        if (popupDelegate != null) {
             popupDelegate = null;
         }
+*/        
     }
 
     /**

@@ -3,6 +3,12 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -34,7 +40,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import org.vns.javafx.dock.api.PositionIndicator;
 
 import org.vns.javafx.dock.api.DockableController;
@@ -607,8 +615,25 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 }
             }
              */
+
             getItemMap().get(group).changeSize();
             ((Stage) dockable.node().getScene().getWindow()).show();
+
+            ////////////////
+/*            Stage s = ((Stage) dockable.node().getScene().getWindow());
+            double x = s.getX();
+            s.setX(50);
+            System.err.println("RRRRRRRRRRRRRRRRRRRRRRRRR");
+            double d1 = System.currentTimeMillis();
+            Platform.runLater( () -> {
+                while (System.currentTimeMillis() - d1 < 50) {}    
+                System.err.println("111111111111111111RRRRRRRRRRRRRRRRRRRRRRRRR");
+            });
+  */          
+            
+            //s.setX(x);
+
+            ////////////////
         }
 
         @Override
@@ -628,11 +653,11 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     return p;
                 }
 
-                @Override
-                protected String getStylePrefix() {
+                //@Override
+                /*protected String getStylePrefix() {
                     return "dock-indicator";
                 }
-
+                 */
                 protected Rectangle getTabDockPlace() {
                     if (tabDockPlace == null) {
                         tabDockPlace = new Rectangle();
@@ -811,6 +836,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         protected void changeSize() {
 
             Stage stage = (Stage) dockable.node().getScene().getWindow();
+            
             DockSideBar sb = (DockSideBar) dockable.dockableController().getTargetController().getTargetNode();
             if (!stage.isShowing()) {
                 return;

@@ -44,13 +44,19 @@ public abstract class PositionIndicator {
         //showIndicator(screenX, screenY);
     }
     
-    public abstract void showIndicator(double screenX, double screenY);
-    
+    //public abstract void showIndicator(double screenX, double screenY);
+    public void showIndicator(double screenX, double screenY) {
+        getTargetController().getIndicatorPopup().show(getTargetController().getTargetNode(), screenX, screenY);
+    }   
     /*12.05public void showIndicator(double screenX, double screenY) {
         showIndicator(screenX, screenY, null);
     }
     */
 
+    protected void setDockPlace(Node node) {
+        dockPlace = node;
+    }
+    
     public Node getDockPlace() {
         return dockPlace;
     }
@@ -70,7 +76,7 @@ public abstract class PositionIndicator {
     }
 
 
-    protected abstract String getStylePrefix();
+    //protected abstract String getStylePrefix();
 
 
     public void hideDockPlace() {

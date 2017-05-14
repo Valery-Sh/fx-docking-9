@@ -20,7 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
@@ -114,7 +113,7 @@ public class TestEditorTreeView01 extends Application {
         rootPane.getChildren().add(dragButton);
 
         this.dragButton.setOnDragDetected(ev -> {
-            Dragboard dragboard = nlb1.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             ClipboardContent content = new ClipboardContent();
             content.put(DataFormat.PLAIN_TEXT, "dragButton");
             dragboard.setContent(content);

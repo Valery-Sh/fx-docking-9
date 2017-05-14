@@ -1,5 +1,8 @@
 package org.vns.javafx.dock.api;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -9,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 
 /**
@@ -362,6 +366,15 @@ public class DragPopup extends IndicatorPopup {
             getPaneIndicator().showDockPlace(targetNode, screenX, screenY);
         } else {
             getDockPlace().setVisible(false);
+        }
+        ((Rectangle) getDockPlace()).strokeDashOffsetProperty().set(0);
+        if (getDockPlace().isVisible()) {
+            Timeline placeTimeline = new Timeline();
+            placeTimeline.setCycleCount(Timeline.INDEFINITE);
+            KeyValue kv = new KeyValue(((Rectangle) getDockPlace()).strokeDashOffsetProperty(), 12);
+            KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+            placeTimeline.getKeyFrames().add(kf);
+            placeTimeline.play();
         }
     }
 

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -22,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.vns.javafx.dock.api.PositionIndicator;
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -210,7 +214,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return retval;
         }
 
-/*07.05        @Override
+        /*07.05        @Override
         protected void dock(Point2D mousePos, Dockable dockable) {
             if (dockable.dockableController().isFloating()) {
                 if (doDock(mousePos, dockable.node())) {
@@ -218,7 +222,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                 }
             }
         }
-*/
+         */
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             Stage stage = null;
@@ -309,7 +313,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                     return p;
                 }
 
-                @Override
+                //@Override
                 protected String getStylePrefix() {
                     return "dock-indicator";
                 }
@@ -337,52 +341,69 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                     if (idx < 0 && !pane.localToScreen(pane.getBoundsInLocal()).contains(x, y)) {
                         return;
                     }
-
-                    double tabsHeight = pane.getTabAreaHeight(x, y);
-
+                    System.err.println("idx = " + idx);
+                    //13.05double tabsHeight = pane.getTabAreaHeight(x, y);
+                    double tabsHeight = pane.getTabAreaHeight();
                     Rectangle dockPlace = (Rectangle) getDockPlace();
-                    dockPlace.setWidth(pane.getWidth());
-                    dockPlace.setHeight(pane.getHeight() / 2);
-                    Point2D p = dockPlace.localToParent(0, 0);
-
-                    dockPlace.setX(p.getX());
-                    dockPlace.setY(p.getY() + tabsHeight);
-
-                    dockPlace.setVisible(true);
-                    dockPlace.toFront();
-
                     Rectangle tabPlace = (Rectangle) getTabDockPlace();
-                    tabPlace.setWidth(75);
-                    tabPlace.setHeight(tabsHeight);
-                    p = tabPlace.localToParent(0, 0);
+                    if (idx >= 0 || pane.getTabs().isEmpty()) {
 
-                    Point2D pt = tabPlace.screenToLocal(x, y);
+                        dockPlace.setWidth(pane.getWidth());
+                        dockPlace.setHeight(pane.getHeight() / 2);
+                        Point2D p = dockPlace.localToParent(0, 0);
 
-                    double tabPlaceX = 0;
+                        dockPlace.setX(p.getX());
+                        dockPlace.setY(p.getY() + tabsHeight);
+                        dockPlace.setVisible(true);
+                        dockPlace.toFront();
 
-                    Node node = null;
-                    //
-                    // idx may be equal to size => the mouse is after last tab
-                    //
-                    List<Node> tg = pane.getTabGraphics();
-                    if (idx >= 0 && idx < tg.size()) {
-                        node = tg.get(idx);
+                        if (!pane.getTabs().isEmpty()) {
+                            tabPlace.setWidth(75);
+                            tabPlace.setHeight(tabsHeight);
+                            p = tabPlace.localToParent(0, 0);
+
+                            Point2D pt = tabPlace.screenToLocal(x, y);
+
+                            double tabPlaceX = 0;
+
+                            Node node = null;
+                            //
+                            // idx may be equal to size => the mouse is after last tab
+                            //
+                            List<Node> tg = pane.getTabGraphics();
+                            if (idx >= 0 && idx < tg.size()) {
+                                node = tg.get(idx);
+                            }
+                            int tabsSize = tg.size();
+                            if (node != null) {
+                                Point2D tabPt = node.localToParent(0, 0);
+                                tabPlaceX = tabPt.getX();
+                            } else if (tabsSize > 0) {
+                                node = tg.get(tabsSize - 1);
+                                Point2D tabPt = node.localToParent(node.getBoundsInParent().getWidth(), 0);
+                                tabPlaceX = tabPt.getX();
+                            }
+                            tabPlace.setX(tabPlaceX);
+                            tabPlace.setY(p.getY());
+
+                            tabPlace.setVisible(true);
+                            tabPlace.toFront();
+                        } else {
+                            tabPlace.setVisible(false);
+                        }
+                    } else {
+                        dockPlace.setVisible(false);
+                        tabPlace.setVisible(false);
                     }
-                    int tabsSize = tg.size();
-                    if (node != null) {
-                        Point2D tabPt = node.localToParent(0, 0);
-                        tabPlaceX = tabPt.getX();
-                    } else if (tabsSize > 0) {
-                        node = tg.get(tabsSize - 1);
-                        Point2D tabPt = node.localToParent(node.getBoundsInParent().getWidth(), 0);
-                        tabPlaceX = tabPt.getX();
+                    tabPlace.strokeDashOffsetProperty().set(0);
+                    if (tabPlace.isVisible()) {
+                        Timeline placeTimeline = new Timeline();
+                        placeTimeline.setCycleCount(Timeline.INDEFINITE);
+                        KeyValue kv = new KeyValue(tabPlace.strokeDashOffsetProperty(), 12);
+                        KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+                        placeTimeline.getKeyFrames().add(kf);
+                        placeTimeline.play();
                     }
-                    tabPlace.setX(tabPlaceX);
-                    tabPlace.setY(p.getY());
-
-                    tabPlace.setVisible(true);
-                    tabPlace.toFront();
-
                 }
 
             };
@@ -475,7 +496,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         return retval;
     }
 
-    protected double getTabAreaHeight(double x, double y) {
+    /*13.05    protected double getTabAreaHeight(double x, double y) {
+
         double retval = 24;
         List<Node> list = getTabGraphics();
         int idx = -1;
@@ -505,6 +527,18 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                 retval = getHeight() - ch;
             }
         }
+        return retval;
+
+    }
+     */
+    protected double getTabAreaHeight() {
+
+        double retval = 0;
+        List<Node> list = getTabGraphics();
+        if (list.isEmpty()) {
+            return retval;
+        }
+        retval = getHeight() - getContentHeight();;
         return retval;
 
     }

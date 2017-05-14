@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 
 /**
@@ -24,7 +25,7 @@ public abstract class DockTargetController {
     private boolean usedAsDockTarget = true;
 
     private IndicatorPopup indicatorPopup;
-    
+
     protected DockTargetController(Region targetNode) {
         this.targetNode = targetNode;
         init();
@@ -37,11 +38,13 @@ public abstract class DockTargetController {
     private void init() {
         inititialize();
     }
+
     /**
-     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and  
-     * org.vns.javafx.dock.api.util.ParentChainPopup
-     * !!! I think may be deleted in the future
-     * @return 
+     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
+     * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
+     * in the future
+     *
+     * @return
      */
     public String getTitle() {
         if (title != null) {
@@ -53,14 +56,15 @@ public abstract class DockTargetController {
         }
         return title;
     }
-    
+
     //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
     /**
-     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and  
-     * org.vns.javafx.dock.api.util.ParentChainPopup
-     * !!! I think may be deleted in the future
-     * @return 
-     */            
+     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
+     * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
+     * in the future
+     *
+     * @return
+     */
     public void setTitle(String title) {
         this.title = title;
     }
@@ -69,7 +73,7 @@ public abstract class DockTargetController {
     /*12.05protected void setIndicatorPopup(IndicatorPopup indicatorPopup) {
         this.indicatorPopup = indicatorPopup;
     }
-    */
+     */
     protected IndicatorPopup createIndicatorPopup() {
         //if ( indicatorPopup == null ) {
         //    indicatorPopup = new IndicatorPopup(this);
@@ -77,13 +81,13 @@ public abstract class DockTargetController {
         //return indicatorPopup;
         return new IndicatorPopup(this);
     }
+
     public IndicatorPopup getIndicatorPopup() {
         if (indicatorPopup == null) {
             indicatorPopup = createIndicatorPopup();
         }
         return indicatorPopup;
     }
-
 
     protected void inititialize() {
         DockRegistry.start();
@@ -119,23 +123,30 @@ public abstract class DockTargetController {
         });
 
     }
-    
 
     protected void dock(Point2D mousePos, Dockable dockable) {
         if (isDocked(dockable.node())) {
             return;
         }
-        if ( doDock(mousePos, dockable.node()) ) {
+        Node node = dockable.node();
+        Stage stage = null; 
+        if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
+            stage = (Stage) node.getScene().getWindow();
+        }
+
+        if (doDock(mousePos, dockable.node())) {
             dockable.dockableController().setFloating(false);
+            if ( stage != null ) {
+                stage.close();
+            }
+            dockable.dockableController().setTargetController(this);
         }
     }
 
-
 //    protected void dock(Dockable dockable, Object pos)  {
 //    }
-
     protected abstract boolean doDock(Point2D mousePos, Node node);
-    
+
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -144,25 +155,23 @@ public abstract class DockTargetController {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-
     public PositionIndicator getPositionIndicator() {
         if (positionIndicator == null) {
             positionIndicator = createPositionIndicator();
         }
         return positionIndicator;
     }
-    
+
     protected abstract PositionIndicator createPositionIndicator();
 
-/*07.05    protected PositionIndicator createPositionIndicator() {
+    /*07.05    protected PositionIndicator createPositionIndicator() {
         return new PaneSideIndicator(this);
     }
-*/
+     */
     public Region getTargetNode() {
         return this.targetNode;
     }
 
-    
     public void setTargetNode(Region targetNode) {
         this.targetNode = targetNode;
     }
@@ -179,10 +188,10 @@ public abstract class DockTargetController {
         }
     }
 
-/*07.05    public FloatStageBuilder getStageBuilder(Dockable dockable) {
+    /*07.05    public FloatStageBuilder getStageBuilder(Dockable dockable) {
         return new FloatStageBuilder(dockable.dockableController());
     }
-*/
+     */
     public abstract void remove(Node dockNode);
 
 }//class

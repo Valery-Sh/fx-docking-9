@@ -19,67 +19,67 @@
     -fx-text-fill: rgb(240,240,240) ;
 }
 .labeled-insert-graphic {
-   /*-fx-graphic: url(grapfic-frame-black-16x16.png);*/
-   -fx-graphic: url(graphic-frame-16x16.png);
-                    
+    /*-fx-graphic: url(grapfic-frame-black-16x16.png);*/
+    -fx-graphic: url(graphic-frame-16x16.png);
+
 }
 .tree-item-node-button {
-   -fx-graphic: url(button-16x16.png);
+    -fx-graphic: url(button-16x16.png);
 }
 
 .tree-item-node-hbox {
-   -fx-graphic: url(hbox-16x16.png);
-    
+    -fx-graphic: url(hbox-16x16.png);
+
 }
 .tree-item-node-vbox {
-   -fx-graphic: url(vbox-16x16.png);
-    
+    -fx-graphic: url(vbox-16x16.png);
+
 }
 .tree-item-node-stackpane {
-   -fx-graphic: url(stackpane-16x16.png);
-    
+    -fx-graphic: url(stackpane-16x16.png);
+
 }
 .tree-item-node-pane {
-   -fx-graphic: url(pane-16x16.png);
-    
+    -fx-graphic: url(pane-16x16.png);
+
 }
 .tree-item-node-gridpane {
-   -fx-graphic: url(gridpane-16x16.png);
+    -fx-graphic: url(gridpane-16x16.png);
 }
 .tree-item-node-borderpane {
-   -fx-graphic: url(borderpane-16x16.png);
+    -fx-graphic: url(borderpane-16x16.png);
 }
 .tree-item-node-anchorpane {
-   -fx-graphic: url(anchorpane-16x16.png);
+    -fx-graphic: url(anchorpane-16x16.png);
 }
 .tree-item-node-flowpane {
-   -fx-graphic: url(flowpane-16x16.png);
+    -fx-graphic: url(flowpane-16x16.png);
 }
 .tree-item-node-scrollpane {
-   -fx-graphic: url(scrollpane-16x16.png);
+    -fx-graphic: url(scrollpane-16x16.png);
 }
 .tree-item-node-splitpane {
-   -fx-graphic: url(splitpane-16x16.png);
+    -fx-graphic: url(splitpane-16x16.png);
 }
 .tree-item-node-titledpane {
-   -fx-graphic: url(titledpane-16x16.png);
+    -fx-graphic: url(titledpane-16x16.png);
 }
 .tree-item-node-tilepane {
-   -fx-graphic: url(tilepane-16x16.png);
+    -fx-graphic: url(tilepane-16x16.png);
 }
 .tree-item-node-tabpane {
-   -fx-graphic: url(tabpane-16x16.png);
+    -fx-graphic: url(tabpane-16x16.png);
 }
 .tree-item-node-rectangle {
-   -fx-graphic: url(rectangle-16x16.png);
+    -fx-graphic: url(rectangle-16x16.png);
 }
 
 .tree-item-node-accordion {
-   -fx-graphic: url(accordion-16x16.png);
+    -fx-graphic: url(accordion-16x16.png);
 }
 
 .tree-item-node-label {
-   -fx-graphic: url(label-16x16.png);
+    -fx-graphic: url(label-16x16.png);
 }
 .tree-cell {
     -fx-indent: 20;
@@ -98,9 +98,9 @@
 }
 */
 .tree-cell .tree-disclosure-node .arrow {
-/*    -fx-shape: "M0,3h3V0h1v3h3v1H4v3H3l0-3H0V3z";
-    -fx-padding: 0.2em;
-*/
+    /*    -fx-shape: "M0,3h3V0h1v3h3v1H4v3H3l0-3H0V3z";
+        -fx-padding: 0.2em;
+    */
     -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
     -fx-shape: null;
     -fx-background-color: null;
@@ -151,7 +151,18 @@
  *********************************************/
 .dock-place {
     -fx-fill: -fx-selection-bar;
-    -fx-opacity: 0.3;
+    -fx-opacity: 0.5;
+
+    -fx-stroke: yellow;
+    -fx-stroke-width: 1;
+    -fx-stroke-type: inside;
+    -fx-stroke-dash-array: 8 2;
+    -fx-stroke-line-cap: butt;
+
+}
+.dock-place-hide {
+    -fx-fill: -fx-selection-bar;
+    -fx-opacity: 0.5;
 }
 
 .dock-place2 {
@@ -191,7 +202,7 @@
 
 .drag-pane-indicator {
     -fx-border-width: 1.0; 
-    -fx-border-color: -fx-selection-bar;    
+    -fx-border-color: -fx-selection-bar;
 }
 
 

@@ -402,7 +402,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                     return p;
                 }
 
-                @Override
+               // @Override
                 protected String getStylePrefix() {
                     return "dock-indicator";
                 }

@@ -17,8 +17,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
@@ -645,7 +643,7 @@ public class SceneGraphEditor {
 
             } else if (ev.getEventType() == DragEvent.DRAG_DONE) {
                 // Check how the data transfer happened. If it was moved, clear the text in the source.
-                TransferMode modeUsed = ev.getTransferMode();
+                //TransferMode modeUsed = ev.getTransferMode();
                 getEditor().hideDrawShapes();
                 ev.consume();
             }

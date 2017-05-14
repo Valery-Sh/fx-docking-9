@@ -1,10 +1,15 @@
 package org.vns.javafx.dock.api;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 
 /**
@@ -15,8 +20,8 @@ import org.vns.javafx.dock.DockUtil;
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link Dockable} or {@link DockTarget}. The position of
- * the target object is set as a value of type {@code javafx.geometry.Side} the
+ * object of type {@link Dockable} or {@link DockTarget}. The position of the
+ * target object is set as a value of type {@code javafx.geometry.Side} the
  * object is given enum type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
@@ -92,7 +97,7 @@ public class IndicatorPopup extends Popup {
 
     protected void initContent() {
         //12.05
-        if ( targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null ) {
+        if (targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null) {
             return;
         }
         //end 12.05
@@ -109,15 +114,14 @@ public class IndicatorPopup extends Popup {
     }
 
     /**
-     * Returns an object of type {@link PositionIndicator} to display indicators for
-     * an object of type {@link DockPaneController}.
+     * Returns an object of type {@link PositionIndicator} to display indicators
+     * for an object of type {@link DockPaneController}.
      *
      * @return Returns an object of type {@code PositionIndicator}
      */
     public PositionIndicator getPositionIndicator() {
         return targetController.getPositionIndicator();
     }
-
 
     /**
      * Returns the owner of this object used when the instance created.
@@ -133,7 +137,7 @@ public class IndicatorPopup extends Popup {
      */
     //public void showPopup(Node dockNode) {
     public void showPopup() {
-        if ( getPositionIndicator() == null ) {
+        if (getPositionIndicator() == null) {
             return;
         }
         setAutoFix(false);
@@ -173,12 +177,21 @@ public class IndicatorPopup extends Popup {
      * @param screenY a screen mouse position
      */
     public void handle(double screenX, double screenY) {
-        if ( getPositionIndicator() == null ) {
+        if (getPositionIndicator() == null) {
             return;
         }
-        getPositionIndicator().showDockPlace(screenX,screenY);
+        getPositionIndicator().showDockPlace(screenX, screenY);
+        ((Rectangle) getDockPlace()).strokeDashOffsetProperty().set(0);
+        if (getDockPlace().isVisible()) {
+            Timeline placeTimeline = new Timeline();
+            placeTimeline.setCycleCount(Timeline.INDEFINITE);
+            KeyValue kv = new KeyValue(((Rectangle) getDockPlace()).strokeDashOffsetProperty(), 12);
+            KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+            placeTimeline.getKeyFrames().add(kf);
+            placeTimeline.play();
+        }
+
     }
-    
 
     /**
      * Returns a shape of type {@code  Rectangle} to be displayed to showPopup a
