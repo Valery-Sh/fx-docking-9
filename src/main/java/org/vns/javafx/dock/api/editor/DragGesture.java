@@ -4,7 +4,7 @@ import javafx.scene.Node;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 public interface DragGesture {
 

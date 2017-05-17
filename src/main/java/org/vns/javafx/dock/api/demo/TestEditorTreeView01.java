@@ -6,10 +6,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -21,8 +22,13 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.editor.DragGesture;
+import org.vns.javafx.dock.api.editor.DragNodeGesture;
+import org.vns.javafx.dock.api.editor.DragTreeCellGesture;
+import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
+import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
  *
@@ -42,7 +48,7 @@ public class TestEditorTreeView01 extends Application {
         System.err.println("uidd-" + s);
         
         HBox rootPane = new HBox();
-        StackPane stackPane = new StackPane();
+        VBox stackPane = new VBox();
         VBox vbox = new VBox();
         vbox.setId("vbox1");
         vbox.getChildren().add(new Button("bbb"));
@@ -51,12 +57,29 @@ public class TestEditorTreeView01 extends Application {
         hbox.setId("hbox");
 
         stackPane.getChildren().add(vbox);
+        
+        
         //stackPane.getChildren().add(vbox2);        
         stackPane.getChildren().add(hbox);
         Pane pane = new Pane();
         pane.setId("pane1");
         stackPane.getChildren().add(pane);
         vbox.toFront();
+        TabPane tabPane = new TabPane();
+        tabPane.setId("tabpane11");
+        Tab tab1 = new Tab("Tab 1");
+        tabPane.getTabs().add(tab1);
+        Tab tab2 = new Tab("Tab 2");
+        Button tabContent2 = new Button("btn of Tab2");
+        tabContent2.setOnAction(v -> {
+             
+            System.err.println("tabContent2.getParent=" + tabContent2.getParent());
+        });
+        
+        tab2.setContent(tabContent2);
+        tabPane.getTabs().add(tab2);
+        
+        stackPane.getChildren().add(tabPane);        
         /*        GridPane gridPane = new GridPane();
         gridPane.setId("gridpane1");        
         stackPane.getChildren().add(gridPane);
@@ -93,6 +116,20 @@ public class TestEditorTreeView01 extends Application {
         Button vboxBtn1 = new Button("vbox btn1");
         vboxBtn1.setId("vboxBtn1");
         vbox.getChildren().add(vboxBtn1);
+        vboxBtn1.setOnDragDetected(ev -> {
+            Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            DragGesture dg = new DragNodeGesture(vboxBtn1);
+            ((DragNodeGesture)dg).setSourceGestureObject(vboxBtn1);
+            dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+            
+            ClipboardContent content = new ClipboardContent();
+            content.putUrl(NODE_UUID);
+//            content.put(DataFormat.PLAIN_TEXT, "dragButton");
+            dragboard.setContent(content);
+            ev.consume();
+            mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
+        });        
+        
         Button vboxBtn2 = new Button("vbox btn2");
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
@@ -114,8 +151,14 @@ public class TestEditorTreeView01 extends Application {
 
         this.dragButton.setOnDragDetected(ev -> {
             Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            DragGesture dg = new DragNodeGesture(dragButton);
+            Tab tab = new Tab("New Tab 1");
+            ((DragNodeGesture)dg).setSourceGestureObject(tab);
+            dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+            
             ClipboardContent content = new ClipboardContent();
-            content.put(DataFormat.PLAIN_TEXT, "dragButton");
+            content.putUrl(NODE_UUID);
+//            content.put(DataFormat.PLAIN_TEXT, "dragButton");
             dragboard.setContent(content);
             ev.consume();
             mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -142,14 +185,25 @@ public class TestEditorTreeView01 extends Application {
         //stackPane.setStyle("-fx-background-color: yellow");   
         TreeView<ItemValue> tv = edt.getTreeView();
         vboxBtn1.setOnAction(a -> {
-            //System.err.println("edt.findTreeItem=" + tv.getRow(edt.findTreeItem(vboxBtn1)));
+            //System.err.println("TreeView 4=" + tv.getTreeItem(5).getValue().getTreeItemObject());
+//            tabPane.getTabs().forEach(t -> {
+//                System.err.println("tab.content=" + t.getContent());            
+//            });
+            
+        });
+        vboxBtn2.setOnAction(a -> {
+            //System.err.println("TreeView 4=" + tv.getTreeItem(5).getValue().getTreeItemObject());
+            tabPane.getTabs().forEach(t -> {
+                System.err.println("tab.content=" + t.getContent());            
+            });
+            
         });
 
         
 //        Pane editorPane = edt.getEditorPane();
         rootPane.getChildren().add(editorPane);
 
-//        TreeItem<ItemValue> tib1 = edt.createItem(stackPane);
+//        TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
 //        tv.setRoot(tib1);
         //tv.setStyle("-fx-background-color: yellow");
         tv.getStyleClass().add("myTree");
@@ -192,7 +246,7 @@ public class TestEditorTreeView01 extends Application {
         });
         stage.setOnShown(ev -> {
             //DockUtil.print(editorPane);
-/*            TreeItem<ItemValue> tib1 = edt.createItem(stackPane);
+/*            TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
             tv.setRoot(tib1);
             //tv.setStyle("-fx-background-color: yellow");
             tv.getStyleClass().add("myTree");

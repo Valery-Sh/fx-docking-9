@@ -16,5 +16,9 @@ public class ShapeItemBuilder extends TreeItemBuilder {
         }
         return retval;
     }
+    @Override
+    public boolean isDragTarget() {
+        return false;
+    }
 
 }

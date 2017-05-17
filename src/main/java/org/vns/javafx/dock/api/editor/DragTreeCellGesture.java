@@ -12,13 +12,8 @@ public class DragTreeCellGesture extends DragNodeGesture{
 
     public DragTreeCellGesture(Node gestureSource) {
         super(gestureSource);
-        //init(sourceGestureObject);
     }
     
-/*    private void init(Object sourceGestureObject) {
-        setSourceGestureObject(sourceGestureObject);        
-    }
-*/
     @Override
     public Object getGestureSourceObject() {
         TreeItem it = ((TreeCell)getGestureSource()).getTreeItem();

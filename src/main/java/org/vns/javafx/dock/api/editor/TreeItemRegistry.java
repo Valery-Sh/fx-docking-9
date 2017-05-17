@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
@@ -88,6 +90,8 @@ public class TreeItemRegistry {
         register(Labeled.class, new LabeledItemBuilder());
         register(Pane.class, new PaneItemBuilder());        
         register(Shape.class, new ShapeItemBuilder());        
+        register(TabPane.class, new TabPaneItemBuilder());        
+        register(Tab.class, new TabItemBuilder());        
         
     }
     private static class SingletonInstance {

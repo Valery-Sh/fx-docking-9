@@ -15,7 +15,7 @@ public class DragNodeGesture implements DragGesture {
         this.sourceGesture = sourceGesture;
         this.sourceGestureObject = sourceGesture;
     }
-    protected void setSourceGestureObject(Object sourceGestureObject) {
+    public void setSourceGestureObject(Object sourceGestureObject) {
         this.sourceGestureObject = sourceGestureObject;
     }
     

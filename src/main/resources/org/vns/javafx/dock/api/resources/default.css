@@ -70,6 +70,9 @@
 .tree-item-node-tabpane {
     -fx-graphic: url(tabpane-16x16.png);
 }
+.tree-item-node-tab {
+    -fx-graphic: url(tab-16x16.png);
+}
 .tree-item-node-rectangle {
     -fx-graphic: url(rectangle-16x16.png);
 }

@@ -30,11 +30,14 @@ public class TreeItemBuilder {
     }
 
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
+        if (target.getValue().getTreeItemObject() == obj) {
+            return false;
+        }
         return isAcceptable(obj);
     }
 
     public boolean isDragTarget() {
-        return false;
+        return true;
     }
 
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
@@ -63,7 +66,6 @@ public class TreeItemBuilder {
     protected TreeItemEx createItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
-        //anchorPane.setStyle(getStyle());
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         TreeItemEx item = new TreeItemEx();
@@ -71,10 +73,10 @@ public class TreeItemBuilder {
 
         itv.setTreeItemObject(obj);
         itv.setCellGraphic(anchorPane);
-        
+
         item.setValue(itv);
         box.getChildren().add(createItemContent(obj));
-        
+
         return item;
     }
 
@@ -87,17 +89,29 @@ public class TreeItemBuilder {
             root = parent;
             parent = parent.getParent();
         }
-        /*        while (false) {
-            for (int i = 0; i < root.getChildren().size(); i++) {
-                TreeItem<ItemValue> it = root.getChildren().get(i);
-                if (it.getValue().getTreeItemObject() == obj) {
-                    retval = it;
-                    break;
-                }
+        return retval;
+    }
+    public static TreeItem<ItemValue> findTreeItemByObject(TreeView<ItemValue> treeView, Object obj) {
+        TreeItem<ItemValue> retval = null;
+        TreeItem<ItemValue> root = treeView.getRoot();
+        for ( TreeItem ti : root.getChildren()) {
+            TreeItem found = findChildTreeItem(ti, obj);
+            if ( found != null ) {
+                retval = found;
+                break;
             }
-            
         }
-         */
+        return retval;
+    }
+    
+    public static TreeItem<ItemValue> findChildTreeItem(TreeItem<ItemValue> treeItem, Object obj) {
+        TreeItem<ItemValue> retval = null;
+        for ( TreeItem<ItemValue> ti : treeItem.getChildren()) {
+            if ( ti.getValue().getTreeItemObject() == obj) {
+                retval = ti;
+                break;
+            }
+        }
         return retval;
     }
 
@@ -108,7 +122,6 @@ public class TreeItemBuilder {
     protected Node createItemContent(Object obj) {
         return createDefaultContent(obj);
     }
-
 
     protected Node createDefaultContent(Object obj) {
         String text = "";

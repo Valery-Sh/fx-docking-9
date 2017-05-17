@@ -30,17 +30,11 @@ public class LabeledItemBuilder extends TreeItemBuilder {
         if (obj instanceof Labeled) {
             Labeled node = (Labeled) obj;
             retval = createItem((Node) obj);
-            //            TreeItem placeholder = createPlaceHolders()[0];
-            //System.err.println("build.placeholder=" + placeholder);
-            //retval.getChildren().add(placeholder);
 
             if (node.getGraphic() != null) {
-                //TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(node.getGraphic());
                 TreeItem placeholder = createPlaceHolders(node.getGraphic())[0];
-                //retval.getChildren().add(gb.build(node.getGraphic()));
                 retval.getChildren().add(placeholder);
             }
-
         }
         return retval;
     }
@@ -54,29 +48,44 @@ public class LabeledItemBuilder extends TreeItemBuilder {
         return label;
     }
 
+    /**
+     * Checks whether the specified object can be used as a value of the graphic
+     * property. May accepts only objects of type {@literal Node} witch becomes
+     * a value of the graphic property. of the
+     *
+     * @param obj an object to be checked
+     * @return true if the parameter value is not null and is an instance of
+     * Node/
+     */
     @Override
     public boolean isAcceptable(Object obj) {
         return obj != null && (obj instanceof Node);
     }
 
+    /**
+     * /**
+     * Checks whether the specified object is not null and is an instance of
+     * Node and the specified target doesn't have children. The method returns {@literal false
+     * } if one of the following conditions is not satisfied:
+     * <ul>
+     * <li>The method
+     * {@link #isAcceptable(java.lang.Object) returns {@literal false}</li>
+     * <li>The specified {@literal target} has children. This means that the
+     *        {@literal Labeled} node has already it's {@literal  graphic}
+     *         value set to not null value   </li>
+     * </ul>
+     *
+     * @param target the TreeItem object witch corresponds to the 
+     *           {@literal  Labeled node}.
+     * @param obj an object to be checked
+     * @return true if the parameter value is not null and is an instance of
+     * Node and the specified target doesn't have children
+     */
     @Override
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
         return isAcceptable(obj) && target.getChildren().isEmpty();
     }
 
-    /*    @Override
-    public TreeItemEx accept(TreeItem<ItemValue> target, TreeItem<ItemValue> place, Object value) {
-        TreeItemEx retval = null;
-
-        if (isAcceptable(value) && (value instanceof Node)) {
-            retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-            target.getChildren().add(retval);
-            ItemValue v = (ItemValue) target.getValue();
-            ((Labeled) v.getTreeItemObject()).setGraphic((Node) value);
-        }
-        return retval;
-    }
-     */
     @Override
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItemEx retval = null;
@@ -90,6 +99,8 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                 TreeCell cell = (TreeCell) dg.getGestureSource();
                 if (cell.getTreeItem() instanceof TreeItemEx) {
+                    System.err.println("Accept Labeled before Notify");
+                    notifyTreeItemRemove(treeView, cell.getTreeItem());
                     cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
                 }
             }
@@ -103,13 +114,16 @@ public class LabeledItemBuilder extends TreeItemBuilder {
         }
         return retval;
     }
-        @Override
-        public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
-            Object obj = toRemove.getParent().getValue().getTreeItemObject();
-            if ( obj instanceof Labeled) {
-                ((Labeled)obj).setGraphic(null);
-            }
+
+    @Override
+    public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+        System.err.println("Labelled obj 1");
+        Object obj = toRemove.getParent().getValue().getTreeItemObject();
+        System.err.println("Labelled obj=" + obj);
+        if (obj instanceof Labeled) {
+            ((Labeled) obj).setGraphic(null);
         }
+    }
 
     /*    @Override
     public boolean accept(Object target, Object place, Object value) {
@@ -125,11 +139,6 @@ public class LabeledItemBuilder extends TreeItemBuilder {
         return retval;
     }
      */
-
-    @Override
-    public boolean isDragTarget() {
-        return true;
-    }
 
     @Override
     public TreeItem[] createPlaceHolders(Object obj) {
@@ -180,7 +189,6 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             return obj != null && (obj instanceof Node);
         }
 
-
         @Override
         public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
 
@@ -202,7 +210,6 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             }
             return retval;
         }
-
 
         @Override
         public boolean isDragTarget() {

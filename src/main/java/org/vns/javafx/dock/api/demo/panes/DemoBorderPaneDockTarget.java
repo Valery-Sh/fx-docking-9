@@ -43,6 +43,14 @@ public class DemoBorderPaneDockTarget extends Application {
         borderPane.setStyle("-fx-border-width: 2px; -fx-border-color: red");
         Button topNode = new Button("Initial Top");
         borderPane.setTop(topNode);
+        topNode.setOnAction(a -> {
+            System.err.println("CENTER  = " + borderPane.getBottom().getParent());
+            System.err.println("CENTER0  = " + borderPane.getChildren().size());
+            //((BorderPane)borderPane.getBottom().getParent()).getChildren().remove(borderPane.getBottom());
+            borderPane.setBottom(null);
+            System.err.println("CENTER1  = " + borderPane.getBottom());            
+            System.err.println("CENTER2  = " + borderPane.getChildren().size());
+        });
         //
         // Create & Register an Object witch declares a Given BorderPane 
         // as a DockTarget

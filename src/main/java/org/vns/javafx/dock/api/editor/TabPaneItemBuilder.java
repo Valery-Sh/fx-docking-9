@@ -1,27 +1,33 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Pane;
 import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
 
 /**
  *
  * @author Valery
  */
-public class PaneItemBuilder extends TreeItemBuilder {
+public class TabPaneItemBuilder extends TreeItemBuilder {
 
     @Override
     public TreeItemEx build(Object obj) {
         TreeItemEx retval = null;
-        if (obj instanceof Pane) {
-            Pane pane = (Pane) obj;
-            retval = createItem((Pane) obj);
-            for (Node node : pane.getChildren()) {
-                TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(node);
-                retval.getChildren().add(gb.build(node));
+        if (obj instanceof TabPane) {
+            TabPane pane = (TabPane) obj;
+            retval = createItem((TabPane) obj);
+            for (Tab tab : pane.getTabs()) {
+                TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(tab);
+                retval.getChildren().add(gb.build(tab));
             }
         }
         return retval;
@@ -29,47 +35,50 @@ public class PaneItemBuilder extends TreeItemBuilder {
 
     @Override
     public boolean isAcceptable(Object obj) {
-        return obj instanceof Node;
+        return obj instanceof Tab;
     }
 
 
     @Override
-    //public TreeItem<ItemValue> accept(TreeItem<ItemValue> parent, TreeItem<ItemValue> target,Object obj) {
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
 
         TreeItemEx retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-        if (dg == null || !(dg.getGestureSourceObject() instanceof Node)) {
+        if (dg == null || !(dg.getGestureSourceObject() instanceof Tab)) {
             return retval;
         }
-        Node value = (Node) dg.getGestureSourceObject();
-
+        Tab value = (Tab) dg.getGestureSourceObject();
         if (isAcceptable(target, value) && target != null && place != null) {
             int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
             }
-            Pane p = (Pane) ((ItemValue) target.getValue()).getTreeItemObject();
-
-            if (!p.getChildren().contains(value)) {
-                if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
+            
+            TabPane p = (TabPane) ((ItemValue) target.getValue()).getTreeItemObject();
+            if (!p.getTabs().contains(value)) {
+                if (dg.getGestureSource() != null && (dg instanceof DragTreeCellGesture)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
                         notifyTreeItemRemove(treeView, cell.getTreeItem());
                         cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
                     }
+                } 
+/*                else if (dg.getGestureSource() != null && (dg instanceof DragNodeGesture)) {
+                    //Node node = dg
+                    System.err.println("accept: dragNodeGesture");
                 }
+*/
 
                 retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
                 target.getChildren().add(idx, retval);
-                p.getChildren().add(idx, value);
+                p.getTabs().add(idx, value);
             } else {
-                int idxSource = p.getChildren().indexOf(value);
+                int idxSource = p.getTabs().indexOf(value);
                 if (idx != idxSource) {
                     if (idxSource > idx) {
-                        p.getChildren().remove(idxSource);
+                        p.getTabs().remove(idxSource);
                     } else {
-                        p.getChildren().remove(idxSource);
+                        p.getTabs().remove(idxSource);
                         idx--;
                     }
                     if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
@@ -83,7 +92,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
                     retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
                     target.getChildren().add(idx, retval);
 
-                    p.getChildren().add(idx, value);
+                    p.getTabs().add(idx, value);
 
                 }
             }
@@ -94,22 +103,22 @@ public class PaneItemBuilder extends TreeItemBuilder {
     protected int getIndex(TreeView treeView,TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
         int idx = -1;
         
-        Pane p = (Pane) parent.getValue().getTreeItemObject();
+        TabPane p = (TabPane) parent.getValue().getTreeItemObject();
         if (parent == target) {
             int q = target.getValue().getDragDropQualifier();
             
             if ( q == FIRST ) {
                 idx = 0;
             } else {
-                idx = p.getChildren().size();
+                idx = p.getTabs().size();
             }
             
         } else {
             if (parent.getValue().getTreeItemObject() instanceof Node) {
                 int level = treeView.getTreeItemLevel(parent);
                 TreeItem<ItemValue> it = EditorUtil.parentOfLevel(treeView, target, level + 1 );
-                Node node = (Node) it.getValue().getTreeItemObject();
-                idx = p.getChildren().indexOf(node) + 1;
+                Tab tab = (Tab) it.getValue().getTreeItemObject();
+                idx = p.getTabs().indexOf(tab) + 1;
             }
         }
         return idx;
