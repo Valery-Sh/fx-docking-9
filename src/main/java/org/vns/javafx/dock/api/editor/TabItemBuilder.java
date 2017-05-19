@@ -102,12 +102,12 @@ public class TabItemBuilder extends TreeItemBuilder {
             tab.setContent((Node)value);
             Node n = (Node) value;
             //((Pane)n.getParent()).getChildren().remove(n);
-            System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
+            //System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
 
         }
         return retval;
     }
-    @Override
+/*    @Override
     public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parent = toRemove.getParent();
         if (parent != null ) {
@@ -118,4 +118,12 @@ public class TabItemBuilder extends TreeItemBuilder {
 //            TreeItemRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
         }
     }
+*/    
+    @Override
+    public void remove(Object parent, Object toRemove) {
+        if (parent != null && ( parent instanceof Tab) ) {
+            ((Tab)parent).setContent(null);
+        }
+    }
+    
 }

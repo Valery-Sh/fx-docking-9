@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
@@ -49,6 +50,7 @@ public class TestEditorTreeView01 extends Application {
         
         HBox rootPane = new HBox();
         VBox stackPane = new VBox();
+        stackPane.setId("ROOT");
         VBox vbox = new VBox();
         vbox.setId("vbox1");
         vbox.getChildren().add(new Button("bbb"));
@@ -70,6 +72,14 @@ public class TestEditorTreeView01 extends Application {
         Tab tab1 = new Tab("Tab 1");
         tabPane.getTabs().add(tab1);
         Tab tab2 = new Tab("Tab 2");
+        
+        TabPane tabPane2 = new TabPane();
+        tabPane.setId("tabpane12");
+        Tab tab21 = new Tab("Tab 21");
+        tabPane2.getTabs().add(tab21);
+        Button tabContent21 = new Button("btn of Tab21");
+        tab21.setContent(tabContent21);
+        
         Button tabContent2 = new Button("btn of Tab2");
         tabContent2.setOnAction(v -> {
              
@@ -80,6 +90,38 @@ public class TestEditorTreeView01 extends Application {
         tabPane.getTabs().add(tab2);
         
         stackPane.getChildren().add(tabPane);        
+        stackPane.getChildren().add(tabPane2);        
+        
+        VBox vbox2 = new VBox();
+        vbox2.setId("vbox2");
+        Button vbox2b1 = new Button("vbox2 b1");
+        vbox2b1.setOnAction(a -> {
+            System.err.println("vbox1 has scene  " );
+            vbox2b1.setTranslateX(-1000);
+        });
+        vbox2.getChildren().add(vbox2b1);
+        Button vbox2b2 = new Button("vbox2 b2");
+        vbox2.getChildren().add(vbox2b2);
+        TreeView tt = new TreeView() {
+            public void v() {
+                
+            }
+        };
+        
+        vbox2b2.setOnAction(a -> {
+            System.err.println("vbox1 has scene  " + vbox2b1.getScene());
+            
+        });
+        
+        vbox2.getChildren().add(new Button("vbox2 b3"));
+        vbox2.getChildren().add(new Button("vbox2 b4"));
+        vbox2.getChildren().add(new Button("vbox2 b5"));
+        vbox2.getChildren().add(new Button("vbox2 b6"));
+        vbox2.getChildren().add(new Button("vbox2 b7"));
+        vbox2.getChildren().add(new Button("vbox2 b8"));
+        
+        stackPane.getChildren().add(vbox2);
+        
         /*        GridPane gridPane = new GridPane();
         gridPane.setId("gridpane1");        
         stackPane.getChildren().add(gridPane);
@@ -191,17 +233,24 @@ public class TestEditorTreeView01 extends Application {
 //            });
             
         });
-        vboxBtn2.setOnAction(a -> {
-            //System.err.println("TreeView 4=" + tv.getTreeItem(5).getValue().getTreeItemObject());
-            tabPane.getTabs().forEach(t -> {
-                System.err.println("tab.content=" + t.getContent());            
-            });
-            
-        });
 
         
-//        Pane editorPane = edt.getEditorPane();
-        rootPane.getChildren().add(editorPane);
+        StackPane editorStackPane = new StackPane();
+        
+        //rootPane.getChildren().add(editorPane);
+        editorStackPane.getChildren().add(editorPane);
+        rootPane.getChildren().add(editorStackPane);
+        
+        vboxBtn2.setOnAction(a -> {
+            //editorPane.setMinWidth(editorPane.getWidth() + 20);
+            //tv.setMinWidth(tv.getWidth() + 20);
+            System.err.println("rootStartGap=" + EditorUtil.getRootStartGap(tv));
+            System.err.println("tv.getWidth=" + tv.getWidth());
+            System.err.println("tv.root.getWidth=" + ((TreeCell)tv.getRoot().getValue().getCellGraphic().getParent()).getWidth());
+            System.err.println("tv.getInsets=" + tv.getInsets());
+            
+            
+        });
 
 //        TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
 //        tv.setRoot(tib1);

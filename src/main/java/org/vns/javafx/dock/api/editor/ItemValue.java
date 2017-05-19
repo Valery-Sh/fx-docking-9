@@ -17,6 +17,7 @@ public class ItemValue {
     private Node cellGraphic;
     
     private int dragDropQualifier;
+    private double rootStartGap;
     
     public ItemValue(TreeItem treeItem) {
         this.dragDropQualifier = FIRST;

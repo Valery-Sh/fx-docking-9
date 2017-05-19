@@ -39,19 +39,25 @@ public class TreeItemBuilder {
     public boolean isDragTarget() {
         return true;
     }
+    public boolean isDragPlace(Object target, Object source) {
+        return true;
+    }
 
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         return null;
     }
 
-    public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+    //public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {    }
+    public void remove(Object parent,Object toRemove) {    
+        
     }
-
     protected void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
-        TreeItem<ItemValue> parent = toRemove.getParent();
-        if (parent != null) {
-            Object obj = ((ItemValue) parent.getValue()).getTreeItemObject();
-            TreeItemRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
+        TreeItem<ItemValue> parentItem = toRemove.getParent();
+        if (parentItem != null) {
+            Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
+            Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
+            TreeItemRegistry.getInstance().getBuilder(parent).remove(parent,remove);
+            //remove(parent,remove); 
         }
     }
 

@@ -37,6 +37,10 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
     public boolean isAcceptable(Object obj) {
         return obj instanceof Tab;
     }
+    @Override
+    public boolean isDragPlace(Object target, Object source) {
+        return source instanceof Tab;
+    }
 
 
     @Override
@@ -48,7 +52,7 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
             return retval;
         }
         Tab value = (Tab) dg.getGestureSourceObject();
-        if (isAcceptable(target, value) && target != null && place != null) {
+        if (target != null && place != null && isAcceptable(target, value) ) {
             int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
@@ -99,7 +103,14 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
         }
         return retval;
     }
-
+    
+    @Override
+    public void remove(Object parent, Object toRemove) {
+        if ( parent != null && (parent instanceof TabPane) && toRemove != null && (toRemove instanceof Tab)) {
+            ((TabPane)parent).getTabs().remove((Tab)toRemove);
+        }
+    }
+    
     protected int getIndex(TreeView treeView,TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
         int idx = -1;
         

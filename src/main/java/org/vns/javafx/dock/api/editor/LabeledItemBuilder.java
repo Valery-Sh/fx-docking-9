@@ -83,6 +83,9 @@ public class LabeledItemBuilder extends TreeItemBuilder {
      */
     @Override
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
+        if ( target.getValue().getTreeItemObject() == obj ) {
+            return false;
+        }
         return isAcceptable(obj) && target.getChildren().isEmpty();
     }
 
@@ -115,35 +118,25 @@ public class LabeledItemBuilder extends TreeItemBuilder {
         return retval;
     }
 
-    @Override
+/*    @Override
     public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
-        System.err.println("Labelled obj 1");
         Object obj = toRemove.getParent().getValue().getTreeItemObject();
-        System.err.println("Labelled obj=" + obj);
         if (obj instanceof Labeled) {
             ((Labeled) obj).setGraphic(null);
         }
     }
-
-    /*    @Override
-    public boolean accept(Object target, Object place, Object value) {
-        boolean retval = true;
-        TreeItem item;
-        if (isAcceptable(value) && (value instanceof Node)) {
-            item = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-            //target.getChildren().add(retval);
-            ItemValue v = (ItemValue)target.getValue();
-            ((Labeled)v.getTreeItemObject()).setGraphic((Node) value);
+*/    
+    @Override
+    public void remove(Object parent,Object  toRemove) {
+        if ( parent instanceof Labeled) {
+            ((Labeled) parent).setGraphic(null);
         }
-        
-        return retval;
     }
-     */
+
 
     @Override
     public TreeItem[] createPlaceHolders(Object obj) {
         return new TreeItem[]{placeholderBuilder.build(obj)};
-        //placeholderBuilder.build(null);
     }
 
     @Override

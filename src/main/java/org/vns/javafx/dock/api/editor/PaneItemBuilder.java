@@ -29,6 +29,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
 
     @Override
     public boolean isAcceptable(Object obj) {
+        System.err.println("isAcceptable obj=" + obj);
         return obj instanceof Node;
     }
 
@@ -44,7 +45,7 @@ public class PaneItemBuilder extends TreeItemBuilder {
         }
         Node value = (Node) dg.getGestureSourceObject();
 
-        if (isAcceptable(target, value) && target != null && place != null) {
+        if (target != null && place != null && value != null && isAcceptable(target, value)  ) {
             int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
