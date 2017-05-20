@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
@@ -17,7 +18,7 @@ public class ItemValue {
     private Node cellGraphic;
     
     private int dragDropQualifier;
-    private double rootStartGap;
+    
     
     public ItemValue(TreeItem treeItem) {
         this.dragDropQualifier = FIRST;
@@ -39,15 +40,7 @@ public class ItemValue {
     public void setDragDropQualifier(int dragDropQualifier) {
         this.dragDropQualifier = dragDropQualifier;
     }
-    
-/*    public Object getTreeItemObject() {
-        return treeItemObject;
-    }
 
-    public void setTreeItemObject(Node treeItemObject) {
-        this.treeItemObject = treeItemObject;
-    }
-*/
     public void setTreeItemObject(Object treeItemObject) {
         this.treeItemObject = treeItemObject;
     }

@@ -2,7 +2,10 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,7 +50,7 @@ public class TestEditorTreeView01 extends Application {
 
         String s = java.util.UUID.randomUUID().toString();
         System.err.println("uidd-" + s);
-        
+
         HBox rootPane = new HBox();
         VBox stackPane = new VBox();
         stackPane.setId("ROOT");
@@ -59,8 +62,7 @@ public class TestEditorTreeView01 extends Application {
         hbox.setId("hbox");
 
         stackPane.getChildren().add(vbox);
-        
-        
+
         //stackPane.getChildren().add(vbox2);        
         stackPane.getChildren().add(hbox);
         Pane pane = new Pane();
@@ -72,31 +74,31 @@ public class TestEditorTreeView01 extends Application {
         Tab tab1 = new Tab("Tab 1");
         tabPane.getTabs().add(tab1);
         Tab tab2 = new Tab("Tab 2");
-        
+
         TabPane tabPane2 = new TabPane();
         tabPane.setId("tabpane12");
         Tab tab21 = new Tab("Tab 21");
         tabPane2.getTabs().add(tab21);
         Button tabContent21 = new Button("btn of Tab21");
         tab21.setContent(tabContent21);
-        
+
         Button tabContent2 = new Button("btn of Tab2");
         tabContent2.setOnAction(v -> {
-             
+
             System.err.println("tabContent2.getParent=" + tabContent2.getParent());
         });
-        
+
         tab2.setContent(tabContent2);
         tabPane.getTabs().add(tab2);
-        
-        stackPane.getChildren().add(tabPane);        
-        stackPane.getChildren().add(tabPane2);        
-        
+
+        stackPane.getChildren().add(tabPane);
+        stackPane.getChildren().add(tabPane2);
+
         VBox vbox2 = new VBox();
         vbox2.setId("vbox2");
         Button vbox2b1 = new Button("vbox2 b1");
         vbox2b1.setOnAction(a -> {
-            System.err.println("vbox1 has scene  " );
+            System.err.println("vbox1 has scene  ");
             vbox2b1.setTranslateX(-1000);
         });
         vbox2.getChildren().add(vbox2b1);
@@ -104,24 +106,24 @@ public class TestEditorTreeView01 extends Application {
         vbox2.getChildren().add(vbox2b2);
         TreeView tt = new TreeView() {
             public void v() {
-                
+
             }
         };
-        
+
         vbox2b2.setOnAction(a -> {
             System.err.println("vbox1 has scene  " + vbox2b1.getScene());
-            
+
         });
-        
+
         vbox2.getChildren().add(new Button("vbox2 b3"));
         vbox2.getChildren().add(new Button("vbox2 b4"));
         vbox2.getChildren().add(new Button("vbox2 b5"));
         vbox2.getChildren().add(new Button("vbox2 b6"));
         vbox2.getChildren().add(new Button("vbox2 b7"));
         vbox2.getChildren().add(new Button("vbox2 b8"));
-        
+
         stackPane.getChildren().add(vbox2);
-        
+
         /*        GridPane gridPane = new GridPane();
         gridPane.setId("gridpane1");        
         stackPane.getChildren().add(gridPane);
@@ -154,24 +156,23 @@ public class TestEditorTreeView01 extends Application {
         tabPane.setId("tabPane1");        
         stackPane.getChildren().add(tabPane);       
          */
-
         Button vboxBtn1 = new Button("vbox btn1");
         vboxBtn1.setId("vboxBtn1");
         vbox.getChildren().add(vboxBtn1);
         vboxBtn1.setOnDragDetected(ev -> {
             Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             DragGesture dg = new DragNodeGesture(vboxBtn1);
-            ((DragNodeGesture)dg).setSourceGestureObject(vboxBtn1);
+            ((DragNodeGesture) dg).setSourceGestureObject(vboxBtn1);
             dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-            
+
             ClipboardContent content = new ClipboardContent();
             content.putUrl(NODE_UUID);
 //            content.put(DataFormat.PLAIN_TEXT, "dragButton");
             dragboard.setContent(content);
             ev.consume();
             mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
-        });        
-        
+        });
+
         Button vboxBtn2 = new Button("vbox btn2");
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
@@ -195,9 +196,9 @@ public class TestEditorTreeView01 extends Application {
             Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             DragGesture dg = new DragNodeGesture(dragButton);
             Tab tab = new Tab("New Tab 1");
-            ((DragNodeGesture)dg).setSourceGestureObject(tab);
+            ((DragNodeGesture) dg).setSourceGestureObject(tab);
             dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-            
+
             ClipboardContent content = new ClipboardContent();
             content.putUrl(NODE_UUID);
 //            content.put(DataFormat.PLAIN_TEXT, "dragButton");
@@ -227,29 +228,30 @@ public class TestEditorTreeView01 extends Application {
         //stackPane.setStyle("-fx-background-color: yellow");   
         TreeView<ItemValue> tv = edt.getTreeView();
         vboxBtn1.setOnAction(a -> {
-            //System.err.println("TreeView 4=" + tv.getTreeItem(5).getValue().getTreeItemObject());
-//            tabPane.getTabs().forEach(t -> {
-//                System.err.println("tab.content=" + t.getContent());            
-//            });
-            
         });
 
-        
         StackPane editorStackPane = new StackPane();
-        
+
         //rootPane.getChildren().add(editorPane);
         editorStackPane.getChildren().add(editorPane);
         rootPane.getChildren().add(editorStackPane);
-        
+
         vboxBtn2.setOnAction(a -> {
-            //editorPane.setMinWidth(editorPane.getWidth() + 20);
-            //tv.setMinWidth(tv.getWidth() + 20);
-            System.err.println("rootStartGap=" + EditorUtil.getRootStartGap(tv));
+            editorPane.setMinWidth(editorPane.getWidth() + 20);
+            tv.setMinWidth(tv.getWidth() + 20);
+
+            Platform.runLater(() -> {
+                tv.refresh();
+                TreeItem<ItemValue> it = tv.getRoot();
+                Node arrow = ((Pane) ((TreeCell) it.getValue().getCellGraphic().getParent()).getDisclosureNode()).getChildren().get(0);
+                //Bounds b = EditorUtil.screenArrowBounds(it);
+
+            });
+
             System.err.println("tv.getWidth=" + tv.getWidth());
-            System.err.println("tv.root.getWidth=" + ((TreeCell)tv.getRoot().getValue().getCellGraphic().getParent()).getWidth());
+            System.err.println("tv.root.getWidth=" + ((TreeCell) tv.getRoot().getValue().getCellGraphic().getParent()).getWidth());
             System.err.println("tv.getInsets=" + tv.getInsets());
-            
-            
+
         });
 
 //        TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
@@ -259,7 +261,7 @@ public class TestEditorTreeView01 extends Application {
         //rootTreeViewPane.getChildren().add(tv);
         tv.relocate(5, 0);
         //tv.getRoot().setExpanded(true);
- /*        tv.setOnMouseClicked(ev -> {
+        /*        tv.setOnMouseClicked(ev -> {
             TreeItem it = edt.getTreeItem(ev.getScreenX(), ev.getScreenY());
             //edt.drawRectangle(tv.getRoot());
             if ( it != null ) {
@@ -302,7 +304,7 @@ public class TestEditorTreeView01 extends Application {
             editorPane.getChildren().add(tv);
             tv.relocate(5, 0);
             tv.getRoot().setExpanded(true);
-*/
+             */
         });
         stage.show();
         VBox nvb1 = new VBox(nlb1);
