@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.scene.control.TreeItem;
 import javafx.scene.shape.Shape;
 
 /**
@@ -9,8 +10,8 @@ import javafx.scene.shape.Shape;
 public class ShapeItemBuilder extends TreeItemBuilder {
 
     @Override
-    public TreeItemEx build(Object obj) {
-        TreeItemEx retval = null;
+    public TreeItem build(Object obj) {
+        TreeItem retval = null;
         if (obj instanceof Shape) {
             retval = createItem((Shape) obj);
         }

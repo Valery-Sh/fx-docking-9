@@ -14,22 +14,40 @@
 /* ---------------------------------
     Original: -fx-padding: 4 6 4 8;
   ----------------------------------*/
-.myTree .tree-cell {
+/*.myTree .tree-cell {
     -fx-background-color: rgb(240,240,240) ;
     -fx-text-fill: rgb(240,240,240) ;
 }
+*/
+
 .labeled-insert-graphic {
     /*-fx-graphic: url(grapfic-frame-black-16x16.png);*/
     -fx-graphic: url(graphic-frame-16x16.png);
 
 }
+.pane, .tree-view-pane {
+    -fx-background-color: green; 
+    -fx-padding: 0 3 0 3; 
+    -fx-insets: 0; 
+    -fx-border-width: 0    
+}
+
+.tree-view-indicator {
+    -fx-stroke: RGB(255,148,40);
+    -fx-stroke-width: 2
+}
+.tree-view-indicator, .rect {
+    -fx-background-color: transparent;
+    -fx-fill: transparent    
+}
+
+
 .tree-item-node-button {
     -fx-graphic: url(button-16x16.png);
 }
 
 .tree-item-node-hbox {
     -fx-graphic: url(hbox-16x16.png);
-
 }
 .tree-item-node-vbox {
     -fx-graphic: url(vbox-16x16.png);
@@ -48,6 +66,25 @@
 }
 .tree-item-node-borderpane {
     -fx-graphic: url(borderpane-16x16.png);
+}
+
+/*
+    BorderPane placeholders
+*/
+.borderpane-insert-top {
+ -fx-graphic: url(insert-top-16x16.png);    
+}
+.borderpane-insert-right {
+ -fx-graphic: url(insert-right-16x16.png);    
+}
+.borderpane-insert-bottom {
+ -fx-graphic: url(insert-bottom-16x16.png);    
+}
+.borderpane-insert-left {
+ -fx-graphic: url(insert-left-16x16.png);    
+}
+.borderpane-insert-center {
+ -fx-graphic: url(insert-center-16x16.png);    
 }
 .tree-item-node-anchorpane {
     -fx-graphic: url(anchorpane-16x16.png);
@@ -87,6 +124,7 @@
 .tree-cell {
     -fx-indent: 20;
     -fx-cell-size: 40;
+    /*-fx-background-color: yellow;*/
 } 
 .cell {
     -fx-cell-size: 40;
@@ -100,15 +138,11 @@
     -fx-translate-y: 4 ;
 }
 */
-.tree-cell .tree-disclosure-node .arrow {
-    /*    -fx-shape: "M0,3h3V0h1v3h3v1H4v3H3l0-3H0V3z";
-        -fx-padding: 0.2em;
-    */
+.tree-cell .tree-disclosure-node  .arrow {
     -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
     -fx-shape: null;
     -fx-background-color: null;
     -fx-background-image: url(plus-blue-16x16.png);
-
 }
 
 .tree-cell:expanded .tree-disclosure-node .arrow {

@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.animation.PauseTransition;
@@ -18,6 +23,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -30,15 +36,15 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragGesture;
 import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
+import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
  *
  * @author Valery
  */
-public class TestEditorTreeView01 extends Application {
+public class TestEditorTreeView02 extends Application {
 
     private Line vertLine = new Line();
     private Button dragButton;
@@ -47,9 +53,8 @@ public class TestEditorTreeView01 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Label nlb1 = new Label("DRAGGED LABEL");
-
-        String s = java.util.UUID.randomUUID().toString();
-        System.err.println("uidd-" + s);
+        //String s = java.util.UUID.randomUUID().toString();
+        //System.err.println("uidd-" + s);
 
         HBox rootPane = new HBox();
         VBox stackPane = new VBox();
@@ -124,38 +129,6 @@ public class TestEditorTreeView01 extends Application {
 
         stackPane.getChildren().add(vbox2);
 
-        /*        GridPane gridPane = new GridPane();
-        gridPane.setId("gridpane1");        
-        stackPane.getChildren().add(gridPane);
-        BorderPane borderPane = new BorderPane();
-        gridPane.setId("borderPane1");        
-        stackPane.getChildren().add(borderPane);
-        AnchorPane anchorPane = new AnchorPane();
-        anchorPane.setId("anchorPane1");        
-        stackPane.getChildren().add(anchorPane);
-        Accordion accordion = new Accordion();
-        accordion.setId("accordion1");        
-        stackPane.getChildren().add(accordion);
-        FlowPane flowPane = new FlowPane();
-        flowPane.setId("flowPane1");        
-        stackPane.getChildren().add(flowPane);
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setId("scrollPane1");        
-        stackPane.getChildren().add(scrollPane);
-        SplitPane splitPane = new SplitPane();
-        splitPane.setId("splitPane1");        
-        stackPane.getChildren().add(splitPane);
-        TitledPane titledPane = new TitledPane();
-        titledPane.setId("titledPane1");        
-        stackPane.getChildren().add(titledPane);
-        
-        TilePane tilePane = new TilePane();
-        tilePane.setId("tiledPane1");        
-        stackPane.getChildren().add(tilePane);       
-        TabPane tabPane = new TabPane();
-        tabPane.setId("tabPane1");        
-        stackPane.getChildren().add(tabPane);       
-         */
         Button vboxBtn1 = new Button("vbox btn1");
         vboxBtn1.setId("vboxBtn1");
         vbox.getChildren().add(vboxBtn1);
@@ -180,7 +153,11 @@ public class TestEditorTreeView01 extends Application {
         Label vboxLb1 = new Label("vbox lb11");
         vboxLb1.setId("vboxLb1");
         vbox.getChildren().add(vboxLb1);
-
+        BorderPane borderPane1 = new BorderPane();
+        vbox.getChildren().add(borderPane1);
+        Button borderPaneBtn1 = new Button("borderPaneBtn1" );
+        borderPaneBtn1.setId("borderPaneBtn1");
+        borderPane1.setCenter(borderPaneBtn1);
         Rectangle rect = new Rectangle(50, 50);
         vbox.getChildren().add(rect);
         rootPane.getChildren().add(stackPane);
@@ -227,32 +204,28 @@ public class TestEditorTreeView01 extends Application {
         Pane editorPane = edt.getEditorPane();
         //stackPane.setStyle("-fx-background-color: yellow");   
         TreeView<ItemValue> tv = edt.getTreeView();
-        PauseTransition pt2 = new PauseTransition(Duration.seconds(3));
         vboxBtn1.setOnAction(a -> {
             edt.expandAllItems(tv.getRoot());
             tv.getExpandedItemCount();
             System.err.println("tv.getExpandedItemCount();: " + tv.getExpandedItemCount());
             System.err.println("item 10 obj = " + tv.getTreeItem(10).getValue().getTreeItemObject());
-            pt2.setOnFinished(p -> {
-                //System.err.println("FINISHED !!!!!!!!!!!!!!");
-//                });
-                //System.err.println("555555555555555555555555555");
-
-                //tv.scrollTo(0);
-                //pt2.play();
-            });
-            //pt2.play();
-            System.err.println("START !!!!!!!!!!!!!!");
             
         });
         StackPane editorStackPane = new StackPane();
 
         //rootPane.getChildren().add(editorPane);
-        editorStackPane.getChildren().add(editorPane);
-        editorStackPane.setStyle("-fx-background-color: red)");
-        editorStackPane.minHeightProperty().bind(rootPane.heightProperty());
+        //editorStackPane.getChildren().add(editorPane);
+        //editorStackPane.setStyle("-fx-background-color: red)");
+        //editorStackPane.minHeightProperty().bind(rootPane.heightProperty());
         
-        editorPane.minHeightProperty().bind(editorStackPane.heightProperty());
+        //editorPane.minHeightProperty().bind(editorStackPane.heightProperty());
+        Scene tvScene = new Scene(editorPane);
+        Stage tvStage = new Stage();
+        tvStage.setHeight(300);
+        tvStage.setWidth(300);
+        
+        tvStage.setScene(tvScene);
+        
         rootPane.getChildren().add(editorStackPane);
 
         vboxBtn2.setOnAction(a -> {
@@ -273,25 +246,7 @@ public class TestEditorTreeView01 extends Application {
 
         });
 
-//        TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
-//        tv.setRoot(tib1);
-        //tv.setStyle("-fx-background-color: yellow");
-        //tv.getStyleClass().add("myTree");
-        //rootTreeViewPane.getChildren().add(tv);
         tv.relocate(5, 0);
-        
-        //tv.getRoot().setExpanded(true);
-        /*        tv.setOnMouseClicked(ev -> {
-            TreeItem it = edt.getTreeItem(ev.getScreenX(), ev.getScreenY());
-            //edt.drawRectangle(tv.getRoot());
-            if ( it != null ) {
-                edt.drawRectangle(it);
-                System.err.println("it != root it.idx=" + tv.getRow(it));
-            } else {
-                edt.drawRectangle(tv.getRoot());
-            }
-        });
-         */
         Scene scene = new Scene(rootPane);
 
         stage.setTitle("Test EditorTreeView");
@@ -307,27 +262,16 @@ public class TestEditorTreeView01 extends Application {
         doAccept.setOnAction(a -> {
             TreeItem item = tv.getTreeItem(2);
             vbox.getChildren().forEach(c -> {
-                //System.err.println("VBOX c = " + c);
             });
-
-            //System.err.println("tv.getChildren().size=" + tv.getRoot().getParent());            
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[0]);
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[1]);            
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[2]);            
         });
         stage.setOnShown(ev -> {
-            //DockUtil.print(editorPane);
-/*            TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
-            tv.setRoot(tib1);
-            //tv.setStyle("-fx-background-color: yellow");
-            tv.getStyleClass().add("myTree");
-            editorPane.getChildren().add(tv);
-            tv.relocate(5, 0);
-            tv.getRoot().setExpanded(true);
-             */
             rootPane.minHeightProperty().bind(rootPane.getScene().heightProperty());
         });
+        editorPane.prefHeightProperty().bind(tvStage.heightProperty());
+        tv.prefHeightProperty().bind(editorPane.heightProperty());
+        tv.setStyle("-fx-background-color: gray");
         stage.show();
+        tvStage.show();
         VBox nvb1 = new VBox(nlb1);
         Scene nscene = new Scene(nvb1);
         Stage nstage1 = new Stage();
@@ -335,7 +279,6 @@ public class TestEditorTreeView01 extends Application {
         nstage1.setX(10);
         nstage1.setY(10);
 
-        //nstage1.show();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

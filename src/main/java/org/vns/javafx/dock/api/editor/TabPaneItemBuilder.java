@@ -20,8 +20,8 @@ import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
 public class TabPaneItemBuilder extends TreeItemBuilder {
 
     @Override
-    public TreeItemEx build(Object obj) {
-        TreeItemEx retval = null;
+    public TreeItem build(Object obj) {
+        TreeItem retval = null;
         if (obj instanceof TabPane) {
             TabPane pane = (TabPane) obj;
             retval = createItem((TabPane) obj);
@@ -37,41 +37,42 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
     public boolean isAcceptable(Object obj) {
         return obj instanceof Tab;
     }
-    @Override
-    public boolean isDragPlace(Object target, Object source) {
+
+/*    @Override
+    public boolean isDragPlace(TreeItem<ItemValue> target, TreeItem<ItemValue> place, Object source) {
         return source instanceof Tab;
     }
-
-
+*/
     @Override
-    public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
 
-        TreeItemEx retval = null;
+        TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
         if (dg == null || !(dg.getGestureSourceObject() instanceof Tab)) {
             return retval;
         }
         Tab value = (Tab) dg.getGestureSourceObject();
-        if (target != null && place != null && isAcceptable(target, value) ) {
+        if (target != null && place != null && isAcceptable(target, value)) {
             int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
             }
-            
+
             TabPane p = (TabPane) ((ItemValue) target.getValue()).getTreeItemObject();
             if (!p.getTabs().contains(value)) {
                 if (dg.getGestureSource() != null && (dg instanceof DragTreeCellGesture)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
+                        notifyObjectRemove(treeView, cell.getTreeItem());
                         notifyTreeItemRemove(treeView, cell.getTreeItem());
-                        cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
+                        //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
                     }
-                } 
-/*                else if (dg.getGestureSource() != null && (dg instanceof DragNodeGesture)) {
+                }
+                /*                else if (dg.getGestureSource() != null && (dg instanceof DragNodeGesture)) {
                     //Node node = dg
                     System.err.println("accept: dragNodeGesture");
                 }
-*/
+                 */
 
                 retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
                 target.getChildren().add(idx, retval);
@@ -88,8 +89,10 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
                     if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                         TreeCell cell = (TreeCell) dg.getGestureSource();
                         if (cell.getTreeItem() instanceof TreeItemEx) {
+                            notifyObjectRemove(treeView, cell.getTreeItem());
+//                            cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
                             notifyTreeItemRemove(treeView, cell.getTreeItem());
-                            cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
+
                         }
                     }
 
@@ -103,31 +106,36 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
         }
         return retval;
     }
-    
+
     @Override
-    public void remove(Object parent, Object toRemove) {
-        if ( parent != null && (parent instanceof TabPane) && toRemove != null && (toRemove instanceof Tab)) {
-            ((TabPane)parent).getTabs().remove((Tab)toRemove);
+    public void removeObject(Object parent, Object toRemove) {
+        if (parent != null && (parent instanceof TabPane) && toRemove != null && (toRemove instanceof Tab)) {
+            ((TabPane) parent).getTabs().remove((Tab) toRemove);
         }
     }
-    
-    protected int getIndex(TreeView treeView,TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
+
+    @Override
+    public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+        parent.getChildren().remove(toRemove);
+    }
+
+    protected int getIndex(TreeView treeView, TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
         int idx = -1;
-        
+
         TabPane p = (TabPane) parent.getValue().getTreeItemObject();
         if (parent == target) {
             int q = target.getValue().getDragDropQualifier();
-            
-            if ( q == FIRST ) {
+
+            if (q == FIRST) {
                 idx = 0;
             } else {
                 idx = p.getTabs().size();
             }
-            
+
         } else {
             if (parent.getValue().getTreeItemObject() instanceof Node) {
                 int level = treeView.getTreeItemLevel(parent);
-                TreeItem<ItemValue> it = EditorUtil.parentOfLevel(treeView, target, level + 1 );
+                TreeItem<ItemValue> it = EditorUtil.parentOfLevel(treeView, target, level + 1);
                 Tab tab = (Tab) it.getValue().getTreeItemObject();
                 idx = p.getTabs().indexOf(tab) + 1;
             }

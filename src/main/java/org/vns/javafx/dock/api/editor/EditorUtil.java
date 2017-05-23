@@ -40,5 +40,23 @@ public class EditorUtil {
         }
         return treeItem.getValue().getCellGraphic().getParent().localToScreen(treeItem.getValue().getCellGraphic().getParent().getBoundsInLocal());
     }
+    public static TreeItem<ItemValue> findTreeItemByObject(TreeView treeView,Object sourceGesture) {
+        return findTreeItem(treeView.getRoot(), sourceGesture);
+    }
+
+    protected static TreeItem<ItemValue> findTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
+        TreeItem retval = null;
+        for (TreeItem<ItemValue> it : item.getChildren()) {
+            if (it.getValue().getTreeItemObject() == sourceGesture) {
+                retval = it;
+                break;
+            }
+            retval = findTreeItem(it, sourceGesture);
+            if (retval != null) {
+                break;
+            }
+        }
+        return retval;
+    }
 
 }

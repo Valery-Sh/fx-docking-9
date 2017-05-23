@@ -3,6 +3,7 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
@@ -39,37 +40,96 @@ public class TreeItemBuilder {
     public boolean isDragTarget() {
         return true;
     }
-    public boolean isDragPlace(Object target, Object source) {
-        return true;
+
+    public boolean isDragPlace(TreeItem<ItemValue> target, TreeItem<ItemValue> place, Object source) {
+        boolean retval = true;
+        if (place.getValue().isPlaceholder() && target != null) {
+            TreeItemBuilder builder = place.getValue().getBuilder();
+            if (!(builder instanceof PlaceHolderBuilder) && place.getParent() != null) {
+                builder = place.getParent().getValue().getBuilder().getPlaceHolderBuilder(place.getParent());
+                System.err.println("   ---  1 IS DRAG PLACE = " + retval);
+                retval = builder.isDragPlace(target, place, source);
+            }
+
+        } else if (target == null) {
+            retval = false;
+        }
+
+        return retval;
     }
 
-    public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    /**
+     *
+     * @param treeView the treeView/ Cannot be null
+     * @param target the item which is an actual target item to accept a dragged
+     * object
+     * @param place the item which is a gesture target during the drag&drop
+     * operation
+     * @param dragObject an object which is an actual object to be accepted by
+     * the target item.
+     * @return true id the builder evaluates that a specified dragObject can be
+     * accepted by the given target tree item
+     */
+    public boolean isAdmissiblePosition(TreeItem<ItemValue> target,
+            TreeItem<ItemValue> place,
+            Object dragObject) {
+        if (target.getValue().getTreeItemObject() == dragObject) {
+            return false;
+        }
+        return isAcceptable(dragObject);
+    }
+
+    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         return null;
     }
 
     //public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {    }
-    public void remove(Object parent,Object toRemove) {    
-        
+    protected void removeObject(Object parent, Object toRemove) {
+
     }
-    protected void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+
+    protected void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+
+    }
+
+    protected void notifyObjectRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parentItem = toRemove.getParent();
-        if (parentItem != null) {
+        if (parentItem != null && toRemove != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
             Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
-            TreeItemRegistry.getInstance().getBuilder(parent).remove(parent,remove);
-            //remove(parent,remove); 
+            TreeItemRegistry.getInstance().getBuilder(parent).removeObject(parent, remove);
         }
     }
 
-    public TreeItemEx build(Object obj) {
-        TreeItemEx retval = null;
+    /*    protected void notifyGestureObjectRemove(TreeView treeView, DragNodeGesture gesture) {
+        System.err.println("notifyGestureObjectRemove obj = " + gesture.getGestureSourceObject());            
+        Object obj = gesture.getGestureSourceObject();
+        TreeItem item = EditorUtil.findTreeItemByObject(treeView, obj);
+        if ( item != null && item.getParent() != null ) {
+            TreeItemRegistry.getInstance().getBuilder(gesture.getGestureSourceObject()).removeObject(item.getParent(),item);
+        }
+    }    
+     */
+    protected void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+        if (toRemove == null) {
+            return;
+        }
+        TreeItem<ItemValue> parentItem = toRemove.getParent();
+        if (parentItem != null) {
+            Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
+            TreeItemRegistry.getInstance().getBuilder(parent).removeItem(parentItem, toRemove);
+        }
+    }
+
+    public TreeItem build(Object obj) {
+        TreeItem retval = null;
         if (obj instanceof Node) {
             retval = createItem(obj);
         }
         return retval;
     }
 
-    protected TreeItemEx createItem(Object obj) {
+    protected TreeItem createItem(Object obj, Object... others) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -81,12 +141,16 @@ public class TreeItemBuilder {
         itv.setCellGraphic(anchorPane);
 
         item.setValue(itv);
-        box.getChildren().add(createItemContent(obj));
+        box.getChildren().add(createItemContent(obj, others));
 
         return item;
     }
 
-    public static TreeItem<ItemValue> findTreeItem(TreeItem<ItemValue> item, Object obj) {
+    public HBox getItemContentPane(TreeItem<ItemValue> item) {
+        return (HBox) ((AnchorPane) item.getValue().getCellGraphic()).getChildren().get(0);
+    }
+
+    /*    public static TreeItem<ItemValue> findTreeItemByObject(TreeItem<ItemValue> item, Object obj) {
         TreeItem<ItemValue> retval = null;
         TreeItem<ItemValue> root = null;
         TreeItem<ItemValue> parent = item;
@@ -120,16 +184,16 @@ public class TreeItemBuilder {
         }
         return retval;
     }
-
+     */
     public String getStyle() {
         return "-fx-backGround-color: aqua";
     }
 
-    protected Node createItemContent(Object obj) {
-        return createDefaultContent(obj);
+    protected Node createItemContent(Object obj, Object... others) {
+        return createDefaultContent(obj, others);
     }
 
-    protected Node createDefaultContent(Object obj) {
+    protected Node createDefaultContent(Object obj, Object... others) {
         String text = "";
         if (obj != null && (obj instanceof Labeled)) {
             text = ((Labeled) obj).getText();
@@ -140,23 +204,25 @@ public class TreeItemBuilder {
         return label;
     }
 
-    public String getText() {
-        return "";
-    }
-
-    public Node getGraphic() {
-        return null;
-    }
-
-    public TreeItem[] createPlaceHolders(Object obj) {
+    /**
+     * Returns an Empty array of objects of type {@literal TreeItem}.
+     *
+     * @param obj
+     * @return
+     */
+    /*    public TreeItem[] createPlaceHolders(Object obj) {
         return new TreeItem[0];
     }
-
-    public boolean hasPlaceHolders() {
+     */
+ /*    public boolean hasPlaceHolders() {
         return false;
     }
-
+     */
     public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return null;
+    }
+
+    public static interface PlaceHolderBuilder {
+
     }
 }// TreeItemBuilder

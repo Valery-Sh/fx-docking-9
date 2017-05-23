@@ -28,8 +28,8 @@ public class TabItemBuilder extends TreeItemBuilder {
     }
 
     @Override
-    public TreeItemEx build(Object obj) {
-        TreeItemEx retval = null;
+    public TreeItem build(Object obj) {
+        TreeItem retval = null;
         if (obj instanceof Tab) {
             Tab tab = (Tab) obj;
             retval = createItem((Tab) obj);
@@ -42,7 +42,7 @@ public class TabItemBuilder extends TreeItemBuilder {
     }
 
     @Override
-    protected Node createDefaultContent(Object obj) {
+    protected Node createDefaultContent(Object obj, Object...others) {
         String text = ((Tab) obj).getText();
         text = text == null ? "" : text;
         Label label = new Label(obj.getClass().getSimpleName() + " " + text);
@@ -67,8 +67,8 @@ public class TabItemBuilder extends TreeItemBuilder {
 
 
     @Override
-    public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
-        TreeItemEx retval = null;
+    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+        TreeItem retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
         if (dg == null) {
@@ -80,17 +80,20 @@ public class TabItemBuilder extends TreeItemBuilder {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                 TreeCell cell = (TreeCell) dg.getGestureSource();
                 if (cell.getTreeItem() instanceof TreeItemEx) {
+                    notifyObjectRemove(treeView, cell.getTreeItem());
                     notifyTreeItemRemove(treeView, cell.getTreeItem());
-                    cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
+                    //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
                 }
             } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
-                TreeItem<ItemValue> treeItem= TreeItemBuilder.findTreeItemByObject(treeView, dg.getGestureSource());
+                TreeItem<ItemValue> treeItem= EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
                 if ( treeItem != null && treeItem.getParent() != null) {
                     //
                     // We must delete the item
                     //
+                    notifyObjectRemove(treeView, treeItem);
                     notifyTreeItemRemove(treeView, treeItem);
-                    treeItem.getParent().getChildren().remove(treeItem);
+                    
+                    //treeItem.getParent().getChildren().removeObject(treeItem);
                 }
             }
             
@@ -101,7 +104,7 @@ public class TabItemBuilder extends TreeItemBuilder {
             target.getChildren().add(retval);
             tab.setContent((Node)value);
             Node n = (Node) value;
-            //((Pane)n.getParent()).getChildren().remove(n);
+            //((Pane)n.getParent()).getChildren().removeObject(n);
             //System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
 
         }
@@ -120,10 +123,14 @@ public class TabItemBuilder extends TreeItemBuilder {
     }
 */    
     @Override
-    public void remove(Object parent, Object toRemove) {
+    public void removeObject(Object parent, Object toRemove) {
         if (parent != null && ( parent instanceof Tab) ) {
             ((Tab)parent).setContent(null);
         }
+    }
+    @Override
+    public void removeItem(TreeItem<ItemValue> parent,TreeItem<ItemValue> toRemove ) {
+        parent.getChildren().remove(toRemove);
     }
     
 }

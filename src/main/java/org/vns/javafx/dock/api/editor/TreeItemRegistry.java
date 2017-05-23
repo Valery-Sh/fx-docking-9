@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
@@ -92,6 +93,7 @@ public class TreeItemRegistry {
         register(Shape.class, new ShapeItemBuilder());        
         register(TabPane.class, new TabPaneItemBuilder());        
         register(Tab.class, new TabItemBuilder());        
+        register(BorderPane.class, new BorderPaneItemBuilder());        
         
     }
     private static class SingletonInstance {
