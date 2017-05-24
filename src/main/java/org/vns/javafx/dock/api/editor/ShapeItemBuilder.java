@@ -7,7 +7,7 @@ import javafx.scene.shape.Shape;
  *
  * @author Valery
  */
-public class ShapeItemBuilder extends TreeItemBuilder {
+public class ShapeItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
     public TreeItem build(Object obj) {
@@ -17,9 +17,5 @@ public class ShapeItemBuilder extends TreeItemBuilder {
         }
         return retval;
     }
-    @Override
-    public boolean isDragTarget() {
-        return false;
-    }
-
+    
 }

@@ -14,7 +14,7 @@ public class ItemValue {
     private final TreeItem treeItem;
     private Object treeItemObject;
     //private Node treeItemObject;    
-    private TreeItemBuilder builder;
+    private DefaultTreeItemBuilder builder;
     private boolean placeholder;
     private Node cellGraphic;
     private String title;
@@ -54,9 +54,9 @@ public class ItemValue {
     }
 
     
-    public TreeItemBuilder getBuilder() {
+    public DefaultTreeItemBuilder getBuilder() {
         //Object obj = getDragTargetObject(ev);
-        TreeItemBuilder builder;
+        DefaultTreeItemBuilder builder;
         if (isPlaceholder() && treeItemObject == null) {
             TreeItem<ItemValue> p = treeItem.getParent();
             System.err.println("  Handle itemValue.getBuilder p=" + p.getValue().getTreeItemObject());

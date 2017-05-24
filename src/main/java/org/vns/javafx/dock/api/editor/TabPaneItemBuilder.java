@@ -5,6 +5,7 @@
  */
 package org.vns.javafx.dock.api.editor;
 
+import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -17,7 +18,7 @@ import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
  *
  * @author Valery
  */
-public class TabPaneItemBuilder extends TreeItemBuilder {
+public class TabPaneItemBuilder extends DefaultTreeItemBuilder implements CollectionBasedBuilder<Tab> {
 
     @Override
     public TreeItem build(Object obj) {
@@ -26,7 +27,7 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
             TabPane pane = (TabPane) obj;
             retval = createItem((TabPane) obj);
             for (Tab tab : pane.getTabs()) {
-                TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(tab);
+                DefaultTreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(tab);
                 retval.getChildren().add(gb.build(tab));
             }
         }
@@ -52,31 +53,25 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
             return retval;
         }
         Tab value = (Tab) dg.getGestureSourceObject();
-        if (target != null && place != null && isAcceptable(target, value)) {
+        //if (target != null && place != null && isAcceptable(target, value)) {
+        if (target != null && place != null) {
             int idx = getIndex(treeView, target, place);
             if (idx < 0) {
                 return null;
             }
 
             TabPane p = (TabPane) ((ItemValue) target.getValue()).getTreeItemObject();
-            if (!p.getTabs().contains(value)) {
+            if (!getList(target).contains(value)) {
                 if (dg.getGestureSource() != null && (dg instanceof DragTreeCellGesture)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
                         notifyObjectRemove(treeView, cell.getTreeItem());
                         notifyTreeItemRemove(treeView, cell.getTreeItem());
-                        //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
                     }
                 }
-                /*                else if (dg.getGestureSource() != null && (dg instanceof DragNodeGesture)) {
-                    //Node node = dg
-                    System.err.println("accept: dragNodeGesture");
-                }
-                 */
-
                 retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
                 target.getChildren().add(idx, retval);
-                p.getTabs().add(idx, value);
+                getList(target).add(idx, value);
             } else {
                 int idxSource = p.getTabs().indexOf(value);
                 if (idx != idxSource) {
@@ -99,7 +94,7 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
                     retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
                     target.getChildren().add(idx, retval);
 
-                    p.getTabs().add(idx, value);
+                    getList(target).add(idx, value);
 
                 }
             }
@@ -119,7 +114,7 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
         parent.getChildren().remove(toRemove);
     }
 
-    protected int getIndex(TreeView treeView, TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
+/*    protected int getIndex(TreeView treeView, TreeItem<ItemValue> parent, TreeItem<ItemValue> target) {
         int idx = -1;
 
         TabPane p = (TabPane) parent.getValue().getTreeItemObject();
@@ -142,6 +137,21 @@ public class TabPaneItemBuilder extends TreeItemBuilder {
         }
         return idx;
     }
+*/
 
+    @Override
+    public List<Tab> getList(TreeItem<ItemValue> target) {
+        return ((TabPane)target.getValue().getTreeItemObject()).getTabs();
+    }
+
+    @Override
+    public Tab getItem() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Tab> getList(Object obj) {
+        return ((TabPane)obj).getTabs();
+    }
 }//PaneItemBuilder
 

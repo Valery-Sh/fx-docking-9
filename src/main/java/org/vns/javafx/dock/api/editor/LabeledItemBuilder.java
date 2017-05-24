@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
  *
  * @author Valery
  */
-public class LabeledItemBuilder extends TreeItemBuilder {
+public class LabeledItemBuilder extends DefaultTreeItemBuilder {
 
     private final LabelPlaceholderBuilder placeholderBuilder;
 
@@ -61,6 +61,23 @@ public class LabeledItemBuilder extends TreeItemBuilder {
     public boolean isAcceptable(Object obj) {
         return obj != null && (obj instanceof Node);
     }
+        @Override
+        public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
+                TreeItem<ItemValue> place,
+                Object dragObject) {
+            boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
+            if ( ! retval ) {
+                return false;
+            }
+            if ( place.getParent() == target ) {
+                return false;
+            }
+            Labeled lb = (Labeled) place.getValue().getTreeItemObject();
+            if ( place == target && lb.getGraphic() != null ) {
+                return false;
+            }
+            return true;
+        }
 
     /**
      * /**
@@ -81,14 +98,14 @@ public class LabeledItemBuilder extends TreeItemBuilder {
      * @return true if the parameter value is not null and is an instance of
      * Node and the specified target doesn't have children
      */
-    @Override
+/*    @Override
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
         if ( target.getValue().getTreeItemObject() == obj ) {
             return false;
         }
         return isAcceptable(obj) && target.getChildren().isEmpty();
     }
-
+*/
     @Override
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItemEx retval = null;
@@ -98,7 +115,7 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             return retval;
         }
         Object value = dg.getGestureSourceObject();
-        if (isAcceptable(target, value)) {
+        //if (isAcceptable(target, value)) {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                 TreeCell cell = (TreeCell) dg.getGestureSource();
                 if (cell.getTreeItem() instanceof TreeItemEx) {
@@ -115,7 +132,7 @@ public class LabeledItemBuilder extends TreeItemBuilder {
             target.getChildren().add(retval);
 
             ((Labeled) v.getTreeItemObject()).setGraphic((Node) value);
-        }
+        //}
         return retval;
     }
 
@@ -144,11 +161,11 @@ public class LabeledItemBuilder extends TreeItemBuilder {
     }
 
     @Override
-    public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return placeholderBuilder;
     }
 
-    public static class LabelPlaceholderBuilder extends TreeItemBuilder implements PlaceHolderBuilder {
+    public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder implements PlaceHolderBuilder {
 
         @Override
         public TreeItem build(Object obj) {
@@ -189,7 +206,7 @@ public class LabeledItemBuilder extends TreeItemBuilder {
                 return retval;
             }
             Object obj = dg.getGestureSourceObject();
-            if (isAcceptable(target, obj)) {
+            //if (isAcceptable(target, obj)) {
                 retval = TreeItemRegistry.getInstance().getBuilder(obj).build(obj);
                 System.err.println("!!! TreeItemRegistry.getBuilder = " + TreeItemRegistry.getInstance().getBuilder(obj));
                 ((ItemValue) retval.getValue()).setPlaceholder(true);
@@ -198,17 +215,13 @@ public class LabeledItemBuilder extends TreeItemBuilder {
                 ItemValue v = (ItemValue) target.getValue();
                 ((Labeled) v.getTreeItemObject()).setGraphic((Node) obj);
 
-            }
+            //}
             return retval;
         }
 
-        @Override
-        public boolean isDragTarget() {
-            return true;
-        }
 
         @Override
-        public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+        public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
             return null;
         }
 

@@ -5,7 +5,6 @@
  */
 package org.vns.javafx.dock.api.editor;
 
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
@@ -19,7 +18,7 @@ import javafx.scene.layout.HBox;
  *
  * @author Valery
  */
-public class BorderPaneItemBuilder extends TreeItemBuilder {
+public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
     private final BorderPanePlaceholderBuilder placeholderBuilder;
 
@@ -98,7 +97,7 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
         System.err.println("BorderPane removeItem ");
         Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
-        TreeItemBuilder builder;
+        DefaultTreeItemBuilder builder;
         if (obj == null) {
             //
             // PlaceHolderBuilder will be returned
@@ -128,11 +127,18 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
     }
 
     @Override
-    public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return placeholderBuilder;
     }
 
-    public static class BorderPanePlaceholderBuilder extends TreeItemBuilder {
+    @Override
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
+            TreeItem<ItemValue> place,
+            Object dragObject) {
+        return false;
+    }
+
+    public static class BorderPanePlaceholderBuilder extends DefaultTreeItemBuilder {
 
         public static enum BuildPos {
             TOP, RIGHT, BOTTOM, LEFT, CENTER
@@ -250,6 +256,20 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
         }
 
         @Override
+        public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
+                TreeItem<ItemValue> place,
+                Object dragObject) {
+            boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
+            if ( ! retval ) {
+                return false;
+            }
+            if ( place.getParent() == target ) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
         public boolean isAcceptable(Object obj) {
             return obj != null && (obj instanceof Node);
         }
@@ -266,7 +286,7 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
                 return retval;
             }
             Object value = dg.getGestureSourceObject();
-            if (isAcceptable(target, value)) {
+            //if (isAcceptable(target, value)) {
                 if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
@@ -281,7 +301,7 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
 
                 setContent(place, value);
 
-                if (isAcceptable(target, value)) {
+/*                if (isAcceptable(target, value)) {
                     switch (pos) {
                         case TOP:
                             break;
@@ -294,33 +314,31 @@ public class BorderPaneItemBuilder extends TreeItemBuilder {
                         case CENTER:
                             break;
                     }
+
                 }
-            }
+*/
+            //}
             System.err.println("(ItemValue) place.getValue().getTreeItemObject=" + (ItemValue) place.getValue().getTreeItemObject());
             return retval;
 
         }
 
-        @Override
-        public boolean isDragTarget() {
-            return true;
-        }
 
-        @Override
-        public boolean isDragPlace(TreeItem<ItemValue> target, TreeItem<ItemValue> place,Object source) {
+/*        @Override
+        public boolean isDragPlace(TreeItem<ItemValue> target, TreeItem<ItemValue> place, Object source) {
             boolean retval = false;
-            if ( target != null && target != place.getParent() && place.getParent().getChildren().indexOf(place) == 4 ) {
+            if (target != null && target != place.getParent() && place.getParent().getChildren().indexOf(place) == 4) {
                 retval = true;
             } else {
                 retval = target != place.getParent() && target != null;
             }
-            
+
             System.err.println("BorderPane isDragPlace retval = " + retval);
             return retval;
         }
-
+*/
         @Override
-        public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+        public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
             return null;
         }
 

@@ -11,14 +11,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Pane;
 
 /**
  *
  * @author Valery
  */
-public class TabItemBuilder extends TreeItemBuilder {
-
+public class TabItemBuilder extends DefaultTreeItemBuilder{
 
     public TabItemBuilder() {
     }
@@ -34,7 +32,7 @@ public class TabItemBuilder extends TreeItemBuilder {
             Tab tab = (Tab) obj;
             retval = createItem((Tab) obj);
             if (tab.getContent() != null) {
-                TreeItemBuilder b = TreeItemRegistry.getInstance().getBuilder(tab.getContent());
+                DefaultTreeItemBuilder b = TreeItemRegistry.getInstance().getBuilder(tab.getContent());
                 retval.getChildren().add(b.build(tab.getContent()));
             }
         }
@@ -42,7 +40,7 @@ public class TabItemBuilder extends TreeItemBuilder {
     }
 
     @Override
-    protected Node createDefaultContent(Object obj, Object...others) {
+    protected Node createDefaultContent(Object obj, Object... others) {
         String text = ((Tab) obj).getText();
         text = text == null ? "" : text;
         Label label = new Label(obj.getClass().getSimpleName() + " " + text);
@@ -65,7 +63,6 @@ public class TabItemBuilder extends TreeItemBuilder {
         return obj != null && (obj instanceof Node);
     }
 
-
     @Override
     public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItem retval = null;
@@ -76,41 +73,42 @@ public class TabItemBuilder extends TreeItemBuilder {
         }
         Object value = dg.getGestureSourceObject();
         Tab tab = (Tab) ((ItemValue) target.getValue()).getTreeItemObject();
-        if (isAcceptable(target, value)) {
-            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                TreeCell cell = (TreeCell) dg.getGestureSource();
-                if (cell.getTreeItem() instanceof TreeItemEx) {
-                    notifyObjectRemove(treeView, cell.getTreeItem());
-                    notifyTreeItemRemove(treeView, cell.getTreeItem());
-                    //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
-                }
-            } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
-                TreeItem<ItemValue> treeItem= EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
-                if ( treeItem != null && treeItem.getParent() != null) {
-                    //
-                    // We must delete the item
-                    //
-                    notifyObjectRemove(treeView, treeItem);
-                    notifyTreeItemRemove(treeView, treeItem);
-                    
-                    //treeItem.getParent().getChildren().removeObject(treeItem);
-                }
+        //if (isAcceptable(target, value)) {
+        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
+            TreeCell cell = (TreeCell) dg.getGestureSource();
+            if (cell.getTreeItem() instanceof TreeItemEx) {
+                notifyObjectRemove(treeView, cell.getTreeItem());
+                notifyTreeItemRemove(treeView, cell.getTreeItem());
+                //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
             }
-            
-            retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-            if ( ! target.getChildren().isEmpty() ) {
-                target.getChildren().clear();
-            }
-            target.getChildren().add(retval);
-            tab.setContent((Node)value);
-            Node n = (Node) value;
-            //((Pane)n.getParent()).getChildren().removeObject(n);
-            //System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
+        } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
+            TreeItem<ItemValue> treeItem = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
+            if (treeItem != null && treeItem.getParent() != null) {
+                //
+                // We must delete the item
+                //
+                notifyObjectRemove(treeView, treeItem);
+                notifyTreeItemRemove(treeView, treeItem);
 
+                //treeItem.getParent().getChildren().removeObject(treeItem);
+            }
         }
+
+        retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
+        if (!target.getChildren().isEmpty()) {
+            target.getChildren().clear();
+        }
+        target.getChildren().add(retval);
+        tab.setContent((Node) value);
+        Node n = (Node) value;
+        //((Pane)n.getParent()).getChildren().removeObject(n);
+        //System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
+
+        //}
         return retval;
     }
-/*    @Override
+
+    /*    @Override
     public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parent = toRemove.getParent();
         if (parent != null ) {
@@ -121,16 +119,17 @@ public class TabItemBuilder extends TreeItemBuilder {
 //            TreeItemRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
         }
     }
-*/    
+     */
     @Override
     public void removeObject(Object parent, Object toRemove) {
-        if (parent != null && ( parent instanceof Tab) ) {
-            ((Tab)parent).setContent(null);
+        if (parent != null && (parent instanceof Tab)) {
+            ((Tab) parent).setContent(null);
         }
     }
+
     @Override
-    public void removeItem(TreeItem<ItemValue> parent,TreeItem<ItemValue> toRemove ) {
+    public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
     }
-    
+
 }

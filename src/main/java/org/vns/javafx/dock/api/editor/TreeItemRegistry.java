@@ -17,12 +17,12 @@ import javafx.scene.shape.Shape;
  */
 public class TreeItemRegistry {
     
-    private final ObservableMap<String, TreeItemBuilder> builders = FXCollections.observableHashMap();
+    private final ObservableMap<String, DefaultTreeItemBuilder> builders = FXCollections.observableHashMap();
     
     public static TreeItemRegistry getInstance() {
         return SingletonInstance.INSTANCE;
     }
-    public TreeItemBuilder getBuilder(Object o) {
+    public DefaultTreeItemBuilder getBuilder(Object o) {
         if ( o == null ) {
             return null;
         }
@@ -37,8 +37,8 @@ public class TreeItemRegistry {
         return find(o.getClass());
     }
     
-    protected TreeItemBuilder find( Class clazz) {
-        TreeItemBuilder retval = null;
+    protected DefaultTreeItemBuilder find( Class clazz) {
+        DefaultTreeItemBuilder retval = null;
         Class c = clazz;
         String name = c.getName();
         
@@ -65,7 +65,7 @@ public class TreeItemRegistry {
         return retval;
     }
     
-    public void register(Object key, TreeItemBuilder value)  {
+    public void register(Object key, DefaultTreeItemBuilder value)  {
         String clazz = key.getClass().getName();
         if ( key instanceof String )  {
             clazz = (String) key;
@@ -87,7 +87,7 @@ public class TreeItemRegistry {
         return getBuilder(obj) != null;
     }
     protected void createDefaultBuilders() {
-        register(Node.class, new TreeItemBuilder());
+        register(Node.class, new DefaultTreeItemBuilder());
         register(Labeled.class, new LabeledItemBuilder());
         register(Pane.class, new PaneItemBuilder());        
         register(Shape.class, new ShapeItemBuilder());        

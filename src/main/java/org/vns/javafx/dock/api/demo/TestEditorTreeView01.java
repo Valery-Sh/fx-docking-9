@@ -32,7 +32,7 @@ import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
-import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
+import static org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder.NODE_UUID;
 
 /**
  *

@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
-import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -31,14 +25,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragGesture;
 import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.SceneGraphEditor;
-import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
+import static org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder.NODE_UUID;
 
 /**
  *
