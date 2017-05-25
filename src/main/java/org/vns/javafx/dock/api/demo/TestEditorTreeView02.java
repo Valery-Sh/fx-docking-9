@@ -7,9 +7,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -18,8 +22,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
@@ -48,7 +54,6 @@ public class TestEditorTreeView02 extends Application {
         Label nlb1 = new Label("DRAGGED LABEL");
         //String s = java.util.UUID.randomUUID().toString();
         //System.err.println("uidd-" + s);
-
         HBox rootPane = new HBox();
         VBox stackPane = new VBox();
         stackPane.setId("ROOT");
@@ -58,6 +63,30 @@ public class TestEditorTreeView02 extends Application {
 
         HBox hbox = new HBox();
         hbox.setId("hbox");
+        TextField textField1 = new TextField();
+        textField1.setId("textField1");
+        hbox.getChildren().add(textField1);
+        TextArea textArea1 = new TextArea("Text Area 1");
+        textArea1.setMaxWidth(70);
+        textArea1.setMaxHeight(30);
+        textArea1.setId("textArea1");
+        hbox.getChildren().add(textArea1);
+
+        ChoiceBox choiceBox1 = new ChoiceBox();
+        choiceBox1.setId("choiceBox1");
+        hbox.getChildren().add(choiceBox1);
+        ComboBox<String> comboBox1 = new ComboBox<>();
+        comboBox1.setId("comboBox1");
+        hbox.getChildren().add(comboBox1);
+        GridPane gridPane1 = new GridPane();
+        Label gb1Label1 = new Label(" Col=2, row=3");
+        gridPane1.add(gb1Label1, 2, 3);
+        
+        System.err.println("GRID PANE SIZE=" + GridPane.getRowIndex(gb1Label1));
+        //System.err.println("GRID PANE ROW SIZE=" + gridPane1.getRowConstraints().size());
+        //RowConstraints rc;
+        gridPane1.setId("gridPane1");
+        hbox.getChildren().add(gridPane1);
 
         stackPane.getChildren().add(vbox);
 
@@ -249,7 +278,7 @@ public class TestEditorTreeView02 extends Application {
         Label paneLb = new Label("pane label");
         System.err.println("vbox.getChildren().size()=" + vbox.getChildren().size());
         vbox.getChildren().forEach(c -> {
-            System.err.println("VBOX c = " + c);
+            //System.err.println("VBOX c = " + c);
         });
 
         doAccept.setOnAction(a -> {

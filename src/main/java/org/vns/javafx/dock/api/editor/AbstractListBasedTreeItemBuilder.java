@@ -1,32 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.editor;
 
 import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Pane;
 import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
 
 /**
  *
  * @author Valery
  */
-public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
+public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeItemBuilder{
+    
+    protected List<T> getList(TreeItem<ItemValue> target) {
+        return getList(target.getValue().getTreeItemObject());
+    } 
 
-    List<T> getList(TreeItem<ItemValue> target);
+    protected abstract  List<T> getList(Object obj);
 
-    List<T> getList(Object obj);
 
-    T getItem();
-    //E getNode();
-
-    default int getIndex(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, T value) {
+    protected int getIndex(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, T value) {
         if (place.getValue().getTreeItemObject() == value) {
             return -1;
         }
@@ -55,10 +50,10 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
             int targetLevel = treeView.getTreeItemLevel(target);
             int placeLevel = treeView.getTreeItemLevel(place);
             TreeItem<ItemValue> parent = place;
-            System.err.println(" -------------- 1 -- place.obj" + place.getValue().getTreeItemObject());
-            System.err.println(" -------------- 2 -- target.obj" + target.getValue().getTreeItemObject());
-            System.err.println(" -------------- 3 -- targetLevel = " + targetLevel);
-            System.err.println(" -------------- 4 -- placeLevel = " + placeLevel);
+//            System.err.println(" -------------- 1 -- place.obj" + place.getValue().getTreeItemObject());
+//            System.err.println(" -------------- 2 -- target.obj" + target.getValue().getTreeItemObject());
+//            System.err.println(" -------------- 3 -- targetLevel = " + targetLevel);
+//            System.err.println(" -------------- 4 -- placeLevel = " + placeLevel);
 
             if (targetLevel - placeLevel == 1) {
 
@@ -66,59 +61,11 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
                 while (treeView.getTreeItemLevel(parent) - targetLevel > 1) {
 
                     parent = parent.getParent();
-                    System.err.println("   --- parent = " + parent.getValue().getTreeItemObject());
-                    System.err.println("   ---  dif = " + (targetLevel - treeView.getTreeItemLevel(parent)));
+//                    System.err.println("   --- parent = " + parent.getValue().getTreeItemObject());
+//                    System.err.println("   ---  dif = " + (targetLevel - treeView.getTreeItemLevel(parent)));
                 }
             }
-            System.err.println(" -------------- 2 " + parent.getValue().getTreeItemObject());
-            /*            if (target.getChildren().indexOf(place) < target.getChildren().indexOf(sourceItem)
-                    && target.getChildren().indexOf(sourceItem) >= 0) {
-                idx = target.getChildren().indexOf(place);
-            } else {
-                idx = target.getChildren().indexOf(place) + 1;
-            }
-             */
-
-            idx = target.getChildren().indexOf(parent);
-            System.err.println("1 INDEX == " + idx);
-        }
-        System.err.println("2 INDEX == " + idx);
-        return idx;
-    }
-
-    default int getIndex(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place) {
-        int idx = -1;
-
-        //Pane p = (Pane) target.getValue().getTreeItemObject();
-        if (target == place) {
-            int q = place.getValue().getDragDropQualifier();
-
-            if (q == FIRST) {
-                idx = 0;
-            } else {
-                idx = getList(target).size();
-            }
-        } else {
-
-            int targetLevel = treeView.getTreeItemLevel(target);
-            int placeLevel = treeView.getTreeItemLevel(place);
-            TreeItem<ItemValue> parent = place;
-            System.err.println("@ -------------- 1 -- place.obj" + place.getValue().getTreeItemObject());
-            System.err.println("@ -------------- 2 -- target.obj" + target.getValue().getTreeItemObject());
-            System.err.println("@ -------------- 3 -- targetLevel = " + targetLevel);
-            System.err.println("@ -------------- 4 -- placeLevel = " + placeLevel);
-
-            if (targetLevel - placeLevel == 1) {
-
-            } else {
-                while (treeView.getTreeItemLevel(parent) - targetLevel > 1) {
-
-                    parent = parent.getParent();
-                    System.err.println("@   --- parent = " + parent.getValue().getTreeItemObject());
-                    System.err.println("@   ---  dif = " + (targetLevel - treeView.getTreeItemLevel(parent)));
-                }
-            }
-            System.err.println("@ -------------- 2 " + parent.getValue().getTreeItemObject());
+//            System.err.println(" -------------- 2 " + parent.getValue().getTreeItemObject());
             /*            if (target.getChildren().indexOf(place) < target.getChildren().indexOf(sourceItem)
                     && target.getChildren().indexOf(sourceItem) >= 0) {
                 idx = target.getChildren().indexOf(place);
@@ -128,15 +75,54 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
              */
 
             idx = target.getChildren().indexOf(parent) + 1;
-            System.err.println("@ INDEX == " + idx);
-
-//            idx = target.getChildren().indexOf(place) + 1;
+//            System.err.println("1 INDEX == " + idx);
         }
-        System.err.println("@INDEX == " + idx);
+//        System.err.println("2 INDEX == " + idx);
         return idx;
     }
 
-    default TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    protected int getIndex(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place) {
+        int idx = -1;
+
+        //Pane p = (Pane) target.getValue().getTreeItemObject();
+        if (target == place) {
+            int q = place.getValue().getDragDropQualifier();
+
+            if (q == FIRST) {
+                idx = 0;
+            } else {
+                int idx1 = target.getChildren().size();
+                idx = getList(target).size();
+            }
+        } else {
+
+            int targetLevel = treeView.getTreeItemLevel(target);
+            int placeLevel = treeView.getTreeItemLevel(place);
+            TreeItem<ItemValue> parent = place;
+//            System.err.println("@ -------------- 1 -- place.obj" + place.getValue().getTreeItemObject());
+//            System.err.println("@ -------------- 2 -- target.obj" + target.getValue().getTreeItemObject());
+//            System.err.println("@ -------------- 3 -- targetLevel = " + targetLevel);
+//            System.err.println("@ -------------- 4 -- placeLevel = " + placeLevel);
+
+            if (targetLevel - placeLevel == 1) {
+
+            } else {
+                while (treeView.getTreeItemLevel(parent) - targetLevel > 1) {
+
+                    parent = parent.getParent();
+//                    System.err.println("@   --- parent = " + parent.getValue().getTreeItemObject());
+//                    System.err.println("@   ---  dif = " + (targetLevel - treeView.getTreeItemLevel(parent)));
+                }
+            }
+//            System.err.println("@ -------------- 2 " + parent.getValue().getTreeItemObject());
+            idx = target.getChildren().indexOf(parent) + 1;
+//            System.err.println("@ INDEX == " + idx);
+        }
+//        System.err.println("@INDEX == " + idx);
+        return idx;
+    }
+
+    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
         /*        if (dg == null || !(dg.getGestureSourceObject() instanceof Node)) {
@@ -144,7 +130,7 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
         }
          */
         T value = (T) dg.getGestureSourceObject();
-        DefaultTreeItemBuilder targetBuilder = target.getValue().getBuilder();
+        TreeItemBuilder targetBuilder = target.getValue().getBuilder();
         //if (target != null && place != null && value != null && isAcceptable(target, value)) {
         if (target != null && place != null && value != null) {
             int idx = getIndex(treeView, target, place, value);
@@ -161,7 +147,7 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
                         targetBuilder.notifyTreeItemRemove(treeView, cell.getTreeItem());
                     }
                 } else if (dg.getGestureSource() != null && (dg.getGestureSourceObject() instanceof Node)) {
-                    //Node node = (Node) dg.getGestureSourceObject();
+                    //Node it = (Node) dg.getGestureSourceObject();
                     TreeItem item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
                     if (item == null) {
                         return null;
@@ -183,7 +169,7 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
                     }
                 } else if (dg.getGestureSource() != null && (dg.getGestureSourceObject() instanceof Node)) {
                     TreeItem item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
-                    System.err.println("ACCEPT item = item");
+//                    System.err.println("ACCEPT item = item");
                     if (item == null) {
                         return null;
                     }
@@ -191,10 +177,10 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
                     targetBuilder.notifyTreeItemRemove(treeView, item);
                 }
                 idx = getIndex(treeView, target, place);
-                System.err.println("ACCEPT idx = " + idx);
+//                System.err.println("ACCEPT idx = " + idx);
                 //              idx = 0;///////!!!!!!!!!!!!!!!!!!!
                 retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-                System.err.println("revval.value = " + value);
+//                System.err.println("revval.value = " + value);
                 target.getChildren().add(idx, retval);
 
                 getList(target).add(idx, value);
@@ -203,26 +189,27 @@ public interface CollectionBasedBuilder<T> extends TreeItemBuilder {
         return retval;
     }
 
-    default TreeItem build(Object obj) {
+    @Override
+    public TreeItem build(Object obj) {
         TreeItem retval = null;
         List<T> children = getList(obj);
-        //if (obj instanceof Pane) {
-        //Pane pane = (Pane) obj;
         retval = createItem(obj);
-        for (T node : children) {
-            DefaultTreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(node);
-            retval.getChildren().add(gb.build(node));
+        for (T it : children) {
+            TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(it);
+            //if ( it instanceof ComboBox ) {
+                System.err.println("YYYYYYYYYYYYYYYYYYYYYY");
+                retval.getChildren().add(gb.build(it));
+            //}
         }
-        //}
         return retval;
     }
-
+    
     @Override
-    default void removeObject(Object parent, Object toRemove) {
+    public void removeObject(Object parent, Object toRemove) {
         //if (parent instanceof Pane) {
         //((Pane) parent).getChildren().remove(toRemove);
         getList(parent).remove(toRemove);
         //}
     }
-
+    
 }

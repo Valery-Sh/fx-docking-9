@@ -40,7 +40,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    protected Node createDefaultContent(Object obj, Object...others) {
+    protected Node createDefaultContent(Object obj, Object... others) {
         String text = ((Labeled) obj).getText();
         Label label = new Label(obj.getClass().getSimpleName() + " " + text);
         String styleClass = "tree-item-node-" + obj.getClass().getSimpleName().toLowerCase();
@@ -61,23 +61,28 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
     public boolean isAcceptable(Object obj) {
         return obj != null && (obj instanceof Node);
     }
-        @Override
-        public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
-                TreeItem<ItemValue> place,
-                Object dragObject) {
-            boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
-            if ( ! retval ) {
-                return false;
-            }
-            if ( place.getParent() == target ) {
-                return false;
-            }
-            Labeled lb = (Labeled) place.getValue().getTreeItemObject();
-            if ( place == target && lb.getGraphic() != null ) {
-                return false;
-            }
-            return true;
+
+    @Override
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
+            TreeItem<ItemValue> place,
+            Object dragObject) {
+//        System.err.println("Labeled isAdmissiblePosition");
+        boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
+        if (!retval) {
+            return false;
         }
+//       System.err.println("=== LabelIBuilderplace.getParent() obj = " + place.getParent().getValue().getTreeItemObject());
+//       System.err.println("=== LabelIBuilder target. obj = " + target.getValue().getTreeItemObject());
+        
+        if (place.getParent() == target) {
+            return false;
+        }
+        Labeled lb = (Labeled) place.getValue().getTreeItemObject();
+        if (place == target && lb.getGraphic() != null) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * /**
@@ -98,14 +103,14 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
      * @return true if the parameter value is not null and is an instance of
      * Node and the specified target doesn't have children
      */
-/*    @Override
+    /*    @Override
     public boolean isAcceptable(TreeItem<ItemValue> target, Object obj) {
         if ( target.getValue().getTreeItemObject() == obj ) {
             return false;
         }
         return isAcceptable(obj) && target.getChildren().isEmpty();
     }
-*/
+     */
     @Override
     public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItemEx retval = null;
@@ -116,56 +121,56 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
         }
         Object value = dg.getGestureSourceObject();
         //if (isAcceptable(target, value)) {
-            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                TreeCell cell = (TreeCell) dg.getGestureSource();
-                if (cell.getTreeItem() instanceof TreeItemEx) {
-                    notifyObjectRemove(treeView, cell.getTreeItem());
-                    notifyTreeItemRemove(treeView, cell.getTreeItem());
+        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
+            TreeCell cell = (TreeCell) dg.getGestureSource();
+            if (cell.getTreeItem() instanceof TreeItemEx) {
+                notifyObjectRemove(treeView, cell.getTreeItem());
+                notifyTreeItemRemove(treeView, cell.getTreeItem());
 
-                    //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
-                }
+                //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
             }
+        }
 
-            ItemValue v = (ItemValue) target.getValue();
+        ItemValue v = (ItemValue) target.getValue();
 
-            retval = (TreeItemEx) createPlaceHolders(value)[0];
-            target.getChildren().add(retval);
+        retval = (TreeItemEx) createPlaceHolders(value)[0];
+        target.getChildren().add(retval);
 
-            ((Labeled) v.getTreeItemObject()).setGraphic((Node) value);
+        ((Labeled) v.getTreeItemObject()).setGraphic((Node) value);
         //}
         return retval;
     }
 
-/*    @Override
+    /*    @Override
     public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         Object obj = toRemove.getParent().getValue().getTreeItemObject();
         if (obj instanceof Labeled) {
             ((Labeled) obj).setGraphic(null);
         }
     }
-*/    
+     */
     @Override
-    public void removeObject(Object parent,Object  toRemove) {
-        if ( parent instanceof Labeled) {
+    public void removeObject(Object parent, Object toRemove) {
+        if (parent instanceof Labeled) {
             ((Labeled) parent).setGraphic(null);
         }
     }
+
     @Override
-    public void removeItem(TreeItem<ItemValue> parent,TreeItem<ItemValue> toRemove ) {
+    public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
     }
-
 
     protected TreeItem[] createPlaceHolders(Object obj) {
         return new TreeItem[]{placeholderBuilder.build(obj)};
     }
 
     @Override
-    public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return placeholderBuilder;
     }
 
-    public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder implements PlaceHolderBuilder {
+    public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder implements PlaceholderBuilder {
 
         @Override
         public TreeItem build(Object obj) {
@@ -174,7 +179,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
         }
 
         @Override
-        protected Node createDefaultContent(Object obj, Object...others) {
+        protected Node createDefaultContent(Object obj, Object... others) {
             //HBox hb = new HBox();
             Label label = new Label();
             HBox hb = new HBox(label);
@@ -207,23 +212,16 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
             }
             Object obj = dg.getGestureSourceObject();
             //if (isAcceptable(target, obj)) {
-                retval = TreeItemRegistry.getInstance().getBuilder(obj).build(obj);
-                System.err.println("!!! TreeItemRegistry.getBuilder = " + TreeItemRegistry.getInstance().getBuilder(obj));
-                ((ItemValue) retval.getValue()).setPlaceholder(true);
+            retval = TreeItemRegistry.getInstance().getBuilder(obj).build(obj);
+//            System.err.println("!!! TreeItemRegistry.getBuilder = " + TreeItemRegistry.getInstance().getBuilder(obj));
+            ((ItemValue) retval.getValue()).setPlaceholder(true);
 
-                target.getChildren().add(retval);
-                ItemValue v = (ItemValue) target.getValue();
-                ((Labeled) v.getTreeItemObject()).setGraphic((Node) obj);
+            target.getChildren().add(retval);
+            ItemValue v = (ItemValue) target.getValue();
+            ((Labeled) v.getTreeItemObject()).setGraphic((Node) obj);
 
             //}
             return retval;
         }
-
-
-        @Override
-        public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
-            return null;
-        }
-
     }
 }

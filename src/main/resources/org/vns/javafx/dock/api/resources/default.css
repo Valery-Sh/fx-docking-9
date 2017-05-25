@@ -121,6 +121,19 @@
 .tree-item-node-label {
     -fx-graphic: url(label-16x16.png);
 }
+.tree-item-node-textfield {
+    -fx-graphic: url(text-field-16x16.png);
+}
+.tree-item-node-textarea {
+    -fx-graphic: url(text-area-16x16.png);
+}
+.tree-item-node-choicebox {
+    -fx-graphic: url(choice-box-16x16.png);
+}
+.tree-item-node-combobox {
+    -fx-graphic: url(combo-box-16x16.png);
+}
+
 .tree-cell {
     -fx-indent: 20;
     -fx-cell-size: 40;

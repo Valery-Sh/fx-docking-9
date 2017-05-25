@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
@@ -17,12 +18,13 @@ import javafx.scene.shape.Shape;
  */
 public class TreeItemRegistry {
     
-    private final ObservableMap<String, DefaultTreeItemBuilder> builders = FXCollections.observableHashMap();
+    private final ObservableMap<String, TreeItemBuilder> builders = FXCollections.observableHashMap();
     
     public static TreeItemRegistry getInstance() {
         return SingletonInstance.INSTANCE;
     }
-    public DefaultTreeItemBuilder getBuilder(Object o) {
+    public TreeItemBuilder getBuilder(Object o) {
+        System.err.println("REGISTRY o = " + o);
         if ( o == null ) {
             return null;
         }
@@ -34,11 +36,15 @@ public class TreeItemRegistry {
         } else if ( o instanceof Class) {
             return find((Class)o); 
         }
-        return find(o.getClass());
+        TreeItemBuilder retval = find(o.getClass());
+        if ( retval == null ) {
+            retval = builders.get("javafx.scene.Node");
+        }
+        return retval;
     }
     
-    protected DefaultTreeItemBuilder find( Class clazz) {
-        DefaultTreeItemBuilder retval = null;
+    protected TreeItemBuilder find( Class clazz) {
+        TreeItemBuilder retval = null;
         Class c = clazz;
         String name = c.getName();
         
@@ -65,7 +71,7 @@ public class TreeItemRegistry {
         return retval;
     }
     
-    public void register(Object key, DefaultTreeItemBuilder value)  {
+    public void register(Object key, TreeItemBuilder value)  {
         String clazz = key.getClass().getName();
         if ( key instanceof String )  {
             clazz = (String) key;
@@ -94,6 +100,7 @@ public class TreeItemRegistry {
         register(TabPane.class, new TabPaneItemBuilder());        
         register(Tab.class, new TabItemBuilder());        
         register(BorderPane.class, new BorderPaneItemBuilder());        
+        register(TextInputControl.class, new TextInputControlItemBuilder());        
         
     }
     private static class SingletonInstance {

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
@@ -32,7 +27,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
             Tab tab = (Tab) obj;
             retval = createItem((Tab) obj);
             if (tab.getContent() != null) {
-                DefaultTreeItemBuilder b = TreeItemRegistry.getInstance().getBuilder(tab.getContent());
+                TreeItemBuilder b = TreeItemRegistry.getInstance().getBuilder(tab.getContent());
                 retval.getChildren().add(b.build(tab.getContent()));
             }
         }
@@ -101,10 +96,6 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
         target.getChildren().add(retval);
         tab.setContent((Node) value);
         Node n = (Node) value;
-        //((Pane)n.getParent()).getChildren().removeObject(n);
-        //System.err.println("tab.getContent()=" + tab.getContent() + " ; new Value)=" + value);
-
-        //}
         return retval;
     }
 
@@ -130,6 +121,23 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
     @Override
     public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
+    }
+    @Override
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
+            TreeItem<ItemValue> place,
+            Object dragObject) {
+        boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
+        if (!retval) {
+            return false;
+        }
+        if (place != target) {
+            return false;
+        }
+        Tab tab = (Tab) place.getValue().getTreeItemObject();
+        if (tab.getContent() != null) {
+            return false;
+        }
+        return true;
     }
 
 }

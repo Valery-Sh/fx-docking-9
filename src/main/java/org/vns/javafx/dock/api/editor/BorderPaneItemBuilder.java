@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
@@ -94,10 +89,10 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
      */
     @Override
     public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
-        System.err.println("BorderPane removeItem ");
+//        System.err.println("BorderPane removeItem ");
         Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
-        DefaultTreeItemBuilder builder;
+        TreeItemBuilder builder;
         if (obj == null) {
             //
             // PlaceHolderBuilder will be returned
@@ -111,7 +106,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
     public void removeObject(Object parent, Object toRemove) {
-        System.err.println("BorderPane remove ");
+//        System.err.println("BorderPane remove ");
         BorderPane bp = (BorderPane) parent;
         if (bp.getTop() == toRemove) {
             bp.setTop(null);
@@ -127,7 +122,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return placeholderBuilder;
     }
 
@@ -276,7 +271,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
         @Override
         public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
-            System.err.println("BorderPane Placeholder accept");
+//            System.err.println("BorderPane Placeholder accept");
             int idx = place.getParent().getChildren().indexOf(place);
             BuildPos pos = BuildPos.values()[idx];
 
@@ -290,7 +285,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
-                        System.err.println("Accept Node before Notify");
+//                        System.err.println("Accept Node before Notify");
                         notifyObjectRemove(treeView, cell.getTreeItem());
                         notifyTreeItemRemove(treeView, cell.getTreeItem());
                     }
@@ -318,30 +313,15 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 }
 */
             //}
-            System.err.println("(ItemValue) place.getValue().getTreeItemObject=" + (ItemValue) place.getValue().getTreeItemObject());
+//            System.err.println("(ItemValue) place.getValue().getTreeItemObject=" + (ItemValue) place.getValue().getTreeItemObject());
             return retval;
 
         }
 
 
-/*        @Override
-        public boolean isDragPlace(TreeItem<ItemValue> target, TreeItem<ItemValue> place, Object source) {
-            boolean retval = false;
-            if (target != null && target != place.getParent() && place.getParent().getChildren().indexOf(place) == 4) {
-                retval = true;
-            } else {
-                retval = target != place.getParent() && target != null;
-            }
-
-            System.err.println("BorderPane isDragPlace retval = " + retval);
-            return retval;
-        }
-*/
         @Override
-        public DefaultTreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+        public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
             return null;
         }
-
     }
-
 }
