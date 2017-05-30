@@ -24,7 +24,7 @@ public class TreeItemRegistry {
         return SingletonInstance.INSTANCE;
     }
     public TreeItemBuilder getBuilder(Object o) {
-        System.err.println("REGISTRY o = " + o);
+        //System.err.println("REGISTRY o = " + o);
         if ( o == null ) {
             return null;
         }

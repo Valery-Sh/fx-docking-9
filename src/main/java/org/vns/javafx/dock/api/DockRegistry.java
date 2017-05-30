@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -162,21 +163,40 @@ public class DockRegistry {
                 //12.05return (n instanceof DockTarget);
                 return isDockPaneTarget(n);
             });
-            /* 11.01            List<Node> ls = DockUtil.findNodes(s.getScene().getRoot(), (node) -> {
-                Point2D p = node.screenToLocal(x, y);
-                return node.contains(p) && (node instanceof DockTarget)
-                        && ((DockTarget) node).paneHandler().zorder() == 0;
-            });
-            
-            Node node = s.getScene().getRoot();
-            Point2D p = node.screenToLocal(x, y);
-            if (node.contains(p) && (node instanceof DockTarget && ((DockTarget) node).paneHandler().zorder() == 0)) {
-                ls.add(0, node);
-            }
-            if (!ls.isEmpty()) {
+            if (topNode != null) {
                 targetStages.add(s);
             }
-             */
+        });
+        for (Stage s1 : targetStages) {
+            retval = s1;
+            for (Stage s2 : allStages) {
+                if (s1 == s2) {
+                    continue;
+                }
+                if (s1 != getTarget(s1, s2)) {
+                    retval = null;
+                    break;
+                }
+            }
+            if (retval != null) {
+                break;
+            }
+        }
+        return retval;
+    }
+    public Stage getTarget(double x, double y, Stage excl, Predicate<Node> predicate) {
+        Stage retval = null;
+        List<Stage> allStages = getStages(x, y, excl);
+        if (allStages.isEmpty()) {
+            return null;
+        }
+        List<Stage> targetStages = new ArrayList<>();
+        allStages.forEach(s -> {
+            Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
+                //12.05return (n instanceof DockTarget);
+                //return isDockPaneTarget(n);
+                return predicate.test(n);
+            });
             if (topNode != null) {
                 targetStages.add(s);
             }
@@ -218,11 +238,11 @@ public class DockRegistry {
             retval = s1;
         } else if (!b1 && b2) {
         }
-        String t = null;
+      /*  String t = null;
         if (retval != null) {
             t = retval.getTitle();
         }
-
+      */  
         return retval;
     }
 
@@ -235,8 +255,6 @@ public class DockRegistry {
                     retlist.add(s);
                 }
             }
-            //s.getScene().getRoot().setStyle("-fx-background-color: lightgray");
-            //s.getScene().getRoot().setStyle("-fx-background-color: lightgray");
         });
         return retlist;
     }

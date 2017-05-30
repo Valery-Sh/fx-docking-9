@@ -1,13 +1,10 @@
 package org.vns.javafx.dock.api.editor;
 
+import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import java.util.List;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WritableStringValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -15,13 +12,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
@@ -46,7 +44,7 @@ public class SceneGraphEditor {
     public static final int LAST = 0;
     public static final int FIRST = 2;
 
-    private TreeViewDragEventHandler mouseDragHandler;
+    private TreeViewDragEventHandler dragDropHandler;
 
     public static double ANCHOR_OFFSET = 4;
 
@@ -59,9 +57,10 @@ public class SceneGraphEditor {
 
     private double parentOffset = 10;
     private Bounds disclosureBounds;
+    private ScrollAnimation scrollAnimation;
 
     public SceneGraphEditor(Node rootNode) {
-        this.treeView = new TreeView<>();
+        this.treeView = new TreeViewEx<>(this);
         this.rootNode = rootNode;
         init();
     }
@@ -70,18 +69,20 @@ public class SceneGraphEditor {
         getEditorPane().getChildren().add(treeView);
         addStageListeners();
         customizeCell();
-        mouseDragHandler = new TreeViewDragEventHandler(this);
-
-        treeView.addEventHandler(DragEvent.ANY, mouseDragHandler);
+        scrollAnimation = new ScrollAnimation((TreeViewEx) treeView);
+        //
+        // 
+        //
+        dragDropHandler = new TreeViewDragEventHandler(this);
+        //
+        //
+        //
+        //mouseDragHandler = new TreeViewMouseDragEventHandler(this);
+        treeView.addEventHandler(DragEvent.ANY, dragDropHandler);
 
         editorPane.getChildren().addAll(horLine, vertLine, itemRect);
         editorPane.getStyleClass().add("tree-view-pane");
         //editorPane.setStyle("-fx-background-color: green; -fx-padding: 0 3 0 3; -fx-insets: 0; -fx-border-width: 0");
-        TreeView tt = new TreeView() {
-            void me() {
-
-            }
-        };
         vertLine.getStyleClass().add("tree-view-indicator");
         vertLine.getStyleClass().add("vert-line");
         horLine.getStyleClass().add("hor-line");
@@ -99,6 +100,10 @@ public class SceneGraphEditor {
         if (treeView.getScene() != null && treeView.getScene().getWindow() != null && treeView.getScene().getWindow().isShowing()) {
             windowShown(null);
         }
+    }
+
+    public ScrollAnimation getScrollAnimation() {
+        return scrollAnimation;
     }
 
     public Pane getEditorPane() {
@@ -153,7 +158,36 @@ public class SceneGraphEditor {
             Node arrow = ((Pane) ((TreeCell) it.getValue().getCellGraphic().getParent()).getDisclosureNode()).getChildren().get(0);
             getItemParentOffset(it);
             getDisclosureBounds();
+            registerScrollBarEvents();
         });
+    }
+
+    protected void registerScrollBarEvents() {
+        ScrollBar sb = ((TreeViewEx) treeView).getScrollBar();
+
+        sb.addEventHandler(DragEvent.DRAG_EXITED, ev -> {
+            hideDrawShapes();
+            scrollAnimation.stop();
+            ev.consume();
+        });
+        sb.addEventHandler(DragEvent.DRAG_OVER, ev -> {
+            hideDrawShapes();
+            ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            if (!scrollAnimation.isRunning()) {
+                scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
+            }
+            ev.consume();
+        });
+
+        sb.addEventHandler(DragEvent.DRAG_ENTERED, ev -> {
+            hideDrawShapes();
+
+            ev.consume();
+            //treeView.getScene().setCursor(Cursor.HAND);
+            scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
+
+        });
+
     }
 
     protected void customizeCell() {
@@ -168,65 +202,35 @@ public class SceneGraphEditor {
                         setGraphic(null);
                         //setStyle(null);
                         if (this.getUserData() != null) {
-                            this.removeEventHandler(DragEvent.ANY, (TreeItemCellDragEventHandler) this.getUserData());
+                            Object[] o = (Object[]) this.getUserData();
+                            if (o[0] != null) {
+                                this.removeEventHandler(DragEvent.ANY, (TreeItemCellDragEventHandler) o[0]);
+                            }
+/*                            if (o[1] != null) {
+                                this.removeEventHandler(NodeDragEvent.NODE_DRAG, (TreeCellNodeDragEventHandler) o[1]);
+                            }
+*/
                         }
                         this.setOnDragDetected(null);
                         this.setOnDragDropped(null);
                         this.setOnDragDone(null);
                     } else {
-                        //if ( value.getTreeItemObject() instanceof VBox )
-                        //this.setStyle("-fx-background-color: yellow");
                         this.setGraphic(value.getCellGraphic());
                         TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphEditor.this, this);
                         this.addEventHandler(DragEvent.ANY, h);
-                        this.setUserData(h);
-                        //this.applyCss();
-                        boolean isRoot = this.getTreeItem() == treeView.getRoot();
+                        this.setUserData(new Object[]{h, null});
 
                         registerDragDetected(this);
                         registerDragDropped(this);
                         registerDragDone(this);
 
-                        this.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                            @Override
-                            public void handle(MouseEvent ev) {
-                                System.err.println("MOUSE CLICKED");
-                                TreeItem<ItemValue> item = ((TreeCell) ev.getSource()).getTreeItem();
-                                Object o = item.getValue().getTreeItemObject();
-                                System.err.println("start = " + System.currentTimeMillis());
-                                if ( ba == null ){
-                                    ba = new BeanAdapter(o);
-                                    sp = (Property)ba.getPropertyModel("text");
-                                    System.err.println("model = " + sp);
-                                    if ( ! sp.isBound() ) {
-                                        sp.bind(tmpProp);
-                                    }
-                                    
-                                }
-                                
-                                if (o instanceof Label) {
-                                    System.err.println("textProperty=" + ba.get("text"));
-                                    //((WritableStringValue)ba.getPropertyModel("text"))
-                                    //((Label) o).setText("TEXT CHANGED " + (++tmp));
-                                    
-                                }
-                                tmpProp.set("CHANGED " + (++tmp));
-                                System.err.println("end = " + System.currentTimeMillis());
-                            }
-                        });
                     }
                 }
             };
             return cell;
         });
     }
-    public static BeanAdapter ba = null;
-    public static Property sp = null;
-    public static int tmp = 0;
-    public static StringProperty tmpProp = new SimpleStringProperty("1");
-    
-    
+
     protected void registerDragDetected(TreeCell cell) {
         cell.setOnDragDetected(ev -> {
             Dragboard dragboard = cell.startDragAndDrop(TransferMode.COPY_OR_MOVE);
@@ -253,17 +257,18 @@ public class SceneGraphEditor {
     }
 
     protected void registerDragDropped(TreeCell cell) {
-        System.err.println("DROPPED");
+        //System.err.println("DROPPED");
         cell.setOnDragDropped((DragEvent ev) -> {
-            TreeItem<ItemValue> targetItem = getDropTreeItem(ev, ((TreeCell) ev.getGestureTarget()).getTreeItem());
+            System.err.println("");
+            TreeItem<ItemValue> targetItem = getTargetTreeItem(ev, ((TreeCell) ev.getGestureTarget()).getTreeItem());
             //
             // Try transfer data to the place
             //
-            Dragboard dragboard = ev.getDragboard();
-            if (dragboard.hasUrl() && targetItem != null) {
+            //Dragboard dragboard = ev.getDragboard();
+            if (targetItem != null) {
                 ItemValue targetValue = targetItem.getValue();
                 TreeItem place = ((TreeCell) ev.getGestureTarget()).getTreeItem();
-                System.err.println("DROPPED BEFORE ACCEPT");
+                System.err.println("DROPPED BEFORE ACCEPT " + targetValue + "; gestureSource = " + ev.getGestureSource());
                 targetValue.getBuilder().accept(treeView, targetItem, place, (Node) ev.getGestureSource());
 
                 ev.setDropCompleted(true);
@@ -623,16 +628,56 @@ public class SceneGraphEditor {
         return it;
     }
 
-    protected TreeItem<ItemValue> getDropTreeItem(DragEvent ev, TreeItem<ItemValue> item) {
+    private TreeItem getParentTarget(TreeItem item, int targetLevel) {
+        TreeItem<ItemValue> retval = null;
+        //int level = treeView.getTreeItemLevel(item);
+        //
+        // n < level - 1
+        //
+        TreeItem<ItemValue> it = item;
+        int n = targetLevel;
+        int row = treeView.getRow(it);
+
+        //System.err.println("exp item count = " + treeView.getExpandedItemCount());
+        //System.err.println("n = " + n + "    --- lev = " + treeView.getTreeItemLevel(treeView.getTreeItem(row + 1)) );
+        TreeItem<ItemValue> next = treeView.getTreeItem(row + 1);
+        int nextRowLevel = 0;
+        if (next != null) {
+            //System.err.println("next obj = " + next.getValue().getTreeItemObject());
+            nextRowLevel = treeView.getTreeItemLevel(treeView.getTreeItem(row + 1));
+        } else {
+            //System.err.println(" set to n = " + n);
+            retval = parentAtLevel(item, n);
+            //System.err.println("RETVAL obj=" + retval.getValue().getTreeItemObject());
+            return parentAtLevel(item, n);
+        }
+
+        while (true) {
+            if (row == treeView.getExpandedItemCount() - 1 || nextRowLevel <= n + 1) {
+                retval = parentAtLevel(item, n);
+                break;
+            }
+            n++;
+            nextRowLevel = n + 1;
+        }
+
+        return retval;
+    }
+
+    protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev, TreeItem<ItemValue> item) {
+        return getTargetTreeItem(ev.getScreenX(), ev.getScreenY(), item);
+    }
+
+    protected TreeItem<ItemValue> getTargetTreeItem(double x, double y, TreeItem<ItemValue> item) {
 
         TreeItem<ItemValue> retval = null;
-        //Object o = item.getValue().getTreeItemObject();
+        
         hideDrawShapes();
         if (item != null) {
             Bounds[] bounds = levelBoundsOf(item);
             int n = -1;
             for (int i = 0; i < bounds.length; i++) {
-                if (bounds[i].contains(ev.getScreenX(), ev.getScreenY())) {
+                if (bounds[i].contains(x, y)) {
                     n = i;
                     break;
                 }
@@ -642,11 +687,14 @@ public class SceneGraphEditor {
                 retval = item;
                 ((ItemValue) retval.getValue()).setDragDropQualifier(LAST);
             } else if (item.isLeaf()) {
+                //System.err.println("n = " + n + "; level=" + level);
                 if (n == level - 1 || n == level || n == level + 1 || n == level + 2) {
                     retval = item.getParent();
                 } else if (n < level - 1) {
                     if (item.nextSibling() == null) {
-                        retval = parentAtLevel(item, n);
+                        //System.err.println("sibling = null");
+                        retval = getParentTarget(item, n);
+                        //retval = parentAtLevel(item, n+1);
                     } else {
                         retval = item.getParent();
                     }
@@ -672,185 +720,6 @@ public class SceneGraphEditor {
         return retval;
     }
 
-    protected void treeItemDragOver(DragEvent ev, TreeItem<ItemValue> item, boolean acceptable) {
-        hideDrawShapes();
-        if (item != null) {
-            Bounds[] bounds = levelBoundsOf(item);
-            int n = -1;
-            for (int i = 0; i < bounds.length; i++) {
-                if (bounds[i].contains(ev.getScreenX(), ev.getScreenY())) {
-                    n = i;
-                    break;
-                }
-            }
-            int level = treeView.getTreeItemLevel(item);
-            if (n < 0 && !acceptable) {
-                return;
-            } else if (n < 0) {
-                itemRect.setVisible(true);
-                drawRectangle(item);
-            } else if (item.isLeaf()) {
-                if (n == level - 1 || n == level || n == level + 1 || n == level + 2) {
-                    drawLines(item.getParent(), item);
-                } else if (n < level - 1) {
-                    if (item.nextSibling() == null) {
-                        drawLines(parentAtLevel(item, n), item);
-                    } else {
-                        drawLines(item.getParent(), item);
-                    }
-                }
-            } else if (!item.isExpanded()) {
-                // not leaf and not expanded     
-                if (n == level || n == level + 1 || n == level + 2) {
-                    if (acceptable) {
-                        itemRect.setVisible(true);
-                        drawRectangle(item);
-                    }
-                } else if (n == level - 1) {
-                    drawLines(item.getParent(), item);
-                } else if (n < level - 1) {
-                    if (item.nextSibling() == null) {
-                        drawLines(parentAtLevel(item, n), item);
-                    } else {
-                        drawLines(item.getParent(), item);
-                    }
-                }
-            } else {
-                drawLines(item, item);
-            }
-        }
-    }
-
-    protected void treeItemDragOver(DragEvent ev, TreeItem<ItemValue> item) {
-        hideDrawShapes();
-        if (item != null) {
-            Bounds[] bounds = levelBoundsOf(item);
-            int n = -1;
-            for (int i = 0; i < bounds.length; i++) {
-                if (bounds[i].contains(ev.getScreenX(), ev.getScreenY())) {
-                    n = i;
-                    break;
-                }
-            }
-            int level = treeView.getTreeItemLevel(item);
-            if (n < 0) {
-                itemRect.setVisible(true);
-                //if (true) return;
-                drawRectangle(item);
-            } else if (item.isLeaf()) {
-                if (n == level - 1 || n == level || n == level + 1 || n == level + 2) {
-                    drawLines(item.getParent(), item);
-                } else if (n < level - 1) {
-                    if (item.nextSibling() == null) {
-                        drawLines(parentAtLevel(item, n), item);
-                    } else {
-                        drawLines(item.getParent(), item);
-                    }
-                }
-            } else if (!item.isExpanded()) {
-                // not leaf and not expanded     
-                if (n == level || n == level + 1 || n == level + 2) {
-                    itemRect.setVisible(true);
-                    drawRectangle(item);
-                } else if (n == level - 1) {
-                    drawLines(item.getParent(), item);
-                } else if (n < level - 1) {
-                    if (item.nextSibling() == null) {
-                        drawLines(parentAtLevel(item, n), item);
-                    } else {
-                        drawLines(item.getParent(), item);
-                    }
-                }
-            } else {
-                drawLines(item, item);
-            }
-        }
-    }
-
-    public static class DragEventHandler implements EventHandler<DragEvent> {
-
-        private final SceneGraphEditor editor;
-        private final TreeCell targetCell;
-
-        private Point2D point = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
-
-        protected DragEventHandler(SceneGraphEditor editor, TreeCell targetCell) {
-            this.editor = editor;
-            this.targetCell = targetCell;
-        }
-
-        public Point2D getPoint() {
-            return point;
-        }
-
-        public SceneGraphEditor getEditor() {
-            return editor;
-        }
-
-        public TreeCell getTargetCell() {
-            return targetCell;
-        }
-
-        public TreeItem<ItemValue> getTreeCellItem() {
-            return targetCell.getTreeItem();
-        }
-
-        /**
-         * Returns an object for witch the {@literal  TreeItem} of the
-         * {@link #targetCell} was created. .
-         *
-         * @param ev
-         * @return
-         */
-        protected Object getDragTargetObject(DragEvent ev) {
-            return ((ItemValue) getTreeCellItem().getValue()).getTreeItemObject();
-        }
-
-        protected Object getDragSource(DragEvent ev) {
-            Object o = ev.getGestureSource();
-            if (o == null) {
-                return null;
-            }
-            //Object retval = null;
-            Node node = (Node) o;
-            DragGesture dg = (DragGesture) node.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-            return dg.getGestureSourceObject();
-        }
-
-        /*        protected boolean isAcceptable(DragEvent ev, DefaultTreeItemBuilder builder) {
-            Dragboard dragboard = ev.getDragboard();
-            Object dragSource = getDragSource(ev);
-            TreeItem it = getTreeCellItem();
-            return (dragboard.hasUrl() && (dragboard.getUrl().equals(NODE_UUID) || dragboard.getUrl().equals(CELL_UUID)))
-                    && builder != null
-                    && builder.isDragTarget()
-                    && builder.isAcceptable(getTreeCellItem(), dragSource);
-        }
-         */
- /*        protected boolean isSupportedDragSource(DragEvent ev, DefaultTreeItemBuilder builder) {
-            Dragboard dragboard = ev.getDragboard();
-            Object dragSource = getDragSource(ev);
-            return (dragSource != null && dragboard.hasUrl()
-                    && (dragboard.getUrl().equals(NODE_UUID)
-                    || dragboard.getUrl().equals(CELL_UUID))
-                    && builder != null);
-        }
-         */
-        protected boolean isSupportedDragSource(DragEvent ev) {
-            Dragboard dragboard = ev.getDragboard();
-            Object dragSource = getDragSource(ev);
-            return dragSource != null && dragboard.hasUrl()
-                    && (dragboard.getUrl().equals(NODE_UUID)
-                    || dragboard.getUrl().equals(CELL_UUID));
-            //&& builder != null);
-        }
-
-        @Override
-        public void handle(DragEvent event) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-    }
 
     public static class TreeItemCellDragEventHandler extends DragEventHandler {
 
@@ -865,50 +734,26 @@ public class SceneGraphEditor {
         }
 
         @Override
-        public void handle(DragEvent ev
-        ) {
+        public void handle(DragEvent ev) {
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
                 TreeView tv = getEditor().getTreeView();
-                Bounds tvb = tv.localToScreen(tv.getBoundsInLocal());
-                if (ev.getScreenY() < tvb.getMinY() + 15) {
-                    return;
-                } else if (ev.getScreenY() > tvb.getMinY() + tv.getHeight() - 15) {
-                    return;
-                }
-                //
-                // getDragTargetObject(ev) returns an object that corresponds the 
-                // current mouse pos and not the actual place
-                //
                 getEditor().hideDrawShapes();
+                System.err.println("HANDLE 1");
                 if (!isAdmissiblePosition(ev)) {
+                    System.err.println("HANDLE 2 false");
                     ev.consume();
                 } else {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                    Point2D pt = new Point2D(Math.round(ev.getX()), Math.round(ev.getY()));
-                    if (!pt.equals(getPoint())) {
-                        getEditor().treeItemDragOver(ev, (TreeItem) getTargetCell().getTreeItem());
-                    }
+                    //Point2D pt = new Point2D(Math.round(ev.getX()), Math.round(ev.getY()));
+                    //if (!pt.equals(getPoint())) {
+                    // getEditor().treeItemDragOver(ev, (TreeItem) getTreeCell().getTreeItem());
+                    drawIndicator(ev);
+                    //}
                     ev.consume();
                 }
             }
         }
 
-        public boolean isAdmissiblePosition(DragEvent ev) {
-            boolean retval = true;
-            if (!isSupportedDragSource(ev)) {
-                return false;
-            }
-
-            TreeItem<ItemValue> target = getEditor().getDropTreeItem(ev, getTreeCellItem());
-            if (target == null) {
-                return false;
-            }
-            //
-            // Delegate to check if admissible to a DefaultTreeItemBuilder of the target item
-            //
-            retval = target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTargetCell().getTreeItem(), getDragSource(ev));
-            return retval;
-        }
     }//MouseEventHandler
 
     public static class TreeViewDragEventHandler extends DragEventHandler {
@@ -917,11 +762,6 @@ public class SceneGraphEditor {
             super(editor, null);
         }
 
-        /*        @Override
-        protected Object getDragTargetObject(DragEvent ev) {
-            return ((ItemValue) getTreeCellItem().getValue()).getTreeItemObject();
-        }
-         */
         /**
          *
          * @return
@@ -931,69 +771,32 @@ public class SceneGraphEditor {
             int sz = getEditor().getTreeView().getExpandedItemCount();
             return getEditor().getTreeView().getTreeItem(sz - 1);
         }
-        double sX = -1000;
-        double sY = -1000;
-        long sTime = System.currentTimeMillis();
+
+        @Override
+        protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev) { //, TreeItem place) {
+            return getEditor().getTreeView().getRoot();
+        }
 
         @Override
         public void handle(DragEvent ev) {
+            System.err.println("TreeVieHandler: gestureSource = " + ev.getGestureSource());
+            System.err.println("TreeVieHandler: source = " + ev.getSource());
+
+            getEditor().hideDrawShapes();
+            VirtualScrollBar sb = ((TreeViewEx) getEditor().getTreeView()).getScrollBar();
+            if (sb != null) {
+                Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
+                if (sbBounds != null && sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
+                    return;
+                }
+            }
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-
-                TreeView tv = getEditor().getTreeView();
-
-                Bounds tvb = tv.localToScreen(tv.getBoundsInLocal());
-                if (ev.getScreenY() < tvb.getMinY() + 15) {
-                    long t = System.currentTimeMillis();
-                    if (ev.getScreenX() == sX && ev.getScreenY() == sY && t - sTime > 75) {
-
-                        sTime = System.currentTimeMillis();
-                        TreeItem<ItemValue> first = getEditor().findFirstVisibleTreeItem(ev.getScreenX(), ev.getScreenY());
-                        if (first != null && tv.getRow(first) > 0) {
-                            tv.scrollTo(tv.getRow(first) - 1);
-                        }
-                    } else if (ev.getScreenX() != sX || ev.getScreenY() != sY) {
-                        sX = ev.getScreenX();
-                        sY = ev.getScreenY();
-                        sTime = System.currentTimeMillis();
-                    }
-
-                    //ev.consume();
-                    return;
-                } else if (ev.getScreenY() > tvb.getMinY() + tv.getHeight() - 15) {
-                    long t = System.currentTimeMillis();
-                    if (ev.getScreenX() == sX && ev.getScreenY() == sY && t - sTime > 75) {
-
-                        sTime = System.currentTimeMillis();
-                        TreeItem<ItemValue> last = getEditor().findLastVisibleTreeItem(ev.getScreenX(), ev.getScreenY());
-                        if (last != null && tv.getRow(last) < tv.getExpandedItemCount()) {
-                            tv.scrollTo(tv.getRow(last) + 1);
-                        }
-                    } else if (ev.getScreenX() != sX || ev.getScreenY() != sY) {
-                        sX = ev.getScreenX();
-                        sY = ev.getScreenY();
-                        sTime = System.currentTimeMillis();
-                    }
-
-                    //ev.consume();
-                    return;
+                System.err.println("TreeViewHandler dragOver");
+                if (isAdmissiblePosition(ev)) {
+                    ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    drawIndicator(ev);
                 }
-
-                TreeItemBuilder builder;// = TreeItemRegistry.getInstance().getBuilder(getDragTargetObject(ev));
-                getEditor().hideDrawShapes();
-                ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                Point2D pt = new Point2D(Math.round(ev.getX()), Math.round(ev.getY()));
-                if (!pt.equals(getPoint())) {
-                    TreeItem item = getTreeCellItem();
-                    if (item != null) {
-                        TreeItem<ItemValue> it = getEditor().getTreeView().getRoot();
-                        builder = TreeItemRegistry.getInstance().getBuilder(it.getValue().getTreeItemObject());
-                        //if (builder.isAcceptable(it, getDragSource(ev))) {
-                        getEditor().drawLines(getEditor().getTreeView().getRoot(), item);
-                        //}
-                    }
-                }
-
-                //}
+                ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
                 getEditor().hideDrawShapes();
                 TreeItem<ItemValue> targetItem = getEditor().getTreeView().getRoot();
@@ -1001,10 +804,10 @@ public class SceneGraphEditor {
                 //
                 // Transfer the data to the place
                 //
-                Dragboard dragboard = ev.getDragboard();
-                if (dragboard.hasUrl()) {
-                    TreeItem target = getEditor().getTreeView().getRoot();
-                    targetValue.getBuilder().accept(getEditor().getTreeView(), targetItem, target, (Node) ev.getGestureSource());
+                //isSupportedDragSource(ev)
+                if (isAdmissiblePosition(ev) ) {
+                    TreeItem place = getTreeCellItem();
+                    targetValue.getBuilder().accept(getEditor().getTreeView(), targetItem, place, (Node) ev.getGestureSource());
                     ev.setDropCompleted(true);
 
                 } else {
@@ -1019,4 +822,5 @@ public class SceneGraphEditor {
             ev.consume();
         }
     }//TreeViewDragEventHandler
+
 }// SceneGraphEditor

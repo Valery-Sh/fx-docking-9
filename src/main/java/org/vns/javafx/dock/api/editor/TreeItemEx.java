@@ -13,6 +13,7 @@ public class TreeItemEx<T> extends TreeItem{
     /* 10.04 private EventHandler eventHandler;*/
             
     public TreeItemEx() {
+        
     }
 
     public TreeItemEx(T value) {

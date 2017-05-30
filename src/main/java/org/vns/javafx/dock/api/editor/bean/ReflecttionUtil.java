@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vns.javafx.dock.api.editor;
+package org.vns.javafx.dock.api.editor.bean;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;

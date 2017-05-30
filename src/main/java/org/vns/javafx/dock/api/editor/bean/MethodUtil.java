@@ -1,5 +1,6 @@
-package org.vns.javafx.dock.api.editor;
+package org.vns.javafx.dock.api.editor.bean;
 
+import org.vns.javafx.dock.api.editor.bean.ReflecttionUtil;
 import java.security.AllPermission;
 import java.security.AccessController;
 import java.security.PermissionCollection;

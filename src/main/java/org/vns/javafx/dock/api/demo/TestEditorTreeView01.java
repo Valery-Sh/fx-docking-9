@@ -1,9 +1,11 @@
 package org.vns.javafx.dock.api.demo;
 
+import java.io.File;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -15,6 +17,8 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -33,6 +37,7 @@ import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.SceneGraphEditor;
 import org.vns.javafx.dock.api.editor.ItemValue;
 import static org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder.NODE_UUID;
+import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
  *
@@ -162,7 +167,6 @@ public class TestEditorTreeView01 extends Application {
         vboxBtn1.setOnDragDetected(ev -> {
             Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             DragGesture dg = new DragNodeGesture(vboxBtn1);
-            ((DragNodeGesture) dg).setSourceGestureObject(vboxBtn1);
             dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
 
             ClipboardContent content = new ClipboardContent();
@@ -192,7 +196,7 @@ public class TestEditorTreeView01 extends Application {
 
         rootPane.getChildren().add(dragButton);
 
-        this.dragButton.setOnDragDetected(ev -> {
+        /*        this.dragButton.setOnDragDetected(ev -> {
             Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             DragGesture dg = new DragNodeGesture(dragButton);
             Tab tab = new Tab("New Tab 1");
@@ -206,7 +210,7 @@ public class TestEditorTreeView01 extends Application {
             ev.consume();
             mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
         });
-
+         */
         rootPane.setOnDragOver(ev -> {
 
             if (ev.getDragboard().hasString()) {
@@ -222,6 +226,17 @@ public class TestEditorTreeView01 extends Application {
             }
             ev.consume();
         });
+        Button bb1 = new Button("bb1");
+        Button bb2 = new Button("bb2");
+        VBox vb2 = new VBox(bb1, bb2);
+        Scene scene2 = new Scene(vb2);
+        Stage stage2 = new Stage();
+        stage2.setScene(scene2);
+        stage2.setX(10);
+        stage2.setY(400);
+
+        stage2.show();
+
         SceneGraphEditor edt = new SceneGraphEditor(stackPane);
         //Pane editorPane = edt.initialize(stackPane);
         Pane editorPane = edt.getEditorPane();
@@ -243,7 +258,7 @@ public class TestEditorTreeView01 extends Application {
             });
             //pt2.play();
             System.err.println("START !!!!!!!!!!!!!!");
-            
+
         });
         StackPane editorStackPane = new StackPane();
 
@@ -251,7 +266,7 @@ public class TestEditorTreeView01 extends Application {
         editorStackPane.getChildren().add(editorPane);
         editorStackPane.setStyle("-fx-background-color: red)");
         editorStackPane.minHeightProperty().bind(rootPane.heightProperty());
-        
+
         editorPane.minHeightProperty().bind(editorStackPane.heightProperty());
         rootPane.getChildren().add(editorStackPane);
 
@@ -279,7 +294,7 @@ public class TestEditorTreeView01 extends Application {
         //tv.getStyleClass().add("myTree");
         //rootTreeViewPane.getChildren().add(tv);
         tv.relocate(5, 0);
-        
+
         //tv.getRoot().setExpanded(true);
         /*        tv.setOnMouseClicked(ev -> {
             TreeItem it = edt.getTreeItem(ev.getScreenX(), ev.getScreenY());
@@ -335,6 +350,63 @@ public class TestEditorTreeView01 extends Application {
         nstage1.setX(10);
         nstage1.setY(10);
 
+        bb1.setOnMousePressed(e -> {
+// Make sure the node is not picked
+            bb1.setMouseTransparent(true);
+            System.err.println("Source: Mouse pressed");
+        });
+        bb1.setOnDragDetected(ev -> {
+            System.err.println("dragButton = " + bb1);
+            Dragboard dragboard = bb2.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+
+            DragGesture dg = new DragNodeGesture(bb1);
+            bb1.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+
+            ClipboardContent content = new ClipboardContent();
+            content.putUrl(NODE_UUID);
+            dragboard.setContent(content);
+            ev.consume();
+            //mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
+        });
+/*        bb1.setOnDragDetected(ev -> {
+            System.err.println("dragButton = " + bb1);
+            dragButton.startFullDrag();
+//            Dragboard dragboard = bb1.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+
+            DragGesture dg = new DragNodeGesture(bb1);
+            dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+            ev.consume();
+        });
+*/        
+        bb2.setOnMouseDragOver(e -> System.err.println("Target: drag over " + e.getGestureSource() + "; e.getSource=" + e.getSource()));
+        vboxBtn1.setOnMouseDragOver(e -> System.err.println("Target: drag over " + e));
+        dragButton.setOnMouseClicked(ev -> {
+            //Dragboard dragboard = bb1.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            ClipboardContent content = new ClipboardContent();
+            content.putUrl(NODE_UUID);
+            //dragboard.setContent(content);
+            Bounds bsc = tv.localToScene(tv.getBoundsInLocal());
+            Bounds bscr = tv.localToScreen(tv.getBoundsInLocal());
+            DragEvent de= new DragEvent(DragEvent.ANY, null, bsc.getMinX(),bsc.getMinY() ,bscr.getMinX() ,bscr.getMinY(), TransferMode.MOVE, dragButton, null, null);
+            tv.fireEvent(de);
+            
+            TreeCell cell = (TreeCell) tv.getRoot().getValue().getCellGraphic().getParent();
+            bsc = cell.localToScene(cell.getBoundsInLocal());
+            bscr = cell.localToScreen(cell.getBoundsInLocal());
+            de= new DragEvent(DragEvent.ANY, null, bsc.getMinX(),bsc.getMinY() ,bscr.getMinX() ,bscr.getMinY(), TransferMode.MOVE, dragButton, null, null);
+            cell.fireEvent(de);
+            
+        });
+        dragButton.setOnMouseDragOver(e -> System.err.println("DragButton Target: drag over"));
+        bb2.setOnDragOver(ev -> {
+            System.err.println("drag over = " + bb2);
+            System.err.println("   --- drag over gestureSource = " + ev.getGestureSource());
+            System.err.println("   --- drag over        source = " + ev.getSource());
+
+            ev.consume();
+            //mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
+        });
+
         //nstage1.show();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
@@ -350,7 +422,6 @@ public class TestEditorTreeView01 extends Application {
      *
      * @param args the command line arguments
      */
-
     public static void main(String[] args) {
         launch(args);
     }

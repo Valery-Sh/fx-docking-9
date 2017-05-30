@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.editor;
+package org.vns.javafx.dock.api.editor.bean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javafx.beans.value.ObservableValue;
-import static org.vns.javafx.dock.api.editor.ReflecttionUtil.checkPackageAccess;
+import static org.vns.javafx.dock.api.editor.bean.ReflecttionUtil.checkPackageAccess;
 //import sun.reflect.misc.MethodUtil;
 
 /**

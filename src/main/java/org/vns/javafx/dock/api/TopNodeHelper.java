@@ -1,6 +1,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
@@ -15,7 +16,7 @@ import javafx.stage.Stage;
  */
 public class TopNodeHelper {
 
-    public static Node getTopNode(List<Node> nodes) {
+    public static Node getTopNode(Collection<Node> nodes) {
         List<Node> visNodes = new ArrayList<>();
         nodes.stream().filter((n) -> (n.isVisible())).forEachOrdered((n) -> {
             visNodes.add(n);
