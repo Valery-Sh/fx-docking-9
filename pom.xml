@@ -8,7 +8,22 @@
     <packaging>jar</packaging>
 
     <name>FXDocking</name>
-
+    <description>JavaFX Docking API.</description>
+    <url>https://github.com/Valery-Sh/FXDocking</url>    
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>    
+    <developers>
+        <developer>
+            <name>Valery Shyshkin</name>
+            <email>vns.shyshkin@gmail.com</email>
+            <organization>IgroService</organization>
+            <organizationUrl>https://github.com/Valery-Sh/FXDocking.git</organizationUrl>
+        </developer>
+    </developers>    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>org.vns.javafx.dock.demo.MainApp</mainClass>
@@ -68,6 +83,45 @@
         </resources-->
         <plugins>
             <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>    
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>     
+            
+            
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -78,8 +132,8 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
-            <plugin>
+            </plugin-->
+            <!--plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.5.4</version>
@@ -100,7 +154,7 @@
                         <Private-Package>org.dockfx.demo</Private-Package>
                     </instructions>
                 </configuration>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -152,8 +206,33 @@
             </exclusions>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>
+                https://oss.sonatype.org/content/repositories/snapshots
+            </url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>
+                https://oss.sonatype.org/service/local/staging/deploy/maven2/
+            </url>
+        </repository>
+    </distributionManagement>
     <reporting>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy nexus-staging:release</goals>
+                </configuration>
+            </plugin>    
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -174,6 +253,16 @@
                     <configLocation>google_checks.xml</configLocation>
                 </configuration>
             </plugin>
+            
         </plugins>
+        
+        
+        
     </reporting>
+    <!--scm>
+        <connection>scm:git:git://github.com/Valery-Sh/FXDocking.git</connection>
+        <developerConnection>scm:git:git@github.com:Valery-Sh/FXDocking.git</developerConnection>
+        <url>https://github.com/Valery-Sh/FXDocking.git</url>
+    </scm-->        
+        
 </project>

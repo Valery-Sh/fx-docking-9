@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.properties;
 
 import javafx.beans.property.ObjectPropertyBase;
@@ -11,7 +6,7 @@ import org.vns.javafx.dock.api.DockTargetController;
 /**
  *
  * @author Valery
- * @param <T>
+ * @param <T> ???
  */
 public class DockPaneHandlerProperty<T extends DockTargetController> extends ObjectPropertyBase<T> {
 

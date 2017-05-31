@@ -27,8 +27,8 @@ public interface DockTarget {
     /**
      * Returns an object which provides a state and behavior of the target panel 
      * during a docking process. In contrast to the {@link Dockable} interface where
-     * a single class of type {@link DockNodeController} may be used for various
-     * implementations of the {@xode Dockable} the method as a rule returns a 
+     * a single class of type {@link DockableController} may be used for various
+     * implementations of the {@code Dockable} the method as a rule returns a 
      * an instance of specific  class depending on the target functionality.
      * For example, all such classes as {@code DockPane, DockSideBar, 
      * DockTabpane, DockTabPane2} provide their  own implementations of the class

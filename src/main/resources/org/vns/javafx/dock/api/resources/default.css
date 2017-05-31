@@ -25,12 +25,6 @@
     -fx-graphic: url(graphic-frame-16x16.png);
 
 }
-.pane, .tree-view-pane {
-    -fx-background-color: green; 
-    -fx-padding: 0 3 0 3; 
-    -fx-insets: 0; 
-    -fx-border-width: 0    
-}
 
 .tree-view-indicator {
     -fx-stroke: RGB(255,148,40);

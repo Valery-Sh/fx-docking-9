@@ -24,7 +24,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * {@link DockableController#isDocked() } returns the true.
  * </p>
  * <p>
- * In the <i>floating<i> state an object of type {@code Dockable} is transformed
+ * In the <i>floating</i> state an object of type {@code Dockable} is transformed
  * when the method {@link DockableController#setFloating(boolean) }  
  * is applied to it with the parameter value equals to {#code true}.
  * </p>
@@ -32,7 +32,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  *   The {@literal dockable} node may have a title bar. The title bar may be an 
  * object of any type that extends {@code javafx.scene.layout.Region }. The class
  * provides the method {@link DockableController#createDefaultTitleBar(java.lang.String) }
- * which create a default title bar of type {@link org.vns.javafx.dock.DockTitleBar).
+ * which create a default title bar of type {@link org.vns.javafx.dock.DockTitleBar }.
  * You can replace it at any time by applying the method 
  * {@link DockableController#setTitleBar(javafx.scene.layout.Region) }. 
  * If the parameter of the method equals to {@code null} then the title bar 
@@ -119,7 +119,7 @@ public class DockableController {
      * considered as a dock target. This means that an indicator pane
      * which allows to choose a dock place appears. If {@code false} then 
      * the node can't be a dock target.
-     * @return 
+     * @return true if the {@literal  dockable} cam be used as a dock target
      */
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
@@ -153,7 +153,7 @@ public class DockableController {
     }
     /**
      * Return an object property which represents a title bar as a node.
-     * @return the property of type {@link org.vns.javafx.dock.api.properties.TitleBarProperty
+     * @return the property of type {@link org.vns.javafx.dock.api.properties.TitleBarProperty}
      */
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBar;
@@ -300,7 +300,7 @@ public class DockableController {
     }
     /**
      * Specifies whether a floating window of the node can be resized.
-     * The floating window appears when applying the method {@link DockableController#setFloating(boolean) 
+     * The floating window appears when applying the method {@link DockableController#setFloating(boolean) }
      * with the parameter value equals to {@code true}.
      * 
      * @param resizable if true the the window can be resized. false - otherwise.

@@ -34,14 +34,13 @@ public class EditorUtil {
     }
     
     public static TreeCell getCell(TreeItem<ItemValue> item) {
-        //AnchorPane ap = (AnchorPane) item.getValue().getCellGraphic();
         return (TreeCell) ((AnchorPane) item.getValue().getCellGraphic()).getParent();
     }
 
-    public static Bounds screenTreeViewBounds(TreeView treeView) {
+/*    public static Bounds screenTreeViewBounds(TreeView treeView) {
         return treeView.localToScreen(treeView.getBoundsInLocal());
     }
-    
+*/    
     public static Bounds screenTreeItemBounds(TreeItem<ItemValue> treeItem) {
         if ( treeItem.getValue().getCellGraphic().getScene() == null ) {
             return null;

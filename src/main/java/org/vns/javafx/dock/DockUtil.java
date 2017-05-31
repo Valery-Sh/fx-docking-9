@@ -152,12 +152,7 @@ public class DockUtil {
         return TopNodeHelper.getTopNode((Stage) root.getScene().getWindow(), screenX, screenY, predicate);
     }
 
-    /**
-     *
-     * @param root
-     * @param toSearch
-     * @return
-     */
+
     public static Node findNode(Parent root, Node toSearch) {
         if (toSearch == null) {
             return null;

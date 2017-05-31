@@ -4,8 +4,6 @@ import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
-import javafx.geometry.VerticalDirection;
-import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -21,18 +19,18 @@ import javafx.scene.input.TransferMode;
 public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEvent> {
 
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
-    private SceneGraphEditor editor;
+    private SceneGraphView sceneGraphView;
 
-    public TreeViewEx(SceneGraphEditor editor) {
+    public TreeViewEx(SceneGraphView editor) {
         super();
-        this.editor = editor;
+        this.sceneGraphView = editor;
         init();
-        
+
     }
 
-    public TreeViewEx(SceneGraphEditor editor, TreeItem<T> root) {
+    public TreeViewEx(SceneGraphView editor, TreeItem<T> root) {
         super(root);
-        this.editor = editor;
+        this.sceneGraphView = editor;
         init();
     }
 
@@ -41,8 +39,8 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         getStyleClass().add(LOOKUP_SELECTOR);
     }
 
-    public SceneGraphEditor getEditor() {
-        return editor;
+    public SceneGraphView getSceneGraphView() {
+        return sceneGraphView;
     }
 
     @Override
@@ -58,6 +56,15 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         boolean retval = false;
         VirtualScrollBar sb = getScrollBar();
         Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
+        if (sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
+            retval = true;
+        }
+        return retval;
+    }
+
+    private boolean isInsideTreeView(MouseEvent ev) {
+        boolean retval = false;
+        Bounds sbBounds = localToScreen(getBoundsInLocal());
         if (sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
             retval = true;
         }
@@ -84,11 +91,10 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public void handle(NodeDragEvent ev) {
 
         TreeItem<ItemValue> item = EditorUtil.findTreeItem(this, ev.getMouseEvent().getScreenX(), ev.getMouseEvent().getScreenY());
-        
+
         DragEvent dragEvent;
 
         if (isInsideScrollBar(ev.getMouseEvent())) {
-            System.err.println("isInside scrollBar");
             dragEvent = createDragEvent(ev.getMouseEvent(), DragEvent.DRAG_ENTERED,
                     ev.getGestureSource(), getScrollBar());
         } else {
@@ -108,8 +114,18 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         if (item != null) {
             System.err.println("1) DRAGEVENT TYPE = " + dragEvent.getEventType());
             item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);
-        } else {
-            System.err.println("2) DRAGEVENT TYPE = " + dragEvent.getEventType());
+/*            if (dragEvent.getEventType() == DragEvent.DRAG_DROPPED) {
+                dragEvent = createDragEvent(ev.getMouseEvent(), DragEvent.DRAG_DONE,
+                        ev.getGestureSource(),
+                        item != null ? item.getValue().getCellGraphic().getParent() : this);
+                item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);                        
+            }
+*/
+            System.err.println("2) DRAGEVENT gestureSource = " + dragEvent.getGestureSource());
+            System.err.println("3) DRAGEVENT        source = " + dragEvent.getSource());
+
+        } else if (isInsideTreeView(ev.getMouseEvent())) {
+            System.err.println("4) DRAGEVENT TYPE = " + dragEvent.getEventType());
             fireEvent(dragEvent);
         }
     }

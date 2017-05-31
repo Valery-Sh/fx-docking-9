@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.demo;
 
-import java.io.File;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -17,7 +16,6 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -34,9 +32,8 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragGesture;
 import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.SceneGraphEditor;
+import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.ItemValue;
-import static org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder.NODE_UUID;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
@@ -237,76 +234,23 @@ public class TestEditorTreeView01 extends Application {
 
         stage2.show();
 
-        SceneGraphEditor edt = new SceneGraphEditor(stackPane);
+        SceneGraphView edt = new SceneGraphView(stackPane);
         //Pane editorPane = edt.initialize(stackPane);
-        Pane editorPane = edt.getEditorPane();
-        //stackPane.setStyle("-fx-background-color: yellow");   
-        TreeView<ItemValue> tv = edt.getTreeView();
         PauseTransition pt2 = new PauseTransition(Duration.seconds(3));
         vboxBtn1.setOnAction(a -> {
-            edt.expandAllItems(tv.getRoot());
-            tv.getExpandedItemCount();
-            System.err.println("tv.getExpandedItemCount();: " + tv.getExpandedItemCount());
-            System.err.println("item 10 obj = " + tv.getTreeItem(10).getValue().getTreeItemObject());
-            pt2.setOnFinished(p -> {
-                //System.err.println("FINISHED !!!!!!!!!!!!!!");
-//                });
-                //System.err.println("555555555555555555555555555");
-
-                //tv.scrollTo(0);
-                //pt2.play();
-            });
-            //pt2.play();
-            System.err.println("START !!!!!!!!!!!!!!");
-
         });
         StackPane editorStackPane = new StackPane();
 
         //rootPane.getChildren().add(editorPane);
-        editorStackPane.getChildren().add(editorPane);
+        editorStackPane.getChildren().add(edt);
         editorStackPane.setStyle("-fx-background-color: red)");
         editorStackPane.minHeightProperty().bind(rootPane.heightProperty());
 
-        editorPane.minHeightProperty().bind(editorStackPane.heightProperty());
         rootPane.getChildren().add(editorStackPane);
 
         vboxBtn2.setOnAction(a -> {
-            editorPane.setMinWidth(editorPane.getWidth() + 20);
-            tv.setMinWidth(tv.getWidth() + 20);
-
-            Platform.runLater(() -> {
-                tv.refresh();
-                TreeItem<ItemValue> it = tv.getRoot();
-                Node arrow = ((Pane) ((TreeCell) it.getValue().getCellGraphic().getParent()).getDisclosureNode()).getChildren().get(0);
-                //Bounds b = EditorUtil.screenArrowBounds(it);
-
-            });
-
-            System.err.println("tv.getWidth=" + tv.getWidth());
-            System.err.println("tv.root.getWidth=" + ((TreeCell) tv.getRoot().getValue().getCellGraphic().getParent()).getWidth());
-            System.err.println("tv.getInsets=" + tv.getInsets());
-
         });
 
-//        TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
-//        tv.setRoot(tib1);
-        //tv.setStyle("-fx-background-color: yellow");
-        //tv.getStyleClass().add("myTree");
-        //rootTreeViewPane.getChildren().add(tv);
-        tv.relocate(5, 0);
-
-        //tv.getRoot().setExpanded(true);
-        /*        tv.setOnMouseClicked(ev -> {
-            TreeItem it = edt.getTreeItem(ev.getScreenX(), ev.getScreenY());
-            //edt.drawRectangle(tv.getRoot());
-            if ( it != null ) {
-                edt.drawRectangle(it);
-                System.err.println("it != root it.idx=" + tv.getRow(it));
-            } else {
-                edt.drawRectangle(tv.getRoot());
-            }
-        });
-         */
         Scene scene = new Scene(rootPane);
 
         stage.setTitle("Test EditorTreeView");
@@ -320,27 +264,8 @@ public class TestEditorTreeView01 extends Application {
         });
 
         doAccept.setOnAction(a -> {
-            TreeItem item = tv.getTreeItem(2);
-            vbox.getChildren().forEach(c -> {
-                //System.err.println("VBOX c = " + c);
-            });
-
-            //System.err.println("tv.getChildren().size=" + tv.getRoot().getParent());            
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[0]);
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[1]);            
-            //System.err.println("BOUNDS[] = " + edt.levelBoundsOf(item)[2]);            
         });
         stage.setOnShown(ev -> {
-            //DockUtil.print(editorPane);
-/*            TreeItem<ItemValue> tib1 = edt.createSceneGraph(stackPane);
-            tv.setRoot(tib1);
-            //tv.setStyle("-fx-background-color: yellow");
-            tv.getStyleClass().add("myTree");
-            editorPane.getChildren().add(tv);
-            tv.relocate(5, 0);
-            tv.getRoot().setExpanded(true);
-             */
-            rootPane.minHeightProperty().bind(rootPane.getScene().heightProperty());
         });
         stage.show();
         VBox nvb1 = new VBox(nlb1);
@@ -351,7 +276,7 @@ public class TestEditorTreeView01 extends Application {
         nstage1.setY(10);
 
         bb1.setOnMousePressed(e -> {
-// Make sure the node is not picked
+
             bb1.setMouseTransparent(true);
             System.err.println("Source: Mouse pressed");
         });
@@ -381,21 +306,6 @@ public class TestEditorTreeView01 extends Application {
         bb2.setOnMouseDragOver(e -> System.err.println("Target: drag over " + e.getGestureSource() + "; e.getSource=" + e.getSource()));
         vboxBtn1.setOnMouseDragOver(e -> System.err.println("Target: drag over " + e));
         dragButton.setOnMouseClicked(ev -> {
-            //Dragboard dragboard = bb1.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(NODE_UUID);
-            //dragboard.setContent(content);
-            Bounds bsc = tv.localToScene(tv.getBoundsInLocal());
-            Bounds bscr = tv.localToScreen(tv.getBoundsInLocal());
-            DragEvent de= new DragEvent(DragEvent.ANY, null, bsc.getMinX(),bsc.getMinY() ,bscr.getMinX() ,bscr.getMinY(), TransferMode.MOVE, dragButton, null, null);
-            tv.fireEvent(de);
-            
-            TreeCell cell = (TreeCell) tv.getRoot().getValue().getCellGraphic().getParent();
-            bsc = cell.localToScene(cell.getBoundsInLocal());
-            bscr = cell.localToScreen(cell.getBoundsInLocal());
-            de= new DragEvent(DragEvent.ANY, null, bsc.getMinX(),bsc.getMinY() ,bscr.getMinX() ,bscr.getMinY(), TransferMode.MOVE, dragButton, null, null);
-            cell.fireEvent(de);
-            
         });
         dragButton.setOnMouseDragOver(e -> System.err.println("DragButton Target: drag over"));
         bb2.setOnDragOver(ev -> {

@@ -33,8 +33,10 @@ import javafx.stage.Stage;
  * visible on screen, then it can be used to perform mouse dragging.
  * <p>
  * The object of type {@code Dockable} has a method {@link DockableController#setDragNode(javafx.scene.Node)
- * }. The {@code Node } which has been set by the method may be used to drag the  {@literal dockable> in the same manner as the title bar is used. Thus, both 
- * objects, such as a title bar and a drag node can be used to perform dragging.
+ * }. The {@code Node } which has been set by the method may be used to 
+ * drag the  {@literal dockable} in the same manner as the title bar is used. 
+ * Thus, both objects, such as a title bar and a drag node can be used to 
+ * perform dragging.
  *
  * </p>
  * @author Valery Shyshkin
@@ -404,10 +406,10 @@ public class DragManager implements EventHandler<MouseEvent> {
      * The implementation of the interface {@code EventHandler<MouseEvent> }.
      * Depending of the event type invokes one of the methods
      * <ul>
-     * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}<li>
+     * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}</li>
      * <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }
-     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)<li>
-     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)<li>
+     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)}</li>
+     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)}</li>
      * </ul>
      *
      * @param ev the event that describes the mouse events.

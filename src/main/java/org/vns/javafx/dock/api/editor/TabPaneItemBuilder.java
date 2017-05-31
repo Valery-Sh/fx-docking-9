@@ -3,7 +3,6 @@ package org.vns.javafx.dock.api.editor;
 import java.util.List;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
 
 /**
  *

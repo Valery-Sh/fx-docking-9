@@ -44,7 +44,7 @@ public abstract class DockTargetController {
      * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
      * in the future
      *
-     * @return
+     * @return the title
      */
     public String getTitle() {
         if (title != null) {
@@ -63,7 +63,7 @@ public abstract class DockTargetController {
      * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
      * in the future
      *
-     * @return
+     * @param title the text used as a title
      */
     public void setTitle(String title) {
         this.title = title;

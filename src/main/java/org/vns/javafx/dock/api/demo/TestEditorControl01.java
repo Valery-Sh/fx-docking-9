@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
@@ -5,7 +10,6 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,13 +22,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -35,14 +33,10 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.DragGesture;
-import org.vns.javafx.dock.api.editor.DragNodeGesture;
-import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.ItemValue;
-import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.NodeDragEvent;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
-import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
+import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.TreeViewEx;
 import org.vns.javafx.dock.api.editor.TreeViewExSkin;
 
@@ -50,7 +44,7 @@ import org.vns.javafx.dock.api.editor.TreeViewExSkin;
  *
  * @author Valery
  */
-public class TestEditorTreeView02 extends Application {
+public class TestEditorControl01 extends Application {
 
     private Line vertLine = new Line();
     private Button dragButton;
@@ -112,11 +106,6 @@ public class TestEditorTreeView02 extends Application {
         tab21.setContent(tabContent21);
 
         Button tabContent2 = new Button("btn of Tab2");
-        tabContent2.setOnAction(v -> {
-
-            System.err.println("tabContent2.getParent=" + tabContent2.getParent());
-        });
-
         tab2.setContent(tabContent2);
         tabPane.getTabs().add(tab2);
 
@@ -126,23 +115,9 @@ public class TestEditorTreeView02 extends Application {
         VBox vbox2 = new VBox();
         vbox2.setId("vbox2");
         Button vbox2b1 = new Button("vbox2 b1");
-        vbox2b1.setOnAction(a -> {
-            System.err.println("vbox1 has scene  ");
-
-        });
         vbox2.getChildren().add(vbox2b1);
         Button vbox2b2 = new Button("vbox2 b2");
         vbox2.getChildren().add(vbox2b2);
-        TreeView tt = new TreeView() {
-            public void v() {
-
-            }
-        };
-
-        vbox2b2.setOnAction(a -> {
-            System.err.println("vbox1 has scene  " + vbox2b1.getScene());
-
-        });
 
         vbox2.getChildren().add(new Button("vbox2 b3"));
         vbox2.getChildren().add(new Button("vbox2 b4"));
@@ -156,33 +131,6 @@ public class TestEditorTreeView02 extends Application {
         Button vboxBtn1 = new Button("vbox btn1");
         vboxBtn1.setId("vboxBtn1");
         vbox.getChildren().add(vboxBtn1);
-/*        vboxBtn1.setOnDragDetected(ev -> {
-            Dragboard dragboard = vboxBtn1.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            DragGesture dg = new DragNodeGesture(vboxBtn1);
-            ((DragNodeGesture) dg).setSourceGestureObject(vboxBtn1);
-            vboxBtn1.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(NODE_UUID);
-//            content.put(DataFormat.PLAIN_TEXT, "dragButton");
-            dragboard.setContent(content);
-            ev.consume();
-//            mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
-        });
-*/
-        vboxBtn1.setOnDragDetected(ev -> {
-            Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            DragGesture dg = new DragNodeGesture(vboxBtn1);
-            dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(NODE_UUID);
-//            content.put(DataFormat.PLAIN_TEXT, "dragButton");
-            dragboard.setContent(content);
-            ev.consume();
-            
-        });
-
         Button vboxBtn2 = new Button("vbox btn2");
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
@@ -206,59 +154,26 @@ public class TestEditorTreeView02 extends Application {
 
         rootPane.getChildren().add(dragButton);
 
-        this.dragButton.setOnDragDetected(ev -> {
-            System.err.println("isStill = " + ev.isStillSincePress());
-            System.err.println("isSynth = " + ev.isSynthesized());
-            Dragboard dragboard = dragButton.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            Tab tab = new Tab("New Tab 1");
-            DragGesture dg = new DragNodeGesture(dragButton, tab);
-            System.err.println("App dragButton ");
-            dragButton.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
 
-            
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(NODE_UUID);
-//            content.put(DataFormat.PLAIN_TEXT, "dragButton");
-            dragboard.setContent(content);
-            ev.consume();
-//            mpt = new Point2D(Double.MAX_VALUE, Double.MAX_VALUE);
-        });
-
-/*        rootPane.setOnDragOver(ev -> {
-
-            if (ev.getDragboard().hasString()) {
-                long x = Math.round(ev.getX());
-                long y = Math.round(ev.getY());
-                Point2D p = new Point2D(x, y);
-
-                if (!p.equals(mpt)) {
-                    System.err.println("1 rootPane.setOnDragOver " + ev.getX() + "; " + ev.getY());
-//                    mpt = p;
-                }
-                ev.acceptTransferModes(TransferMode.COPY);
-            }
-            ev.consume();
-        });
-*/        
-        SceneGraphView edt = new SceneGraphView(stackPane);
-        //Pane editorPane = edt.initialize(stackPane);
-        
-        //stackPane.setStyle("-fx-background-color: yellow");   
-        vboxBtn1.setOnAction(a -> {
-            
-        });
-        vboxBtn2.setOnMouseClicked(a -> {
-            System.err.println("Button vboxbtn2 clicked");
-        });
-        
-        dragButton.setOnMouseClicked(ev -> {
-        });
+        //SceneGraphView graphView = new SceneGraphView(stackPane);
+        SceneGraphView graphView = new SceneGraphView();
         
         StackPane editorStackPane = new StackPane();
-
+        Scene tvScene = new Scene(graphView);
+        Label statusBar = new Label("It is STAUS BAR");
+        graphView.setStatusBar(statusBar);
         
-        //editorPane.minHeightProperty().bind(editorStackPane.heightProperty());
-        Scene tvScene = new Scene(edt);
+        vboxBtn1.setOnAction(a -> {
+            if ( graphView.getRootNode() == stackPane ) {
+                graphView.setRootNode(vbox);
+                graphView.setStatusBar(null);
+            } else {
+                graphView.setRootNode(stackPane);
+            }
+        });
+        
+        
+        
         Stage tvStage = new Stage();
         tvStage.setHeight(300);
         tvStage.setWidth(300);
@@ -266,9 +181,6 @@ public class TestEditorTreeView02 extends Application {
         tvStage.setScene(tvScene);
         
         rootPane.getChildren().add(editorStackPane);
-
-        vboxBtn2.setOnAction(a -> {
-        });
 
         Scene scene = new Scene(rootPane);
 
@@ -283,10 +195,24 @@ public class TestEditorTreeView02 extends Application {
         });
 
         stage.setOnShown(ev -> {
-            rootPane.minHeightProperty().bind(rootPane.getScene().heightProperty());
+//            rootPane.minHeightProperty().bind(rootPane.getScene().heightProperty());
         });
+        //edt.prefHeightProperty().bind(tvStage.heightProperty());
+        //edt.prefHeightProperty().bind(graphView.heightProperty());
+        graphView.setStyle("-fx-background-color: yellow");
         stage.show();
         tvStage.show();
+        //edt.windowShown(null);
+/*        System.err.println("graphView maxW = " + graphView.getWidth());
+        System.err.println("graphView maxH = " + graphView.getHeight());
+        System.err.println("--------");
+        System.err.println("tv maxW = " + graphView.getTreeView().getWidth());
+        System.err.println("tv maxH = " + graphView.getTreeView().getHeight());
+        System.err.println("--------");
+        
+        System.err.println("pane maxW = " + graphView.getTreeViewPane().getWidth());
+        System.err.println("pane maxH = " + graphView.getTreeViewPane().getHeight());
+*/        
         VBox nvb1 = new VBox(nlb1);
         Scene nscene = new Scene(nvb1);
         Stage nstage1 = new Stage();
@@ -297,16 +223,9 @@ public class TestEditorTreeView02 extends Application {
         doAccept.setId("do-accept");
         doAccept.getStyleClass().add("do-accept-class");
         doAccept.getStyleClass().add("uuid-f53db037-2e33-4c68-8ffa-06044fc10f81");
-        vboxBtn2.addEventHandler(NodeDragEvent.NODE_DRAG, new EventHandler<NodeDragEvent>(){
-            @Override
-            public void handle(NodeDragEvent event) {
-                System.err.println("Button vboxBtn2 NodeDragEvent handler " + vboxBtn2.getScene().lookup("#do-accept"));
-                System.err.println("    --- 1 NodeDragEvent handler " + vboxBtn2.getScene().lookup(".do-accept-class"));
-                System.err.println("    --- 2 NodeDragEvent handler " + vboxBtn2.getScene().getRoot().lookup(".do-accept-class"));
-                System.err.println("    --- 3 NodeDragEvent handler " + vboxBtn2.getScene().getRoot().lookup(".uuid-f53db037-2e33-4c68-8ffa-06044fc10f81"));
-                
-            }
+        vboxBtn2.setOnAction(a -> {
         });
+        
         
         doAccept.setOnAction(a -> {
             //NodeDragEvent de = new NodeDragEvent(null);
@@ -354,3 +273,4 @@ public class TestEditorTreeView02 extends Application {
     }
 
 }
+

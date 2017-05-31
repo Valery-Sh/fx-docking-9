@@ -23,34 +23,38 @@ import org.vns.javafx.dock.DockUtil;
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link Dockable} or {@link DockPaneTarget}. The position of
+ * object of type {@link Dockable} or {@link DockTarget}. The position of
  * the target object is set as a value of type {@code javafx.geometry.Side} the
- * object is given enum type Side and can take one of the values: Side.TOP,
+ * object is given {@literal  enum} type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
  * Most of the work with the object of the class is done in the method 
  * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the
  * mouse cursor resides above the {@code dockable node} then {@code DragPoup}
  * provides two panes of position indicators:
- * <ul>
- * <li>The pane of indicators for the {@code dockable} node</li>
- * <li>The pane of indicators for the {@code DockPaneTarget} object which is a
- * parent of the {@code dockable node} mentioned above
- * </li>
- * </ul>
  * </p>
+ * <ul>
+ *    <li>The pane of indicators for the {@code dockable} node</li>
+ *    <li>The pane of indicators for the {@code DockPaneTarget} object which is a
+ *        parent of the {@code dockable node} mentioned above
+ *    </li>
+ * </ul>
+ * 
+ * <p>
  * If the mouse cursor resides above the {@code DockPaneTarget} then
  * {@code DragPoup} provides a single pane of position indicators.
- * <p>
+ * 
  * Each pane generally comprises four indicators which are objects of type
  * Button. Every button is located on the top, right, bottom side of the
  * indicator pane. As noted above, the position of the button is determined in
  * terms of {@code enum Side} type.
  * </p>
+ * <p>
  * When the user moves the mouse cursor and the cursor intersects one of the
  * buttons of the indicator pane, the rectangular area is displayed. This area
  * points to the position of the dragged object in case the user releases the
  * mouse button.
+ * </p>
  * <p>
  * While dragging the object {@code Dockable} the drag manager object defines
  * the cursor position and calculates the object type {@code DockPaneTarget},
@@ -132,7 +136,7 @@ public class DragPopup extends IndicatorPopup {
 
     /**
      * Returns an object of type {@link SideIndicator} to display indicators for
-     * an object of type {@link DockPaneTarget}.
+     * an object of type {@link DockTarget}.
      *
      * @return Returns an object of type {@code SideIndicator}
      */
@@ -162,7 +166,7 @@ public class DragPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns an object of type {@link Dockable} or {@link DockPaneTarget}
+     * Returns an object of type {@link Dockable} or {@link DockTarget}
      * depending on the user selection or null if no object has been selected.
      *
      * @return a target object to dock to or null.

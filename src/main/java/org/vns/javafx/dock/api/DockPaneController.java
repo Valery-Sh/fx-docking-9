@@ -83,9 +83,9 @@ public class DockPaneController extends DockTargetController {
     }
     /**
      * The method does nothing.
-     * @param mousePos
-     * @param node
-     * @return 
+     * @param mousePos the mouse pos
+     * @param node the node to be docked
+     * @return true if the method execution was successful
      */
     @Override
     protected boolean doDock(Point2D mousePos, Node node) {

@@ -91,15 +91,17 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
      * } if one of the following conditions is not satisfied:
      * <ul>
      * <li>The method
-     * {@link #isAcceptable(java.lang.Object) returns {@literal false}</li>
+     * {@link #isAcceptable(java.lang.Object)} returns {@literal false} }
+     * </li>
      * <li>The specified {@literal target} has children. This means that the
      *        {@literal Labeled} node has already it's {@literal  graphic}
-     *         value set to not null value   </li>
+     *         value set to not null value   
+     * </li>
      * </ul>
      *
      * @param target the TreeItem object witch corresponds to the 
      *           {@literal  Labeled node}.
-     * @param obj an object to be checked
+     * @param gestureSource an object to be checked
      * @return true if the parameter value is not null and is an instance of
      * Node and the specified target doesn't have children
      */

@@ -202,7 +202,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return Returns <tt>null</tt>, since returning the previous value would
      * require an unnecessary call to the getter method.
      *
-     * @throws PropertyNotFoundException If the given property does not exist or
      * is read-only.
      */
     @Override
@@ -270,6 +269,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Returns the property model for the given property.
      *
+     * @param <T>  specifies
      * @param key The property name.
      *
      * @return The named property model, or <tt>null</tt> if no such property
@@ -288,6 +288,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Returns the type of a property.
      *
      * @param key The property name.
+     * @return the type
      */
     public Class<?> getType(String key) {
         if (key == null) {
@@ -303,6 +304,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Returns the generic type of a property.
      *
      * @param key The property name.
+     * @return the object 
+     * 
      */
     public Type getGenericType(String key) {
         if (key == null) {
@@ -334,8 +337,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Coerces a value to a given type.
      *
-     * @param value
-     * @param type
+     * @param <T> ??
+     * @param value??
+     * @param type ??
      *
      * @return The coerced value.
      */
@@ -474,6 +478,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Invokes the static getter method for the given property.
      *
+     * @param <T> ???
      * @param target The object to which the property is attached.
      *
      * @param sourceType The class that defines the property.
@@ -509,7 +514,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #coerce(Object, Class)} method is used to attempt to convert the
      * value to the actual property type (defined by the return value of the
      * getter method).
-     *
+     * throws PropertyNotFoundException If the given static property does not
+     * exist or is read-only.     * 
      * @param target The object to which the property is or will be attached.
      *
      * @param sourceType The class that defines the property.
@@ -518,8 +524,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * @param value The new property value.
      *
-     * @throws PropertyNotFoundException If the given static property does not
-     * exist or is read-only.
+     * 
      */
     public static void put(Object target, Class<?> sourceType, String key, Object value) {
         Class<?> targetType = target.getClass();
@@ -547,9 +552,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         // Invoke the setter
         try {
             MethodUtil.invoke(setterMethod, null, new Object[]{target, value});
-        } catch (InvocationTargetException exception) {
-            throw new RuntimeException(exception);
-        } catch (IllegalAccessException exception) {
+        } catch (InvocationTargetException | IllegalAccessException exception) {
             throw new RuntimeException(exception);
         }
     }
@@ -563,8 +566,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * @param targetType The type of the object to which the property applies.
      *
-     * @return
-     * <tt>true</tt> if the property exists; <tt>false</tt>, otherwise.
+     * @return  <tt>true</tt> if the property exists; <tt>false</tt>, otherwise.
      */
     public static boolean isDefined(Class<?> sourceType, String key, Class<?> targetType) {
         return (getStaticGetterMethod(sourceType, key, targetType) != null);
@@ -592,6 +594,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param key The property name.
      *
      * @param targetType The type of the object to which the property applies.
+     * @return ???
      */
     public static Type getGenericType(Class<?> sourceType, String key, Class<?> targetType) {
         Method getterMethod = getStaticGetterMethod(sourceType, key, targetType);
@@ -602,6 +605,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Determines the type of a list item.
      *
      * @param listType
+     * @return ???
      */
     public static Class<?> getListItemType(Type listType) {
         Type itemType = getGenericListItemType(listType);
@@ -616,7 +620,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Determines the type of a map value.
      *
-     * @param mapType
+     * @param mapType ???
+     * @return ???
      */
     public static Class<?> getMapValueType(Type mapType) {
         Type valueType = getGenericMapValueType(mapType);
@@ -631,7 +636,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Determines the type of a list item.
      *
-     * @param listType
+     * @param listType ??
+     * @return ??
      */
     public static Type getGenericListItemType(Type listType) {
         Type itemType = null;
@@ -683,7 +689,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Determines the type of a map value.
      *
-     * @param mapType
+     * @param mapType ???
+     * @return ???
      */
     public static Type getGenericMapValueType(Type mapType) {
         Type valueType = null;
@@ -738,6 +745,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param type The type that defines the constant.
      *
      * @param name The name of the constant.
+     * @return ???
      */
     public static Object getConstantValue(Class<?> type, String name) {
         if (type == null) {

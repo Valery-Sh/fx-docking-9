@@ -36,7 +36,7 @@ public class DockNode extends TitledPane implements Dockable {
     }
 
     private void init(String id, String title) {
-        this.setContent(new StackPane());
+        setContent(new StackPane());
         contentProperty().addListener(this::contentChanged);
         getStyleClass().add("dock-node");
         dockableController = new DockableController(this);

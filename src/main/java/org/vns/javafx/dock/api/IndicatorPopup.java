@@ -29,13 +29,14 @@ import org.vns.javafx.dock.DockUtil;
  * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the
  * mouse cursor resides above the {@code dockable node} then {@code DragPoup}
  * provides two panes of position indicators:
+ * </P>
  * <ul>
  * <li>The pane of indicators for the {@code dockable} node</li>
  * <li>The pane of indicators for the {@code DockPaneTarget} object which is a
  * parent of the {@code dockable node} mentioned above
  * </li>
  * </ul>
- * </p>
+ * 
  * If the mouse cursor resides above the {@code DockPaneTarget} then
  * {@code DragPoup} provides a single pane of position indicators.
  * <p>

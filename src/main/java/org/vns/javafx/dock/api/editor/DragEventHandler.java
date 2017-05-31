@@ -15,33 +15,31 @@ import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
  * This is the base class intended for implementing the handlers of the event
  * {@code DragEvent}.
  *
- * @see TreeItemCellDragEventHandler
- * @see TreeViewDragEventHandler*
  *
  * @author Valery
  */
 public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
-    private final SceneGraphEditor editor;
+    private final SceneGraphView editor;
     private final TreeCell dragTargetCell;
 
     /**
      * Creates a new instance of the class for the specified object of type
-     * {@link SceneGraphEditor} and an instance of {@code TreeCell}.
+     * {@link SceneGraphView} and an instance of {@code TreeCell}.
      *
      * @param editor the object of type SceneGraphEdotor
      * @param targetCell the cell this object is creating for
      */
-    protected DragEventHandler(SceneGraphEditor editor, TreeCell targetCell) {
+    protected DragEventHandler(SceneGraphView editor, TreeCell targetCell) {
         this.editor = editor;
         this.dragTargetCell = targetCell;
     }
 
     /**
      * Returns a tree item which is an actual target of a drag gesture.
-     * Delegates the execution to the eponymous one {@link SceneGraphEditor#getTargetTreeItem(javafx.scene.input.DragEvent, javafx.scene.control.TreeItem)
+     * Delegates the execution to the eponymous one {@link SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, javafx.scene.control.TreeItem)}
      *
-     * @param ev the event of type {@code DragEvent}
+     * @param ev the event of type {@code DragEvent }
      * @return a tree item which is an actual target of a drag gesture.
      */
     protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev) {
@@ -56,12 +54,13 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * been initiated.
      *
      * The method uses the source's properties collection to extract an object
-     * of type {@link DragGesture} and then applies the method      {@link DragGesture#getGestureSourceObject() ) to it.
+     * of type {@link DragGesture} and then applies the method 
+     * {@link DragGesture#getGestureSourceObject() } to it.
      *
      * @param ev the event object of type DragEvent
-     * @return the object whick serves as a gesture source object.
+     * @return the object which serves as a gesture source object.
      */
-    protected Object getGestureSourceObject(DragEvent ev) {
+    public static Object getGestureSourceObject(DragEvent ev) {
         Object o = ev.getGestureSource();
 
         if (o == null) {
@@ -107,7 +106,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * gesture</i> cannot be done and a <i>simple press-drag-release</i> was
      * used. In this case the method assumes that an object of type {@code Node}
      * but not a {@code TreeCell} of the editor's {@code Treeview} is dragged
-     * and invokes the method {@link #isSupportedDragSource(javafx.scene.Node).
+     * and invokes the method {@link #isSupportedDragSource(javafx.scene.Node)}.
      *
      * @param ev the processed event
      * @return true is the specified event can be accepted/ false otherwise
@@ -143,14 +142,14 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
     /**
      * Checks whether the given event can be accepted and consumed by the event
-     * handler. Fist invokes the method      {@link #isSupportedDragSource(javafx.scene.input.DragEvent) and if 
+     * handler. Fist invokes the method      {@link #isSupportedDragSource(javafx.scene.input.DragEvent)} and if 
      * the resukt is {@code false} then returns the {@code false }.
      * Defines the target {@code TreeItem} which is an actual item which
      * must accept the dragged object. If the target is {@code null} then
      * returns false. Then finds a builder of type
      * {@link TreeItemBuilder } for the target  and then it returns the result
      * of applying the
-     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, javafx.scene.control.TreeItem, javafx.scene.control.TreeItem, java.lang.Object)
+     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, javafx.scene.control.TreeItem, javafx.scene.control.TreeItem, java.lang.Object) }
      * method to this object.
      *
      * @param ev the processed event
@@ -183,7 +182,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      */
     protected boolean isRectangleIndicator(DragEvent ev, TreeItem<ItemValue> place) {
         boolean retval = false;
-        Bounds[] bounds = getEditor().levelBoundsOf(place);
+        Bounds[] bounds = getEditor().getDragIndicator().levelBoundsOf(place);
         int n = -1;
         for (int i = 0; i < bounds.length; i++) {
             if (bounds[i].contains(ev.getScreenX(), ev.getScreenY())) {
@@ -210,23 +209,23 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @param ev the processed event
      */
     protected void drawIndicator(DragEvent ev) {
-        getEditor().hideDrawShapes();
+        getEditor().getDragIndicator().hideDrawShapes();
         TreeItem<ItemValue> fromItem = getTargetTreeItem(ev);
         TreeItem toItem = getTreeCellItem();
         if (fromItem == toItem && isRectangleIndicator(ev, toItem)) {
-            getEditor().drawRectangle(toItem);
+            getEditor().getDragIndicator().drawRectangle(toItem);
         } else {
-            getEditor().drawLines(fromItem, toItem);
+            getEditor().getDragIndicator().drawLines(fromItem, toItem);
         }
 
     }
 
     /**
-     * Return an object of type {@link SceneGraphEditor }.
+     * Return an object of type {@link SceneGraphView }.
      *
-     * @return an object of type {@link SceneGraphEditor }.
+     * @return an object of type {@link SceneGraphView }.
      */
-    public SceneGraphEditor getEditor() {
+    public SceneGraphView getEditor() {
         return editor;
     }
 

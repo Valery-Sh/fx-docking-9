@@ -2,7 +2,7 @@ package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
+import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 
 /**
  * An Instance of the class is used as a {@code value} property of the
@@ -77,10 +77,7 @@ public class ItemValue {
         this.title = title;
     }
 
-    /**
-     * 
-     * @return 
-     */
+
     public TreeItemBuilder getBuilder() {
         TreeItemBuilder builder;
         if (isPlaceholder() && treeItemObject == null) {
@@ -111,9 +108,9 @@ public class ItemValue {
      * <p>
      * To display objects of type {@code TreeItem}, the {@code graphic} property 
      * of a node of type {code TreeCell} is used. The method 
-     * {@link TreeItemBuilder#createItem(java.lang.Object, java.lang.Object...)
+     * {@link TreeItemBuilder#createItem(java.lang.Object, java.lang.Object...)}
      * creates the mentioned node and stores it as a value of the property 
-     * {@code cellGraphic) of this class. Later when an object of type {@TreeCell} 
+     * {@code cellGraphic} of this class. Later when an object of type {@code TreeCell} 
      * will be created it becomes possible to assign the saved value to 
      * {@code graphic} property of the cell. It is a callback parameter of the 
      * method {@code setCellFactory} where all this stuff can be done.

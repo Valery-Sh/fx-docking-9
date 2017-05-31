@@ -158,12 +158,7 @@ public class FloatStageResizer {
     public static Cursor cursorBy(MouseEvent ev, double width, double height, double left, double right, double top, double bottom) {
         return cursorBy(ev.getX(), ev.getY(), width, height, left, right, top, bottom);
     }
-    /**
-     * !!!!!!!!!
-     * @param ev
-     * @param r
-     * @return 
-     */
+
     public static Cursor cursorBy(MouseEvent ev, Region r) {
         double x, y, w, h;
         

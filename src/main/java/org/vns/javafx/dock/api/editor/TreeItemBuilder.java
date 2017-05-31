@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import static org.vns.javafx.dock.api.editor.SceneGraphEditor.ANCHOR_OFFSET;
+import static org.vns.javafx.dock.api.editor.SceneGraphView.ANCHOR_OFFSET;
 
 /**
  *
@@ -79,7 +79,7 @@ public interface TreeItemBuilder {
      * @param treeView the treeView/ Cannot be null
      * @param target the item which is an actual target item to accept a dragged
      * object
-     * @param place the item which is a gesture target during the drag&drop
+     * @param place the item which is a gesture target during the drag-and-drop
      * operation
      * @param dragObject an object which is an actual object to be accepted by
      * the target item.

@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api.editor;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
@@ -46,6 +47,7 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
     }
 
     protected void registerMouseReleased(Node source) {
+        source.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
         source.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
     }
 
@@ -59,6 +61,7 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
     }
     public NodeDragManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenNodeRemover remover) {
         registerMousePressed(source);
+        
         registerMouseReleased(source);
         if (gestureSourceObject != null) {
             registerMouseDragDetected(source, gestureSourceObject, remover);
@@ -82,8 +85,8 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      * <ul>
      * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}<li>
      * <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }
-     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)<li>
-     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)<li>
+     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)}<li>
+     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent) }<li>
      * </ul>
      *
      * @param ev the event that describes the mouse events.
@@ -133,21 +136,17 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      */
     public void mouseDragged(MouseEvent ev) {
         if (ev.isPrimaryButtonDown()) {
-            System.err.println("MOUSE DRAGGED");
 
             TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
             if (tv == null) {
-                System.err.println("TREEVIEW FOUND " + tv);
                 return;
             }
-            System.err.println("MOUSE DRAGGED before find");
             tv.fireEvent(new NodeDragEvent(ev));
 
-            System.err.println("====== ev getSource=" + ev.getSource());
             ev.consume();
         }
     }
-
+static int cc = 0;
     /**
      * The method is called when a user releases the mouse button.
      *
@@ -157,12 +156,11 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      * @param ev the event that describes the mouse events.
      */
     public void mouseReleased(MouseEvent ev) {
-        System.err.println("MOUSE RELEASED");
+        System.err.println("MOUSE RELEASED " + (cc++));
 
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
-        if (tv != null) {
+        if (tv != null && ! ev.isConsumed()) {
             tv.fireEvent(new NodeDragEvent(ev));
-            ev.consume();
         }
 
         Node source = (Node) ev.getSource();
@@ -170,6 +168,7 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
         source.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
         source.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         source.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
+        ev.consume();
 
         //Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
     }

@@ -5,13 +5,12 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Pane;
-import static org.vns.javafx.dock.api.editor.SceneGraphEditor.FIRST;
+import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 
 /**
  *
  * @author Valery
- * @param <T>
+ * @param <T> the parameter
  */
 public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeItemBuilder {
 
@@ -133,6 +132,9 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
 
         System.err.println("accept target = " + target.getValue().getTreeItemObject());
         System.err.println("accept place  = " + place.getValue().getTreeItemObject());
+            for ( Object o : getList(target) ) {
+                System.err.println("   0) ---  child = " + o);
+            }
 
         if (target != null && place != null && value != null) {
             int idx = getIndex(treeView, target, place, value);
@@ -160,16 +162,19 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
                     }
                 }
             }
-            System.err.println("1) ACCEPT idx=" + idx + "; size=" + getList(target).size());
             
             idx = getIndex(treeView, target, place);
             retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-            target.getChildren().add(idx, retval);
-            getList(target).add(idx, value);
-            System.err.println("2) ACCEPT idx=" + idx + "; size=" + getList(target).size() + "; list=" + getList(target));
-            int sz = ((Pane)target.getValue().getTreeItemObject()).getChildren().size();
-            System.err.println("3) ACCEPT pane.size=" +sz);
+            for ( Object o : getList(target) ) {
+                System.err.println("   1 ---  child = " + o);
+            }
             
+            target.getChildren().add(idx, retval);
+            System.err.println("ACCEPT idx = " + idx + "; value = " + value + "; target.obj=" + target.getValue().getTreeItemObject());
+            for ( Object o : getList(target) ) {
+                System.err.println("   ---  child = " + o);
+            }
+            getList(target).add(idx, value);
         }
         return retval;
     }
