@@ -1,8 +1,6 @@
 package org.vns.javafx.dock.api.editor;
 
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
@@ -21,8 +19,6 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      */
     protected void mouseDragDetected(MouseEvent ev) {
         if (ev.isPrimaryButtonDown()) {
-            System.err.println("MOUSE DRAG DETECTED");
-
             ev.consume();
             return;
         }
@@ -94,10 +90,8 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            System.err.println("BEFORE 1");
             mousePressed(ev);
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            System.err.println("BEFORE 2");
             mouseDragDetected(ev);
         } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             mouseDragged(ev);
@@ -114,7 +108,6 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      */
     protected void mousePressed(MouseEvent ev) {
         if (ev.isPrimaryButtonDown()) {
-            System.err.println("MOUSE PRESSED");
             ev.consume();
             return;
         }
@@ -156,8 +149,6 @@ static int cc = 0;
      * @param ev the event that describes the mouse events.
      */
     public void mouseReleased(MouseEvent ev) {
-        System.err.println("MOUSE RELEASED " + (cc++));
-
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
         if (tv != null && ! ev.isConsumed()) {
             tv.fireEvent(new NodeDragEvent(ev));

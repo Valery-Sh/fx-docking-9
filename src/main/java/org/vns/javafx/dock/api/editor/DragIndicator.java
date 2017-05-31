@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.editor;
 
 import javafx.geometry.BoundingBox;
@@ -34,16 +29,12 @@ public class DragIndicator {
     private final Line vertLine = new Line();
     private final Line horLine = new Line();
     private final Rectangle itemRect = new Rectangle();
-    private DragIndicator dragIndicator;
     
     private final Pane indicatorPane = new Pane();    
     
     public DragIndicator(SceneGraphView sceneGraphView) {
         this.sceneGraphView = sceneGraphView;
         this.treeView = (TreeViewEx<ItemValue>) sceneGraphView.getTreeView();
-    }
-/*    protected TreeItem<ItemValue> findTreeItem(Object sourceGesture) {
-        return findTreeItem(treeView.getRoot(), sourceGesture);
     }
 
     protected TreeItem<ItemValue> findTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
@@ -60,7 +51,7 @@ public class DragIndicator {
         }
         return retval;
     }
-*/
+
     public void initIndicatorPane() {
         indicatorPane.setMouseTransparent(true);
         indicatorPane.getChildren().addAll(horLine, vertLine, itemRect);
@@ -137,7 +128,6 @@ public class DragIndicator {
         Bounds vBnd = screenValueBounds(item);
         Bounds itBnd = screenTreeItemBounds(item);
         if (itBnd == null) {
-            System.err.println("screenNonValueBounds NULL item obj = " + item.getValue().getTreeItemObject());
             return null;
         }
         return new BoundingBox(itBnd.getMinX(), itBnd.getMinY(), itBnd.getWidth() - vBnd.getWidth(), itBnd.getHeight());
@@ -254,25 +244,15 @@ public class DragIndicator {
 
     protected TreeItem getParentTarget(TreeItem item, int targetLevel) {
         TreeItem<ItemValue> retval = null;
-        //int level = treeView.getTreeItemLevel(item);
-        //
-        // n < level - 1
-        //
         TreeItem<ItemValue> it = item;
         int n = targetLevel;
         int row = treeView.getRow(it);
-
-        //System.err.println("exp item count = " + treeView.getExpandedItemCount());
-        //System.err.println("n = " + n + "    --- lev = " + treeView.getTreeItemLevel(treeView.getTreeItem(row + 1)) );
         TreeItem<ItemValue> next = treeView.getTreeItem(row + 1);
         int nextRowLevel = 0;
         if (next != null) {
-            //System.err.println("next obj = " + next.getValue().getTreeItemObject());
             nextRowLevel = treeView.getTreeItemLevel(treeView.getTreeItem(row + 1));
         } else {
-            //System.err.println(" set to n = " + n);
             retval = parentAtLevel(item, n);
-            //System.err.println("RETVAL obj=" + retval.getValue().getTreeItemObject());
             return parentAtLevel(item, n);
         }
 
@@ -300,30 +280,23 @@ public class DragIndicator {
     protected void drawRectangle(TreeItem item) {
         hideDrawShapes();
         Bounds lb = EditorUtil.screenTreeItemBounds(item);
-        //System.err.println("LB = " + lb);
         if (lb == null) {
             return;
         }
 
         lb = sceneGraphView.getTreeViewPane().screenToLocal(lb);
-        //System.err.println("LB1 = " + lb);
 
         itemRect.setX(lb.getMinX());
         itemRect.setY(lb.getMinY());
         itemRect.setWidth(lb.getWidth());
         itemRect.setHeight(lb.getHeight());
 
-        //System.err.println("itemrect X=" + itemRect.getX() + "; Y=" + itemRect.getY());
         itemRect.toFront();
         itemRect.setVisible(true);
-        //StackPane.setAlignment(rootNode, Pos.CENTER);
-
     }
 
     protected void drawLines(TreeItem<ItemValue> from, TreeItem<ItemValue> to) {
-        System.err.println("DRAW LINES");
         Bounds lb = EditorUtil.screenTreeItemBounds(to);
-        //Bounds rootBounds = EditorUtil.screenNonValueLevelBounds(treeView, treeView.getRoot());
         Bounds rootBounds = screenNonValueLevelBounds(treeView.getRoot(), to);
         treeView.setPadding(Insets.EMPTY);
         Insets pins = treeView.getPadding();
@@ -332,18 +305,13 @@ public class DragIndicator {
 
         Pane p = sceneGraphView.getTreeViewPane();
         Bounds bnd = null;
-        //if (ap.getScene() != null) {
-        //bnd = EditorUtil.screenNonValueLevelBounds(treeView, from);
+
         bnd = screenNonValueLevelBounds(from, to);
-        //}
 
         int level = treeView.getTreeItemLevel(from);
-
-        //double gap = EditorUtil.getRootStartGap(treeView);
         double gap = getItemParentOffset(to);
-        //Bounds arrowBnd = EditorUtil.screenArrowBounds(from);
         Bounds arrowBnd = screenArrowBounds(from, to);
-        /////
+        
         TreeCell c = ((TreeCell) to.getValue().getCellGraphic().getParent());
 
         double startY = bnd.getMinY() + bnd.getHeight() + pins.getBottom();
@@ -386,8 +354,6 @@ public class DragIndicator {
         int level = treeView.getTreeItemLevel(sample);
         double cellOffset = getItemParentOffset(sample);
         Bounds sampleBounds = screenNonValueBounds(sample);
-        System.err.println("rootNonValueWidth sample obj =  " + sample.getValue().getTreeItemObject() );
-        System.err.println("rootNonValueWidth sampleBounds =  " + sampleBounds );
         return sampleBounds.getWidth() - cellOffset * level;
     }
 

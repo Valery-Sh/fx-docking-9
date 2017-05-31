@@ -112,20 +112,8 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
                 item != null ? item.getValue().getCellGraphic().getParent() : this);
 
         if (item != null) {
-            System.err.println("1) DRAGEVENT TYPE = " + dragEvent.getEventType());
             item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);
-/*            if (dragEvent.getEventType() == DragEvent.DRAG_DROPPED) {
-                dragEvent = createDragEvent(ev.getMouseEvent(), DragEvent.DRAG_DONE,
-                        ev.getGestureSource(),
-                        item != null ? item.getValue().getCellGraphic().getParent() : this);
-                item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);                        
-            }
-*/
-            System.err.println("2) DRAGEVENT gestureSource = " + dragEvent.getGestureSource());
-            System.err.println("3) DRAGEVENT        source = " + dragEvent.getSource());
-
         } else if (isInsideTreeView(ev.getMouseEvent())) {
-            System.err.println("4) DRAGEVENT TYPE = " + dragEvent.getEventType());
             fireEvent(dragEvent);
         }
     }

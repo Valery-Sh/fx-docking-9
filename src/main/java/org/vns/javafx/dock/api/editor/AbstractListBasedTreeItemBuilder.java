@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api.editor;
 
 import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -130,12 +131,6 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
         T value = (T) dg.getGestureSourceObject();
         TreeItemBuilder targetBuilder = target.getValue().getBuilder();
 
-        System.err.println("accept target = " + target.getValue().getTreeItemObject());
-        System.err.println("accept place  = " + place.getValue().getTreeItemObject());
-            for ( Object o : getList(target) ) {
-                System.err.println("   0) ---  child = " + o);
-            }
-
         if (target != null && place != null && value != null) {
             int idx = getIndex(treeView, target, place, value);
 
@@ -164,132 +159,32 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
             }
             
             idx = getIndex(treeView, target, place);
-            retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-            for ( Object o : getList(target) ) {
-                System.err.println("   1 ---  child = " + o);
-            }
+            retval = TreeItemBuilderRegistry.getInstance().getBuilder(value).build(value);
             
             target.getChildren().add(idx, retval);
-            System.err.println("ACCEPT idx = " + idx + "; value = " + value + "; target.obj=" + target.getValue().getTreeItemObject());
-            for ( Object o : getList(target) ) {
-                System.err.println("   ---  child = " + o);
-            }
             getList(target).add(idx, value);
         }
         return retval;
     }
 
-/*    public TreeItem accept_OLD(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
-        TreeItem retval = null;
-        DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-
-        T value = (T) dg.getGestureSourceObject();
-        TreeItemBuilder targetBuilder = target.getValue().getBuilder();
-
-        System.err.println("accept target = " + target.getValue().getTreeItemObject());
-        System.err.println("accept place  = " + place.getValue().getTreeItemObject());
-
-        boolean objRemoved = true;
-
-        if (target != null && place != null && value != null) {
-            int idx = getIndex(treeView, target, place, value);
-
-            if (!getList(target).contains(value)) {
-                if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                    TreeCell cell = (TreeCell) dg.getGestureSource();
-                    if (cell.getTreeItem() instanceof TreeItemEx) {
-                        targetBuilder.notifyObjectRemove(treeView, cell.getTreeItem());
-                        targetBuilder.notifyTreeItemRemove(treeView, cell.getTreeItem());
-                    }
-                } else if (dg.getGestureSource() != null) {
-                    //Node it = (Node) dg.getGestureSourceObject();
-                    TreeItem item;
-                    if (idx >= 0 && (value instanceof Node)) {
-                        item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
-                        if (item == null) {
-                            return null;
-                        }
-                        targetBuilder.notifyObjectRemove(treeView, item);
-                        targetBuilder.notifyTreeItemRemove(treeView, item);
-
-                    } else if (idx < 0) {
-                        ChildrenNodeRemover r = (ChildrenNodeRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
-                        if (r != null) {
-                            objRemoved = r.remove(dg.getGestureSource());
-                        }
-
-                    }
-                }
-                if (!objRemoved) {
-                    System.err.println("0) NOTREMOVED");
-                    //return null;
-                }
-                System.err.println("0) EMOVED");
-                retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-                if (idx < 0) {
-                    idx = getIndex(treeView, target, place);
-                }
-                target.getChildren().add(idx, retval);
-                getList(target).add(idx, value);
-            } else {
-                if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                    TreeCell cell = (TreeCell) dg.getGestureSource();
-                    if (cell.getTreeItem() instanceof TreeItemEx) {
-                        targetBuilder.notifyObjectRemove(treeView, cell.getTreeItem());
-                        targetBuilder.notifyTreeItemRemove(treeView, cell.getTreeItem());
-                    }
-                } else if (dg.getGestureSource() != null) {
-                    TreeItem item;
-                    if (idx >= 0 && (value instanceof Node)) {
-                        item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
-                        if (item == null) {
-                            return null;
-                        }
-                        targetBuilder.notifyObjectRemove(treeView, item);
-                        targetBuilder.notifyTreeItemRemove(treeView, item);
-
-                    } else if (idx < 0) {
-                        ChildrenNodeRemover r = (ChildrenNodeRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
-                        if (r != null) {
-                            objRemoved = r.remove(dg.getGestureSource());
-                        }
-                    }
-                }
-                if (!objRemoved) {
-                    System.err.println("NOT REMOVED OBJECT");
-                    //return null;
-                }
-                System.err.println("REMOVED OBJECT");
-                idx = getIndex(treeView, target, place);
-                retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
-                target.getChildren().add(idx, retval);
-
-                getList(target).add(idx, value);
-            }
-        }
-        return retval;
-    }
-*/
     @Override
     public TreeItem build(Object obj) {
+        
+        
         TreeItem retval = null;
         List<T> children = getList(obj);
+        
         retval = createItem(obj);
         for (T it : children) {
-            TreeItemBuilder gb = TreeItemRegistry.getInstance().getBuilder(it);
-            //if ( it instanceof ComboBox ) {
+            TreeItemBuilder gb = TreeItemBuilderRegistry.getInstance().getBuilder(it);
             retval.getChildren().add(gb.build(it));
-            //}
         }
         return retval;
     }
 
     @Override
     public void removeObject(Object parent, Object toRemove) {
-        //if (parent instanceof Pane) {
-        //((Pane) parent).getChildren().remove(toRemove);
         getList(parent).remove(toRemove);
-        //}
     }
 
 }

@@ -27,9 +27,6 @@ public class DefaultTreeItemBuilder  implements TreeItemBuilder {
 
     @Override
     public TreeItem build(Object obj) {
-        if ( obj instanceof ComboBox ) {
-            System.err.println("COMBO BOX BUILD");
-        }
         TreeItem retval = null;
         if (obj instanceof Node) {
             retval = createItem(obj);

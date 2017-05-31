@@ -5,23 +5,18 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -33,12 +28,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.ItemValue;
-import org.vns.javafx.dock.api.editor.NodeDragEvent;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
-import org.vns.javafx.dock.api.editor.TreeViewEx;
-import org.vns.javafx.dock.api.editor.TreeViewExSkin;
 
 /**
  *
@@ -134,7 +125,32 @@ public class TestEditorControl01 extends Application {
         Button vboxBtn2 = new Button("vbox btn2");
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
-
+        vboxBtn2.setOnAction(a -> {
+            Class c = vboxBtn2.getClass();
+            Object o = vboxBtn2;
+            while ( c!= null  ) {
+                //System.err.println("1 c.class = " + c.getName());
+                if ( test(o) ) {
+                    // 
+                    // return retval
+                    //
+                }
+                Class s = c;
+                c = c.getSuperclass();
+                if ( Labeled.class.equals(c)) {
+                    System.err.println("LABELED " + c.getSuperclass());
+                }
+                if ( c != null ) {
+                    System.err.println("2 c.class = " + c.getName());
+                } else {
+                    System.err.println("3 s.class = " + s.getName());
+                }
+            }
+            c = vboxBtn2.getClass();
+            for ( Class i : c.getInterfaces()) {
+                System.err.println("4 interface = )" + i.getName());
+            }
+        });
         Label vboxLb1 = new Label("vbox lb11");
         vboxLb1.setId("vboxLb1");
         vbox.getChildren().add(vboxLb1);
@@ -189,7 +205,7 @@ public class TestEditorControl01 extends Application {
 
         Label lb = new Label("label-graphic");
         Label paneLb = new Label("pane label");
-        System.err.println("vbox.getChildren().size()=" + vbox.getChildren().size());
+        //System.err.println("vbox.getChildren().size()=" + vbox.getChildren().size());
         vbox.getChildren().forEach(c -> {
             //System.err.println("VBOX c = " + c);
         });
@@ -223,8 +239,6 @@ public class TestEditorControl01 extends Application {
         doAccept.setId("do-accept");
         doAccept.getStyleClass().add("do-accept-class");
         doAccept.getStyleClass().add("uuid-f53db037-2e33-4c68-8ffa-06044fc10f81");
-        vboxBtn2.setOnAction(a -> {
-        });
         
         
         doAccept.setOnAction(a -> {
@@ -253,7 +267,9 @@ public class TestEditorControl01 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
+    public static boolean test(Object o) {
+        return false;
+    }
     public static void handle(MouseEvent e) {
         if (e.getEventType() == MouseEvent.DRAG_DETECTED) {
             /*            String sourceText = sourceFld.getText();

@@ -89,7 +89,6 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
      */
     @Override
     public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
-//        System.err.println("BorderPane removeItem ");
         Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
         TreeItemBuilder builder;
@@ -106,7 +105,6 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
     public void removeObject(Object parent, Object toRemove) {
-//        System.err.println("BorderPane remove ");
         BorderPane bp = (BorderPane) parent;
         if (bp.getTop() == toRemove) {
             bp.setTop(null);
@@ -271,7 +269,6 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
         @Override
         public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
-//            System.err.println("BorderPane Placeholder accept");
             int idx = place.getParent().getChildren().indexOf(place);
             BuildPos pos = BuildPos.values()[idx];
 
@@ -285,7 +282,6 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
                     TreeCell cell = (TreeCell) dg.getGestureSource();
                     if (cell.getTreeItem() instanceof TreeItemEx) {
-//                        System.err.println("Accept Node before Notify");
                         notifyObjectRemove(treeView, cell.getTreeItem());
                         notifyTreeItemRemove(treeView, cell.getTreeItem());
                     }
@@ -296,29 +292,9 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
                 setContent(place, value);
 
-/*                if (isAcceptable(target, value)) {
-                    switch (pos) {
-                        case TOP:
-                            break;
-                        case RIGHT:
-                            break;
-                        case BOTTOM:
-                            break;
-                        case LEFT:
-                            break;
-                        case CENTER:
-                            break;
-                    }
-
-                }
-*/
-            //}
-//            System.err.println("(ItemValue) place.getValue().getTreeItemObject=" + (ItemValue) place.getValue().getTreeItemObject());
             return retval;
 
         }
-
-
         @Override
         public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
             return null;

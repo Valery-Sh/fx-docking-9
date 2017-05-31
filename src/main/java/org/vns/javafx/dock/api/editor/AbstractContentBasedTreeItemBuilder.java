@@ -13,7 +13,7 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
         TreeItem retval = null;
         retval = createItem(obj);
         if ( getContent(obj) != null ) {
-            TreeItem it = TreeItemRegistry.getInstance().getBuilder(obj).createItem(getContent(obj));
+            TreeItem it = TreeItemBuilderRegistry.getInstance().getBuilder(obj).createItem(getContent(obj));
             retval.getChildren().add(it);
         }
         return retval;

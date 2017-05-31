@@ -84,7 +84,6 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
     protected Node getGestureSource(DragEvent ev) {
         Node node = (Node) ev.getGestureSource();
         if (node == null) {
-            System.err.println("!!!!!!!!!!!!!!!!! ");
             return null;
         }
 

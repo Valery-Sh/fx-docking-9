@@ -59,7 +59,7 @@ public interface TreeItemBuilder {
         if (parentItem != null && toRemove != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
             Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
-            TreeItemRegistry.getInstance().getBuilder(parent).removeObject(parent, remove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeObject(parent, remove);
         }
     }
 
@@ -71,7 +71,7 @@ public interface TreeItemBuilder {
         TreeItem<ItemValue> parentItem = toRemove.getParent();
         if (parentItem != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
-            TreeItemRegistry.getInstance().getBuilder(parent).removeItem(parentItem, toRemove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeItem(parentItem, toRemove);
         }
     }
     /**

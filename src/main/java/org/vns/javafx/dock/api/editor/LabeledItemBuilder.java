@@ -66,14 +66,10 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
     public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
             TreeItem<ItemValue> place,
             Object dragObject) {
-//        System.err.println("Labeled isAdmissiblePosition");
         boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
         if (!retval) {
             return false;
         }
-//       System.err.println("=== LabelIBuilderplace.getParent() obj = " + place.getParent().getValue().getTreeItemObject());
-//       System.err.println("=== LabelIBuilder target. obj = " + target.getValue().getTreeItemObject());
-        
         if (place.getParent() == target) {
             return false;
         }
@@ -172,7 +168,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
         return placeholderBuilder;
     }
 
-    public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder implements PlaceholderBuilder {
+    public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder {
 
         @Override
         public TreeItem build(Object obj) {
@@ -213,9 +209,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
                 return retval;
             }
             Object obj = dg.getGestureSourceObject();
-            //if (isAcceptable(target, obj)) {
-            retval = TreeItemRegistry.getInstance().getBuilder(obj).build(obj);
-//            System.err.println("!!! TreeItemRegistry.getBuilder = " + TreeItemRegistry.getInstance().getBuilder(obj));
+            retval = TreeItemBuilderRegistry.getInstance().getBuilder(obj).build(obj);
             ((ItemValue) retval.getValue()).setPlaceholder(true);
 
             target.getChildren().add(retval);

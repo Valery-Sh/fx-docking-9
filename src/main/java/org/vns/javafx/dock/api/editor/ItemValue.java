@@ -84,7 +84,7 @@ public class ItemValue {
             TreeItem<ItemValue> p = treeItem.getParent();
             builder = p.getValue().getBuilder().getPlaceHolderBuilder(p);
         } else {
-            builder = TreeItemRegistry.getInstance().getBuilder(treeItemObject);
+            builder = TreeItemBuilderRegistry.getInstance().getBuilder(treeItemObject);
         }
         return builder;
     }

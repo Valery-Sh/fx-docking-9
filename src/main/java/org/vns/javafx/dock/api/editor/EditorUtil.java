@@ -69,10 +69,8 @@ public class EditorUtil {
         TreeItem<ItemValue> retval = null;
         int count = treeView.getExpandedItemCount();
         for ( int i=0; i < count; i++) {
-            //System.err.println("COUNT = " + count + "; i=" + i );
             TreeCell cell = (TreeCell) treeView.getTreeItem(i).getValue().getCellGraphic().getParent();
             if ( cell == null ) {
-                //System.err.println("cell == NULL obj = " + treeView.getTreeItem(i).getValue().getTreeItemObject());
                 continue;
             }
             if ( cell.contains(cell.screenToLocal(x, y))) {
@@ -100,7 +98,6 @@ public class EditorUtil {
         if (allStages.isEmpty()) {
             return null;
         }
-        //System.err.println("   --- getTargetTreeView stages.size=" + allStages.size());  
         for ( Stage s : allStages ) {
             if ( s.getScene() == null || s.getScene().getRoot() == null ) {
                 break;
@@ -109,9 +106,7 @@ public class EditorUtil {
             if ( ! b.contains(x, y)) {
                 continue;
             }
-            //System.err.println("   --- getTargetTreeView 1 " + s.getScene().getRoot());              
             Node n =  s.getScene().lookup("." + TreeViewEx.LOOKUP_SELECTOR);
-            //System.err.println("   --- getTargetTreeView 2 " + n);              
             
             if ( n != null && (n instanceof TreeViewEx) ) {
                 retval = (TreeViewEx) n;

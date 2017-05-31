@@ -27,7 +27,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
             Tab tab = (Tab) obj;
             retval = createItem((Tab) obj);
             if (tab.getContent() != null) {
-                TreeItemBuilder b = TreeItemRegistry.getInstance().getBuilder(tab.getContent());
+                TreeItemBuilder b = TreeItemBuilderRegistry.getInstance().getBuilder(tab.getContent());
                 retval.getChildren().add(b.build(tab.getContent()));
             }
         }
@@ -89,7 +89,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
             }
         }
 
-        retval = TreeItemRegistry.getInstance().getBuilder(value).build(value);
+        retval = TreeItemBuilderRegistry.getInstance().getBuilder(value).build(value);
         if (!target.getChildren().isEmpty()) {
             target.getChildren().clear();
         }
@@ -107,7 +107,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
             if ( obj instanceof Tab) {
                 ((Tab)obj).setContent(null);
             }
-//            TreeItemRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
+//            TreeItemBuilderRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
         }
     }
      */
