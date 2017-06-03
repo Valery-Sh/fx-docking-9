@@ -1,10 +1,10 @@
 package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
@@ -21,6 +21,7 @@ public class DefaultTreeItemBuilder  implements TreeItemBuilder {
     private void init() {
     }
 
+    @Override
     public boolean isAcceptable(Object obj) {
         return false;
     }
@@ -53,6 +54,9 @@ public class DefaultTreeItemBuilder  implements TreeItemBuilder {
         return label;
     }
 
-
+    @Override
+    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+        return null;
+    }
  
 }// DefaultTreeItemBuilder

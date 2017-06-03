@@ -15,11 +15,12 @@ public interface TreeItemBuilder {
 
     public static final String CELL_UUID = "uuid-29a4b479-0282-41f1-8ac8-21b4923235be";
     public static final String NODE_UUID = "uuid-f53db037-2e33-4c68-8ffa-06044fc10f81";
-    
-    default TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+
+/*    default TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         return null;
     }
-    
+*/
+    TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource);    
     TreeItem build(Object obj);
 
     default TreeItem createItem(Object obj, Object... others) {
@@ -27,6 +28,7 @@ public interface TreeItemBuilder {
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
+        anchorPane.setStyle("-fx-background-color: yellow");
         TreeItemEx item = new TreeItemEx();
         ItemValue itv = new ItemValue(item);
 
@@ -38,21 +40,20 @@ public interface TreeItemBuilder {
 
         return item;
     }
-    
-    Node createItemContent(Object obj, Object... others);    
-    
+
+    Node createItemContent(Object obj, Object... others);
+
     default void removeObject(Object parent, Object toRemove) {
-        
+
     }
 
     default void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
     }
-    
+
     default TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return null;
     }
-    
 
     default void notifyObjectRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parentItem = toRemove.getParent();
@@ -62,7 +63,6 @@ public interface TreeItemBuilder {
             TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeObject(parent, remove);
         }
     }
-
 
     default void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         if (toRemove == null) {
@@ -74,6 +74,7 @@ public interface TreeItemBuilder {
             TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeItem(parentItem, toRemove);
         }
     }
+
     /**
      *
      * @param treeView the treeView/ Cannot be null
@@ -92,24 +93,27 @@ public interface TreeItemBuilder {
         if (target.getValue().getTreeItemObject() == dragObject) {
             return false;
         }
-        
+
         TreeItem<ItemValue> dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
         //
         // We do not want to insert the draggedItem before or after itself
         //
         if (target == place.getParent() && dragItem != null) {
-            if ( dragItem == place || dragItem.previousSibling() == place) {
+            if (dragItem == place || dragItem.previousSibling() == place) {
+//                System.err.println("builder 1");
                 return false;
             }
         } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
             int level = treeView.getTreeItemLevel(target) + 1;
             TreeItem<ItemValue> actualPlace = EditorUtil.parentOfLevel(treeView, place, level);
-            if ( dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+//                System.err.println("builder 2");
+
                 return false;
             }
         }
-        
         return isAcceptable(dragObject);
     }
+
     boolean isAcceptable(Object obj);
 }

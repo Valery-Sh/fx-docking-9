@@ -7,16 +7,18 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -26,8 +28,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.editor.EditorUtil;
+import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
 
@@ -55,7 +60,16 @@ public class TestEditorControl01 extends Application {
         hbox.setId("hbox");
         TextField textField1 = new TextField();
         textField1.setId("textField1");
+        textField1.setId("textField1");
         hbox.getChildren().add(textField1);
+        Text text1 = new Text("Text text1");
+        text1.setId("text1");
+        hbox.getChildren().add(text1);
+        
+        TitledPane titledPane1 = new TitledPane();
+        titledPane1.setId("titledpane1");
+        hbox.getChildren().add(titledPane1);
+        
         TextArea textArea1 = new TextArea("Text Area 1");
         textArea1.setMaxWidth(70);
         textArea1.setMaxHeight(30);
@@ -88,20 +102,15 @@ public class TestEditorControl01 extends Application {
         Tab tab1 = new Tab("Tab 1");
         tabPane.getTabs().add(tab1);
         Tab tab2 = new Tab("Tab 2");
+        tabPane.setMinSize(150,150);
+        tabPane.setStyle("-fx-border-width: 3; -fx-border-color: red");
 
-        TabPane tabPane2 = new TabPane();
-        tabPane.setId("tabpane12");
-        Tab tab21 = new Tab("Tab 21");
-        tabPane2.getTabs().add(tab21);
-        Button tabContent21 = new Button("btn of Tab21");
-        tab21.setContent(tabContent21);
 
         Button tabContent2 = new Button("btn of Tab2");
         tab2.setContent(tabContent2);
         tabPane.getTabs().add(tab2);
 
         stackPane.getChildren().add(tabPane);
-        stackPane.getChildren().add(tabPane2);
 
         VBox vbox2 = new VBox();
         vbox2.setId("vbox2");
@@ -126,30 +135,9 @@ public class TestEditorControl01 extends Application {
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
         vboxBtn2.setOnAction(a -> {
-            Class c = vboxBtn2.getClass();
-            Object o = vboxBtn2;
-            while ( c!= null  ) {
-                //System.err.println("1 c.class = " + c.getName());
-                if ( test(o) ) {
-                    // 
-                    // return retval
-                    //
-                }
-                Class s = c;
-                c = c.getSuperclass();
-                if ( Labeled.class.equals(c)) {
-                    System.err.println("LABELED " + c.getSuperclass());
-                }
-                if ( c != null ) {
-                    System.err.println("2 c.class = " + c.getName());
-                } else {
-                    System.err.println("3 s.class = " + s.getName());
-                }
-            }
-            c = vboxBtn2.getClass();
-            for ( Class i : c.getInterfaces()) {
-                System.err.println("4 interface = )" + i.getName());
-            }
+            //BeanAdapter ba =  new BeanAdapter(hbox);
+            //System.err.println("ba.getChildren() = " + ba.get("children"));
+            
         });
         Label vboxLb1 = new Label("vbox lb11");
         vboxLb1.setId("vboxLb1");
@@ -164,6 +152,8 @@ public class TestEditorControl01 extends Application {
         rootPane.getChildren().add(stackPane);
         vboxLb1.setGraphic(rect);
         Button doAccept = new Button("Accept");
+        Button stringDrag = new Button("String Drag");        
+        rootPane.getChildren().add(stringDrag);        
         rootPane.getChildren().add(doAccept);
         Button dragObject = new Button("Drag Object");
         dragButton = new Button("Drag Button");
@@ -172,7 +162,7 @@ public class TestEditorControl01 extends Application {
 
 
         //SceneGraphView graphView = new SceneGraphView(stackPane);
-        SceneGraphView graphView = new SceneGraphView();
+        SceneGraphView graphView = new SceneGraphView(stackPane);
         
         StackPane editorStackPane = new StackPane();
         Scene tvScene = new Scene(graphView);
@@ -187,6 +177,21 @@ public class TestEditorControl01 extends Application {
                 graphView.setRootNode(stackPane);
             }
         });
+        vboxBtn2.setOnAction(a -> {
+            //BeanAdapter ba =  new BeanAdapter(hbox);
+            //System.err.println("ba.getChildren() = " + ba.get("children"));
+            TreeItem<ItemValue> it = EditorUtil.findTreeItemByObject(graphView.getTreeView(),vboxBtn1);
+            System.err.println("TEST: it obj =  " + it.getValue().getTreeItemObject());
+            //System.err.println("TEST: it isVisible =  " + graphView.isVisible(it));
+        });
+        TabPane tabPane2 = new TabPane();
+        tabPane.setId("tabpane12");
+        Tab tab21 = new Tab("Tab 21");
+        tabPane2.getTabs().add(tab21);
+        Button tabContent21 = new Button("btn of Tab21");
+        tab21.setContent(tabContent21);
+        
+        stackPane.getChildren().add(tabPane2);
         
         
         
@@ -195,6 +200,8 @@ public class TestEditorControl01 extends Application {
         tvStage.setWidth(300);
         
         tvStage.setScene(tvScene);
+        tvStage.setX(350);
+        tvStage.setY(40);
         
         rootPane.getChildren().add(editorStackPane);
 
@@ -202,7 +209,10 @@ public class TestEditorControl01 extends Application {
 
         stage.setTitle("Test EditorTreeView");
         stage.setScene(scene);
-
+        stage.setWidth(300);
+        stage.setHeight(300);        
+        stage.setX(10);
+        stage.setY(20);
         Label lb = new Label("label-graphic");
         Label paneLb = new Label("pane label");
         //System.err.println("vbox.getChildren().size()=" + vbox.getChildren().size());
@@ -246,8 +256,23 @@ public class TestEditorControl01 extends Application {
             //vboxBtn2.fireEvent(de);
             //tv.fireEvent(de);
         });
+        stringDrag.setOnAction(a -> {
+            System.err.println("text1 text = " + text1.getText());
+            System.err.println("TITLE PANE CONTENT" + titledPane1.getContent());
+            System.err.println("   --- TITLE PANE CONTENT" + titledPane1.getContent().getParent());
+            hbox.getChildren().forEach(n -> {
+                System.err.println("  hbox child = " + n);                
+            });
+        });
+        Point2D pp1 = new Point2D(0,0); 
+        Point2D pp2 = pp1;
+        
+        pp1 = null;
+        
+        
         NodeDragManager dm = new NodeDragManager();
-        dm.enableDragAndDrop(dragButton,doAccept);
+        //dm.enableDragAndDrop(dragButton,doAccept);
+        dm.enableDragAndDrop("NEW TEXT", stringDrag);
         //dm.enableDragAndDrop(doAccept);
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

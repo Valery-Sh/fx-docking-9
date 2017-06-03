@@ -2,7 +2,9 @@ package org.vns.javafx.dock.api.editor;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
@@ -108,6 +110,7 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      */
     protected void mousePressed(MouseEvent ev) {
         if (ev.isPrimaryButtonDown()) {
+            
             ev.consume();
             return;
         }
@@ -134,13 +137,13 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
             if (tv == null) {
                 return;
             }
-            tv.fireEvent(new NodeDragEvent(ev));
-
+            NodeDragEvent nodeEvent = tv.getNodeDragEvent(ev);
+            tv.fireEvent(nodeEvent);
+            
             ev.consume();
         }
     }
-static int cc = 0;
-    /**
+   /**
      * The method is called when a user releases the mouse button.
      *
      * Depending on whether or not the target object is detected during dragging
@@ -151,9 +154,13 @@ static int cc = 0;
     public void mouseReleased(MouseEvent ev) {
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
         if (tv != null && ! ev.isConsumed()) {
-            tv.fireEvent(new NodeDragEvent(ev));
+            DragEvent dragEvent = tv.getDragEvent();
+            if ( dragEvent.getTransferMode() != TransferMode.COPY 
+                 &&  dragEvent.getTransferMode() != TransferMode.MOVE  ) {
+                return;
+            }
+            tv.fireEvent(tv.getNodeDragEvent(ev));
         }
-
         Node source = (Node) ev.getSource();
         source.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
         source.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
@@ -161,7 +168,6 @@ static int cc = 0;
         source.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
         ev.consume();
 
-        //Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
     }
 
 }

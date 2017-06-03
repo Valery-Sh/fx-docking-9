@@ -23,7 +23,11 @@
 .labeled-insert-graphic {
     /*-fx-graphic: url(grapfic-frame-black-16x16.png);*/
     -fx-graphic: url(graphic-frame-16x16.png);
+}
 
+.tree-view {
+    -fx-border-width:  0 0 2 0;
+    -fx-border-color: transparent;
 }
 
 .tree-view-indicator {
@@ -119,6 +123,9 @@
     -fx-graphic: url(text-field-16x16.png);
 }
 .tree-item-node-textarea {
+    -fx-graphic: url(text-area-16x16.png);
+}
+.tree-item-node-text {
     -fx-graphic: url(text-area-16x16.png);
 }
 .tree-item-node-choicebox {

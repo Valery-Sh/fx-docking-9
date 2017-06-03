@@ -159,14 +159,20 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         if (!isSupportedDragSource(ev)) {
             return false;
         }
+        //System.err.println("isAdmissiblePosition supported");
         TreeItem<ItemValue> target = getTargetTreeItem(ev);
 
         if (target == null) {
             return false;
         }
+        //System.err.println("   ---- isAdmissiblePosition targetTreeItem obj = " + target.getValue().getTreeItemObject());
+        //System.err.println("   ---- isAdmissiblePosition treeCellItem   obj = " + getTreeCellItem().getValue().getTreeItemObject());
+        //System.err.println("   ---- isAdmissiblePosition gestureSource  obj = " + getGestureSourceObject(ev));
+        
         //
         // Delegate to check if admissible to a DefaultTreeItemBuilder of the target item
         //
+        //System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
         return target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
 
     }

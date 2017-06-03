@@ -1,8 +1,5 @@
 package org.vns.javafx.dock.api.editor;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
@@ -10,9 +7,12 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import org.vns.javafx.dock.api.editor.AbstractContentBasedTreeItemBuilder.NodeContentBasedItemBuilder;
 
 /**
  *
@@ -127,6 +127,8 @@ public class TreeItemBuilderRegistry {
         register(Tab.class, new TabItemBuilder());
         register(BorderPane.class, new BorderPaneItemBuilder());
         register(TextInputControl.class, new TextInputControlItemBuilder());
+        register(Text.class, new TextBasedTreeItemBuilder());
+        register(TitledPane.class, new NodeContentBasedItemBuilder());
 
     }
 

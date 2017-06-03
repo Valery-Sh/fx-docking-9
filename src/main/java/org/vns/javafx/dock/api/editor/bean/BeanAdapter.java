@@ -15,7 +15,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javafx.beans.value.ObservableValue;
-import static org.vns.javafx.dock.api.editor.bean.ReflecttionUtil.checkPackageAccess;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
+import static org.vns.javafx.dock.api.editor.bean.ReflectHelper.checkPackageAccess;
+import static org.vns.javafx.dock.api.editor.bean.ReflectHelper.getField;
+//import static org.vns.javafx.dock.api.editor.bean.ReflecttionUtil.checkPackageAccess;
 //import sun.reflect.misc.MethodUtil;
 
 /**
@@ -91,7 +94,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             Map<String, List<Method>> classMethods = new HashMap<>();
 
             //ReflectUtil.checkPackageAccess(type);
-            ReflecttionUtil.checkPackageAccess(type);
+            checkPackageAccess(type);
             if (Modifier.isPublic(type.getModifiers())) {
                 // only interested in public methods in public classes in
                 // non-restricted packages
@@ -177,9 +180,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (getterMethod != null) {
             try {
                 value = MethodUtil.invoke(getterMethod, bean, (Object[]) null);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            } catch (InvocationTargetException exception) {
+            } catch (IllegalAccessException | InvocationTargetException exception) {
                 throw new RuntimeException(exception);
             }
         } else {
@@ -219,9 +220,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         try {
             MethodUtil.invoke(setterMethod, bean, new Object[]{coerce(value, getType(key))});
-        } catch (IllegalAccessException exception) {
-            throw new RuntimeException(exception);
-        } catch (InvocationTargetException exception) {
+        } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
 
@@ -428,7 +427,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             try {
                 final String className = value.toString();
                 //ReflectUtil.checkPackageAccess(className);
-                ReflecttionUtil.checkPackageAccess(className);
+                checkPackageAccess(className);
                 final ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 coercedValue = Class.forName(
                         className,
@@ -580,6 +579,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param key The property name.
      *
      * @param targetType The type of the object to which the property applies.
+     * @return ???
      */
     public static Class<?> getType(Class<?> sourceType, String key, Class<?> targetType) {
         Method getterMethod = getStaticGetterMethod(sourceType, key, targetType);
@@ -747,7 +747,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param name The name of the constant.
      * @return ???
      */
-    public static Object getConstantValue(Class<?> type, String name) {
+    public static Object getConstantValue(Class<?> type, String name) throws NoSuchFieldException {
         if (type == null) {
             throw new IllegalArgumentException();
         }
@@ -757,7 +757,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         Field field;
-        field = ReflecttionUtil.getField(type, name);
+        field = getField(type, name);
 
         int fieldModifiers = field.getModifiers();
         if ((fieldModifiers & Modifier.STATIC) == 0

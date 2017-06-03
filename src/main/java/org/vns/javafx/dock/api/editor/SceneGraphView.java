@@ -59,6 +59,7 @@ public class SceneGraphView extends Control {
     private Region statusBar;
 
     private ScrollAnimation scrollAnimation;
+    
 
     public SceneGraphView() {
         this.treeView = new TreeViewEx<>(this);
@@ -78,7 +79,9 @@ public class SceneGraphView extends Control {
         sceneProperty().addListener(this::sceneChanged);
         customizeCell();
         dragIndicator.initIndicatorPane();
-        //contentPane.setStyle("-fx-border-width: 3;-fx-border-color: blue; -fx-background-color: red");
+        //treeView.setStyle("-fx-border-width:  0 0 10 0; ;-fx-border-color: blue; -fx-background-color: aqua");
+        
+        //treeView.setPadding(new Insets(2,2,2,2));
         scrollAnimation = new ScrollAnimation((TreeViewEx) treeView);
         treeView.addEventHandler(DragEvent.ANY, new TreeViewDragEventHandler(this));
 
@@ -138,7 +141,7 @@ public class SceneGraphView extends Control {
         return treeViewPane;
     }
 
-    protected TreeView<ItemValue> getTreeView() {
+    public TreeView<ItemValue> getTreeView() {
         return treeView;
     }
 
@@ -194,14 +197,14 @@ public class SceneGraphView extends Control {
         treeView.setRoot(it);
         Platform.runLater(() -> {
 //            Node arrow = ((Pane) ((TreeCell) it.getValue().getCellGraphic().getParent()).getDisclosureNode()).getChildren().get(0);
-            dragIndicator.getItemParentOffset(it);
-            dragIndicator.getDisclosureBounds();
+            //dragIndicator.getItemParentOffset(it);
+            //dragIndicator.getDisclosureBounds();
             registerScrollBarEvents();
         });
     }
 
     protected void registerScrollBarEvents() {
-        ScrollBar sb = ((TreeViewEx) treeView).getScrollBar();
+        ScrollBar sb = ((TreeViewEx) treeView).getVScrollBar();
 
         sb.addEventHandler(DragEvent.DRAG_EXITED, ev -> {
             dragIndicator.hideDrawShapes();
@@ -236,13 +239,15 @@ public class SceneGraphView extends Control {
                     super.updateItem(value, empty);
 
                     if (empty || value == null) {
+                        //System.err.println("UPDATE cell = " + this);
+                        //if ( getTreeItem() != null && getTreeItem().getValue() != null )
+                        //System.err.println("CUSTOMIZE: EMPTY " + getTreeItem().getValue().getTreeItemObject());
                         setText(null);
                         setGraphic(null);
-                        //setStyle(null);
                         if (this.getUserData() != null) {
                             Object[] o = (Object[]) this.getUserData();
                             if (o[0] != null) {
-                                this.removeEventHandler(DragEvent.ANY, (TreeItemCellDragEventHandler) o[0]);
+                                this.removeEventHandler(DragEvent.DRAG_OVER, (TreeItemCellDragEventHandler) o[0]);
                             }
                             /*                            if (o[1] != null) {
                                 this.removeEventHandler(NodeDragEvent.NODE_DRAG, (TreeCellNodeDragEventHandler) o[1]);
@@ -254,6 +259,10 @@ public class SceneGraphView extends Control {
                         this.setOnDragDone(null);
                     } else {
                         this.setGraphic(value.getCellGraphic());
+                        String id = "UUU";
+                        if ( value.getTreeItemObject() instanceof Node)
+                            setId(((Node)value.getTreeItemObject()).getId());
+                        //getDragIndicator().setDisclosureBounds(this);
                         TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphView.this, this);
                         this.addEventHandler(DragEvent.ANY, h);
                         this.setUserData(new Object[]{h, null});
@@ -269,11 +278,28 @@ public class SceneGraphView extends Control {
         });
     }
 
-    protected void registerDragDetected(TreeCell cell) {
+/*    protected void registerDragDetected(TreeCell cell) {
         cell.setOnDragDetected(ev -> {
             Dragboard dragboard = cell.startDragAndDrop(TransferMode.COPY_OR_MOVE);
             DragGesture dg = new DragTreeCellGesture(cell);
             cell.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+            ClipboardContent content = new ClipboardContent();
+            content.putUrl(CELL_UUID);
+            dragboard.setContent(content);
+            treeView.getSelectionModel().clearSelection();
+            ev.consume();
+            Platform.runLater(() -> {
+                dragIndicator.getItemParentOffset(cell.getTreeItem());
+            });
+
+        });
+    }
+*/    
+    protected void registerDragDetected(TreeCell cell) {
+        cell.setOnDragDetected(ev -> {
+            Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            DragGesture dg = new DragTreeViewGesture(treeView, cell.getTreeItem());
+            treeView.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
             ClipboardContent content = new ClipboardContent();
             content.putUrl(CELL_UUID);
             dragboard.setContent(content);
@@ -296,6 +322,9 @@ public class SceneGraphView extends Control {
 
     protected void registerDragDropped(TreeCell cell) {
         cell.setOnDragDropped((DragEvent ev) -> {
+            System.err.println("DROPPED TransferMode="  + ev.getAcceptedTransferMode());
+            
+            //System.err.println("ev DRAG_DROPPED cell id=" + ev.getGestureSource());
             TreeItem<ItemValue> targetItem = getTargetTreeItem(ev, ((TreeCell) ev.getGestureTarget()).getTreeItem());
             //
             // Try transfer data to the place
@@ -316,10 +345,10 @@ public class SceneGraphView extends Control {
     }
 
     protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev, TreeItem<ItemValue> item) {
-        return getTargetTreeItem(ev.getScreenX(), ev.getScreenY(), item);
+        return dragIndicator.getTargetTreeItem(ev.getScreenX(), ev.getScreenY(), item);
     }
 
-    protected TreeItem<ItemValue> getTargetTreeItem(double x, double y, TreeItem<ItemValue> item) {
+/*    protected TreeItem<ItemValue> getTargetTreeItem(double x, double y, TreeItem<ItemValue> item) {
 
         TreeItem<ItemValue> retval = null;
 
@@ -367,7 +396,7 @@ public class SceneGraphView extends Control {
         }
         return retval;
     }
-
+*/
     @Override
     protected double computePrefHeight(double h) {
         return contentPane.computePrefHeight(h);
@@ -412,14 +441,20 @@ public class SceneGraphView extends Control {
 
         @Override
         public void handle(DragEvent ev) {
+            ((TreeViewEx)getEditor().getTreeView()).notifyDragEvent(ev);
+            
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
+                System.err.println("ev DRAG_OVER cell id=" + ev.getGestureSource());
                 TreeView tv = getEditor().getTreeView();
                 getEditor().getDragIndicator().hideDrawShapes();
                 if (!isAdmissiblePosition(ev)) {
+                    //System.err.println(" 1  --- ev DRAG_OVER cell id=" + ev.getGestureSource());
                     ev.consume();
                 } else {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    ((TreeViewEx)getEditor().getTreeView()).notifyDragEvent(ev);
                     drawIndicator(ev);
+                    
                     ev.consume();
                 }
             }
@@ -448,7 +483,7 @@ public class SceneGraphView extends Control {
         @Override
         public void handle(DragEvent ev) {
             getEditor().getDragIndicator().hideDrawShapes();
-            VirtualScrollBar sb = ((TreeViewEx) getEditor().getTreeView()).getScrollBar();
+            VirtualScrollBar sb = ((TreeViewEx) getEditor().getTreeView()).getVScrollBar();
             if (sb != null) {
                 Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
                 if (sbBounds != null && sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {

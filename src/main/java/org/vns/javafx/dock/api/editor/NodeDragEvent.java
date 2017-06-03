@@ -42,9 +42,10 @@ import javafx.scene.input.MouseEvent;
  */
 public class NodeDragEvent extends Event{
     
-    public static EventType<NodeDragEvent>  NODE_DRAG = createtEventType();
-    private final MouseEvent mouseEvent;
-    private final Node gestureSource;
+    public   static EventType<NodeDragEvent>  NODE_DRAG = createtEventType();
+    private  MouseEvent mouseEvent;
+    private  Node gestureSource;
+    
     /**
      * Create a new instance of the class for the specified {@code mouseEvent}.
      * @param mouseEvent the event  for which this object is creating
@@ -52,9 +53,17 @@ public class NodeDragEvent extends Event{
     public NodeDragEvent(MouseEvent mouseEvent) {
         super(mouseEvent == null ? null : mouseEvent.getSource(), null, NODE_DRAG);
         this.mouseEvent = mouseEvent;
-        this.gestureSource = (Node) mouseEvent.getSource();
+        if ( mouseEvent == null ) {
+            this.gestureSource = null; 
+        } else {
+            this.gestureSource = (Node) mouseEvent.getSource();
+        }
     }    
-    
+    protected void setMouseEvent(MouseEvent mouseEvent) {
+        this.mouseEvent = mouseEvent;
+        this.gestureSource = (Node) mouseEvent.getSource();
+    }
+
     private static EventType<NodeDragEvent> createtEventType() {
         return new EventType("NODE_DRAG");
     }

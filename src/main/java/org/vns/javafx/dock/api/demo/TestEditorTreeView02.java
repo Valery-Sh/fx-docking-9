@@ -1,12 +1,8 @@
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -16,13 +12,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
@@ -38,13 +30,10 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragGesture;
 import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.NodeDragEvent;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
-import org.vns.javafx.dock.api.editor.TreeViewEx;
-import org.vns.javafx.dock.api.editor.TreeViewExSkin;
 
 /**
  *
@@ -314,7 +303,8 @@ public class TestEditorTreeView02 extends Application {
             //tv.fireEvent(de);
         });
         NodeDragManager dm = new NodeDragManager();
-        dm.enableDragAndDrop(dragButton,doAccept);
+        //dm.enableDragAndDrop(dragButton,doAccept);
+        dm.enableDragAndDrop("new Text",doAccept);
         //dm.enableDragAndDrop(doAccept);
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

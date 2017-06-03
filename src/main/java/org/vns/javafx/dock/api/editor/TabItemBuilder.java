@@ -11,7 +11,7 @@ import javafx.scene.control.TreeView;
  *
  * @author Valery
  */
-public class TabItemBuilder extends DefaultTreeItemBuilder{
+public class TabItemBuilder extends DefaultTreeItemBuilder {
 
     public TabItemBuilder() {
     }
@@ -68,13 +68,12 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
         }
         Object value = dg.getGestureSourceObject();
         Tab tab = (Tab) ((ItemValue) target.getValue()).getTreeItemObject();
-        //if (isAcceptable(target, value)) {
-        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-            TreeCell cell = (TreeCell) dg.getGestureSource();
-            if (cell.getTreeItem() instanceof TreeItemEx) {
-                notifyObjectRemove(treeView, cell.getTreeItem());
-                notifyTreeItemRemove(treeView, cell.getTreeItem());
-                //cell.getTreeItem().getParent().getChildren().removeObject(cell.getTreeItem());
+
+        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
+            TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
+            if (treeItem instanceof TreeItemEx) {
+                notifyObjectRemove(treeView, treeItem);
+                notifyTreeItemRemove(treeView, treeItem);
             }
         } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
             TreeItem<ItemValue> treeItem = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
@@ -122,6 +121,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder{
     public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
     }
+
     @Override
     public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
             TreeItem<ItemValue> place,

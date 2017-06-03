@@ -2,7 +2,6 @@ package org.vns.javafx.dock.api.editor;
 
 import java.util.List;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -132,13 +131,14 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
         TreeItemBuilder targetBuilder = target.getValue().getBuilder();
 
         if (target != null && place != null && value != null) {
+            
             int idx = getIndex(treeView, target, place, value);
-
-            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                TreeCell cell = (TreeCell) dg.getGestureSource();
-                if (cell.getTreeItem() instanceof TreeItemEx) {
-                    targetBuilder.notifyObjectRemove(treeView, cell.getTreeItem());
-                    targetBuilder.notifyTreeItemRemove(treeView, cell.getTreeItem());
+            
+            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
+                TreeItem treeItem = ((DragTreeViewGesture)dg).getGestureSourceTreeItem();
+                if (treeItem instanceof TreeItemEx) {
+                    targetBuilder.notifyObjectRemove(treeView, treeItem);
+                    targetBuilder.notifyTreeItemRemove(treeView, treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItem item;

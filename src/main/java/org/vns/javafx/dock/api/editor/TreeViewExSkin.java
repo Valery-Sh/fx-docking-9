@@ -10,6 +10,7 @@ import javafx.scene.control.TreeView;
 /**
  *
  * @author Valery
+ * @param <T> ???
  */
 public class TreeViewExSkin<T> extends TreeViewSkin {
 
@@ -22,23 +23,25 @@ public class TreeViewExSkin<T> extends TreeViewSkin {
     @Override
     protected VirtualFlowEx<TreeCell> createVirtualFlow() {
         return (exFlow = (VirtualFlowEx<TreeCell>) new VirtualFlowEx<TreeCell>());
-        //return new VirtualFlow<>();
     }
 
     public VirtualFlowEx<TreeCell> getExFlow() {
         return exFlow;
     }
 
-    public VirtualScrollBar getScrollBar() {
-        return exFlow.getScrollBar();
+    public VirtualScrollBar getVScrollBar() {
+        return exFlow.getVScrollBar();
+    }
+    public VirtualScrollBar getHScrollBar() {
+        return exFlow.getHScrollBar();
     }
 
     public static class VirtualFlowEx<I> extends VirtualFlow {
-
-        VirtualScrollBar vBar;
-
-        public VirtualScrollBar getScrollBar() {
+        public VirtualScrollBar getVScrollBar() {
             return this.getVbar();
         }
+        public VirtualScrollBar getHScrollBar() {
+            return this.getHbar();
+        }        
     }
 }

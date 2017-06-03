@@ -253,10 +253,10 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 TreeItem<ItemValue> place,
                 Object dragObject) {
             boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
-            if ( ! retval ) {
+            if (!retval) {
                 return false;
             }
-            if ( place.getParent() == target ) {
+            if (place.getParent() == target) {
                 return false;
             }
             return true;
@@ -278,23 +278,22 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 return retval;
             }
             Object value = dg.getGestureSourceObject();
-            //if (isAcceptable(target, value)) {
-                if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeCell)) {
-                    TreeCell cell = (TreeCell) dg.getGestureSource();
-                    if (cell.getTreeItem() instanceof TreeItemEx) {
-                        notifyObjectRemove(treeView, cell.getTreeItem());
-                        notifyTreeItemRemove(treeView, cell.getTreeItem());
-                    }
+            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
+                TreeItem treeItem = ((DragTreeViewGesture)dg).getGestureSourceTreeItem();
+                if (treeItem instanceof TreeItemEx) {
+                    notifyObjectRemove(treeView, treeItem);
+                    notifyTreeItemRemove(treeView, treeItem);
                 }
+            }
+            ItemValue v = (ItemValue) place.getValue();
+            v.setTreeItemObject(value);
 
-                ItemValue v = (ItemValue) place.getValue();
-                v.setTreeItemObject(value);
-
-                setContent(place, value);
+            setContent(place, value);
 
             return retval;
 
         }
+
         @Override
         public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
             return null;

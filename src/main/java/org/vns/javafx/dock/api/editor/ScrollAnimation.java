@@ -29,7 +29,7 @@ public class ScrollAnimation {
 
             @Override
             public void handle(long time) {
-                VirtualScrollBar scrollBar = treeView.getScrollBar();
+                VirtualScrollBar scrollBar = treeView.getVScrollBar();
                 if (lastUpdate <= 0) {
                     lastUpdate = time;
                 }
@@ -71,7 +71,7 @@ public class ScrollAnimation {
         if ( isRunning() ) {
             return;
         }
-        VirtualScrollBar sb = treeView.getScrollBar();
+        VirtualScrollBar sb = treeView.getVScrollBar();
         Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
         if (!sbBounds.contains(x, y)) {
             return;
