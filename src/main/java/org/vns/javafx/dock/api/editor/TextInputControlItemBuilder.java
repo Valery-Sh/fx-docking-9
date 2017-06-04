@@ -3,7 +3,6 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -53,7 +52,7 @@ public class TextInputControlItemBuilder extends DefaultTreeItemBuilder {
      * Node and the specified target doesn't have children
      */
     @Override
-    public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItemEx accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItemEx retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
@@ -64,8 +63,10 @@ public class TextInputControlItemBuilder extends DefaultTreeItemBuilder {
         if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
             TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
-                notifyObjectRemove(treeView, treeItem);
-                notifyTreeItemRemove(treeView, treeItem);
+                //notifyObjectRemove(treeView, treeItem);
+                treeView.removeTreeItemObject(treeItem);
+                treeView.removeTreeItem(treeItem);                
+                //notifyTreeItemRemove(treeView, treeItem);
             }
         } else if (dg.getGestureSourceObject() instanceof String) {
             String text = (String) dg.getGestureSourceObject();

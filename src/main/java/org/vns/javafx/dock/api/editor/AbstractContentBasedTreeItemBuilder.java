@@ -23,6 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
@@ -31,17 +32,19 @@ import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
  * @param <T> ???
  */
 public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTreeItemBuilder {
+
     @Override
     public TreeItem build(Object obj) {
         TreeItem retval;
         retval = createItem(obj);
         T content = getContent(obj);
-        if ( content != null ) {
+        if (content != null) {
             TreeItem item = TreeItemBuilderRegistry.getInstance().getBuilder(content).build(content);
             retval.getChildren().add(item);
         }
         return retval;
     }
+
     protected T getContent(Object obj) {
         T retval = null;
         try {
@@ -79,7 +82,7 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
     public abstract boolean isAcceptable(Object obj);
 
     @Override
-    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
@@ -88,26 +91,36 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
 
         if (target != null && place != null && value != null) {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-                TreeItem treeItem = ((DragTreeViewGesture)dg).getGestureSourceTreeItem();
+                TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    targetBuilder.notifyObjectRemove(treeView, treeItem);
-                    targetBuilder.notifyTreeItemRemove(treeView, treeItem);
+                    //targetBuilder.notifyObjectRemove(treeView, treeItem);
+                    treeView.removeTreeItemObject(treeItem);
+                    treeView.removeTreeItem(treeItem);
+
+                    //targetBuilder.notifyTreeItemRemove(treeView, treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItem item;
                 item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
-                if (item == null) {
-                    return null;
-                }
-                targetBuilder.notifyObjectRemove(treeView, item);
-                targetBuilder.notifyTreeItemRemove(treeView, item);
+                if (item != null) {
+                    //targetBuilder.notifyObjectRemove(treeView, item);
+                    treeView.removeTreeItemObject(item);
+                    treeView.removeTreeItem(item);
+                    //targetBuilder.notifyTreeItemRemove(treeView, item);
 
+                } else {
+                    ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
+                    if (r != null) {
+                        //r.remove(dg.getGestureSource());
+                        r.remove();
+                    }
+                }
             }
 
             retval = TreeItemBuilderRegistry.getInstance().getBuilder(value).build(value);
             Object obj = target.getValue().getTreeItemObject();
             setContent(obj, (T) dg.getGestureSourceObject());
-            
+
             target.getChildren().clear();
             target.getChildren().add(0, retval);
 
@@ -115,15 +128,15 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
         return retval;
     }
 
-
     @SuppressWarnings("unchecked")
     public Class<T> getTypeParameterClass() {
         Type type = getClass().getGenericSuperclass();
         ParameterizedType paramType = (ParameterizedType) type;
-        return (Class<T>) paramType.getActualTypeArguments()[0];        
+        return (Class<T>) paramType.getActualTypeArguments()[0];
     }
-    
+
     public static class NodeContentBasedItemBuilder extends AbstractContentBasedTreeItemBuilder<Node> {
+
         @Override
         public boolean isAcceptable(Object obj) {
             return obj instanceof Node;

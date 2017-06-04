@@ -26,6 +26,7 @@ public class EditorUtil {
     public static final String GESTURE_SOURCE_KEY = "drag-gesture-source-key";
     public static final String DRAGBOARD_KEY = "dragboard-url-key";
     public static final String REMOVER_KEY = "remove-children-node-key";
+    public static final String MOUSE_EVENT_NOTIFIER_KEY = "mouse-event-notifier-key";
 
     protected static TreeItem parentOfLevel(TreeView treeView, TreeItem item, int level) {
         TreeItem it = item;

@@ -133,7 +133,6 @@ public class TreeItemBuilderRegistry {
     }
 
     private static class SingletonInstance {
-
         private static final TreeItemBuilderRegistry INSTANCE = new TreeItemBuilderRegistry();
     }
 

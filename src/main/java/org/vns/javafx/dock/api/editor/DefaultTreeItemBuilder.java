@@ -4,7 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
@@ -55,8 +54,18 @@ public class DefaultTreeItemBuilder  implements TreeItemBuilder {
     }
 
     @Override
-    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         return null;
+    }
+
+    @Override
+    public void removeChildObject(Object parent, Object toRemove) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+        parent.getChildren().remove(toRemove);
     }
  
 }// DefaultTreeItemBuilder

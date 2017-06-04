@@ -1,6 +1,6 @@
 package org.vns.javafx.dock.api.editor;
 
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -11,109 +11,14 @@ import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
  *
  * @author Valery
  */
-public class NodeDragManager implements EventHandler<MouseEvent> {
+public class NodeDragManager extends AbstractDragManager {
 
-    /**
-     * The method is called when the the drag-detected event is generated once
-     * after the mouse is dragged. The method checks whether the
-     *
-     * @param ev the event that describes the mouse events.
-     */
-    protected void mouseDragDetected(MouseEvent ev) {
-        if (ev.isPrimaryButtonDown()) {
-            ev.consume();
-            return;
-        }
+    private NodeDragManager() {
+
     }
 
-    public void registerMousePressed(Node source) {
-        source.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
-    }
-
-    public void registerMouseDragDetected(Node source) {
-        registerMouseDragDetected(source, source, null);
-    }
-
-    protected void registerMouseDragDetected(Node source, Object gestureSource, ChildrenNodeRemover remover) {
-        DragNodeGesture dg = new DragNodeGesture(source,gestureSource);
-        source.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-        source.getProperties().put(EditorUtil.DRAGBOARD_KEY, NODE_UUID);
-        if ( remover != null ) {
-            source.getProperties().put(EditorUtil.REMOVER_KEY, remover);
-        }
-        source.addEventHandler(MouseEvent.ANY, this);
-    }
-
-    protected void registerMouseReleased(Node source) {
-        source.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
-        source.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
-    }
-
-    protected void registerMouseDragged(Node source) {
-        source.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-    }
-
-    public NodeDragManager enableDragAndDrop(Object gestureSourceObject, Node source ) {
-        enableDragAndDrop(gestureSourceObject, source, null);
-        return this;
-    }
-    public NodeDragManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenNodeRemover remover) {
-        registerMousePressed(source);
-        
-        registerMouseReleased(source);
-        if (gestureSourceObject != null) {
-            registerMouseDragDetected(source, gestureSourceObject, remover);
-        } else {
-            registerMouseDragDetected(source, source, remover);
-        }
-        registerMouseDragged(source);
-        return this;
-    }
-
-    public NodeDragManager enableDragAndDrop(Node source) {
-        return this.enableDragAndDrop(null, source, null);
-    }
-    public NodeDragManager enableDragAndDrop(Node source, ChildrenNodeRemover remover) {
-        return this.enableDragAndDrop(null, source, remover);
-    }
-
-    /**
-     * The implementation of the interface {@code EventHandler<MouseEvent> }.
-     * Depending of the event type invokes one of the methods
-     * <ul>
-     * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}<li>
-     * <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }
-     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)}<li>
-     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent) }<li>
-     * </ul>
-     *
-     * @param ev the event that describes the mouse events.
-     */
-    @Override
-    public void handle(MouseEvent ev) {
-        if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            mousePressed(ev);
-        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            mouseDragDetected(ev);
-        } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-            mouseDragged(ev);
-        } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            mouseReleased(ev);
-        }
-    }
-
-    /**
-     * The method is called when the user presses a primary mouse button. Saves
-     * the screen position of the mouse screen cursor.
-     *
-     * @param ev the event that describes the mouse events
-     */
-    protected void mousePressed(MouseEvent ev) {
-        if (ev.isPrimaryButtonDown()) {
-            
-            ev.consume();
-            return;
-        }
+    public static NodeDragManager getInstance() {
+        return SingletonInstance.INSTANCE;
     }
 
     /**
@@ -130,44 +35,65 @@ public class NodeDragManager implements EventHandler<MouseEvent> {
      *
      * @param ev the event that describes the mouse events
      */
+    @Override
     public void mouseDragged(MouseEvent ev) {
+        System.err.println("MOUSE DRAGGED");
         if (ev.isPrimaryButtonDown()) {
-
             TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
             if (tv == null) {
                 return;
             }
             NodeDragEvent nodeEvent = tv.getNodeDragEvent(ev);
             tv.fireEvent(nodeEvent);
-            
+            notifyEventFired(ev);
+
             ev.consume();
         }
     }
-   /**
+
+    /**
      * The method is called when a user releases the mouse button.
      *
      * Depending on whether or not the target object is detected during dragging
      * the method initiates a dock operation or just returns.
+     * <p>
+     * If the object of type {@link EventNotifier } specified then it's method {@link EventNotifier#notifyEventFired(javafx.scene.input.MouseEvent)
+     * is invoked jast after the tree view handled the event.
+     * </p>
      *
      * @param ev the event that describes the mouse events.
      */
+    @Override
     public void mouseReleased(MouseEvent ev) {
+        System.err.println("MOUSE RELEASED");
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
-        if (tv != null && ! ev.isConsumed()) {
+        if (tv != null && !ev.isConsumed()) {
             DragEvent dragEvent = tv.getDragEvent();
-            if ( dragEvent.getTransferMode() != TransferMode.COPY 
-                 &&  dragEvent.getTransferMode() != TransferMode.MOVE  ) {
+            if (dragEvent.getTransferMode() != TransferMode.COPY
+                    && dragEvent.getTransferMode() != TransferMode.MOVE) {
                 return;
             }
             tv.fireEvent(tv.getNodeDragEvent(ev));
+            notifyEventFired(ev);
         }
         Node source = (Node) ev.getSource();
-        source.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-        source.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        source.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        source.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
+        System.err.println("----------- RELEASED");
+/*        source.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+        source.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
+        source.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
+        source.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+*/
         ev.consume();
 
+    }
+
+    public Object getGestureSourceObject(Node source) {
+        return source.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
+    }
+
+    private static class SingletonInstance {
+
+        private static final NodeDragManager INSTANCE = new NodeDragManager();
     }
 
 }

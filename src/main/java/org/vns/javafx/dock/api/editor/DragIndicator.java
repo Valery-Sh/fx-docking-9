@@ -125,25 +125,18 @@ public class DragIndicator {
         double x1 = item1.getValue().getCellGraphic().getBoundsInParent().getWidth();
         double x2 = item2.getValue().getCellGraphic().getBoundsInParent().getWidth();
         return x1 - x2 < 0 ? x2 - x1 : x1 - x2;
-
     }
 
     protected double getItemParentOffset(TreeItem<ItemValue> item) {
         double parentOffset = 10;
         int level = treeView.getTreeItemLevel(item);
-        //System.err.println("item.getChildren.isEmpty=" + item.getChildren().isEmpty());
-        //System.err.println("item obj=" + item.getValue().getTreeItemObject());
         if (isVisibleOnTop(item) && !item.getChildren().isEmpty() && isVisibleOnTop(item.getChildren().get(0))) {
             parentOffset = getOffset(item, item.getChildren().get(0));
-            //System.err.println("1 getItemParentOffset = " + parentOffset);
         } else if (isVisibleOnTop(item) && item.getParent() != null && isVisibleOnTop(item.getParent())) {
             parentOffset = getOffset(item, item.getParent());
-            //System.err.println("2 getItemParentOffset = " + parentOffset);
         } else if (isVisibleOnTop(item) && item.getParent() != null && level > 0) {
             parentOffset = screenNonValueBounds(item).getWidth() / (level + 1);
-            //System.err.println("3 getItemParentOffset = " + parentOffset);
         }
-        //System.err.println("4 getItemParentOffset = " + parentOffset);
         return parentOffset;
     }
 

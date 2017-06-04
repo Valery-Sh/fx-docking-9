@@ -3,11 +3,11 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
 
 /**
  *
@@ -88,7 +88,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
      * @param toRemove a place holder TreeItem (one of five)
      */
     @Override
-    public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+    public void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
         TreeItemBuilder builder;
@@ -104,7 +104,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public void removeObject(Object parent, Object toRemove) {
+    public void removeChildObject(Object parent, Object toRemove) {
         BorderPane bp = (BorderPane) parent;
         if (bp.getTop() == toRemove) {
             bp.setTop(null);
@@ -268,9 +268,8 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
         }
 
         @Override
-        public TreeItemEx accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+        public TreeItemEx accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
             int idx = place.getParent().getChildren().indexOf(place);
-            BuildPos pos = BuildPos.values()[idx];
 
             TreeItemEx retval = null;
             DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
@@ -279,10 +278,26 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
             }
             Object value = dg.getGestureSourceObject();
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-                TreeItem treeItem = ((DragTreeViewGesture)dg).getGestureSourceTreeItem();
+                TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    notifyObjectRemove(treeView, treeItem);
-                    notifyTreeItemRemove(treeView, treeItem);
+                    //notifyObjectRemove(treeView, treeItem);
+                    treeView.removeTreeItemObject(treeItem);
+                    treeView.removeTreeItem(treeItem);
+
+                    //notifyTreeItemRemove(treeView, treeItem);
+                }
+            } else if (dg.getGestureSource() != null) {
+                TreeItem item;
+                item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
+                if (item != null) {
+                    treeView.removeTreeItemObject(item);
+                    treeView.removeTreeItem(item);
+                } else {
+                    ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
+                    if (r != null) {
+                        //r.remove(dg.getGestureSource());
+                        r.remove();
+                    }
                 }
             }
             ItemValue v = (ItemValue) place.getValue();

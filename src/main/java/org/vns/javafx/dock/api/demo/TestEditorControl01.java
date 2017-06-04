@@ -31,6 +31,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.editor.DragManager;
 import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
@@ -153,7 +154,14 @@ public class TestEditorControl01 extends Application {
         vboxLb1.setGraphic(rect);
         Button doAccept = new Button("Accept");
         Button stringDrag = new Button("String Drag");        
-        rootPane.getChildren().add(stringDrag);        
+        rootPane.getChildren().add(stringDrag);
+
+        Label tabNode = new Label("Tab");
+        tabNode.setId("labelTab1") ;
+        rootPane.getChildren().add(tabNode);
+        NodeDragManager.getInstance().enableDragAndDrop(new Tab(),tabNode,() -> {
+            System.err.println("tabNode = " + tabNode);
+            return true;});
         rootPane.getChildren().add(doAccept);
         Button dragObject = new Button("Drag Object");
         dragButton = new Button("Drag Button");
@@ -270,7 +278,7 @@ public class TestEditorControl01 extends Application {
         pp1 = null;
         
         
-        NodeDragManager dm = new NodeDragManager();
+        DragManager dm = NodeDragManager.getInstance();
         //dm.enableDragAndDrop(dragButton,doAccept);
         dm.enableDragAndDrop("NEW TEXT", stringDrag);
         //dm.enableDragAndDrop(doAccept);

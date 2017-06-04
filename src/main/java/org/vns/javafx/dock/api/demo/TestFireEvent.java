@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.NodeDragEvent;
-import org.vns.javafx.dock.api.editor.ChildrenNodeRemover;
 
 /**
  *
@@ -60,8 +59,8 @@ public class TestFireEvent  extends Application {
         //stage2.show();
         
         btn01.setOnAction(a -> {
-            ChildrenNodeRemover r = n -> vboxPane.getChildren().remove(n);
-            r.remove(btn03);
+            //ChildrenNodeRemover r = n -> vboxPane.getChildren().remove(n);
+            //r.remove(btn03);
         });
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);

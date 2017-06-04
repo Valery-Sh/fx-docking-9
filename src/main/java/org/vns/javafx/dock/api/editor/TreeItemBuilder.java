@@ -20,7 +20,7 @@ public interface TreeItemBuilder {
         return null;
     }
 */
-    TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource);    
+    TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource);    
     TreeItem build(Object obj);
 
     default TreeItem createItem(Object obj, Object... others) {
@@ -42,39 +42,65 @@ public interface TreeItemBuilder {
     }
 
     Node createItemContent(Object obj, Object... others);
+    /**
+     * Removes the specified {@code toRemove) object from the given 
+     * {@code parent} one.
+     * The {@code parent object} can be of any type. For example it can
+     * represent a node of type {@VBox}. The {@code toRemove} also can be of 
+     * any type for example a node of type {@code Button}. Then the method 
+     * will try to remove the button from the children collection of the VBox pane.
+     * 
+     * @param parent the parent object to remove from
+     * @param toRemove  the object to be removed.
+     */
+    void removeChildObject(Object parent, Object toRemove);
 
-    default void removeObject(Object parent, Object toRemove) {
-
-    }
-
-    default void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
-        parent.getChildren().remove(toRemove);
-    }
+    /**
+     * Removes the specified {@code toRemove) tree item from the given 
+     * {@code parent} one.
+     * The {@code parent item can represent the object of type {@code Node} or
+     * any other type, for example {@code Tab} element of {@code TabPane}.
+     * Usually it will be enough to remove the item from it's parent 
+     * applying the code:
+     * <pre>
+     *    toRemove.getParent().getChildren().remove(toRemove)
+     * </pre>
+     * However, in more complex cases, this will not be enough.
+     * @param parent the parent object to remove from
+     * @param toRemove  the object to be removed.
+     */
+    void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove);
 
     default TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
         return null;
     }
-
-    default void notifyObjectRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+    /**
+     * Removes the object specified by the parameter {@code toRemove}.
+     * When a tree item @code toRemove} is dragged and dropped on another
+     * item {@code item2} 
+     * @param treeView
+     * @param toRemove 
+     */
+/*    default void notifyObjectRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parentItem = toRemove.getParent();
         if (parentItem != null && toRemove != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
             Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeObject(parent, remove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildObject(parent, remove);
         }
     }
-
-    default void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
+*/
+/*    default void notifyTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
         if (toRemove == null) {
             return;
         }
         TreeItem<ItemValue> parentItem = toRemove.getParent();
         if (parentItem != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeItem(parentItem, toRemove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem(parentItem, toRemove);
         }
     }
-
+*/
     /**
      *
      * @param treeView the treeView/ Cannot be null

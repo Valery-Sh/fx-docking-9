@@ -59,7 +59,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItem retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
@@ -72,8 +72,11 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
         if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
             TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
-                notifyObjectRemove(treeView, treeItem);
-                notifyTreeItemRemove(treeView, treeItem);
+                //notifyObjectRemove(treeView, treeItem);
+                treeView.removeTreeItemObject(treeItem);
+                treeView.removeTreeItem(treeItem);
+                
+                //notifyTreeItemRemove(treeView, treeItem);
             }
         } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
             TreeItem<ItemValue> treeItem = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
@@ -81,10 +84,11 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
                 //
                 // We must delete the item
                 //
-                notifyObjectRemove(treeView, treeItem);
-                notifyTreeItemRemove(treeView, treeItem);
-
-                //treeItem.getParent().getChildren().removeObject(treeItem);
+                //notifyObjectRemove(treeView, treeItem);
+                treeView.removeTreeItemObject(treeItem);
+                treeView.removeTreeItem(treeItem);
+                
+                //notifyTreeItemRemove(treeView, treeItem);
             }
         }
 
@@ -98,27 +102,15 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
         return retval;
     }
 
-    /*    @Override
-    public void childrenTreeItemRemove(TreeView treeView, TreeItem<ItemValue> toRemove) {
-        TreeItem<ItemValue> parent = toRemove.getParent();
-        if (parent != null ) {
-            Object obj = ((ItemValue) parent.getValue()).getTreeItemObject();
-            if ( obj instanceof Tab) {
-                ((Tab)obj).setContent(null);
-            }
-//            TreeItemBuilderRegistry.getInstance().getBuilder(obj).childrenTreeItemRemove(treeView, toRemove);
-        }
-    }
-     */
     @Override
-    public void removeObject(Object parent, Object toRemove) {
+    public void removeChildObject(Object parent, Object toRemove) {
         if (parent != null && (parent instanceof Tab)) {
             ((Tab) parent).setContent(null);
         }
     }
 
     @Override
-    public void removeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+    public void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
         parent.getChildren().remove(toRemove);
     }
 

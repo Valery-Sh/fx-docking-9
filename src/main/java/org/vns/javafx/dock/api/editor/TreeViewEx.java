@@ -20,11 +20,10 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
     private final SceneGraphView sceneGraphView;
-    
-    private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent)null);
+
+    private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
     private DragEvent dragEvent;
-    
-    
+
     public TreeViewEx(SceneGraphView editor) {
         super();
         this.sceneGraphView = editor;
@@ -42,9 +41,9 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         addEventFilter(NodeDragEvent.NODE_DRAG, this);
         getStyleClass().add(LOOKUP_SELECTOR);
     }
-    public static int cc =0;
-    
-    public NodeDragEvent getNodeDragEvent(MouseEvent ev ) {
+    public static int cc = 0;
+
+    public NodeDragEvent getNodeDragEvent(MouseEvent ev) {
         nodeDragEvent.setMouseEvent(ev);
         return nodeDragEvent;
     }
@@ -52,11 +51,39 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public DragEvent getDragEvent() {
         return dragEvent;
     }
+
     public void notifyDragEvent(DragEvent dragEvent) {
         this.dragEvent = dragEvent;
     }
-    
-    
+
+    /**
+     * Removes the object specified by the parameter {@code toRemove}. 
+     * When a tree item @code toRemove} is dragged and dropped on another item
+     * {@code item2}
+     *
+     * @param treeView
+     * @param toRemove
+     */
+    public void removeTreeItemObject(TreeItem<ItemValue> toRemove) {
+        TreeItem<ItemValue> parentItem = toRemove.getParent();
+        if (parentItem != null && toRemove != null) {
+            Object parent = parentItem.getValue().getTreeItemObject();
+            Object remove = toRemove.getValue().getTreeItemObject();
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildObject(parent, remove);
+        }
+    }
+
+    public void removeTreeItem(TreeItem<ItemValue> toRemove) {
+        if (toRemove == null) {
+            return;
+        }
+        TreeItem<ItemValue> parentItem = toRemove.getParent();
+        if (parentItem != null) {
+            Object parent = parentItem.getValue().getTreeItemObject();
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem(parentItem, toRemove);
+        }
+    }
+
     public SceneGraphView getSceneGraphView() {
         return sceneGraphView;
     }
@@ -69,6 +96,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public VirtualScrollBar getVScrollBar() {
         return ((TreeViewExSkin) getSkin()).getVScrollBar();
     }
+
     public VirtualScrollBar getHScrollBar() {
         return ((TreeViewExSkin) getSkin()).getHScrollBar();
     }
@@ -133,7 +161,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
         if (item != null) {
             item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);
-            
+
         } else if (isInsideTreeView(ev.getMouseEvent())) {
             fireEvent(dragEvent);
         }

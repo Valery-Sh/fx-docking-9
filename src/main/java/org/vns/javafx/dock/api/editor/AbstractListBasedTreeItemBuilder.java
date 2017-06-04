@@ -2,9 +2,9 @@ package org.vns.javafx.dock.api.editor;
 
 import java.util.List;
 import javafx.scene.Node;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
 import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 
 /**
@@ -123,7 +123,7 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
     }
 
     @Override
-    public TreeItem accept(TreeView treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
@@ -137,8 +137,11 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItem treeItem = ((DragTreeViewGesture)dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    targetBuilder.notifyObjectRemove(treeView, treeItem);
-                    targetBuilder.notifyTreeItemRemove(treeView, treeItem);
+                    //targetBuilder.notifyObjectRemove(treeView, treeItem);
+                    treeView.removeTreeItemObject(treeItem);
+                    treeView.removeTreeItem(treeItem);
+                    
+                    //targetBuilder.notifyTreeItemRemove(treeView, treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItem item;
@@ -147,13 +150,17 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
                     if (item == null) {
                         return null;
                     }
-                    targetBuilder.notifyObjectRemove(treeView, item);
-                    targetBuilder.notifyTreeItemRemove(treeView, item);
+                    //targetBuilder.notifyObjectRemove(treeView, item);
+                    treeView.removeTreeItemObject(item);
+                    treeView.removeTreeItem(item);
+                    
+                    //targetBuilder.notifyTreeItemRemove(treeView, item);
 
                 } else if (idx < 0) {
-                    ChildrenNodeRemover r = (ChildrenNodeRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
+                    ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
-                        r.remove(dg.getGestureSource());
+                        //r.remove(dg.getGestureSource());
+                        r.remove();
                     }
                 }
             }
@@ -183,7 +190,7 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends DefaultTreeIte
     }
 
     @Override
-    public void removeObject(Object parent, Object toRemove) {
+    public void removeChildObject(Object parent, Object toRemove) {
         getList(parent).remove(toRemove);
     }
 
