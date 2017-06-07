@@ -27,6 +27,7 @@ public class EditorUtil {
     public static final String DRAGBOARD_KEY = "dragboard-url-key";
     public static final String REMOVER_KEY = "remove-children-node-key";
     public static final String MOUSE_EVENT_NOTIFIER_KEY = "mouse-event-notifier-key";
+    public static final String CHANGE_LISTENER = "object-change-handler-listener-key";
 
     protected static TreeItem parentOfLevel(TreeView treeView, TreeItem item, int level) {
         TreeItem it = item;
@@ -61,8 +62,8 @@ public class EditorUtil {
      * from the full bounds of the cell only with a {@code width } value.
      *
      * @param treeView the tree view of the specified {@code treeItem}
-     * @param treeItem
-     * @return
+     * @param treeItem ???
+     * @return ???
      */
     public static Bounds screenHorVisibleBounds(TreeViewEx treeView, TreeItem<ItemValue> treeItem) {
         Node node = treeItem.getValue().getCellGraphic().getParent();
@@ -175,24 +176,43 @@ public class EditorUtil {
     }
      */
     public static TreeItem<ItemValue> findTreeItemByObject(TreeView treeView, Object sourceGesture) {
-        return findTreeItem(treeView.getRoot(), sourceGesture);
+        return findChildTreeItem(treeView.getRoot(), sourceGesture);
     }
 
-    protected static TreeItem<ItemValue> findTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
+    protected static TreeItem<ItemValue> findChildTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
         TreeItem retval = null;
+        if ( item.getChildren() == null ) {
+            return null;
+        }
         for (TreeItem<ItemValue> it : item.getChildren()) {
             if (it.getValue().getTreeItemObject() == sourceGesture) {
                 retval = it;
                 break;
             }
-            retval = findTreeItem(it, sourceGesture);
+            retval = findChildTreeItem(it, sourceGesture);
             if (retval != null) {
                 break;
             }
         }
         return retval;
     }
-
+    protected static TreeItem<ItemValue> findByTreeItemObject(TreeItem<ItemValue> item) {
+        if ( item.getValue().getTreeItemObject() == null ) {
+            return null;
+        }
+        TreeItem<ItemValue>  root = findRootTreeItem(item);
+        return findChildTreeItem(root, item.getValue().getTreeItemObject());
+    }    
+    protected static TreeItem<ItemValue> findRootTreeItem(TreeItem<ItemValue> item) {
+        TreeItem<ItemValue>  root = item;
+        TreeItem<ItemValue>  retval = null;
+        while ( root != null  ) {
+            retval = root;
+            root = root.getParent();
+            
+        }
+        return retval;
+    }
     public static TreeItem<ItemValue> findTreeItem(TreeView<ItemValue> treeView, double x, double y) {
         TreeItem<ItemValue> retval = null;
         int count = treeView.getExpandedItemCount();

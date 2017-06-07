@@ -1,11 +1,7 @@
 package org.vns.javafx.dock.api.editor;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
  *
@@ -37,7 +33,6 @@ public class NodeDragManager extends AbstractDragManager {
      */
     @Override
     public void mouseDragged(MouseEvent ev) {
-        System.err.println("MOUSE DRAGGED");
         if (ev.isPrimaryButtonDown()) {
             TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
             if (tv == null) {
@@ -57,7 +52,7 @@ public class NodeDragManager extends AbstractDragManager {
      * Depending on whether or not the target object is detected during dragging
      * the method initiates a dock operation or just returns.
      * <p>
-     * If the object of type {@link EventNotifier } specified then it's method {@link EventNotifier#notifyEventFired(javafx.scene.input.MouseEvent)
+     * If the object of type {@link EventNotifier } specified then it's method {@link EventNotifier#notifyEventFired(javafx.scene.input.MouseEvent)}
      * is invoked jast after the tree view handled the event.
      * </p>
      *
@@ -65,24 +60,22 @@ public class NodeDragManager extends AbstractDragManager {
      */
     @Override
     public void mouseReleased(MouseEvent ev) {
-        System.err.println("MOUSE RELEASED");
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
         if (tv != null && !ev.isConsumed()) {
-            DragEvent dragEvent = tv.getDragEvent();
+/*            DragEvent dragEvent = tv.getDragEvent();
+            
+            System.err.println("dragEvent.getTransferMode() = " + dragEvent.getAcceptedTransferMode());
             if (dragEvent.getTransferMode() != TransferMode.COPY
                     && dragEvent.getTransferMode() != TransferMode.MOVE) {
+                return;
+            }
+*/
+            if ( ! tv.isDragAccepted() ) {
                 return;
             }
             tv.fireEvent(tv.getNodeDragEvent(ev));
             notifyEventFired(ev);
         }
-        Node source = (Node) ev.getSource();
-        System.err.println("----------- RELEASED");
-/*        source.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-        source.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-        source.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
-        source.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
-*/
         ev.consume();
 
     }
@@ -92,7 +85,6 @@ public class NodeDragManager extends AbstractDragManager {
     }
 
     private static class SingletonInstance {
-
         private static final NodeDragManager INSTANCE = new NodeDragManager();
     }
 

@@ -20,9 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javafx.scene.Node;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
@@ -82,7 +80,7 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
     public abstract boolean isAcceptable(Object obj);
 
     @Override
-    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 

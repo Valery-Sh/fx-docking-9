@@ -76,6 +76,7 @@ public class ReflectHelper {
      * If it is a {@link Proxy#isProxyClass(java.lang.Class)} that implements a
      * non-public interface (i.e. may be in a non-restricted package), also
      * check the package access on the proxy interfaces.
+     * @param clazz ???
      */
     public static void checkPackageAccess(Class<?> clazz) {
         SecurityManager s = System.getSecurityManager();
@@ -88,6 +89,7 @@ public class ReflectHelper {
      * Checks package access on the given classname. This method is typically
      * called when the Class instance is not available and the caller attempts
      * to load a class on behalf the true caller (application).
+     * @param name ???
      */
     public static void checkPackageAccess(String name) {
         SecurityManager s = System.getSecurityManager();
@@ -154,6 +156,8 @@ public class ReflectHelper {
      * Test if the given class is a proxy class that implements non-public
      * interface. Such proxy class may be in a non-restricted package that
      * bypasses checkPackageAccess.
+     * @param cls ??
+     * @return ??
      */
     public static boolean isNonPublicProxyClass(Class<?> cls) {
         if (!Proxy.isProxyClass(cls)) {

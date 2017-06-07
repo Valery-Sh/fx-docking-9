@@ -15,12 +15,9 @@
  */
 package org.vns.javafx.dock.api.editor;
 
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
 
 /**
@@ -36,7 +33,6 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
      * @param ev the event that describes the mouse events.
      */
     protected void mouseDragDetected(MouseEvent ev) {
-        System.err.println("MOUSE DRAGD_ETECTED");
         if (ev.isPrimaryButtonDown()) {
             notifyEventFired(ev);
             ev.consume();
@@ -45,7 +41,6 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
     }
 
     protected void registerMousePressed(Node source) {
-        System.err.println("REGISTR MOUSE_PRESSED");
         source.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
     }
 
@@ -61,7 +56,6 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
         if (remover != null) {
             source.getProperties().put(EditorUtil.REMOVER_KEY, remover);
         }
-        System.err.println("REGISTR DRAG_DETECTED");
         source.addEventHandler(MouseEvent.DRAG_DETECTED, this);
     }
     public void setChildrenRemover(Node source, ChildrenRemover remover) {
@@ -83,19 +77,15 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
     }
     
     protected void registerMouseReleased(Node source) {
-        //source.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
-        System.err.println("REGISTR MOUSE_RELEASED");
         source.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
     }
 
     protected void registerMouseDragged(Node source) {
-        System.err.println("REGISTR MOUSE_DRAGGED");
         source.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
     }
 
     @Override
     public DragManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenRemover remover) {
-        System.err.println("ENABLE DRAG AND DROP");
         disableDragAndDrop(source);
 
         registerMousePressed(source);
@@ -142,8 +132,6 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
      * @param ev the event that describes the mouse events
      */
     protected void mousePressed(MouseEvent ev) {
-        //notifyEventFired(ev);
-        System.err.println("MOUSE PRESSED");
         if (ev.isPrimaryButtonDown() ) {
             notifyEventFired(ev);
             ev.consume();

@@ -1,38 +1,42 @@
+/*
+ * Copyright 2017 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.DragManager;
-import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
 
-public class TestNodeDragManager  extends Application {
+/**
+ *
+ * @author Valery
+ */
+public class TestBorderPaneItemBuilder01   extends Application {
 
     private Line vertLine = new Line();
     private Button dragButton;
@@ -46,6 +50,8 @@ public class TestNodeDragManager  extends Application {
         vbox.setId("vbox1");
         Button btn1 = new Button("btn1");
         vbox.getChildren().add(btn1);
+        //Button btn2 = new Button("btn2");
+        //vbox.getChildren().add(btn2);
 
         HBox hbox = new HBox();
         hbox.setId("hbox");
@@ -63,8 +69,8 @@ public class TestNodeDragManager  extends Application {
         tabPane2.getTabs().add(tab22);
         
         
-        VBox treeViewRoot = new VBox(vbox,hbox,tabPane1);
-        treeViewRoot.setId("ROOT");
+        VBox pane1 = new VBox(vbox,hbox,tabPane1);
+        pane1.setId("ROOT");
         
         //tab22.setContent(treeViewRoot);
         
@@ -124,14 +130,26 @@ public class TestNodeDragManager  extends Application {
         btn3.setOnAction(a -> {
             vbox.getChildren().remove(btn1);
         });
-        VBox vbox1 = new VBox(dragBtn1, btn2,btn3, btn4,btn5);
+        
+        BorderPane borderPane1 = new BorderPane();
+        borderPane1.setBottom(new Button("bpBtn1"));
+        borderPane1.setMinSize(70,70);
+        borderPane1.setStyle("-fx-border-width: 2; -fx-border-color: blue;");
+        //VBox vbox1 = new VBox( borderPane1,dragBtn1, btn2,btn3, btn4,btn5);
+        btn1.setOnAction(e -> {
+            borderPane1.setTop(btn2);
+        });
+
+        VBox vbox1 = new VBox( borderPane1,dragBtn1, btn2,btn3, btn4,btn5);
         
         tab21.setContent(vbox1);
         
         Button tabContent22 = new Button("btn of Tab22");
         //tab22.setContent(tabContent22);
-
-        VBox rootPane = new VBox(tabPane2);
+        
+        VBox forGraphView = new VBox(tabPane2);
+//        Scene scene = new Scene(forGraphView);
+        VBox rootPane = new VBox(pane1, forGraphView);
         Scene scene = new Scene(rootPane);
 
         stage.setTitle("Test EditorTreeView");
@@ -142,7 +160,7 @@ public class TestNodeDragManager  extends Application {
         stage.setY(20);
         
 //        SceneGraphView graphView = new SceneGraphView(treeViewRoot);
-        SceneGraphView graphView = new SceneGraphView(rootPane);
+        SceneGraphView graphView = new SceneGraphView(forGraphView);
         Label statusBar = new Label("It is STAUS BAR");
         graphView.setStatusBar(statusBar);
         

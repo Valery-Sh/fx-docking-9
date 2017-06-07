@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
@@ -88,11 +89,11 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
      * @param toRemove a place holder TreeItem (one of five)
      */
     @Override
-    public void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+    public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
         TreeItemBuilder builder;
-        if (obj == null) {
+/*        if (obj == null) {
             //
             // PlaceHolderBuilder will be returned
             //
@@ -100,6 +101,8 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
         } else {
             builder = parent.getValue().getBuilder().getPlaceHolderBuilder(toRemove);
         }
+*/
+        builder = toRemove.getBuilder();
         ((BorderPanePlaceholderBuilder) builder).setContent(toRemove, null);
     }
 
@@ -120,15 +123,59 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    public TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
         return placeholderBuilder;
     }
 
     @Override
-    public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
-            TreeItem<ItemValue> place,
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
+            TreeItemEx place,
             Object dragObject) {
         return false;
+    }
+
+    @Override
+    public void registerChangeHandler(TreeItemEx item) {
+        final BorderPane pane = (BorderPane) item.getObject();
+        pane.topProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue == null && newValue != null) {
+                TreeItem<ItemValue> it = EditorUtil.findRootTreeItem(item);
+                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) item.getBuilder().getPlaceHolderBuilder(null);                
+                builder.setContent((TreeItemEx)item.getChildren().get(0), newValue);
+            } else if (oldValue != null && newValue == null) {
+                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) item.getBuilder().getPlaceHolderBuilder(null);                
+                builder.setContent((TreeItemEx)item.getChildren().get(0), null);
+            } else if (oldValue != null && newValue != null) {
+
+            }
+        });
+        //parentProperty().addListener( (observable, oldValue, newValue) -> {            
+//            graphic.parentProperty().addListener( (observable, oldValue, newValue) -> {
+/*            Node graphic = (Node) item.getValue().getTreeItemObject();  
+            System.err.println("LABELED placeholder registerchangeHandler graphic = " + graphic);
+            graphic.parentProperty().addListener( (observable, oldValue, newValue) -> {
+                System.err.println("NULL Graphic oldValue= " + oldValue + "; newValue=" + newValue);
+                if (oldValue != null) {
+                    //TreeItemBuilder oldParentBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
+                    removeChildObject(oldValue,graphic);
+                    //TreeViewEx.removeTreeItemObject(item);
+                   //((Labeled)oldValue).setGraphic(null);
+                } else if ( newValue != null) {
+                    //((Labeled)oldValue).setGraphic(newValue);
+                }
+            });
+            System.err.println("Labaeld Palceholder registerChangeHandler " + item.getValue().getTreeItemObject());
+         */
+    }
+
+    @Override
+    public void unregisterChangeHandler(TreeItemEx item) {
+        //Object treeItemObject = (Labeled) item.getValue().getTreeItemObject();
+        if (item.getValue().getChangeListener() == null) {
+            return;
+        }
+        item.getValue().treeItemObjectProperty().removeListener((ChangeListener) item.getValue().getChangeListener());
+        item.getValue().setChangeListener(null);
     }
 
     public static class BorderPanePlaceholderBuilder extends DefaultTreeItemBuilder {
@@ -227,9 +274,10 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
             return hb;
         }
 
-        protected void setContent(TreeItem<ItemValue> item, Object obj) {
+        protected void setContent(TreeItemEx item, Object obj) {
             HBox c = getItemContentPane(item);
             HBox hb = (HBox) c.getChildren().get(0);
+            hb.setMouseTransparent(true);
             if (obj != null) {
                 Label glb = new Label(obj.getClass().getSimpleName());
 
@@ -239,18 +287,21 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 if (obj instanceof Labeled) {
                     glb.setText(glb.getText() + " " + ((Labeled) obj).getText());
                 }
+                glb.setMouseTransparent(true);
             } else {
                 hb.getChildren().remove(1);
                 Label lb = (Label) hb.getChildren().get(0);
                 lb.setText(item.getValue().getTitle());
                 item.getValue().setTreeItemObject(null);
+                lb.setMouseTransparent(true);
+                
             }
 
         }
 
         @Override
-        public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
-                TreeItem<ItemValue> place,
+        public boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
+                TreeItemEx place,
                 Object dragObject) {
             boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
             if (!retval) {
@@ -268,8 +319,8 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
         }
 
         @Override
-        public TreeItemEx accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
-            int idx = place.getParent().getChildren().indexOf(place);
+        public TreeItemEx accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
+            //int idx = place.getParent().getChildren().indexOf(place);
 
             TreeItemEx retval = null;
             DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
@@ -282,7 +333,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 if (treeItem instanceof TreeItemEx) {
                     //notifyObjectRemove(treeView, treeItem);
                     treeView.removeTreeItemObject(treeItem);
-                    treeView.removeTreeItem(treeItem);
+                    //treeView.removeTreeItem(treeItem);
 
                     //notifyTreeItemRemove(treeView, treeItem);
                 }
@@ -291,7 +342,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
                 if (item != null) {
                     treeView.removeTreeItemObject(item);
-                    treeView.removeTreeItem(item);
+                    //treeView.removeTreeItem(item);
                 } else {
                     ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
@@ -300,17 +351,31 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                     }
                 }
             }
-            ItemValue v = (ItemValue) place.getValue();
-            v.setTreeItemObject(value);
-
-            setContent(place, value);
-
+            setNode(place, (Node) value);
+            place.getValue().setTreeItemObject(value);
+            boolean b = place.getValue().isPlaceholder();
+            int r = treeView.getRow(place); 
+            //System.err.println("BorderPane place.obj= " + place.getValue().getTreeItemObject());            
+            //System.err.println("BorderPane row = " + r + "; isPlaceholder=" + b);
             return retval;
 
         }
-
+        private void setNode(TreeItemEx place, Node value) {
+            BorderPane bp = (BorderPane) place.getParent().getValue().getTreeItemObject();
+            if (place == place.getParent().getChildren().get(0) ) {
+                bp.setTop(value);
+            } else if (place == place.getParent().getChildren().get(1) ) {
+                bp.setRight(value);
+            } else if (place == place.getParent().getChildren().get(2) ) {
+                bp.setBottom(value);
+            } else if (place == place.getParent().getChildren().get(3) ) {
+                bp.setLeft(value);
+            } else if (place == place.getParent().getChildren().get(4) ) {
+                bp.setCenter(value);
+            }            
+        }  
         @Override
-        public TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+        public TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
             return null;
         }
     }

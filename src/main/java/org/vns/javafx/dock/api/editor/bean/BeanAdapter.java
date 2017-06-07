@@ -604,7 +604,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Determines the type of a list item.
      *
-     * @param listType
+     * @param listType ??
      * @return ???
      */
     public static Class<?> getListItemType(Type listType) {
@@ -746,6 +746,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * @param name The name of the constant.
      * @return ???
+     * @throws java.lang.NoSuchFieldException ???
      */
     public static Object getConstantValue(Class<?> type, String name) throws NoSuchFieldException {
         if (type == null) {

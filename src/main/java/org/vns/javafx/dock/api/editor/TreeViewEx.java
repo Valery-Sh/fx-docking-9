@@ -14,7 +14,7 @@ import javafx.scene.input.TransferMode;
 /**
  *
  * @author Valery
- * @param <T>
+ * @param <T> ??
  */
 public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEvent> {
 
@@ -23,6 +23,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
     private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
     private DragEvent dragEvent;
+    private boolean dragAccepted;
 
     public TreeViewEx(SceneGraphView editor) {
         super();
@@ -51,9 +52,15 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public DragEvent getDragEvent() {
         return dragEvent;
     }
+    public boolean isDragAccepted() {
+        return dragAccepted;
+    }
 
     public void notifyDragEvent(DragEvent dragEvent) {
         this.dragEvent = dragEvent;
+    }
+    public void notifyDragAccepted(boolean dragAccepted) {
+        this.dragAccepted = dragAccepted;
     }
 
     /**
@@ -61,10 +68,9 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
      * When a tree item @code toRemove} is dragged and dropped on another item
      * {@code item2}
      *
-     * @param treeView
-     * @param toRemove
+     * @param toRemove ??
      */
-    public void removeTreeItemObject(TreeItem<ItemValue> toRemove) {
+    public static void removeTreeItemObject(TreeItem<ItemValue> toRemove) {
         TreeItem<ItemValue> parentItem = toRemove.getParent();
         if (parentItem != null && toRemove != null) {
             Object parent = parentItem.getValue().getTreeItemObject();
@@ -80,7 +86,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         TreeItem<ItemValue> parentItem = toRemove.getParent();
         if (parentItem != null) {
             Object parent = parentItem.getValue().getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem(parentItem, toRemove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem((TreeItemEx)parentItem, (TreeItemEx)toRemove);
         }
     }
 

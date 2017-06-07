@@ -1,7 +1,10 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 
 /**
@@ -12,12 +15,15 @@ import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 public class ItemValue {
 
     private final TreeItem treeItem;
-    private Object treeItemObject;
+    private ObjectProperty treeItemObject = new SimpleObjectProperty();
+    
+    //private Object treeItemObject;
 
     private boolean placeholder;
     private Node cellGraphic;
     private String title;
     private int dragDropQualifier;
+    private Object changeListener;
     
     /**
      * Creates a new instance of the class for the specified {@code TreeItem}.
@@ -27,6 +33,35 @@ public class ItemValue {
     public ItemValue(TreeItem treeItem) {
         this.dragDropQualifier = FIRST;
         this.treeItem = treeItem;
+//        System.err.println("*** newValue treeItem = " + treeItem);
+        
+        init();
+    }
+    private void init() {
+        treeItemObject.addListener((observable, oldValue, newValue) -> {
+            TreeItemBuilder b;
+//            System.err.println("ItemValue listener oldVlalue = " + oldValue + "; newValue=" + newValue);
+            if ( newValue != null ) {
+//                System.err.println("*** newValue != null newValue = " + newValue);
+//                System.err.println("*** newValue getTreeItem() = " + getTreeItem());
+                TreeItemEx t = getTreeItem().treeItemOf(newValue);
+                b = TreeItemBuilderRegistry.getInstance().getBuilder(newValue);
+                if ( b != null ) {
+//                    System.err.println("*** item new Value = " + newValue);
+                    b.registerChangeHandler(getTreeItem());
+                }
+                
+            } else  if ( oldValue != null && newValue == null ) {
+//                System.err.println("*** newValue == ");
+                
+                TreeItemEx t = getTreeItem().treeItemOf(newValue);
+                if ( t != null ) {
+                    b = t.getBuilder();
+                    b.unregisterChangeHandler(t);
+                }
+                
+            }
+        });
     }
     /**
      * Returns the owner of this object.
@@ -34,8 +69,12 @@ public class ItemValue {
      * @return the object of type {@code TreeItem} which value property is 
      * this object.
      */
-    public TreeItem getTreeItem() {
-        return treeItem;
+    public TreeItemEx getTreeItem() {
+        return (TreeItemEx) treeItem;
+    }
+    
+    public ObjectProperty treeItemObjectProperty() {
+        return treeItemObject;
     }
     /**
      * Returns an object which was used to create an instance of
@@ -44,7 +83,7 @@ public class ItemValue {
      * {@code TreeItem}.
      */
     public Object getTreeItemObject() {
-        return treeItemObject;
+        return treeItemObject.get();
     }
 
     public int getDragDropQualifier() {
@@ -59,8 +98,17 @@ public class ItemValue {
      * @param treeItemObject the new value to be set
      */
     public void setTreeItemObject(Object treeItemObject) {
-        this.treeItemObject = treeItemObject;
+        this.treeItemObject.set(treeItemObject);
     }
+
+    public Object getChangeListener() {
+        return changeListener;
+    }
+
+    public void setChangeListener(Object changeListener) {
+        this.changeListener = changeListener;
+    }
+    
     /**
      * Return a string value which is used to display a text of the {@code TreeItem}
      * @return Return a string value which is used to display a text of the {@code TreeItem}
@@ -80,11 +128,11 @@ public class ItemValue {
 
     public TreeItemBuilder getBuilder() {
         TreeItemBuilder builder;
-        if (isPlaceholder() && treeItemObject == null) {
-            TreeItem<ItemValue> p = treeItem.getParent();
+        if (isPlaceholder() && getTreeItemObject() == null) {
+            TreeItemEx p = (TreeItemEx) treeItem.getParent();
             builder = p.getValue().getBuilder().getPlaceHolderBuilder(p);
         } else {
-            builder = TreeItemBuilderRegistry.getInstance().getBuilder(treeItemObject);
+            builder = TreeItemBuilderRegistry.getInstance().getBuilder(getTreeItemObject());
         }
         return builder;
     }

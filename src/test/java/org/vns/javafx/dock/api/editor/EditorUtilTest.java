@@ -196,7 +196,7 @@ public class EditorUtilTest {
     }
 
     /**
-     * Test of findTreeItem method, of class EditorUtil.
+     * Test of findChildTreeItem method, of class EditorUtil.
      */
     @Test
     public void testFindTreeItem_TreeItem_Object() {
@@ -204,14 +204,14 @@ public class EditorUtilTest {
         TreeItem<ItemValue> item = null;
         Object sourceGesture = null;
         TreeItem<ItemValue> expResult = null;
-//        TreeItem<ItemValue> result = EditorUtil.findTreeItem(item, sourceGesture);
+//        TreeItem<ItemValue> result = EditorUtil.findChildTreeItem(item, sourceGesture);
 //        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
     }
 
     /**
-     * Test of findTreeItem method, of class EditorUtil.
+     * Test of findChildTreeItem method, of class EditorUtil.
      */
     @Test
     public void testFindTreeItem_3args() {
@@ -220,7 +220,7 @@ public class EditorUtilTest {
         double x = 0.0;
         double y = 0.0;
         TreeItem<ItemValue> expResult = null;
-//        TreeItem<ItemValue> result = EditorUtil.findTreeItem(treeView, x, y);
+//        TreeItem<ItemValue> result = EditorUtil.findChildTreeItem(treeView, x, y);
 //        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");

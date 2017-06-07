@@ -46,11 +46,18 @@ public class TestBorderPane extends Application {
         
         Button b02 = new Button("Change Orientation");
         Button b03 = new Button("Change Side");
+        Button b04 = new Button("center Button");
         //borderPane.getChildren().addAll(b01,b02,b03);
         borderPane.setTop(b01);
         borderPane.getChildren().add(b02);
-        System.err.println("borderPane.getChildren().size()=" + borderPane.getChildren().size());
+        borderPane.getChildren().add(b03);
+        borderPane.setCenter(b04);
+        System.err.println("0 borderPane.getChildren().size()=" + borderPane.getChildren().size());
         
+        b01.setOnAction(e->{
+            borderPane.setCenter(null);
+            System.err.println("1 borderPane.getChildren().size()=" + borderPane.getChildren().size());            
+        });
         
         stage.setScene(scene);
         stage.setOnShown(s -> {

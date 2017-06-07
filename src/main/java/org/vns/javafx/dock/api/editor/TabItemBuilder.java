@@ -3,7 +3,6 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -59,7 +58,7 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItem retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
@@ -110,13 +109,13 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove) {
+    public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         parent.getChildren().remove(toRemove);
     }
 
     @Override
-    public boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
-            TreeItem<ItemValue> place,
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
+            TreeItemEx place,
             Object dragObject) {
         boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
         if (!retval) {

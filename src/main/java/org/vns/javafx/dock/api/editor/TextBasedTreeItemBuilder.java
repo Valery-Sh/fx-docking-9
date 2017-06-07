@@ -20,9 +20,7 @@ import java.lang.reflect.Method;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
@@ -116,7 +114,7 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
      * Node and the specified target doesn't have children
      */
     @Override
-    public TreeItemEx accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource) {
+    public TreeItemEx accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItemEx retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);

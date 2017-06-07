@@ -42,8 +42,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @param ev the event of type {@code DragEvent }
      * @return a tree item which is an actual target of a drag gesture.
      */
-    protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev) {
-        return getEditor().getTargetTreeItem(ev, getTreeCellItem());
+    protected TreeItemEx getTargetTreeItem(DragEvent ev) {
+        return (TreeItemEx) getEditor().getTargetTreeItem(ev, getTreeCellItem());
     }
 
     /**
@@ -160,7 +160,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
             return false;
         }
         //System.err.println("isAdmissiblePosition supported");
-        TreeItem<ItemValue> target = getTargetTreeItem(ev);
+        TreeItemEx target = getTargetTreeItem(ev);
 
         if (target == null) {
             return false;
@@ -173,6 +173,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         // Delegate to check if admissible to a DefaultTreeItemBuilder of the target item
         //
         //System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
+
+        //System.err.println("BUILDER target.getValue().getBuilder() = " + target.getValue().getBuilder());
         return target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
 
     }
@@ -185,7 +187,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @param place the item the rectangle indicator may be drawn around.
      * @return true if a rectangular indicator must be drawn. false otherwise
      */
-    protected boolean isRectangleIndicator(DragEvent ev, TreeItem<ItemValue> place) {
+    protected boolean isRectangleIndicator(DragEvent ev, TreeItemEx place) {
         boolean retval = false;
         Bounds[] bounds = getEditor().getDragIndicator().levelBoundsOf(place);
         int n = -1;
@@ -217,7 +219,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         getEditor().getDragIndicator().hideDrawShapes();
         TreeItem<ItemValue> fromItem = getTargetTreeItem(ev);
         TreeItem toItem = getTreeCellItem();
-        if (fromItem == toItem && isRectangleIndicator(ev, toItem)) {
+        if (fromItem == toItem && isRectangleIndicator(ev, (TreeItemEx) toItem)) {
             getEditor().getDragIndicator().drawRectangle(toItem);
         } else {
             getEditor().getDragIndicator().drawLines(fromItem, toItem);
@@ -252,8 +254,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      *
      * @return an object of type TreeItem for the cell this object was created
      */
-    public TreeItem<ItemValue> getTreeCellItem() {
-        return dragTargetCell.getTreeItem();
+    public TreeItemEx getTreeCellItem() {
+        return (TreeItemEx) dragTargetCell.getTreeItem();
     }
 
     /**

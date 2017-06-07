@@ -5,7 +5,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import static org.vns.javafx.dock.api.editor.SceneGraphView.ANCHOR_OFFSET;
 
 /**
  *
@@ -20,33 +19,18 @@ public interface TreeItemBuilder {
         return null;
     }
 */
-    TreeItem accept(TreeViewEx treeView, TreeItem<ItemValue> target, TreeItem<ItemValue> place, Node gestureSource);    
+    TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource);    
+    //TreeItem buildRoot(Object obj);
     TreeItem build(Object obj);
-
-    default TreeItem createItem(Object obj, Object... others) {
-        HBox box = new HBox();
-        AnchorPane anchorPane = new AnchorPane(box);
-        AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
-        AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
-        anchorPane.setStyle("-fx-background-color: yellow");
-        TreeItemEx item = new TreeItemEx();
-        ItemValue itv = new ItemValue(item);
-
-        itv.setTreeItemObject(obj);
-        itv.setCellGraphic(anchorPane);
-
-        item.setValue(itv);
-        box.getChildren().add(createItemContent(obj, others));
-
-        return item;
-    }
+    TreeItem createItem(Object obj, Object... others);
+    
 
     Node createItemContent(Object obj, Object... others);
     /**
-     * Removes the specified {@code toRemove) object from the given 
+     * Removes the specified {@code toRemove} object from the given 
      * {@code parent} one.
      * The {@code parent object} can be of any type. For example it can
-     * represent a node of type {@VBox}. The {@code toRemove} also can be of 
+     * represent a node of type {@code VBox}. The {@code toRemove} also can be of 
      * any type for example a node of type {@code Button}. Then the method 
      * will try to remove the button from the children collection of the VBox pane.
      * 
@@ -56,9 +40,9 @@ public interface TreeItemBuilder {
     void removeChildObject(Object parent, Object toRemove);
 
     /**
-     * Removes the specified {@code toRemove) tree item from the given 
+     * Removes the specified {@code toRemove} tree item from the given 
      * {@code parent} one.
-     * The {@code parent item can represent the object of type {@code Node} or
+     * The {@code parent} item can represent the object of type {@code Node} or
      * any other type, for example {@code Tab} element of {@code TabPane}.
      * Usually it will be enough to remove the item from it's parent 
      * applying the code:
@@ -69,9 +53,12 @@ public interface TreeItemBuilder {
      * @param parent the parent object to remove from
      * @param toRemove  the object to be removed.
      */
-    void removeChildTreeItem(TreeItem<ItemValue> parent, TreeItem<ItemValue> toRemove);
+    void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove);
+    void registerChangeHandler(TreeItemEx item);
+    void unregisterChangeHandler(TreeItemEx item);
+    Object getChangeHandler(Node node);
 
-    default TreeItemBuilder getPlaceHolderBuilder(TreeItem placeHolder) {
+    default TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
         return null;
     }
     /**
@@ -113,8 +100,8 @@ public interface TreeItemBuilder {
      * @return true id the builder evaluates that a specified dragObject can be
      * accepted by the given target tree item
      */
-    default boolean isAdmissiblePosition(TreeView treeView, TreeItem<ItemValue> target,
-            TreeItem<ItemValue> place,
+    default boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
+            TreeItemEx place,
             Object dragObject) {
         if (target.getValue().getTreeItemObject() == dragObject) {
             return false;
@@ -142,4 +129,6 @@ public interface TreeItemBuilder {
     }
 
     boolean isAcceptable(Object obj);
+    
+    
 }
