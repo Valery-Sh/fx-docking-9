@@ -33,33 +33,26 @@ public class ItemValue {
     public ItemValue(TreeItem treeItem) {
         this.dragDropQualifier = FIRST;
         this.treeItem = treeItem;
-//        System.err.println("*** newValue treeItem = " + treeItem);
-        
         init();
     }
+    public ItemValue(TreeItem treeItem, boolean noEvent) {
+        this.dragDropQualifier = FIRST;
+        this.treeItem = treeItem;
+       init();
+    }    
     private void init() {
         treeItemObject.addListener((observable, oldValue, newValue) -> {
             TreeItemBuilder b;
-//            System.err.println("ItemValue listener oldVlalue = " + oldValue + "; newValue=" + newValue);
             if ( newValue != null ) {
-//                System.err.println("*** newValue != null newValue = " + newValue);
-//                System.err.println("*** newValue getTreeItem() = " + getTreeItem());
-                TreeItemEx t = getTreeItem().treeItemOf(newValue);
                 b = TreeItemBuilderRegistry.getInstance().getBuilder(newValue);
-                if ( b != null ) {
-//                    System.err.println("*** item new Value = " + newValue);
+                if ( b != null) {
                     b.registerChangeHandler(getTreeItem());
                 }
-                
-            } else  if ( oldValue != null && newValue == null ) {
-//                System.err.println("*** newValue == ");
-                
-                TreeItemEx t = getTreeItem().treeItemOf(newValue);
-                if ( t != null ) {
-                    b = t.getBuilder();
-                    b.unregisterChangeHandler(t);
+            } else  if ( oldValue != null && newValue == null && (oldValue instanceof Node )) {
+                b = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
+                if ( b != null ) {
+                    //b.unregisterChangeHandler((Node) oldValue);
                 }
-                
             }
         });
     }
@@ -100,7 +93,12 @@ public class ItemValue {
     public void setTreeItemObject(Object treeItemObject) {
         this.treeItemObject.set(treeItemObject);
     }
-
+/*    public boolean nono = false;
+    public void setTreeItemObject(Object treeItemObject, boolean nono) {
+        this.treeItemObject.set(treeItemObject);
+        this.nono = nono; 
+    }
+*/
     public Object getChangeListener() {
         return changeListener;
     }

@@ -206,7 +206,7 @@ public class TestEditorControl01 extends Application {
         Stage tvStage = new Stage();
         tvStage.setHeight(300);
         tvStage.setWidth(300);
-        
+
         tvStage.setScene(tvScene);
         tvStage.setX(350);
         tvStage.setY(40);

@@ -40,7 +40,7 @@ public class EditorUtil {
         return it;
     }
 
-    public static TreeCell getCell(TreeItem<ItemValue> item) {
+    public static TreeCell getCell(TreeItemEx item) {
         return (TreeCell) ((AnchorPane) item.getValue().getCellGraphic()).getParent();
     }
 
@@ -48,7 +48,7 @@ public class EditorUtil {
         return treeView.localToScreen(treeView.getBoundsInLocal());
     }
      */
-    public static Bounds screenTreeItemBounds(TreeItem<ItemValue> treeItem) {
+    public static Bounds screenTreeItemBounds(TreeItemEx treeItem) {
         Node node = treeItem.getValue().getCellGraphic().getParent();
         //Bounds b1 = node.localToScreen(node.getBoundsInLocal());
         //System.err.println("=============== b1=" + b1);
@@ -65,7 +65,7 @@ public class EditorUtil {
      * @param treeItem ???
      * @return ???
      */
-    public static Bounds screenHorVisibleBounds(TreeViewEx treeView, TreeItem<ItemValue> treeItem) {
+    public static Bounds screenHorVisibleBounds(TreeViewEx treeView, TreeItemEx treeItem) {
         Node node = treeItem.getValue().getCellGraphic().getParent();
         Bounds retval = node.localToScreen(node.getBoundsInLocal());
         if (treeView.getHScrollBar().isVisible()) {
@@ -175,46 +175,46 @@ public class EditorUtil {
         );
     }
      */
-    public static TreeItem<ItemValue> findTreeItemByObject(TreeView treeView, Object sourceGesture) {
-        return findChildTreeItem(treeView.getRoot(), sourceGesture);
+    public static TreeItemEx findTreeItemByObject(TreeView treeView, Object sourceGesture) {
+        return (TreeItemEx) findChildTreeItem((TreeItemEx) treeView.getRoot(), sourceGesture);
     }
 
-    protected static TreeItem<ItemValue> findChildTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
-        TreeItem retval = null;
+    protected static TreeItemEx findChildTreeItem(TreeItemEx item, Object sourceGesture) {
+        TreeItemEx retval = null;
         if ( item.getChildren() == null ) {
             return null;
         }
         for (TreeItem<ItemValue> it : item.getChildren()) {
             if (it.getValue().getTreeItemObject() == sourceGesture) {
-                retval = it;
+                retval = (TreeItemEx) it;
                 break;
             }
-            retval = findChildTreeItem(it, sourceGesture);
+            retval = findChildTreeItem((TreeItemEx) it, sourceGesture);
             if (retval != null) {
                 break;
             }
         }
         return retval;
     }
-    protected static TreeItem<ItemValue> findByTreeItemObject(TreeItem<ItemValue> item) {
+    protected static TreeItemEx findByTreeItemObject(TreeItemEx item) {
         if ( item.getValue().getTreeItemObject() == null ) {
             return null;
         }
-        TreeItem<ItemValue>  root = findRootTreeItem(item);
+        TreeItemEx  root = findRootTreeItem(item);
         return findChildTreeItem(root, item.getValue().getTreeItemObject());
     }    
-    protected static TreeItem<ItemValue> findRootTreeItem(TreeItem<ItemValue> item) {
-        TreeItem<ItemValue>  root = item;
-        TreeItem<ItemValue>  retval = null;
+    protected static TreeItemEx findRootTreeItem(TreeItemEx item) {
+        TreeItemEx  root = item;
+        TreeItemEx  retval = null;
         while ( root != null  ) {
             retval = root;
-            root = root.getParent();
+            root = (TreeItemEx) root.getParent();
             
         }
         return retval;
     }
-    public static TreeItem<ItemValue> findTreeItem(TreeView<ItemValue> treeView, double x, double y) {
-        TreeItem<ItemValue> retval = null;
+    public static TreeItemEx findTreeItem(TreeView<ItemValue> treeView, double x, double y) {
+        TreeItemEx retval = null;
         int count = treeView.getExpandedItemCount();
         for (int i = 0; i < count; i++) {
             TreeCell cell = (TreeCell) treeView.getTreeItem(i).getValue().getCellGraphic().getParent();
@@ -222,7 +222,7 @@ public class EditorUtil {
                 continue;
             }
             if (cell.contains(cell.screenToLocal(x, y))) {
-                retval = treeView.getTreeItem(i);
+                retval = (TreeItemEx) treeView.getTreeItem(i);
                 break;
             }
         }
@@ -265,66 +265,4 @@ public class EditorUtil {
 
         return retval;
     }
-
-    /*    public static Stage getTarget(double x, double y, Stage excl) {
-        Stage retval = null;
-        List<Stage> allStages = getStages(x, y, excl);
-        if (allStages.isEmpty()) {
-            return null;
-        }
-        List<Stage> targetStages = new ArrayList<>();
-        allStages.forEach(s -> {
-            Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
-                //12.05return (n instanceof DockTarget);
-                return isDockPaneTarget(n);
-            });
-            if (topNode != null) {
-                targetStages.add(s);
-            }
-        });
-        for (Stage s1 : targetStages) {
-            retval = s1;
-            for (Stage s2 : allStages) {
-                if (s1 == s2) {
-                    continue;
-                }
-                if (s1 != getTarget(s1, s2)) {
-                    retval = null;
-                    break;
-                }
-            }
-            if (retval != null) {
-                break;
-            }
-        }
-        return retval;
-    }
-
-    public static Stage getTarget(Stage s1, Stage s2) {
-        Stage retval = null;
-        Stage s = s1;
-
-        boolean b1 = s1.isAlwaysOnTop();
-        boolean b2 = s2.isAlwaysOnTop();
-        if (isChild(s1, s2)) {
-            //retval must be null s2 is a child window of s1
-
-        } else if (isChild(s2, s1)) {
-            retval = s1;
-        } else if (zorder(s1) < zorder(s2) && !b1 && !b2) {
-            retval = s1;
-        } else if (zorder(s1) < zorder(s2) && b1 && b2) {
-            retval = s1;
-        } else if (b1 && !b2) {
-            retval = s1;
-        } else if (!b1 && b2) {
-        }
-        String t = null;
-        if (retval != null) {
-            t = retval.getTitle();
-        }
-
-        return retval;
-    }
-     */
 }

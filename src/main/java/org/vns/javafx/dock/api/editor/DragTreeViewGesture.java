@@ -41,7 +41,7 @@ import javafx.scene.control.TreeItem;
  */
 public class DragTreeViewGesture extends DragNodeGesture{
     
-    private TreeItem<ItemValue> sourceTreeItem;
+    private TreeItemEx sourceTreeItem;
     /**
      * Creates a new instance of the class for the specified parameter.
      * the following code sets the value of the property {@code gestureSourceObject}
@@ -54,7 +54,7 @@ public class DragTreeViewGesture extends DragNodeGesture{
      *    gesture is initiated.
      * @param treeItem ???
      */
-    public DragTreeViewGesture(Node gestureSource, TreeItem<ItemValue> treeItem) {
+    public DragTreeViewGesture(Node gestureSource, TreeItemEx treeItem) {
         super(gestureSource);
         this.sourceTreeItem = treeItem;
         init();
@@ -63,7 +63,7 @@ public class DragTreeViewGesture extends DragNodeGesture{
         setSourceGestureObject(sourceTreeItem.getValue().getTreeItemObject());
     } 
 
-    public TreeItem<ItemValue> getGestureSourceTreeItem() {
+    public TreeItemEx getGestureSourceTreeItem() {
         return sourceTreeItem;
     }
     

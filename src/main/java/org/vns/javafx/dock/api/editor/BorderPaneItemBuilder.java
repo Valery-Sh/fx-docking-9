@@ -14,7 +14,7 @@ import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
  *
  * @author Valery
  */
-public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
+public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
 
     private final BorderPanePlaceholderBuilder placeholderBuilder;
 
@@ -23,8 +23,8 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItem build(Object obj) {
-        TreeItem retval = null;
+    public TreeItemEx build(Object obj) {
+        TreeItemEx retval = null;
         if (obj instanceof BorderPane) {
             //BorderPane pane = (BorderPane) obj;
             retval = createItem((BorderPane) obj);
@@ -88,36 +88,32 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
      * @param parent an object of type BorderPane
      * @param toRemove a place holder TreeItem (one of five)
      */
-    @Override
+/*    @Override
     public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
-        Object obj = toRemove.getValue().getTreeItemObject();
+        //Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
         TreeItemBuilder builder;
-/*        if (obj == null) {
-            //
-            // PlaceHolderBuilder will be returned
-            //
-            builder = toRemove.getValue().getBuilder();
-        } else {
-            builder = parent.getValue().getBuilder().getPlaceHolderBuilder(toRemove);
-        }
-*/
         builder = toRemove.getBuilder();
         ((BorderPanePlaceholderBuilder) builder).setContent(toRemove, null);
     }
-
+*/
     @Override
-    public void removeChildObject(Object parent, Object toRemove) {
-        BorderPane bp = (BorderPane) parent;
-        if (bp.getTop() == toRemove) {
+    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+        BorderPane bp = (BorderPane) parent.getObject();
+        if (bp.getTop() == child.getObject()) {
+            TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
             bp.setTop(null);
-        } else if (bp.getRight() == toRemove) {
+        } else if (bp.getRight() == child.getObject()) {
+            TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
             bp.setRight(null);
-        } else if (bp.getBottom() == toRemove) {
+        } else if (bp.getBottom() == child.getObject()) {
+            TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
             bp.setBottom(null);
-        } else if (bp.getLeft() == toRemove) {
+        } else if (bp.getLeft() == child.getObject()) {
+            TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
             bp.setLeft(null);
-        } else if (bp.getCenter() == toRemove) {
+        } else if (bp.getCenter() == child.getObject()) {
+            TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
             bp.setCenter(null);
         }
     }
@@ -136,46 +132,85 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
     public void registerChangeHandler(TreeItemEx item) {
+        if (!(item.getValue().getTreeItemObject() != null && (item.getValue().getTreeItemObject() instanceof BorderPane))) {
+            return;
+        }
+//        unregisterChangeHandler((Node) item.getValue().getTreeItemObject());
         final BorderPane pane = (BorderPane) item.getObject();
-        pane.topProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue == null && newValue != null) {
-                TreeItem<ItemValue> it = EditorUtil.findRootTreeItem(item);
-                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) item.getBuilder().getPlaceHolderBuilder(null);                
-                builder.setContent((TreeItemEx)item.getChildren().get(0), newValue);
-            } else if (oldValue != null && newValue == null) {
-                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) item.getBuilder().getPlaceHolderBuilder(null);                
-                builder.setContent((TreeItemEx)item.getChildren().get(0), null);
-            } else if (oldValue != null && newValue != null) {
-
-            }
-        });
-        //parentProperty().addListener( (observable, oldValue, newValue) -> {            
-//            graphic.parentProperty().addListener( (observable, oldValue, newValue) -> {
-/*            Node graphic = (Node) item.getValue().getTreeItemObject();  
-            System.err.println("LABELED placeholder registerchangeHandler graphic = " + graphic);
-            graphic.parentProperty().addListener( (observable, oldValue, newValue) -> {
-                System.err.println("NULL Graphic oldValue= " + oldValue + "; newValue=" + newValue);
-                if (oldValue != null) {
-                    //TreeItemBuilder oldParentBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
-                    removeChildObject(oldValue,graphic);
-                    //TreeViewEx.removeTreeItemObject(item);
-                   //((Labeled)oldValue).setGraphic(null);
-                } else if ( newValue != null) {
-                    //((Labeled)oldValue).setGraphic(newValue);
-                }
-            });
-            System.err.println("Labaeld Palceholder registerChangeHandler " + item.getValue().getTreeItemObject());
-         */
+        BorderPaneChangeHandler listener = new BorderPaneChangeHandler(item);
+        pane.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
+        
+/*        unregisterChangeHandler(pane.getTop());
+        unregisterChangeHandler(pane.getRight());
+        unregisterChangeHandler(pane.getBottom());
+        unregisterChangeHandler(pane.getLeft());
+        unregisterChangeHandler(pane.getCenter());
+*/        
+//        ChangeListener<? super Node> listener = getListener(item, 0);
+        pane.topProperty().addListener(listener.topListener);
+        //pane.rightProperty().addListener(listener.rightListener);
+        pane.bottomProperty().addListener(listener.bottomListener);
+        pane.leftProperty().addListener(listener.leftListener);
+        pane.centerProperty().addListener(listener.centerListener);
     }
 
     @Override
-    public void unregisterChangeHandler(TreeItemEx item) {
-        //Object treeItemObject = (Labeled) item.getValue().getTreeItemObject();
-        if (item.getValue().getChangeListener() == null) {
+    public boolean isAcceptable(Object obj) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(Object obj) {
+        BorderPane l = (BorderPane) obj;
+        Object ooo = l.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        BorderPaneChangeHandler listener = (BorderPaneChangeHandler) l.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        if ( listener == null ) {
             return;
         }
-        item.getValue().treeItemObjectProperty().removeListener((ChangeListener) item.getValue().getChangeListener());
-        item.getValue().setChangeListener(null);
+        l.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+        
+    }
+    ChangeListener<? super Node> getListener(TreeItemEx borderPaneItem,int idx) {
+        ChangeListener<? super Node> listener = (observable, oldValue, newValue) -> {
+            if (oldValue == null && newValue != null) {
+                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) borderPaneItem.getBuilder().getPlaceHolderBuilder(null);
+                builder.setContent((TreeItemEx) borderPaneItem.getChildren().get(idx), newValue);
+                
+            } else if (oldValue != null && newValue == null) {
+                BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) borderPaneItem.getBuilder().getPlaceHolderBuilder(null);
+                builder.setContent((TreeItemEx) borderPaneItem.getChildren().get(idx), null);
+            } else if (oldValue != null && newValue != null) {
+
+            }
+        };
+        return listener;
+    }
+    
+    public static class BorderPaneChangeHandler {
+        
+        final TreeItemEx borderPaneItem;
+        final BorderPaneItemBuilder builder;
+        ChangeListener<? super Node> topListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(0), 0 );
+        ChangeListener<? super Node> rightListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(1), 1 );        
+        ChangeListener<? super Node> bottomListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(2), 2 );                
+        ChangeListener<? super Node> leftListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(3), 3 );
+        ChangeListener<? super Node> centerListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(4), 4 );                                
+
+        
+        public BorderPaneChangeHandler(TreeItemEx item) {
+            this.borderPaneItem = item;
+            this.builder = (BorderPaneItemBuilder) borderPaneItem.getBuilder();
+            topListener = builder.getListener(borderPaneItem, 0 );
+            rightListener = builder.getListener(borderPaneItem, 1 );        
+            bottomListener = builder.getListener(borderPaneItem, 2 );                
+            leftListener = builder.getListener(borderPaneItem, 3 );
+            centerListener = builder.getListener(borderPaneItem, 4 );                                
+        }
     }
 
     public static class BorderPanePlaceholderBuilder extends DefaultTreeItemBuilder {
@@ -185,41 +220,41 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
         }
 
         @Override
-        public TreeItem build(Object obj) {
-            TreeItem retval = buildCenter(obj);
+        public TreeItemEx build(Object obj) {
+            TreeItemEx retval = buildCenter(obj);
             return retval;
         }
 
-        public TreeItem buildTop(Object obj) {
-            TreeItem<ItemValue> retval = createItem(obj, BuildPos.TOP);
+        public TreeItemEx buildTop(Object obj) {
+            TreeItemEx retval = createItem(obj, BuildPos.TOP);
             retval.getValue().setPlaceholder(true);
             retval.getValue().setTitle("insert TOP");
             return retval;
         }
 
-        public TreeItem buildRight(Object obj) {
-            TreeItem<ItemValue> retval = createItem(obj, BuildPos.RIGHT);
+        public TreeItemEx buildRight(Object obj) {
+            TreeItemEx retval = createItem(obj, BuildPos.RIGHT);
             retval.getValue().setPlaceholder(true);
             retval.getValue().setTitle("insert RIGHT");
             return retval;
         }
 
-        public TreeItem buildBottom(Object obj) {
-            TreeItem<ItemValue> retval = createItem(obj, BuildPos.BOTTOM);
+        public TreeItemEx buildBottom(Object obj) {
+            TreeItemEx retval = createItem(obj, BuildPos.BOTTOM);
             retval.getValue().setPlaceholder(true);
             retval.getValue().setTitle("insert BOTTOM");
             return retval;
         }
 
-        public TreeItem buildLeft(Object obj) {
-            TreeItem<ItemValue> retval = createItem(obj, BuildPos.LEFT);
+        public TreeItemEx buildLeft(Object obj) {
+            TreeItemEx retval = createItem(obj, BuildPos.LEFT);
             retval.getValue().setPlaceholder(true);
             retval.getValue().setTitle("insert LEFT");
             return retval;
         }
 
-        public TreeItem buildCenter(Object obj) {
-            TreeItem<ItemValue> retval = createItem(obj, BuildPos.CENTER);
+        public TreeItemEx buildCenter(Object obj) {
+            TreeItemEx retval = createItem(obj, BuildPos.CENTER);
             retval.getValue().setPlaceholder(true);
             retval.getValue().setTitle("insert CENTER");
             return retval;
@@ -275,12 +310,13 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
         }
 
         protected void setContent(TreeItemEx item, Object obj) {
+            System.err.println("setContent = itemGetObject=" + item.getObject() + "; obj = " + obj);
             HBox c = getItemContentPane(item);
             HBox hb = (HBox) c.getChildren().get(0);
+            
             hb.setMouseTransparent(true);
             if (obj != null) {
                 Label glb = new Label(obj.getClass().getSimpleName());
-
                 glb.getStyleClass().add("tree-item-node-" + obj.getClass().getSimpleName().toLowerCase());
                 hb.getChildren().add(glb);
                 ((Labeled) hb.getChildren().get(0)).setText("");
@@ -288,13 +324,17 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                     glb.setText(glb.getText() + " " + ((Labeled) obj).getText());
                 }
                 glb.setMouseTransparent(true);
+                TreeItemEx objItem = (TreeItemEx) TreeItemBuilderRegistry.getInstance().getBuilder(obj).build(obj);
+                item.getChildren().addAll(objItem.getChildren());
+                item.getValue().setTreeItemObject(obj);
             } else {
                 hb.getChildren().remove(1);
                 Label lb = (Label) hb.getChildren().get(0);
                 lb.setText(item.getValue().getTitle());
                 item.getValue().setTreeItemObject(null);
                 lb.setMouseTransparent(true);
-                
+                item.getChildren().clear();
+
             }
 
         }
@@ -332,7 +372,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
                     //notifyObjectRemove(treeView, treeItem);
-                    treeView.removeTreeItemObject(treeItem);
+                    treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
                     //treeView.removeTreeItem(treeItem);
 
                     //notifyTreeItemRemove(treeView, treeItem);
@@ -341,7 +381,7 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
                 TreeItem item;
                 item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
                 if (item != null) {
-                    treeView.removeTreeItemObject(item);
+                    treeView.updateSourceSceneGraph((TreeItemEx) item);
                     //treeView.removeTreeItem(item);
                 } else {
                     ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
@@ -354,26 +394,28 @@ public class BorderPaneItemBuilder extends DefaultTreeItemBuilder {
             setNode(place, (Node) value);
             place.getValue().setTreeItemObject(value);
             boolean b = place.getValue().isPlaceholder();
-            int r = treeView.getRow(place); 
+            int r = treeView.getRow(place);
             //System.err.println("BorderPane place.obj= " + place.getValue().getTreeItemObject());            
             //System.err.println("BorderPane row = " + r + "; isPlaceholder=" + b);
             return retval;
 
         }
+
         private void setNode(TreeItemEx place, Node value) {
             BorderPane bp = (BorderPane) place.getParent().getValue().getTreeItemObject();
-            if (place == place.getParent().getChildren().get(0) ) {
+            if (place == place.getParent().getChildren().get(0)) {
                 bp.setTop(value);
-            } else if (place == place.getParent().getChildren().get(1) ) {
+            } else if (place == place.getParent().getChildren().get(1)) {
                 bp.setRight(value);
-            } else if (place == place.getParent().getChildren().get(2) ) {
+            } else if (place == place.getParent().getChildren().get(2)) {
                 bp.setBottom(value);
-            } else if (place == place.getParent().getChildren().get(3) ) {
+            } else if (place == place.getParent().getChildren().get(3)) {
                 bp.setLeft(value);
-            } else if (place == place.getParent().getChildren().get(4) ) {
+            } else if (place == place.getParent().getChildren().get(4)) {
                 bp.setCenter(value);
-            }            
-        }  
+            }
+        }
+
         @Override
         public TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
             return null;

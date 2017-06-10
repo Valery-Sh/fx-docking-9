@@ -21,8 +21,8 @@ public interface TreeItemBuilder {
 */
     TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource);    
     //TreeItem buildRoot(Object obj);
-    TreeItem build(Object obj);
-    TreeItem createItem(Object obj, Object... others);
+    TreeItemEx build(Object obj);
+    TreeItemEx createItem(Object obj, Object... others);
     
 
     Node createItemContent(Object obj, Object... others);
@@ -35,9 +35,10 @@ public interface TreeItemBuilder {
      * will try to remove the button from the children collection of the VBox pane.
      * 
      * @param parent the parent object to remove from
-     * @param toRemove  the object to be removed.
+     * @param child  the object to be removed.
      */
-    void removeChildObject(Object parent, Object toRemove);
+    void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child);
+    //void accept(Object targetParent, Object targetPlace, Object treeItemObject);
 
     /**
      * Removes the specified {@code toRemove} tree item from the given 
@@ -53,10 +54,12 @@ public interface TreeItemBuilder {
      * @param parent the parent object to remove from
      * @param toRemove  the object to be removed.
      */
-    void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove);
+    //void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove);
     void registerChangeHandler(TreeItemEx item);
-    void unregisterChangeHandler(TreeItemEx item);
-    Object getChangeHandler(Node node);
+    void unregisterChangeHandler(TreeItemEx source);
+    void unregisterObjectChangeHandler(Object obj);
+    //void removeChangeHandler(Node node);
+    //Object getChangeHandler(Node node);
 
     default TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
         return null;
@@ -73,7 +76,7 @@ public interface TreeItemBuilder {
         if (parentItem != null && toRemove != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
             Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildObject(parent, remove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).updateSourceSceneGraph(parent, remove);
         }
     }
 */

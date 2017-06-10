@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
  *
  * @author Valery
  */
-public class LabeledItemBuilder extends DefaultTreeItemBuilder {
+public class LabeledItemBuilder extends AbstractTreeItemBuilder {
 
     private final LabelPlaceholderBuilder placeholderBuilder;
 
@@ -27,8 +27,8 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItem build(Object obj) {
-        TreeItem retval = null;
+    public TreeItemEx build(Object obj) {
+        TreeItemEx retval = null;
         if (obj instanceof Labeled) {
             Labeled node = (Labeled) obj;
             retval = createItem((Node) obj);
@@ -104,7 +104,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
      * @return true if the parameter value is not null and is an instance of
      * Node and the specified target doesn't have children
      */
-    @Override
+/*    @Override
     public TreeItemEx accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         int r = treeView.getRow(place); 
 
@@ -121,7 +121,7 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
             TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
                 //(notifyObjectRemove(treeView, treeItem);
-                treeView.removeTreeItemObject(treeItem);
+                treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
                 //treeView.removeTreeItem(treeItem);
 
                 //notifyTreeItemRemove(treeView, treeItem);
@@ -154,19 +154,19 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
         
         return retval;
     }
-
+*/
     @Override
-    public void removeChildObject(Object parent, Object toRemove) {
-        if (parent instanceof Labeled) {
-            ((Labeled) parent).setGraphic(null);
+    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+        if (parent.getObject() instanceof Labeled) {
+            ((Labeled) parent.getObject()).setGraphic(null);
         }
     }
 
-    @Override
+/*    @Override
     public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         parent.getChildren().remove(toRemove);
     }
-
+*/
     protected TreeItem[] createPlaceHolders(Object obj) {
         return new TreeItem[]{placeholderBuilder.build(obj)};
     }
@@ -178,28 +178,39 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
     public void registerChangeHandler(TreeItemEx item) {
-        //System.err.println("item.getValue().getTreeItemObject() = " + item.getValue().getTreeItemObject());
+        if (!(item.getValue().getTreeItemObject() != null && (item.getValue().getTreeItemObject() instanceof Labeled))) {
+            return;
+        }
         Labeled node = (Labeled) item.getValue().getTreeItemObject();
-        GraphicChangeListener l = new GraphicChangeListener(item);
-        node.graphicProperty().addListener(l);
-        item.getValue().setChangeListener(l);
+        unregisterChangeHandler(item);        
+        GraphicChangeListener listener = new GraphicChangeListener(item);
+        node.graphicProperty().addListener(listener);
+        node.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
     }
 
     @Override
-    public void unregisterChangeHandler(TreeItemEx item) {
-        Labeled node = (Labeled) item.getValue().getTreeItemObject();
-        if (item.getValue().getChangeListener() == null) {
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        ItemValue v = target.getValue();
+        ((Labeled) v.getTreeItemObject()).setGraphic((Node) sourceObject);        
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(Object obj) {
+        Labeled l = (Labeled) obj;
+        GraphicChangeListener listener = (GraphicChangeListener) l.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        if ( listener == null ) {
             return;
         }
-        node.graphicProperty().removeListener((ChangeListener) item.getValue().getChangeListener());
-        item.getValue().setChangeListener(null);
+        l.graphicProperty().removeListener(listener);
+        l.getProperties().remove(EditorUtil.CHANGE_LISTENER);
     }
+
 
     public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder {
 
         @Override
-        public TreeItem build(Object obj) {
-            TreeItem retval = createItem(obj);
+        public TreeItemEx build(Object obj) {
+            TreeItemEx retval = createItem(obj);
             return retval;
         }
 
@@ -247,68 +258,6 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
             return retval;
         }
 
-        @Override
-        public void registerChangeHandler(TreeItemEx item) {
-/*            Node graphic = (Node) item.getValue().getTreeItemObject();  
-            System.err.println("LABELED placeholder registerchangeHandler graphic = " + graphic);
-            graphic.parentProperty().addListener( (observable, oldValue, newValue) -> {
-                System.err.println("NULL Graphic oldValue= " + oldValue + "; newValue=" + newValue);
-                if (oldValue != null) {
-                    //TreeItemBuilder oldParentBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
-                    removeChildObject(oldValue,graphic);
-                    //TreeViewEx.removeTreeItemObject(item);
-                   //((Labeled)oldValue).setGraphic(null);
-                } else if ( newValue != null) {
-                    //((Labeled)oldValue).setGraphic(newValue);
-                }
-            });
-            System.err.println("Labaeld Palceholder registerChangeHandler " + item.getValue().getTreeItemObject());
-*/
-        }
-
-        @Override
-        public void unregisterChangeHandler(TreeItemEx item) {
-            //Object treeItemObject = (Labeled) item.getValue().getTreeItemObject();
-/*            if (item.getValue().getChangeListener() == null) {
-                return;
-            }
-            item.getValue().treeItemObjectProperty().removeListener((ChangeListener) item.getValue().getChangeListener());
-            item.getValue().setChangeListener(null);
-*/            
-        }
-
-        public class TreeItemObjectChangeListener implements ChangeListener<Node> {
-
-            private final TreeItem<ItemValue> treeItem;
-
-            public TreeItemObjectChangeListener(TreeItem<ItemValue> treeItem) {
-                this.treeItem = treeItem;
-            }
-
-            @Override
-            public void changed(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
-                if (oldValue != null && newValue != null) {
-                    //System.err.println("1 Labeled PlaceHilder oldValue=" + oldValue + "; newValue = " + newValue);
-                }
-                if (oldValue != null && newValue == null) {
-                    //System.err.println("2 Labeled PlaceHilder oldValue=" + oldValue + "; newValue = " + newValue);                    
-                    //treeItem.getChildren().remove(0);
-                } else if (oldValue == null && newValue != null) {
-                    //System.err.println("3 Labeled PlaceHilder oldValue=" + oldValue + "; newValue = " + newValue);                    
-                    
-                    TreeItem<ItemValue> oldItem = EditorUtil.findChildTreeItem(EditorUtil.findRootTreeItem(treeItem), newValue);
-                    if (oldItem != null) {
-                        //TreeViewEx.removeTreeItemObject(oldItem);
-                    }
-//                    TreeItem<ItemValue> ph = (TreeItemEx) createPlaceHolders(newValue)[0];
-
-//                    treeItem.getChildren().add(ph);
-                    //TreeItemBuilderRegistry.getInstance().getBuilder(newValue).removeChildObject(ph, treeItem);
-//                ((Labeled)  treeItem.getValue().getTreeItemObject()).setGraphic(newValue);
-                }
-            }
-
-        }
 
     }//LabeledPlaceholder
 
@@ -322,56 +271,19 @@ public class LabeledItemBuilder extends DefaultTreeItemBuilder {
 
         @Override
         public void changed(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
-            //System.err.println("4 CHANGED place.obj= " + treeItem.getValue().getTreeItemObject());            
-            //System.err.println("   --- changed.isPlaceHolder  " + treeItem.getValue().isPlaceholder());
-            
             if (oldValue != null && newValue == null) {
-                treeItem.getChildren().remove(0);
+                treeItem.getChildren().clear();
             } else if (oldValue == null && newValue != null) {
-                TreeItemEx t = treeItem.treeItemOf(newValue);
-                //System.err.println("treeItem == t = " + (treeItem == t));
-                if ( t != null  ) {
-                    //System.err.println("LABELED remove " + newValue);
-                    //TreeViewEx.removeTreeItemObject(t);
-                }
-                
-/*                TreeItem<ItemValue> it = EditorUtil.findRootTreeItem(treeItem);
-                if ( it != null ) {
-                    it = EditorUtil.findChildTreeItem(it, newValue);
-                    if ( it != null ) {
-                        TreeViewEx.removeTreeItemObject(it);
-                    }
-                }
-*/                
                 TreeItemEx ph = (TreeItemEx) createPlaceHolders(newValue)[0];
-                Object ooo = treeItem.getValue().getTreeItemObject();
-                boolean b = treeItem.getValue().isPlaceholder();
-                b = ph.getValue().isPlaceholder();
                 treeItem.getChildren().add(ph);
                 ((Labeled)  treeItem.getObject()).setGraphic(newValue);
-                Object ooo1 = treeItem.getValue().getTreeItemObject();
-                b = treeItem.getValue().isPlaceholder();
             }  else if (oldValue != null && newValue != null) {
                 TreeItemEx t = treeItem.treeItemOf(newValue);
                 if ( t != null  ) {
-                    TreeViewEx.removeTreeItemObject(t);
+                    TreeViewEx.updateSourceSceneGraph(t);
                 }
-                
-/*                TreeItem<ItemValue> it = EditorUtil.findRootTreeItem(treeItem);
-                if ( it != null ) {
-                    it = EditorUtil.findChildTreeItem(it, oldValue);
-                    if ( it != null ) {
-                        TreeViewEx.removeTreeItemObject(it);
-                    }
-                }
-*/
                 ((Labeled)  treeItem.getObject()).setGraphic(newValue);
             }
-            //System.err.println("5 CHANGED place.obj= " + treeItem.getValue().getTreeItemObject());            
-            //System.err.println("   --- changed  " + treeItem.getValue().isPlaceholder());
-            Node tt =  treeItem.getValue().getCellGraphic().getParent();
-            //System.err.println("   ---   " + tt.getRow(treeItem));
-            //System.err.println("   ---   cellGraphic = " + tt);
         }
 
     }

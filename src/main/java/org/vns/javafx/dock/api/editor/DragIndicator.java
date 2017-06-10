@@ -40,19 +40,20 @@ public class DragIndicator {
         this.treeView = (TreeViewEx<ItemValue>) sceneGraphView.getTreeView();
     }
 
-    protected TreeItem<ItemValue> findTreeItem(TreeItem<ItemValue> item, Object sourceGesture) {
+    protected TreeItemEx findTreeItem(TreeItemEx item, Object sourceGesture) {
         TreeItem retval = null;
         for (TreeItem<ItemValue> it : item.getChildren()) {
+            
             if (it.getValue().getTreeItemObject() == sourceGesture) {
                 retval = it;
                 break;
             }
-            retval = findTreeItem(it, sourceGesture);
+            retval = findTreeItem((TreeItemEx) it, sourceGesture);
             if (retval != null) {
                 break;
             }
         }
-        return retval;
+        return (TreeItemEx) retval;
     }
 
     public void initIndicatorPane() {
@@ -74,7 +75,7 @@ public class DragIndicator {
 
     }
 
-    protected Bounds getDisclosureBounds(TreeItem<ItemValue> item) {
+    protected Bounds getDisclosureBounds(TreeItemEx item) {
 
         TreeCell c = EditorUtil.getCell(item);
         //
@@ -121,27 +122,27 @@ public class DragIndicator {
         //disclosureBounds = cell.screenToLocal(dn.localToScreen(dn.getBoundsInLocal()));
     }
 
-    private double getOffset(TreeItem<ItemValue> item1, TreeItem<ItemValue> item2) {
+    private double getOffset(TreeItemEx item1, TreeItemEx item2) {
         double x1 = item1.getValue().getCellGraphic().getBoundsInParent().getWidth();
         double x2 = item2.getValue().getCellGraphic().getBoundsInParent().getWidth();
         return x1 - x2 < 0 ? x2 - x1 : x1 - x2;
     }
 
-    protected double getItemParentOffset(TreeItem<ItemValue> item) {
+    protected double getItemParentOffset(TreeItemEx item) {
         double parentOffset = 10;
         int level = treeView.getTreeItemLevel(item);
-        if (isVisibleOnTop(item) && !item.getChildren().isEmpty() && isVisibleOnTop(item.getChildren().get(0))) {
-            parentOffset = getOffset(item, item.getChildren().get(0));
-        } else if (isVisibleOnTop(item) && item.getParent() != null && isVisibleOnTop(item.getParent())) {
-            parentOffset = getOffset(item, item.getParent());
+        if (isVisibleOnTop(item) && !item.getChildren().isEmpty() && isVisibleOnTop((TreeItemEx) item.getChildren().get(0))) {
+            parentOffset = getOffset(item, (TreeItemEx) item.getChildren().get(0));
+        } else if (isVisibleOnTop(item) && item.getParent() != null && isVisibleOnTop((TreeItemEx) item.getParent())) {
+            parentOffset = getOffset(item, (TreeItemEx)item.getParent());
         } else if (isVisibleOnTop(item) && item.getParent() != null && level > 0) {
             parentOffset = screenNonValueBounds(item).getWidth() / (level + 1);
         }
         return parentOffset;
     }
 
-    protected Bounds screenArrowBounds(TreeItem<ItemValue> from, TreeItem<ItemValue> to) {
-        TreeItem<ItemValue> item = isVisibleOnTop(from) ? from : to;
+    protected Bounds screenArrowBounds(TreeItemEx from, TreeItemEx to) {
+        TreeItemEx item = isVisibleOnTop(from) ? from : to;
         //System.err.println("screenArrowBounds item obj = " + item.getValue().getTreeItemObject());
         Bounds b = getDisclosureBounds(item);
         //System.err.println("getDisclosureBounds(item) = " + getDisclosureBounds(item));
@@ -171,7 +172,7 @@ public class DragIndicator {
         return new BoundingBox(x + dif * cellOffset, y, b.getWidth(), b.getHeight());
     }
 
-    protected Bounds screenNonValueBounds(TreeItem<ItemValue> item) {
+    protected Bounds screenNonValueBounds(TreeItemEx item) {
 
         Bounds vBnd = screenValueBounds(item);
         Bounds itBnd = screenTreeItemBounds(item);
@@ -181,7 +182,7 @@ public class DragIndicator {
         return new BoundingBox(itBnd.getMinX(), itBnd.getMinY(), itBnd.getWidth() - vBnd.getWidth(), itBnd.getHeight());
     }
 
-    protected Bounds screenNonValueLevelBounds(TreeItem<ItemValue> item, TreeItem<ItemValue> sample) {
+    protected Bounds screenNonValueLevelBounds(TreeItemEx item, TreeItemEx sample) {
         Bounds sampleBnd = screenNonValueBounds(sample);
 
         int level = treeView.getTreeItemLevel(item);
@@ -212,7 +213,7 @@ public class DragIndicator {
         return nvBnd;
     }
 
-    private Bounds screenValueBounds(TreeItem<ItemValue> item) {
+    private Bounds screenValueBounds(TreeItemEx item) {
         AnchorPane ap = (AnchorPane) item.getValue().getCellGraphic();
         Bounds apBounds = ap.localToScreen(ap.getBoundsInLocal());
         if (apBounds == null) {
@@ -229,7 +230,7 @@ public class DragIndicator {
         return new BoundingBox(apBounds.getMinX(), cellBounds.getMinY(), width, height);
     }
 
-    protected Bounds screenValueBounds(TreeItem<ItemValue> item, TreeItem<ItemValue> sample) {
+    protected Bounds screenValueBounds(TreeItemEx item, TreeItemEx sample) {
         AnchorPane ap = (AnchorPane) sample.getValue().getCellGraphic();
         if (ap.getScene() == null) {
             return null;
@@ -250,7 +251,7 @@ public class DragIndicator {
         return new BoundingBox(apBounds.getMinX() - dif * cellOffset, treeView.localToScreen(treeView.getBoundsInLocal()).getMinY(), width, height);
     }
 
-    protected Bounds[] levelBoundsOf(TreeItem<ItemValue> item) {
+    protected Bounds[] levelBoundsOf(TreeItemEx item) {
         int level = treeView.getTreeItemLevel(item);
         double cellOffset = getItemParentOffset(item);
         Bounds[] bounds = new Bounds[level + 3];
@@ -323,7 +324,7 @@ public class DragIndicator {
         return it;
     }
 
-    protected TreeItem getParentTarget(TreeItem item, int targetLevel) {
+    protected TreeItem getParentTarget(TreeItemEx item, int targetLevel) {
         TreeItem<ItemValue> retval = null;
         TreeItem<ItemValue> it = item;
         int n = targetLevel;
@@ -359,7 +360,7 @@ public class DragIndicator {
 
     }
 
-    protected void drawRectangle(TreeItem item) {
+    protected void drawRectangle(TreeItemEx item) {
         hideDrawShapes();
         Bounds lb = EditorUtil.screenTreeItemBounds(item);
         if (lb == null) {
@@ -377,7 +378,7 @@ public class DragIndicator {
         itemRect.setVisible(true);
     }
 
-    protected void drawLines(TreeItem<ItemValue> from, TreeItem<ItemValue> to) {
+    protected void drawLines(TreeItemEx from, TreeItemEx to) {
         //Bounds lb = EditorUtil.screenTreeItemBounds(to);
         Bounds lb = EditorUtil.screenHorVisibleBounds(treeView,to);
 //        System.err.println("is HBar  Visible " + treeView.getHScrollBar().isVisible());
@@ -386,7 +387,7 @@ public class DragIndicator {
         }
 //        System.err.println("drawLinew lb=" + lb);
 //        System.err.println("drawLinew treeView = " + treeView.localToScreen(treeView.getBoundsInLocal()));
-        Bounds rootBounds = screenNonValueLevelBounds(treeView.getRoot(), to);
+        Bounds rootBounds = screenNonValueLevelBounds((TreeItemEx) treeView.getRoot(), to);
 
         Insets pins = treeView.getInsets();
 
@@ -456,14 +457,14 @@ public class DragIndicator {
 
     }
 
-    protected double rootNonValueWidth(TreeItem<ItemValue> sample) {
+    protected double rootNonValueWidth(TreeItemEx sample) {
         int level = treeView.getTreeItemLevel(sample);
         double cellOffset = getItemParentOffset(sample);
         Bounds sampleBounds = screenNonValueBounds(sample);
         return sampleBounds.getWidth() - cellOffset * level;
     }
 
-    public boolean isVisibleOnTop(TreeItem<ItemValue> item) {
+    public boolean isVisibleOnTop(TreeItemEx item) {
         TreeCell cell = (TreeCell) item.getValue().getCellGraphic().getParent();
         if (cell == null || !(cell.getScene() != null && cell.getScene().getWindow() != null)) {
             return false;
@@ -490,7 +491,7 @@ public class DragIndicator {
     }
 
 
-    protected void printBounds(TreeItem<ItemValue> item) {
+    protected void printBounds(TreeItemEx item) {
         boolean retval = false;
         TreeCell cell = (TreeCell) item.getValue().getCellGraphic().getParent();
 
@@ -506,9 +507,9 @@ public class DragIndicator {
     }
 
     
-    protected TreeItem<ItemValue> getTargetTreeItem(double x, double y, TreeItem<ItemValue> item) {
+    protected TreeItemEx getTargetTreeItem(double x, double y, TreeItemEx item) {
 
-        TreeItem<ItemValue> retval = null;
+        TreeItemEx retval = null;
 
         hideDrawShapes();
         if (item != null) {
@@ -526,12 +527,12 @@ public class DragIndicator {
                 ((ItemValue) retval.getValue()).setDragDropQualifier(LAST);
             } else if (item.isLeaf()) {
                 if (n == level - 1 || n == level || n == level + 1 || n == level + 2) {
-                    retval = item.getParent();
+                    retval = (TreeItemEx) item.getParent();
                 } else if (n < level - 1) {
                     if (item.nextSibling() == null) {
-                        retval = getParentTarget(item, n);
+                        retval = (TreeItemEx) getParentTarget(item, n);
                     } else {
-                        retval = item.getParent();
+                        retval = (TreeItemEx) item.getParent();
                     }
                 }
             } else if (!item.isExpanded()) {
@@ -539,12 +540,12 @@ public class DragIndicator {
                 if (n == level || n == level + 1 || n == level + 2) {
                     retval = item;
                 } else if (n == level - 1) {
-                    retval = item.getParent();
+                    retval = (TreeItemEx) item.getParent();
                 } else if (n < level - 1) {
                     if (item.nextSibling() == null) {
-                        retval = parentAtLevel(item, n);
+                        retval = (TreeItemEx) parentAtLevel(item, n);
                     } else {
-                        retval = item.getParent();
+                        retval = (TreeItemEx) item.getParent();
                     }
                 }
             } else {

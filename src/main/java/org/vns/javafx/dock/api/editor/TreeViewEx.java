@@ -64,32 +64,32 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     }
 
     /**
-     * Removes the object specified by the parameter {@code toRemove}. 
-     * When a tree item @code toRemove} is dragged and dropped on another item
-     * {@code item2}
+     * Removes the object specified by the parameter {@code sourceTreeItem}. 
+     * When a tree item @code sourceTreeItem} is dragged and dropped on another item
+ {@code item2}
      *
-     * @param toRemove ??
+     * @param sourceTreeItem ??
      */
-    public static void removeTreeItemObject(TreeItem<ItemValue> toRemove) {
-        TreeItem<ItemValue> parentItem = toRemove.getParent();
-        if (parentItem != null && toRemove != null) {
-            Object parent = parentItem.getValue().getTreeItemObject();
-            Object remove = toRemove.getValue().getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildObject(parent, remove);
+    public static void updateSourceSceneGraph(TreeItemEx sourceTreeItem) {
+        if (sourceTreeItem != null && sourceTreeItem.getParent() != null) {
+            TreeItemEx parentItem = (TreeItemEx) sourceTreeItem.getParent();
+            TreeItemBuilderRegistry.getInstance().getBuilder(parentItem.getObject()).updateSourceSceneGraph(parentItem, sourceTreeItem);
         }
     }
 
-    public void removeTreeItem(TreeItem<ItemValue> toRemove) {
+/*    public void removeTreeItem(TreeItem<ItemValue> toRemove) {
         if (toRemove == null) {
             return;
         }
         TreeItem<ItemValue> parentItem = toRemove.getParent();
+        
         if (parentItem != null) {
-            Object parent = parentItem.getValue().getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem((TreeItemEx)parentItem, (TreeItemEx)toRemove);
+            parentItem.getChildren().remove(toRemove);
+            //Object parent = parentItem.getValue().getTreeItemObject();
+            //TreeItemBuilderRegistry.getInstance().getBuilder(parent).removeChildTreeItem((TreeItemEx)parentItem, (TreeItemEx)toRemove);
         }
     }
-
+*/
     public SceneGraphView getSceneGraphView() {
         return sceneGraphView;
     }

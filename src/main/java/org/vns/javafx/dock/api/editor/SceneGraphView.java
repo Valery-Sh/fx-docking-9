@@ -149,14 +149,14 @@ public class SceneGraphView extends Control {
         }
         if (ev.wasRemoved()) {
             for (TreeItem<ItemValue> item : ev.getRemovedChildren()) {
-                ((TreeItemEx)item).getBuilder().unregisterChangeHandler((TreeItemEx) item);
+                //((TreeItemEx)item).getBuilder().unregisterChangeHandler((TreeItemEx) item);
 //                System.err.println("Event:  removed item obj = " + item.getValue().getTreeItemObject());
             }
         }
     }
 
-    protected TreeItem createSceneGraph(Node node) {
-        TreeItem<ItemValue> item = null;
+    protected TreeItemEx createSceneGraph(Node node) {
+        TreeItemEx item = null;
         if (TreeItemBuilderRegistry.getInstance().exists(node)) {
             item = TreeItemBuilderRegistry.getInstance().getBuilder(node).build(node);
         }
@@ -287,7 +287,7 @@ public class SceneGraphView extends Control {
     protected void registerDragDetected(TreeCell cell) {
         cell.setOnDragDetected(ev -> {
             Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            DragGesture dg = new DragTreeViewGesture(treeView, cell.getTreeItem());
+            DragGesture dg = new DragTreeViewGesture(treeView, (TreeItemEx) cell.getTreeItem());
             treeView.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
             ClipboardContent content = new ClipboardContent();
             content.putUrl(CELL_UUID);
@@ -310,7 +310,7 @@ public class SceneGraphView extends Control {
 
     protected void registerDragDropped(TreeCell cell) {
         cell.setOnDragDropped((DragEvent ev) -> {
-            TreeItem<ItemValue> targetItem = getTargetTreeItem(ev, ((TreeCell) ev.getGestureTarget()).getTreeItem());
+            TreeItemEx targetItem = getTargetTreeItem(ev, (TreeItemEx) ((TreeCell) ev.getGestureTarget()).getTreeItem());
             //
             // Try transfer data to the place
             //
@@ -327,7 +327,7 @@ public class SceneGraphView extends Control {
         });
     }
 
-    protected TreeItem<ItemValue> getTargetTreeItem(DragEvent ev, TreeItem<ItemValue> item) {
+    protected TreeItemEx getTargetTreeItem(DragEvent ev, TreeItemEx item) {
         return dragIndicator.getTargetTreeItem(ev.getScreenX(), ev.getScreenY(), item);
     }
 

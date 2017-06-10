@@ -32,9 +32,9 @@ import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTreeItemBuilder {
 
     @Override
-    public TreeItem build(Object obj) {
-        TreeItem retval;
-        retval = createItem(obj);
+    public TreeItemEx build(Object obj) {
+        TreeItemEx retval;
+        retval = (TreeItemEx) createItem(obj);
         T content = getContent(obj);
         if (content != null) {
             TreeItem item = TreeItemBuilderRegistry.getInstance().getBuilder(content).build(content);
@@ -92,8 +92,8 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
                     //targetBuilder.notifyObjectRemove(treeView, treeItem);
-                    treeView.removeTreeItemObject(treeItem);
-                    treeView.removeTreeItem(treeItem);
+                    treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
+                    //treeView.removeTreeItem(treeItem);
 
                     //targetBuilder.notifyTreeItemRemove(treeView, treeItem);
                 }
@@ -102,8 +102,8 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
                 item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
                 if (item != null) {
                     //targetBuilder.notifyObjectRemove(treeView, item);
-                    treeView.removeTreeItemObject(item);
-                    treeView.removeTreeItem(item);
+                    treeView.updateSourceSceneGraph((TreeItemEx) item);
+                    //treeView.removeTreeItem(item);
                     //targetBuilder.notifyTreeItemRemove(treeView, item);
 
                 } else {

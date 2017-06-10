@@ -3,7 +3,6 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TreeItem;
 
 /**
  *
@@ -59,15 +58,15 @@ public class TextInputControlItemBuilder extends DefaultTreeItemBuilder {
             return retval;
         }
 
-        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
+/*        if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
             TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
-                //notifyObjectRemove(treeView, treeItem);
-                treeView.removeTreeItemObject(treeItem);
-                treeView.removeTreeItem(treeItem);                
-                //notifyTreeItemRemove(treeView, treeItem);
+                treeView.updateSceneGraph((TreeItemEx) treeItem);
+//                treeView.removeTreeItem(treeItem);                
             }
-        } else if (dg.getGestureSourceObject() instanceof String) {
+        } else 
+*/
+        if (dg.getGestureSourceObject() instanceof String) {
             String text = (String) dg.getGestureSourceObject();
             if (text == null) {
                 text = "";

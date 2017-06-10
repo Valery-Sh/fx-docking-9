@@ -6,7 +6,7 @@ import javafx.scene.control.TreeItem;
 /**
  *
  * @author Valery
- * @param <T> specifies value type
+ *
  */
 public class TreeItemEx extends TreeItem<ItemValue> {
 
@@ -49,7 +49,7 @@ public class TreeItemEx extends TreeItem<ItemValue> {
     }
 
     public void removeObjectFromParent() {
-        TreeViewEx.removeTreeItemObject(this);
+        TreeViewEx.updateSourceSceneGraph(this);
     }
 
     public TreeItemEx treeItemOf(Object obj) {

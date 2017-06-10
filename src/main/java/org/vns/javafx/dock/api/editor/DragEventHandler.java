@@ -4,7 +4,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import static org.vns.javafx.dock.api.editor.EditorUtil.DRAGBOARD_KEY;
@@ -37,7 +36,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
     /**
      * Returns a tree item which is an actual target of a drag gesture.
-     * Delegates the execution to the eponymous one {@link SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, javafx.scene.control.TreeItem)}
+     * Delegates the execution to the eponymous one {@link SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, org.vns.javafx.dock.api.editor.TreeItemEx)   }
      *
      * @param ev the event of type {@code DragEvent }
      * @return a tree item which is an actual target of a drag gesture.
@@ -148,7 +147,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * returns false. Then finds a builder of type
      * {@link TreeItemBuilder } for the target  and then it returns the result
      * of applying the
-     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, javafx.scene.control.TreeItem, javafx.scene.control.TreeItem, java.lang.Object) }
+     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)  }
      * method to this object.
      *
      * @param ev the processed event
@@ -217,8 +216,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      */
     protected void drawIndicator(DragEvent ev) {
         getEditor().getDragIndicator().hideDrawShapes();
-        TreeItem<ItemValue> fromItem = getTargetTreeItem(ev);
-        TreeItem toItem = getTreeCellItem();
+        TreeItemEx fromItem = getTargetTreeItem(ev);
+        TreeItemEx toItem = getTreeCellItem();
         if (fromItem == toItem && isRectangleIndicator(ev, (TreeItemEx) toItem)) {
             getEditor().getDragIndicator().drawRectangle(toItem);
         } else {

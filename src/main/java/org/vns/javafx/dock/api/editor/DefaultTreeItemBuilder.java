@@ -20,27 +20,31 @@ public class DefaultTreeItemBuilder  extends AbstractTreeItemBuilder {
         return false;
     }
 
-    @Override
+/*    @Override
     public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         return null;
     }
+*/
 
-    @Override
-    public void removeChildObject(Object parent, Object toRemove) {
-        
-    }
-
-    @Override
+/*    @Override
     public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         parent.getChildren().remove(toRemove);
     }
-
+*/
     @Override
     public void registerChangeHandler(TreeItemEx item) {
     }
-    
     @Override
-    public void unregisterChangeHandler(TreeItemEx item) {
+    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+        
     }
- 
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(Object obj) {
+    }
+
+    
 }// DefaultTreeItemBuilder

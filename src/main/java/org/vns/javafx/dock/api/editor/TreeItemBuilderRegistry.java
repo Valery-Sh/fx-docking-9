@@ -121,15 +121,14 @@ public class TreeItemBuilderRegistry {
     protected void createDefaultBuilder() {
         register(Node.class, new DefaultTreeItemBuilder());
         register(Labeled.class, new LabeledItemBuilder());
+        register(TabPane.class, new TabPaneItemBuilder());
         register(Pane.class, new PaneItemBuilder());
         register(Shape.class, new ShapeItemBuilder());
-        register(TabPane.class, new TabPaneItemBuilder());
         register(Tab.class, new TabItemBuilder());
         register(BorderPane.class, new BorderPaneItemBuilder());
         register(TextInputControl.class, new TextInputControlItemBuilder());
         register(Text.class, new TextBasedTreeItemBuilder());
         register(TitledPane.class, new NodeContentBasedItemBuilder());
-
     }
 
     private static class SingletonInstance {

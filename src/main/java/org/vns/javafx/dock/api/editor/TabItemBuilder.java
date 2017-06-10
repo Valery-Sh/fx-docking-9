@@ -1,7 +1,10 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -10,7 +13,7 @@ import javafx.scene.control.TreeView;
  *
  * @author Valery
  */
-public class TabItemBuilder extends DefaultTreeItemBuilder {
+public class TabItemBuilder extends AbstractTreeItemBuilder {
 
     public TabItemBuilder() {
     }
@@ -20,8 +23,8 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
     }
 
     @Override
-    public TreeItem build(Object obj) {
-        TreeItem retval = null;
+    public TreeItemEx build(Object obj) {
+        TreeItemEx retval = null;
         if (obj instanceof Tab) {
             Tab tab = (Tab) obj;
             retval = createItem((Tab) obj);
@@ -57,9 +60,9 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
         return obj != null && (obj instanceof Node);
     }
 
-    @Override
-    public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
-        TreeItem retval = null;
+    //@Override
+/*    public TreeItem accept_OLD(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
+        TreeItemEx retval = null;
 
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
         if (dg == null) {
@@ -69,24 +72,24 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
         Tab tab = (Tab) ((ItemValue) target.getValue()).getTreeItemObject();
 
         if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-            TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
+            TreeItemEx treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
                 //notifyObjectRemove(treeView, treeItem);
-                treeView.removeTreeItemObject(treeItem);
+                TreeViewEx.updateSourceSceneGraph(treeItem);
                 treeView.removeTreeItem(treeItem);
-                
+
                 //notifyTreeItemRemove(treeView, treeItem);
             }
         } else if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof Node)) {
-            TreeItem<ItemValue> treeItem = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
+            TreeItemEx treeItem = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSource());
             if (treeItem != null && treeItem.getParent() != null) {
                 //
                 // We must delete the item
                 //
                 //notifyObjectRemove(treeView, treeItem);
-                treeView.removeTreeItemObject(treeItem);
+                treeView.updateSourceSceneGraph(treeItem);
                 treeView.removeTreeItem(treeItem);
-                
+
                 //notifyTreeItemRemove(treeView, treeItem);
             }
         }
@@ -100,19 +103,19 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
         Node n = (Node) value;
         return retval;
     }
-
+*/
     @Override
-    public void removeChildObject(Object parent, Object toRemove) {
-        if (parent != null && (parent instanceof Tab)) {
-            ((Tab) parent).setContent(null);
+    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+        if (parent.getObject() != null && (parent.getObject() instanceof Tab)) {
+            ((Tab) parent.getObject()).setContent(null);
         }
     }
 
-    @Override
+/*    @Override
     public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         parent.getChildren().remove(toRemove);
     }
-
+*/
     @Override
     public boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
             TreeItemEx place,
@@ -129,6 +132,57 @@ public class TabItemBuilder extends DefaultTreeItemBuilder {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        ItemValue v = target.getValue();
+        ((Tab) v.getTreeItemObject()).setContent((Node) sourceObject);        
+    }
+
+    @Override
+    public void registerChangeHandler(TreeItemEx item) {
+        if (!(item.getValue().getTreeItemObject() != null && (item.getValue().getTreeItemObject() instanceof Tab))) {
+            return;
+        }
+        Tab tab = (Tab) item.getValue().getTreeItemObject();
+        unregisterChangeHandler(item);        
+        TabChangeListener listener = new TabChangeListener(item);
+        tab.contentProperty().addListener(listener);
+        tab.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
+        
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(Object obj) {
+        Tab tab = (Tab) obj;
+        TabChangeListener listener = (TabChangeListener) tab.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        if ( listener == null ) {
+            return;
+        }
+        tab.contentProperty().removeListener(listener);
+        tab.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+        
+    }
+
+    public class TabChangeListener implements ChangeListener<Node> {
+
+        private final TreeItemEx treeItem;
+
+        public TabChangeListener(TreeItemEx treeItem) {
+            this.treeItem = treeItem;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
+            if (oldValue != null && newValue == null) {
+                treeItem.getChildren().clear();
+            } else if (oldValue == null && newValue != null) {
+                TreeItemEx item = TreeItemBuilderRegistry.getInstance().getBuilder(newValue).build(newValue);
+                treeItem.getChildren().add(item);
+            }
+        }
+
     }
 
 }

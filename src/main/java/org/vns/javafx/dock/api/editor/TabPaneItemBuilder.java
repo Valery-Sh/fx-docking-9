@@ -2,9 +2,11 @@ package org.vns.javafx.dock.api.editor;
 
 import java.util.List;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.layout.Pane;
 
 /**
  *
@@ -24,21 +26,41 @@ public class TabPaneItemBuilder extends AbstractListBasedTreeItemBuilder<Tab> {
 
     @Override
     public void registerChangeHandler(TreeItemEx item) {
-        TabPane pane = (TabPane) item.getValue().getTreeItemObject();
-        BuilderListChangeListener l = new BuilderListChangeListener(item);
-        item.getValue().setChangeListener(l);
-        pane.getTabs().addListener(new BuilderListChangeListener(item));
-    }
-    @Override
-    public void unregisterChangeHandler(TreeItemEx item) {
-        TabPane pane = (TabPane) item.getValue().getTreeItemObject();
-        if ( item.getValue().getChangeListener() == null ) {
+        if (!(item.getValue().getTreeItemObject() != null && (item.getValue().getTreeItemObject() instanceof TabPane))) {
             return;
         }
-        pane.getTabs().removeListener((ListChangeListener) item.getValue().getChangeListener());
-        item.getValue().setChangeListener(null);        
+        TabPane pane = (TabPane) item.getValue().getTreeItemObject();
+        unregisterChangeHandler(item);        
+        
+        BuilderListChangeListener listener = new BuilderListChangeListener(item);
+        pane.getTabs().addListener(listener);
+        pane.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
     }
 
+    @Override
+    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+        ((TabPane) parent.getObject()).getTabs().remove(child.getObject());
+        //
+        // remove listeners
+        //
+    }
+
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        int idx = getIndex(treeView, target, place);
+        getList(target.getObject()).add(idx, (Tab) sourceObject);
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(Object obj) {
+        TabPane pane = (TabPane) obj;
+        if ( pane.getProperties().get(EditorUtil.CHANGE_LISTENER) == null ) {
+            return;
+        }
+        pane.getTabs().removeListener((ListChangeListener<? super Tab>) pane.getProperties().get(EditorUtil.CHANGE_LISTENER));
+        pane.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+        
+    }
     
 }//TabPaneItemBuilder
 
