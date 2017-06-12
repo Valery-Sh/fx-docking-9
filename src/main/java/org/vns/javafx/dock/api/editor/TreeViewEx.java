@@ -70,10 +70,10 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
      *
      * @param sourceTreeItem ??
      */
-    public static void updateSourceSceneGraph(TreeItemEx sourceTreeItem) {
+    public static void updateOnMove(TreeItemEx sourceTreeItem) {
         if (sourceTreeItem != null && sourceTreeItem.getParent() != null) {
             TreeItemEx parentItem = (TreeItemEx) sourceTreeItem.getParent();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parentItem.getObject()).updateSourceSceneGraph(parentItem, sourceTreeItem);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parentItem.getObject()).updateOnMove(sourceTreeItem);
         }
     }
 

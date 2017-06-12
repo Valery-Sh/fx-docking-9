@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
@@ -37,8 +36,8 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
     }
 
     @Override
-    public boolean isAcceptable(Object obj) {
-        return (obj == null) || (obj instanceof String);
+    public boolean isAcceptable(Object target,Object accepting) {
+        return (accepting == null) || (accepting instanceof String);
     }
 
     @Override
@@ -140,6 +139,24 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
         }
 
         return retval;
+    }
+
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        
+    }
+
+    @Override
+    public void updateOnMove(TreeItemEx item) {
+        
+    }
+
+    @Override
+    public void registerChangeHandler(TreeItemEx item) {
+    }
+
+    @Override
+    public void unregisterObjectChangeHandler(TreeItemEx item) {
     }
 
 }

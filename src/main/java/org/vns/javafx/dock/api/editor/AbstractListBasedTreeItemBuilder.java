@@ -1,8 +1,12 @@
 package org.vns.javafx.dock.api.editor;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
@@ -14,12 +18,12 @@ import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
  */
 public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeItemBuilder {
 
-/*    protected List<T> getList(TreeItemEx target) {
+    /*    protected List<T> getList(TreeItemEx target) {
         //AbstractListBasedTreeItemBuilder.this.
         return getList(target.getValue().getTreeItemObject());
     }
-*/
-    protected abstract List<T> getList(Object obj);
+     */
+    protected abstract ObservableList<T> getList(Object obj);
 
     /**
      * Tries to to find an object of type {@code TreeItem} in the specified 
@@ -122,7 +126,43 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
         return idx;
     }
 
-/*    public TreeItem update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
+    @Override
+    protected Object createAndAddListener(TreeItemEx item) {
+        BuilderListChangeListener listener = new BuilderListChangeListener(item);
+        
+        getList(item.getObject()).addListener(listener);
+        return listener;
+    }
+
+    @Override
+    protected void removelistener(TreeItemEx item, Object listener) {
+        getList(item.getObject()).removeListener((ListChangeListener<? super T>) listener);
+    }
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        int idx = getIndex(treeView, target, place);
+        getList(target.getObject()).add(idx, (T)sourceObject);
+    }
+    @Override
+    public void updateOnMove(TreeItemEx child) {
+        TreeItemEx parent = (TreeItemEx) child.getParent();
+        //((Pane) parent.getObject()).getChildren().remove(child.getObject());
+        getList(parent.getObject()).remove(child.getObject());
+        //
+        // remove listeners fron source and all it's children
+        //
+        TreeItemBuilder b = TreeItemBuilderRegistry.getInstance().getBuilder(child.getObject());
+        b.unregisterChangeHandler(child);
+                
+    }
+    @SuppressWarnings("unchecked")
+    public Class<T> getTypeParameterClass() {
+        Type type = getClass().getGenericSuperclass();
+        ParameterizedType paramType = (ParameterizedType) type;
+        return (Class<T>) paramType.getActualTypeArguments()[0];
+    }
+
+    /*    public TreeItem update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
@@ -134,10 +174,10 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    updateSourceSceneGraph((TreeItemEx) treeItem);
+                    updateOnMove((TreeItemEx) treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
-                if ( ! updateSourceSceneGraph(treeView, value) ) {
+                if ( ! updateOnMove(treeView, value) ) {
                     ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
                         r.remove();
@@ -149,28 +189,27 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
         update(treeView, target.getObject(), place.getObject(), value);
         return retval;
     }
-*/
-/*    protected void updateSourceSceneGraph(TreeItemEx sourceTreeItem) {
+     */
+ /*    protected void updateOnMove(TreeItemEx sourceTreeItem) {
         TreeItem<ItemValue> parentItem = sourceTreeItem.getParent();
         if (parentItem != null && sourceTreeItem != null) {
             Object parent = parentItem.getValue().getTreeItemObject();
             Object remove = sourceTreeItem.getValue().getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).updateSourceSceneGraph(parent, remove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).updateOnMove(parent, remove);
         }
     }
-*/
-/*    public boolean updateSourceSceneGraph(TreeViewEx treeView, Object sourceObject) {
+     */
+ /*    public boolean updateOnMove(TreeViewEx treeView, Object sourceObject) {
        boolean retval = false;
         TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, sourceObject);
         if (sourceTreeItem != null) {
-            updateSourceSceneGraph(sourceTreeItem);
+            updateOnMove(sourceTreeItem);
             retval = true;
         }
         return retval;
     }
-*/
-    
-/*    public TreeItem accept_OLD(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
+     */
+ /*    public TreeItem accept_OLD(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
@@ -184,7 +223,7 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
+                    treeView.updateOnMove((TreeItemEx) treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItem item;
@@ -195,7 +234,7 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
                         return null;
                     }
                     //targetBuilder.notifyObjectRemove(treeView, item);
-                    treeView.updateSourceSceneGraph((TreeItemEx) item);
+                    treeView.updateOnMove((TreeItemEx) item);
                     //treeView.removeTreeItem(item);
 
                     //targetBuilder.notifyTreeItemRemove(treeView, item);
@@ -213,8 +252,7 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
         }
         return retval;
     }
-*/    
-    
+     */
     @Override
     public TreeItemEx build(Object obj) {
 
@@ -222,23 +260,28 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
         //List<T> children = getList(obj);        
         List<T> children = getList(obj);
         //List<T> children = AbstractListBasedTreeItemBuilder.this.getList(obj);
-
+        if ( obj instanceof ListView ) {
+            System.err.println("1 listView " + obj);
+        }
         retval = createItem(obj);
         for (T it : children) {
+            System.err.println("2 listView " + it);
             TreeItemBuilder gb = TreeItemBuilderRegistry.getInstance().getBuilder(it);
+            System.err.println("3 listView " + it);
+
             retval.getChildren().add(gb.build(it));
         }
         return retval;
     }
 
-/*    @Override
-    public void updateSourceSceneGraph(Object parent, Object toRemove) {
+    /*    @Override
+    public void updateOnMove(Object parent, Object toRemove) {
         getList(parent).remove(toRemove);
 
     }
-*/    
+     */
 
-    /*    @Override
+ /*    @Override
     protected void registerChangeHandler(Object obj, Object[] others) {
         
     }    
@@ -284,8 +327,6 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
                     treeItem.getChildren().addAll(change.getFrom(), itemList);
                 }
             }//while
-            //update();
-
         }
     }
 

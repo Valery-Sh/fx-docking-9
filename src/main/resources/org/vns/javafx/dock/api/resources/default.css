@@ -119,6 +119,10 @@
 .tree-item-node-label {
     -fx-graphic: url(label-16x16.png);
 }
+.tree-item-node-listview {
+    -fx-graphic: url(listview-16x16.png);
+}
+
 .tree-item-node-textfield {
     -fx-graphic: url(text-field-16x16.png);
 }

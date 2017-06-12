@@ -19,9 +19,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
+import javafx.scene.control.TreeView;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
@@ -29,7 +32,7 @@ import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
  * @author Valery
  * @param <T> ???
  */
-public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTreeItemBuilder {
+public abstract class AbstractContentBasedTreeItemBuilder<T> extends AbstractTreeItemBuilder {
 
     @Override
     public TreeItemEx build(Object obj) {
@@ -58,7 +61,23 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
             System.err.println("InvocationTargetException. " + ex.getMessage());
         }
         return retval;
+    }
 
+    protected ObjectProperty<T> getContentProperty(Object obj) {
+        ObjectProperty<T> retval = null;
+        try {
+            Method m = ReflectHelper.MethodUtil.getMethod(obj.getClass(), "contentProperty", new Class[0]);
+            retval = (ObjectProperty<T>) m.invoke(obj, new Object[0]);
+        } catch (NoSuchMethodException ex) {
+            System.err.println("NoSuchMethodException. " + ex.getMessage());
+        } catch (IllegalAccessException ex) {
+            System.err.println("IllegalAccessException. " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            System.err.println("IllegalArgumentException. " + ex.getMessage());
+        } catch (InvocationTargetException ex) {
+            System.err.println("InvocationTargetException. " + ex.getMessage());
+        }
+        return retval;
     }
 
     protected void setContent(Object obj, T content) {
@@ -76,55 +95,6 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
         }
     }
 
-    @Override
-    public abstract boolean isAcceptable(Object obj);
-
-    @Override
-    public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
-        TreeItem retval = null;
-        DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-
-        T value = (T) dg.getGestureSourceObject();
-        TreeItemBuilder targetBuilder = target.getValue().getBuilder();
-
-        if (target != null && place != null && value != null) {
-            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-                TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
-                if (treeItem instanceof TreeItemEx) {
-                    //targetBuilder.notifyObjectRemove(treeView, treeItem);
-                    treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
-                    //treeView.removeTreeItem(treeItem);
-
-                    //targetBuilder.notifyTreeItemRemove(treeView, treeItem);
-                }
-            } else if (dg.getGestureSource() != null) {
-                TreeItem item;
-                item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
-                if (item != null) {
-                    //targetBuilder.notifyObjectRemove(treeView, item);
-                    treeView.updateSourceSceneGraph((TreeItemEx) item);
-                    //treeView.removeTreeItem(item);
-                    //targetBuilder.notifyTreeItemRemove(treeView, item);
-
-                } else {
-                    ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
-                    if (r != null) {
-                        //r.remove(dg.getGestureSource());
-                        r.remove();
-                    }
-                }
-            }
-
-            retval = TreeItemBuilderRegistry.getInstance().getBuilder(value).build(value);
-            Object obj = target.getValue().getTreeItemObject();
-            setContent(obj, (T) dg.getGestureSourceObject());
-
-            target.getChildren().clear();
-            target.getChildren().add(0, retval);
-
-        }
-        return retval;
-    }
 
     @SuppressWarnings("unchecked")
     public Class<T> getTypeParameterClass() {
@@ -133,11 +103,106 @@ public abstract class AbstractContentBasedTreeItemBuilder<T> extends DefaultTree
         return (Class<T>) paramType.getActualTypeArguments()[0];
     }
 
+    @Override
+    public boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
+            TreeItemEx place,
+            Object dragObject) {
+
+        boolean retval = super.isAdmissiblePosition(treeView, target, place, dragObject);
+        if (!retval) {
+            return false;
+        }
+        if (place.getParent() == target) {
+            return false;
+        }
+
+        return !(place == target && getContent(place.getObject()) != null);
+    }
+
+    @Override
+    protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        setContent(target.getObject(), (T) sourceObject);
+    }
+
+    @Override
+    public void updateOnMove(TreeItemEx item) {
+        TreeItemEx parent = (TreeItemEx) item.getParent();
+        setContent(parent.getObject(), null);
+    }
+    protected Object createAndAddListener(TreeItemEx item) {
+        ObjectProperty<T> contentProperty = getContentProperty(item.getObject());
+        ContentPropertyChangeListener listener = new ContentPropertyChangeListener(item);
+        contentProperty.addListener(listener);
+        return listener;
+        
+    }
+    protected void removeListener(TreeItemEx item, Object listener) {
+         getContentProperty(item.getObject()).removeListener((ChangeListener) listener);
+    }
+/*    @Override
+    public void registerChangeHandler(TreeItemEx item) {
+        if (!(item.getObject() != null && (item.getObject() instanceof Node))) {
+            return;
+        }
+
+        unregisterChangeHandler(item);
+        
+        ObjectProperty<T> contentProperty = getContentProperty(item.getObject());
+        ContentPropertyChangeListener listener = new ContentPropertyChangeListener(item);
+        contentProperty.addListener(listener);
+//            node.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
+        item.getValue().setChangeListener(listener);
+        System.err.println("REGISTER CHANGE " + listener);
+    }
+*/
+/*    @Override
+    public void unregisterObjectChangeHandler(TreeItemEx item) {
+        //Node node = (Node) item.getObject();
+        //ContentPropertyChangeListener listener = (ContentPropertyChangeListener) node.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        ContentPropertyChangeListener listener = (ContentPropertyChangeListener) item.getValue().getChangeListener();
+        if (listener == null) {
+            return;
+        }
+        getContentProperty(item.getObject()).removeListener(listener);
+        //node.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+
+        item.getValue().setChangeListener(null);
+
+    }
+*/
+    public class ContentPropertyChangeListener implements ChangeListener<T> {
+
+        private final TreeItemEx treeItem;
+
+        public ContentPropertyChangeListener(TreeItemEx treeItem) {
+            this.treeItem = treeItem;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+            if (oldValue != null && newValue == null) {
+                treeItem.getChildren().clear();
+            } else if (oldValue == null && newValue != null) {
+                TreeItemEx contentItem = TreeItemBuilderRegistry.getInstance().getBuilder(newValue).build(newValue);
+                treeItem.getChildren().add(contentItem);
+            } else if (oldValue != null && newValue != null) {
+                TreeItemEx item = treeItem.treeItemOf(oldValue);
+                if (item != null) {
+                    TreeViewEx.updateOnMove(item);
+                }
+                TreeItemEx contentItem = TreeItemBuilderRegistry.getInstance().getBuilder(newValue).build(newValue);
+                treeItem.getChildren().add(contentItem);
+            }
+        }
+
+    }
+
     public static class NodeContentBasedItemBuilder extends AbstractContentBasedTreeItemBuilder<Node> {
 
         @Override
-        public boolean isAcceptable(Object obj) {
-            return obj instanceof Node;
+        public boolean isAcceptable(Object target, Object accepting) {
+            return accepting instanceof Node;
         }
+
     }
 }

@@ -1,5 +1,7 @@
 package org.vns.javafx.dock.api.editor;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventType;
@@ -60,8 +62,8 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
      * Node/
      */
     @Override
-    public boolean isAcceptable(Object obj) {
-        return obj != null && ((obj instanceof Node) || (obj instanceof String));
+    public boolean isAcceptable(Object target, Object accepting) {
+        return accepting != null && ((accepting instanceof Node) || (accepting instanceof String));
     }
 
     @Override
@@ -121,7 +123,7 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
             TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
             if (treeItem instanceof TreeItemEx) {
                 //(notifyObjectRemove(treeView, treeItem);
-                treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
+                treeView.updateOnMove((TreeItemEx) treeItem);
                 //treeView.removeTreeItem(treeItem);
 
                 //notifyTreeItemRemove(treeView, treeItem);
@@ -156,7 +158,8 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
     }
 */
     @Override
-    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+    public void updateOnMove(TreeItemEx child) {
+        TreeItemEx parent = (TreeItemEx) child.getParent();
         if (parent.getObject() instanceof Labeled) {
             ((Labeled) parent.getObject()).setGraphic(null);
         }
@@ -175,19 +178,7 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
     public TreeItemBuilder getPlaceHolderBuilder(TreeItemEx placeHolder) {
         return placeholderBuilder;
     }
-
-    @Override
-    public void registerChangeHandler(TreeItemEx item) {
-        if (!(item.getValue().getTreeItemObject() != null && (item.getValue().getTreeItemObject() instanceof Labeled))) {
-            return;
-        }
-        Labeled node = (Labeled) item.getValue().getTreeItemObject();
-        unregisterChangeHandler(item);        
-        GraphicChangeListener listener = new GraphicChangeListener(item);
-        node.graphicProperty().addListener(listener);
-        node.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
-    }
-
+    
     @Override
     protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
         ItemValue v = target.getValue();
@@ -195,16 +186,16 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
     }
 
     @Override
-    public void unregisterObjectChangeHandler(Object obj) {
-        Labeled l = (Labeled) obj;
-        GraphicChangeListener listener = (GraphicChangeListener) l.getProperties().get(EditorUtil.CHANGE_LISTENER);
-        if ( listener == null ) {
-            return;
-        }
-        l.graphicProperty().removeListener(listener);
-        l.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+    protected Object createAndAddListener(TreeItemEx item) {
+        GraphicChangeListener listener = new GraphicChangeListener(item);
+        ((Labeled) item.getObject()).graphicProperty().addListener(listener);
+        return listener;
     }
 
+    @Override
+    protected void removelistener(TreeItemEx item, Object listener) {
+        ((Labeled)item.getObject()).graphicProperty().removeListener((ChangeListener) listener);
+    }
 
     public static class LabelPlaceholderBuilder extends DefaultTreeItemBuilder {
 
@@ -234,8 +225,8 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
         }
 
         @Override
-        public boolean isAcceptable(Object obj) {
-            return obj != null && (obj instanceof Node);
+        public boolean isAcceptable(Object target, Object accepting) {
+            return accepting != null && (accepting instanceof Node);
         }
 
         @Override
@@ -280,7 +271,7 @@ public class LabeledItemBuilder extends AbstractTreeItemBuilder {
             }  else if (oldValue != null && newValue != null) {
                 TreeItemEx t = treeItem.treeItemOf(newValue);
                 if ( t != null  ) {
-                    TreeViewEx.updateSourceSceneGraph(t);
+                    TreeViewEx.updateOnMove(t);
                 }
                 ((Labeled)  treeItem.getObject()).setGraphic(newValue);
             }

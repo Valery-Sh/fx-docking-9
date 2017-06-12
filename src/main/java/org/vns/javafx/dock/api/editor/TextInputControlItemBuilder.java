@@ -11,8 +11,8 @@ import javafx.scene.control.TextInputControl;
 public class TextInputControlItemBuilder extends DefaultTreeItemBuilder {
 
     @Override
-    public boolean isAcceptable(Object obj) {
-        return (obj == null) || (obj instanceof String);
+    public boolean isAcceptable(Object target,Object accepting) {
+        return (accepting == null) || (accepting instanceof String);
     }
 
     @Override

@@ -120,8 +120,8 @@ public class LabeledItemBuilderTest {
         Object obj = null;
         LabeledItemBuilder instance = new LabeledItemBuilder();
         boolean expResult = false;
-        boolean result = instance.isAcceptable(obj);
-        assertEquals(expResult, result);
+        //boolean result = instance.isAcceptable(obj);
+        //assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -145,7 +145,7 @@ public class LabeledItemBuilderTest {
     }
 
     /**
-     * Test of updateSourceSceneGraph method, of class LabeledItemBuilder.
+     * Test of updateOnMove method, of class LabeledItemBuilder.
      */
     @Test
     public void testUpdateSourceSceneGraph() {
@@ -153,7 +153,7 @@ public class LabeledItemBuilderTest {
         TreeItemEx parent = null;
         TreeItemEx child = null;
         LabeledItemBuilder instance = new LabeledItemBuilder();
-        instance.updateSourceSceneGraph(parent, child);
+        //instance.updateOnMove(parent, child);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -225,7 +225,7 @@ public class LabeledItemBuilderTest {
         System.out.println("unregisterObjectChangeHandler");
         Object obj = null;
         LabeledItemBuilder instance = new LabeledItemBuilder();
-        instance.unregisterObjectChangeHandler(obj);
+        //instance.unregisterObjectChangeHandler(obj);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

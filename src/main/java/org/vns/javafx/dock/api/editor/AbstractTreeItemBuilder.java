@@ -2,10 +2,12 @@ package org.vns.javafx.dock.api.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -37,12 +39,12 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    TreeViewEx.updateSourceSceneGraph((TreeItemEx) treeItem);
+                    TreeViewEx.updateOnMove((TreeItemEx) treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, value);
                 if (sourceTreeItem != null) {
-                    TreeViewEx.updateSourceSceneGraph(sourceTreeItem);
+                    TreeViewEx.updateOnMove(sourceTreeItem);
                 } else {
                     DragManager.ChildrenRemover r = (DragManager.ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
@@ -55,8 +57,6 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
         return retval;
     }
 
-    @Override
-    public abstract boolean isAcceptable(Object obj);
 
     protected abstract void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject);
 
@@ -76,6 +76,7 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
         return retval;
     }
      */
+    @Override
     public final TreeItemEx createItem(Object obj, Object... others) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
@@ -112,68 +113,50 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
         return label;
     }
 
-/*    protected void updateSourceSceneGraph(TreeItemEx sourceTreeItem) {
-        TreeItemEx parentItem = (TreeItemEx) sourceTreeItem.getParent();
-        if (parentItem != null && sourceTreeItem != null) {
-            //Object parent = parentItem.getValue().getTreeItemObject();
-            //Object sourceObject = sourceTreeItem.getValue().getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parentItem.getObject()).updateSourceSceneGraph(parentItem, sourceTreeItem);
-        }
-    }
-*/
-    /*    protected boolean updateSourceSceneGraph(TreeViewEx treeView, Object sourceObject) {
-        boolean retval = false;
-        TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, sourceObject);
-        if (sourceTreeItem != null) {
-            updateSourceSceneGraph(sourceTreeItem);
-            retval = true;
-        }
-        return retval;
-    }
-     */
-/*    @Override
-    public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
-        parent.getChildren().remove(toRemove);
-    }
-*/
-    public void unregisterChangeHandler_OLD(Object obj) {
-        if (obj instanceof Node) {
-            Node node = (Node) obj;
-            Object o = node.getProperties().remove(EditorUtil.CHANGE_LISTENER);
-            if (o != null && (node instanceof Labeled)) {
-                ((Labeled) node).graphicProperty().removeListener((ChangeListener<Node>) o);
-            }
-        }
-    }
-
+    @Override
     public void unregisterChangeHandler(TreeItemEx item) {
         if (item.getObject() == null) {
             return;
         }
-        TreeItemBuilder b  = TreeItemBuilderRegistry.getInstance().getBuilder(item.getObject());
-        b.unregisterObjectChangeHandler(item.getObject());
+        TreeItemBuilder b = TreeItemBuilderRegistry.getInstance().getBuilder(item.getObject());
+        b.unregisterObjectChangeHandler(item);
         for (TreeItem it : item.getChildren()) {
             unregisterChangeHandler((TreeItemEx) it);
         }
     }
 
+    protected Object createAndAddListener(TreeItemEx item) {
+        return null;
+    }
 
-    /*    protected void unregisterSingleChangeHandler(Object obj) {
-        if (obj == null || !(obj instanceof Node)) {
+    protected void removelistener(TreeItemEx item, Object listener) {
+    }
+
+    @Override
+    public void registerChangeHandler(TreeItemEx item) {
+        if (item.getObject() instanceof Tab) {
+            System.err.println("REGISTER CHANGE ");
+        }
+
+        if (item.getObject() == null) {
             return;
         }
-        Node node = (Node) obj;
-        Object o = node.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+        unregisterChangeHandler(item);
+        Object listener = createAndAddListener(item);
+        item.getValue().setChangeListener(listener);
+        System.err.println("REGISTER CHANGE " + listener);
     }
-     */
-//    public void unregisterSingleChangeHandler(Object obj) {
-//    }    
-/*    private void toList(TreeItemEx item, List list) {
-        list.add(item.getObject());
-        for (TreeItem it : item.getChildren()) {
-            toList((TreeItemEx) it, list);
+
+    @Override
+    public void unregisterObjectChangeHandler(TreeItemEx item) {
+
+        Object listener = item.getValue().getChangeListener();
+
+        if (listener == null) {
+            return;
         }
-/
+        removelistener(item, listener);
+        item.getValue().setChangeListener(null);
     }
-     */
-}// DefaultTreeItemBuilder
+
+}// AbstractTreeItemBuilder

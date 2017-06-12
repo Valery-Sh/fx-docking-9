@@ -3,15 +3,21 @@ package org.vns.javafx.dock.api.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.vns.javafx.dock.api.editor.AbstractContentBasedTreeItemBuilder.NodeContentBasedItemBuilder;
 
 /**
@@ -20,7 +26,8 @@ import org.vns.javafx.dock.api.editor.AbstractContentBasedTreeItemBuilder.NodeCo
  */
 public class TreeItemBuilderRegistry {
 
-    private final ObservableMap<String, TreeItemBuilder> builders = FXCollections.observableHashMap();
+    //private final ObservableMap<String, TreeItemBuilder> builders = FXCollections.observableHashMap();
+    private final ObservableMap<Class, TreeItemBuilder> builders = FXCollections.observableHashMap();
 
     public static TreeItemBuilderRegistry getInstance() {
         return SingletonInstance.INSTANCE;
@@ -31,11 +38,13 @@ public class TreeItemBuilderRegistry {
             return null;
         }
         if (builders.isEmpty()) {
-            createDefaultBuilder();
+            createDefaultBuilders();
         }
-        if (o instanceof String) {
+/*        if (o instanceof String) {
             return builders.get((String) o);
-        } else if (o instanceof Class) {
+        } else 
+*/            
+        if (o instanceof Class) {
             return find((Class) o);
         }
         TreeItemBuilder retval = find(o.getClass());
@@ -43,9 +52,9 @@ public class TreeItemBuilderRegistry {
     }
 
 
-    protected TreeItemBuilder find(Class clazz) {
+    protected TreeItemBuilder find_old(Class clazz) {
         if (builders.isEmpty()) {
-            createDefaultBuilder();
+            createDefaultBuilders();
         }
 
         TreeItemBuilder retval = null;
@@ -76,6 +85,41 @@ public class TreeItemBuilderRegistry {
         
         return retval;
     }
+    
+    protected TreeItemBuilder find(Class clazz) {
+        if (builders.isEmpty()) {
+            createDefaultBuilders();
+        }
+
+        TreeItemBuilder retval = null;
+        Class c = clazz;
+
+        while (c != null && ! c.isPrimitive() ) {
+            if (builders.get(c) != null) {
+                retval = builders.get(c);
+                break;
+            }
+            c = c.getSuperclass();
+        }
+        
+        if (retval == null ) {
+            c = clazz;
+            while (c != null) {
+                retval = find(c.getInterfaces());
+                if ( retval != null ) {
+                    break;
+                }
+                c = c.getSuperclass();
+            }
+        }
+        if (retval == null) {
+            retval = builders.get(Node.class);
+            register(clazz, retval);
+        }
+        
+        return retval;
+    }
+    
     protected TreeItemBuilder find(Class[] interfaces) {
         TreeItemBuilder retval = null;
         for ( Class c : interfaces) {
@@ -88,10 +132,11 @@ public class TreeItemBuilderRegistry {
         return retval;
     }
     protected TreeItemBuilder findForInterface(Class clazz) {
-        return builders.get(clazz.getName());
+        return builders.get(clazz);
     }
+    
 
-    public void register(Object key, TreeItemBuilder value) {
+/*    public void register(Object key, TreeItemBuilder value) {
         String clazz = key.getClass().getName();
         if (key instanceof String) {
             clazz = (String) key;
@@ -103,8 +148,12 @@ public class TreeItemBuilderRegistry {
     public void register(Class clazz, TreeItemBuilder value) {
         builders.put(clazz.getName(), value);
     }
+*/
+    public void register(Class clazz, TreeItemBuilder value) {
+        builders.put(clazz, value);
+    }
 
-    public void uregister(Object key) {
+/*    public void uregister(Object key) {
         String clazz = key.getClass().getName();
         if (key instanceof String) {
             clazz = (String) key;
@@ -113,16 +162,28 @@ public class TreeItemBuilderRegistry {
         }
         builders.remove(clazz);
     }
-
+*/
+    public void uregister(Object key) {
+        builders.remove(key.getClass());
+    }    
     public boolean exists(Object obj) {
         return getBuilder(obj) != null;
     }
 
-    protected void createDefaultBuilder() {
+    protected void createDefaultBuilders() {
         register(Node.class, new DefaultTreeItemBuilder());
         register(Labeled.class, new LabeledItemBuilder());
         register(TabPane.class, new TabPaneItemBuilder());
+        register(Accordion.class, new AccordionItemBuilder());
+        register(AnchorPane.class, new PaneItemBuilder());
+        register(FlowPane.class, new PaneItemBuilder());
+        register(TextFlow.class, new PaneItemBuilder());
+        register(ListView.class, new ListViewItemBuilder());
+        register(String.class, new StringTreeItemBuilder());
+        
         register(Pane.class, new PaneItemBuilder());
+        register(TilePane.class, new PaneItemBuilder());
+        
         register(Shape.class, new ShapeItemBuilder());
         register(Tab.class, new TabItemBuilder());
         register(BorderPane.class, new BorderPaneItemBuilder());

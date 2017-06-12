@@ -18,7 +18,7 @@ public class ShapeItemBuilder extends AbstractTreeItemBuilder {
     }
 
     @Override
-    public boolean isAcceptable(Object obj) {
+        public boolean isAcceptable(Object target, Object accepting) {
         return false;
     }
 
@@ -28,7 +28,7 @@ public class ShapeItemBuilder extends AbstractTreeItemBuilder {
     }
 
     @Override
-    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+    public void updateOnMove(TreeItemEx child) {
         //
         // remove listeners fron source and all it's children
         //
@@ -36,13 +36,4 @@ public class ShapeItemBuilder extends AbstractTreeItemBuilder {
         b.unregisterChangeHandler(child);
         
     }
-
-    @Override
-    public void registerChangeHandler(TreeItemEx item) {
-    }
-
-    @Override
-    public void unregisterObjectChangeHandler(Object obj) {
-    }
-    
 }

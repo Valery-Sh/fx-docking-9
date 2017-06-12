@@ -1,8 +1,5 @@
 package org.vns.javafx.dock.api.editor;
 
-import javafx.scene.Node;
-import javafx.scene.control.TreeItem;
-
 /**
  *
  * @author Valery
@@ -16,7 +13,7 @@ public class DefaultTreeItemBuilder  extends AbstractTreeItemBuilder {
     private void init() {
     }
     @Override
-    public boolean isAcceptable(Object obj) {
+    public boolean isAcceptable(Object target, Object accepting) {
         return false;
     }
 
@@ -35,7 +32,7 @@ public class DefaultTreeItemBuilder  extends AbstractTreeItemBuilder {
     public void registerChangeHandler(TreeItemEx item) {
     }
     @Override
-    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+    public void updateOnMove(TreeItemEx child) {
         
     }
     @Override
@@ -43,7 +40,8 @@ public class DefaultTreeItemBuilder  extends AbstractTreeItemBuilder {
     }
 
     @Override
-    public void unregisterObjectChangeHandler(Object obj) {
+    public void unregisterObjectChangeHandler(TreeItemEx item) {
+        item.getValue().setChangeListener(null);
     }
 
     

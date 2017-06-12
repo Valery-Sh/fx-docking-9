@@ -3,15 +3,13 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 
 /**
  *
  * @author Valery
  */
 public interface TreeItemBuilder {
-
+    public static final String ACCEPT_TYPES_KEY = "tree-item-builder-accept-types";
     public static final String CELL_UUID = "uuid-29a4b479-0282-41f1-8ac8-21b4923235be";
     public static final String NODE_UUID = "uuid-f53db037-2e33-4c68-8ffa-06044fc10f81";
 
@@ -34,10 +32,10 @@ public interface TreeItemBuilder {
      * any type for example a node of type {@code Button}. Then the method 
      * will try to remove the button from the children collection of the VBox pane.
      * 
-     * @param parent the parent object to remove from
-     * @param child  the object to be removed.
+     * @param item  the object to be removed.
      */
-    void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child);
+    void updateOnMove(TreeItemEx item);
+    //void updateOnMove(TreeItemEx parent, TreeItemEx child);
     //void accept(Object targetParent, Object targetPlace, Object treeItemObject);
 
     /**
@@ -57,7 +55,7 @@ public interface TreeItemBuilder {
     //void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove);
     void registerChangeHandler(TreeItemEx item);
     void unregisterChangeHandler(TreeItemEx source);
-    void unregisterObjectChangeHandler(Object obj);
+    void unregisterObjectChangeHandler(TreeItemEx item);
     //void removeChangeHandler(Node node);
     //Object getChangeHandler(Node node);
 
@@ -76,7 +74,7 @@ public interface TreeItemBuilder {
         if (parentItem != null && toRemove != null) {
             Object parent = ((ItemValue) parentItem.getValue()).getTreeItemObject();
             Object remove = ((ItemValue) toRemove.getValue()).getTreeItemObject();
-            TreeItemBuilderRegistry.getInstance().getBuilder(parent).updateSourceSceneGraph(parent, remove);
+            TreeItemBuilderRegistry.getInstance().getBuilder(parent).updateOnMove(parent, remove);
         }
     }
 */
@@ -109,14 +107,15 @@ public interface TreeItemBuilder {
         if (target.getValue().getTreeItemObject() == dragObject) {
             return false;
         }
-
+        System.err.println("TreeItemBuilder isAdmissiblePosition 1 " );
         TreeItem<ItemValue> dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
         //
         // We do not want to insert the draggedItem before or after itself
         //
         if (target == place.getParent() && dragItem != null) {
             if (dragItem == place || dragItem.previousSibling() == place) {
-//                System.err.println("builder 1");
+        System.err.println("TreeItemBuilder isAdmissiblePosition 2 " + ((TreeItemEx)dragItem).getObject() );
+
                 return false;
             }
         } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
@@ -124,14 +123,18 @@ public interface TreeItemBuilder {
             TreeItem<ItemValue> actualPlace = EditorUtil.parentOfLevel(treeView, place, level);
             if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
 //                System.err.println("builder 2");
+        System.err.println("TreeItemBuilder isAdmissiblePosition 3 " );
 
                 return false;
             }
         }
-        return isAcceptable(dragObject);
+        System.err.println("TreeItemBuilder isAdmissiblePosition 4 " );
+        
+        return isAcceptable(target.getObject(),dragObject);
     }
 
-    boolean isAcceptable(Object obj);
+    //boolean isAcceptable(Object obj);
+    boolean isAcceptable(Object target,Object accepting);
     
     
 }

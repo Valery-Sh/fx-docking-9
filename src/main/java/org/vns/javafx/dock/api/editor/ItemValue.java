@@ -16,6 +16,7 @@ public class ItemValue {
 
     private final TreeItem treeItem;
     private ObjectProperty treeItemObject = new SimpleObjectProperty();
+    private ObjectProperty treeItemObjectChangeHandler = new SimpleObjectProperty();
     
     //private Object treeItemObject;
 
@@ -78,6 +79,13 @@ public class ItemValue {
     public Object getTreeItemObject() {
         return treeItemObject.get();
     }
+    /**
+     * Sets  the new value to the property {@code treeItemObject}.
+     * @param treeItemObject the new value to be set
+     */
+    public void setTreeItemObject(Object treeItemObject) {
+        this.treeItemObject.set(treeItemObject);
+    }
 
     public int getDragDropQualifier() {
         return dragDropQualifier;
@@ -86,19 +94,7 @@ public class ItemValue {
     public void setDragDropQualifier(int dragDropQualifier) {
         this.dragDropQualifier = dragDropQualifier;
     }
-    /**
-     * Sets  the new value to the property {@code treeItemObject}.
-     * @param treeItemObject the new value to be set
-     */
-    public void setTreeItemObject(Object treeItemObject) {
-        this.treeItemObject.set(treeItemObject);
-    }
-/*    public boolean nono = false;
-    public void setTreeItemObject(Object treeItemObject, boolean nono) {
-        this.treeItemObject.set(treeItemObject);
-        this.nono = nono; 
-    }
-*/
+
     public Object getChangeListener() {
         return changeListener;
     }
@@ -174,7 +170,7 @@ public class ItemValue {
      * @param cellGraphic the Node to be set
      */
     public void setCellGraphic(Node cellGraphic) {
-        cellGraphic.setMouseTransparent(true);
+       // cellGraphic.setMouseTransparent(true);
         this.cellGraphic = cellGraphic;
     }
 

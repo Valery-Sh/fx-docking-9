@@ -48,10 +48,6 @@ public class TreeItemEx extends TreeItem<ItemValue> {
         return getValue().getTreeItemObject();
     }
 
-    public void removeObjectFromParent() {
-        TreeViewEx.updateSourceSceneGraph(this);
-    }
-
     public TreeItemEx treeItemOf(Object obj) {
         TreeItemEx retval = null;
         TreeItemEx t = (TreeItemEx) EditorUtil.findRootTreeItem(this);

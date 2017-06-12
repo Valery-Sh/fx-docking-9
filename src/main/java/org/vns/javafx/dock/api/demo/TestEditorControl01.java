@@ -7,24 +7,26 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -32,10 +34,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragManager;
-import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
+import org.vns.javafx.dock.api.editor.TreeItemBuilder;
 
 /**
  *
@@ -69,6 +70,7 @@ public class TestEditorControl01 extends Application {
         
         TitledPane titledPane1 = new TitledPane();
         titledPane1.setId("titledpane1");
+        titledPane1.setContent(new Label("content of titlePane1LABEL"));
         hbox.getChildren().add(titledPane1);
         
         TextArea textArea1 = new TextArea("Text Area 1");
@@ -94,14 +96,34 @@ public class TestEditorControl01 extends Application {
 
         //stackPane.getChildren().add(vbox2);        
         stackPane.getChildren().add(hbox);
-        Pane pane = new Pane();
+        VBox pane = new VBox();
         pane.setId("pane1");
-        stackPane.getChildren().add(pane);
+        //stackPane.getChildren().add(pane);
         vbox.toFront();
         TabPane tabPane = new TabPane();
         tabPane.setId("tabpane11");
         Tab tab1 = new Tab("Tab 1");
         tabPane.getTabs().add(tab1);
+        tab1.setContent(pane);
+        Button accordBtn1 = new Button("accordBtn1");
+        Accordion accord1 = new Accordion();
+        //accord1.getPanes().add(accordBtn1);
+        accord1.setId("accord1");
+        Button tilePaneBtn1 = new Button("tilePaneBtn1");
+        tilePaneBtn1.setId("tilePaneBtn1");
+        TilePane tilePane1 = new TilePane(Orientation.VERTICAL);
+        tilePane1.getChildren().add(tilePaneBtn1);
+        tilePane1.setId("tilePane1");
+        ListView<String> listView1 = new ListView<>();
+        
+        listView1.getItems().addAll("Item1","item2" );
+        listView1.getProperties().put(TreeItemBuilder.ACCEPT_TYPES_KEY,"java.lang.String");
+        //listView1.getProperties().put(TreeItemBuilder.ACCEPT_TYPES_KEY,"*");
+        //listView1.getItems().add(new Button("list Button"));
+        pane.getChildren().add(listView1);        
+        pane.getChildren().add(tilePane1);        
+        pane.getChildren().add(accord1);
+        
         Tab tab2 = new Tab("Tab 2");
         tabPane.setMinSize(150,150);
         tabPane.setStyle("-fx-border-width: 3; -fx-border-color: red");
@@ -135,11 +157,6 @@ public class TestEditorControl01 extends Application {
         Button vboxBtn2 = new Button("vbox btn2");
         vboxBtn2.setId("vboxBtn2");
         vbox.getChildren().add(vboxBtn2);
-        vboxBtn2.setOnAction(a -> {
-            //BeanAdapter ba =  new BeanAdapter(hbox);
-            //System.err.println("ba.getChildren() = " + ba.get("children"));
-            
-        });
         Label vboxLb1 = new Label("vbox lb11");
         vboxLb1.setId("vboxLb1");
         vbox.getChildren().add(vboxLb1);
@@ -186,10 +203,12 @@ public class TestEditorControl01 extends Application {
             }
         });
         vboxBtn2.setOnAction(a -> {
+            System.err.println("CLICkED");
             //BeanAdapter ba =  new BeanAdapter(hbox);
             //System.err.println("ba.getChildren() = " + ba.get("children"));
-            TreeItem<ItemValue> it = EditorUtil.findTreeItemByObject(graphView.getTreeView(),vboxBtn1);
-            System.err.println("TEST: it obj =  " + it.getValue().getTreeItemObject());
+            //TreeItem<ItemValue> it = EditorUtil.findTreeItemByObject(graphView.getTreeView(),vboxBtn1);
+            //System.err.println("TEST: it obj =  " + it.getValue().getTreeItemObject());
+            vbox.getChildren().add(titledPane1);
             //System.err.println("TEST: it isVisible =  " + graphView.isVisible(it));
         });
         TabPane tabPane2 = new TabPane();

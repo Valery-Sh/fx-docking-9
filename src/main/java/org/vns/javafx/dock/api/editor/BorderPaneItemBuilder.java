@@ -88,7 +88,7 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
      * @param parent an object of type BorderPane
      * @param toRemove a place holder TreeItem (one of five)
      */
-/*    @Override
+    /*    @Override
     public void removeChildTreeItem(TreeItemEx parent, TreeItemEx toRemove) {
         //Object obj = toRemove.getValue().getTreeItemObject();
         BorderPane bp = (BorderPane) parent.getValue().getTreeItemObject();
@@ -96,9 +96,10 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
         builder = toRemove.getBuilder();
         ((BorderPanePlaceholderBuilder) builder).setContent(toRemove, null);
     }
-*/
+     */
     @Override
-    public void updateSourceSceneGraph(TreeItemEx parent, TreeItemEx child) {
+    public void updateOnMove(TreeItemEx child) {
+        TreeItemEx parent = (TreeItemEx) child.getParent();
         BorderPane bp = (BorderPane) parent.getObject();
         if (bp.getTop() == child.getObject()) {
             TreeItemBuilderRegistry.getInstance().getBuilder(child).unregisterChangeHandler(child);
@@ -138,49 +139,46 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
 //        unregisterChangeHandler((Node) item.getValue().getTreeItemObject());
         final BorderPane pane = (BorderPane) item.getObject();
         BorderPaneChangeHandler listener = new BorderPaneChangeHandler(item);
-        pane.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
-        
-/*        unregisterChangeHandler(pane.getTop());
-        unregisterChangeHandler(pane.getRight());
-        unregisterChangeHandler(pane.getBottom());
-        unregisterChangeHandler(pane.getLeft());
-        unregisterChangeHandler(pane.getCenter());
-*/        
-//        ChangeListener<? super Node> listener = getListener(item, 0);
+        //pane.getProperties().put(EditorUtil.CHANGE_LISTENER, listener);
+        item.getValue().setChangeListener(listener);
+
         pane.topProperty().addListener(listener.topListener);
-        //pane.rightProperty().addListener(listener.rightListener);
+        pane.rightProperty().addListener(listener.rightListener);
         pane.bottomProperty().addListener(listener.bottomListener);
         pane.leftProperty().addListener(listener.leftListener);
         pane.centerProperty().addListener(listener.centerListener);
     }
 
     @Override
-    public boolean isAcceptable(Object obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isAcceptable(Object target, Object accepting) {
+        return false;
     }
 
     @Override
     protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
-        
+
     }
 
     @Override
-    public void unregisterObjectChangeHandler(Object obj) {
-        BorderPane l = (BorderPane) obj;
-        Object ooo = l.getProperties().get(EditorUtil.CHANGE_LISTENER);
-        BorderPaneChangeHandler listener = (BorderPaneChangeHandler) l.getProperties().get(EditorUtil.CHANGE_LISTENER);
-        if ( listener == null ) {
+    public void unregisterObjectChangeHandler(TreeItemEx item) {
+        BorderPane l = (BorderPane) item.getObject();
+        //BorderPaneChangeHandler listener = (BorderPaneChangeHandler) l.getProperties().get(EditorUtil.CHANGE_LISTENER);
+        BorderPaneChangeHandler listener = (BorderPaneChangeHandler) item.getValue().getChangeListener();
+        if (listener == null) {
             return;
         }
-        l.getProperties().remove(EditorUtil.CHANGE_LISTENER);
-        
+        //l.getProperties().remove(EditorUtil.CHANGE_LISTENER);
+        item.getValue().setChangeListener(null);
+
     }
-    ChangeListener<? super Node> getListener(TreeItemEx borderPaneItem,int idx) {
+
+    ChangeListener<? super Node> getListener(TreeItemEx borderPaneItem, int idx) {
         ChangeListener<? super Node> listener = (observable, oldValue, newValue) -> {
+
             if (oldValue == null && newValue != null) {
                 BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) borderPaneItem.getBuilder().getPlaceHolderBuilder(null);
                 builder.setContent((TreeItemEx) borderPaneItem.getChildren().get(idx), newValue);
-                
+
             } else if (oldValue != null && newValue == null) {
                 BorderPanePlaceholderBuilder builder = (BorderPanePlaceholderBuilder) borderPaneItem.getBuilder().getPlaceHolderBuilder(null);
                 builder.setContent((TreeItemEx) borderPaneItem.getChildren().get(idx), null);
@@ -190,9 +188,9 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
         };
         return listener;
     }
-    
+
     public static class BorderPaneChangeHandler {
-        
+
         final TreeItemEx borderPaneItem;
         final BorderPaneItemBuilder builder;
         ChangeListener<? super Node> topListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(0), 0 );
@@ -201,15 +199,14 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
         ChangeListener<? super Node> leftListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(3), 3 );
         ChangeListener<? super Node> centerListener;// = builder.getListener((TreeItemEx) borderPaneItem.getChildren().get(4), 4 );                                
 
-        
         public BorderPaneChangeHandler(TreeItemEx item) {
             this.borderPaneItem = item;
             this.builder = (BorderPaneItemBuilder) borderPaneItem.getBuilder();
-            topListener = builder.getListener(borderPaneItem, 0 );
-            rightListener = builder.getListener(borderPaneItem, 1 );        
-            bottomListener = builder.getListener(borderPaneItem, 2 );                
-            leftListener = builder.getListener(borderPaneItem, 3 );
-            centerListener = builder.getListener(borderPaneItem, 4 );                                
+            topListener = builder.getListener(borderPaneItem, 0);
+            rightListener = builder.getListener(borderPaneItem, 1);
+            bottomListener = builder.getListener(borderPaneItem, 2);
+            leftListener = builder.getListener(borderPaneItem, 3);
+            centerListener = builder.getListener(borderPaneItem, 4);
         }
     }
 
@@ -313,7 +310,7 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
             System.err.println("setContent = itemGetObject=" + item.getObject() + "; obj = " + obj);
             HBox c = getItemContentPane(item);
             HBox hb = (HBox) c.getChildren().get(0);
-            
+
             hb.setMouseTransparent(true);
             if (obj != null) {
                 Label glb = new Label(obj.getClass().getSimpleName());
@@ -323,7 +320,7 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
                 if (obj instanceof Labeled) {
                     glb.setText(glb.getText() + " " + ((Labeled) obj).getText());
                 }
-                glb.setMouseTransparent(true);
+                //glb.setMouseTransparent(true);
                 TreeItemEx objItem = (TreeItemEx) TreeItemBuilderRegistry.getInstance().getBuilder(obj).build(obj);
                 item.getChildren().addAll(objItem.getChildren());
                 item.getValue().setTreeItemObject(obj);
@@ -332,7 +329,7 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
                 Label lb = (Label) hb.getChildren().get(0);
                 lb.setText(item.getValue().getTitle());
                 item.getValue().setTreeItemObject(null);
-                lb.setMouseTransparent(true);
+                //lb.setMouseTransparent(true);
                 item.getChildren().clear();
 
             }
@@ -354,14 +351,12 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
         }
 
         @Override
-        public boolean isAcceptable(Object obj) {
-            return obj != null && (obj instanceof Node);
+        public boolean isAcceptable(Object target,Object accepting) {
+            return accepting != null && (accepting instanceof Node);
         }
 
         @Override
         public TreeItemEx accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
-            //int idx = place.getParent().getChildren().indexOf(place);
-
             TreeItemEx retval = null;
             DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
             if (dg == null) {
@@ -371,32 +366,25 @@ public class BorderPaneItemBuilder extends AbstractTreeItemBuilder {
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItem treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    //notifyObjectRemove(treeView, treeItem);
-                    treeView.updateSourceSceneGraph((TreeItemEx) treeItem);
-                    //treeView.removeTreeItem(treeItem);
-
-                    //notifyTreeItemRemove(treeView, treeItem);
+                    treeView.updateOnMove((TreeItemEx) treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItem item;
                 item = EditorUtil.findTreeItemByObject(treeView, dg.getGestureSourceObject());
                 if (item != null) {
-                    treeView.updateSourceSceneGraph((TreeItemEx) item);
-                    //treeView.removeTreeItem(item);
+                    treeView.updateOnMove((TreeItemEx) item);
                 } else {
                     ChildrenRemover r = (ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
-                        //r.remove(dg.getGestureSource());
                         r.remove();
                     }
                 }
             }
             setNode(place, (Node) value);
             place.getValue().setTreeItemObject(value);
+
             boolean b = place.getValue().isPlaceholder();
             int r = treeView.getRow(place);
-            //System.err.println("BorderPane place.obj= " + place.getValue().getTreeItemObject());            
-            //System.err.println("BorderPane row = " + r + "; isPlaceholder=" + b);
             return retval;
 
         }

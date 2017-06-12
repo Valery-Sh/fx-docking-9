@@ -158,22 +158,22 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         if (!isSupportedDragSource(ev)) {
             return false;
         }
-        //System.err.println("isAdmissiblePosition supported");
+        System.err.println("isAdmissiblePosition supported");
         TreeItemEx target = getTargetTreeItem(ev);
 
         if (target == null) {
             return false;
         }
-        //System.err.println("   ---- isAdmissiblePosition targetTreeItem obj = " + target.getValue().getTreeItemObject());
-        //System.err.println("   ---- isAdmissiblePosition treeCellItem   obj = " + getTreeCellItem().getValue().getTreeItemObject());
-        //System.err.println("   ---- isAdmissiblePosition gestureSource  obj = " + getGestureSourceObject(ev));
+        System.err.println("   ---- isAdmissiblePosition targetTreeItem obj = " + target.getValue().getTreeItemObject());
+        System.err.println("   ---- isAdmissiblePosition treeCellItem   obj = " + getTreeCellItem().getValue().getTreeItemObject());
+        System.err.println("   ---- isAdmissiblePosition gestureSource  obj = " + getGestureSourceObject(ev));
         
         //
         // Delegate to check if admissible to a DefaultTreeItemBuilder of the target item
         //
-        //System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
+        System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
 
-        //System.err.println("BUILDER target.getValue().getBuilder() = " + target.getValue().getBuilder());
+        System.err.println("BUILDER target.getValue().getBuilder() = " + target.getValue().getBuilder());
         return target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
 
     }

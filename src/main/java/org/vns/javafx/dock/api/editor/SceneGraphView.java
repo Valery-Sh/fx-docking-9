@@ -4,8 +4,6 @@ import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -149,8 +147,8 @@ public class SceneGraphView extends Control {
         }
         if (ev.wasRemoved()) {
             for (TreeItem<ItemValue> item : ev.getRemovedChildren()) {
-                //((TreeItemEx)item).getBuilder().unregisterChangeHandler((TreeItemEx) item);
-//                System.err.println("Event:  removed item obj = " + item.getValue().getTreeItemObject());
+                TreeViewEx.updateOnMove((TreeItemEx) item);
+                System.err.println("UPDATE ON MOVE");
             }
         }
     }
@@ -425,11 +423,12 @@ public class SceneGraphView extends Control {
                 ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(false);
                 TreeView tv = getEditor().getTreeView();
                 getEditor().getDragIndicator().hideDrawShapes();
-                
+                System.err.println("HANDLE 1");
                 if (!isAdmissiblePosition(ev)) {
 //                    System.err.println("=== HANDLE NOT isAdmissiblePosition");
 //                    ev.acceptTransferModes(TransferMode.NONE);
                     //ev.setDropCompleted(true)
+                    System.err.println("HANDLE 2");
                     ev.consume();
                 } else {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
