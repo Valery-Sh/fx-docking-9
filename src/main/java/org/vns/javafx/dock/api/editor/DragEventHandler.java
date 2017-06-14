@@ -36,7 +36,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
     /**
      * Returns a tree item which is an actual target of a drag gesture.
-     * Delegates the execution to the eponymous one {@link SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, org.vns.javafx.dock.api.editor.TreeItemEx)   }
+     * Delegates the execution to the eponymous one {@link SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, org.vns.javafx.dock.api.editor.TreeItemEx)
+     * }
      *
      * @param ev the event of type {@code DragEvent }
      * @return a tree item which is an actual target of a drag gesture.
@@ -140,14 +141,15 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
     /**
      * Checks whether the given event can be accepted and consumed by the event
-     * handler. Fist invokes the method      {@link #isSupportedDragSource(javafx.scene.input.DragEvent)} and if 
-     * the resukt is {@code false} then returns the {@code false }.
-     * Defines the target {@code TreeItem} which is an actual item which
-     * must accept the dragged object. If the target is {@code null} then
-     * returns false. Then finds a builder of type
-     * {@link TreeItemBuilder } for the target  and then it returns the result
-     * of applying the
-     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)  }
+     * handler. Fist invokes the method
+     * {@link #isSupportedDragSource(javafx.scene.input.DragEvent)} and if the
+     * resukt is {@code false} then returns the {@code false }. Defines the
+     * target {@code TreeItem} which is an actual item which must accept the
+     * dragged object. If the target is {@code null} then returns false. Then
+     * finds a builder of type {@link TreeItemBuilder } for the target and then
+     * it returns the result of applying the
+     * {@link TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)
+     * }
      * method to this object.
      *
      * @param ev the processed event
@@ -158,22 +160,32 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         if (!isSupportedDragSource(ev)) {
             return false;
         }
-        System.err.println("isAdmissiblePosition supported");
+        //System.err.println("isAdmissiblePosition supported");
         TreeItemEx target = getTargetTreeItem(ev);
 
         if (target == null) {
             return false;
         }
-        System.err.println("   ---- isAdmissiblePosition targetTreeItem obj = " + target.getValue().getTreeItemObject());
-        System.err.println("   ---- isAdmissiblePosition treeCellItem   obj = " + getTreeCellItem().getValue().getTreeItemObject());
-        System.err.println("   ---- isAdmissiblePosition gestureSource  obj = " + getGestureSourceObject(ev));
-        
+        //System.err.println("   ---- isAdmissiblePosition targetTreeItem obj = " + target.getValue().getTreeItemObject());
+        //System.err.println("   ---- isAdmissiblePosition treeCellItem   obj = " + getTreeCellItem().getValue().getTreeItemObject());
+        //System.err.println("   ---- isAdmissiblePosition gestureSource  obj = " + getGestureSourceObject(ev));
+
         //
         // Delegate to check if admissible to a DefaultTreeItemBuilder of the target item
         //
-        System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
+        //System.err.println("  ---- builder.isAdmissiblePosition =" + target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev)));
 
-        System.err.println("BUILDER target.getValue().getBuilder() = " + target.getValue().getBuilder());
+        //System.err.println("BUILDER target.getValue().getBuilder() = " + target.getValue().getBuilder());
+
+/*        TreeItemBuilder targetBuilder;
+        ItemValue targetValue = target.getValue();
+        if (targetValue.isPlaceholder() && targetValue.getTreeItemObject() == null) {
+            TreeItemEx p = (TreeItemEx) target.getParent();
+            targetBuilder = p.getValue().getBuilder().getPlaceHolderBuilder((TreeItemEx) target);
+        } else {
+            targetBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(targetValue.getTreeItemObject());
+        }
+*/
         return target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
 
     }
@@ -264,8 +276,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @param ev
      * @return
      */
-/*    protected Object getDragTargetObject(DragEvent ev) {
+    /*    protected Object getDragTargetObject(DragEvent ev) {
         return ((ItemValue) getTreeCellItem().getValue()).getTreeItemObject();
     }
-*/
+     */
 }

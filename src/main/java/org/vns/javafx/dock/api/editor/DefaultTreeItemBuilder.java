@@ -12,6 +12,7 @@ public class DefaultTreeItemBuilder  extends AbstractTreeItemBuilder {
 
     private void init() {
     }
+    
     @Override
     public boolean isAcceptable(Object target, Object accepting) {
         return false;

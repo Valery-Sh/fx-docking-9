@@ -10,6 +10,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import org.vns.javafx.dock.api.editor.TreeItemBuilder.PlaceholderBuilderFactory;
 
 /**
  *
@@ -20,7 +21,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
     private final SceneGraphView sceneGraphView;
-
+            
     private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
     private DragEvent dragEvent;
     private boolean dragAccepted;
@@ -172,4 +173,6 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
             fireEvent(dragEvent);
         }
     }
+    
+
 }

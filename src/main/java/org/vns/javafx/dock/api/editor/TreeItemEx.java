@@ -2,6 +2,8 @@ package org.vns.javafx.dock.api.editor;
 
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.editor.TreeItemBuilder.PlaceholderBuilder;
+import org.vns.javafx.dock.api.editor.TreeItemBuilder.PlaceholderBuilderFactory;
 
 /**
  *
@@ -10,6 +12,8 @@ import javafx.scene.control.TreeItem;
  */
 public class TreeItemEx extends TreeItem<ItemValue> {
 
+    private TreeItemBuilder placeholderBuilder; 
+    
     public TreeItemEx() {
 
     }
@@ -24,26 +28,14 @@ public class TreeItemEx extends TreeItem<ItemValue> {
 
     public TreeItemBuilder getBuilder() {
         TreeItemBuilder retval = null;
-        if (getValue().isPlaceholder()) {
-            retval = getParent().getValue().getBuilder().getPlaceHolderBuilder((TreeItemEx) getParent());
+        if (getValue().isPlaceholder() && getValue().getTreeItemObject() == null ) {
+            retval = this.getPlaceholderBuilder();
         } else {
             retval = TreeItemBuilderRegistry.getInstance().getBuilder(getValue().getTreeItemObject());
         }
         return retval;
-    }
-
-    public TreeItemBuilder getPlaceHolderBuilder() {
-        TreeItemBuilder builder = null;
-        if (getValue().isPlaceholder()) {
-            TreeItemEx p = (TreeItemEx) getParent();
-            builder = p.getValue().getBuilder().getPlaceHolderBuilder(p);
-        } else {
-            builder = null;
-        }
-        return builder;
-        //return ((TreeItemEx) getParent()).getBuilder().getPlaceHolderBuilder(this);
-    }
-
+    }    
+    
     public Object getObject() {
         return getValue().getTreeItemObject();
     }
@@ -60,4 +52,21 @@ public class TreeItemEx extends TreeItem<ItemValue> {
         }
         return retval;
     }
+    
+    public TreeItemBuilder getPlaceholderBuilder() {
+        return placeholderBuilder;
+    }
+    public void setPlaceholderBuilder(TreeItemBuilder placeholderBuilder) {
+        this.placeholderBuilder = placeholderBuilder;
+    }
+    public TreeItemEx createPlaceholder(int placeholderId, Object newValue)  {
+        TreeItemEx ph = null; 
+        if ( getBuilder() instanceof PlaceholderBuilderFactory ) {
+            PlaceholderBuilder pb = ((PlaceholderBuilderFactory)getBuilder()).getPlaceholderBuilder(placeholderId);            
+            ph = pb.buildPlaceholder(newValue);
+            ph.setPlaceholderBuilder((TreeItemBuilder) pb);
+        }
+        return ph;
+    }
+    
 }

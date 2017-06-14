@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.editor;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -159,22 +158,22 @@ public class LabeledItemBuilderTest {
     }
 
     /**
-     * Test of createPlaceHolders method, of class LabeledItemBuilder.
+     * Test of createPlaceholders method, of class LabeledItemBuilder.
      */
     @Test
     public void testCreatePlaceHolders() {
         System.out.println("createPlaceHolders");
         Object obj = null;
         LabeledItemBuilder instance = new LabeledItemBuilder();
-        TreeItem[] expResult = null;
-        TreeItem[] result = instance.createPlaceHolders(obj);
-        assertArrayEquals(expResult, result);
+        TreeItem expResult = null;
+        TreeItem result = instance.createPlaceholder(0,obj);
+        //assertArrayEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getPlaceHolderBuilder method, of class LabeledItemBuilder.
+     * Test of getPlaceholderBuilder method, of class LabeledItemBuilder.
      */
     @Test
     public void testGetPlaceHolderBuilder() {
@@ -182,10 +181,10 @@ public class LabeledItemBuilderTest {
         TreeItemEx placeHolder = null;
         LabeledItemBuilder instance = new LabeledItemBuilder();
         TreeItemBuilder expResult = null;
-        TreeItemBuilder result = instance.getPlaceHolderBuilder(placeHolder);
-        assertEquals(expResult, result);
+//        TreeItemBuilder result = instance.getPlaceholderBuilder(placeHolder);
+//        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        fail("The test case is a prototype.");
     }
 
     /**

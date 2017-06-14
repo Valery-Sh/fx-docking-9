@@ -148,7 +148,7 @@ public class SceneGraphView extends Control {
         if (ev.wasRemoved()) {
             for (TreeItem<ItemValue> item : ev.getRemovedChildren()) {
                 TreeViewEx.updateOnMove((TreeItemEx) item);
-                System.err.println("UPDATE ON MOVE");
+                //System.err.println("UPDATE ON MOVE");
             }
         }
     }
@@ -161,9 +161,9 @@ public class SceneGraphView extends Control {
 
         item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
                 this::childrenModification);
-        
 
-/*        item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
+
+        /*        item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
                 new EventHandler<TreeItem.TreeModificationEvent<ItemValue>>() {
             @Override
             public void handle(TreeItem.TreeModificationEvent<ItemValue> ev) {
@@ -181,9 +181,8 @@ public class SceneGraphView extends Control {
 
             }
         });
-*/        
+         */
         //this::childrenModification);
-
         return item;
     }
 
@@ -313,10 +312,20 @@ public class SceneGraphView extends Control {
             // Try transfer data to the place
             //
 //            System.err.println("ev modif = " + ev.getAcceptedTransferMode() + "; isDropCompleted=" + ev.isDropCompleted());
-            if (targetItem != null && !ev.isDropCompleted() ) {
+            if (targetItem != null && !ev.isDropCompleted()) {
                 ItemValue targetValue = targetItem.getValue();
                 TreeItem place = ((TreeCell) ev.getGestureTarget()).getTreeItem();
-                targetValue.getBuilder().accept(treeView, (TreeItemEx)targetItem, (TreeItemEx)place, (Node) ev.getGestureSource());
+/*                TreeItemBuilder targetBuilder;
+                if (targetValue.isPlaceholder() && targetValue.getTreeItemObject() == null) {
+                    TreeItemEx p = (TreeItemEx) targetItem.getParent();
+                    targetBuilder = p.getValue().getBuilder().getPlaceHolderBuilder(targetItem);
+                } else {
+                    targetBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(targetValue.getTreeItemObject());
+                }
+                targetBuilder.accept(treeView, (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
+*/                
+                targetValue.getBuilder().accept(treeView, (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
+                
                 ev.setDropCompleted(true);
             } else {
                 ev.setDropCompleted(false);
@@ -434,7 +443,7 @@ public class SceneGraphView extends Control {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
 //                    System.err.println("handle acceptingMode = " + ev.getAcceptedTransferMode());                    
                     ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);
-                    ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(true);                    
+                    ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(true);
                     drawIndicator(ev);
                     ev.consume();
                 }
@@ -485,7 +494,17 @@ public class SceneGraphView extends Control {
                 //
                 if (isAdmissiblePosition(ev)) {
                     TreeItem place = getTreeCellItem();
-                    targetValue.getBuilder().accept(getEditor().getTreeView(), (TreeItemEx)targetItem, (TreeItemEx)place, (Node) ev.getGestureSource());
+/*                    TreeItemBuilder targetBuilder;
+                    if (targetValue.isPlaceholder() && targetValue.getTreeItemObject() == null) {
+                        TreeItemEx p = (TreeItemEx) targetItem.getParent();
+                        targetBuilder = p.getValue().getBuilder().getPlaceHolderBuilder((TreeItemEx) targetItem);
+                    } else {
+                        targetBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(targetValue.getTreeItemObject());
+                    }
+                    targetBuilder.accept(getEditor().getTreeView(), (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
+*/
+                    targetValue.getBuilder().accept(getEditor().getTreeView(), (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
+                    
                     ev.setDropCompleted(true);
 
                 } else {

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.layout.HBox;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
@@ -41,7 +42,7 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
     }
 
     @Override
-    protected Node createDefaultContent(Object obj, Object... others) {
+    protected HBox createDefaultContent(Object obj) {
         String text = "";
         if (obj instanceof TextInputControl) {
             text = ((TextInputControl) obj).getText();
@@ -49,7 +50,7 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
         Label label = new Label(obj.getClass().getSimpleName() + " " + text);
         String styleClass = "tree-item-node-" + obj.getClass().getSimpleName().toLowerCase();
         label.getStyleClass().add(styleClass);
-        return label;
+        return new HBox(label);
     }
 
     protected String getText(Object obj) {
@@ -95,7 +96,7 @@ public class TextBasedTreeItemBuilder extends AbstractContentBasedTreeItemBuilde
      * Node and the specified target doesn't have children. The method returns {@literal false
      * } if one of the following conditions is not satisfied:
      * <ul>
-     * <li>The method {@link #isAcceptable(java.lang.Object)} returns
+     * <li>The method {@link #isAcceptable(java.lang.Object, java.lang.Object)  } returns
      * {@literal false} }
      * </li>
      * <li>The specified {@literal target} has children. This means that the

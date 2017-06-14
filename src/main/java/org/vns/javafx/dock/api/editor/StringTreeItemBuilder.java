@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.editor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.layout.HBox;
 
 /**
  *
@@ -26,10 +27,10 @@ import javafx.scene.control.Labeled;
 public class StringTreeItemBuilder extends DefaultTreeItemBuilder {
     
   @Override
-  protected Node createDefaultContent(Object obj, Object... others) {
+  protected HBox createDefaultContent(Object obj) {
         Label label = new Label("" + obj);
         String styleClass = "tree-item-node-" + obj.getClass().getSimpleName().toLowerCase();
         label.getStyleClass().add(styleClass);
-        return label;
+        return new HBox(label);
     }    
 }

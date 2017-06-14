@@ -33,6 +33,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder;
 import org.vns.javafx.dock.api.editor.DragManager;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
@@ -50,14 +51,26 @@ public class TestEditorControl01 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        TreeItemBuilder yy = new DefaultTreeItemBuilder();
         Label nlb1 = new Label("DRAGGED LABEL");
         HBox rootPane = new HBox();
         VBox stackPane = new VBox();
         stackPane.setId("ROOT");
         VBox vbox = new VBox();
         vbox.setId("vbox1");
-        vbox.getChildren().add(new Button("bbb"));
-
+        Button bbb = new Button("bbb");
+        vbox.getChildren().add(bbb);
+        bbb.setId("bbb");
+        
+        Button bbbGraphic = new Button("bbbGraphic");
+        bbbGraphic.setId("bbbGraphic");
+        Button graphicLb = new Button("graphicLb");
+        bbbGraphic.setGraphic(graphicLb);
+        
+        graphicLb.setId("graphicLb");
+        
+        bbb.setGraphic(bbbGraphic);
+        
         HBox hbox = new HBox();
         hbox.setId("hbox");
         TextField textField1 = new TextField();
@@ -291,6 +304,13 @@ public class TestEditorControl01 extends Application {
                 System.err.println("  hbox child = " + n);                
             });
         });
+        bbb.setOnAction(a -> {
+//            bbbGraphic.setGraphic(new Button("new graphic"));
+            graphicLb.setGraphic(new Button("new graphic"));
+            borderPane1.setRight(bbb);
+            
+        });
+        
         Point2D pp1 = new Point2D(0,0); 
         Point2D pp2 = pp1;
         

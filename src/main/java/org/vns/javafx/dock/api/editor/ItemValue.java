@@ -2,85 +2,122 @@ package org.vns.javafx.dock.api.editor;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.layout.HBox;
 import static org.vns.javafx.dock.api.editor.SceneGraphView.FIRST;
 
 /**
- * An Instance of the class is used as a {@code value} property of the
- * item of type {@code TreeItem}
+ * An Instance of the class is used as a {@code value} property of the item of
+ * type {@code TreeItem}
+ *
  * @author Valery
  */
 public class ItemValue {
 
-    private final TreeItem treeItem;
-    private ObjectProperty treeItemObject = new SimpleObjectProperty();
-    private ObjectProperty treeItemObjectChangeHandler = new SimpleObjectProperty();
-    
-    //private Object treeItemObject;
+    private final TreeItemEx treeItem;
+    private final ObjectProperty treeItemObject = new SimpleObjectProperty();
+    private final ObjectProperty treeItemObjectChangeHandler = new SimpleObjectProperty();
 
+    //private Object treeItemObject;
     private boolean placeholder;
     private Node cellGraphic;
     private String title;
     private int dragDropQualifier;
     private Object changeListener;
-    
+
     /**
      * Creates a new instance of the class for the specified {@code TreeItem}.
-     * 
-     * @param treeItem  the tree item for which the value is created.
+     *
+     * @param treeItem the tree item for which the value is created.
      */
-    public ItemValue(TreeItem treeItem) {
+    public ItemValue(TreeItemEx treeItem) {
         this.dragDropQualifier = FIRST;
         this.treeItem = treeItem;
         init();
     }
-    public ItemValue(TreeItem treeItem, boolean noEvent) {
+
+    public ItemValue(TreeItemEx treeItem, boolean noEvent) {
         this.dragDropQualifier = FIRST;
         this.treeItem = treeItem;
-       init();
-    }    
+        init();
+    }
+    private ChangeListener treeItemObjectListener;
+
     private void init() {
-        treeItemObject.addListener((observable, oldValue, newValue) -> {
-            TreeItemBuilder b;
-            if ( newValue != null ) {
-                b = TreeItemBuilderRegistry.getInstance().getBuilder(newValue);
-                if ( b != null) {
-                    b.registerChangeHandler(getTreeItem());
-                }
-            } else  if ( oldValue != null && newValue == null && (oldValue instanceof Node )) {
-                b = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
-                if ( b != null ) {
-                    //b.unregisterChangeHandler((Node) oldValue);
+        if (treeItemObjectListener != null) {
+            treeItemObject.removeListener(treeItemObjectListener);
+        }
+        System.err.println("ItemValue INIT " + treeItemObject.get());
+
+        if (treeItemObject.get() instanceof Node) {
+            Node n = (Node) treeItemObject.get();
+            if ("graphicLb".equals(n.getId())) {
+                System.err.println("ItemValue REGICTER graphicLb");
+            }
+        }
+
+        treeItemObjectListener = new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                TreeItemBuilder b;
+                updateContent(oldValue, newValue);
+                if (newValue != null) {
+                    b = TreeItemBuilderRegistry.getInstance().getBuilder(newValue);
+                    if (b != null) {
+                        b.registerChangeHandler(getTreeItem());
+                    }
+                } else if (oldValue != null && newValue == null && (oldValue instanceof Node)) {
+                    b = TreeItemBuilderRegistry.getInstance().getBuilder(oldValue);
+                    if (b != null) {
+                        //b.unregisterChangeHandler((Node) oldValue);
+                    }
                 }
             }
-        });
+        };
+
+        treeItemObject.addListener(treeItemObjectListener);
     }
+
+    protected void updateContent(Object oldValue, Object newValue) {
+        TreeItemBuilder builder;
+        if (isPlaceholder()) {
+            builder = treeItem.getPlaceholderBuilder();
+        } else {
+            builder = getBuilder();
+        }
+        builder.updateTreeItemContent(treeItem, oldValue, newValue);
+    }
+
     /**
      * Returns the owner of this object.
-     * 
-     * @return the object of type {@code TreeItem} which value property is 
-     * this object.
+     *
+     * @return the object of type {@code TreeItem} which value property is this
+     * object.
      */
     public TreeItemEx getTreeItem() {
         return (TreeItemEx) treeItem;
     }
-    
+
     public ObjectProperty treeItemObjectProperty() {
         return treeItemObject;
     }
+
     /**
      * Returns an object which was used to create an instance of
      * {@code TreeItem}.
+     *
      * @return an object which was used to create an instance of
      * {@code TreeItem}.
      */
     public Object getTreeItemObject() {
         return treeItemObject.get();
     }
+
     /**
-     * Sets  the new value to the property {@code treeItemObject}.
+     * Sets the new value to the property {@code treeItemObject}.
+     *
      * @param treeItemObject the new value to be set
      */
     public void setTreeItemObject(Object treeItemObject) {
@@ -102,17 +139,22 @@ public class ItemValue {
     public void setChangeListener(Object changeListener) {
         this.changeListener = changeListener;
     }
-    
+
     /**
-     * Return a string value which is used to display a text of the {@code TreeItem}
-     * @return Return a string value which is used to display a text of the {@code TreeItem}
+     * Return a string value which is used to display a text of the
+     * {@code TreeItem}
+     *
+     * @return Return a string value which is used to display a text of the
+     * {@code TreeItem}
      */
     public String getTitle() {
         return title;
     }
+
     /**
-     * Sets a string value which can be used to display text for {@code TreeItem}.
-     * 
+     * Sets a string value which can be used to display text for
+     * {@code TreeItem}.
+     *
      * @param title the text to be displayed
      */
     public void setTitle(String title) {
@@ -120,11 +162,22 @@ public class ItemValue {
     }
 
 
-    public TreeItemBuilder getBuilder() {
+    /*    public TreeItemBuilder getBuilder() {
         TreeItemBuilder builder;
         if (isPlaceholder() && getTreeItemObject() == null) {
             TreeItemEx p = (TreeItemEx) treeItem.getParent();
-            builder = p.getValue().getBuilder().getPlaceHolderBuilder(p);
+            int idx = p.getChildren().indexOf(this);
+            builder = ((TreeItemBuilder.HasPlaceholders)p.getValue().getBuilder()).getPlaceholderBuilders(this)[idx];
+        } else {
+            builder = TreeItemBuilderRegistry.getInstance().getBuilder(getTreeItemObject());
+        }
+        return builder;
+    }
+     */
+    public TreeItemBuilder getBuilder() {
+        TreeItemBuilder builder;
+        if (isPlaceholder() && getTreeItemObject() == null) {
+            builder = treeItem.getPlaceholderBuilder();
         } else {
             builder = TreeItemBuilderRegistry.getInstance().getBuilder(getTreeItemObject());
         }
@@ -132,45 +185,48 @@ public class ItemValue {
     }
 
     public boolean isPlaceholder() {
-        return placeholder;
+        //return placeholder;
+        return treeItem.getPlaceholderBuilder() != null;
     }
 
-    public void setPlaceholder(boolean placeholder) {
+    /*    public void setPlaceholder(boolean placeholder) {
         this.placeholder = placeholder;
     }
+     */
     /**
-     * There is no one-to-one relation between an object of 
-     * type {@code TreeItem} and it's {@code TreeCell}. The only place where we 
-     * can legitimately get access to the cell of the item is the method 
-     * {@code setCellFactory} defined in the class (@code TreeView}. The callback
-     * function specified as a parameter of the method provides the value of the 
-     * {@code value} property of the {@code TreeItem}. In our case it has type
-     * of this class and we can use it in order to modify the corresponding
-     * {@code TreeCell}. 
+     * There is no one-to-one relation between an object of type
+     * {@code TreeItem} and it's {@code TreeCell}. The only place where we can
+     * legitimately get access to the cell of the item is the method
+     * {@code setCellFactory} defined in the class (@code TreeView}. The
+     * callback function specified as a parameter of the method provides the
+     * value of the {@code value} property of the {@code TreeItem}. In our case
+     * it has type of this class and we can use it in order to modify the
+     * corresponding {@code TreeCell}.
      * <p>
-     * To display objects of type {@code TreeItem}, the {@code graphic} property 
-     * of a node of type {code TreeCell} is used. The method 
+     * To display objects of type {@code TreeItem}, the {@code graphic} property
+     * of a node of type {code TreeCell} is used. The method
      * {@link TreeItemBuilder#createItem(java.lang.Object, java.lang.Object...)}
-     * creates the mentioned node and stores it as a value of the property 
-     * {@code cellGraphic} of this class. Later when an object of type {@code TreeCell} 
-     * will be created it becomes possible to assign the saved value to 
-     * {@code graphic} property of the cell. It is a callback parameter of the 
-     * method {@code setCellFactory} where all this stuff can be done.
+     * creates the mentioned node and stores it as a value of the property
+     * {@code cellGraphic} of this class. Later when an object of type
+     * {@code TreeCell} will be created it becomes possible to assign the saved
+     * value to {@code graphic} property of the cell. It is a callback parameter
+     * of the method {@code setCellFactory} where all this stuff can be done.
      * </p>
-     * 
-     * @return the Node to be used as a value of the {@code graphic} property 
-     *   of a {@code TreeCell} which is used to display a tree item.
+     *
+     * @return the Node to be used as a value of the {@code graphic} property of
+     * a {@code TreeCell} which is used to display a tree item.
      */
     public Node getCellGraphic() {
         return cellGraphic;
     }
+
     /**
-     * Sets the specified node as a value of the property {@code cellGraphic} 
-     * 
+     * Sets the specified node as a value of the property {@code cellGraphic}
+     *
      * @param cellGraphic the Node to be set
      */
     public void setCellGraphic(Node cellGraphic) {
-       // cellGraphic.setMouseTransparent(true);
+        // cellGraphic.setMouseTransparent(true);
         this.cellGraphic = cellGraphic;
     }
 

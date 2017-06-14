@@ -261,13 +261,13 @@ public abstract class AbstractListBasedTreeItemBuilder<T> extends AbstractTreeIt
         List<T> children = getList(obj);
         //List<T> children = AbstractListBasedTreeItemBuilder.this.getList(obj);
         if ( obj instanceof ListView ) {
-            System.err.println("1 listView " + obj);
+            //System.err.println("1 listView " + obj);
         }
         retval = createItem(obj);
         for (T it : children) {
-            System.err.println("2 listView " + it);
+            //System.err.println("2 listView " + it);
             TreeItemBuilder gb = TreeItemBuilderRegistry.getInstance().getBuilder(it);
-            System.err.println("3 listView " + it);
+            //System.err.println("3 listView " + it);
 
             retval.getChildren().add(gb.build(it));
         }

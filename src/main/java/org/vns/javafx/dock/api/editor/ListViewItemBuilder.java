@@ -1,7 +1,5 @@
 package org.vns.javafx.dock.api.editor;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
