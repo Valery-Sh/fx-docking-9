@@ -308,7 +308,6 @@ public class TestEditorControl01 extends Application {
 //            bbbGraphic.setGraphic(new Button("new graphic"));
             graphicLb.setGraphic(new Button("new graphic"));
             borderPane1.setRight(bbb);
-            
         });
         
         Point2D pp1 = new Point2D(0,0); 

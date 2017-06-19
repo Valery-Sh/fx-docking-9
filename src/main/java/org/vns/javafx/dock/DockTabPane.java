@@ -31,7 +31,6 @@ import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.IndicatorPopup;
 import org.vns.javafx.dock.api.DockTarget;
 
 /**
@@ -42,7 +41,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
 
-    private final StringProperty title = new SimpleStringProperty();
+    //private final StringProperty title = new SimpleStringProperty();
 
     private final DockableController dockableController = new DockableController(this);
 
@@ -52,7 +51,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     private Tab dragTab;
 
-    private final Map<Dockable, Object> listeners = new HashMap<>();
+    //private final Map<Dockable, Object> listeners = new HashMap<>();
 
     private TabPaneController paneController;
 

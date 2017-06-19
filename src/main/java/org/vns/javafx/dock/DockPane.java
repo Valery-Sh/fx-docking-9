@@ -56,11 +56,17 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
     }
 
     public void dock(Dockable dockNode, Side side) {
+        if ( ! targetController().isAcceptable(dockNode.node())) {
+            throw new UnsupportedOperationException("The node '" + dockNode + "' to be docked is not registered by the DockLoader");
+        }
         getDelegate().dock(dockNode, side);
     }
 
     public void dock(Dockable dockNode, Side side, Dockable target) {
-        //((DockPaneExecutor) getDelegate().targetController().getDockExecutor()).dock(dockNode, side, target);
+        if ( ! targetController().isAcceptable(dockNode.node())) {
+            throw new UnsupportedOperationException("The node '" + dockNode + "' to be docked is not registered by the DockLoader");
+        }
+
         getDelegate().targetController().dock(dockNode, side, target);
     }
 
@@ -77,6 +83,7 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
         }
     }
 
+    @Override
     protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
@@ -124,7 +131,6 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
                 splitPaneRemoved(((SplitPane) node), dpt);
             }
         }
-
     }
 
     public boolean isUsedAsDockTarget() {

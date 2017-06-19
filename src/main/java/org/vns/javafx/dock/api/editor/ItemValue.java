@@ -205,7 +205,7 @@ public class ItemValue {
      * <p>
      * To display objects of type {@code TreeItem}, the {@code graphic} property
      * of a node of type {code TreeCell} is used. The method
-     * {@link TreeItemBuilder#createItem(java.lang.Object, java.lang.Object...)}
+     * {@link TreeItemBuilder#createItem(java.lang.Object) }
      * creates the mentioned node and stores it as a value of the property
      * {@code cellGraphic} of this class. Later when an object of type
      * {@code TreeCell} will be created it becomes possible to assign the saved

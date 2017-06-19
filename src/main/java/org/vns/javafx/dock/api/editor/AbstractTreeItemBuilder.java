@@ -126,35 +126,7 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
     public void updateTreeItemContent(TreeItemEx item, Object oldValue, Object newValue) {
         HBox c = getItemContentPane(item);
         c.getChildren().remove(0);
-        //c = (HBox) c.getChildren().get(0);
-        //c.getChildren().remove(1, c.getChildren().size());
         c.getChildren().add(0, createItemContent(newValue));
-        //HBox hb = (HBox) c.getChildren().get(0);
-
-        //hb.setMouseTransparent(true);
-/*        if (newValue != null) {
-            Label glb = new Label(newValue.getClass().getSimpleName());
-            glb.getStyleClass().add("tree-item-node-" + newValue.getClass().getSimpleName().toLowerCase());
-            hb.getChildren().add(glb);
-            ((Labeled) hb.getChildren().get(0)).setText("");
-            if (newValue instanceof Labeled) {
-                glb.setText(glb.getText() + " " + ((Labeled) newValue).getText());
-            }
-            //glb.setMouseTransparent(true);
-//            TreeItemEx objItem = (TreeItemEx) TreeItemBuilderRegistry.getInstance().getBuilder(obj).build(obj);
-//            item.getChildren().addAll(objItem.getChildren());
-//            item.getValue().setTreeItemObject(obj);
-
-        } else {
-            hb.getChildren().remove(1);
-            Label lb = (Label) hb.getChildren().get(0);
-            lb.setText(item.getValue().getTitle());
-            item.getValue().setTreeItemObject(null);
-            //lb.setMouseTransparent(true);
-            item.getChildren().clear();
-
-        }
-         */
     }
 
     protected HBox getItemContentPane(TreeItemEx item) {

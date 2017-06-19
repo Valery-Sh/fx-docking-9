@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import java.util.function.Predicate;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -123,7 +124,25 @@ public abstract class DockTargetController {
         });
 
     }
-
+    
+    private Predicate<Node> acceptableNode;
+    
+    private DockLoader dockLoader;
+    
+    public void setDockLoader(DockLoader loader) {
+        this.dockLoader = loader;
+    }
+    
+    public boolean isAcceptable(Node node) {
+        
+        boolean retval = true;
+        
+        if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
+            retval = dockLoader.isRegistered(node);
+        }
+        return retval;
+    }
+    
     protected void dock(Point2D mousePos, Dockable dockable) {
         if (isDocked(dockable.node())) {
             return;
@@ -193,5 +212,9 @@ public abstract class DockTargetController {
     }
      */
     public abstract void remove(Node dockNode);
-
+    
+    public PreferencesBuilder getPreferencesBuilder() {
+        return null;
+    }
+    
 }//class

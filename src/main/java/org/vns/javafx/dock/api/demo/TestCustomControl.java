@@ -26,6 +26,7 @@ import org.vns.javafx.dock.api.controls.CustomControl;
 public class TestCustomControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
+        
         StackPane dockPane = new StackPane();
         dockPane.setId("DOCK PANE");
         Button b1 = new Button("b01");

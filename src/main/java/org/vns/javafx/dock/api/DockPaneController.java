@@ -1,12 +1,21 @@
 package org.vns.javafx.dock.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
+import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
@@ -81,8 +90,10 @@ public class DockPaneController extends DockTargetController {
         //07.05getDockExecutor().dock(mousePos, dockable);
         getDockExecutor().dock(dockable);
     }
+
     /**
      * The method does nothing.
+     *
      * @param mousePos the mouse pos
      * @param node the node to be docked
      * @return true if the method execution was successful
@@ -91,6 +102,7 @@ public class DockPaneController extends DockTargetController {
     protected boolean doDock(Point2D mousePos, Node node) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     //@Override
     public void dock(Dockable dockable, Object pos) {
         getDockExecutor().dock(dockable, pos);
@@ -111,10 +123,15 @@ public class DockPaneController extends DockTargetController {
         }
     }
 
+    @Override
+    public PreferencesBuilder getPreferencesBuilder() {
+        return new DockPanePreferencesBuilder();
+    }
+
     public static class DockDelegate {
 
         private DockSplitPane root;
-        private DockPaneController paneController;
+        private final DockPaneController paneController;
 
         public DockDelegate(DockSplitPane root, DockPaneController paneController) {
             this.root = root;
@@ -298,7 +315,6 @@ public class DockPaneController extends DockTargetController {
             return dockable;
         }
 
-
         protected Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
             if (paneController.isDocked(dockable.node())) {
                 return dockable;
@@ -479,5 +495,133 @@ public class DockPaneController extends DockTargetController {
         }
 
     }//DockExcecutor OLD
-    
+
+    public static class DockPanePreferencesBuilder implements PreferencesBuilder {
+
+        @Override
+        public TreeItem<PreferencesItem> build(DockTarget dockTarget) {
+            TreeItem<PreferencesItem> retval = new TreeItem<>();
+            DockPane pane = (DockPane) dockTarget;
+            PreferencesItem it = new PreferencesItem(pane);
+            retval.setValue(it);
+            setProperties(it);
+            for (int i = 0; i < pane.getItems().size(); i++) {
+                if (pane.getItems().get(i) instanceof DockSplitPane) {
+                    it = new PreferencesItem(pane.getItems().get(i));
+                    TreeItem ti = new TreeItem();
+                    ti.setValue(it);
+                    retval.getChildren().add(ti);
+                    ti.setExpanded(true);
+                    setProperties(it);
+                    buildPane((SplitPane) pane.getItems().get(i), retval, ti);
+                } else if (DockRegistry.isDockable(pane.getItems().get(i))) {
+                    it = new PreferencesItem(pane.getItems().get(i));
+                    TreeItem ti = new TreeItem();
+                    ti.setValue(it);
+                    retval.getChildren().add(ti);
+                    ti.setExpanded(true);
+                }
+            }
+            /*            System.err.println("------------------------------");
+            System.err.println("0 " + retval);
+            retval.getChildren().forEach(t -> {
+                 System.err.println("  1 " + t);
+                 t.getChildren().forEach( t1 -> {
+                     System.err.println("    2 " + t1);
+                     t1.getChildren().forEach(t2 -> {
+                        System.err.println("      3 " + t2);
+
+                     });
+                 });
+            });
+            System.err.println("------------------------------");
+             */
+            return retval;
+        }
+
+        protected void buildPane(SplitPane pane, TreeItem<PreferencesItem> root, TreeItem<PreferencesItem> parent) {
+            for (int i = 0; i < pane.getItems().size(); i++) {
+                if (pane.getItems().get(i) instanceof DockSplitPane) {
+                    PreferencesItem it = new PreferencesItem(pane.getItems().get(i));
+                    TreeItem ti = new TreeItem();
+                    ti.setValue(it);
+                    parent.getChildren().add(ti);
+                    ti.setExpanded(true);
+                    setProperties(it);
+//System.err.println( i + ") ti = " + ti + "; parent = " + parent);                                        
+                    buildPane((SplitPane) pane.getItems().get(i), root, ti);
+                } else if (DockRegistry.isDockable(pane.getItems().get(i))) {
+                    PreferencesItem it = new PreferencesItem(pane.getItems().get(i));
+                    TreeItem ti = new TreeItem();
+                    ti.setValue(it);
+                    parent.getChildren().add(ti);
+//System.err.println( "!!!!! " + i + ") ti = " + ti + "; parent = " + parent);                                        
+
+                    ti.setExpanded(true);
+                }
+            }
+        }
+
+        private void setProperties(PreferencesItem it) {
+            SplitPane sp = (SplitPane) it.getItemObject();
+            String[] strDp = new String[sp.getDividerPositions().length];
+
+            it.getProperties().put("orientation", sp.getOrientation().toString());
+            for (int i = 0; i < sp.getDividerPositions().length; i++) {
+                strDp[i] = String.valueOf(sp.getDividerPositions()[i]);
+            }
+            if (strDp.length > 0) {
+                it.getProperties().put("dividerPositions", String.join(",", strDp));
+            }
+        }
+
+        @Override
+        public void fillDockTarget(DockLoader loader, DockTarget dockTarget) {
+
+        }
+
+        @Override
+        public Map<String, String> getProperties(Object node) {
+            Map<String, String> props = FXCollections.observableHashMap();
+            if (node instanceof SplitPane) {
+                SplitPane sp = (SplitPane) node;
+                props.put("orientation", sp.getOrientation().toString());
+                if (sp.getDividerPositions().length != 0) {
+                    String[] s = new String[sp.getDividerPositions().length];
+                    Arrays.setAll(s, (idx) -> {
+                        return String.valueOf(sp.getDividerPositions()[idx]);
+                    });
+                    String dp = String.join(",", s);
+                    props.put("dividerPositions", dp);
+                }
+            }
+            return props;
+        }
+
+        @Override
+        public void setProperties(Object node, Map<String, String> prefProps) {
+            if (node instanceof SplitPane) {
+                SplitPane sp = (SplitPane) node;
+                if (prefProps.get("orientation") != null) {
+                    if (prefProps.get("orientation").equals("VERTICAL")) {
+                        sp.setOrientation(Orientation.VERTICAL);
+                    } else {
+                        sp.setOrientation(Orientation.HORIZONTAL);
+                    }
+                }
+                if (prefProps.get("dividerPositions") != null) {
+                    String[] s = prefProps.get("dividerPositions").split(",");
+                    if (s.length > 0) {
+                        double[] d = new double[s.length];
+                        Arrays.setAll(d, (idx) -> {
+                            return Double.parseDouble(s[idx]);
+                        });
+                        sp.setDividerPositions(d);
+                    }
+                }
+            }
+
+        }
+
+    }
 }//class DockPaneController

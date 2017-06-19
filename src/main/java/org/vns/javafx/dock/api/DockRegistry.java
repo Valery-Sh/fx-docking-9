@@ -340,7 +340,6 @@ public class DockRegistry {
     }
 
     private static class SingletonInstance {
-
         private static final DockRegistry instance = new DockRegistry();
     }
 

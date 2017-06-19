@@ -16,7 +16,8 @@ import org.vns.javafx.dock.DockUtil;
 public class DockSplitPane extends SplitPane implements ListChangeListener {
 
     private EventHandler<ActionEvent> root;
-
+    private ListChangeListener itemsChangeListener;
+    
     public DockSplitPane() {
         init();
     }
