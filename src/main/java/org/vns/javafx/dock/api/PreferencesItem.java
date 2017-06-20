@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api;
 
 import java.util.Map;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 
 /**
  *
@@ -44,7 +45,21 @@ public class PreferencesItem {
     
     @Override
     public String toString() {
-        String retval = "entryName/" + itemObject.getClass().getSimpleName();
-        return retval;
+        StringBuilder sb = new StringBuilder();
+        if ( (itemObject instanceof Node)  ) {
+            sb.append("id=" + ((Node)itemObject).getId() + " ");
+        }
+        sb.append("type : " + itemObject.getClass().getSimpleName());
+        if ( String.class.equals(itemObject.getClass())) {
+            sb.append(" (")
+                .append((String)itemObject)
+                .append(")");                    
+        }
+        if ( ! getProperties().isEmpty() ) {
+            sb.append(" [")
+                    .append(getProperties())
+                    .append(" ]");
+        }
+        return sb.toString();
     }
 }

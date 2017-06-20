@@ -15,63 +15,84 @@
  */
 package org.vns.javafx.dock.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
-import org.vns.javafx.dock.api.util.prefs.CommonPreferences;
-import org.vns.javafx.dock.api.util.prefs.InstancePreferences;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
+import org.vns.javafx.dock.api.util.prefs.DockPreferences;
+import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 
 /**
  *
  * @author Valery
  */
 public class DockLoader {
-    
+
     public static final String STORE_ENTRY_NAME = "store-entry-name";
-    public static final String STORE_ENTRY_CLASS = "store-entry-class";    
-    public static final String INFO = "info";    
-    public static final String NODE = "node";    
-    public static final String PROPERTIES = "properties";    
-    
+    public static final String NOT_REGISTERED = "not.registered";
+
+    public static final String STORE_ENTRY_CLASS = "store-entry-class";
+    public static final String INFO = "info";
+    public static final String NODE = "node";
+    public static final String PROPERTIES = "properties";
+
     public static final String REGISTRY_STORE_ENTRIES = "store-registered-classes";
 
-    private final Map<String, Object> store = FXCollections.observableHashMap();
+    private final static Map<String, Node> store = FXCollections.observableHashMap();
+    private final static List<Node> stateChangedList = FXCollections.observableArrayList();
+    private final static List<TreeItem<PreferencesItem>> defaultState = FXCollections.observableArrayList();
 
     private String prefEntry;
+
     private boolean loaded = false;
-    
+
+    public DockLoader(String prefEntry) {
+        this.prefEntry = prefEntry;
+    }
+
+    public DockLoader(Class clazz) {
+        prefEntry = clazz.getName().replace(".", "/");
+    }
+
     public synchronized static DockLoader create(String prefEntry) {
-        if (SingletonInstance.INSTANCE.prefEntry == null && prefEntry != null) {
-            SingletonInstance.INSTANCE.prefEntry = prefEntry;
-        }
-        return SingletonInstance.INSTANCE;
+        return new DockLoader(prefEntry);
     }
 
     public synchronized static DockLoader create(Class clazz) {
-        if (SingletonInstance.INSTANCE.prefEntry == null && clazz != null) {
-            String prefEntry = clazz.getName().replace(".", "/");
-            SingletonInstance.INSTANCE.prefEntry = prefEntry;
+        return create(clazz.getName().replace(".", "/"));
+    }
+
+    public String getRoot() {
+        return prefEntry;
+    }
+
+    public void layoutChanged(Node target) {
+        if (! loaded || stateChangedList.contains(target) ) {
+            return;
         }
-        return SingletonInstance.INSTANCE;
+        stateChangedList.add(target);
     }
 
-    private synchronized static DockLoader getInstance() {
-        return SingletonInstance.INSTANCE;
-    }
-
-    private Map<String, Object> getStore() {
+    private Map<String, Node> getStore() {
         return store;
     }
-    
-    public Object register(String entry, Class clazz) {
-        Object retval = null;
-        if ( loaded ) {
-            throw new IllegalStateException("Attempts to register an entry '" 
+
+    public Node register(String entry, Class clazz) {
+        Node retval = null;
+        if (loaded) {
+            throw new IllegalStateException("Attempts to register an entry '"
                     + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
         }
         if (entry == null || getStore().containsKey(entry)) {
@@ -79,21 +100,30 @@ public class DockLoader {
         }
 
         try {
-            retval = clazz.newInstance();
-            if (!Dockable.class.isInstance(retval) && !DockTarget.class.isInstance(retval)) {
+            Object o = clazz.newInstance();
+            if (!(o instanceof Node)) {
                 throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
             }
+            retval = (Node) o;
+
+            if (!DockRegistry.isDockPaneTarget(retval) && !DockRegistry.isDockable(retval)) {
+                throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
+            }
+
             getStore().put(entry, retval);
+            if (DockRegistry.isDockPaneTarget(retval)) {
+                addListeners(retval);
+            }
         } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
 
-    public Dockable registerDockable(String entry, Class<? extends Dockable> clazz) {
+    /*    public Dockable registerDockable(String entry, Class<? extends Dockable> clazz) {
         Dockable retval = null;
-        if ( loaded ) {
-            throw new IllegalStateException("Attempts to register an entry '" 
+        if (loaded) {
+            throw new IllegalStateException("Attempts to register an entry '"
                     + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
         }
         if (entry == null || getStore().containsKey(entry)) {
@@ -106,7 +136,7 @@ public class DockLoader {
 
         try {
             retval = clazz.newInstance();
-            getStore().put(entry, retval);
+            getStore().put(entry, DockRegistry.dockable(retval));
         } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,8 +146,8 @@ public class DockLoader {
     public DockTarget registerDockTarget(String entry, Class<? extends DockTarget> clazz) {
         DockTarget retval = null;
 
-        if ( loaded ) {
-            throw new IllegalStateException("Attempts to register an entry '" 
+        if (loaded) {
+            throw new IllegalStateException("Attempts to register an entry '"
                     + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
         }
         if (entry == null || getStore().containsKey(entry)) {
@@ -131,131 +161,261 @@ public class DockLoader {
         try {
             retval = clazz.newInstance();
             getStore().put(entry, retval);
+            addListeners(DockRegistry.dockPaneTarget(node));
         } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
+     */
+    protected void addListeners(Node target) {
+
+        EventHandler<WindowEvent> wh = new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+
+                Platform.runLater(() -> {
+                    if (!stateChangedList.isEmpty()) {
+                        save();
+                    }
+                });
+
+            }
+        };
+        ChangeListener<Window> wl = (ObservableValue<? extends Window> observable, Window oldValue, Window newValue) -> {
+            if (newValue != null) {
+                newValue.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
+            } else {
+                oldValue.removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
+            }
+
+        };
+
+        ChangeListener<Scene> sl = (ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) -> {
+            if (newValue != null) {
+                newValue.windowProperty().addListener(wl);
+            }
+            if (oldValue != null) {
+                oldValue.windowProperty().removeListener(wl);
+                oldValue.getWindow().removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
+            }
+
+        };
+        target.sceneProperty().addListener(sl);
+        //scenelisteners.put(node, sl);
+        //windowlisteners.put(node, wl);
+
+    }
 
     public void load() {
-       loaded = true;
-       //
-       // Go through all registered DockTarget and set there this instance 
-       //
-       getStore().values().forEach( obj -> {
-           if ( obj instanceof DockTarget )  {
-               ((DockTarget)obj).targetController().setDockLoader(this);
-           }
-       });
-       
+        if (loaded) {
+            return;
+        }
+
+        //
+        // Check weather the registry store changed and if so reset and reload
+        //
+        if (!isDestroyed()) {
+            reset();
+            save();
+        }
+        //
+        // Go through all registered DockTarget and set there this instance 
+        //
+        getStore().values().forEach(node -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                DockRegistry.dockPaneTarget(node).targetController().setDockLoader(this);
+            }
+        });
+        
+        
+        Long start = System.currentTimeMillis();
+
+        //
+        // Save default state
+        //
+        getStore().values().forEach(node -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                DockTarget t = DockRegistry.dockPaneTarget(node);
+                defaultState.add(t.targetController().getPreferencesBuilder().build(t));
+            }
+        });
+        System.err.println("DEFAULT STATE " + (System.currentTimeMillis() - start));
+        
+        List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
+        getStore().values().forEach(node -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                list.add(restore(DockRegistry.dockPaneTarget(node)));
+            }
+        });
+        
+        TreeItem<PreferencesItem> item = list.get(0);
+//        String s = toString(item, 0);
+//        System.err.println("================ RESTORED in LOAD ==========================");
+//        System.err.println(s);
+//        System.err.println("================= END RESTORED in LOAD=========================");
+//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
+//        System.err.println(s);
+        list.forEach(it -> {
+            DockTarget dt = DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject());
+            dt.targetController().getPreferencesBuilder().restoreFrom(it);
+        });
+        Long end = System.currentTimeMillis();
+        System.err.println("!!!!!!!!! TIME !!!!!! " + (end - start));
+        loaded = true;
+        
     }
-    
+
+    private final Map<Node, ChangeListener<Scene>> scenelisteners = FXCollections.observableHashMap();
+    private final Map<Node, ChangeListener<Window>> windowlisteners = FXCollections.observableHashMap();
+
     protected boolean isRegistered(Object node) {
         return getEntryName(node) != null;
     }
-    
+
     public void saveStore() {
 
-        CommonPreferences cp = new CommonPreferences(prefEntry);
-        CommonPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
-        
-        InstancePreferences registeredProps = registered.getProperties(PROPERTIES);
+        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
+
+        PrefProperties registeredProps = registered.getProperties(PROPERTIES);
 
         if (registeredProps == null || registeredProps.keys().length == 0) {
-            InstancePreferences ip = registered.createProperties(PROPERTIES);
+            PrefProperties ip = registered.createProperties(PROPERTIES);
             getStore().forEach((k, v) -> {
                 ip.setProperty(k, v.getClass().getName());
             });
+            registered.next("NULL");
         }
+    }
+
+    public boolean isDestroyed() {
+        boolean retval = true;
+        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
+
+        PrefProperties registeredProps = registered.getProperties(PROPERTIES);
+        if (!getStore().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
+            return false;
+        }
+        if (getStore().isEmpty() && registeredProps != null && registeredProps.keys().length > 0) {
+            return false;
+        }
+        if (getStore().size() != registeredProps.size()) {
+            return false;
+        }
+        Properties props = registeredProps.toProperties();
+        for (String key : getStore().keySet()) {
+            if (!props.containsKey(key)) {
+                return false;
+            }
+            String class1 = props.getProperty(key);
+            String class2 = getStore().get(key).getClass().getName();
+            if (!class2.equals(class1)) {
+                return false;
+            }
+        }//for
+        return retval;
     }
 
     public String getEntryName(Object obj) {
         String retval = null;
-        if ((obj instanceof Node) && DockRegistry.isDockable((Node) obj) && getStore().containsValue(obj)) {
-            for (Entry<String, Object> e : getStore().entrySet()) {
-                if (e.getValue() == obj) {
-                    retval = e.getKey();
-                    break;
-                }
-            }
-        } else if ((obj instanceof Node) && DockRegistry.isDockPaneTarget((Node) obj) && getStore().containsValue(obj)) {
-            for (Entry<String, Object> e : getStore().entrySet()) {
-                if (e.getValue() == obj) {
-                    retval = e.getKey();
-                    break;
-                }
+        for (Entry<String, Node> e : getStore().entrySet()) {
+            if (e.getValue() == obj) {
+                retval = e.getKey();
+                break;
             }
         }
 
         return retval;
     }
-    
-    public void save(DockTarget dockTarget) {
+
+    public void save() {
+        Long start = System.currentTimeMillis();
+
+        DockPreferences cp = new DockPreferences(prefEntry);
+        cp.clearRoot();
+        saveStore();
+        getStore().values().forEach((node) -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                save(DockRegistry.dockPaneTarget(node));
+            }
+        });
+        Long end = System.currentTimeMillis();
+        System.err.println("!!!!!!!!! ON CLOSE TIME !!!!!! " + (end - start));
+
+    }
+
+    protected void save(DockTarget dockTarget, TreeItem<PreferencesItem> root) {
         PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
-        TreeItem<PreferencesItem> root = builder.build(dockTarget);
-        CommonPreferences cp = new CommonPreferences(prefEntry);
+        DockPreferences cp = new DockPreferences(prefEntry);
+
         PreferencesItem pit = root.getValue();
         String entryName = getEntryName(pit.getItemObject());
-        CommonPreferences cpProps = cp.next(entryName).next(PROPERTIES);
-        InstancePreferences ip = cpProps.createProperties(INFO);
+        cp.next(entryName).removelChildren();
+        //PrefProperties ip1 = cp.next(entryName).next(PROPERTIES).getProperties(INFO);
+        DockPreferences cpProps = cp.next(entryName).next(PROPERTIES);
+        PrefProperties ip = cpProps.createProperties(INFO);
         ip.setProperty(STORE_ENTRY_NAME, entryName);
         ip.setProperty(STORE_ENTRY_CLASS, pit.getItemObject().getClass().getName());
         final Map<String, String> nodeProps = builder.getProperties(pit.getItemObject());
         if (nodeProps != null && !nodeProps.isEmpty()) {
-            InstancePreferences nodeIp = cpProps.createProperties(NODE);
+            PrefProperties nodeIp = cpProps.createProperties(NODE);
             nodeProps.keySet().forEach(k -> {
                 nodeIp.setProperty(k, nodeProps.get(k));
             });
         }
         for (int i = 0; i < root.getChildren().size(); i++) {
-            System.err.println(i + "). " + root.getChildren().get(i));
             TreeItem<PreferencesItem> it = root.getChildren().get(i);
             save(builder, it, entryName + "/" + String.valueOf(i));
         }
+        
+    }    
+    public void save(DockTarget dockTarget) {
+        PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
+        TreeItem<PreferencesItem> root = builder.build(dockTarget);
+        save(dockTarget, root);
     }
 
     protected void save(PreferencesBuilder builder, TreeItem<PreferencesItem> item, String namespace) {
-        CommonPreferences cp = new CommonPreferences(prefEntry).next(namespace);
-        CommonPreferences cpProps = cp.next(PROPERTIES);
+        DockPreferences cp = new DockPreferences(prefEntry).next(namespace);
+        DockPreferences cpProps = cp.next(PROPERTIES);
         PreferencesItem pit = item.getValue();
         String entryName = getEntryName(pit.getItemObject());
-        InstancePreferences ip = cpProps.createProperties(INFO);
-        if ( entryName == null ) {
-            ip.setProperty(STORE_ENTRY_NAME, "not.registered");
+        PrefProperties ip = cpProps.createProperties(INFO);
+        if (entryName == null) {
+            ip.setProperty(STORE_ENTRY_NAME, NOT_REGISTERED);
         } else {
             ip.setProperty(STORE_ENTRY_NAME, entryName);
         }
         ip.setProperty(STORE_ENTRY_CLASS, pit.getItemObject().getClass().getName());
         final Map<String, String> nodeProps = builder.getProperties(pit.getItemObject());
         if (nodeProps != null && !nodeProps.isEmpty()) {
-            InstancePreferences nodeIp = cpProps.createProperties(NODE);
+            PrefProperties nodeIp = cpProps.createProperties(NODE);
             nodeProps.keySet().forEach(k -> {
                 nodeIp.setProperty(k, nodeProps.get(k));
             });
         }
-
         for (int i = 0; i < item.getChildren().size(); i++) {
             TreeItem<PreferencesItem> it = item.getChildren().get(i);
             save(builder, it, namespace + "/" + String.valueOf(i));
         }
-
     }
 
-    public String namespaceStringValue(DockTarget dockTarget) {
-        return namespaceStringValue("", getEntryName(dockTarget), 0);
+    public String preferencesStringValue(DockTarget dockTarget) {
+        return preferencesStringValue("", getEntryName(dockTarget), 0);
     }
 
-    public String namespaceStringValue(String namespace, String entryName, int offset) {
+    protected String preferencesStringValue(String namespace, String entryName, int offset) {
         String sep = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
 
-        CommonPreferences cp = new CommonPreferences(prefEntry);
+        DockPreferences cp = new DockPreferences(prefEntry);
         if (cp.childrenNames().length == 0) {
             return "root '" + prefEntry + "' is empty";
         }
-        CommonPreferences cpEntry = cp.next(namespace).next(entryName);
-        //System.err.println("!!!!!!!! cpEntry.directoryNamespace() = " + cpEntry.directoryNamespace());
-        InstancePreferences ip = cpEntry.next(PROPERTIES).getProperties(INFO);
+        DockPreferences cpEntry = cp.next(namespace).next(entryName);
+        PrefProperties ip = cpEntry.next(PROPERTIES).getProperties(INFO);
 
         sb.append(sep)
                 .append(spaces(offset))
@@ -300,16 +460,92 @@ public class DockLoader {
             }
             sb.append(sep)
                     .append(spaces(propOffset))
-                    .append(namespaceStringValue(cpEntry.rootExtendedNamespace(), childs[i], propOffset));
+                    .append(preferencesStringValue(cpEntry.currentNamespace(), childs[i], propOffset));
         }
         return sb.toString();
     }
 
-    public void reset() {
-        new CommonPreferences(prefEntry).clearRoot();
+    public TreeItem<PreferencesItem> restore(DockTarget dockTarget) {
+        return restore("", getEntryName(dockTarget.target()));
     }
+
+    protected TreeItem<PreferencesItem> restore(String namespace, String entryName) {
+        //PreferencesItem pit = new PreferencesItem();
+        TreeItem<PreferencesItem> treeItem = new TreeItem<>();
+        PreferencesItem pit;
+        DockPreferences cp = new DockPreferences(prefEntry);
+        PrefProperties infoPrefs = cp.next(namespace).next(entryName).next(PROPERTIES).getProperties(INFO);
+        String storeEntry = infoPrefs.getProperty(STORE_ENTRY_NAME);
+        //
+        // We store intto PreferencesItem an actual object if registered or a 
+        // class name of the unregistered object
+        //
+        if (storeEntry == null || NOT_REGISTERED.equals(storeEntry)) {
+            pit = new PreferencesItem(infoPrefs.getProperty(STORE_ENTRY_CLASS));
+        } else {
+            pit = new PreferencesItem(getStore().get(storeEntry));
+        }
+        treeItem.setValue(pit);
+        //
+        // Copy to PreferencesItem  node properties if exist 
+        //
+        PrefProperties ip = cp.next(namespace).next(entryName).next(PROPERTIES).getProperties(NODE);
+        if (ip != null) {
+            pit.getProperties().putAll(ip.toMap());
+        }
+
+        DockPreferences entryRoot = cp.next(namespace).next(entryName);
+
+        String[] childs = entryRoot.childrenNames();
+
+        for (int i = 0; i < childs.length; i++) {
+            if (PROPERTIES.equals(childs[i])) {
+                continue;
+            }
+            treeItem.getChildren().add(restore(entryRoot.currentNamespace(), childs[i]));
+        }
+        return treeItem;
+    }
+
+    public void reset() {
+        new DockPreferences(prefEntry).clearRoot();
+    }
+    public void reload() {
+        reset();
+        saveStore();
+        
+        Long start = System.currentTimeMillis();
+        
+        defaultState.forEach(treeItem -> {
+            save(DockRegistry.dockPaneTarget( (Node)treeItem.getValue().getItemObject()), treeItem );
+        });
+        
+        List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
+        getStore().values().forEach(node -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                list.add(restore(DockRegistry.dockPaneTarget(node)));
+            }
+        });
+        
+        TreeItem<PreferencesItem> item = list.get(0);
+//        String s = toString(item, 0);
+//        System.err.println("================ RESTORED in LOAD ==========================");
+//        System.err.println(s);
+//        System.err.println("================= END RESTORED in LOAD=========================");
+//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
+//        System.err.println(s);
+        list.forEach(it -> {
+            DockTarget dt = DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject());
+            dt.targetController().getPreferencesBuilder().restoreFrom(it);
+        });
+        Long end = System.currentTimeMillis();
+        System.err.println("!!!!!!!!! RELOAD TIME !!!!!! " + (end - start));
+        loaded = true;
+        
+    }
+
     public void resetStore() {
-        new CommonPreferences(prefEntry).next(REGISTRY_STORE_ENTRIES).clearRoot();
+        new DockPreferences(prefEntry).next(REGISTRY_STORE_ENTRIES).clearRoot();
     }
 
     public String toString(DockTarget dockTarget) {
@@ -352,7 +588,7 @@ public class DockLoader {
     }
 
     private static class SingletonInstance {
-        private static final DockLoader INSTANCE = new DockLoader();
+
     }
 
 }

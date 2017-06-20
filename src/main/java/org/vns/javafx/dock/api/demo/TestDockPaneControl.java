@@ -30,20 +30,20 @@ public class TestDockPaneControl extends Application {
         stage.setTitle("PRIMARY");
 
         StackPane root = new StackPane();
-        //DockPane cc = new DockPane();
+        //DockPane dockPane1 = new DockPane();
 
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DockLoader loader = DockLoader.create(TestDockPaneControl.class);
-        DockPane cc = (DockPane) loader.registerDockTarget("dockPane1", DockPane.class);
-        DockNode dnc1 = (DockNode) loader.registerDockable("dnc1", DockNode.class);
-        DockNode dnc2 = (DockNode) loader.registerDockable("dnc2", DockNode.class);
-        DockNode dnc3 = (DockNode) loader.registerDockable("dnc3", DockNode.class);
-
-        loader.saveStore();
+        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
+        dockPane1.setId("dockPane1");
+        DockNode dnc1 = (DockNode) loader.register("dnc1", DockNode.class);
+        DockNode dnc2 = (DockNode) loader.register("dnc2", DockNode.class);
+        DockNode dnc3 = (DockNode) loader.register("dnc3", DockNode.class);
+        //loader.reset();
         //DockNode dnc2 = new DockNode("DockNodeControl dnc2");
         dnc3.setTitle("DockNodeControl dnc3");
-        loader.load();
-
+        
+        
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
 
         dnc1.setId("dnc1");
@@ -53,23 +53,25 @@ public class TestDockPaneControl extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
-        cc.getItems().add(vs1);
+        dockPane1.getItems().add(vs1);
 
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
         vs1.getItems().addAll(hs1, dnc3);
-        //TreeItem<PreferencesItem> items = cc.targetController().getPreferencesBuilder().build(cc);
-        String s = loader.toString(cc);
-        System.err.print(s);
-        System.err.println("===================================");
-        loader.reset();
-        loader.save(cc);
-        System.err.println(loader.namespaceStringValue(cc));
-        System.err.println("===================================");
+        //TreeItem<PreferencesItem> items = dockPane1.targetController().getPreferencesBuilder().build(dockPane1);
+//        String s = loader.toString(dockPane1);
+//        System.err.print(s);
+        //loader.reset();
+        loader.load();
+        //System.err.println(" TEST ===================================");
+        //loader.reset();
+        //loader.save(dockPane1);
+        //System.err.println(loader.preferencesStringValue(dockPane1));
+        //System.err.println("TEST ===================================");
 
         //vs1.getItems().add(hs1);
         //vs1.getItems().add(dnc3);
-        Button b1 = new Button("Items Count");
+        Button b1 = new Button("reset");
         Button b2 = new Button("add dnc4");
         Button b3 = new Button("remove dnc4");
         Button b4 = new Button("change dnc1 DividerPos");
@@ -83,7 +85,11 @@ public class TestDockPaneControl extends Application {
         ((StackPane) dnc3.getContent()).getChildren().add(childLabel);
 
         b1.setOnAction(a -> {
-            System.err.println("hs1.sz=" + hs1.getItems().size());
+            System.err.println("----------  hs1.sz=" + hs1.getItems().size());
+            //loader.save(dockPane1);
+            //loader.save(dockPane1);
+            loader.reload();
+            System.err.println(loader.toString(dockPane1));
         });
         b2.setOnAction(a -> {
             System.err.println("(b2)hs1.sz=" + hs1.getItems().size());
@@ -112,7 +118,7 @@ public class TestDockPaneControl extends Application {
 
         //cc.setRoot(vs1);
         //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
-        root.getChildren().add(cc);
+        root.getChildren().add(dockPane1);
 
         scene = new Scene(root, 250, 250);
 
@@ -120,8 +126,8 @@ public class TestDockPaneControl extends Application {
 
         stage.setScene(scene);
         stage.show();
-        System.err.println("SKIN = " + cc.getSkin());
-        System.err.println("SKIN.node = " + cc.getSkin().getNode());
+        System.err.println("SKIN = " + dockPane1.getSkin());
+        System.err.println("SKIN.node = " + dockPane1.getSkin().getNode());
         // SplitDelegate.DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(dn3);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);

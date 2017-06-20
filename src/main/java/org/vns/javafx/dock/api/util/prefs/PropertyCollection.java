@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
-public interface PreferencesProperties {
+public interface PropertyCollection {
     
     public static String HIDDEN_KEY = "...HIDDEN...";
     public static String HIDDEN_VALUE = "HIDDEN_VALUE";
@@ -43,7 +43,7 @@ public interface PreferencesProperties {
 
     void putLong(String key, long value);
 
-    PreferencesProperties setProperty(String propName, String value);
+    PropertyCollection setProperty(String propName, String value);
 
     String getProperty(String propName);
 
@@ -76,9 +76,9 @@ public interface PreferencesProperties {
     
     void forEach(BiConsumer<String, String> action);
     
-    PreferencesProperties copyFrom(Map<String,String> props);
+    PropertyCollection copyFrom(Map<String,String> props);
     
-    PreferencesProperties copyFrom(Properties props);
+    PropertyCollection copyFrom(Properties props);
     
     Map<String, String> toMap();
     

@@ -25,15 +25,15 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
-public class InstancePreferences implements PreferencesProperties {
+public class PrefProperties implements PropertyCollection {
 
-    private static final Logger LOG = Logger.getLogger(InstancePreferences.class.getName());
+    private static final Logger LOG = Logger.getLogger(PrefProperties.class.getName());
 
     private final Preferences prefs;
 
     private final String id;
 
-    public InstancePreferences(String id, Preferences prefs) {
+    public PrefProperties(String id, Preferences prefs) {
         this.prefs = prefs;
         this.id = id;
     }
@@ -55,7 +55,7 @@ public class InstancePreferences implements PreferencesProperties {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final InstancePreferences other = (InstancePreferences) obj;
+        final PrefProperties other = (PrefProperties) obj;
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
@@ -196,7 +196,7 @@ public class InstancePreferences implements PreferencesProperties {
     }
 
     @Override
-    public InstancePreferences setProperty(String propName, String value) {
+    public PrefProperties setProperty(String propName, String value) {
         this.putString(propName, value);
         return this;
     }
@@ -352,7 +352,7 @@ public class InstancePreferences implements PreferencesProperties {
     }
 
     @Override
-    public PreferencesProperties copyFrom(Properties props) {
+    public PropertyCollection copyFrom(Properties props) {
         synchronized (this) {
             if (props == null || props.isEmpty()) {
                 return this;
@@ -368,7 +368,7 @@ public class InstancePreferences implements PreferencesProperties {
     }
 
     @Override
-    public PreferencesProperties copyFrom(Map<String, String> props) {
+    public PropertyCollection copyFrom(Map<String, String> props) {
         if (props == null || props.isEmpty()) {
             return this;
         }

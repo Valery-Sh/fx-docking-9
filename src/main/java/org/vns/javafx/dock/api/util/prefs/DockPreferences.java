@@ -16,16 +16,16 @@ import java.util.prefs.Preferences;
  * The main objective of the class is to provide access to various settings
  * (properties,preferences etc.) specific to an application or module. The
  * method {@link #getProperties(java.lang.String) } return an instance of type
- * {@link PreferencesProperties}. This instance allows to store data and extract
+ * {@link PropertyCollection}. This instance allows to store data and extract
  * them in a manner like we do when use {@literal java.util.Properties} but
  * without worrying about persistence.
  * <p>
  * For example, we can execute the following code:
  * <pre>
- * Path forDirPath = Paths.get("c:/my-tests/first-test");
- * DirectoryPreferences reg = DirectoryPreferences.newInstance("my-examples/1", dir);
- * PreferencesProperties props = reg.getProperties{"example-properties");
- * </pre> As a result, somewhere in the name space defined by the class
+ Path forDirPath = Paths.get("c:/my-tests/first-test");
+ DirectoryPreferences reg = DirectoryPreferences.newInstance("my-examples/1", dir);
+ PropertyCollection props = reg.getProperties{"example-properties");
+ </pre> As a result, somewhere in the name space defined by the class
  * {@literal AbstractPreferences} the following structure will be created:
  * <pre>
  *   UUID_ROOT/my-examples/1/c_/my-tests/first-test/<i>example-properties</i>
@@ -59,13 +59,13 @@ import java.util.prefs.Preferences;
  * </pre> and receive as a result:
  * <pre>
  *   UUID_ROOT/my-examples/1/c:/my-tests/first-test/<i>example-properties-1</i>
- * </pre> Now that we have an object of type {@link PreferencesProperties} , we
+ * </pre> Now that we have an object of type {@link PropertyCollection} , we
  * can read or write various properties, for example:
  * <pre>
  *  props.setProperty("myProp1","My first property");
  *  String value = props.getProperty("myProp1");
  * </pre> There are many useful methods in the class
- * {@link PreferencesProperties} that we can use to work with the properties.
+ * {@link PropertyCollection} that we can use to work with the properties.
  * 
  * 
  *
@@ -76,9 +76,9 @@ import java.util.prefs.Preferences;
  *
  * @author V. Shyshkin
  */
-public class CommonPreferences {
+public class DockPreferences {
 
-    private static final Logger LOG = Logger.getLogger(CommonPreferences.class.getName());
+    private static final Logger LOG = Logger.getLogger(DockPreferences.class.getName());
 
     public static String TEST_COMMON_ROOT = "TEST_UUID-ROOT";
 
@@ -90,14 +90,16 @@ public class CommonPreferences {
 
     protected Preferences rootNode;
     
+    public DockPreferences(String root) {
+        this(root, new String[0]);
+    }
     
 
-    public CommonPreferences(String root, String... rootExtentions) {
+    protected DockPreferences(String root, String... rootExtentions) {
         this(AbstractPreferences.userRoot().node(root.replace("\\", "/")), rootExtentions);
-//        this.rootNamespace = root;
     }
 
-    protected CommonPreferences(Preferences rootNode, String... rootExtentions) {
+    protected DockPreferences(Preferences rootNode, String... rootExtentions) {
         this.rootExtentions = rootExtentions;
         this.rootNode = rootNode;
         init();
@@ -123,19 +125,13 @@ public class CommonPreferences {
         
     }
 
-    public CommonPreferences next(String newNamespace) {
+    public DockPreferences next(String newNamespace) {
         if ( newNamespace.trim().isEmpty() ) {
             return this;
         }
         String[] extentions = Arrays.copyOf(rootExtentions, rootExtentions.length + 1);
         extentions[rootExtentions.length] = normalize(newNamespace);
-        return new CommonPreferences(rootNamespace, extentions);
-    }
-    protected CommonPreferences newNamespace(String newNamespace) {
-
-        String[] extentions = Arrays.copyOf(rootExtentions, rootExtentions.length + 1);;
-        extentions[rootExtentions.length] = normalize(rootNamespace);
-        return new CommonPreferences(newNamespace, extentions);
+        return new DockPreferences(rootNamespace, extentions);
     }
 
     /**
@@ -145,18 +141,6 @@ public class CommonPreferences {
      * registry
      */
     public String rootNamespace() {
-        //Path commonUserRoot = Paths.get(commonUserRoot().absolutePath());
-/*        String root = normalize(rootNode().absolutePath());
-        String user = normalize(userRoot().absolutePath());
-        if (root.isEmpty()) {
-            return "";
-        }
-        root = root.substring(user.length());
-        if (root.startsWith("/") && root.length() > 1) {
-            root = root.substring(1);
-        }
-*/
-
         return rootNamespace;
     }
 
@@ -166,7 +150,7 @@ public class CommonPreferences {
      * @return Return a string value which is used to create a root node of the
      * registry
      */
-    public String rootExtendedNamespace() {
+    public String currentNamespace() {
         //Path commonUserRoot = Paths.get(commonUserRoot().absolutePath());
         String result = "";
         for (String item : rootExtentions) {
@@ -178,34 +162,6 @@ public class CommonPreferences {
         return result;
     }
 
-    /**
-     * Return a string value that is used to create a root node of the registry.
-     * The implementation returns {@link #UUID_ROOT} constant value and may be
-     * overridden to assign a new registry root node.
-     *
-     * @return Return a string value which is used to create a root node of the
-     * registry
-     */
-/*    protected String propertiesRootNamespace() {
-        return "";
-    }
-*/
-    /**
-     * Returns the root preference node for the calling user with extended name
-     * space as specified by the constant {@link #COMMON_ROOT}. Just calls:
-     * <pre>
-     *  AbstractPreferences.userRoot().node()COMMON_ROOT;
-     * </pre>
-     *
-     * @return the root preference node for the calling user.
-     * @throws java.lang.SecurityException - If a security manager is present
-     * and it denies RuntimePermission("preferences").
-     * @see java.lang.RuntimePermission
-     */
-    /*    public Preferences commonUserRoot() {
-        return AbstractPreferences.userRoot().node(COMMON_ROOT);
-    }
-     */
     /**
      * Returns the root preference node for the calling user with extended name
      * space as specified by the constant {@link #COMMON_ROOT}. Just calls:
@@ -226,7 +182,7 @@ public class CommonPreferences {
         return rootNode;
     }
 
-    public Preferences rootExtended() {
+    public Preferences getPreferences() {
         Preferences p = rootNode();
 
         if (rootExtentions != null && rootExtentions.length > 0) {
@@ -285,22 +241,6 @@ public class CommonPreferences {
         return String.join("/", norm);
     }
 
-    /**
-     * Returns a preferences node that represents a directory name space. Just
-     * returns a value:
-     * <pre>
-     * rootExtended().node(DIRECTORY);
-     * </pre>
-     *
-     * @return Returns a preferences node that represents a directory name
-     * space.
-     */
-    protected Preferences directoryRoot() {
-        return rootExtended();
-    }
-    public String directoryNamespace() {
-        return "";
-    }
 
     public String[] childrenNames(Preferences forNode) {
         String[] result = new String[0];
@@ -317,7 +257,7 @@ public class CommonPreferences {
     public String[] childrenNames(String relativePath) throws BackingStoreException {
         String rp = normalize(relativePath);
         synchronized (this) {
-            return rootExtended().node(rp).childrenNames();
+            return getPreferences().node(rp).childrenNames();
         }
     }
 
@@ -325,7 +265,7 @@ public class CommonPreferences {
         String[] result = new String[0];
         synchronized (this) {
             try {
-                result = rootExtended().childrenNames();
+                result = getPreferences().childrenNames();
             } catch (BackingStoreException ex) {
                 LOG.log(Level.INFO, null, ex);
             }
@@ -351,16 +291,20 @@ public class CommonPreferences {
             return result;
         }
     }
+    public boolean removelChildren() {
+        return clear();
+    }
 
-    public boolean clearRootExtended() {
+    public boolean clear() {
 
         boolean result = false;
 
         synchronized (this) {
             try {
-                String[] childs = rootExtended().childrenNames();
+                String[] childs = getPreferences().childrenNames();
+                
                 for (String c : childs) {
-                    rootNode().node(c).removeNode();
+                    getPreferences().node(c).removeNode();
                 }
                 result = true;
             } catch (BackingStoreException ex) {
@@ -377,9 +321,9 @@ public class CommonPreferences {
 
         synchronized (this) {
             try {
-                String[] childs = directoryRoot().childrenNames();
+                String[] childs = getPreferences().childrenNames();
                 for (String c : childs) {
-                    directoryRoot().node(c).removeNode();
+                    getPreferences().node(c).removeNode();
                 }
                 result = true;
             } catch (BackingStoreException ex) {
@@ -420,7 +364,7 @@ public class CommonPreferences {
      * removes all parent nodes as long as one of the conditions is satisfied
      * <ul>
      * <li>The parent node is a root registry node as specified by the method
-     * {@link #rootExtended()}
+     * {@link #getPreferences()}
      * </li>
      * <li>The parent node has children nodes
      * </li>
@@ -447,9 +391,9 @@ public class CommonPreferences {
                 if (!rootToDelete.nodeExists("") || !rootToDelete.nodeExists(newpath)) {
                     return false;
                 }
-                //removeNode(rootToDelete.node(newpath), rootExtended());
+                //removeNode(rootToDelete.node(newpath), getPreferences());
                 //rootExtended().flush();
-                CommonPreferences.this.remove(rootToDelete.node(newpath));
+                DockPreferences.this.remove(rootToDelete.node(newpath));
                 userRoot().flush();
             } catch (BackingStoreException ex) {
                 LOG.log(Level.INFO, null, ex);
@@ -459,62 +403,19 @@ public class CommonPreferences {
         return result;
     }
 
-    /**
-     * Removes directory nodes starting from the given node. Be careful
-     * regardless whether the child node exists the method always tries to
-     * remove the given node. Once the node is deleted, the method recursively
-     * removes all parent nodes as long as one of the conditions is satisfied
-     * <ul>
-     * <li>The parent node is a root registry node as specified by the method
-     * {@link #rootExtended()}
-     * </li>
-     * <li>The parent node has children nodes
-     * </li>
-     * </ul>
-     *
-     * The above-mentioned node is not removed.<p>
-     * To remove the node specified by the first parameter set the second
-     * parameter to {@code null } or to an empty string.
-     *
-     * @param rootToDelete initial node to delete
-     * @param path a relative path to the node specified by the first parameter
-     * @return return true when remove success. If the node to delete doesn't
-     * exist then the method does nothing and returns false
-     */
-    /*    public boolean remove(Preferences rootToDelete, String path) {
-        String newpath = "";
-        if (path != null) {
-            newpath = normalize(path);
-        }
-
-        boolean result = true;
-        synchronized (this) {
-            try {
-                if (!rootToDelete.nodeExists("") || !rootToDelete.nodeExists(newpath)) {
-                    return false;
-                }
-                remove(rootToDelete.node(newpath));
-                rootToDelete.flush();
-            } catch (BackingStoreException ex) {
-                LOG.log(Level.INFO, null, ex);
-                result = false;
-            }
-        }
-        return result;
-    }
-     */
+ 
     /**
      * Checks whether a node specified by the parameter exists. The parameter
-     * {@code namespace} must be relative path to the {@link #rootExtended() }.
+     * {@code namespace} must be relative path to the {@link #getPreferences() }.
      *
      * @param relativePath a string that specifies a path relative to the node
-     * as defined by the method {@link #rootExtended() }.
+     * as defined by the method {@link #getPreferences() }.
      * @return {@code  true} if the node exists, {@code false} - otherwise
      */
     public boolean nodeExists(String relativePath) {
         boolean b = false;
         try {
-            b = rootExtended().nodeExists(normalize(relativePath));
+            b = getPreferences().nodeExists(normalize(relativePath));
         } catch (BackingStoreException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
@@ -549,7 +450,7 @@ public class CommonPreferences {
      * removes all parent nodes as long as one of the conditions is satisfied
      * <ul>
      * <li>The parent node is a root registry node as specified by the method
-     * {@link #rootExtended() }
+     * {@link #getPreferences() }
      * </li>
      * <li>The parent node has children nodes
      * </li>
@@ -570,14 +471,14 @@ public class CommonPreferences {
             prefs.removeNode();
             prefs.flush();
             //boolean b = parent.nodeExists(nm);
-            /* 28.09if (parent.absolutePath().equals(rootExtended().absolutePath())) {
+            /* 28.09if (parent.absolutePath().equals(getPreferences().absolutePath())) {
                 return;
             }
             */
             if (parent.childrenNames().length > 0) {
                 return;
             }
-            CommonPreferences.this.remove(parent);
+            DockPreferences.this.remove(parent);
         } catch (BackingStoreException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
@@ -595,7 +496,7 @@ public class CommonPreferences {
         Preferences parent = toRemove.parent();
         try {
             toRemove.removeNode();
-            //String rootAbs = rootExtended().absolutePath();
+            //String rootAbs = getPreferences().absolutePath();
             if (parent.absolutePath().equals(upperNode.absolutePath())) {
                 return parent;
             }
@@ -612,27 +513,27 @@ public class CommonPreferences {
     }
 
     /**
-     * The method returns an instance of {@link  PreferencesProperties} class.
+     * The method returns an instance of {@link  PropertyCollection} class.
      * The {@literal id} is used to create a node relatively to a directory node.
      *
      * @param id the value that specifies a name for a node where properties are
      * written and read.
      *
-     * @return an object of type {@link PreferencesProperties}
+     * @return an object of type {@link PropertyCollection}
      */
-    public InstancePreferences getProperties(String id) {
+    public PrefProperties getProperties(String id) {
 
         String cid = normalize(id);
 
-        Preferences prefs = directoryRoot();
+        Preferences prefs = getPreferences();
         try {
             synchronized (this) {
                 if (!prefs.nodeExists(cid)) {
                     return null;
                 }
                 prefs = prefs.node(cid);
-                PreferencesProperties properties = new InstancePreferences(cid, prefs);//factory.create(id, prefs);                
-                return (InstancePreferences) properties;
+                PropertyCollection properties = new PrefProperties(cid, prefs);//factory.create(id, prefs);                
+                return (PrefProperties) properties;
             }
         } catch (BackingStoreException ex) {
             LOG.log(Level.INFO, null, ex);
@@ -640,18 +541,18 @@ public class CommonPreferences {
         }
     }
 
-    public InstancePreferences createProperties(String id) {
+    public PrefProperties createProperties(String id) {
         String cid = normalize(id);
-        Preferences prefs = directoryRoot();
+        Preferences prefs = getPreferences();
         try {
             synchronized (this) {
                 prefs = prefs.node(cid);
                 initProperties(prefs);
                 prefs.flush();
 
-                PreferencesProperties created = new InstancePreferences(cid, prefs);//factory.create(id, prefs);                
+                PropertyCollection created = new PrefProperties(cid, prefs);//factory.create(id, prefs);                
                 String s = created.getPreferences().absolutePath();
-                return (InstancePreferences) created;
+                return (PrefProperties) created;
             }
         } catch (BackingStoreException ex) {
             LOG.log(Level.INFO, null, ex);
@@ -659,10 +560,10 @@ public class CommonPreferences {
         }
     }
 
-    public InstancePreferences createProperties(String id, boolean needInitProperties) {
+    public PrefProperties createProperties(String id, boolean needInitProperties) {
         String cid = normalize(id);
 
-        Preferences prefs = directoryRoot();
+        Preferences prefs = getPreferences();
         try {
             synchronized (this) {
                 prefs = prefs.node(cid);
@@ -670,8 +571,8 @@ public class CommonPreferences {
                     initProperties(prefs);
                 }
                 prefs.flush();
-                PreferencesProperties created = new InstancePreferences(cid, prefs);//factory.create(id, prefs);                
-                return (InstancePreferences) created;
+                PropertyCollection created = new PrefProperties(cid, prefs);//factory.create(id, prefs);                
+                return (PrefProperties) created;
             }
         } catch (BackingStoreException ex) {
             LOG.log(Level.INFO, null, ex);
@@ -700,9 +601,10 @@ public class CommonPreferences {
      *
      */
     public void remove() {
-        remove(directoryRoot());
+        remove(getPreferences());
     }
-
+    
+    
     protected static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
@@ -731,29 +633,19 @@ public class CommonPreferences {
             }
         }
 
-        if (!rootExtendedNamespace().isEmpty()) {
+        if (!currentNamespace().isEmpty()) {
             try {
-                if (!rootNode().nodeExists(rootExtendedNamespace())) {
+                if (!rootNode().nodeExists(currentNamespace())) {
                     return removeDoubleSlashes(result);
                 }
-                result += "/" + rootExtendedNamespace();
-            } catch (BackingStoreException ex) {
-                LOG.log(Level.INFO, null, ex);
-            }
-        }
-        if (!directoryNamespace().isEmpty()) {
-            try {
-                if (!rootExtended().nodeExists(directoryNamespace())) {
-                    return removeDoubleSlashes(result);
-                }
-                result += "/" + directoryNamespace();
+                result += "/" + currentNamespace();
             } catch (BackingStoreException ex) {
                 LOG.log(Level.INFO, null, ex);
             }
         }
         if (!propsPath.isEmpty()) {
             try {
-                if (! directoryRoot().nodeExists(propsPath)) {
+                if (! getPreferences().nodeExists(propsPath)) {
                     return removeDoubleSlashes(result);
                 }
                 result += "/" + propsPath;
@@ -784,7 +676,7 @@ public class CommonPreferences {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CommonPreferences other = (CommonPreferences) obj;
+        final DockPreferences other = (DockPreferences) obj;
         if (!Arrays.deepEquals(this.rootExtentions, other.rootExtentions)) {
             return false;
         }
