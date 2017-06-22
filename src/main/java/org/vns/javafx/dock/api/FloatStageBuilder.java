@@ -1,15 +1,21 @@
 package org.vns.javafx.dock.api;
 
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -183,8 +189,17 @@ public class FloatStageBuilder {
         this.rootPane = borderPane;
 
         DockPane dockPane = new DockPane();
-        DockSplitPane dsp = new DockSplitPane();
-        //dockPane.setRoot(dsp);
+        
+        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if ( newStage != null ) {
+                    newStage.close();
+                }
+                dockable.node().parentProperty().removeListener(this);
+            }
+        };        
+        
         //
         // Prohibit to use as a dock target
         //
@@ -222,6 +237,7 @@ public class FloatStageBuilder {
         newStage.setAlwaysOnTop(true);
 
         newStage.show();
+        dockable.node().parentProperty().addListener(pcl);
     }
 
     protected void addResizer(Stage stage, Dockable dockable) {

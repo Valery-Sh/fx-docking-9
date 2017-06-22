@@ -2,11 +2,14 @@ package org.vns.javafx.dock.api;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
+import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -60,14 +63,24 @@ public class ScenePaneController extends DockTargetController {
         }
         return retval;
     }
+    @Override
+    public ObservableList<Dockable> getDockables() {
+        ObservableList<Dockable> list = FXCollections.observableArrayList();
+        
+/*        if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
+            ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
+        }
+*/
+        return null;
+    }
 
     @Override
     public void remove(Node dockNode) {
-        if (dockNode.getParent() != null && dockNode.getParent().getParent() != null
+/*22.06.2017        if (dockNode.getParent() != null && dockNode.getParent().getParent() != null
                 && (dockNode.getParent().getParent() instanceof SplitPane)) {
             ((SplitPane) dockNode.getParent().getParent()).getItems().remove(dockNode);
-        }
-
+        } else 
+*/
         if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
             ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
         }

@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +130,23 @@ public class DockPaneController extends DockTargetController {
         return new DockPanePreferencesBuilder();
     }
 
+    @Override
+    public ObservableList<Dockable> getDockables() {
+        ObservableList<Dockable> list = FXCollections.observableArrayList();
+        getDockables((DockPane)getTargetNode(), list);
+        return list;
+    }
+    private void getDockables(DockSplitPane pane, List<Dockable> list) {
+        pane.getItems().forEach(node -> {
+            if ( DockRegistry.isDockable(node) ) {
+                list.add(DockRegistry.dockable(node));
+            } else if ( node instanceof DockSplitPane ) {
+                getDockables((DockSplitPane)node, list);
+            }
+        } );
+    }
+    
+    
     public static class DockDelegate {
 
         private DockSplitPane root;
@@ -377,127 +393,6 @@ public class DockPaneController extends DockTargetController {
 
     }//DockExcecutor
 
-    public static class DockExecutor_OLD {
-
-        private DockPaneController paneController;
-
-        public DockExecutor_OLD(DockPaneController paneController) {
-            this.paneController = paneController;
-        }
-
-        protected Dockable dock(Point2D mousePos, Node node, Side nodeDockPos, Side paneDockPos, Node target) {
-            Dockable retval = null;
-            if (paneDockPos != null) {
-                dock(mousePos, DockRegistry.dockable(node), paneDockPos);
-            } else if (nodeDockPos != null) {
-                Dockable t = target == null ? null : DockRegistry.dockable(target);
-                dock(mousePos, DockRegistry.dockable(node), nodeDockPos, t);
-            }
-            return retval;
-        }
-
-        protected void dock(Point2D mousePos, Dockable dockable) {
-            IndicatorPopup popup = paneController.getIndicatorPopup();
-            Node node = dockable.node();
-            if (!(popup instanceof DragPopup)) {
-                return;
-            }
-            DragPopup dp = (DragPopup) popup;
-            Dockable d = DockRegistry.dockable(node);
-            if (d.dockableController().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
-                //Dockable retval = null;
-                if (dp.getTargetPaneSidePos() != null) {
-                    dock(mousePos, DockRegistry.dockable(node), dp.getTargetPaneSidePos());
-                } else if (dp.getTargetNodeSidePos() != null) {
-                    Dockable t = dp.getDragTarget() == null ? null : DockRegistry.dockable(dp.getDragTarget());
-                    dock(mousePos, DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
-                }
-
-                //dock(mousePos, node, p.getTargetNodeSidePos(), p.getTargetPaneSidePos(), p.getDragTarget());
-            }
-
-        }
-
-        public void dock(Dockable dockable, Object pos) {
-            if (pos instanceof Side) {
-                dock(null, dockable, (Side) pos);
-            }
-        }
-
-        protected Dockable dock(Point2D mousePos, Dockable dockable, Side dockPos) {
-            if (paneController.isDocked(dockable.node())) {
-                return dockable;
-            }
-
-            if (doDock(mousePos, dockable.node(), dockPos)) {
-                dockable.dockableController().setFloating(false);
-            }
-            return dockable;
-        }
-
-        public Dockable dock(Dockable dockable, Side dockPos, Dockable target) {
-            return dock(null, dockable, dockPos, target);
-        }
-
-        protected Dockable dock(Point2D mousePos, Dockable dockable, Side dockPos, Dockable target) {
-            if (paneController.isDocked(dockable.node())) {
-                return dockable;
-            }
-            if (!(dockable instanceof Node) && !DockRegistry.getDockables().containsKey(dockable.node())) {
-                DockRegistry.getDockables().put(dockable.node(), dockable);
-            }
-            dockable.dockableController().setFloating(false);
-
-            doDock(mousePos, dockable.node(), dockPos, target);
-            //09.02changeDockedState(dockable, true);
-            return dockable;
-        }
-
-        protected boolean doDock(Point2D mousePos, Node node, Side dockPos) {
-            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                ((Stage) node.getScene().getWindow()).close();
-            }
-            paneController.getDockDelegate().dock(DockRegistry.dockable(node), dockPos);
-
-            if (DockRegistry.isDockable(node)) {
-                DockableController nodeController = DockRegistry.dockable(node).dockableController();
-                if (nodeController.getTargetController() == null || nodeController.getTargetController() != paneController) {
-                    nodeController.setTargetController(paneController);
-                }
-                //nodeController.setTargetController(paneController); //06.05.2017
-            }
-
-            return true;
-        }
-
-        protected boolean doDock(Point2D mousePos, Node node, Side dockPos, Dockable targetDockable) {
-            if (paneController.getDockDelegate() == null) {
-                return false;
-            }
-            if (paneController.isDocked(node)) {
-                return false;
-            }
-            if (targetDockable == null) {
-                dock(DockRegistry.dockable(node), dockPos);
-            } else {
-                if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                    ((Stage) node.getScene().getWindow()).close();
-                }
-                if (DockRegistry.isDockable(node)) {
-                    DockRegistry.dockable(node).dockableController().setFloating(false);
-                }
-                paneController.getDockDelegate().dock(node, dockPos, targetDockable);
-            }
-            if (DockRegistry.isDockable(node)) {
-                DockableController nodeController = DockRegistry.dockable(node).dockableController();
-                if (nodeController.getTargetController() == null || nodeController.getTargetController() != paneController) {
-                    nodeController.setTargetController(paneController);
-                }
-            }
-            return true;
-        }
-
-    }//DockExcecutor OLD
 
     public class DockPanePreferencesBuilder implements PreferencesBuilder {
 

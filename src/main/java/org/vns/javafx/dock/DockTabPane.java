@@ -1,15 +1,13 @@
 package org.vns.javafx.dock;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
@@ -198,6 +196,15 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         @Override
         public TabPane getTargetNode() {
             return (TabPane) super.getTargetNode();
+        }
+        public ObservableList<Dockable> getDockables() {
+            List<Dockable> list = FXCollections.observableArrayList();
+            getTargetNode().getTabs().forEach(tab -> {
+                if ( tab.getContent() != null && DockRegistry.isDockable(tab.getContent()) ) {
+                    list.add(DockRegistry.dockable(tab.getContent()));
+                }
+            });
+            return (ObservableList<Dockable>) list;
         }
 
         @Override

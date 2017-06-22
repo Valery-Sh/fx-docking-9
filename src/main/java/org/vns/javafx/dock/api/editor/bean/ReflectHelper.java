@@ -69,6 +69,16 @@ public class ReflectHelper {
         checkPackageAccess(clazz);
         return clazz.getFields();
     }
+    public static Field getDeclaredField(Class<?> clazz, String name)
+            throws NoSuchFieldException {
+        checkPackageAccess(clazz);
+        return clazz.getDeclaredField(name);
+    }
+
+    public static Field[] getDeclaredFields(Class<?> clazz) {
+        checkPackageAccess(clazz);
+        return clazz.getDeclaredFields();
+    }
 
     /**
      * Checks package access on the given class.

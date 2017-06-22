@@ -61,7 +61,8 @@ public class DockableController {
     private DragManager dragManager;
 
     private DockTargetController scenePaneController;
-
+    
+    private boolean draggable;
     /**
      * dock target pane
      */
@@ -80,11 +81,20 @@ public class DockableController {
     }
 
     private void init() {
+        draggable = true;
         dragManager = getDragManager();
         titleBar.addListener(this::titlebarChanged);
         scenePaneController = new ScenePaneController(dockable);
         targetController.set(scenePaneController);
         targetController.addListener(this::targetControllerChanged);
+    }
+
+    public boolean isDraggable() {
+        return draggable;
+    }
+
+    public void setDraggable(boolean draggable) {
+        this.draggable = draggable;
     }
 
     /**

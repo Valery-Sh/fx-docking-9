@@ -14,7 +14,7 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.api.DockLoader;
+import org.vns.javafx.dock.api.DefaultDockLoader;
 
 /**
  *
@@ -33,7 +33,7 @@ public class TestDockPaneControl extends Application {
         //DockPane dockPane1 = new DockPane();
 
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DockLoader loader = DockLoader.create(TestDockPaneControl.class);
+        DefaultDockLoader loader = new DefaultDockLoader(TestDockPaneControl.class);
         DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         dockPane1.setId("dockPane1");
         DockNode dnc1 = (DockNode) loader.register("dnc1", DockNode.class);

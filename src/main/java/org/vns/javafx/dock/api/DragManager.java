@@ -401,6 +401,12 @@ public class DragManager implements EventHandler<MouseEvent> {
             ev.consume();
             return;
         }
+        DockLoader dl = dockable.dockableController().getTargetController().getDockLoader();
+        if ( dl != null && ! dl.isRegistered(dockable.node())) {
+            ev.consume();
+            return;
+        }
+        
         if (!dockable.dockableController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             dockable.dockableController().setFloating(true);

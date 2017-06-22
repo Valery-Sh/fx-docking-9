@@ -347,6 +347,9 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         private StackPane getContents() {
             return ((StackPane) getTargetNode().rootPane.getChildren().get(1));
         }
+        public ObservableList<Dockable> getDockables() {
+            return ((DockTabPane2)getTargetNode()).getItems();
+        }
 
         @Override
         protected boolean isDocked(Node node) {
@@ -359,11 +362,6 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             getDockExecutor().dock(mousePos, dockable);
         }
 
-        //07.05 @Override
-        /*protected void dock(Dockable dockable, Object pos) {
-            getDockExecutor().dock(dockable, pos);
-        }
-         */
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             return getDockExecutor().doDock(mousePos, node);

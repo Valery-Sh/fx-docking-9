@@ -17,7 +17,6 @@ package org.vns.javafx.dock.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +57,7 @@ public class DockLoader {
 
     private boolean loaded = false;
 
-    public DockLoader(String prefEntry) {
+    protected DockLoader(String prefEntry) {
         this.prefEntry = prefEntry;
     }
 
@@ -66,27 +65,39 @@ public class DockLoader {
         prefEntry = clazz.getName().replace(".", "/");
     }
 
-    public synchronized static DockLoader create(String prefEntry) {
-        return new DockLoader(prefEntry);
-    }
-
-    public synchronized static DockLoader create(Class clazz) {
-        return create(clazz.getName().replace(".", "/"));
-    }
-
     public String getRoot() {
         return prefEntry;
     }
 
     public void layoutChanged(Node target) {
-        if (! loaded || stateChangedList.contains(target) ) {
+        if (!loaded || stateChangedList.contains(target)) {
             return;
         }
         stateChangedList.add(target);
     }
 
-    private Map<String, Node> getStore() {
+    protected Map<String, Node> getStore() {
         return store;
+    }
+
+    public void register(String entry, Node node) {
+        if (loaded) {
+            throw new IllegalStateException("Attempts to register an entry '"
+                    + entry + "' and class '" + node.getClass().getName() + "' but the method 'load' has already been invoked");
+        }
+        if (entry == null || getStore().containsKey(entry)) {
+            throw new IllegalArgumentException("Dublicate entry name: " + entry);
+        }
+
+        if (!DockRegistry.isDockPaneTarget(node) && !DockRegistry.isDockable(node)) {
+            throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + node.getClass().getName());
+        }
+
+        getStore().put(entry, node);
+        if (DockRegistry.isDockPaneTarget(node)) {
+            addListeners(node);
+        }
+
     }
 
     public Node register(String entry, Class clazz) {
@@ -115,61 +126,12 @@ public class DockLoader {
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DefaultDockLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
 
-    /*    public Dockable registerDockable(String entry, Class<? extends Dockable> clazz) {
-        Dockable retval = null;
-        if (loaded) {
-            throw new IllegalStateException("Attempts to register an entry '"
-                    + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
-        }
-        if (entry == null || getStore().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
-        }
-
-        if (entry == null || getStore().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
-        }
-
-        try {
-            retval = clazz.newInstance();
-            getStore().put(entry, DockRegistry.dockable(retval));
-        } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return retval;
-    }
-
-    public DockTarget registerDockTarget(String entry, Class<? extends DockTarget> clazz) {
-        DockTarget retval = null;
-
-        if (loaded) {
-            throw new IllegalStateException("Attempts to register an entry '"
-                    + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
-        }
-        if (entry == null || getStore().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
-        }
-
-        if (entry == null || getStore().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
-        }
-
-        try {
-            retval = clazz.newInstance();
-            getStore().put(entry, retval);
-            addListeners(DockRegistry.dockPaneTarget(node));
-        } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(DockLoader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return retval;
-    }
-     */
     protected void addListeners(Node target) {
-
         EventHandler<WindowEvent> wh = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -202,6 +164,10 @@ public class DockLoader {
 
         };
         target.sceneProperty().addListener(sl);
+        if ( target.getScene() != null && target.getScene().getWindow() != null) {
+            target.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
+        }
+        
         //scenelisteners.put(node, sl);
         //windowlisteners.put(node, wl);
 
@@ -227,8 +193,7 @@ public class DockLoader {
                 DockRegistry.dockPaneTarget(node).targetController().setDockLoader(this);
             }
         });
-        
-        
+
         Long start = System.currentTimeMillis();
 
         //
@@ -241,14 +206,14 @@ public class DockLoader {
             }
         });
         System.err.println("DEFAULT STATE " + (System.currentTimeMillis() - start));
-        
+
         List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
         getStore().values().forEach(node -> {
             if (DockRegistry.isDockPaneTarget(node)) {
                 list.add(restore(DockRegistry.dockPaneTarget(node)));
             }
         });
-        
+
         TreeItem<PreferencesItem> item = list.get(0);
 //        String s = toString(item, 0);
 //        System.err.println("================ RESTORED in LOAD ==========================");
@@ -263,13 +228,13 @@ public class DockLoader {
         Long end = System.currentTimeMillis();
         System.err.println("!!!!!!!!! TIME !!!!!! " + (end - start));
         loaded = true;
-        
+
     }
 
     private final Map<Node, ChangeListener<Scene>> scenelisteners = FXCollections.observableHashMap();
     private final Map<Node, ChangeListener<Window>> windowlisteners = FXCollections.observableHashMap();
 
-    protected boolean isRegistered(Object node) {
+    public boolean isRegistered(Node node) {
         return getEntryName(node) != null;
     }
 
@@ -298,7 +263,8 @@ public class DockLoader {
         if (!getStore().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
             return false;
         }
-        if (getStore().isEmpty() && registeredProps != null && registeredProps.keys().length > 0) {
+//        if (getStore().isEmpty() && registeredProps == null) && registeredProps.keys().length > 0) {
+        if (getStore().isEmpty() && registeredProps == null ) {
             return false;
         }
         if (getStore().size() != registeredProps.size()) {
@@ -320,7 +286,7 @@ public class DockLoader {
 
     public String getEntryName(Object obj) {
         String retval = null;
-        for (Entry<String, Node> e : getStore().entrySet()) {
+        for (Map.Entry<String, Node> e : getStore().entrySet()) {
             if (e.getValue() == obj) {
                 retval = e.getKey();
                 break;
@@ -369,8 +335,9 @@ public class DockLoader {
             TreeItem<PreferencesItem> it = root.getChildren().get(i);
             save(builder, it, entryName + "/" + String.valueOf(i));
         }
-        
-    }    
+
+    }
+
     public void save(DockTarget dockTarget) {
         PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
         TreeItem<PreferencesItem> root = builder.build(dockTarget);
@@ -403,6 +370,7 @@ public class DockLoader {
     }
 
     public String preferencesStringValue(DockTarget dockTarget) {
+        
         return preferencesStringValue("", getEntryName(dockTarget), 0);
     }
 
@@ -510,23 +478,24 @@ public class DockLoader {
     public void reset() {
         new DockPreferences(prefEntry).clearRoot();
     }
+
     public void reload() {
         reset();
         saveStore();
-        
+
         Long start = System.currentTimeMillis();
-        
+
         defaultState.forEach(treeItem -> {
-            save(DockRegistry.dockPaneTarget( (Node)treeItem.getValue().getItemObject()), treeItem );
+            save(DockRegistry.dockPaneTarget((Node) treeItem.getValue().getItemObject()), treeItem);
         });
-        
+
         List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
         getStore().values().forEach(node -> {
             if (DockRegistry.isDockPaneTarget(node)) {
                 list.add(restore(DockRegistry.dockPaneTarget(node)));
             }
         });
-        
+
         TreeItem<PreferencesItem> item = list.get(0);
 //        String s = toString(item, 0);
 //        System.err.println("================ RESTORED in LOAD ==========================");
@@ -541,7 +510,7 @@ public class DockLoader {
         Long end = System.currentTimeMillis();
         System.err.println("!!!!!!!!! RELOAD TIME !!!!!! " + (end - start));
         loaded = true;
-        
+
     }
 
     public void resetStore() {

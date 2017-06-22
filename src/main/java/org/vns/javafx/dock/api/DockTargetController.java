@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import java.util.List;
 import java.util.function.Predicate;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
@@ -186,11 +187,9 @@ public abstract class DockTargetController {
     }
 
     protected abstract PositionIndicator createPositionIndicator();
+    
+    public abstract List<Dockable> getDockables();
 
-    /*07.05    protected PositionIndicator createPositionIndicator() {
-        return new PaneSideIndicator(this);
-    }
-     */
     public Region getTargetNode() {
         return this.targetNode;
     }

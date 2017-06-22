@@ -1,5 +1,8 @@
 package org.vns.javafx.dock.api;
 
+import java.util.List;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -52,11 +55,11 @@ public class StageBuilder extends FloatStageBuilder {
         st.setMinHeight(borderPane.minHeight(dockable.node().getWidth()) + insetsHeight);
         st.setMinWidth(borderPane.minWidth(dockable.node().getHeight()) + insetsWidth);
     }
-    
+
     public Stage createStage(Dockable dockable) {
         return this.createStage(dockable, null);
     }
-    
+
     public Stage createStage(Dockable dockable, Region parentPane) {
 
         Region node = dockable.node();
@@ -81,21 +84,21 @@ public class StageBuilder extends FloatStageBuilder {
 
         setRootPane(new BorderPane());
         Region pane = parentPane;
-        if ( parentPane == null ) {
+        if (parentPane == null) {
             pane = new StackPane();
         }
-        
+
         pane.setStyle("-fx-background-color: aqua");
         //dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
         //PaneHandler ph = dockable.dockableController().getTargetController();
         //ph.dock(dockable, Side.TOP);
-        if ( pane instanceof Pane) {
-            ((Pane)pane).getChildren().add(dockable.node());
-        } else if ( pane instanceof SplitPane) {
-            ((SplitPane)pane).getItems().add(dockable.node());
+        if (pane instanceof Pane) {
+            ((Pane) pane).getChildren().add(dockable.node());
+        } else if (pane instanceof SplitPane) {
+            ((SplitPane) pane).getItems().add(dockable.node());
         }
-        //dockPane.getItems().add(dockable.node()); // we do not apply dock() 
-        //dockable.dockableController().setTargetController(pp);
+        
+
         ((BorderPane) getRootPane()).setCenter(pane);
 
         Scene scene = new Scene(getRootPane());

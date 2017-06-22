@@ -5,12 +5,16 @@
  */
 package org.vns.javafx.dock.api.demo.panes;
 
+import java.util.List;
+import javafx.collections.FXCollections;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PositionIndicator;
 
 /**
@@ -59,6 +63,18 @@ public class BorderPaneTargetController extends DockTargetController {
     public void remove(Node dockNode) {
         System.err.println("REMOVE ____________________");
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Dockable> getDockables() {
+        BorderPane bp = (BorderPane) getTargetNode();
+        List<Dockable> list = FXCollections.observableArrayList();
+        bp.getChildren().forEach(node -> {
+            if ( DockRegistry.isDockable(node)) {
+                list.add(DockRegistry.dockable(node));
+            }
+        });
+        return list;
     }
 
 }

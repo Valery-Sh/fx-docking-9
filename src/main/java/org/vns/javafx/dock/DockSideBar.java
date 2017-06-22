@@ -367,9 +367,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         }
 
         private void init() {
-            //setSidePointerModifier(this::modifyNodeSidePointer);
-            //12.05setIndicatorPopup(new IndicatorPopup(this));
-
         }
 
         @Override
@@ -399,19 +396,10 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             }
             return retval;
         }
-
-        /*07.05        @Override
-        protected void dock(Point2D mousePos, Dockable dockable) {
-            if (isDocked(dockable.node())) {
-                return;
-            }
-            if (dockable.dockableController().isFloating()) {
-                if (doDock(mousePos, dockable.node())) {
-                    dockable.dockableController().setFloating(false);
-                }
-            }
+        public ObservableList<Dockable> getDockables() {
+            return ((DockSideBar)getTargetNode()).getItems();
         }
-         */
+        
         protected void dock(Dockable dockable) {
             if (doDock(null, dockable.node())) {
                 dockable.dockableController().setFloating(false);
