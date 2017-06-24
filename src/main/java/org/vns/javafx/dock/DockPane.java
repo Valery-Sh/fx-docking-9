@@ -1,9 +1,14 @@
 package org.vns.javafx.dock;
 
+import javafx.beans.DefaultProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
+import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.control.SplitPane;
 import org.vns.javafx.dock.api.DockPaneController;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -16,63 +21,99 @@ import org.vns.javafx.dock.api.DockTarget;
  *
  * @author Valery
  */
-public class DockPane extends DockSplitPane implements DockTarget , EventHandler<ActionEvent> {
+@DefaultProperty(value = "items")
+public class DockPane extends Control implements DockTarget, EventHandler<ActionEvent> {
 
-    private ControlDockPane delegate;
-
+    private DockSplitPane root;
+    private DockPaneController targetController;
     public DockPane() {
         super();
         init();
     }
 
     private void init() {
-        getDelegate();
+        //getDelegate();
+        root = new DockSplitPane();
+        root.setRoot(this);
+        targetController = new DockPaneController(this, root);
     }
 
+    public DockSplitPane getRoot() {
+        return root;
+    }
+    public ObservableList<Node> getItems() {
+        return root.getItems();
+    }
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
-    protected ControlDockPane getDelegate() {
+/*    protected ControlDockPane getDelegate() {
         if (delegate == null) {
             delegate = new ControlDockPane(new DockPaneController(this));
             //delegate = this;
-            setRoot(this);
+            //setRoot(this);
 
         }
 
         return delegate;
     }
-
+*/
     @Override
-    public DockSplitPane target() {
+    protected Skin<?> createDefaultSkin() {
+        return new DockPane1Skin(this);
+    }
+
+    public static class DockPane1Skin extends SkinBase<DockPane> {
+
+        public DockPane1Skin(DockPane control) {
+            super(control);
+            getChildren().add(control.getRoot());
+        }
+    }
+    
+    @Override
+    public DockPane target() {
         return this;
     }
 
     @Override
     public DockTargetController targetController() {
-        return getDelegate().targetController();
+        return targetController;
     }
 
-    public void dock(Dockable dockNode, Side side) {
-        if ( ! targetController().isAcceptable(dockNode.node())) {
-            throw new UnsupportedOperationException("The node '" + dockNode + "' to be docked is not registered by the DockLoader");
+/*    private void dock(int idx, Dockable dockable, DockSplitPane splitPane) {
+        if (!getDelegate().targetController().isAcceptable(dockable.node())) {
+            throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
-        getDelegate().dock(dockNode, side);
+        getDelegate().targetController().dock(idx, dockable, splitPane);
+    }
+*/
+    public void dock(Dockable dockable, Side side) {
+        if (!targetController().isAcceptable(dockable.node())) {
+            throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
+        }
+        if (dockable.dockableController().getTargetController() != null) {
+            dockable.dockableController().getTargetController().undock(dockable.node());
+        }
+        targetController.dock(dockable, side);
     }
 
-    public void dock(Dockable dockNode, Side side, Dockable target) {
-        if ( ! targetController().isAcceptable(dockNode.node())) {
-            throw new UnsupportedOperationException("The node '" + dockNode + "' to be docked is not registered by the DockLoader");
+    public void dock(Dockable dockable, Side side, Dockable target) {
+        if (!targetController().isAcceptable(dockable.node())) {
+            throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
+        }
+        if (dockable.dockableController().getTargetController() != null) {
+            dockable.dockableController().getTargetController().undock(dockable.node());
         }
 
-        getDelegate().targetController().dock(dockNode, side, target);
+        targetController.dock(dockable, side, target);
     }
 
     protected void update(DockSplitPane dsp) {
         SplitPane sp = dsp;
-        DockTargetController ph = getDelegate().targetController();
+        DockTargetController ph = targetController;
         for (Node node : dsp.getItems()) {
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
@@ -83,7 +124,6 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
         }
     }
 
-    @Override
     protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
@@ -95,24 +135,18 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
                 }
                  */
             } else if (node instanceof DockSplitPane) {
-                ((DockSplitPane) node).setRoot(getRoot());
+                ((DockSplitPane) node).setRoot(this);
                 DockSplitPane sp = (DockSplitPane) node;
-                /*                if (i < split.getDividers().size() && sp.getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(sp.getDividerPos());
-                }
-                 */
                 update(sp, ph);
             }
         }
     }
 
-    @Override
     public void update() {
-        update(this);
-        update(this, getDelegate().targetController());
+        update(getRoot());
+        update(this.getRoot(), targetController);
     }
 
-    @Override
     protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
@@ -123,7 +157,6 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
         }
     }
 
-    @Override
     protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
             if (DockRegistry.isDockable(node)) {
@@ -134,11 +167,11 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
     }
 
     public boolean isUsedAsDockTarget() {
-        return getDelegate().targetController().isUsedAsDockTarget();
+        return targetController.isUsedAsDockTarget();
     }
 
     public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        getDelegate().targetController().setUsedAsDockTarget(usedAsDockTarget);
+        targetController.setUsedAsDockTarget(usedAsDockTarget);
     }
 
     @Override
@@ -146,34 +179,5 @@ public class DockPane extends DockSplitPane implements DockTarget , EventHandler
         update();
     }
 
-    public class ControlDockPane implements DockTarget {
-
-        private final DockPaneController paneController;
-
-        public ControlDockPane(DockPaneController paneController) {
-            this.paneController = paneController;
-            init();
-
-        }
-
-        private void init() {
-            //paneController = new DockPaneController(this);
-        }
-
-        @Override
-        public DockSplitPane target() {
-            return (DockSplitPane) paneController.getTargetNode();
-        }
-
-        @Override
-        public DockPaneController targetController() {
-            return paneController;
-        }
-
-        public void dock(Dockable node, Side dockPos) {
-            paneController.dock(node, dockPos);
-        }
-
-    }
 
 }//class

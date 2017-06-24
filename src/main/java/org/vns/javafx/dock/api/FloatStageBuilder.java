@@ -24,7 +24,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.api.demo.DockPaneOld;
 
 /**
  *
@@ -188,7 +188,7 @@ public class FloatStageBuilder {
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
 
-        DockPane dockPane = new DockPane();
+        DockPaneOld dockPane = new DockPaneOld();
         
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override

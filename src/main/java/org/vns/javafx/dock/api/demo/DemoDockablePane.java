@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -45,7 +44,7 @@ public class DemoDockablePane extends Application {
         root.getChildren().addAll(dockablePane, dockablePane1);
 
         Stage stage1 = new Stage();
-        DockPane dockPane = new DockPane();
+        DockPaneOld dockPane = new DockPaneOld();
         dockPane.setStyle("-fx-border-width: 2px; -fx-border-color: red");
         stage1.setX(100);
         stage1.setY(100);

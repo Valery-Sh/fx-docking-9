@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockTabPane2;
 
@@ -44,7 +43,7 @@ public class TestDockTabPane2 extends Application {
         rootPane.setId("ROOT PANE");
         
         stage.setTitle("Tests Several DockPanes");
-        DockPane dpCenter = new DockPane();
+        DockPaneOld dpCenter = new DockPaneOld();
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
         
@@ -60,7 +59,7 @@ public class TestDockTabPane2 extends Application {
         });
         dpCenter.getChildren().add(dn01Btn);
         
-        DockPane dpRight = new DockPane();
+        DockPaneOld dpRight = new DockPaneOld();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
@@ -89,7 +88,7 @@ public class TestDockTabPane2 extends Application {
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         
-        DockPane rootAsDockPane = new DockPane();
+        DockPaneOld rootAsDockPane = new DockPaneOld();
         //stg01dp01.targetController().setUsedAsDockTarget(false);
         rootAsDockPane.setPrefHeight(200);
         rootAsDockPane.setPrefWidth(200);

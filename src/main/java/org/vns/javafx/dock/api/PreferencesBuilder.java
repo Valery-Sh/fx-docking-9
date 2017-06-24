@@ -11,5 +11,5 @@ public interface PreferencesBuilder {
     TreeItem<PreferencesItem> build(DockTarget dockTarget);
     void restoreFrom(TreeItem<PreferencesItem> targetRoot);
     Map<String,String> getProperties(Object node);
-    void setProperties(Object node, Map<String,String> prefProps );
+    //void setProperties(Object node, Map<String,String> prefProps );
 }

@@ -8,7 +8,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
@@ -20,7 +19,7 @@ import org.vns.javafx.dock.DockNode;
 public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        DockPane dockPane = new DockPane();
+        DockPaneOld dockPane = new DockPaneOld();
         dockPane.setId("DOCK PANE");
         
         Button b1 = new Button("Add or Remove TitleBar");

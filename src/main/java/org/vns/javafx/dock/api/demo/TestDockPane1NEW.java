@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
@@ -11,22 +26,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.HPane;
-import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.HPane;
+import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.DefaultDockLoader;
-import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class TestDockPaneControl extends Application {
+public class TestDockPane1NEW extends Application {
 
     Stage stage;
     Scene scene;
@@ -43,10 +55,8 @@ public class TestDockPaneControl extends Application {
 
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DefaultDockLoader loader = new DefaultDockLoader(TestDockPaneControl.class);
-        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
-        //DockPane dockPane1 = new DockPane();
-        
-        //DockPane1 dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);        
+        //DockPane1 dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
+        DockPane dockPane1 = new DockPane();
         dockPane1.setId("dockPane1");
         //DockNode dnc1 = (DockNode) loader.register("dnc1", DockNode.class);
         //DockNode dnc2 = (DockNode) loader.register("dnc2", DockNode.class);
@@ -60,7 +70,7 @@ public class TestDockPaneControl extends Application {
         
         
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
-        ////loader.register("dnc4", dnc4);
+        loader.register("dnc4", dnc4);
         
         dnc1.setId("dnc1");
         dnc2.setId("dnc2");
@@ -69,7 +79,7 @@ public class TestDockPaneControl extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
-        dockPane1.getItems().add(vs1);
+        dockPane1.getRoot().getItems().add(vs1);
 
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
@@ -89,14 +99,10 @@ public class TestDockPaneControl extends Application {
         dockTabPane1.dock(tabDnc1);
         dockTabPane1.dock(tabDnc2);
         Tab tab = new Tab("Not dock Tab",tabButton1);
-        dockTabPane1.getTabs().add(tab);
+        //dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
-        
-        DockableController dc = DockRegistry.dockable(dnc3).dockableController();
-        DockTargetController dtc = dc.getTargetController();
-        loader.reset();
-        loader.load();
-        
+        //loader.reset();
+        //loader.load();
         //System.err.println(" TEST ===================================");
         //loader.reset();
         //loader.save(dockPane1);

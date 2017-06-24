@@ -401,8 +401,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             ev.consume();
             return;
         }
-        DockLoader dl = dockable.dockableController().getTargetController().getDockLoader();
-        if ( dl != null && ! dl.isRegistered(dockable.node())) {
+        if ( ! dockable.dockableController().isDraggable()) {
             ev.consume();
             return;
         }

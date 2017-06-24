@@ -15,7 +15,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
@@ -37,7 +36,7 @@ public class TestDockPaneSplit extends Application {
         Button btn01 = new Button("sp btn01");
         
         StackPane root = new StackPane();
-        DockPane cc = new DockPane();
+        DockPaneOld cc = new DockPaneOld();
         
         DockNode dn1 = new DockNode();
         dn1.setId("dn01");

@@ -17,7 +17,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
 
     private EventHandler<ActionEvent> root;
     private ListChangeListener itemsChangeListener;
-    
+
     public DockSplitPane() {
         init();
     }
@@ -96,17 +96,17 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.dockableController().setTargetController(ph);
-/*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
+                /*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
                     split.getDividers().get(i).setPosition(d.dockableController().getDividerPos());
                 }
-*/                
+                 */
             } else if (node instanceof DockSplitPane) {
                 ((DockSplitPane) node).setRoot(getRoot());
                 DockSplitPane sp = (DockSplitPane) node;
-/*                if (i < split.getDividers().size() && sp.getDividerPos() >= 0) {
+                /*                if (i < split.getDividers().size() && sp.getDividerPos() >= 0) {
                     split.getDividers().get(i).setPosition(sp.getDividerPos());
                 }
-*/                
+                 */
                 update(sp, ph);
             }
         }
@@ -119,6 +119,10 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     }
 
     protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
+        for (int di = 0; di < sp.getDividerPositions().length; di++) {
+            sp.setDividerPosition(di, sp.getDividerPositions()[di] + 0.01);
+        }
+
         sp.getItems().forEach((node) -> {
             if (DockRegistry.isDockable(node)) {
                 DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
@@ -137,7 +141,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         });
     }
 
-/*    public DoubleProperty dividerPosProperty() {
+    /*    public DoubleProperty dividerPosProperty() {
         return dividerPosProperty;
     }
 
@@ -148,13 +152,13 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     public void setDividerPos(double dividerPos) {
         this.dividerPosProperty.set(dividerPos);
     }
-*/
+     */
     @Override
     public ObservableList<Node> getChildren() {
         return super.getChildren();
     }
 
-/*    public void setDividerPosition(Node node, Side dockPos) {
+    /*    public void setDividerPosition(Node node, Side dockPos) {
         setDividerPosition(node, this, dockPos);
     }
 
@@ -196,6 +200,5 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             }
         }
     }
-*/
+     */
 }
-

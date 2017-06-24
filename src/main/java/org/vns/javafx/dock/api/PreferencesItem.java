@@ -18,19 +18,23 @@ package org.vns.javafx.dock.api;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
+import javafx.scene.control.TreeItem;
 
 /**
  *
  * @author Valery
  */
 public class PreferencesItem {
+    private TreeItem treeItem;
     private Object itemObject;
     private Map<String,String> properties = FXCollections.observableHashMap();
 
-    public PreferencesItem(Object itemObject) {
+    public PreferencesItem(TreeItem treItem, Object itemObject) {
         this.itemObject = itemObject;
+        this.treeItem = treItem;
+        treeItem.setExpanded(true);
     }
-
+    
     public Object getItemObject() {
         return itemObject;
     }

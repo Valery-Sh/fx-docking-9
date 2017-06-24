@@ -185,6 +185,9 @@ public abstract class DockTargetController {
         }
         return positionIndicator;
     }
+    public PositionIndicator getNodeIndicator() {
+        return null;
+    }
 
     protected abstract PositionIndicator createPositionIndicator();
     

@@ -238,7 +238,7 @@ public abstract class SideIndicator extends PositionIndicator {
         dockPlace.toFront();
     }
 
-    protected static class NodeSideIndicator extends SideIndicator {
+    public static class NodeSideIndicator extends SideIndicator {
 
         private DockableController nodeController;
         private final Scale smallbuttonsScale;
@@ -414,7 +414,7 @@ public abstract class SideIndicator extends PositionIndicator {
         }
     }//class NodeSideIndicator
 
-    protected static class PaneSideIndicator extends SideIndicator {
+    public static class PaneSideIndicator extends SideIndicator {
 
         public PaneSideIndicator(DockTargetController paneController) {
             super(paneController);

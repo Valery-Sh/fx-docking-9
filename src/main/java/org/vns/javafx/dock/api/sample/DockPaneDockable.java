@@ -7,7 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.vns.javafx.dock.api.DockPaneController;
+import org.vns.javafx.dock.api.demo.DockPaneControllerOld;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.DockTarget;
@@ -18,7 +18,7 @@ import org.vns.javafx.dock.api.DockTarget;
  */
 public class DockPaneDockable extends VBox implements DockTarget{
 
-    private DockPaneController paneHandler;
+    private DockPaneControllerOld paneHandler;
     private HBox headerPane;
     private StackPane dockRootPane;
 
@@ -34,7 +34,7 @@ public class DockPaneDockable extends VBox implements DockTarget{
         dockRootPane.setStyle("-fx-border-width: 2; -fx-border-color: red");
         getChildren().addAll(headerPane, dockRootPane);
         this.autosize();
-        paneHandler = new DockPaneController(this.dockRootPane);
+        paneHandler = new DockPaneControllerOld(this.dockRootPane);
         Platform.runLater(() -> dockRootPane.prefHeightProperty().bind(heightProperty()));
     }
 
