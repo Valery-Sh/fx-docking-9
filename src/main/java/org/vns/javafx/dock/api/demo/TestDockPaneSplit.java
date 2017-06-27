@@ -20,6 +20,7 @@ import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -36,7 +37,7 @@ public class TestDockPaneSplit extends Application {
         Button btn01 = new Button("sp btn01");
         
         StackPane root = new StackPane();
-        DockPaneOld cc = new DockPaneOld();
+        DockPane cc = new DockPane();
         
         DockNode dn1 = new DockNode();
         dn1.setId("dn01");
@@ -158,7 +159,6 @@ public class TestDockPaneSplit extends Application {
         });
         b4.setOnAction(a -> {
         });
-        
         //cc.setRoot(vs1);
         //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
         

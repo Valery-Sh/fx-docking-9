@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,6 +32,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import javafx.util.Pair;
+import org.vns.javafx.dock.api.util.prefs.DockPreferences;
+import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 //import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 //import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 
@@ -39,12 +43,13 @@ import javafx.stage.WindowEvent;
  * @author Valery
  */
 public abstract class AbstractDockLoader {
+
     public static final String PERSIST_KEY = "docloader-stotere-node-key";
 
-    public static final String STORE_ENTRY_NAME = "store-entry-name";
+    public static final String FIELD_NAME = "-ld:fieldName";
     public static final String NOT_REGISTERED = "not.registered";
 
-    public static final String STORE_ENTRY_CLASS = "store-entry-class";
+    public static final String CLASS_NAME = "-ld:className";
     public static final String INFO = "info";
     public static final String NODE = "node";
     public static final String PROPERTIES = "properties";
@@ -54,7 +59,7 @@ public abstract class AbstractDockLoader {
 
     private final static Map<String, Node> store = FXCollections.observableHashMap();
     private final static List<Node> stateChangedList = FXCollections.observableArrayList();
-    private final static List<TreeItem<PreferencesItem>> defaultState = FXCollections.observableArrayList();
+    private final static List<TreeItem<Pair<ObjectProperty, Properties>>> defaultState = FXCollections.observableArrayList();
 
     private String prefEntry;
 
@@ -67,6 +72,18 @@ public abstract class AbstractDockLoader {
     protected AbstractDockLoader(Class clazz) {
         prefEntry = clazz.getName().replace(".", "/");
     }
+    
+    protected abstract void save(DockTarget dockTarget, TreeItem<Pair<ObjectProperty,Properties>> root);
+    public abstract void resetStore(); 
+    public abstract void reset(); 
+    protected abstract void saveStore();
+    //protected abstract boolean isDestroyed(); 
+    public abstract void save(DockTarget dockTarget); 
+    protected abstract TreeItem<Pair<ObjectProperty,Properties>> restore(DockTarget dockTarget); 
+
+    public String getPrefEntry() {
+        return prefEntry;
+    }
 
     public String getRoot() {
         return prefEntry;
@@ -75,8 +92,10 @@ public abstract class AbstractDockLoader {
     public boolean isLoaded() {
         return loaded;
     }
-    
-    
+
+    protected void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
 
     public void layoutChanged(Node target) {
         if (!loaded || stateChangedList.contains(target)) {
@@ -162,7 +181,7 @@ public abstract class AbstractDockLoader {
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(DefaultDockLoader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AbstractDockLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
@@ -206,7 +225,7 @@ public abstract class AbstractDockLoader {
             }
 
         };
-        
+
         target.sceneProperty().addListener(sl);
         System.err.println("sceneProperty().addListener target=" + target);
         if (target.getScene() != null && target.getScene().getWindow() != null) {
@@ -222,14 +241,14 @@ public abstract class AbstractDockLoader {
         if (loaded) {
             return;
         }
-        
+
         Long start = System.currentTimeMillis();
-/*        DockPreferences cp = new DockPreferences(prefEntry);
-        if ( cp.getProperties(PROPERTIES) == null ) {
+        DockPreferences cp = new DockPreferences(prefEntry);
+        if (cp.getProperties(PROPERTIES) == null) {
             cp.createProperties(PROPERTIES).setProperty("description", "application");
-            
+
         }
-*/        
+
         List<Node> nodeList = new ArrayList<>();
         nodeList.addAll(getStore().values());
         nodeList.forEach(node -> {
@@ -240,28 +259,27 @@ public abstract class AbstractDockLoader {
         //
         // Go through all registered DockTarget and set there this instance 
         //
-/*        getStore().values().forEach(node -> {
+        getStore().values().forEach(node -> {
             if (DockRegistry.isDockPaneTarget(node)) {
                 DockRegistry.dockPaneTarget(node).targetController().setDockLoader(this);
             }
         });
-*/        
+
         //
         // Save default state
         //
         defaultState.clear();
-        
+
         try {
             getStore().values().forEach(node -> {
                 if (DockRegistry.isDockPaneTarget(node)) {
                     DockTarget t = DockRegistry.dockPaneTarget(node);
-                    defaultState.add(t.targetController().getPreferencesBuilder().build(t));
+                    defaultState.add(t.targetController().getPreferencesBuilder().build());
                 }
             });
         } catch (Exception ex) {
             defaultState.clear();
         }
-        
 
         //
         // Check weather the registry store changed and if so reset and reload
@@ -271,7 +289,7 @@ public abstract class AbstractDockLoader {
             save();
         }
 
-        List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
+        List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
         getStore().values().forEach(node -> {
             if (DockRegistry.isDockPaneTarget(node)) {
                 list.add(restore(DockRegistry.dockPaneTarget(node)));
@@ -286,8 +304,8 @@ public abstract class AbstractDockLoader {
 //        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
 //        System.err.println(s);
         list.forEach(it -> {
-            DockTarget dt = DockRegistry.dockPaneTarget((Node) it.getValue().getItemObject());
-            dt.targetController().getPreferencesBuilder().restoreFrom(it);
+            DockTarget dt = DockRegistry.dockPaneTarget((Node) it.getValue().getKey().get());
+            dt.targetController().getPreferencesBuilder().restore(it);
         });
         Long end = System.currentTimeMillis();
         System.err.println("!!!!!!!!! TIME !!!!!! " + (end - start));
@@ -295,65 +313,41 @@ public abstract class AbstractDockLoader {
 
     }
 
-    public boolean isRegistered(Node node) {
-        return getEntryName(node) != null;
-    }
+    public void reload() {
+        reset();
+        saveStore();
 
+        Long start = System.currentTimeMillis();
 
-    protected abstract void saveStore();
-    /*{
-        DockPreferences cp = new DockPreferences(prefEntry);
-        DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
+        defaultState.forEach(treeItem -> {
+            save(DockRegistry.dockPaneTarget((Node) treeItem.getValue().getKey().get()), treeItem);
+        });
 
-        PrefProperties registeredProps = registered.getProperties(PROPERTIES);
-
-        if (registeredProps == null || registeredProps.keys().length == 0) {
-            PrefProperties ip = registered.createProperties(PROPERTIES);
-            getStore().forEach((k, v) -> {
-                ip.setProperty(k, v.getClass().getName());
-            });
-            registered.next("NULL");
-        }
-    }
-*/
-    protected abstract boolean isDestroyed(); /* {
-        boolean retval = false;
-        DockPreferences cp = new DockPreferences(prefEntry);
-        DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
-
-        PrefProperties registeredProps = registered.getProperties(PROPERTIES);
-        if (!getStore().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
-            return true;
-        }
-
-        Map<String, String> props = registeredProps.toMap();
-        for (String key : props.keySet()) {
-            if (!getStore().containsKey(key)) {
-                return true;
+        List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
+        getStore().values().forEach(node -> {
+            if (DockRegistry.isDockPaneTarget(node)) {
+                list.add(restore(DockRegistry.dockPaneTarget(node)));
             }
-            String class1 = props.get(key);
-            String class2 = getStore().get(key).getClass().getName();
-            if (!class2.equals(class1)) {
-                return true;
-            }
-        }//for
-        
-        return retval;
-    }
-*/
-    public String getEntryName(Object obj) {
-        String retval = null;
-        for (Map.Entry<String, Node> e : getStore().entrySet()) {
-            if (e.getValue() == obj) {
-                retval = e.getKey();
-                break;
-            }
-        }
+        });
 
-        return retval;
+        TreeItem<Pair<ObjectProperty, Properties>> item = list.get(0);
+//        String s = toString(item, 0);
+//        System.err.println("================ RESTORED in LOAD ==========================");
+//        System.err.println(s);
+//        System.err.println("================= END RESTORED in LOAD=========================");
+//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
+//        System.err.println(s);
+        list.forEach(it -> {
+            DockTarget dt = DockRegistry.dockPaneTarget((Node) item.getValue().getKey().get());
+            dt.targetController().getPreferencesBuilder().restore(it);
+        });
+        Long end = System.currentTimeMillis();
+        System.err.println("!!!!!!!!! RELOAD TIME !!!!!! " + (end - start));
+        setLoaded(true);
+
     }
 
-    public abstract void save(); /* {
+    public void save() {
         Long start = System.currentTimeMillis();
 
         DockPreferences cp = new DockPreferences(prefEntry);
@@ -369,227 +363,24 @@ public abstract class AbstractDockLoader {
         System.err.println("!!!!!!!!! ON SAVE TIME !!!!!! " + (end - start));
 
     }
-*/
-/*    protected void save(DockTarget dockTarget, TreeItem<PreferencesItem> root) {
-        PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
-        DockPreferences cp = new DockPreferences(prefEntry);
 
-        PreferencesItem pit = root.getValue();
-        String entryName = getEntryName(pit.getItemObject());
-        cp.next(entryName).removelChildren();
-        //PrefProperties ip1 = cp.next(entryName).next(PROPERTIES).getProperties(INFO);
-        DockPreferences cpProps = cp.next(entryName).next(PROPERTIES);
-        PrefProperties ip = cpProps.createProperties(INFO);
-        ip.setProperty(STORE_ENTRY_NAME, entryName);
-        ip.setProperty(STORE_ENTRY_CLASS, pit.getItemObject().getClass().getName());
-        final Map<String, String> nodeProps = builder.getProperties(pit.getItemObject());
-        if (nodeProps != null && !nodeProps.isEmpty()) {
-            PrefProperties nodeIp = cpProps.createProperties(NODE);
-            nodeProps.keySet().forEach(k -> {
-                nodeIp.setProperty(k, nodeProps.get(k));
-            });
-        }
-        for (int i = 0; i < root.getChildren().size(); i++) {
-            TreeItem<PreferencesItem> it = root.getChildren().get(i);
-            save(builder, it, entryName + "/" + String.valueOf(i));
-        }
-
-    }
-*/
-    public abstract void save(DockTarget dockTarget); /* {
-        PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
-        TreeItem<PreferencesItem> root = builder.build(dockTarget);
-        DockPreferences cp = new DockPreferences(prefEntry).next(getEntryName(dockTarget));
-        cp.removelChildren();
-        String ename = getEntryName(dockTarget);
-        long t1 = System.currentTimeMillis();
-        save(dockTarget, root);
-        long t2 = System.currentTimeMillis();
-        System.err.println("Entry " + ename + "; time=" + (t2-t1));
-    }
-*/
-/*    protected void save(PreferencesBuilder builder, TreeItem<PreferencesItem> item, String namespace) {
-        DockPreferences cp = new DockPreferences(prefEntry).next(namespace);
-        DockPreferences cpProps = cp.next(PROPERTIES);
-        PreferencesItem pit = item.getValue();
-        String entryName = getEntryName(pit.getItemObject());
-        PrefProperties ip = cpProps.createProperties(INFO);
-        if (entryName == null) {
-            ip.setProperty(STORE_ENTRY_NAME, NOT_REGISTERED);
-        } else {
-            ip.setProperty(STORE_ENTRY_NAME, entryName);
-        }
-        ip.setProperty(STORE_ENTRY_CLASS, pit.getItemObject().getClass().getName());
-        final Map<String, String> nodeProps = builder.getProperties(pit.getItemObject());
-        if (nodeProps != null && !nodeProps.isEmpty()) {
-            PrefProperties nodeIp = cpProps.createProperties(NODE);
-            nodeProps.keySet().forEach(k -> {
-                nodeIp.setProperty(k, nodeProps.get(k));
-            });
-        }
-        for (int i = 0; i < item.getChildren().size(); i++) {
-            TreeItem<PreferencesItem> it = item.getChildren().get(i);
-            save(builder, it, namespace + "/" + String.valueOf(i));
-        }
-    }
-*/
-/*    public String preferencesStringValue(DockTarget dockTarget) {
-
-        return preferencesStringValue("", getEntryName(dockTarget), 0);
+    public boolean isRegistered(Node node) {
+        return getEntryName(node) != null;
     }
 
-    protected String preferencesStringValue(String namespace, String entryName, int offset) {
-        String sep = System.lineSeparator();
-        StringBuilder sb = new StringBuilder();
-
-        DockPreferences cp = new DockPreferences(prefEntry);
-        if (cp.childrenNames().length == 0) {
-            return "root '" + prefEntry + "' is empty";
-        }
-        DockPreferences cpEntry = cp.next(namespace).next(entryName);
-        PrefProperties ip = cpEntry.next(PROPERTIES).getProperties(INFO);
-
-        sb.append(sep)
-                .append(spaces(offset))
-                .append(entryName);
-
-        sb.append(sep)
-                .append(spaces((offset = offset + 2)))
-                .append(PROPERTIES);
-        int propOffset = offset;
-        sb.append(sep)
-                .append(spaces((offset = offset + 2)))
-                .append(INFO);
-
-        Properties props = ip.toProperties();
-        String spaces = spaces(offset + 2);
-        props.forEach((k, v) -> {
-            sb.append(sep)
-                    .append(spaces)
-                    .append("key=" + k + ", val=" + v);
-        });
-
-        ip = cpEntry.next(PROPERTIES).getProperties(NODE);
-
-        sb.append(sep)
-                .append(spaces(offset))
-                .append(NODE);
-        if (ip != null) {
-            props = ip.toProperties();
-            String spaces1 = spaces(offset + 2);
-            props.forEach((k, v) -> {
-                sb.append(sep)
-                        .append(spaces1)
-                        .append("key=" + k + ", val=" + v);
-            });
-        }
-        ////////////
-        String[] childs = cpEntry.childrenNames();
-
-        for (int i = 0; i < childs.length; i++) {
-            if (PROPERTIES.equals(childs[i])) {
-                continue;
+    public String getEntryName(Object obj) {
+        String retval = null;
+        for (Map.Entry<String, Node> e : getStore().entrySet()) {
+            if (e.getValue() == obj) {
+                retval = e.getKey();
+                break;
             }
-            sb.append(sep)
-                    .append(spaces(propOffset))
-                    .append(preferencesStringValue(cpEntry.currentNamespace(), childs[i], propOffset));
-        }
-        return sb.toString();
-    }
-*/
-    protected abstract TreeItem<PreferencesItem> restore(DockTarget dockTarget); /* {
-        return restore("", getEntryName(dockTarget.target()));
-    }
-*/
-/*    protected TreeItem<PreferencesItem> restore(String namespace, String entryName) {
-        //PreferencesItem pit = new PreferencesItem();
-        TreeItem<PreferencesItem> treeItem = new TreeItem<>();
-        PreferencesItem pit;
-        DockPreferences cp = new DockPreferences(prefEntry);
-        PrefProperties infoPrefs = cp.next(namespace).next(entryName).next(PROPERTIES).getProperties(INFO);
-        
-        String storeEntry = infoPrefs.getProperty(STORE_ENTRY_NAME);
-        //
-        // We store intto PreferencesItem an actual object if registered or a 
-        // class name of the unregistered object
-        //
-        if (storeEntry == null || NOT_REGISTERED.equals(storeEntry)) {
-            pit = new PreferencesItem(treeItem,infoPrefs.getProperty(STORE_ENTRY_CLASS));
-        } else {
-            pit = new PreferencesItem(treeItem,getStore().get(storeEntry));
-        }
-        treeItem.setValue(pit);
-        //
-        // Copy to PreferencesItem  node properties if exist 
-        //
-        PrefProperties ip = cp.next(namespace).next(entryName).next(PROPERTIES).getProperties(NODE);
-        if (ip != null) {
-            pit.getProperties().putAll(ip.toMap());
         }
 
-        DockPreferences entryRoot = cp.next(namespace).next(entryName);
-
-        String[] childs = entryRoot.childrenNames();
-
-        for (int i = 0; i < childs.length; i++) {
-            if (PROPERTIES.equals(childs[i])) {
-                continue;
-            }
-            treeItem.getChildren().add(restore(entryRoot.currentNamespace(), childs[i]));
-        }
-        return treeItem;
+        return retval;
     }
-*/    
-/*    public void reset(DockPreferences cp) {
-        //cp.getProperties(INFO).
-        cp.removelChildren( name -> {return ! "properties".equals(name);});
-    }
-*/
-    public abstract void reset();/* {
-        //DockPreferences cp = new DockPreferences(prefEntry);
-        //reset(cp);
-        new DockPreferences(prefEntry).clearRoot();
-    }
-*/
-/*    public void reload() {
-        reset();
-        saveStore();
 
-        Long start = System.currentTimeMillis();
-
-        defaultState.forEach(treeItem -> {
-            save(DockRegistry.dockPaneTarget((Node) treeItem.getValue().getItemObject()), treeItem);
-        });
-
-        List<TreeItem<PreferencesItem>> list = FXCollections.observableArrayList();
-        getStore().values().forEach(node -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
-                list.add(restore(DockRegistry.dockPaneTarget(node)));
-            }
-        });
-
-        TreeItem<PreferencesItem> item = list.get(0);
-//        String s = toString(item, 0);
-//        System.err.println("================ RESTORED in LOAD ==========================");
-//        System.err.println(s);
-//        System.err.println("================= END RESTORED in LOAD=========================");
-//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
-//        System.err.println(s);
-        list.forEach(it -> {
-            DockTarget dt = DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject());
-            dt.targetController().getPreferencesBuilder().restoreFrom(it);
-        });
-        Long end = System.currentTimeMillis();
-        System.err.println("!!!!!!!!! RELOAD TIME !!!!!! " + (end - start));
-        loaded = true;
-
-    }
-*/
-    public abstract void resetStore(); /* {
-        new DockPreferences(prefEntry).next(REGISTRY_STORE_ENTRIES).clearRoot();
-    }
-*/
-    public String toString(DockTarget dockTarget) {
+/*    public String toString(DockTarget dockTarget) {
         StringBuilder sb = new StringBuilder(200);
         TreeItem<PreferencesItem> ti = dockTarget.targetController().getPreferencesBuilder().build(dockTarget);
         sb.append("---------------------------------------------------").append(System.lineSeparator())
@@ -619,7 +410,7 @@ public abstract class AbstractDockLoader {
         }
         return sb.toString();
     }
-
+*/
     private String spaces(int count) {
         StringBuilder sb = new StringBuilder(count);
         for (int i = 0; i < count; i++) {
@@ -627,4 +418,30 @@ public abstract class AbstractDockLoader {
         }
         return sb.toString();
     }
+
+    protected boolean isDestroyed() {
+        boolean retval = false;
+        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
+
+        PrefProperties registeredProps = registered.getProperties(PROPERTIES);
+        if (!getStore().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
+            return true;
+        }
+
+        Map<String, String> props = registeredProps.toMap();
+        for (String key : props.keySet()) {
+            if (!getStore().containsKey(key)) {
+                return true;
+            }
+            String class1 = props.get(key);
+            String class2 = getStore().get(key).getClass().getName();
+            if (!class2.equals(class1)) {
+                return true;
+            }
+        }//for
+
+        return retval;
+    }
+
 }

@@ -1,15 +1,17 @@
 package org.vns.javafx.dock.api;
 
 import java.util.Map;
+import java.util.Properties;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.TreeItem;
+import javafx.util.Pair;
 
 /**
  *
  * @author Valery
  */
 public interface PreferencesBuilder {
-    TreeItem<PreferencesItem> build(DockTarget dockTarget);
-    void restoreFrom(TreeItem<PreferencesItem> targetRoot);
+    TreeItem<Pair<ObjectProperty, Properties>> build();
+    void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot);
     Map<String,String> getProperties(Object node);
-    //void setProperties(Object node, Map<String,String> prefProps );
 }

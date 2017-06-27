@@ -3,10 +3,12 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -29,6 +31,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import org.vns.javafx.dock.api.PositionIndicator;
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -778,7 +781,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             this.targetController = targetController;
         }
 
-        @Override
         public TreeItem<PreferencesItem> build(DockTarget dockTarget) {
             TreeItem<PreferencesItem> retval = new TreeItem<>();
             DockTabPane pane = (DockTabPane) dockTarget;
@@ -820,7 +822,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return retval;
         }
 
-        @Override
         public void restoreFrom(TreeItem<PreferencesItem> targetRoot) {
             PreferencesItem pit = targetRoot.getValue();
             if (!(pit.getItemObject() instanceof DockTabPane)) {
@@ -877,5 +878,14 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return props;
         }
 
+        @Override
+        public TreeItem<Pair<ObjectProperty, Properties>> build() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 }//DockTabPane

@@ -19,6 +19,7 @@ import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 
 /**
  *
@@ -43,7 +44,7 @@ public class TestFxDockTabPane  extends Application {
         rootPane.setId("ROOT PANE");
         
         stage.setTitle("Primary Tests Several DockPanes");
-        DockPaneOld dpCenter = new DockPaneOld();
+        DockPane dpCenter = new DockPane();
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
         
@@ -55,9 +56,9 @@ public class TestFxDockTabPane  extends Application {
         dn01Btn.setOnAction((event) -> {
             DockUtil.print(dn01Btn.getScene().getRoot());
         });
-        dpCenter.getChildren().add(dn01Btn);
+        dpCenter.getItems().add(dn01Btn);
         
-        DockPaneOld dpRight = new DockPaneOld();
+        DockPane dpRight = new DockPane();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
@@ -68,7 +69,7 @@ public class TestFxDockTabPane  extends Application {
             DockUtil.print(dn02Btn.getScene().getRoot());
         });
         
-        dpRight.getChildren().add(dn02Btn);
+        dpRight.getItems().add(dn02Btn);
         
         SplitPane sp = new SplitPane(dpCenter,dpRight);
         rootPane.getChildren().add(sp);
@@ -85,7 +86,7 @@ public class TestFxDockTabPane  extends Application {
         rootPane01.setId("ROOT PANE 01");
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
-        DockPaneOld stg01dp01 = new DockPaneOld();
+        DockPane stg01dp01 = new DockPane();
         //stg01dp01.targetController().setUsedAsDockTarget(false);
         stg01dp01.setPrefHeight(200);
         stg01dp01.setPrefWidth(200);

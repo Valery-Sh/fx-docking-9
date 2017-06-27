@@ -26,6 +26,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
     private DockSplitPane root;
     private DockPaneController targetController;
+    
     public DockPane() {
         super();
         init();
@@ -35,10 +36,11 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         //getDelegate();
         root = new DockSplitPane();
         root.setRoot(this);
+        root.setId("rootSplitPane");
         targetController = new DockPaneController(this, root);
     }
 
-    public DockSplitPane getRoot() {
+    protected DockSplitPane getRoot() {
         return root;
     }
     public ObservableList<Node> getItems() {
@@ -62,12 +64,12 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 */
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new DockPane1Skin(this);
+        return new DockPaneSkin(this);
     }
 
-    public static class DockPane1Skin extends SkinBase<DockPane> {
+    public static class DockPaneSkin extends SkinBase<DockPane> {
 
-        public DockPane1Skin(DockPane control) {
+        public DockPaneSkin(DockPane control) {
             super(control);
             getChildren().add(control.getRoot());
         }

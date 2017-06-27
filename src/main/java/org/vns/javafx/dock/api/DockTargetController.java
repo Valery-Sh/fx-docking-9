@@ -23,7 +23,7 @@ public abstract class DockTargetController {
     private PositionIndicator positionIndicator;
     
     private Predicate<Node> acceptableNode;
-    private DockLoader dockLoader;
+    private AbstractDockLoader dockLoader;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -130,11 +130,11 @@ public abstract class DockTargetController {
     }
     
 
-    public DockLoader getDockLoader() {
+    public AbstractDockLoader getDockLoader() {
         return dockLoader;
     }
     
-    public void setDockLoader(DockLoader loader) {
+    public void setDockLoader(AbstractDockLoader loader) {
         this.dockLoader = loader;
     }
     

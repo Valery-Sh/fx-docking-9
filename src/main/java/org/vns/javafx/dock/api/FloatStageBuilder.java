@@ -1,14 +1,11 @@
 package org.vns.javafx.dock.api;
 
-import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,8 +21,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.demo.DockPaneOld;
-
+import org.vns.javafx.dock.DockPane;
 /**
  *
  * @author Valery
@@ -188,7 +184,7 @@ public class FloatStageBuilder {
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
 
-        DockPaneOld dockPane = new DockPaneOld();
+        DockPane dockPane = new DockPane();
         
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override

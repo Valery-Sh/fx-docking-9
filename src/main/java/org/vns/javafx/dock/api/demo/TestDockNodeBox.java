@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.DockNodeBox;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -25,7 +26,7 @@ import org.vns.javafx.dock.api.Dockable;
 public class TestDockNodeBox extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        DockPaneOld dockPane = new DockPaneOld();
+        DockPane dockPane = new DockPane();
         dockPane.setId("DOCK PANE");
         Button b1 = new Button("b01");
         Pane p1 = new HBox(b1);

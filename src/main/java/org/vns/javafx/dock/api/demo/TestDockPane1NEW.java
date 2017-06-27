@@ -31,8 +31,8 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.DefaultDockLoader;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DockLoader;
 
 /**
  *
@@ -54,7 +54,7 @@ public class TestDockPane1NEW extends Application {
         //DockPane dockPane1 = new DockPane();
 
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DefaultDockLoader loader = new DefaultDockLoader(TestDockPaneControl.class);
+        DockLoader loader = new DockLoader(TestDockPaneControl.class);
         //DockPane1 dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         DockPane dockPane1 = new DockPane();
         dockPane1.setId("dockPane1");
@@ -79,7 +79,7 @@ public class TestDockPane1NEW extends Application {
 
         VPane vs1 = new VPane();
         vs1.setId("vs1");
-        dockPane1.getRoot().getItems().add(vs1);
+        dockPane1.getItems().add(vs1);
 
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
@@ -129,7 +129,7 @@ public class TestDockPane1NEW extends Application {
             //loader.save(dockPane1);
             //loader.save(dockPane1);
             loader.reload();
-            System.err.println(loader.toString(dockPane1));
+            //System.err.println(loader.toString(dockPane1));
         });
         b2.setOnAction(a -> {
             System.err.println("(b2)hs1.sz=" + hs1.getItems().size());
