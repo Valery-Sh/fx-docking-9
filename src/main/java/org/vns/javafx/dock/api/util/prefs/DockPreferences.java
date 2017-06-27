@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api.util.prefs;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.AbstractPreferences;
@@ -293,6 +294,26 @@ public class DockPreferences {
     }
     public boolean removelChildren() {
         return clear();
+    }
+    public boolean removelChildren(Predicate<String> p) {
+        boolean result = false;
+
+        synchronized (this) {
+            try {
+                String[] childs = getPreferences().childrenNames();
+                for (String c : childs) {
+                    if ( p.test(c) ) {
+                        getPreferences().node(c).removeNode();
+                    }
+                }
+                result = true;
+            } catch (BackingStoreException ex) {
+                LOG.log(Level.INFO, null, ex);
+
+            }
+            return result;
+        }
+
     }
 
     public boolean clear() {

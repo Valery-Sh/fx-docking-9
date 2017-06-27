@@ -25,9 +25,9 @@ import javafx.scene.control.TreeItem;
  * @author Valery
  */
 public class PreferencesItem {
-    private TreeItem treeItem;
+    private final TreeItem treeItem;
     private Object itemObject;
-    private Map<String,String> properties = FXCollections.observableHashMap();
+    private final Map<String,String> properties = FXCollections.observableHashMap();
 
     public PreferencesItem(TreeItem treItem, Object itemObject) {
         this.itemObject = itemObject;

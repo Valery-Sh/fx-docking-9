@@ -143,7 +143,6 @@ public class DockUtil {
                     b = false;
                 } else {
                     b = pd.isUsedAsDockTarget() && st.isUsedAsDockTarget();
-                    System.err.println("findDockable st.isUsedAsDockTarget() " + st.isUsedAsDockTarget());
                 }
 
             }

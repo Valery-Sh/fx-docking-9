@@ -7,9 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
-import org.vns.javafx.dock.api.demo.DockPaneOld;
 
 /**
  *

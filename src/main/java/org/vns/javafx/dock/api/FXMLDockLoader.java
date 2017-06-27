@@ -76,7 +76,6 @@ public class FXMLDockLoader extends DockLoader {
             if (field.getAnnotation(FXML.class) != null) {
 
                 try {
-                    System.err.println("field = " + field);
                     field.setAccessible(true);
                     if (field.getAnnotation(FXML.class) == null) {
                         continue;
@@ -85,10 +84,10 @@ public class FXMLDockLoader extends DockLoader {
                         continue;
                     }
                     
-                    System.err.println("   ---  value = " + field.get(controller));
+/*                    System.err.println("   ---  value = " + field.get(controller));
                     System.err.println("   ---  name = " + field.getName());
                     System.err.println("   ---  class = " + field.getType());
-
+*/
                     if (field.get(controller) instanceof Node) {
                         register(field.getName(), (Node) field.get(controller));
                     }

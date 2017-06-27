@@ -241,11 +241,6 @@ public class DragManager implements EventHandler<MouseEvent> {
         } else if (!DockRegistry.isDockPaneTarget(root)) {
             return;
         }
-        System.err.println("dockable.node() = " + dockable.node());
-        
-        System.err.println("root = " + root);        
-        
-        System.err.println("isAcceptable = " + DockRegistry.dockPaneTarget(root).targetController().isAcceptable(dockable.node()));
         if ( ! DockRegistry.dockPaneTarget(root).targetController().isAcceptable(dockable.node()) ) {
             return; 
         }

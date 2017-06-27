@@ -31,15 +31,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import org.vns.javafx.dock.api.util.prefs.DockPreferences;
-import org.vns.javafx.dock.api.util.prefs.PrefProperties;
+//import org.vns.javafx.dock.api.util.prefs.DockPreferences;
+//import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 
 /**
  *
  * @author Valery
  */
-public class DockLoader {
-
+public abstract class AbstractDockLoader {
     public static final String PERSIST_KEY = "docloader-stotere-node-key";
 
     public static final String STORE_ENTRY_NAME = "store-entry-name";
@@ -61,11 +60,11 @@ public class DockLoader {
 
     private boolean loaded = false;
 
-    protected DockLoader(String prefEntry) {
+    protected AbstractDockLoader(String prefEntry) {
         this.prefEntry = prefEntry;
     }
 
-    public DockLoader(Class clazz) {
+    protected AbstractDockLoader(Class clazz) {
         prefEntry = clazz.getName().replace(".", "/");
     }
 
@@ -225,11 +224,12 @@ public class DockLoader {
         }
         
         Long start = System.currentTimeMillis();
-        DockPreferences cp = new DockPreferences(prefEntry);
+/*        DockPreferences cp = new DockPreferences(prefEntry);
         if ( cp.getProperties(PROPERTIES) == null ) {
             cp.createProperties(PROPERTIES).setProperty("description", "application");
             
         }
+*/        
         List<Node> nodeList = new ArrayList<>();
         nodeList.addAll(getStore().values());
         nodeList.forEach(node -> {
@@ -240,11 +240,12 @@ public class DockLoader {
         //
         // Go through all registered DockTarget and set there this instance 
         //
-        getStore().values().forEach(node -> {
+/*        getStore().values().forEach(node -> {
             if (DockRegistry.isDockPaneTarget(node)) {
                 DockRegistry.dockPaneTarget(node).targetController().setDockLoader(this);
             }
         });
+*/        
         //
         // Save default state
         //
@@ -298,7 +299,9 @@ public class DockLoader {
         return getEntryName(node) != null;
     }
 
-    protected void saveStore() {
+
+    protected abstract void saveStore();
+    /*{
         DockPreferences cp = new DockPreferences(prefEntry);
         DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
 
@@ -312,8 +315,8 @@ public class DockLoader {
             registered.next("NULL");
         }
     }
-
-    protected boolean isDestroyed() {
+*/
+    protected abstract boolean isDestroyed(); /* {
         boolean retval = false;
         DockPreferences cp = new DockPreferences(prefEntry);
         DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
@@ -337,7 +340,7 @@ public class DockLoader {
         
         return retval;
     }
-
+*/
     public String getEntryName(Object obj) {
         String retval = null;
         for (Map.Entry<String, Node> e : getStore().entrySet()) {
@@ -346,10 +349,11 @@ public class DockLoader {
                 break;
             }
         }
+
         return retval;
     }
 
-    public void save() {
+    public abstract void save(); /* {
         Long start = System.currentTimeMillis();
 
         DockPreferences cp = new DockPreferences(prefEntry);
@@ -365,8 +369,8 @@ public class DockLoader {
         System.err.println("!!!!!!!!! ON SAVE TIME !!!!!! " + (end - start));
 
     }
-
-    protected void save(DockTarget dockTarget, TreeItem<PreferencesItem> root) {
+*/
+/*    protected void save(DockTarget dockTarget, TreeItem<PreferencesItem> root) {
         PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
         DockPreferences cp = new DockPreferences(prefEntry);
 
@@ -391,8 +395,8 @@ public class DockLoader {
         }
 
     }
-
-    public void save(DockTarget dockTarget) {
+*/
+    public abstract void save(DockTarget dockTarget); /* {
         PreferencesBuilder builder = dockTarget.targetController().getPreferencesBuilder();
         TreeItem<PreferencesItem> root = builder.build(dockTarget);
         DockPreferences cp = new DockPreferences(prefEntry).next(getEntryName(dockTarget));
@@ -403,8 +407,8 @@ public class DockLoader {
         long t2 = System.currentTimeMillis();
         System.err.println("Entry " + ename + "; time=" + (t2-t1));
     }
-
-    protected void save(PreferencesBuilder builder, TreeItem<PreferencesItem> item, String namespace) {
+*/
+/*    protected void save(PreferencesBuilder builder, TreeItem<PreferencesItem> item, String namespace) {
         DockPreferences cp = new DockPreferences(prefEntry).next(namespace);
         DockPreferences cpProps = cp.next(PROPERTIES);
         PreferencesItem pit = item.getValue();
@@ -428,8 +432,8 @@ public class DockLoader {
             save(builder, it, namespace + "/" + String.valueOf(i));
         }
     }
-
-    public String preferencesStringValue(DockTarget dockTarget) {
+*/
+/*    public String preferencesStringValue(DockTarget dockTarget) {
 
         return preferencesStringValue("", getEntryName(dockTarget), 0);
     }
@@ -492,12 +496,12 @@ public class DockLoader {
         }
         return sb.toString();
     }
-
-    protected TreeItem<PreferencesItem> restore(DockTarget dockTarget) {
+*/
+    protected abstract TreeItem<PreferencesItem> restore(DockTarget dockTarget); /* {
         return restore("", getEntryName(dockTarget.target()));
     }
-
-    protected TreeItem<PreferencesItem> restore(String namespace, String entryName) {
+*/
+/*    protected TreeItem<PreferencesItem> restore(String namespace, String entryName) {
         //PreferencesItem pit = new PreferencesItem();
         TreeItem<PreferencesItem> treeItem = new TreeItem<>();
         PreferencesItem pit;
@@ -535,18 +539,19 @@ public class DockLoader {
         }
         return treeItem;
     }
-    
-    public void reset(DockPreferences cp) {
+*/    
+/*    public void reset(DockPreferences cp) {
         //cp.getProperties(INFO).
         cp.removelChildren( name -> {return ! "properties".equals(name);});
     }
-    public void reset() {
+*/
+    public abstract void reset();/* {
         //DockPreferences cp = new DockPreferences(prefEntry);
         //reset(cp);
         new DockPreferences(prefEntry).clearRoot();
     }
-
-    public void reload() {
+*/
+/*    public void reload() {
         reset();
         saveStore();
 
@@ -579,11 +584,11 @@ public class DockLoader {
         loaded = true;
 
     }
-
-    public void resetStore() {
+*/
+    public abstract void resetStore(); /* {
         new DockPreferences(prefEntry).next(REGISTRY_STORE_ENTRIES).clearRoot();
     }
-
+*/
     public String toString(DockTarget dockTarget) {
         StringBuilder sb = new StringBuilder(200);
         TreeItem<PreferencesItem> ti = dockTarget.targetController().getPreferencesBuilder().build(dockTarget);

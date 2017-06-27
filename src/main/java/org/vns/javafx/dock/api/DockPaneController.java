@@ -667,7 +667,6 @@ public class DockPaneController extends DockTargetController {
                     pane.getItems().add(node);
                 } else {
                     int idx = targetRoot.getChildren().indexOf(item);
-                    System.err.println("1 BUILD FROM node = " + node);
                     if (DockRegistry.dockable(node).dockableController().getTargetController() != null) {
                         DockRegistry.dockable(node).dockableController().getTargetController().undock(node);
                     }
@@ -688,7 +687,7 @@ public class DockPaneController extends DockTargetController {
             //
             // We consider that itemObject ia a string
             //
-            String clazz = (String) pit.getItemObject();
+            //String clazz = (String) pit.getItemObject();
             DockSplitPane pane = new DockSplitPane();
             addDividersListener((DockPane) DockPaneController.this.getTargetNode(), pane);
 
@@ -715,13 +714,10 @@ public class DockPaneController extends DockTargetController {
                 } else {
                     //
                     int idx = targetRoot.getChildren().indexOf(item);
-                    System.err.println("2 BUILD FROM node = " + node);
                     if (DockRegistry.dockable(node).dockableController().getTargetController() != null) {
                         DockRegistry.dockable(node).dockableController().getTargetController().undock(node);
                     }
                     pane.getItems().add(idx, node);
-
-//                    dockPane.dock(idx, DockRegistry.dockable(node), pane);
                 }
             }
             return pane;

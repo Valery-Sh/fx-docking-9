@@ -53,10 +53,10 @@ public abstract class PositionIndicator {
     }
     */
 
-    protected void setDockPlace(Node node) {
+/*    protected void setDockPlace(Node node) {
         dockPlace = node;
     }
-    
+*/    
     public Node getDockPlace() {
         return dockPlace;
     }

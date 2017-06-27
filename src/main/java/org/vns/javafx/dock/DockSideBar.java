@@ -591,37 +591,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         public void show(Button btn) {
             Group group = (Group) btn.getParent();
-
-            //container.getStageBuilder().createStage(dockable).setAlwaysOnTop(true);
             Dockable dockable = getItemMap().get(group).getDockable();
-            /*            if (!hasWindow(dockable)) {
-                getItemMap().get(group).getStageBuilder().createStage(dockable).setAlwaysOnTop(true);
-                if (!dockable.node().getScene().getWindow().isShowing()) {
-                    if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null) {
-                        ((Stage) dockable.node().getScene().getWindow()).initOwner(getTargetNode().getScene().getWindow());
-                    }
-                }
-            }
-             */
-
             getItemMap().get(group).changeSize();
             ((Stage) dockable.node().getScene().getWindow()).show();
-
-            ////////////////
-/*            Stage s = ((Stage) dockable.node().getScene().getWindow());
-            double x = s.getX();
-            s.setX(50);
-            System.err.println("RRRRRRRRRRRRRRRRRRRRRRRRR");
-            double d1 = System.currentTimeMillis();
-            Platform.runLater( () -> {
-                while (System.currentTimeMillis() - d1 < 50) {}    
-                System.err.println("111111111111111111RRRRRRRRRRRRRRRRRRRRRRRRR");
-            });
-  */          
-            
-            //s.setX(x);
-
-            ////////////////
         }
 
         @Override

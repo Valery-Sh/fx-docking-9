@@ -84,17 +84,20 @@ public class TestDockPaneControl extends Application {
         DockNode tabDnc1 = new DockNode(" tan Dnc1");
         tabDnc1.setId("tabDnc1");
         DockNode tabDnc2 = new DockNode(" tab Dnc2");
-        tabDnc2.setId("tabDnc2");
+        tabDnc2.setId("tabDnc3");
+        DockNode tabDnc3 = new DockNode(" tab Dnc3");
+        tabDnc3.setId("tabDnc2");
         
         dockTabPane1.dock(tabDnc1);
         dockTabPane1.dock(tabDnc2);
+        dockTabPane1.dock(tabDnc3);
         Tab tab = new Tab("Not dock Tab",tabButton1);
         dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
         
         DockableController dc = DockRegistry.dockable(dnc3).dockableController();
         DockTargetController dtc = dc.getTargetController();
-        loader.reset();
+        //loader.reset();
         loader.load();
         
         //System.err.println(" TEST ===================================");
@@ -160,9 +163,6 @@ public class TestDockPaneControl extends Application {
 
         stage.setScene(scene);
         stage.show();
-        System.err.println("SKIN = " + dockPane1.getSkin());
-        System.err.println("SKIN.node = " + dockPane1.getSkin().getNode());
-        // SplitDelegate.DockSplitPane dsp = SplitDelegate.DockSplitPane.getParentSplitPane(dn3);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
