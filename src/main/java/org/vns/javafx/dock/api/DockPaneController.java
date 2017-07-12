@@ -628,7 +628,7 @@ public class DockPaneController extends DockTargetController {
                     if ( pane.getItems().get(i).getId() != null ) {
                         pair.getValue().put("id", pane.getItems().get(i).getId());                    
                     }
-                    pair.getValue().put("-ld:className", pane.getItems().get(i).getClass().getSimpleName());
+                    pair.getValue().put("-ld:className", pane.getItems().get(i).getClass().getName());
                     pair.getValue().put("-ld:tagName", pane.getItems().get(i).getClass().getSimpleName());
                     ti.setValue(pair);
                     parent.getChildren().add(ti);
@@ -643,7 +643,7 @@ public class DockPaneController extends DockTargetController {
                     if ( node.getId() != null ) {
                         pair.getValue().put("id", node.getId());                    
                     }
-                    pair.getValue().put("-ld:className", node.getClass().getSimpleName());
+                    pair.getValue().put("-ld:className", node.getClass().getName());
                     pair.getValue().put("-ld:tagName", pane.getItems().get(i).getClass().getSimpleName());
                     System.err.println("-ld:tagName=" + pane.getItems().get(i).getClass().getSimpleName());
                     

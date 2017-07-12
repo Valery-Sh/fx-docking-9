@@ -314,9 +314,9 @@ public class DockUtil {
 
     public static DockTarget getParentDockPane(Node dockNode) {
         Node node = DockUtil.getImmediateParent(dockNode, p -> {
-            return (DockRegistry.isDockPaneTarget(p));
+            return (DockRegistry.isDockTarget(p));
         });
-        return DockRegistry.dockPaneTarget(node);
+        return DockRegistry.dockTarget(node);
     }
 /*07.05    public static DockTarget getParentDockPane(Node dockNode) {
         return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {

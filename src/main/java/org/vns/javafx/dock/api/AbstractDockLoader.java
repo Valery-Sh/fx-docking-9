@@ -110,7 +110,7 @@ public abstract class AbstractDockLoader {
     }
 
     private void registerImplicit(String entry, Node dockTarget) {
-        List<Dockable> list = DockRegistry.dockPaneTarget(dockTarget)
+        List<Dockable> list = DockRegistry.dockTarget(dockTarget)
                 .targetController()
                 .getDockables();
         for (int i = 0; i < list.size(); i++) {
@@ -144,12 +144,12 @@ public abstract class AbstractDockLoader {
             }
         }
 
-        if (!DockRegistry.isDockPaneTarget(node) && !DockRegistry.isDockable(node)) {
+        if (!DockRegistry.isDockTarget(node) && !DockRegistry.isDockable(node)) {
             throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + node.getClass().getName());
         }
 
         getStore().put(entry, node);
-        if (DockRegistry.isDockPaneTarget(node)) {
+        if (DockRegistry.isDockTarget(node)) {
             //registerImplicit(entry, node);
             addListeners(node);
         }
@@ -172,12 +172,12 @@ public abstract class AbstractDockLoader {
             }
             retval = (Node) o;
 
-            if (!DockRegistry.isDockPaneTarget(retval) && !DockRegistry.isDockable(retval)) {
+            if (!DockRegistry.isDockTarget(retval) && !DockRegistry.isDockable(retval)) {
                 throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
             }
 
             getStore().put(entry, retval);
-            if (DockRegistry.isDockPaneTarget(retval)) {
+            if (DockRegistry.isDockTarget(retval)) {
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
@@ -197,7 +197,7 @@ public abstract class AbstractDockLoader {
                         list.addAll(stateChangedList);
                         list.forEach(node -> {
                             System.err.println("SAVE FROM LISTENER node = " + node);
-                            save(DockRegistry.dockPaneTarget(node));
+                            save(DockRegistry.dockTarget(node));
                             stateChangedList.remove(node);
                         });
                         //save();
@@ -252,7 +252,7 @@ public abstract class AbstractDockLoader {
         List<Node> nodeList = new ArrayList<>();
         nodeList.addAll(getStore().values());
         nodeList.forEach(node -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
+            if (DockRegistry.isDockTarget(node)) {
                 registerImplicit(getEntryName(node), node);
             }
         });
@@ -260,8 +260,8 @@ public abstract class AbstractDockLoader {
         // Go through all registered DockTarget and set there this instance 
         //
         getStore().values().forEach(node -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
-                DockRegistry.dockPaneTarget(node).targetController().setDockLoader(this);
+            if (DockRegistry.isDockTarget(node)) {
+                DockRegistry.dockTarget(node).targetController().setDockLoader(this);
             }
         });
 
@@ -272,8 +272,8 @@ public abstract class AbstractDockLoader {
 
         try {
             getStore().values().forEach(node -> {
-                if (DockRegistry.isDockPaneTarget(node)) {
-                    DockTarget t = DockRegistry.dockPaneTarget(node);
+                if (DockRegistry.isDockTarget(node)) {
+                    DockTarget t = DockRegistry.dockTarget(node);
                     defaultState.add(t.targetController().getPreferencesBuilder().build());
                 }
             });
@@ -291,8 +291,8 @@ public abstract class AbstractDockLoader {
 
         List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
         getStore().values().forEach(node -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
-                list.add(restore(DockRegistry.dockPaneTarget(node)));
+            if (DockRegistry.isDockTarget(node)) {
+                list.add(restore(DockRegistry.dockTarget(node)));
             }
         });
 
@@ -301,10 +301,10 @@ public abstract class AbstractDockLoader {
 //        System.err.println("================ RESTORED in LOAD ==========================");
 //        System.err.println(s);
 //        System.err.println("================= END RESTORED in LOAD=========================");
-//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
+//        s = preferencesStringValue( DockRegistry.dockTarget((Node) item.getValue().getItemObject()));
 //        System.err.println(s);
         list.forEach(it -> {
-            DockTarget dt = DockRegistry.dockPaneTarget((Node) it.getValue().getKey().get());
+            DockTarget dt = DockRegistry.dockTarget((Node) it.getValue().getKey().get());
             dt.targetController().getPreferencesBuilder().restore(it);
         });
         Long end = System.currentTimeMillis();
@@ -320,13 +320,13 @@ public abstract class AbstractDockLoader {
         Long start = System.currentTimeMillis();
 
         defaultState.forEach(treeItem -> {
-            save(DockRegistry.dockPaneTarget((Node) treeItem.getValue().getKey().get()), treeItem);
+            save(DockRegistry.dockTarget((Node) treeItem.getValue().getKey().get()), treeItem);
         });
 
         List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
         getStore().values().forEach(node -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
-                list.add(restore(DockRegistry.dockPaneTarget(node)));
+            if (DockRegistry.isDockTarget(node)) {
+                list.add(restore(DockRegistry.dockTarget(node)));
             }
         });
 
@@ -335,10 +335,10 @@ public abstract class AbstractDockLoader {
 //        System.err.println("================ RESTORED in LOAD ==========================");
 //        System.err.println(s);
 //        System.err.println("================= END RESTORED in LOAD=========================");
-//        s = preferencesStringValue( DockRegistry.dockPaneTarget((Node) item.getValue().getItemObject()));
+//        s = preferencesStringValue( DockRegistry.dockTarget((Node) item.getValue().getItemObject()));
 //        System.err.println(s);
         list.forEach(it -> {
-            DockTarget dt = DockRegistry.dockPaneTarget((Node) item.getValue().getKey().get());
+            DockTarget dt = DockRegistry.dockTarget((Node) item.getValue().getKey().get());
             dt.targetController().getPreferencesBuilder().restore(it);
         });
         Long end = System.currentTimeMillis();
@@ -355,8 +355,8 @@ public abstract class AbstractDockLoader {
         reset();
         saveStore();
         getStore().values().forEach((node) -> {
-            if (DockRegistry.isDockPaneTarget(node)) {
-                save(DockRegistry.dockPaneTarget(node));
+            if (DockRegistry.isDockTarget(node)) {
+                save(DockRegistry.dockTarget(node));
             }
         });
         Long end = System.currentTimeMillis();

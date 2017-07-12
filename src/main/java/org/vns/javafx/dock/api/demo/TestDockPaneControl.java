@@ -94,6 +94,8 @@ public class TestDockPaneControl extends Application {
         dockTabPane1.dock(tabDnc2);
         dockTabPane1.dock(tabDnc3);
         Tab tab = new Tab("Not dock Tab",tabButton1);
+        
+        System.err.println("TAB: " + System.identityHashCode(tab));
         dockTabPane1.getTabs().add(tab);
         //root.getChildren().add(0,dockTabPane1);
         

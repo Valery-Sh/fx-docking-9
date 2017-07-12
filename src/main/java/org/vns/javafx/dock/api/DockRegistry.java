@@ -161,7 +161,7 @@ public class DockRegistry {
         allStages.forEach(s -> {
             Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
                 //12.05return (n instanceof DockTarget);
-                return isDockPaneTarget(n);
+                return isDockTarget(n);
             });
             if (topNode != null) {
                 targetStages.add(s);
@@ -194,7 +194,7 @@ public class DockRegistry {
         allStages.forEach(s -> {
             Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
                 //12.05return (n instanceof DockTarget);
-                //return isDockPaneTarget(n);
+                //return isDockTarget(n);
                 return predicate.test(n);
             });
             if (topNode != null) {
@@ -320,11 +320,11 @@ public class DockRegistry {
         return getInstance().dockables.get(node);
     }
 
-    public static boolean isDockPaneTarget(Node node) {
-        return getInstance().isNodeDockPaneTarget(node);
+    public static boolean isDockTarget(Node node) {
+        return getInstance().isNodeDockTarget(node);
     }
 
-    protected boolean isNodeDockPaneTarget(Node node) {
+    protected boolean isNodeDockTarget(Node node) {
         boolean retval = node instanceof DockTarget;
         if (!retval && dockTargets.get(node) != null) {
             retval = true;
@@ -332,7 +332,7 @@ public class DockRegistry {
         return retval;
     }
 
-    public static DockTarget dockPaneTarget(Node node) {
+    public static DockTarget dockTarget(Node node) {
         if (node instanceof DockTarget) {
             return (DockTarget) node;
         }

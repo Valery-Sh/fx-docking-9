@@ -31,7 +31,7 @@ public class NodeTree {
         //
         // Get a list of parent nodes
         //
-        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return DockRegistry.isDockPaneTarget(node);}  );
+        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return DockRegistry.isDockTarget(node);}  );
         root.getChildren().add(getRegion(p));
         Popup popup = new Popup();
         popup.show(root,x,y);
@@ -53,7 +53,7 @@ public class NodeTree {
         return r;        
     }
     public Object getItem(Node node) {
-        String value = DockRegistry.dockPaneTarget(node).targetController().getTitle();
+        String value = DockRegistry.dockTarget(node).targetController().getTitle();
         TreeItem item = new TreeItem(value);
         return item;
     }

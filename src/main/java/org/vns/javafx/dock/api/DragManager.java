@@ -228,26 +228,26 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
 
         Node root = resultStage.getScene().getRoot();
-        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockPaneTarget(root))) {
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockTarget(root))) {
             return;
         }
 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return DockRegistry.isDockPaneTarget(n);
+            return DockRegistry.isDockTarget(n);
         });
 
         if (topPane != null) {
             root = topPane;
-        } else if (!DockRegistry.isDockPaneTarget(root)) {
+        } else if (!DockRegistry.isDockTarget(root)) {
             return;
         }
-        if ( ! DockRegistry.dockPaneTarget(root).targetController().isAcceptable(dockable.node()) ) {
+        if ( ! DockRegistry.dockTarget(root).targetController().isAcceptable(dockable.node()) ) {
             return; 
         }
-        if (!DockRegistry.dockPaneTarget(root).targetController().isUsedAsDockTarget()) {
+        if (!DockRegistry.dockTarget(root).targetController().isUsedAsDockTarget()) {
             return;
         }
-        IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
+        IndicatorPopup newPopup = DockRegistry.dockTarget(root).targetController().getIndicatorPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -255,7 +255,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
         popup = newPopup;
-        //14.05 DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
+        //14.05 DockTargetController ph = DockRegistry.dockTarget(root).targetController();
 
         if (!popup.isShowing()) {
             popup.showPopup();
@@ -309,24 +309,24 @@ public class DragManager implements EventHandler<MouseEvent> {
         }
 
         Node root = resultStage.getScene().getRoot();
-        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockPaneTarget(root))) {
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockTarget(root))) {
             return;
         }
 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return DockRegistry.isDockPaneTarget(n);
+            return DockRegistry.isDockTarget(n);
         });
 
         if (topPane != null) {
             root = topPane;
-        } else if (!DockRegistry.isDockPaneTarget(root)) {
+        } else if (!DockRegistry.isDockTarget(root)) {
             return;
         }
 
-        if (!DockRegistry.dockPaneTarget(root).targetController().isUsedAsDockTarget()) {
+        if (!DockRegistry.dockTarget(root).targetController().isUsedAsDockTarget()) {
             return;
         }
-        IndicatorPopup newPopup = DockRegistry.dockPaneTarget(root).targetController().getIndicatorPopup();
+        IndicatorPopup newPopup = DockRegistry.dockTarget(root).targetController().getIndicatorPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -334,7 +334,7 @@ public class DragManager implements EventHandler<MouseEvent> {
             return;
         }
         popup = newPopup;
-        //14.05 DockTargetController ph = DockRegistry.dockPaneTarget(root).targetController();
+        //14.05 DockTargetController ph = DockRegistry.dockTarget(root).targetController();
 
         if (!popup.isShowing()) {
             popup.showPopup();
