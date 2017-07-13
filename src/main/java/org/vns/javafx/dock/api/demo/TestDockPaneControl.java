@@ -1,7 +1,9 @@
 package org.vns.javafx.dock.api.demo;
 
 import java.util.List;
+import java.util.Properties;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -13,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.vns.common.xml.javafx.TreeItemStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.HPane;
@@ -38,17 +41,31 @@ public class TestDockPaneControl extends Application {
     public void start(Stage stage) {
         stage.setTitle("PRIMARY");
 
-        StackPane stackPane = new StackPane();
-        HBox root = new HBox();
-        root.getChildren().add(stackPane);
-        
+        //StackPane stackPane = new StackPane();
+        //HBox root = new HBox();
+        //root.getChildren().add(stackPane);
+        StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
-
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DockLoader loader = new DockLoader(TestDockPaneControl.class);
         DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
-        //DockPane dockPane1 = new DockPane();
+        DockPane dockPane2 = new DockPane();
+        dockPane2.setId("dockPane2");
+        DockNode dnc1_1 = new DockNode();
+        DockNode dnc2_1 = new DockNode();
+        dnc1_1.setId("dnc1_1");        
+        dnc2_1.setId("dnc2_1");
+        Button b1_1 = new Button("b1_1");
+        Button b1_2 = new Button("b1_2");
+        dnc1_1.setContent(b1_1);
+        dnc2_1.setContent(b1_2);
+        VPane vp1_1 = new VPane();
+        vp1_1.setId("vp1_1");
+        dockPane2.getItems().add(vp1_1);
+        vp1_1.getItems().addAll(dnc1_1,dnc2_1);
         
+        //DockPane dockPane1 = new DockPane();
+
         //DockPane1 dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);        
         dockPane1.setId("dockPane1");
         //DockNode dnc1 = (DockNode) loader.register("dnc1", DockNode.class);
@@ -60,11 +77,11 @@ public class TestDockPaneControl extends Application {
         //loader.reset();
         //DockNode dnc2 = new DockNode("DockNodeControl dnc2");
         dnc3.setTitle("DockNodeControl dnc3");
-        
-        
+
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
-        ////loader.register("dnc4", dnc4);
-        
+        loader.register("dnc4", dnc4);
+        loader.register("dnc2", dnc2);
+
         dnc1.setId("dnc1");
         dnc2.setId("dnc2");
         dnc3.setId("dnc3");
@@ -75,11 +92,15 @@ public class TestDockPaneControl extends Application {
         dockPane1.getItems().add(vs1);
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
-        vs1.getItems().addAll(hs1, dnc3);
+        vs1.getItems().addAll(dockPane2,hs1, dnc3);
+        //vs1.getItems().addAll(hs1);
+        //dockPane1.getRoot().getItems().addAll(dnc1, dnc2,dnc3);
+        
+        
         //TreeItem<PreferencesItem> items = dockPane1.targetController().getPreferencesBuilder().build(dockPane1);
 //        String s = loader.toString(dockPane1);
 //        System.err.print(s);
-        
+
         DockTabPane dockTabPane1 = new DockTabPane();
         //loader.register("dockTabPane1", dockTabPane1);
         Button tabButton1 = new Button("Tab Button1");
@@ -89,38 +110,38 @@ public class TestDockPaneControl extends Application {
         tabDnc2.setId("tabDnc3");
         DockNode tabDnc3 = new DockNode(" tab Dnc3");
         tabDnc3.setId("tabDnc2");
-        
+
         dockTabPane1.dock(tabDnc1);
         dockTabPane1.dock(tabDnc2);
         dockTabPane1.dock(tabDnc3);
-        Tab tab = new Tab("Not dock Tab",tabButton1);
-        
+        Tab tab = new Tab("Not dock Tab", tabButton1);
+
         System.err.println("TAB: " + System.identityHashCode(tab));
         dockTabPane1.getTabs().add(tab);
         //root.getChildren().add(0,dockTabPane1);
-        
+
         DockableController dc = DockRegistry.dockable(dnc3).dockableController();
         DockTargetController dtc = dc.getTargetController();
         //loader.reset();
-        //loader.load();
-        TreeItem ti = dockPane1.targetController().getPreferencesBuilder().build();
-        TreeItemStringConverter tc = new TreeItemStringConverter();
-        System.err.println("TC: ");
-        System.err.println(tc.toString(ti));
-        
+/////// LOAD /////////////        
+        loader.load();
+        //TreeItem ti = dockPane1.targetController().getPreferencesBuilder().build("dockPane1");
+        //TreeItemStringConverter tc = new TreeItemStringConverter();
+        //System.err.println("TC: ");
+        //System.err.println(tc.toString(ti));
+
         //System.err.println(" TEST ===================================");
         //loader.reset();
         //loader.save(dockPane1);
         //System.err.println(loader.preferencesStringValue(dockPane1));
         //System.err.println("TEST ===================================");
-
         //vs1.getItems().add(hs1);
         //vs1.getItems().add(dnc3);
-        Button b1 = new Button("reset");
+        Button b1 = new Button("save");
         Button b2 = new Button("add dnc4");
         Button b3 = new Button("remove dnc4");
         Button b4 = new Button("change dnc1 DividerPos");
-        Button b5 = new Button("print ");
+        Button b5 = new Button("restore ");
 
         VBox content = new VBox(b1, b2, b3, b4, b5);
         dnc1.setContent(content);
@@ -131,9 +152,9 @@ public class TestDockPaneControl extends Application {
 
         b1.setOnAction(a -> {
             System.err.println("----------  hs1.sz=" + hs1.getItems().size());
+            loader.save(dockPane1);
             //loader.save(dockPane1);
-            //loader.save(dockPane1);
-            loader.reload();
+            //loader.reload();
             //System.err.println(loader.toString(dockPane1));
         });
         b2.setOnAction(a -> {
@@ -154,10 +175,17 @@ public class TestDockPaneControl extends Application {
         });
 
         b5.setOnAction(a -> {
-            System.err.println("dnc2 content " + dnc2.getContent());
+            /*            System.err.println("dnc2 content " + dnc2.getContent());
             System.err.println("dnc2 content.size= " + ((Label) dnc2.getContent()).getHeight());
             System.err.println("dnc2 control.size= " + dnc2.getHeight());
             System.err.println("dnc3 size= " + dnc3.getHeight());
+             */
+            TreeItem<Pair<ObjectProperty, Properties>> it = loader.restore(dockPane1);
+            TreeItemStringConverter tc = new TreeItemStringConverter();
+            
+            System.err.println("******* 3333333333 *************");
+            System.err.println(tc.toString(it));
+            System.err.println("******* 444444444 *************");
 
         });
 

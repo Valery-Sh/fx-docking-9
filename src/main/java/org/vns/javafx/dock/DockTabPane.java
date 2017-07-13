@@ -878,14 +878,16 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return props;
         }
 
-        @Override
-        public TreeItem<Pair<ObjectProperty, Properties>> build() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
 
         @Override
         public void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
     }
 }//DockTabPane

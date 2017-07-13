@@ -30,6 +30,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
@@ -46,10 +47,16 @@ public abstract class AbstractDockLoader {
 
     public static final String PERSIST_KEY = "docloader-stotere-node-key";
 
-    public static final String FIELD_NAME = "-ld:fieldName";
+    public static final String FIELD_NAME_ATTR = "ld:fieldName";
+    public static final String CLASS_NAME_ATTR = "ld:className";
+    public static final String TAG_NAME_ATTR = "ld:tagName";
+    public static final String IGNORE_ATTR = "ignore:treeItem";
+    public static final String REGSTERED_ATTR = "id:registered";
+    public static final String ISDOCKABLE_ATTR = "id:isdockable";
+    public static final String ISDOCKTARGET_ATTR = "id:isdocktarget";
+
     public static final String NOT_REGISTERED = "not.registered";
 
-    public static final String CLASS_NAME = "-ld:className";
     public static final String INFO = "info";
     public static final String NODE = "node";
     public static final String PROPERTIES = "properties";
@@ -57,36 +64,140 @@ public abstract class AbstractDockLoader {
     public static final String REGISTRY_STORE_ENTRIES = "store-registered-classes";
     public static final String IMPLICIT = "_implicit_registered_";
 
-    private final static Map<String, Node> store = FXCollections.observableHashMap();
     private final static List<Node> stateChangedList = FXCollections.observableArrayList();
-    private final static List<TreeItem<Pair<ObjectProperty, Properties>>> defaultState = FXCollections.observableArrayList();
+    //private final static List<TreeItem<Pair<ObjectProperty, Properties>>> defaultState = FXCollections.observableArrayList();
+    ///////////////////////////
+    ///////////////////////////
+    private final Map<String, Node> explicitlyRegistered = FXCollections.observableHashMap();
+    private final Map<Object, String> registered = FXCollections.observableHashMap();
 
-    private String prefEntry;
+    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> defaultDockTargets = FXCollections.observableHashMap();
+    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> defaultDockables = FXCollections.observableHashMap();
+    private final Map<Node, String> dockTargets = FXCollections.observableHashMap();
+
+    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> saveDockTargets = FXCollections.observableHashMap();
+
+    private String preferencesRoot;
 
     private boolean loaded = false;
 
     protected AbstractDockLoader(String prefEntry) {
-        this.prefEntry = prefEntry;
+        this.preferencesRoot = prefEntry;
     }
 
     protected AbstractDockLoader(Class clazz) {
-        prefEntry = clazz.getName().replace(".", "/");
+        preferencesRoot = clazz.getName().replace(".", "/");
     }
-    
-    protected abstract void save(DockTarget dockTarget, TreeItem<Pair<ObjectProperty,Properties>> root);
-    public abstract void resetStore(); 
-    public abstract void reset(); 
-    protected abstract void saveStore();
+
+    //protected abstract void save(DockTarget dockTarget, TreeItem<Pair<ObjectProperty,Properties>> root);
+    //public abstract void resetStore(); 
+    public abstract void reset();
+
+    //protected abstract void saveStore();
     //protected abstract boolean isDestroyed(); 
-    public abstract void save(DockTarget dockTarget); 
-    protected abstract TreeItem<Pair<ObjectProperty,Properties>> restore(DockTarget dockTarget); 
+    public abstract void save(DockTarget dockTarget);
 
-    public String getPrefEntry() {
-        return prefEntry;
+    protected abstract TreeItem<Pair<ObjectProperty, Properties>> restore(DockTarget dockTarget);
+
+    /*    public String getFieldName(Object obj) {
+        String fieldName = null;
+        if (getExplicitlyRegistered().containsValue(obj)) {
+            for (String key : getExplicitlyRegistered().keySet()) {
+                if (obj == getExplicitlyRegistered().get(key)) {
+                    fieldName = key;
+                    break;
+                }
+            }
+        }
+        if ( fieldName != null && ! isLoaded()) {
+            getDefaultDockables().remove(fieldName);
+        } 
+        if ( fieldName == null && isLoaded()) {
+            //
+            // default state has already been created
+            //
+        }
+        return fieldName;
+    }
+     */
+    
+    /**
+     * Try to find a registered object which is equal to the given object and
+     * return it's field name if found.
+     *
+     * @param obj an object whose field name has to be returned
+     * @param dockTargetRoot the tree item which represents the root of a DockTarget
+     * @return the field name of the object if it is registered/ Otherwise
+     * returns null.
+     */
+    protected String getFieldName(Object obj, TreeItem<Pair<ObjectProperty, Properties>> dockTargetRoot) {
+        String fieldName = null;
+        if ((obj instanceof Node) && getExplicitlyRegistered().containsValue((Node) obj)) {
+            for (String key : getExplicitlyRegistered().keySet()) {
+                if (obj == getExplicitlyRegistered().get(key)) {
+                    fieldName = key;
+                    break;
+                }
+            }
+        }
+
+        if (fieldName != null && !isLoaded()) {
+            getDefaultDockables().remove(fieldName);
+        } else if (fieldName == null && !isLoaded()) {
+            TreeView treeView = new TreeView();
+            treeView.setRoot(dockTargetRoot);
+            String rootFieldName = dockTargetRoot.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+            int idx = treeView.getExpandedItemCount();
+            fieldName = rootFieldName + "_" + idx + "_" + obj.getClass().getSimpleName();
+        } else if (fieldName == null) {
+            //
+            // default state has already been created ( isLoaded() == true)
+            //
+            TreeView treeView = new TreeView();
+
+            String rootFieldName = dockTargetRoot.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+            treeView.setRoot(getDefaultDockTargets().get(rootFieldName));
+            for (int i = 0; i < treeView.getExpandedItemCount(); i++) {
+                TreeItem<Pair<ObjectProperty, Properties>> it = treeView.getTreeItem(i);
+                if (obj == it.getValue().getKey().get()) {
+                    if (isRegistered(it)) {
+                        fieldName = it.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+                    } else {
+                        fieldName = rootFieldName + "_" + i + "_" + obj.getClass().getSimpleName() + "-loaded";
+                    }
+                }
+            }
+        }
+
+        return fieldName;
     }
 
-    public String getRoot() {
-        return prefEntry;
+    protected boolean isRegistered(TreeItem<Pair<ObjectProperty, Properties>> item) {
+        String val = item.getValue().getValue().getProperty(REGSTERED_ATTR);
+        return val != null && ("yes".equals(val) || "true".equals(val));
+    }
+
+    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getSaveDockTargets() {
+        return saveDockTargets;
+    }
+
+    public void notifyTreeItemBuilt(TreeItem<Pair<ObjectProperty, Properties>> treeItem) {
+        String fieldName = treeItem.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+        if (!isLoaded()) {
+
+            Node node = (Node) treeItem.getValue().getKey().get();
+            if (DockRegistry.isDockTarget(node)) {
+                getDefaultDockTargets().put(fieldName, treeItem);
+                DockRegistry.dockTarget(node).targetController().setDockLoader(this);
+            }
+            getRegistered().put(treeItem.getValue().getKey().get(), fieldName);
+        } else {
+            getSaveDockTargets().put(fieldName, treeItem);
+        }
+    }
+
+    public String getPreferencesRoot() {
+        return preferencesRoot;
     }
 
     public boolean isLoaded() {
@@ -105,17 +216,33 @@ public abstract class AbstractDockLoader {
         System.err.println("Layout Changed count=" + stateChangedList.size());
     }
 
-    protected Map<String, Node> getStore() {
-        return store;
+    public Map<Node, String> getDockTargets() {
+        return dockTargets;
     }
 
-    private void registerImplicit(String entry, Node dockTarget) {
+    protected Map<String, Node> getExplicitlyRegistered() {
+        return explicitlyRegistered;
+    }
+
+    protected Map<Object, String> getRegistered() {
+        return registered;
+    }
+
+    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockTargets() {
+        return defaultDockTargets;
+    }
+
+    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockables() {
+        return defaultDockables;
+    }
+
+    /*    private void registerImplicit(String entry, Node dockTarget) {
         List<Dockable> list = DockRegistry.dockTarget(dockTarget)
                 .targetController()
                 .getDockables();
         for (int i = 0; i < list.size(); i++) {
-            if (!isRegistered(list.get(i).node())) {
-                getStore().put(entry + IMPLICIT + i, list.get(i).node());
+            if (!isExplicitlyRegistered(list.get(i).node())) {
+                getExplicitlyRegistered().put(entry + IMPLICIT + i, list.get(i).node());
             }
             //
             // Mark the node as a subject to persist
@@ -123,24 +250,24 @@ public abstract class AbstractDockLoader {
             list.get(i).node().getProperties().put(PERSIST_KEY, Boolean.TRUE);
         }
     }
-
+     */
     public void register(String entry, Node node) {
         if (loaded) {
             throw new IllegalStateException("Attempts to register an entry '"
                     + entry + "' and class '" + node.getClass().getName() + "' but the method 'load' has already been invoked");
         }
-        if (entry == null || getStore().containsKey(entry)) {
+        if (entry == null || getExplicitlyRegistered().containsKey(entry)) {
             throw new IllegalArgumentException("Dublicate entry name: " + entry);
         }
         //
         // May be the dockable node is allready registered with another entry name
         //
-        if (DockRegistry.isDockable(node) && getStore().containsValue(node)) {
+        if (DockRegistry.isDockable(node) && getExplicitlyRegistered().containsValue(node)) {
             String existingName = getEntryName(node);
             if (!existingName.contains(IMPLICIT)) {
                 throw new IllegalArgumentException("Dublicate entry name: " + entry);
             } else {
-                getStore().remove(existingName);
+                getExplicitlyRegistered().remove(existingName);
             }
         }
 
@@ -148,7 +275,7 @@ public abstract class AbstractDockLoader {
             throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + node.getClass().getName());
         }
 
-        getStore().put(entry, node);
+        getExplicitlyRegistered().put(entry, node);
         if (DockRegistry.isDockTarget(node)) {
             //registerImplicit(entry, node);
             addListeners(node);
@@ -161,7 +288,7 @@ public abstract class AbstractDockLoader {
             throw new IllegalStateException("Attempts to register an entry '"
                     + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
         }
-        if (entry == null || getStore().containsKey(entry)) {
+        if (entry == null || getExplicitlyRegistered().containsKey(entry)) {
             throw new IllegalArgumentException("Dublicate entry name: " + entry);
         }
 
@@ -176,7 +303,7 @@ public abstract class AbstractDockLoader {
                 throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
             }
 
-            getStore().put(entry, retval);
+            getExplicitlyRegistered().put(entry, retval);
             if (DockRegistry.isDockTarget(retval)) {
                 addListeners(retval);
             }
@@ -227,9 +354,9 @@ public abstract class AbstractDockLoader {
         };
 
         target.sceneProperty().addListener(sl);
-        System.err.println("sceneProperty().addListener target=" + target);
+        //System.err.println("sceneProperty().addListener target=" + target);
         if (target.getScene() != null && target.getScene().getWindow() != null) {
-            System.err.println("sceneProperty().addEventHandler target=" + target);
+            //System.err.println("sceneProperty().addEventHandler target=" + target);
             target.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
         }
 
@@ -237,20 +364,22 @@ public abstract class AbstractDockLoader {
         //windowlisteners.put(node, wl);
     }
 
-    public void load() {
+    public abstract void load();
+
+    /*    {
         if (loaded) {
             return;
         }
 
         Long start = System.currentTimeMillis();
-        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences cp = new DockPreferences(preferencesRoot);
         if (cp.getProperties(PROPERTIES) == null) {
             cp.createProperties(PROPERTIES).setProperty("description", "application");
 
         }
 
         List<Node> nodeList = new ArrayList<>();
-        nodeList.addAll(getStore().values());
+        nodeList.addAll(getExplicitlyRegistered().values());
         nodeList.forEach(node -> {
             if (DockRegistry.isDockTarget(node)) {
                 registerImplicit(getEntryName(node), node);
@@ -259,7 +388,7 @@ public abstract class AbstractDockLoader {
         //
         // Go through all registered DockTarget and set there this instance 
         //
-        getStore().values().forEach(node -> {
+        getExplicitlyRegistered().values().forEach(node -> {
             if (DockRegistry.isDockTarget(node)) {
                 DockRegistry.dockTarget(node).targetController().setDockLoader(this);
             }
@@ -268,13 +397,13 @@ public abstract class AbstractDockLoader {
         //
         // Save default state
         //
-        defaultState.clear();
+        //defaultState.clear();
 
         try {
-            getStore().values().forEach(node -> {
+            getExplicitlyRegistered().values().forEach(node -> {
                 if (DockRegistry.isDockTarget(node)) {
                     DockTarget t = DockRegistry.dockTarget(node);
-                    defaultState.add(t.targetController().getPreferencesBuilder().build());
+                    //??? defaultState.add(t.targetController().getPreferencesBuilder().build());
                 }
             });
         } catch (Exception ex) {
@@ -282,7 +411,7 @@ public abstract class AbstractDockLoader {
         }
 
         //
-        // Check weather the registry store changed and if so reset and reload
+        // Check weather the registry explicitlyRegistered changed and if so reset and reload
         //
         if (isDestroyed()) {
             reset();
@@ -290,7 +419,7 @@ public abstract class AbstractDockLoader {
         }
 
         List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
-        getStore().values().forEach(node -> {
+        getExplicitlyRegistered().values().forEach(node -> {
             if (DockRegistry.isDockTarget(node)) {
                 list.add(restore(DockRegistry.dockTarget(node)));
             }
@@ -312,19 +441,18 @@ public abstract class AbstractDockLoader {
         loaded = true;
 
     }
-
+     */
     public void reload() {
         reset();
-        saveStore();
+//        saveStore();
 
         Long start = System.currentTimeMillis();
 
-        defaultState.forEach(treeItem -> {
-            save(DockRegistry.dockTarget((Node) treeItem.getValue().getKey().get()), treeItem);
-        });
-
+//        defaultState.forEach(treeItem -> {
+//            save(DockRegistry.dockTarget((Node) treeItem.getValue().getKey().get()), treeItem);
+//        });
         List<TreeItem<Pair<ObjectProperty, Properties>>> list = FXCollections.observableArrayList();
-        getStore().values().forEach(node -> {
+        getExplicitlyRegistered().values().forEach(node -> {
             if (DockRegistry.isDockTarget(node)) {
                 list.add(restore(DockRegistry.dockTarget(node)));
             }
@@ -347,14 +475,16 @@ public abstract class AbstractDockLoader {
 
     }
 
-    public void save() {
+    public abstract void save();
+
+    /*{
         Long start = System.currentTimeMillis();
 
-        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences cp = new DockPreferences(preferencesRoot);
         //cp.clearRoot();
         reset();
         saveStore();
-        getStore().values().forEach((node) -> {
+        getExplicitlyRegistered().values().forEach((node) -> {
             if (DockRegistry.isDockTarget(node)) {
                 save(DockRegistry.dockTarget(node));
             }
@@ -363,24 +493,27 @@ public abstract class AbstractDockLoader {
         System.err.println("!!!!!!!!! ON SAVE TIME !!!!!! " + (end - start));
 
     }
-
-    public boolean isRegistered(Node node) {
+     */
+ /*    public boolean isExplicitlyRegistered(Node node) {
         return getEntryName(node) != null;
+    }
+     */
+    public boolean isRegistered(Node node) {
+        return getRegistered().containsKey(node);
     }
 
     public String getEntryName(Object obj) {
         String retval = null;
-        for (Map.Entry<String, Node> e : getStore().entrySet()) {
+        for (Map.Entry<String, Node> e : getExplicitlyRegistered().entrySet()) {
             if (e.getValue() == obj) {
                 retval = e.getKey();
                 break;
             }
         }
-
         return retval;
     }
 
-/*    public String toString(DockTarget dockTarget) {
+    /*    public String toString(DockTarget dockTarget) {
         StringBuilder sb = new StringBuilder(200);
         TreeItem<PreferencesItem> ti = dockTarget.targetController().getPreferencesBuilder().build(dockTarget);
         sb.append("---------------------------------------------------").append(System.lineSeparator())
@@ -410,7 +543,7 @@ public abstract class AbstractDockLoader {
         }
         return sb.toString();
     }
-*/
+     */
     private String spaces(int count) {
         StringBuilder sb = new StringBuilder(count);
         for (int i = 0; i < count; i++) {
@@ -421,21 +554,21 @@ public abstract class AbstractDockLoader {
 
     protected boolean isDestroyed() {
         boolean retval = false;
-        DockPreferences cp = new DockPreferences(prefEntry);
+        DockPreferences cp = new DockPreferences(preferencesRoot);
         DockPreferences registered = cp.next(REGISTRY_STORE_ENTRIES);
 
         PrefProperties registeredProps = registered.getProperties(PROPERTIES);
-        if (!getStore().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
+        if (!getExplicitlyRegistered().isEmpty() && (registeredProps == null || registeredProps.keys().length == 0)) {
             return true;
         }
 
         Map<String, String> props = registeredProps.toMap();
         for (String key : props.keySet()) {
-            if (!getStore().containsKey(key)) {
+            if (!getExplicitlyRegistered().containsKey(key)) {
                 return true;
             }
             String class1 = props.get(key);
-            String class2 = getStore().get(key).getClass().getName();
+            String class2 = getExplicitlyRegistered().get(key).getClass().getName();
             if (!class2.equals(class1)) {
                 return true;
             }
