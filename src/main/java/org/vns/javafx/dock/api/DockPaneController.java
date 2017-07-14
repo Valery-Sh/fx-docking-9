@@ -555,9 +555,9 @@ public class DockPaneController extends DockTargetController {
                     dp = new VPane();
                     dpOrig = new HPane();
                 }
-                if ( root.getItems().isEmpty() ) {
-                   root.getItems().add(node); 
-                   return;
+                if (root.getItems().isEmpty()) {
+                    root.getItems().add(node);
+                    return;
                 }
                 Node p1 = root.getItems().get(0);
 //                Node p2 = root.getItems().get(1);
@@ -694,25 +694,14 @@ public class DockPaneController extends DockTargetController {
         @Override
         protected void buildChildren(TreeItem<Pair<ObjectProperty, Properties>> root) {
             DockPane pane = (DockPane) getTargetController().getTargetNode();
-            //TreeView treeView = new TreeView();
-            //treeView.setRoot(root);
-
-            //String rootFieldName = root.getValue().getValue().getProperty(FIELD_NAME_ATTR);
-
             for (int i = 0; i < pane.getItems().size(); i++) {
-                //int idx = treeView.getExpandedItemCount();
-                //String fieldName = rootFieldName + "_" + idx + "_" + pane.getItems().get(i).getClass().getSimpleName();;
                 String fieldName = getDockLoader().getFieldName(pane.getItems().get(i), root);
-                /*???                String fieldName = getDockLoader().getFieldName(pane.getItems().get(i));
-                if (fieldName == null) {
-                    fieldName = rootFieldName + "_" + idx + "_" + pane.getItems().get(i).getClass().getSimpleName();
+                TreeItem ti;
+                if ( ! getDockLoader().isLoaded() ) {
+                    ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i), true);
+                } else {
+                    ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i));
                 }
-                 */
- /* else {
-                    getDockLoader().getDefaultDockables().remove(fieldName);
-                }
-                 */
-                TreeItem ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i));
                 root.getChildren().add(ti);
                 ti.setExpanded(true);
                 getDockLoader().notifyTreeItemBuilt(ti);
@@ -735,16 +724,19 @@ public class DockPaneController extends DockTargetController {
             Pair<ObjectProperty, Properties> pair;
             for (int i = 0; i < pane.getItems().size(); i++) {
                 String fieldName = getDockLoader().getFieldName(pane.getItems().get(i), root);
-                TreeItem ti;// = PreferencesBuilder.build(fieldName, pane.getItems().get(i));
+                TreeItem ti;
                 if (DockRegistry.isDockTarget(pane.getItems().get(i))) {
                     DockRegistry.dockTarget(pane.getItems().get(i)).targetController().setDockLoader(getDockLoader());
                     ti = DockRegistry.dockTarget(pane.getItems().get(i))
                             .targetController()
-                            .getPreferencesBuilder().build(fieldName);                
+                            .getPreferencesBuilder().build(fieldName);
+                } else if ( ! getDockLoader().isLoaded() ) {
+                    System.err.println("buildPane = " + fieldName);
+                    ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i), true);
                 } else {
-                    ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i));    
-                }     
-                
+                    ti = PreferencesBuilder.build(fieldName, pane.getItems().get(i));
+                }
+
                 pair = (Pair<ObjectProperty, Properties>) ti.getValue();
                 parent.getChildren().add(ti);
 
@@ -761,10 +753,9 @@ public class DockPaneController extends DockTargetController {
                             .getPreferencesBuilder().build(fieldName);
                     ti.getChildren().add(it);
                 }
-                */
+                 */
             }
         }
-
 
         protected void setXmlProperties(Pair<ObjectProperty, Properties> pair) {
             SplitPane sp;
@@ -807,12 +798,14 @@ public class DockPaneController extends DockTargetController {
             ListChangeListener<Node> itemsListener = (ListChangeListener.Change<? extends Node> change) -> {
                 while (change.next()) {
                     if (change.wasRemoved()) {
+                        System.err.println("1 addDividersListener removed");
                         List<? extends Node> list = change.getRemoved();
                         for (Node node : list) {
                             getDockLoader().layoutChanged(dockPane);
                         }
                     }
                     if (change.wasAdded()) {
+                        System.err.println("2 addDividersListener added");
                         List<? extends Node> list = change.getAddedSubList();
                         for (Node node : list) {
                             getDockLoader().layoutChanged(dockPane);
@@ -828,6 +821,7 @@ public class DockPaneController extends DockTargetController {
             ListChangeListener<SplitPane.Divider> divListListener;
             divListListener = (ListChangeListener.Change<? extends SplitPane.Divider> change) -> {
                 while (change.next()) {
+                    System.err.println("3 addDividersListener");
                     if (change.wasRemoved()) {
                         List<? extends SplitPane.Divider> list = change.getRemoved();
                         if (!list.isEmpty()) {
@@ -846,17 +840,20 @@ public class DockPaneController extends DockTargetController {
                     }
                 }//while
             };
+            System.err.println("when addListener");
             splitPane.getDividers().addListener(divListListener);
             splitPane.getItems().addListener(itemsListener);
         }
 
         @Override
-        public void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
+        public Node restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
             Pair<ObjectProperty, Properties> pair = targetRoot.getValue();
             if (!(pair.getKey().get() instanceof DockPane)) {
-                return;
+                return null;
             }
             DockPane pane = (DockPane) pair.getKey().get();
+            targetRoot.setExpanded(true);
+
             addDividersListener(pane, getRoot());
             pane.getItems().clear();
 
@@ -870,7 +867,6 @@ public class DockPaneController extends DockTargetController {
                 getRoot().setDividerPositions(dpd);
             }
             for (TreeItem<Pair<ObjectProperty, Properties>> item : targetRoot.getChildren()) {
-                //pane.getItems().add(buildFrom(item));
                 String s = item.getValue().getValue().getProperty("id");
                 Node node = buildFrom(pane, item);
                 if ((node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
@@ -881,24 +877,42 @@ public class DockPaneController extends DockTargetController {
                         DockRegistry.dockable(node).dockableController().getTargetController().undock(node);
                     }
                     pane.getItems().add(idx, node);
-                    //pane.dock(idx, DockRegistry.dockable(node), pane);
                 }
-
-//                int idx = targetRoot.getChildren().indexOf(item);
-//                pane.dock(idx, DockRegistry.dockable(buildFrom(pane,item)), pane);
             }
+            return pane;
         }
 
-        protected Node buildFrom(DockPane dockPane, TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
-            Pair<ObjectProperty, Properties> pair = targetRoot.getValue();
+        protected Node buildFrom(DockPane dockPane, TreeItem<Pair<ObjectProperty, Properties>> sourceItem) {
+            Pair<ObjectProperty, Properties> pair = sourceItem.getValue();
+            sourceItem.setExpanded(true);
             if (pair.getKey().get() instanceof Node) {
-                return (Node) pair.getKey().get();
+                Node node = (Node) pair.getKey().get();
+                if ( DockRegistry.isDockTarget(node)) {
+                    return restore(sourceItem);
+                }
+                return node;
             }
+            System.err.println("!!!!!!!!!!!!!!! BUILD FROM");
+            DockSplitPane pane = null;
+            String className = sourceItem.getValue().getValue().getProperty(CLASS_NAME_ATTR);
+            if (VPane.class.getName().equals(className)) {
+                pane = new VPane();
+            } else if (HPane.class.getName().equals(className)) {
+                pane = new HPane();
+            } else if (DockSplitPane.class.getName().equals(className)) {
+                pane = new DockSplitPane();
+            } //else if {
+                
+            //}
             //
-            // We consider that itemObject ia a string
+            // ??? TO DO
             //
-            //String clazz = (String) pair.getItemObject();
-            DockSplitPane pane = new DockSplitPane();
+            if (pane == null) {
+                return null; // ????
+            }
+
+            pane.setId(sourceItem.getValue().getValue().getProperty("id"));
+
             addDividersListener((DockPane) DockPaneController.this.getTargetNode(), pane);
 
             String p = pair.getValue().getProperty(ORIENTATION);
@@ -917,20 +931,21 @@ public class DockPaneController extends DockTargetController {
                 });
                 pane.setDividerPositions(dpd);
             }
-            for (TreeItem<Pair<ObjectProperty, Properties>> item : targetRoot.getChildren()) {
+            for (TreeItem<Pair<ObjectProperty, Properties>> item : sourceItem.getChildren()) {
+                item.setExpanded(true);
                 Node node = buildFrom(dockPane, item);
                 if ((node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
                     pane.getItems().add(node);
-                } else if (DockRegistry.isDockable(node) && ! DockRegistry.isDockTarget(node)) {
-                    int idx = targetRoot.getChildren().indexOf(item);
+                } else if (DockRegistry.isDockable(node) && !DockRegistry.isDockTarget(node)) {
+                    int idx = sourceItem.getChildren().indexOf(item);
                     if (DockRegistry.dockable(node).dockableController().getTargetController() != null) {
                         DockRegistry.dockable(node).dockableController().getTargetController().undock(node);
                     }
                     pane.getItems().add(idx, node);
                 } else if (DockRegistry.isDockTarget(node)) {
                     String s = item.getValue().getValue().getProperty("Id");
-                    String s1 = targetRoot.getValue().getValue().getProperty("Id");
-                    int idx = targetRoot.getChildren().indexOf(item);
+                    String s1 = sourceItem.getValue().getValue().getProperty("Id");
+                    int idx = sourceItem.getChildren().indexOf(item);
                     pane.getItems().add(idx, node);
                 }
             }

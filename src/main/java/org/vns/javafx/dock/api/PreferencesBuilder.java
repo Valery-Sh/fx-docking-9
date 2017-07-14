@@ -18,11 +18,9 @@ public interface PreferencesBuilder {
     public static int REGISTERED_OPTION = 0;
     public static int ISDOCKABLE_OPTION = 2;
     public static int ISDOCKTARGET_OPTION = 4;
-    //TreeItem<Pair<ObjectProperty, Properties>> build();
+    
     TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName);
-
-    void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot);
-
+    Node restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot);
     Map<String, String> getProperties(Object node);
 
     static TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName, Object obj, boolean... options ) {
@@ -54,6 +52,7 @@ public interface PreferencesBuilder {
                 pair.getValue().put(ISDOCKTARGET_ATTR, "yes");
             }
         } else if ( options.length > 0 && options[REGISTERED_OPTION]) {
+            System.err.println("PreferencesBuilder fieldName = " + fieldName);
             pair.getValue().put(REGSTERED_ATTR, "yes");
         }
         return retval;

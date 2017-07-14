@@ -101,7 +101,7 @@ public abstract class AbstractPreferencesBuilder implements PreferencesBuilder {
     }
 
     @Override
-    public void restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
+    public Node restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

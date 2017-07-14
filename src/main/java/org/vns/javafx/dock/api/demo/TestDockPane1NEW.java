@@ -64,7 +64,7 @@ public class TestDockPane1NEW extends Application {
         DockNode dnc1 = new DockNode();
         DockNode dnc2 = new DockNode();
         DockNode dnc3 = new DockNode();
-        //loader.reset();
+        //loader.resetPreferences();
         //DockNode dnc2 = new DockNode("DockNodeControl dnc2");
         dnc3.setTitle("DockNodeControl dnc3");
         
@@ -101,10 +101,10 @@ public class TestDockPane1NEW extends Application {
         Tab tab = new Tab("Not dock Tab",tabButton1);
         //dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
-        //loader.reset();
+        //loader.resetPreferences();
         //loader.load();
         //System.err.println(" TEST ===================================");
-        //loader.reset();
+        //loader.resetPreferences();
         //loader.save(dockPane1);
         //System.err.println(loader.preferencesStringValue(dockPane1));
         //System.err.println("TEST ===================================");
