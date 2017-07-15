@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -886,6 +887,11 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         @Override
         public TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setOnBuildItem(Consumer<TreeItem<Pair<ObjectProperty, Properties>>> consumer) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 

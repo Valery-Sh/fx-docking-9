@@ -44,10 +44,10 @@ public abstract class AbstractPreferencesBuilder implements PreferencesBuilder {
         return this.targetController;
     }
 
-    public AbstractDockLoader getDockLoader() {
+/*    public AbstractDockLoader getDockLoader() {
         return getTargetController().getDockLoader();
     }
-
+*/
     /**
      * Try to find a registered object which is equal to the given object and
      * return it's field name if found.
@@ -79,22 +79,22 @@ public abstract class AbstractPreferencesBuilder implements PreferencesBuilder {
         retval.setValue(pair);
         setXmlProperties(pair);
         pair.getValue().put(IGNORE_ATTR, retval);
-        //if (fieldName != null) {
-        pair.getValue().put(FIELD_NAME_ATTR, fieldName);
-        //}
+        if (fieldName != null) {
+            pair.getValue().put(FIELD_NAME_ATTR, fieldName);
+        }
         if (node.getId() != null) {
             pair.getValue().put("id", node.getId());
         }
         pair.getValue().put(TAG_NAME_ATTR, node.getClass().getSimpleName());
         pair.getValue().put(CLASS_NAME_ATTR, node.getClass().getName());
         pair.getValue().put(ISDOCKTARGET_ATTR, "yes");
-        pair.getValue().put(REGSTERED_ATTR, "yes");
+        //pair.getValue().put(REGSTERED_ATTR, "yes");
         if (DockRegistry.isDockable(node)) {
             pair.getValue().put(ISDOCKABLE_ATTR, "yes");
         }
 
         buildChildren(retval);
-        getDockLoader().notifyTreeItemBuilt(retval);
+        //getDockLoader().notifyTreeItemBuilt(retval);
 
         return retval;
 

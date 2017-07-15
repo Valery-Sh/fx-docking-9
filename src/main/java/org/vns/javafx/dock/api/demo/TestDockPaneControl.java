@@ -43,6 +43,9 @@ public class TestDockPaneControl extends Application {
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DockLoader loader = new DockLoader(TestDockPaneControl.class);
+        
+        //loader.setSaveOnClose(true);
+        
         DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         DockPane dockPane2 = new DockPane();
         dockPane2.setId("dockPane2");
@@ -191,7 +194,7 @@ public class TestDockPaneControl extends Application {
         //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
         root.getChildren().add(dockPane1);
 
-        scene = new Scene(root, 250, 250);
+        scene = new Scene(root, 350, 350);
 
         scene.getRoot().setStyle("-fx-background-color: rgb(223,223,223)");
 

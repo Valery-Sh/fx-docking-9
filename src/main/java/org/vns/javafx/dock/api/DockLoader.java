@@ -15,7 +15,10 @@
  */
 package org.vns.javafx.dock.api;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -28,7 +31,7 @@ import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 public class DockLoader extends AbstractDockLoader {
 
@@ -68,7 +71,7 @@ public class DockLoader extends AbstractDockLoader {
             prefProps.setProperty("title", "descriptor");
         }
         //
-        // Create properies for a dock target and set a DUMMY property.
+        // Create properies for a dock targets and set a DUMMY property.
         // This allows to escape an excess creation of preferences entries 
         //
         prefProps = cp.next(SAVE).getProperties(DOCKTARGETS);
@@ -77,17 +80,17 @@ public class DockLoader extends AbstractDockLoader {
         }
         prefProps.setProperty(DUMMY_KEY, DUMMY_KEY);
 
-        reset();
-        
+        //reset();
         //
         // Copies all Dockable objects which are not DockTarget.
         //
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             if (DockRegistry.isDockable(node) && !DockRegistry.isDockTarget(node)) {
-                TreeItem item = PreferencesBuilder.build(key, node, true);
+                TreeItem item = PreferencesBuilder.build(key, node);
                 getDefaultDockables().put(key, item);
             }
+            getRegistered().put(key, node);
         }
         //
         // Copies all DockTargets objects 
@@ -98,7 +101,6 @@ public class DockLoader extends AbstractDockLoader {
                 getFreeDockTargets().put(key, node);
             }
         }
-
         //
         // 1. Set Dockloader instance to all explicitly registered DockTargets
         // 2. As a result all objects will be implicitly registered
@@ -108,28 +110,19 @@ public class DockLoader extends AbstractDockLoader {
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             if (DockRegistry.isDockTarget(node)) {
-                DockRegistry.dockTarget(node).targetController().setDockLoader(this);
-
-                DockRegistry.dockTarget(node).targetController()
-                        .getPreferencesBuilder()
-                        .build(key);
+                build(key, node);
             }
         }
-        //
-        // Modify defaltDockTarget map. The result map contains only
-        // DockTargets which are not childs of any other DockTarget
-        //
-        getAllDockTargets().forEach((k, v) -> {
-            if (getFreeDockTargets().containsKey(k)) {
-                getDefaultDockTargets().put(k, v);
-            }
-        });
+
         TreeItemStringConverter tc = new TreeItemStringConverter();
-        System.err.println(tc.toString(getDefaultDockTargets().get("dockPane1")));
+
         System.err.println("BEFORE isDestroyed TIME !!!!!! " + (System.currentTimeMillis() - start));
 
-        if ( isDestroyed() ) {
-            
+        boolean needSave = false;
+
+        if (isDestroyed()) {
+            System.err.println(" ---------- isDestroyed -----------------");
+
             resetPreferences();
 
             PrefProperties docktargetProps = cp.next(DEFAULT).getProperties(DOCKTARGETS);
@@ -137,18 +130,13 @@ public class DockLoader extends AbstractDockLoader {
 
             TreeItemStringConverter converter = new TreeItemStringConverter();
 
-            System.err.println("isDestroyed AFTER RESET TIME !!!!!! " + (System.currentTimeMillis() - start));
             if (docktargetProps == null) {
-                System.err.println("isDestroyed CREATE dockTargets");
                 docktargetProps = cp.next(DEFAULT).createProperties(DOCKTARGETS);
             }
             for (String key : getDefaultDockTargets().keySet()) {
-                System.err.println("isDestroyed CREATE dockables");
                 docktargetProps.setProperty(key, converter.toString(getDefaultDockTargets().get(key)));
             }
             docktargetProps.setProperty(DUMMY_KEY, DUMMY_KEY);
-            
-            System.err.println("isDestroyed AFTER DOCKTARGET TIME !!!!!! " + (System.currentTimeMillis() - start));
 
             if (!getDefaultDockables().isEmpty()) {
                 if (dockableProps == null) {
@@ -159,11 +147,8 @@ public class DockLoader extends AbstractDockLoader {
                 }
             }
             dockableProps.setProperty(DUMMY_KEY, DUMMY_KEY);
-            
-            save(true);
-            
-            System.err.println("isDestroyed AFTER DOCKABLES TIME !!!!!! " + (System.currentTimeMillis() - start));
 
+            needSave = true;
         }
 
         Long end = System.currentTimeMillis();
@@ -171,33 +156,28 @@ public class DockLoader extends AbstractDockLoader {
 
         setLoaded(true);
 
+        if (needSave) {
+            save();
+        }
         restore();
-        //Map m = getSaveDockTargets();
-        //System.err.println("========= dockPane1 ====================");
-        //System.err.println(toString("dockPane1"));
-        
+
         System.err.println("LAST !!!!!!!!! TIME !!!!!! " + (System.currentTimeMillis() - start));
     }
 
     @Override
     protected boolean isDestroyed() {
         boolean retval = false;
-        
+
         DockPreferences cp = new DockPreferences(getPreferencesRoot());
         PrefProperties docktargetProps = cp.next(DEFAULT).getProperties(DOCKTARGETS);
         PrefProperties dockableProps = cp.next(DEFAULT).getProperties(DOCKABLES);
 
         TreeItemStringConverter converter = new TreeItemStringConverter();
-        
+
         if (docktargetProps == null || (dockableProps == null && !getDefaultDockables().isEmpty())) {
             retval = true;
         }
         if (!retval) {
-            docktargetProps.forEach((k,v) ->{
-                String s = k;
-                String s1 = v;
-                s1 = "";
-            } );
             if (docktargetProps.size() != getDefaultDockTargets().size() + 1 || dockableProps.size() != getDefaultDockables().size() + 1) {
                 retval = true;
             }
@@ -205,7 +185,7 @@ public class DockLoader extends AbstractDockLoader {
 
         if (!retval) {
             for (String key : getDefaultDockTargets().keySet()) {
-                String s = converter.toString(getDefaultDockTargets().get(key));                
+                String s = converter.toString(getDefaultDockTargets().get(key));
                 if (!s.equals(docktargetProps.getProperty(key))) {
                     retval = true;
                     break;
@@ -214,7 +194,7 @@ public class DockLoader extends AbstractDockLoader {
         }
         if (!retval) {
             for (String key : getDefaultDockables().keySet()) {
-                String s = converter.toString(getDefaultDockables().get(key));                
+                String s = converter.toString(getDefaultDockables().get(key));
                 if (!s.equals(dockableProps.getProperty(key))) {
                     retval = true;
                     break;
@@ -226,60 +206,46 @@ public class DockLoader extends AbstractDockLoader {
 
     @Override
     public void save() {
-        //resetPreferences();
-        save(isLoaded());
-    }
-
-    @Override
-    public void save(DockTarget dockTarget) {
-        save(dockTarget, isLoaded());
+        save(true);
     }
 
     protected void save(boolean loaded) {
-        if ( loaded ) {
-            getSaveDockTargets().clear();
-        } else {
-            
-        }
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().getKey().get();
             if (DockRegistry.isDockTarget(node)) {
-                save(DockRegistry.dockTarget(node),loaded);
+                save(DockRegistry.dockTarget(node), loaded);
             }
         });
     }
 
+    @Override
+    protected void save(DockTarget dockTarget) {
+        save(dockTarget, true);
+    }
+
     protected void save(DockTarget dockTarget, boolean loaded) {
-        
-        String fieldName = getDockTargets().get(dockTarget.target());
+        long start = System.currentTimeMillis();
+
+        String fieldName = getFieldName(dockTarget.target());
+
         if (fieldName == null) {
             return;
         }
-        System.err.println("SAVE field=" + fieldName);
-        boolean saveLoaded = isLoaded();
-        setLoaded(loaded);
-        TreeItem<Pair<ObjectProperty, Properties>> it = dockTarget.targetController()
-                .getPreferencesBuilder()
-                .build(fieldName);
-        setLoaded(saveLoaded);
+
+        TreeItem<Pair<ObjectProperty, Properties>> it = builder(dockTarget.target()).build(fieldName);
+        completeBuild(it, loaded);
+
         TreeItemStringConverter tc = new TreeItemStringConverter();
-        String convertedTarget;
-        if ( loaded ) {
-            convertedTarget = tc.toString(getSaveDockTargets().get(fieldName));
-        } else {
-            convertedTarget = tc.toString(getDefaultDockTargets().get(fieldName));
-        }
+        String convertedTarget = tc.toString(it);
         DockPreferences cp = new DockPreferences(getPreferencesRoot()).next(SAVE);
         cp.getProperties(DOCKTARGETS).setProperty(fieldName, convertedTarget);
-
+        System.err.println("Save time interval = " + (System.currentTimeMillis() - start));
     }
-    
-    
+
     @Override
     public TreeItem<Pair<ObjectProperty, Properties>> restore(DockTarget dockTarget) {
-        String fieldName = getDockTargets().get(dockTarget.target());
+        String fieldName = getFieldName(dockTarget.target());
         DockPane dp = (DockPane) dockTarget.target();
-        System.err.println("111 dp " + dp.getItems().get(0));
         if (fieldName == null) {
             return null;
         }
@@ -289,9 +255,10 @@ public class DockLoader extends AbstractDockLoader {
         if (strItem == null) {
             return null;
         }
-        System.err.println("0 RESTORE:");
+        System.err.println("retore strItem:");
+        System.err.println("---------------");
         System.err.println(strItem);
-        
+        System.err.println("---------------");
         TreeItemStringConverter tc = new TreeItemStringConverter();
         TreeItem<Pair<ObjectProperty, Properties>> item = tc.fromString(strItem);
         //
@@ -302,68 +269,61 @@ public class DockLoader extends AbstractDockLoader {
 
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
             TreeItem<Pair<ObjectProperty, Properties>> it = tv.getTreeItem(i);
-            if (isRegistered(it)) {
-                String s = it.getValue().getValue().getProperty("id");
-                s = it.getValue().getValue().getProperty(CLASS_NAME_ATTR);
-                fieldName = it.getValue().getValue().getProperty(FIELD_NAME_ATTR);
-                System.err.println("DocLoader restore = " + fieldName);
-                it.getValue().getKey().set(getAllRegistered().get(fieldName));
-            }
+            fieldName = it.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+            it.getValue().getKey().set(getRegistered().get(fieldName));
         }
-        System.err.println("1 RESTORE:");
-        System.err.println("222 dp " + dp.getItems().get(0));
-        System.err.println(tc.toString(item));
-        
         dockTarget.targetController().getPreferencesBuilder().restore(item);
-        System.err.println("2 RESTORE:");
-        System.err.println("333 dp " + dp.getItems().get(0));
-        System.err.println(tc.toString(item));
-        
         return item;
     }
-    
+
     @Override
     public void reset() {
-        
-            long start = System.currentTimeMillis();
-            
-            resetPreferences();
-            
-            DockPreferences cp = new DockPreferences(getPreferencesRoot());
 
-            PrefProperties docktargetProps = cp.next(DEFAULT).getProperties(DOCKTARGETS);
-            PrefProperties dockableProps = cp.next(DEFAULT).getProperties(DOCKABLES);
+        long start = System.currentTimeMillis();
 
-            TreeItemStringConverter converter = new TreeItemStringConverter();
+        resetPreferences();
 
-            if (docktargetProps == null) {
-                docktargetProps = cp.next(DEFAULT).createProperties(DOCKTARGETS);
+        DockPreferences cp = new DockPreferences(getPreferencesRoot());
+
+        PrefProperties docktargetProps = cp.next(DEFAULT).getProperties(DOCKTARGETS);
+        PrefProperties dockableProps = cp.next(DEFAULT).getProperties(DOCKABLES);
+
+        TreeItemStringConverter converter = new TreeItemStringConverter();
+
+        if (docktargetProps == null) {
+            docktargetProps = cp.next(DEFAULT).createProperties(DOCKTARGETS);
+        }
+        for (String key : getDefaultDockTargets().keySet()) {
+            docktargetProps.setProperty(key, converter.toString(getDefaultDockTargets().get(key)));
+        }
+
+        docktargetProps.setProperty(DUMMY_KEY, DUMMY_KEY);
+
+        if (!getDefaultDockables().isEmpty()) {
+            if (dockableProps == null) {
+                dockableProps = cp.next(DEFAULT).createProperties(DOCKABLES);
             }
-            for (String key : getDefaultDockTargets().keySet()) {
-                docktargetProps.setProperty(key, converter.toString(getDefaultDockTargets().get(key)));
+            for (String key : getDefaultDockables().keySet()) {
+                dockableProps.setProperty(key, converter.toString(getDefaultDockables().get(key)));
             }
+        }
+        dockableProps.setProperty(DUMMY_KEY, DUMMY_KEY);
 
-            docktargetProps.setProperty(DUMMY_KEY, DUMMY_KEY);
-            System.err.println("reset AFTER DOCKTARGET TIME !!!!!! " + (System.currentTimeMillis() - start));
-            
-            if (!getDefaultDockables().isEmpty()) {
-                if (dockableProps == null) {
-                    dockableProps = cp.next(DEFAULT).createProperties(DOCKABLES);
-                }
-                for (String key : getDefaultDockables().keySet()) {
-                    dockableProps.setProperty(key, converter.toString(getDefaultDockables().get(key)));
-                }
-            }
-            dockableProps.setProperty(DUMMY_KEY, DUMMY_KEY);
-            
-            getSaveDockTargets().clear();
-            save(false);
+        //save(false);
+        getDefaultDockTargets().forEach((k, v) -> {
+            Node node = (Node) v.getValue().getKey().get();
+            TreeItemStringConverter tc = new TreeItemStringConverter();
+            String convertedTarget = tc.toString(v);
+            cp.next(SAVE).getProperties(DOCKTARGETS).setProperty(k, convertedTarget);
+        });
+        restore();
+
+        Platform.runLater(() -> {
             restore();
-            System.err.println("AFTER reset TIME !!!!!! " + (System.currentTimeMillis() - start));
-
+        });
         
     }
-    
+
     @Override
     protected void resetPreferences() {
         DockPreferences cp = new DockPreferences(getPreferencesRoot());
@@ -389,7 +349,7 @@ public class DockLoader extends AbstractDockLoader {
         }
 
         prefProps = cp.next(SAVE).getProperties(DOCKTARGETS);
-        System.err.println("*************** prefProps = " + prefProps);
+
         if (prefProps != null) {
             prefProps.setProperty(DUMMY_KEY, DUMMY_KEY);
             for (String key : prefProps.keys()) {
@@ -398,14 +358,6 @@ public class DockLoader extends AbstractDockLoader {
                 }
             }
         }
+    }
 
-    }
-    public String toString(DockTarget dt) {
-        String fieldName = getDockTargets().get(dt.target());
-        return new TreeItemStringConverter().toString(getSaveDockTargets().get(fieldName));
-    }
-    public String toString(String fieldName) {
-        return new TreeItemStringConverter().toString(getSaveDockTargets().get(fieldName));
-    }
-    
 }

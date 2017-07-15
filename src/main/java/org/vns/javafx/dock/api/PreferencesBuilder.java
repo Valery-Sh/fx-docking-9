@@ -3,6 +3,7 @@ package org.vns.javafx.dock.api;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -44,17 +45,21 @@ public interface PreferencesBuilder {
         
         if (node != null && (DockRegistry.isDockable(node) || DockRegistry.isDockTarget(node))) {
 
-            pair.getValue().put(REGSTERED_ATTR, "yes");
+            //pair.getValue().put(REGSTERED_ATTR, "yes");
             if (DockRegistry.isDockable(node)) {
                 pair.getValue().put(ISDOCKABLE_ATTR, "yes");
             }
             if (DockRegistry.isDockTarget(node)) {
                 pair.getValue().put(ISDOCKTARGET_ATTR, "yes");
             }
-        } else if ( options.length > 0 && options[REGISTERED_OPTION]) {
+        }/* else if ( options.length > 0 && options[REGISTERED_OPTION]) {
             System.err.println("PreferencesBuilder fieldName = " + fieldName);
             pair.getValue().put(REGSTERED_ATTR, "yes");
         }
+*/
         return retval;
     }
+    
+    void setOnBuildItem(Consumer<TreeItem<Pair<ObjectProperty, Properties>>> consumer);
+    
 }
