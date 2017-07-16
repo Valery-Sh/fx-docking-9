@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -24,11 +22,11 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Pair;
-import org.vns.common.xml.javafx.TreeItemStringConverter;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
-
+import static org.vns.javafx.dock.api.PreferencesBuilder.*;
 /**
  *
  * @author Valery Shyshkin
@@ -95,16 +93,16 @@ public class DockLoader extends AbstractDockLoader {
         //
         // Copies all DockTargets objects 
         //
-        for (String key : getExplicitlyRegistered().keySet()) {
+/*        for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             if (DockRegistry.isDockTarget(node)) {
                 getFreeDockTargets().put(key, node);
             }
         }
+*/        
         //
-        // 1. Set Dockloader instance to all explicitly registered DockTargets
-        // 2. As a result all objects will be implicitly registered
-        // 3. The method getDefaultDockables now contains only those dockable
+        // 1. As a result all objects will be implicitly registered
+        // 2. The method getDefaultDockables now contains only those dockable
         //    objects which are not childs of some DockTarget
         //
         for (String key : getExplicitlyRegistered().keySet()) {
@@ -113,7 +111,19 @@ public class DockLoader extends AbstractDockLoader {
                 build(key, node);
             }
         }
-
+        
+/*        Map<String, TreeItem> duplicates = new HashMap<>();
+        duplicates.putAll(getDefaultDockTargets());
+        getDefaultDockTargets().clear();
+        getAllDockTargets().forEach((k,v) -> {
+            if ( ! duplicates.containsKey(k) ) {
+                getDefaultDockTargets().put(k, v);
+            }
+        });
+*/
+        getDefaultDockTargets().forEach((k,v) -> {
+            System.err.println("DEFAULT " + k);
+        });
         TreeItemStringConverter tc = new TreeItemStringConverter();
 
         System.err.println("BEFORE isDestroyed TIME !!!!!! " + (System.currentTimeMillis() - start));

@@ -45,9 +45,10 @@ public class TestDockPaneControl extends Application {
         DockLoader loader = new DockLoader(TestDockPaneControl.class);
         
         //loader.setSaveOnClose(true);
-        
-        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         DockPane dockPane2 = new DockPane();
+        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
+        loader.register("dockPane2", dockPane2);
+        
         dockPane2.setId("dockPane2");
         DockNode dnc1_1 = new DockNode();
         DockNode dnc2_1 = new DockNode();

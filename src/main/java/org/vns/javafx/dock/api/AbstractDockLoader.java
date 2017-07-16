@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +33,8 @@ import javafx.scene.control.TreeView;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
+
+import static org.vns.javafx.dock.api.PreferencesBuilder.*;
 /**
  *
  * @author Valery Shyshkin
@@ -42,12 +43,6 @@ public abstract class AbstractDockLoader {
 
     public static final String PERSIST_KEY = "docloader-stotere-node-key";
 
-    public static final String FIELD_NAME_ATTR = "ld:fieldName";
-    public static final String CLASS_NAME_ATTR = "ld:className";
-    public static final String TAG_NAME_ATTR = "ld:tagName";
-    public static final String IGNORE_ATTR = "ignore:treeItem";
-    public static final String ISDOCKABLE_ATTR = "ld:isdockable";
-    public static final String ISDOCKTARGET_ATTR = "ld:isdocktarget";
 
     private final static List<Node> stateChangedList = FXCollections.observableArrayList();
 
@@ -58,10 +53,7 @@ public abstract class AbstractDockLoader {
     private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> allDockTargets = FXCollections.observableHashMap();
     private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> defaultDockables = FXCollections.observableHashMap();
 
-    private final Map<String, Node> freeDockTargets = FXCollections.observableHashMap();
-
-
-    private String preferencesRoot;
+    private final String preferencesRoot;
 
     private boolean saveOnClose;
 
@@ -173,7 +165,7 @@ public abstract class AbstractDockLoader {
         return explicitlyRegistered;
     }
 
-    public Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getAllDockTargets() {
+    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getAllDockTargets() {
         return allDockTargets;
     }
 
@@ -189,25 +181,12 @@ public abstract class AbstractDockLoader {
         return retval;
     }
 
-    protected Map<String, Node> getFreeDockTargets() {
-        return freeDockTargets;
-    }
 
     protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockTargets() {
-        if ( defaultDockTargets.isEmpty() ) {
-            allDockTargets.forEach((k, v) -> {
-                if (getFreeDockTargets().containsKey(k)) {
-                    defaultDockTargets.put(k, v);
-                }
-            });
-        }
         return defaultDockTargets;
     }
 
-/*    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getAllDockTargets() {
-        return allDockTargets;
-    }
-*/
+
     protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockables() {
         return defaultDockables;
     }
@@ -511,7 +490,8 @@ public abstract class AbstractDockLoader {
         TreeView<Pair<ObjectProperty, Properties>> tv = new TreeView();
         tv.setRoot(root);
         String rootFieldName = root.getValue().getValue().getProperty(FIELD_NAME_ATTR);
-
+        //String parentFieldName = rootFieldName;
+        
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
             Object obj = tv.getTreeItem(i).getValue().getKey().get();
             String fieldName = getFieldName(obj);
@@ -524,15 +504,42 @@ public abstract class AbstractDockLoader {
             tv.getTreeItem(i).getValue().getValue().setProperty(FIELD_NAME_ATTR, fieldName);
             if ( !loaded ) {
                 if ((obj instanceof Node) && DockRegistry.isDockTarget((Node)obj)) {
+                    if ( i == 0 && ! getAllDockTargets().containsKey(fieldName) ) {
+                        getDefaultDockTargets().put(fieldName, tv.getTreeItem(i));
+                    } else if (getAllDockTargets().containsKey(fieldName)) {
+                        getDefaultDockTargets().remove(fieldName);
+                    }
                     getAllDockTargets().put(fieldName, tv.getTreeItem(i));
                 }
                 registered.put(fieldName, obj);
             }
-
-        }
-
+            //
+            // For now we don't use parent dock target anywhere in code
+            //
+            if ( i > 0 && (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
+                TreeItem<Pair<ObjectProperty, Properties>> p = findParentDockTarget(tv,tv.getTreeItem(i));
+                String parentFieldName = p.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+                tv.getTreeItem(i).getValue().getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
+            }
+        }//for
+        
+        
     }
-
+    
+    private TreeItem<Pair<ObjectProperty, Properties>> findParentDockTarget(TreeView tv,TreeItem item) {
+        TreeItem<Pair<ObjectProperty, Properties>> retval = tv.getRoot();
+        TreeItem<Pair<ObjectProperty, Properties>> parent = item.getParent();
+        while ( parent != null ) {
+            Object obj = parent.getValue().getKey().get();            
+            if ( (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
+                retval = parent;
+                break;
+            }
+            
+            parent = parent.getParent();
+        }
+        return retval;
+    }
     protected String getFieldName(Object obj, String rootFieldName, int idx) {
         String fieldName = getFieldName(obj);
         if (fieldName != null) {

@@ -15,7 +15,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Popup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TopNodeHelper;
-import org.vns.javafx.dock.api.DockTarget;
 
 /**
  *

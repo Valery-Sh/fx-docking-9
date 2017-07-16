@@ -867,7 +867,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             it.getProperties().put("tabPane-max-width", String.valueOf(tabPane.getMaxWidth()));
         }
 
-        @Override
         public Map<String, String> getProperties(Object node) {
             Map<String, String> props = FXCollections.observableHashMap();
             if (node instanceof DockTabPane) {
@@ -894,6 +893,9 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         public void setOnBuildItem(Consumer<TreeItem<Pair<ObjectProperty, Properties>>> consumer) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
+        @Override
+        public Consumer<TreeItem<Pair<ObjectProperty, Properties>>> getOnBuildItem() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 }//DockTabPane
