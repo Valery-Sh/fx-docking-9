@@ -32,7 +32,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import org.vns.javafx.dock.api.PositionIndicator;
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -880,21 +879,21 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
 
         @Override
-        public Node restore(TreeItem<Pair<ObjectProperty, Properties>> targetRoot) {
+        public Node restore(TreeItem<Properties> targetRoot) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName) {
+        public TreeItem<Properties> build(String fieldName) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public void setOnBuildItem(Consumer<TreeItem<Pair<ObjectProperty, Properties>>> consumer) {
+        public void setOnBuildItem(Consumer<TreeItem<Properties>> consumer) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         @Override
-        public Consumer<TreeItem<Pair<ObjectProperty, Properties>>> getOnBuildItem() {
+        public Consumer<TreeItem<Properties>> getOnBuildItem() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }

@@ -1,13 +1,9 @@
 package org.vns.javafx.dock.api;
 
-import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import javafx.util.Pair;
 
 /**
  * Defines the methods needed to convert a {@code Scene Graph }  node to a tree object of
@@ -24,7 +20,7 @@ import javafx.util.Pair;
  * @author Valery Shyshkin
  */
 public interface DockTreeItemBuilder {
-    
+    public static final Object OBJECT_ATTR = "ignore:object";
     public static final String FIELD_NAME_ATTR = "ld:fieldName";
     public static final String CLASS_NAME_ATTR = "ld:className";
     public static final String TAG_NAME_ATTR = "ld:tagName";
@@ -91,7 +87,7 @@ public interface DockTreeItemBuilder {
      * if the value of the {@code fieldName} parameter
      * is not null. Typically, this value is different from {@code null} 
      * only for the root {@code TreeItem}. For its children, this value 
-     * is set by the{@link org.vns.javafx.dock.api.DockLoader }
+     * is set by the{@link org.vns.javafx.dock.api.DockStateLoader }
      * </p>
      * <p>
      * In addition to the specialized properties mentioned above, the 
@@ -107,7 +103,7 @@ public interface DockTreeItemBuilder {
      * @return an object of type {@code javafx.scene.control.TreeItem}
      * @see #build()
      */
-    TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName);
+    TreeItem<Properties> build(String fieldName);
     /**
      * This is a handy method used when you need to call the 
      * {@link #build(java.lang.String) } method with a parameter value 
@@ -116,7 +112,7 @@ public interface DockTreeItemBuilder {
      * @return an object of type {@code javafx.scene.control.TreeItem}
      * @see #build(java.lang.String) 
      */
-    default TreeItem<Pair<ObjectProperty, Properties>> build() {
+    default TreeItem<Properties> build() {
         return build(null);
     }
     /**
@@ -128,11 +124,11 @@ public interface DockTreeItemBuilder {
      * @param root the item to start restore from
      * @return the object of type {@code Node } 
      */
-    Node restore(TreeItem<Pair<ObjectProperty, Properties>> root);
+    Node restore(TreeItem<Properties> root);
 
-    void setOnBuildItem(Consumer<TreeItem<Pair<ObjectProperty, Properties>>> consumer);
+    void setOnBuildItem(Consumer<TreeItem<Properties>> consumer);
 
-    Consumer<TreeItem<Pair<ObjectProperty, Properties>>> getOnBuildItem();
+    Consumer<TreeItem<Properties>> getOnBuildItem();
 
     /**
      * A convenient method when the value of the field name is null. It simply 
@@ -143,7 +139,7 @@ public interface DockTreeItemBuilder {
      * @return an object of type {@code javafx.scene.control.TreeItem}
      * @see #build(java.lang.String,java.lang.Object) 
      */
-    static TreeItem<Pair<ObjectProperty, Properties>> build(Object obj) {
+    static TreeItem<Properties> build(Object obj) {
         return build(null, obj);
     }
     /**
@@ -172,35 +168,36 @@ public interface DockTreeItemBuilder {
      * @return an object of type {@code javafx.scene.control.TreeItem}
      * @see #build(java.lang.Object) 
      */
-    static TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName, Object obj) {
+    static TreeItem<Properties> build(String fieldName, Object obj) {
         if (obj == null) {
             return null;
         }
-        TreeItem<Pair<ObjectProperty, Properties>> retval = new TreeItem<>();
+        TreeItem<Properties> retval = new TreeItem<>();
         retval.setExpanded(true);
         Node node = null;
         if (obj instanceof Node) {
             node = (Node) obj;
         }
-        Pair<ObjectProperty, Properties> pair = new Pair(new SimpleObjectProperty(obj), new Properties());
-        pair.getValue().put(TREEITEM_ATTR, retval);
+        Properties props = new Properties();
+        props.put(OBJECT_ATTR, obj);
+        props.put(TREEITEM_ATTR, retval);
         if (fieldName != null) {
-            pair.getValue().put(FIELD_NAME_ATTR, fieldName);
+            props.put(FIELD_NAME_ATTR, fieldName);
         }
-        pair.getValue().put(CLASS_NAME_ATTR, obj.getClass().getName());
-        pair.getValue().put(TAG_NAME_ATTR, obj.getClass().getSimpleName());
-        retval.setValue(pair);
+        props.put(CLASS_NAME_ATTR, obj.getClass().getName());
+        props.put(TAG_NAME_ATTR, obj.getClass().getSimpleName());
+        retval.setValue(props);
 
         if (node != null && node.getId() != null) {
-            pair.getValue().put("id", node.getId());
+            props.put("id", node.getId());
         }
 
         if (node != null && (DockRegistry.isDockable(node) || DockRegistry.isDockTarget(node))) {
             if (DockRegistry.isDockable(node)) {
-                pair.getValue().put(ISDOCKABLE_ATTR, "yes");
+                props.put(ISDOCKABLE_ATTR, "yes");
             }
             if (DockRegistry.isDockTarget(node)) {
-                pair.getValue().put(ISDOCKTARGET_ATTR, "yes");
+                props.put(ISDOCKTARGET_ATTR, "yes");
             }
         }
         return retval;

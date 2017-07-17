@@ -17,11 +17,9 @@ package org.vns.javafx.dock.api;
 
 import java.util.Properties;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.util.Pair;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
@@ -221,7 +219,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
     protected void save(boolean loaded) {
         getDefaultDockTargets().forEach((k, v) -> {
-            Node node = (Node) v.getValue().getKey().get();
+            Node node = (Node) v.getValue().get(OBJECT_ATTR);
             if (DockRegistry.isDockTarget(node)) {
                 save(DockRegistry.dockTarget(node), loaded);
             }
@@ -242,7 +240,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
             return;
         }
 
-        TreeItem<Pair<ObjectProperty, Properties>> it = builder(dockTarget.target()).build(fieldName);
+        TreeItem<Properties> it = builder(dockTarget.target()).build(fieldName);
         completeBuild(it, loaded);
 
         TreeItemStringConverter tc = new TreeItemStringConverter();
@@ -253,7 +251,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
     }
 
     @Override
-    public TreeItem<Pair<ObjectProperty, Properties>> restore(DockTarget dockTarget) {
+    public TreeItem<Properties> restore(DockTarget dockTarget) {
         String fieldName = getFieldName(dockTarget.target());
         DockPane dp = (DockPane) dockTarget.target();
         if (fieldName == null) {
@@ -270,7 +268,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
         System.err.println(strItem);
         System.err.println("---------------");
         TreeItemStringConverter tc = new TreeItemStringConverter();
-        TreeItem<Pair<ObjectProperty, Properties>> item = tc.fromString(strItem);
+        TreeItem<Properties> item = tc.fromString(strItem);
         //
         // Assign a registered (explicitly or implicitly) value for the items
         //
@@ -278,9 +276,9 @@ public class DockStateLoader extends AbstractDockStateLoader {
         tv.setRoot(item);
 
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
-            TreeItem<Pair<ObjectProperty, Properties>> it = tv.getTreeItem(i);
-            fieldName = it.getValue().getValue().getProperty(FIELD_NAME_ATTR);
-            it.getValue().getKey().set(getRegistered().get(fieldName));
+            TreeItem<Properties> it = tv.getTreeItem(i);
+            fieldName = it.getValue().getProperty(FIELD_NAME_ATTR);
+            it.getValue().put(OBJECT_ATTR,getRegistered().get(fieldName));
         }
         dockTarget.targetController().getDockTreeTemBuilder().restore(item);
         return item;
@@ -321,7 +319,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
         //save(false);
         getDefaultDockTargets().forEach((k, v) -> {
-            Node node = (Node) v.getValue().getKey().get();
+            Node node = (Node) v.getValue().get(OBJECT_ATTR);
             TreeItemStringConverter tc = new TreeItemStringConverter();
             String convertedTarget = tc.toString(v);
             cp.next(SAVE).getProperties(DOCKTARGETS).setProperty(k, convertedTarget);

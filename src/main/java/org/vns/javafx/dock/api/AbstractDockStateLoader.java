@@ -21,7 +21,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -32,7 +31,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 
 import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
 /**
@@ -53,9 +51,9 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
     private final Map<String, Node> explicitlyRegistered = FXCollections.observableHashMap();
     private final Map<String, Object> registered = FXCollections.observableHashMap();
 
-    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> defaultDockTargets = FXCollections.observableHashMap();
-    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> allDockTargets = FXCollections.observableHashMap();
-    private final Map<String, TreeItem<Pair<ObjectProperty, Properties>>> defaultDockables = FXCollections.observableHashMap();
+    private final Map<String, TreeItem<Properties>> defaultDockTargets = FXCollections.observableHashMap();
+    private final Map<String, TreeItem<Properties>> allDockTargets = FXCollections.observableHashMap();
+    private final Map<String, TreeItem<Properties>> defaultDockables = FXCollections.observableHashMap();
 
     private final String preferencesRoot;
 
@@ -107,7 +105,7 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
      *   is the root of TreeItem's tree which corresponds to the {@code Scene Graph } 
      *   of the node specified by the parameter {@code dockTarget}.
      */
-    protected abstract TreeItem<Pair<ObjectProperty, Properties>> restore(DockTarget dockTarget);
+    protected abstract TreeItem<Properties> restore(DockTarget dockTarget);
     /**
      * Restores the previously saved  state of all specified  node.
      * Just scans all registered objects of type of type {@link org.vns.javafx.dock.api.DockTarget }
@@ -185,7 +183,7 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
         return explicitlyRegistered;
     }
 
-    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getAllDockTargets() {
+    protected Map<String, TreeItem<Properties>> getAllDockTargets() {
         return allDockTargets;
     }
 
@@ -202,12 +200,12 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
     }
 
 
-    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockTargets() {
+    protected Map<String, TreeItem<Properties>> getDefaultDockTargets() {
         return defaultDockTargets;
     }
 
 
-    protected Map<String, TreeItem<Pair<ObjectProperty, Properties>>> getDefaultDockables() {
+    protected Map<String, TreeItem<Properties>> getDefaultDockables() {
         return defaultDockables;
     }
 
@@ -330,8 +328,8 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
         return builder;
     }
 
-    protected TreeItem<Pair<ObjectProperty, Properties>> build(String fieldName, Node dockTarget) {
-        TreeItem<Pair<ObjectProperty, Properties>> item = builder(dockTarget).build(fieldName);
+    protected TreeItem<Properties> build(String fieldName, Node dockTarget) {
+        TreeItem<Properties> item = builder(dockTarget).build(fieldName);
         completeBuild(item, false);
         return item;
     }
@@ -341,12 +339,12 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
      * @param root the object
      * @param loaded if {@code treu }
      */
-    protected void completeBuild(TreeItem<Pair<ObjectProperty, Properties>> root, boolean loaded) {
-        TreeView<Pair<ObjectProperty, Properties>> tv = new TreeView();
+    protected void completeBuild(TreeItem<Properties> root, boolean loaded) {
+        TreeView<Properties> tv = new TreeView();
         tv.setRoot(root);
-        String rootFieldName = root.getValue().getValue().getProperty(FIELD_NAME_ATTR);
+        String rootFieldName = root.getValue().getProperty(FIELD_NAME_ATTR);
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
-            Object obj = tv.getTreeItem(i).getValue().getKey().get();
+            Object obj = tv.getTreeItem(i).getValue().get(OBJECT_ATTR);
             String fieldName = getFieldName(obj);
             if (fieldName == null) {
                 fieldName = rootFieldName + "_" + i + "_" + obj.getClass().getSimpleName();
@@ -354,7 +352,7 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
                     fieldName += "_loaded";
                 }
             }
-            tv.getTreeItem(i).getValue().getValue().setProperty(FIELD_NAME_ATTR, fieldName);
+            tv.getTreeItem(i).getValue().setProperty(FIELD_NAME_ATTR, fieldName);
             if ( !loaded ) {
                 if ((obj instanceof Node) && DockRegistry.isDockTarget((Node)obj)) {
                     if ( i == 0 && ! getAllDockTargets().containsKey(fieldName) ) {
@@ -370,20 +368,20 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
             // For now we don't use parent dock target anywhere in code
             //
             if ( i > 0 && (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
-                TreeItem<Pair<ObjectProperty, Properties>> p = findParentDockTarget(tv,tv.getTreeItem(i));
-                String parentFieldName = p.getValue().getValue().getProperty(FIELD_NAME_ATTR);
-                tv.getTreeItem(i).getValue().getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
+                TreeItem<Properties> p = findParentDockTarget(tv,tv.getTreeItem(i));
+                String parentFieldName = p.getValue().getProperty(FIELD_NAME_ATTR);
+                tv.getTreeItem(i).getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
             }
         }//for
         
         
     }
     
-    private TreeItem<Pair<ObjectProperty, Properties>> findParentDockTarget(TreeView tv,TreeItem item) {
-        TreeItem<Pair<ObjectProperty, Properties>> retval = tv.getRoot();
-        TreeItem<Pair<ObjectProperty, Properties>> parent = item.getParent();
+    private TreeItem<Properties> findParentDockTarget(TreeView tv,TreeItem item) {
+        TreeItem<Properties> retval = tv.getRoot();
+        TreeItem<Properties> parent = item.getParent();
         while ( parent != null ) {
-            Object obj = parent.getValue().getKey().get();            
+            Object obj = parent.getValue().get(OBJECT_ATTR);            
             if ( (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
                 retval = parent;
                 break;

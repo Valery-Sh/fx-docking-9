@@ -142,7 +142,8 @@ public abstract class DockTargetController {
     
     public boolean isAcceptable(Node node) {
         //if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
-        return  dockLoader != null && dockLoader.isRegistered(node);
+        
+        return  (dockLoader != null && dockLoader.isRegistered(node)) || dockLoader == null;
     }
     
     protected void dock(Point2D mousePos, Dockable dockable) {
