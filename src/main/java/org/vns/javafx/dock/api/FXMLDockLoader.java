@@ -32,7 +32,7 @@ import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
  *
  * @author Valery Shysshkin
  */
-public class FXMLDockLoader extends DockLoader {
+public class FXMLDockLoader extends DockStateLoader {
 
     private Parent fxmlRoot;
     private Object controller;

@@ -67,7 +67,7 @@ public class DockPaneControllerTest {
         HBox root = new HBox();
         root.getChildren().add(stackPane);
 
-        DockLoader loader = new DockLoader(TestDockPaneControl.class);
+        DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
         dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         dockPane2 = (DockPane) loader.register("dockPane2", DockPane.class);
         

@@ -31,7 +31,7 @@ import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
  *
  * @author Valery Shyshkin
  */
-public class DockLoader extends AbstractDockLoader {
+public class DockStateLoader extends AbstractDockStateLoader {
 
     public static String DUMMY_KEY = "DUMMY_123_DUMMY_321";
     public static String DEFAULT = "default";
@@ -40,11 +40,11 @@ public class DockLoader extends AbstractDockLoader {
     public static String SAVE = "save";
     public static String DESCRIPTOR = "descriptor";
 
-    protected DockLoader(String preferencesRoot) {
+    protected DockStateLoader(String preferencesRoot) {
         super(preferencesRoot);
     }
 
-    public DockLoader(Class clazz) {
+    public DockStateLoader(Class clazz) {
         super(clazz);
     }
 

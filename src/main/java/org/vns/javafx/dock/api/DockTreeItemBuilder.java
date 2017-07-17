@@ -24,7 +24,7 @@ import javafx.util.Pair;
  * @author Valery Shyshkin
  */
 public interface DockTreeItemBuilder {
-
+    
     public static final String FIELD_NAME_ATTR = "ld:fieldName";
     public static final String CLASS_NAME_ATTR = "ld:className";
     public static final String TAG_NAME_ATTR = "ld:tagName";

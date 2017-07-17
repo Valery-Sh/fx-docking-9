@@ -21,7 +21,7 @@ import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.DockableController;
-import org.vns.javafx.dock.api.DockLoader;
+import org.vns.javafx.dock.api.DockStateLoader;
 
 /**
  *
@@ -42,7 +42,7 @@ public class TestDockPaneControl extends Application {
         StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DockLoader loader = new DockLoader(TestDockPaneControl.class);
+        DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
         
         //loader.setSaveOnClose(true);
         DockPane dockPane2 = new DockPane();

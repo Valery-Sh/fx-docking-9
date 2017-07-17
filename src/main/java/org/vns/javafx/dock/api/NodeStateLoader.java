@@ -47,17 +47,22 @@ import javafx.scene.Node;
  *
  * @author Valery Shyshkin
  */
-public interface NodeStateRegistry {
+public interface NodeStateLoader {
+
     /**
-     * @return {@code true} if the method {@link #load() } has already finished. 
+     * Return the boolean value which specifies has the method load() already
+     * finished or not.      
+     * @return {@code true} if the method {@code load() } has already finished. 
      *   {@code false } otherwise.
      */
     boolean isLoaded();
+
     /**
      * Checks whether the specified object was registered early.
+     *
      * @param node the object to be checked
-     * @return {@code true } if the object was registered. {@code false } 
-     *  otherwise.
+     * @return {@code true } if the object was registered. {@code false }
+     * otherwise.
      */
     boolean isRegistered(Node node);
 
@@ -80,28 +85,29 @@ public interface NodeStateRegistry {
     void reset();
 
     /**
-     * Applying the  method saves the current state of the
-     * registered objects. Running a method for execution can be performed by
-     * the application when certain user actions are performed, for example,
-     * clicking a button or executing a menu item or closing the main window.
+     * Applying the method saves the current state of the registered objects.
+     * Running a method for execution can be performed by the application when
+     * certain user actions are performed, for example, clicking a button or
+     * executing a menu item or closing the main window.
      */
     void save();
+
     /**
-     * Registers the specified object of type {@code javafx.scene.Node} with 
-     * the given {@code fieldName}.
-     * 
-     * @param fieldName the string value used as identifier for the node to be 
+     * Registers the specified object of type {@code javafx.scene.Node} with the
+     * given {@code fieldName}.
+     *
+     * @param fieldName the string value used as identifier for the node to be
      * registered.
-     * 
+     *
      * @param node the object to be registered
      */
     void register(String fieldName, Node node);
+
     /**
-     * Creates a new object of the specified class and registered it with the 
-     * given name.
-     * the given {@code fieldName}.
-     * 
-     * @param fieldName the string value used as identifier for the node to be 
+     * Creates a new object of the specified class and registered it with the
+     * given name. the given {@code fieldName}.
+     *
+     * @param fieldName the string value used as identifier for the node to be
      * registered.
      * @param clazz the clazz used to create and register an object.
      * @return a new registered object

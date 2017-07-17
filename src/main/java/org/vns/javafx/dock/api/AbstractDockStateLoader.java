@@ -37,7 +37,7 @@ import javafx.util.Pair;
 import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
 /**
  * The base implementation of the interface 
- * {@link org.vns.javafx.dock.api.NodeStateRegistry }.
+ * {@link org.vns.javafx.dock.api.NodeStateLoader }.
  * The class uses both {@code java.util.prefs.Preferences }  and {@code xml }
  * technology to save/restore state of objects of type 
  * {@link org.vns.javafx.dock.api.DockTarget } and 
@@ -45,7 +45,7 @@ import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
  * 
  * @author Valery Shyshkin
  */
-public abstract class AbstractDockLoader implements NodeStateRegistry{
+public abstract class AbstractDockStateLoader implements NodeStateLoader{
 
 
     private final static List<Node> stateChangedList = FXCollections.observableArrayList();
@@ -69,7 +69,7 @@ public abstract class AbstractDockLoader implements NodeStateRegistry{
      * 
      * @param prefEntry the preferences node's relative path
      */
-    protected AbstractDockLoader(String prefEntry) {
+    protected AbstractDockStateLoader(String prefEntry) {
         this.preferencesRoot = prefEntry;
     }
     /**
@@ -80,7 +80,7 @@ public abstract class AbstractDockLoader implements NodeStateRegistry{
      * 
      * @param clazz used to create a preferences root node path.
      */
-    protected AbstractDockLoader(Class clazz) {
+    protected AbstractDockStateLoader(Class clazz) {
         preferencesRoot = clazz.getName().replace(".", "/");
     }
     /**
@@ -155,7 +155,7 @@ public abstract class AbstractDockLoader implements NodeStateRegistry{
      * The objects which were registered by applying one of the 
      * {@code register} methods are considered as {@code explicitely registered}.
      * 
-     * @return Returns a map of all registered explicitely or implicitly objects
+     * @return a map of all registered explicitely or implicitly objects
      */
     protected Map<String, Object> getRegistered() {
         return registered;
@@ -263,7 +263,7 @@ public abstract class AbstractDockLoader implements NodeStateRegistry{
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(AbstractDockLoader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AbstractDockStateLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
