@@ -141,13 +141,8 @@ public abstract class DockTargetController {
 
     
     public boolean isAcceptable(Node node) {
-        
-        boolean retval = true;
-        
-        if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
-            retval = dockLoader.isRegistered(node);
-        }
-        return retval;
+        //if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
+        return  dockLoader != null && dockLoader.isRegistered(node);
     }
     
     protected void dock(Point2D mousePos, Dockable dockable) {
@@ -221,7 +216,7 @@ public abstract class DockTargetController {
      */
     public abstract void remove(Node dockNode);
     
-    public PreferencesBuilder getPreferencesBuilder() {
+    public DockTreeItemBuilder getDockTreeTemBuilder() {
         return null;
     }
     

@@ -90,7 +90,7 @@ public class ScenePaneController extends DockTargetController {
     }
 
     @Override
-    public PreferencesBuilder getPreferencesBuilder() {
+    public DockTreeItemBuilder getDockTreeTemBuilder() {
         return null;
     }
 

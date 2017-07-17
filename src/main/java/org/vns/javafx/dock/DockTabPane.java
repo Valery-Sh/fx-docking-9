@@ -39,8 +39,8 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.PreferencesBuilder;
 import org.vns.javafx.dock.api.PreferencesItem;
+import org.vns.javafx.dock.api.DockTreeItemBuilder;
 
 /**
  *
@@ -219,7 +219,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
 
         @Override
-        public PreferencesBuilder getPreferencesBuilder() {
+        public DockTreeItemBuilder getDockTreeTemBuilder() {
             return new DockTabPanePreferencesBuilder(this);
         }
 
@@ -774,7 +774,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     }
 
-    public static class DockTabPanePreferencesBuilder implements PreferencesBuilder {
+    public static class DockTabPanePreferencesBuilder implements DockTreeItemBuilder {
 
         private TabPaneController targetController;
 

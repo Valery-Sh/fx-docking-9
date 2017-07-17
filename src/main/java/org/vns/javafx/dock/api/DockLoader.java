@@ -26,7 +26,7 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
-import static org.vns.javafx.dock.api.PreferencesBuilder.*;
+import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
 /**
  *
  * @author Valery Shyshkin
@@ -85,7 +85,7 @@ public class DockLoader extends AbstractDockLoader {
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             if (DockRegistry.isDockable(node) && !DockRegistry.isDockTarget(node)) {
-                TreeItem item = PreferencesBuilder.build(key, node);
+                TreeItem item = DockTreeItemBuilder.build(key, node);
                 getDefaultDockables().put(key, item);
             }
             getRegistered().put(key, node);
@@ -282,7 +282,7 @@ public class DockLoader extends AbstractDockLoader {
             fieldName = it.getValue().getValue().getProperty(FIELD_NAME_ATTR);
             it.getValue().getKey().set(getRegistered().get(fieldName));
         }
-        dockTarget.targetController().getPreferencesBuilder().restore(item);
+        dockTarget.targetController().getDockTreeTemBuilder().restore(item);
         return item;
     }
 

@@ -128,7 +128,7 @@ public class TestDockPane1NEW extends Application {
             System.err.println("----------  hs1.sz=" + hs1.getItems().size());
             //loader.save(dockPane1);
             //loader.save(dockPane1);
-            loader.reload();
+            //loader.reload();
             //System.err.println(loader.toString(dockPane1));
         });
         b2.setOnAction(a -> {
