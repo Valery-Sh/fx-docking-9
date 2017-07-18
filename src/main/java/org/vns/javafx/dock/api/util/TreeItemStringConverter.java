@@ -2,9 +2,9 @@ package org.vns.javafx.dock.api.util;
 
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TreeItem;
 import javafx.util.StringConverter;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -66,6 +66,7 @@ public class TreeItemStringConverter extends StringConverter<TreeItem<Properties
         props.put(TREEITEM_ATTR, item);
 
         Document document = XmlDocBuilder.parse(new ByteArrayInputStream(str.getBytes()));
+
         Element rootEl = document.getDocumentElement();
         NodeList childs = rootEl.getChildNodes();
         Element firstEl = null;

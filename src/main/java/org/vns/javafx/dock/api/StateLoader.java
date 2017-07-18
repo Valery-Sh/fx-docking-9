@@ -47,7 +47,7 @@ import javafx.scene.Node;
  *
  * @author Valery Shyshkin
  */
-public interface NodeStateLoader {
+public interface StateLoader {
 
     /**
      * Return the boolean value which specifies has the method load() already
@@ -109,9 +109,9 @@ public interface NodeStateLoader {
      *
      * @param fieldName the string value used as identifier for the node to be
      * registered.
-     * @param clazz the clazz used to create and register an object.
+     * @param clazz the  class used to create and register an object.
      * @return a new registered object
      */
-    Node register(String fieldName, Class clazz);
+    Node register(String fieldName, Class<? extends Node> clazz);
 
 }

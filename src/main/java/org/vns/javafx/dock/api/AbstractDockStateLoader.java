@@ -33,18 +33,18 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
+
 /**
  * The base implementation of the interface 
- * {@link org.vns.javafx.dock.api.NodeStateLoader }.
- * The class uses both {@code java.util.prefs.Preferences }  and {@code xml }
+ * {@link org.vns.javafx.dock.api.StateLoader }. The class uses both {@code java.util.prefs.Preferences
+ * } and {@code xml }
  * technology to save/restore state of objects of type 
  * {@link org.vns.javafx.dock.api.DockTarget } and 
  * {@link org.vns.javafx.dock.api.Dockable }.
- * 
+ *
  * @author Valery Shyshkin
  */
-public abstract class AbstractDockStateLoader implements NodeStateLoader{
-
+public abstract class AbstractDockStateLoader implements StateLoader {
 
     private final static List<Node> stateChangedList = FXCollections.observableArrayList();
 
@@ -60,56 +60,71 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
     private boolean saveOnClose;
 
     private boolean loaded = false;
+
     /**
-     * Creates a new instance of the class for the specified {@code prefEntry}. 
-     * The parameter must adhere to the rules for node's names as specified 
-     * by the class {@code java.util.Preferences}.
-     * 
+     * Creates a new instance of the class for the specified {@code prefEntry}.
+     * The parameter must adhere to the rules for node's name path as specified
+     * by the class {@code java.util.Preferences}. All back slashes will be
+     * replaced with forward slashes.
+     *
      * @param prefEntry the preferences node's relative path
      */
     protected AbstractDockStateLoader(String prefEntry) {
-        this.preferencesRoot = prefEntry;
+        this.preferencesRoot = prefEntry.replace("\\", "/");
     }
+
     /**
-     * Creates a new instance of the class for the specified class used to create
-     * the root of preferences root node. 
-     * The root node path is constructed by replacing all dots  with the 
-     * forward slash symbol in the fully qualified class name.
-     * 
+     * Creates a new instance of the class for the specified class used to
+     * create the root of preferences root node. The root node path is
+     * constructed by replacing all dots with the forward slash symbol in the
+     * fully qualified class name.
+     *
      * @param clazz used to create a preferences root node path.
      */
     protected AbstractDockStateLoader(Class clazz) {
         preferencesRoot = clazz.getName().replace(".", "/");
     }
+
     /**
-     * @return {@code true} if the {@link #load() } method detected an 
-     *   inconsistency in the early saved state and newly registered object's state. {@code false } otherwise.
+     * @return {@code true} if the {@link #load() } method detected an
+     * inconsistency in the early saved state and newly registered object's
+     * state. {@code false } otherwise.
      */
     protected abstract boolean isDestroyed();
+
     /**
-     * Clears preferences nodes so that there no properties exist 
-     * in preferences store.
+     * Clears preferences nodes so that there no properties exist in preferences
+     * store.
      */
     protected abstract void resetPreferences();
+
     /**
-     * Saves the current state of all registered nodes.
+     * Saves the current state of the specified object.
+     *
      * @param dockTarget the object of type 
      * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
      */
     protected abstract void save(DockTarget dockTarget);
+
     /**
-     * Restores the previously saved  state of the specified  node.
-     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockTarget }
-     * whose state is to be restored.
-     * @return the object of type {@code javafx.scene.control.TreeItem } which 
-     *   is the root of TreeItem's tree which corresponds to the {@code Scene Graph } 
-     *   of the node specified by the parameter {@code dockTarget}.
+     * Restores the previously saved state of the specified node.
+     *
+     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockTarget
+     * } whose state is to be restored.
+     * @return the object of type {@code javafx.scene.control.TreeItem } which
+     * is the root of TreeItem's tree which corresponds to the {@code Scene Graph
+     * }
+     * of the node specified by the parameter {@code dockTarget}.
      */
     protected abstract TreeItem<Properties> restore(DockTarget dockTarget);
+
     /**
-     * Restores the previously saved  state of all specified  node.
-     * Just scans all registered objects of type of type {@link org.vns.javafx.dock.api.DockTarget }
-     * and invokes the method {@link #restore(org.vns.javafx.dock.api.DockTarget) }. 
+     * The method restores the previously saved state of all registered 
+     * {@link org.vns.javafx.dock.api.DockTarget}
+     * objects. The method looks through all objects of type {@code DockTarget}
+     * that are explicitly registered by one of the {@code register} methods and
+     * for each calls the {@link #restore(org.vns.javafx.dock.api.DockTarget) }
+     * method.
      */
     protected void restore() {
         for (String key : getDefaultDockTargets().keySet()) {
@@ -119,55 +134,88 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
             }
         }
     }
+
     /**
-     * Specifies whether the state of registered objects should be saved
-     * when window close.
-     * The implementation may or may not use this opportunity
+     * Specifies whether the state of registered objects should be saved when
+     * window close. The implementation may or may not use this opportunity
      *
-     * @return {@code true} if the state should be saved. {@code false} otherwise
+     * @return {@code true} if the state should be saved. {@code false}
+     * otherwise
      */
     public boolean isSaveOnClose() {
         return saveOnClose;
     }
+
     /**
-     * Set the property value which specifies whether the state of registered objects should be saved
-     * when window close.
-     * The implementation may or may not use this opportunity
+     * Set the property value which specifies whether the state of registered
+     * objects should be saved when window close. The implementation may or may
+     * not use this opportunity
      *
-     * @param saveOnClose {@code saveOnClose} if the state should be saved. {@code false } otherwise
+     * @param saveOnClose {@code saveOnClose} if the state should be saved. {@code false
+     * } otherwise
      */
     public void setSaveOnClose(boolean saveOnClose) {
         this.saveOnClose = saveOnClose;
     }
+
     /**
-     * The preferences root path used to save/restore the state of registered nodes.+
+     * The preferences root path used to save/restore the state of registered
+     * nodes.
+     *
      * @return the preferences root path
      */
     protected String getPreferencesRoot() {
         return preferencesRoot;
     }
+
     /**
-     * Returns a map of all registered explicitely or implicitly objects.
-     * The collection may contain objects of any type which were found
-     * during processing the {@code Scene Graph} of explicitely registered nodes.
-     * The objects which were registered by applying one of the 
-     * {@code register} methods are considered as {@code explicitely registered}.
-     * 
+     * Returns a map of all registered explicitely or implicitly objects. The
+     * collection may contain objects of any type which were found during
+     * processing the {@code Scene Graph} of explicitely registered nodes. The
+     * objects which were registered by applying one of the {@code register}
+     * methods are considered as {@code explicitely registered}.
+     *
      * @return a map of all registered explicitely or implicitly objects
      */
     protected Map<String, Object> getRegistered() {
         return registered;
     }
 
+    /**
+     * Return the boolean value which specifies has the method load() already
+     * finished or not.
+     *
+     * @return {@code true} if the method {@code load() } has already finished. 
+     *   {@code false } otherwise.
+     */
     @Override
     public boolean isLoaded() {
         return loaded;
     }
 
+    /**
+     * Sets the boolean value which specifies has the method load() already
+     * finished or not.
+     *
+     * @param loaded {@code true} if the method {@code load() } has already
+     * finished. {@code false } otherwise.
+     */
     protected void setLoaded(boolean loaded) {
         this.loaded = loaded;
     }
 
+    /**
+     * The method is a callback method that can be called by some class when the
+     * layout of the specified node has changed in some way. For example, a new {@link org.vns.javafx.dock.api.DockSplitPane
+     * }
+     * object has been added to the {@code DockPane } instance or the 
+     * {@code dividerPositions } property has changed. The method registers the
+     * value specified by the parameter in the internal collection of the class.
+     * In the future, if, for example, when closing a window, we can determine
+     * whether there were any changes in some registered object.
+     *
+     * @param target the node whose layout has been changed
+     */
     public void layoutChanged(Node target) {
         if (!loaded || stateChangedList.contains(target)) {
             return;
@@ -175,19 +223,37 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
         stateChangedList.add(target);
     }
 
-
     /**
+     * Returns a map of all explicitly registered nodes. This collection
+     * contains only nodes which were registered by applying one of the
+     * {@code register} methods.
+     *
      * @return a map of all explicitly registered nodes
      */
     protected Map<String, Node> getExplicitlyRegistered() {
         return explicitlyRegistered;
     }
 
+    /**
+     * The method returns a collection of all explicitly or implicitly
+     * registered objects of type {@link org.vns.javafx.dock.api.DockTarget }.
+     * Here the term {@code "implicitly registered" } objects means that some
+     * object was not registered by the {@code register} method, but is a child
+     * of some other explicitly registered object.
+     *
+     * @return a collection of all explicitly or implicitly registered objects
+     */
     protected Map<String, TreeItem<Properties>> getAllDockTargets() {
         return allDockTargets;
     }
 
-
+    /**
+     * Defines and returns a field name by the specified object. Every
+     * registered object has a string identifier or field name.
+     *
+     * @param obj The object for which the field name is defined
+     * @return the field name for the specified object
+     */
     protected String getFieldName(Object obj) {
         String retval = null;
         for (String key : registered.keySet()) {
@@ -199,64 +265,121 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
         return retval;
     }
 
-
+    /**
+     * The method returns a collection of all explicitly registered objects of
+     * type {@link org.vns.javafx.dock.api.DockTarget }. Here the term {@code "explicitly registered"
+     * } objects means that the object was registered by one of {@code register}
+     * method. Each {@code DockTarget} in the map cannot be a child of some
+     * other explicitly registered object of type {@code DockTarget}.
+     *
+     * @return a collection of all explicitly registered objects of type
+     * {@code DockTarget}.
+     */
     protected Map<String, TreeItem<Properties>> getDefaultDockTargets() {
         return defaultDockTargets;
     }
 
-
+    /**
+     * The method returns a collection of all explicitly registered objects of
+     * type {@link org.vns.javafx.dock.api.Dockable }. Here the term {@code "explicitly registered"
+     * } objects means that the object was registered by one of {@code register}
+     * method. Each {@code Dockable} in the map cannot be a child of some other
+     * explicitly registered object of type {@code DockTarget}.
+     *
+     * @return a collection of all explicitly registered objects of type
+     * {@code Dockable}.
+     */
     protected Map<String, TreeItem<Properties>> getDefaultDockables() {
         return defaultDockables;
     }
 
-    public void register(String entry, Node node) {
+    /**
+     * Registers the specified object of type {@code javafx.scene.Node} with the
+     * given {@code fieldName}.
+     *
+     * The method throws an exception if one of the following conditions is met:
+     * <ul>
+     * <li> 
+     * Method 'load' has already been invoked and {@code isLoaded()} method
+     * returns {@code true} 
+     * </li>
+     * <li>The parameter {@code fieldName} is {@code null}</li>
+     * <li>An object with the specified fieldName has already been registered</li>
+     * <li>The specified object has already been registered</li>
+     * <li>The specified node must be of type {@code Dockable} or {@code DockTarget}</li>
+     * </ul>
+     *
+     * @param fieldName the string value used as identifier for the node to be
+     * registered.
+     *
+     * @param node the object to be registered
+     */
+    @Override
+    public void register(String fieldName, Node node) {
         if (loaded) {
             throw new IllegalStateException("Attempts to register an entry '"
-                    + entry + "' and class '" + node.getClass().getName() + "' but the method 'load' has already been invoked");
+                    + fieldName + "' and class '" + node.getClass().getName() + "' but the method 'load' has already been invoked");
         }
-        if (entry == null || getExplicitlyRegistered().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
+        if (fieldName == null || getExplicitlyRegistered().containsKey(fieldName)) {
+            throw new IllegalArgumentException("Dublicate entry name: " + fieldName);
         }
         //
-        // May be the dockable node is allready in registered map with another entry name
+        // May be the dockable node is allready in registered map with another fieldName name
         //
         if (DockRegistry.isDockable(node) && getExplicitlyRegistered().containsValue(node)) {
             //getExplicitlyRegistered().remove(getEntryName(node));
-            throw new IllegalArgumentException("Dublicate node. entryName: " + entry);
+            throw new IllegalArgumentException("Dublicate node. entryName: " + fieldName);
         }
 
         if (!DockRegistry.isDockTarget(node) && !DockRegistry.isDockable(node)) {
-            throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + node.getClass().getName());
+            throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + node.getClass().getName());
         }
 
-        getExplicitlyRegistered().put(entry, node);
+        getExplicitlyRegistered().put(fieldName, node);
         if (DockRegistry.isDockTarget(node)) {
             addListeners(node);
         }
     }
+    /**
+     * Create the object of the specified class and registers it
+     * with the given {@code fieldName}.
+     *
+     * The method throws an exception if one of the following conditions is met:
+     * <ul>
+     * <li> 
+     * Method 'load' has already been invoked and {@code isLoaded()} method
+     * returns {@code true} 
+     * </li>
+     * <li>The parameter {@code fieldName} is {@code null}</li>
+     * <li>An object with the specified fieldName has already been registered</li>
+     * <li>The created node must be of type {@code Dockable} or {@code DockTarget}</li>
+     * </ul>
+     * 
+     * @param fieldName the string value used as identifier for the node to be
+     * registered.
+     *
+     * @param clazz  the object of class Class to be registered
+     */
 
-    public Node register(String entry, Class clazz) {
+    @Override
+    public Node register(String fieldName, Class<? extends Node> clazz) {
         Node retval = null;
         if (loaded) {
             throw new IllegalStateException("Attempts to register an entry '"
-                    + entry + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
+                    + fieldName + "' and class '" + clazz.getName() + "' but the method 'load' has already been invoked");
         }
-        if (entry == null || getExplicitlyRegistered().containsKey(entry)) {
-            throw new IllegalArgumentException("Dublicate entry name: " + entry);
+        if (fieldName == null || getExplicitlyRegistered().containsKey(fieldName)) {
+            throw new IllegalArgumentException("Dublicate entry name: " + fieldName);
         }
 
         try {
-            Object o = clazz.newInstance();
-            if (!(o instanceof Node)) {
-                throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
-            }
-            retval = (Node) o;
+            retval = clazz.newInstance();
 
             if (!DockRegistry.isDockTarget(retval) && !DockRegistry.isDockable(retval)) {
-                throw new IllegalArgumentException("Illegall className. entry name: " + entry + "; class=" + clazz.getName());
+                throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + clazz.getName());
             }
 
-            getExplicitlyRegistered().put(entry, retval);
+            getExplicitlyRegistered().put(fieldName, retval);
             if (DockRegistry.isDockTarget(retval)) {
                 addListeners(retval);
             }
@@ -272,7 +395,7 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
             public void handle(WindowEvent event) {
 
                 Platform.runLater(() -> {
-                    
+
                     /*if (!stateChangedList.isEmpty()) {
                         List<Node> list = new ArrayList<>();
                         list.addAll(stateChangedList);
@@ -284,8 +407,8 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
                         System.err.println("2) *** SAVE ***");
                         //save();
                     }
-                    */
-                    if ( isSaveOnClose()) {
+                     */
+                    if (isSaveOnClose()) {
                         save();
                     }
                 });
@@ -317,22 +440,42 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
             target.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, wh);
         }
     }
-
+    /**
+     * Checks whether the specified node is registered (no matter explicitly or implicitly).
+     * @param node the node to be checked
+     * @return {@code true} if the {@code node} is registered. {@code false} otherwise.
+     */
+    @Override
     public boolean isRegistered(Node node) {
         return registered.values().contains(node);
     }
-
+    /**
+     * The handy method to access an object of type 
+     * {@link org.vns.javafx.dock.api.DockTreeItemBuilder } by the specified 
+     * parameter.
+     * @param dockTarget the object which owns an instance of type {@code DockTreeItemBuilder } 
+     * @return the object of type  {@code DockTreeItemBuilder }
+     */
     protected DockTreeItemBuilder builder(Node dockTarget) {
-        DockTreeItemBuilder builder = DockRegistry.dockTarget(dockTarget).targetController()
+        return DockRegistry.dockTarget(dockTarget).targetController()
                 .getDockTreeTemBuilder();
-        return builder;
     }
-
+    /**
+     * Builds a tree item representation by the specified Node and it's field name.
+     * First the method calls the method {@code build(String}} of the 
+     * {@link org.vns.javafx.dock.api.DockTargetController#getDockTreeTemBuilder() }
+     * instance and then invokes the method {@link #completeBuild(javafx.scene.control.TreeItem, boolean) }
+     * 
+     * @param fieldName the register identifier of the specified node
+     * @param dockTarget the node for which the tree item is to be built
+     * @return the tree item representation of the node
+     */
     protected TreeItem<Properties> build(String fieldName, Node dockTarget) {
         TreeItem<Properties> item = builder(dockTarget).build(fieldName);
         completeBuild(item, false);
         return item;
     }
+
     /**
      * Defines fieldName attribute for each treeItem.
      *
@@ -353,9 +496,9 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
                 }
             }
             tv.getTreeItem(i).getValue().setProperty(FIELD_NAME_ATTR, fieldName);
-            if ( !loaded ) {
-                if ((obj instanceof Node) && DockRegistry.isDockTarget((Node)obj)) {
-                    if ( i == 0 && ! getAllDockTargets().containsKey(fieldName) ) {
+            if (!loaded) {
+                if ((obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+                    if (i == 0 && !getAllDockTargets().containsKey(fieldName)) {
                         getDefaultDockTargets().put(fieldName, tv.getTreeItem(i));
                     } else if (getAllDockTargets().containsKey(fieldName)) {
                         getDefaultDockTargets().remove(fieldName);
@@ -367,31 +510,31 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
             //
             // For now we don't use parent dock target anywhere in code
             //
-            if ( i > 0 && (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
-                TreeItem<Properties> p = findParentDockTarget(tv,tv.getTreeItem(i));
+            if (i > 0 && (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+                TreeItem<Properties> p = findParentDockTarget(tv, tv.getTreeItem(i));
                 String parentFieldName = p.getValue().getProperty(FIELD_NAME_ATTR);
                 tv.getTreeItem(i).getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
             }
         }//for
-        
-        
+
     }
-    
-    private TreeItem<Properties> findParentDockTarget(TreeView tv,TreeItem item) {
+
+    private TreeItem<Properties> findParentDockTarget(TreeView tv, TreeItem item) {
         TreeItem<Properties> retval = tv.getRoot();
         TreeItem<Properties> parent = item.getParent();
-        while ( parent != null ) {
-            Object obj = parent.getValue().get(OBJECT_ATTR);            
-            if ( (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj) ) {
+        while (parent != null) {
+            Object obj = parent.getValue().get(OBJECT_ATTR);
+            if ((obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
                 retval = parent;
                 break;
             }
-            
+
             parent = parent.getParent();
         }
         return retval;
     }
-    protected String getFieldName(Object obj, String rootFieldName, int idx) {
+
+/*    protected String getFieldName(Object obj, String rootFieldName, int idx) {
         String fieldName = getFieldName(obj);
         if (fieldName != null) {
             return fieldName;
@@ -429,4 +572,5 @@ public abstract class AbstractDockStateLoader implements NodeStateLoader{
 
         return fieldName;
     }
+*/
 }//AbstractDockLoader

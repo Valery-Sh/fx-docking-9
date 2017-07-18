@@ -38,10 +38,13 @@ public interface DockTreeItemBuilder {
      * objects the {@code TreeItem} nodes are created is determined by the
      * specific implementation of the corresponding {@code DockTarget}.
      *
-     * The methods sets the reference to a Scene Graph object as shone below:
+     * The method uses the property named {@link #OBJECT_ATTR } to store 
+     * the reference to the registered object.
+     * 
      * <pre>
      *  treeItem.getValue().GetKey().set (obj)
-     * </pre> where the {@code obj} is the Scene Graph object for which the
+     * </pre> 
+     * where the {@code obj} is the Scene Graph object for which the
      * {@code TreeItem} is built.
      * <p>
      * Sets property values whose names are defined as static constants in the
