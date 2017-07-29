@@ -3,12 +3,6 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -40,17 +34,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.util.Duration;
 import org.vns.javafx.dock.api.PositionIndicator;
 
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.FloatStageBuilder;
 import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.IndicatorPopup;
 import org.vns.javafx.dock.api.StageBuilder;
 import org.vns.javafx.dock.api.DockTarget;
 
@@ -262,7 +252,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
     }
 
     protected void stageClicked(MouseEvent ev) {
+        System.err.println("STAGE CLICKED");
         if (localToScreen(getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY())) {
+            System.err.println("STAGE CLICKED 1");
             return;
         }
 
@@ -270,6 +262,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             if (d.getDockable().node().getScene() != null && d.getDockable().node().getScene().getWindow() != null) {
                 Window w = d.getDockable().node().getScene().getWindow();
                 if (w instanceof Stage) {
+                    //System.err.println("STAGE CLICKED 2");
                     ((Stage) w).close();
                 }
             }
@@ -814,6 +807,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     stage.setWidth(sb.getWidth());
                     break;
                 case RIGHT:
+          //          System.err.println("DOCKSIDEBAR changeSize()");
                     stage.setY(pos.getY());
                     stage.setX(pos.getX() - stage.getWidth());
                     stage.setHeight(sb.getHeight());

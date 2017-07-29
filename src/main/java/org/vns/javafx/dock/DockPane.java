@@ -10,6 +10,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockPaneController;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
@@ -24,6 +25,7 @@ import org.vns.javafx.dock.api.DockTarget;
 @DefaultProperty(value = "items")
 public class DockPane extends Control implements DockTarget, EventHandler<ActionEvent> {
 
+    protected StackPane stackPane = new StackPane();
     private DockSplitPane root;
     private DockPaneController targetController;
     
@@ -71,7 +73,9 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
         public DockPaneSkin(DockPane control) {
             super(control);
-            getChildren().add(control.getRoot());
+            control.stackPane.getChildren().add(control.getRoot());
+            getChildren().add(control.stackPane);
+            //getChildren().add(control.getRoot());
         }
     }
     

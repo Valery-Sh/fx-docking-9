@@ -734,7 +734,7 @@ public class DockPaneController extends DockTargetController {
                     TreeItem it = DockRegistry.dockTarget(pane.getItems().get(i))
                             .targetController()
                             .getDockTreeTemBuilder().build();
-                    root.getChildren().add(it);
+                    ti.getChildren().addAll(it.getChildren());
                 }
             }
         }
@@ -742,13 +742,18 @@ public class DockPaneController extends DockTargetController {
         protected void buildPane(SplitPane pane, TreeItem<Properties> root, TreeItem<Properties> parent) {
             Properties props;
             for (int i = 0; i < pane.getItems().size(); i++) {
+System.err.println("1) buildPane i = " + pane.getItems().get(i));                
                 TreeItem ti;
                 if (DockRegistry.isDockTarget(pane.getItems().get(i))) {
+                    System.err.println("2) buildPane = " + pane.getItems().get(i));
                     ti = DockRegistry.dockTarget(pane.getItems().get(i))
                             .targetController()
                             .getDockTreeTemBuilder().build();
+                    System.err.println("1) ti = " + ti.getChildren().size());
                 } else {
+                    System.err.println("3) buildPane i = " + pane.getItems().get(i));                
                     ti = DockTreeItemBuilder.build(pane.getItems().get(i));
+                    System.err.println("2) ti = " + ti.getChildren().size());
                 }
 
                 props = (Properties) ti.getValue();
@@ -875,10 +880,17 @@ public class DockPaneController extends DockTargetController {
                 Node node = (Node) item.getValue().get(OBJECT_ATTR);
                 if (node == null || (node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
                     node = buildSplitPane(item);
+                    System.err.println("++++++ node=" + node);
                     pane.getItems().add(node);
                 } else if (DockRegistry.isDockTarget(node)) {
-                    node = restore(item);
+                    node = DockRegistry.dockTarget(node)
+                            .targetController()
+                            .getDockTreeTemBuilder()
+                            .restore(item);
+                    System.err.println("1) ++++++ node=" + node);
+                    
                     pane.getItems().add(node);
+                    
                 } else if (DockRegistry.isDockable(node)) {
                     if (DockRegistry.dockable(node).dockableController().getTargetController() != null) {
                         DockTargetController c = DockRegistry.dockable(node).dockableController().getTargetController();
@@ -912,7 +924,13 @@ public class DockPaneController extends DockTargetController {
                     node = buildSplitPane(item);
                     pane.getItems().add(node);
                 } else if (DockRegistry.isDockTarget(node)) {
-                    node = restore(item);
+                    node = DockRegistry.dockTarget(node)
+                            .targetController()
+                            .getDockTreeTemBuilder()
+                            .restore(item);
+                    System.err.println("1) buildSplitPane ++++++ node=" + node);
+                    
+//                    node = restore(item);
                     pane.getItems().add(node);
                 } else {
                     pane.getItems().add(node);
@@ -933,7 +951,7 @@ public class DockPaneController extends DockTargetController {
             } else if (DockSplitPane.class.getName().equals(className)) {
                 pane = new DockSplitPane();
             }
-
+            System.err.println("!!!!!!!! BUIKD SplitPane " + pane);
             if (pane == null) {
                 return null; // ????
             }
@@ -961,22 +979,6 @@ public class DockPaneController extends DockTargetController {
             }
             return pane;
         }
-        Consumer<TreeItem<Properties>> notifyOnBuildFunction;
-
-        void notifyOnBuidItem(TreeItem<Properties> item) {
-            if (notifyOnBuildFunction != null) {
-                notifyOnBuildFunction.accept(item);
-            }
-        }
-
-        @Override
-        public void setOnBuildItem(Consumer<TreeItem<Properties>> consumer) {
-            notifyOnBuildFunction = consumer;
-        }
-
-        @Override
-        public Consumer<TreeItem<Properties>> getOnBuildItem() {
-            return notifyOnBuildFunction;
-        }
+        
     }
 }//class DockPaneController

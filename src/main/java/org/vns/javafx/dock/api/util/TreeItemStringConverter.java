@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Properties;
 import javafx.scene.control.TreeItem;
 import javafx.util.StringConverter;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,7 +82,7 @@ public class TreeItemStringConverter extends StringConverter<TreeItem<Properties
         NamedNodeMap nnm = firstEl.getAttributes();
         for (int i = 0; i < nnm.getLength(); i++) {
             if (nnm.item(i) instanceof Attr) {
-                System.err.println(i + ") " + nnm.item(i).getClass().getSimpleName());
+//                System.err.println(i + ") " + nnm.item(i).getClass().getSimpleName());
                 Attr attr = (Attr) nnm.item(i);
                 item.getValue().setProperty(attr.getName(), attr.getValue());
             }
@@ -113,7 +112,7 @@ public class TreeItemStringConverter extends StringConverter<TreeItem<Properties
         NamedNodeMap attrs = element.getAttributes();
         for (int i = 0; i < attrs.getLength(); i++) {
             if (attrs.item(i) instanceof Attr) {
-                System.err.println(i + ") " + attrs.item(i).getClass().getSimpleName());
+//                System.err.println(i + ") " + attrs.item(i).getClass().getSimpleName());
                 Attr attr = (Attr) attrs.item(i);
                 item.getValue().setProperty(attr.getName(), attr.getValue());
             }

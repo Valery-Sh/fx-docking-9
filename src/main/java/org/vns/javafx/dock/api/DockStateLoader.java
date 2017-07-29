@@ -20,11 +20,11 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
+
 /**
  *
  * @author Valery Shyshkin
@@ -33,9 +33,6 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
     public static String DUMMY_KEY = "DUMMY_123_DUMMY_321";
     public static String DEFAULT = "default";
-    public static String DOCKTARGETS = "docktargets";
-    public static String DOCKABLES = "dockables";
-    public static String SAVE = "save";
     public static String DESCRIPTOR = "descriptor";
 
     protected DockStateLoader(String preferencesRoot) {
@@ -46,6 +43,14 @@ public class DockStateLoader extends AbstractDockStateLoader {
         super(clazz);
     }
 
+    /**
+     * The method checks the initial (default) state of objects to detect
+     * inconsistencies between the registered objects and their state, which was
+     * saved during the previous execution of the application. If
+     * inconsistencies are found, the stored state is considered invalid and the
+     * new default state is saved the registration of new objects is not
+     * allowed.
+     */
     @Override
     public void load() {
         if (isLoaded()) {
@@ -89,41 +94,33 @@ public class DockStateLoader extends AbstractDockStateLoader {
             getRegistered().put(key, node);
         }
         //
-        // Copies all DockTargets objects 
-        //
-/*        for (String key : getExplicitlyRegistered().keySet()) {
-            Node node = getExplicitlyRegistered().get(key);
-            if (DockRegistry.isDockTarget(node)) {
-                getFreeDockTargets().put(key, node);
-            }
-        }
-*/        
-        //
         // 1. As a result all objects will be implicitly registered
         // 2. The method getDefaultDockables now contains only those dockable
         //    objects which are not childs of some DockTarget
         //
+        TreeItem<Properties> it1 = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).targetController()
+                .getDockTreeTemBuilder().build("dockTabPane1");
+        System.err.println("------------- +++++++++++++++++++++++++++++++++++");
+        test(it1);
+        System.err.println("------------- +++++++++++++++++++++++++++++++++++");
+
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             if (DockRegistry.isDockTarget(node)) {
-                build(key, node);
+                TreeItem<Properties> it = build(key, node);
+                if ("dockTabPane1".equals(key)) {
+                    System.err.println("+++++++++++++++++++++++++++++++++++");
+                    test(it);
+                    System.err.println("+++++++++++++++++++++++++++++++++++");
+                }
             }
         }
-        
-/*        Map<String, TreeItem> duplicates = new HashMap<>();
-        duplicates.putAll(getDefaultDockTargets());
-        getDefaultDockTargets().clear();
-        getAllDockTargets().forEach((k,v) -> {
-            if ( ! duplicates.containsKey(k) ) {
-                getDefaultDockTargets().put(k, v);
-            }
-        });
-*/
-        getDefaultDockTargets().forEach((k,v) -> {
+
+        getDefaultDockTargets().forEach((k, v) -> {
             System.err.println("DEFAULT " + k);
         });
-        TreeItemStringConverter tc = new TreeItemStringConverter();
 
+        //TreeItemStringConverter tc = new TreeItemStringConverter();
         System.err.println("BEFORE isDestroyed TIME !!!!!! " + (System.currentTimeMillis() - start));
 
         boolean needSave = false;
@@ -135,6 +132,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
             PrefProperties docktargetProps = cp.next(DEFAULT).getProperties(DOCKTARGETS);
             PrefProperties dockableProps = cp.next(DEFAULT).getProperties(DOCKABLES);
+            PrefProperties docktargetSaveProps = cp.next(SAVE).getProperties(DOCKTARGETS);
 
             TreeItemStringConverter converter = new TreeItemStringConverter();
 
@@ -142,8 +140,11 @@ public class DockStateLoader extends AbstractDockStateLoader {
                 docktargetProps = cp.next(DEFAULT).createProperties(DOCKTARGETS);
             }
             for (String key : getDefaultDockTargets().keySet()) {
-                docktargetProps.setProperty(key, converter.toString(getDefaultDockTargets().get(key)));
+                String converted = converter.toString(getDefaultDockTargets().get(key));
+                docktargetProps.setProperty(key, converted);
+                docktargetSaveProps.setProperty(key, converted);
             }
+
             docktargetProps.setProperty(DUMMY_KEY, DUMMY_KEY);
 
             if (!getDefaultDockables().isEmpty()) {
@@ -164,14 +165,20 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
         setLoaded(true);
 
-        if (needSave) {
-            save();
-        }
+        //if (needSave) {
+        //save();
+        //}
         restore();
 
-        System.err.println("LAST !!!!!!!!! TIME !!!!!! " + (System.currentTimeMillis() - start));
+        //TreeItem<Properties> it = build("dockPane1", getExplicitlyRegistered().get("dockPane1"));
+        //System.err.println("LAST !!!!!!!!! TIME !!!!!! " + (System.currentTimeMillis() - start));
     }
 
+    /**
+     * @return {@code true} if the {@link #load() } method detected an
+     * inconsistency between the early saved state and newly registered object's
+     * state. {@code false } otherwise.
+     */
     @Override
     protected boolean isDestroyed() {
         boolean retval = false;
@@ -212,12 +219,35 @@ public class DockStateLoader extends AbstractDockStateLoader {
         return retval;
     }
 
-    @Override
+    /**
+     * Applying the method saves the current state of the registered objects.
+     * Running a method for execution can be performed by the application when
+     * certain user actions are performed, for example, clicking a button or
+     * executing a menu item or closing the main window.
+     */
+    /*    @Override
     public void save() {
-        save(true);
+        //save(true);
+        getDefaultDockTargets().forEach((k, v) -> {
+            Node node = (Node) v.getValue().get(OBJECT_ATTR);
+            if (DockRegistry.isDockTarget(node)) {
+                save(DockRegistry.dockTarget(node));
+            }
+        });
+        
     }
-
-    protected void save(boolean loaded) {
+     */
+    /**
+     * The {@code save} methods are executed differently, depending on whether
+     * the {@link #isLoaded() } method returns {@code true} or {@code false}.
+     * But for internal purposes, sometimes it is required to be in a different
+     * state to simulate another state. It is convenient to not create
+     * unnecessary methods.
+     *
+     * @param loaded if {@code true} then the method considers the instance of
+     * the class as being in a loaded state
+     */
+    /*    protected void save(boolean loaded) {
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
             if (DockRegistry.isDockTarget(node)) {
@@ -225,13 +255,48 @@ public class DockStateLoader extends AbstractDockStateLoader {
             }
         });
     }
-
-    @Override
+     */
+    /**
+     * Saves the current state of the specified object.
+     *
+     * @param dockTarget the object of type 
+     * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
+     */
+    /*    @Override
     protected void save(DockTarget dockTarget) {
-        save(dockTarget, true);
-    }
+        //save(dockTarget, true);
+        long start = System.currentTimeMillis();
 
-    protected void save(DockTarget dockTarget, boolean loaded) {
+        String fieldName = getFieldName(dockTarget.target());
+
+        if (fieldName == null) {
+            return;
+        }
+
+        TreeItem<Properties> it = builder(dockTarget.target()).build(fieldName);
+        completeBuild(it,true);
+
+        TreeItemStringConverter tc = new TreeItemStringConverter();
+        String convertedTarget = tc.toString(it);
+        DockPreferences cp = new DockPreferences(getPreferencesRoot()).next(SAVE);
+        cp.getProperties(DOCKTARGETS).setProperty(fieldName, convertedTarget);
+        System.err.println("Save time interval = " + (System.currentTimeMillis() - start));
+        
+    }
+     */
+    /**
+     * The {@code save} methods are executed differently, depending on whether
+     * the {@link #isLoaded() } method returns {@code true} or {@code false}.
+     * But for internal purposes, sometimes it is required to be in a different
+     * state to simulate another state. It is convenient to not create
+     * unnecessary methods.
+     *
+     * @param dockTarget the object of type 
+     * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
+     * @param loaded if {@code true} then the method considers the instance of
+     * the class as being in a loaded state
+     */
+    /*    protected void save(DockTarget dockTarget, boolean loaded) {
         long start = System.currentTimeMillis();
 
         String fieldName = getFieldName(dockTarget.target());
@@ -249,11 +314,21 @@ public class DockStateLoader extends AbstractDockStateLoader {
         cp.getProperties(DOCKTARGETS).setProperty(fieldName, convertedTarget);
         System.err.println("Save time interval = " + (System.currentTimeMillis() - start));
     }
-
+     */
+    /**
+     * Restores the previously saved state of the specified node.
+     *
+     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockTarget
+     * } whose state is to be restored.
+     * @return the object of type {@code javafx.scene.control.TreeItem } which
+     * is the root of TreeItem's tree which corresponds to the {@code Scene Graph
+     * }
+     * of the node specified by the parameter {@code dockTarget}.
+     */
     @Override
     public TreeItem<Properties> restore(DockTarget dockTarget) {
         String fieldName = getFieldName(dockTarget.target());
-        DockPane dp = (DockPane) dockTarget.target();
+        //DockPane dp = (DockPane) dockTarget.target();
         if (fieldName == null) {
             return null;
         }
@@ -269,6 +344,12 @@ public class DockStateLoader extends AbstractDockStateLoader {
         System.err.println("---------------");
         TreeItemStringConverter tc = new TreeItemStringConverter();
         TreeItem<Properties> item = tc.fromString(strItem);
+
+        System.err.println("retore AFTER RESTORE :");
+        System.err.println("---------------");
+        System.err.println(tc.toString(item));
+        System.err.println("---------------");
+
         //
         // Assign a registered (explicitly or implicitly) value for the items
         //
@@ -277,13 +358,25 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
             TreeItem<Properties> it = tv.getTreeItem(i);
+            it.setExpanded(true);
             fieldName = it.getValue().getProperty(FIELD_NAME_ATTR);
-            it.getValue().put(OBJECT_ATTR,getRegistered().get(fieldName));
+            if (getRegistered().get(fieldName) != null) {
+//                System.err.println("=== fieldName= " + fieldName + "; tagName="
+//                        + it.getValue().getProperty(TAG_NAME_ATTR)
+//                        + "; id = " + it.getValue().getProperty("id"));
+                it.getValue().put(OBJECT_ATTR, getRegistered().get(fieldName));
+            }
         }
         dockTarget.targetController().getDockTreeTemBuilder().restore(item);
         return item;
     }
 
+    /**
+     * The method is used to set the state of registered objects to the default
+     * state. The method can be applied at any time during the execution of the
+     * application. If used when the {@code isLoaded()} method returns
+     * {@code false}, then the method should not do anything.
+     */
     @Override
     public void reset() {
 
@@ -329,9 +422,13 @@ public class DockStateLoader extends AbstractDockStateLoader {
         Platform.runLater(() -> {
             restore();
         });
-        
+
     }
 
+    /**
+     * Clears preferences nodes so that there no properties exist in preferences
+     * store.
+     */
     @Override
     protected void resetPreferences() {
         DockPreferences cp = new DockPreferences(getPreferencesRoot());

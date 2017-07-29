@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -36,10 +37,10 @@ public class TestDockPaneControl extends Application {
     public void start(Stage stage) {
         stage.setTitle("PRIMARY");
 
-        //StackPane stackPane = new StackPane();
-        //HBox root = new HBox();
-        //root.getChildren().add(stackPane);
-        StackPane root = new StackPane();
+        StackPane stackPane = new StackPane();
+        HBox root = new HBox();
+        root.getChildren().add(stackPane);
+        //StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
@@ -102,12 +103,16 @@ public class TestDockPaneControl extends Application {
 //        System.err.print(s);
 
         DockTabPane dockTabPane1 = new DockTabPane();
-        //loader.register("dockTabPane1", dockTabPane1);
+        loader.register("dockTabPane1", dockTabPane1);
         Button tabButton1 = new Button("Tab Button1");
         DockNode tabDnc1 = new DockNode(" tan Dnc1");
         tabDnc1.setId("tabDnc1");
         DockNode tabDnc2 = new DockNode(" tab Dnc2");
         tabDnc2.setId("tabDnc3");
+        Button tabDnc1Btn1 = new Button("Tab Dnc1 Btn");
+        Button tabDnc2Btn1 = new Button("Tab Dnc2 Btn");
+        tabDnc1.setContent(tabDnc1Btn1);
+        tabDnc2.setContent(tabDnc2Btn1);
         DockNode tabDnc3 = new DockNode(" tab Dnc3");
         tabDnc3.setId("tabDnc2");
 
@@ -118,13 +123,14 @@ public class TestDockPaneControl extends Application {
 
         System.err.println("TAB: " + System.identityHashCode(tab));
         dockTabPane1.getTabs().add(tab);
-        //root.getChildren().add(0,dockTabPane1);
+        root.getChildren().add(0,dockTabPane1);
 
         DockableController dc = DockRegistry.dockable(dnc3).dockableController();
         DockTargetController dtc = dc.getTargetController();
         //loader.resetPreferences();
 /////// LOAD /////////////        
         loader.load();
+        
         //TreeItem ti = dockPane1.targetController().getPreferencesBuilder().build("dockPane1");
         //TreeItemStringConverter tc = new TreeItemStringConverter();
         //System.err.println("TC: ");
@@ -195,7 +201,7 @@ public class TestDockPaneControl extends Application {
         //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
         root.getChildren().add(dockPane1);
 
-        scene = new Scene(root, 350, 350);
+        scene = new Scene(root, 550, 550);
 
         scene.getRoot().setStyle("-fx-background-color: rgb(223,223,223)");
 

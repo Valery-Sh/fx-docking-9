@@ -88,7 +88,8 @@ public class StageBuilder extends FloatStageBuilder {
             pane = new StackPane();
         }
 
-        pane.setStyle("-fx-background-color: aqua");
+        //pane.setStyle("-fx-background-color: aqua");
+        
         //dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
         //PaneHandler ph = dockable.dockableController().getTargetController();
         //ph.dock(dockable, Side.TOP);

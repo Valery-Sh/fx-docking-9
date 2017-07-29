@@ -48,15 +48,7 @@ public abstract class PositionIndicator {
     public void showIndicator(double screenX, double screenY) {
         getTargetController().getIndicatorPopup().show(getTargetController().getTargetNode(), screenX, screenY);
     }   
-    /*12.05public void showIndicator(double screenX, double screenY) {
-        showIndicator(screenX, screenY, null);
-    }
-    */
 
-/*    protected void setDockPlace(Node node) {
-        dockPlace = node;
-    }
-*/    
     public Node getDockPlace() {
         return dockPlace;
     }
