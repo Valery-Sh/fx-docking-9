@@ -118,11 +118,14 @@ public class DockableController {
     /**
      * @return an object used as a manager when drag operation is detected.
      */
-    protected DragManager getDragManager() {
+    public DragManager getDragManager() {
         if (dragManager == null) {
-            dragManager = new DragManager(dockable);
+            dragManager = new FxDragManager(dockable);
         }
         return dragManager;
+    }
+    public void setDragManager() {
+        
     }
     /**
      * If {@code true} the node specified by the method {@code node()} may be

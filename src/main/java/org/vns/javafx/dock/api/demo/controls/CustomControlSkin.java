@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.controls;
+package org.vns.javafx.dock.api.demo.controls;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.SkinBase;

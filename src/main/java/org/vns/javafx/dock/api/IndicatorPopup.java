@@ -97,6 +97,7 @@ public class IndicatorPopup extends Popup {
     }
 
     protected void initContent() {
+        
         //12.05
         if (targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null) {
             return;
@@ -178,7 +179,9 @@ public class IndicatorPopup extends Popup {
      * @param screenY a screen mouse position
      */
     public void handle(double screenX, double screenY) {
+        System.err.println("   *** HANDLE 1");
         if (getPositionIndicator() == null) {
+            System.err.println("   *** HANDLE 2");
             return;
         }
         getPositionIndicator().showDockPlace(screenX, screenY);
@@ -191,7 +194,7 @@ public class IndicatorPopup extends Popup {
             placeTimeline.getKeyFrames().add(kf);
             placeTimeline.play();
         }
-
+        System.err.println("   *** HANDLE 3");
     }
 
     /**

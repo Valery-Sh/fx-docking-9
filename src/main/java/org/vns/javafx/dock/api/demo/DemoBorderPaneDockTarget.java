@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.demo.panes;
+package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -8,8 +8,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.demo.controls.DemoDockBorderPane;
 
 /**
  *
@@ -39,7 +41,10 @@ public class DemoBorderPaneDockTarget extends Application {
         // Create Stage with a BorderPane as DockTarget
         //
         Stage stage1 = new Stage();
+        
         BorderPane borderPane = new BorderPane();
+        DemoDockBorderPane demoDockBorderPane = new DemoDockBorderPane(borderPane);
+        
         borderPane.setStyle("-fx-border-width: 2px; -fx-border-color: red");
         Button topNode = new Button("Initial Top");
         borderPane.setTop(topNode);
@@ -55,8 +60,8 @@ public class DemoBorderPaneDockTarget extends Application {
         // Create & Register an Object witch declares a Given BorderPane 
         // as a DockTarget
         //
-        BorderPaneTarget borderPaneTarget = new BorderPaneTarget(borderPane);
-        DockRegistry.getInstance().register(borderPaneTarget);
+        //DockBorderPane borderPaneTarget = new DockBorderPane();
+        DockRegistry.getInstance().register(demoDockBorderPane);
 
         stage1.setTitle("Stage with a BorderPane as DockTarget");
 

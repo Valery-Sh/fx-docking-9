@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.controls.CustomControl;
+import org.vns.javafx.dock.api.demo.controls.CustomControl;
 
 /**
  *
