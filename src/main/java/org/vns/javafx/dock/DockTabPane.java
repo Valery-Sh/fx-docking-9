@@ -2,17 +2,13 @@ package org.vns.javafx.dock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.BoundingBox;
@@ -326,23 +322,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
             Dockable dockable = DockRegistry.dockable(node);
             DockTabPane tabPane = (DockTabPane) getTargetNode();
-            //TabGraphic tabGraphic = new TabGraphic(dockable, tabPane);
-/*            int idx = -1;
-            if (mousePos != null) {
-                idx = tabPane.indexOf(mousePos.getX(), mousePos.getY());
-                if (idx == 0) {
-                    if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
-                        idx++;
-                    }
-                }
-            }
-            if (idx < 0 && tabPane.getTabs().size() > 0) {
-                return false;
-            }
-            if (idx < 0 && mousePos != null && !tabPane.localToScreen(tabPane.getBoundsInLocal()).contains(mousePos.getX(), mousePos.getY())) {
-                return false;
-            }
-             */
+
             String txt = getButtonText(dockable);
             if (txt.isEmpty()) {
                 txt = " ... ";

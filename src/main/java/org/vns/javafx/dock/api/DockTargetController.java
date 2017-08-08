@@ -10,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 
 /**
@@ -158,8 +159,11 @@ public abstract class DockTargetController {
 
         if (doDock(mousePos, dockable.node())) {
             dockable.dockableController().setFloating(false);
-            if ( stage != null ) {
+            if ( stage != null && stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) == null) {
+                System.err.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
                 stage.close();
+            } else if ( stage != null) {
+                //stage.hide();
             }
             dockable.dockableController().setTargetController(this);
         }

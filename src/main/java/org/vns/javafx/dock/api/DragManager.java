@@ -15,21 +15,10 @@
  */
 package org.vns.javafx.dock.api;
 
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
@@ -78,23 +67,8 @@ public interface DragManager extends EventHandler<MouseEvent> {
      * @param dragNode a node which becomes a drag node
      */
     void setDragNode(Node dragNode);
-
-    /**
-     * A handler function with is called when the title bar of the
-     * {@code dockable} object changes.
-     *
-     * @param ov doesn't used
-     * @param oldValue the old value of the object which represents a title bar
-     * @param newValue the new value of the object which represents a title bar
-     */
-    default void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-        if (oldValue != null) {
-            removeEventHandlers(oldValue);
-        }
-        if (newValue != null) {
-            addEventHandlers(newValue);
-        }
-    }
+    
+    void hideFloatingStage(Window floatStage);
 
     void removeEventHandlers(Node titleBar);
 
@@ -107,6 +81,8 @@ public interface DragManager extends EventHandler<MouseEvent> {
      * @param ev the event that describes the mouse events
      */
     void mousePressed(MouseEvent ev);
+    void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue);
+    
 /*{
         if (!ev.isPrimaryButtonDown()) {
             //ev.consume();
@@ -330,7 +306,7 @@ public interface DragManager extends EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once
      * after the mouse is dragged. The method checks whether the
      * {@code dockable} objects is in a floating state and if not invokes the
-     * method {@link DockableController#setFloating(boolean) } with an argument
+     * method {@link DockableController#setFloating(boolean,boolean...) } with an argument
      * set to {@code true}.
      *
      * @param ev the event that describes the mouse events.

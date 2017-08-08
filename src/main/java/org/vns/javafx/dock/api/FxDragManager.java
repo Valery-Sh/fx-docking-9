@@ -5,6 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -65,7 +66,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
     /**
      * The stage that contains the target dock target
      */
-    private Stage resultStage;
+    private Window resultStage;
     /**
      * The mouse screen coordinates assigned by the mousePressed method.
      */
@@ -153,6 +154,10 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
 
     @Override
     public void removeEventHandlers(Node titleBar) {
+        if ( titleBar == null ) {
+            return;
+        }
+        
         titleBar.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
         titleBar.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
@@ -161,6 +166,10 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
 
 
     public void addEventHandlers(Node titleBar) {
+        if ( titleBar == null ) {
+            return;
+        }
+        
         titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
         titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
@@ -207,7 +216,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
             return;
         }
         if (!dockable.dockableController().isFloating()) {
-            //!!!!! 05.08     return;
+            return;
         }
 
         double leftDelta = 0;
@@ -330,7 +339,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
             topDelta = insets.getTop();
         }
 
-        Stage stage = (Stage) dockable.node().getScene().getWindow();
+        Window stage = (Window) dockable.node().getScene().getWindow();
         stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
         stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
         System.err.println("MOUSE DRAGGED 1");
@@ -340,17 +349,24 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
         }
         System.err.println("MOUSE DRAGGED 2");
 
-        if (popup == null || !popup.isShowing()) {
-            resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
+        if ( (popup == null || !popup.isShowing()) && (stage instanceof Stage )) {
+            resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), (Stage)stage);
+        } else if ( (popup == null || !popup.isShowing()) && (stage instanceof Window )) {
+            Bounds b = new BoundingBox(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()); 
+            if ( b.contains(ev.getScreenX(),ev.getScreenY())) {
+                resultStage = stage;
+            }
         }
-        System.err.println("MOUSE DRAGGED 3");
+        System.err.println("MOUSE DRAGGED 3 " + resultStage);
 
         if (resultStage == null) {
             return;
         }
         System.err.println("MOUSE DRAGGED 4");
-
+        
+        //Node root = (resultStage instanceof Popup) ? resultStage.getresultStage.getScene().getRoot();
         Node root = resultStage.getScene().getRoot();
+        
         if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockTarget(root))) {
             return;
         }
@@ -510,7 +526,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once
      * after the mouse is dragged. The method checks whether the
      * {@code dockable} objects is in a floating state and if not invokes the
-     * method {@link DockableController#setFloating(boolean) } with an argument
+     * method {@link DockableController#setFloating(boolean,boolean...) } with an argument
      * set to {@code true}.
      *
      * @param ev the event that describes the mouse events.
@@ -548,6 +564,12 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         //ev.consume();
+    }
+
+    @Override
+    public void hideFloatingStage(Window floatStage) {
+        System.err.println("HIDE FLOATING STAGE");
+        floatStage.hide();
     }
 
     /**

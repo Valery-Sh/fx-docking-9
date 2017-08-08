@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  *
@@ -21,7 +22,7 @@ public class FloatStageResizer {
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private Cursor cursor;
-    private Stage stage;
+    private Window window;
     
     private final Set<Cursor> cursorTypes = new HashSet<>();
     
@@ -87,33 +88,47 @@ public class FloatStageResizer {
             curY = y;
         }
 
-        if (wDelta + stage.getWidth() >= stage.getMinWidth()) {
-            stage.setX(xDelta + stage.getX());
-            stage.setWidth(wDelta + stage.getWidth());
+        if (wDelta + window.getWidth() >= getMinWidth()) {
+            window.setX(xDelta + window.getX());
+            window.setWidth(wDelta + window.getWidth());
             mouseX.set(curX);
         }
-        if (hDelta + stage.getHeight() >= stage.getMinHeight()) {
-            stage.setY(yDelta + stage.getY());
-            stage.setHeight(hDelta + stage.getHeight());
+        if (hDelta + window.getHeight() >= getMinHeight()) {
+            window.setY(yDelta + window.getY());
+            window.setHeight(hDelta + window.getHeight());
             mouseY.set(curY);
         }
     }
-
+    
+    protected double getMinWidth() {
+        double retval = 50.0;
+        if ( window instanceof Stage ) {
+            retval = ((Stage)window).getMinWidth();
+        }
+        return retval;
+    }
+    protected double getMinHeight() {
+        double retval = 50.0;
+        if ( window instanceof Stage ) {
+            retval = ((Stage)window).getMinHeight();
+        }
+        return retval;
+    }    
     public void resize(MouseEvent ev) {
         resize(ev.getScreenX(), ev.getScreenY());
     }
 
-    public Stage getStage() {
-        return stage;
+    public Window getStage() {
+        return window;
     }
 
-    public void start(MouseEvent ev, Stage stage, Cursor cursor, Cursor... supportedCursors) {
+    public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
 
         this.cursor = cursor;
-        this.stage = stage;
+        this.window = stage;
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {

@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  *
@@ -138,17 +139,17 @@ public class TopNodeHelper {
         }));
     }
 
-    public static Node getTopNode(Stage stage, Point2D screenPos) {
+    public static Node getTopNode(Window stage, Point2D screenPos) {
         return getTopNode(stage, screenPos, (n -> {
             return true;
         }));
     }
 
-    public static Node getTopNode(Stage stage, Point2D screenPos, Predicate<Node> predicate) {
+    public static Node getTopNode(Window stage, Point2D screenPos, Predicate<Node> predicate) {
         return getTopNode(stage, screenPos.getX(), screenPos.getY(), predicate);
     }
 
-    public static Node getTopNode(Stage stage, double screenX, double screenY, Predicate<Node> predicate) {
+    public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
         Node retval = null;
         Node node = getTopNode(getNodes(stage, screenX, screenY));
         while (node != null) {
@@ -168,7 +169,7 @@ public class TopNodeHelper {
      * @param pos a position of a point on the screen
      * @return a list of nodes
      */
-    public static List<Node> getNodes(Stage stage, Point2D pos) {
+    public static List<Node> getNodes(Window stage, Point2D pos) {
         return getNodes(stage, pos.getX(), pos.getY(), (node) -> {
             return true;
         });
@@ -182,7 +183,7 @@ public class TopNodeHelper {
      * @param screenY a vertical position of a point on the screen
      * @return a list of nodes
      */
-    public static List<Node> getNodes(Stage stage, double screenX, double screenY) {
+    public static List<Node> getNodes(Window stage, double screenX, double screenY) {
         return getNodes(stage, screenX, screenY, (node) -> {
             return true;
         });
@@ -198,7 +199,7 @@ public class TopNodeHelper {
      * @param predicate a function to filter nodes
      * @return a list of nodes
      */
-    public static List<Node> getNodes(Stage stage, double screenX, double screenY, Predicate<Node> predicate) {
+    public static List<Node> getNodes(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
         if (stage == null || stage.getScene() == null || stage.getScene().getRoot() == null) {
             return new ArrayList<>();
         }

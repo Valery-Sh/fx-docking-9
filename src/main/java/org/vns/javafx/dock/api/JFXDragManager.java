@@ -29,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -38,6 +39,10 @@ import javafx.stage.Window;
  */
 public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
 
+    public static String DRAG_PANE_KEY = "JFXPANEL:drag-source-pane";
+    public static String DRAG_FLOATING_STAGE = "JFXPANEL:drag-floating-stage";
+    
+    private Window floatPopup;
     /**
      * The object to be dragged
      */
@@ -53,6 +58,10 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      * The target dock target
      */
     private Parent targetDockPane;
+    /**
+     * The stage that contains the target dock target
+     */
+    private Window jfxWindow;
     /**
      * The stage that contains the target dock target
      */
@@ -77,6 +86,8 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
     }
 
     private void init() {
+        jfxWindow = dockable.node().getScene().getWindow();
+        //System.err.println("!!!!!!!!!!!!!!!! " + jfxWindow);
         dragNode.addListener(this::dragNodeChanged);
     }
 
@@ -89,12 +100,13 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      * @param oldValue the old drag node
      * @param newValue the new drag node
      */
-    @Override
     public void dragNodeChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
+            System.err.println("=== NULL dragNodeChanged " + oldValue);
             removeEventHandlers(oldValue);
         }
         if (newValue != null) {
+            System.err.println("=== NOT NULL dragNodeChanged " + newValue);
             addEventHandlers(newValue);
         }
     }
@@ -134,26 +146,34 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      * @param oldValue the old value of the object which represents a title bar
      * @param newValue the new value of the object which represents a title bar
      */
+    @Override
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
+            System.err.println("=== NULL titleBarChanged " + oldValue);
             removeEventHandlers(oldValue);
         }
         if (newValue != null) {
+            System.err.println("=== NOT NULL titleBarChanged " + newValue);
             addEventHandlers(newValue);
         }
     }
 
     @Override
     public void removeEventHandlers(Node titleBar) {
+        if ( titleBar == null ) {
+            return;
+        }
+        
         titleBar.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
         titleBar.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
         titleBar.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
     }
 
-
-    @Override
     public void addEventHandlers(Node titleBar) {
+        if ( titleBar == null ) {
+            return;
+        }
         titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
         titleBar.addEventHandler(MouseEvent.DRAG_DETECTED, this);
         titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
@@ -167,12 +187,14 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      *
      * @param ev the event that describes the mouse events
      */
+    @Override
     public void mousePressed(MouseEvent ev) {
+        System.err.println("***** mousePressed " + ev.getSource());
+        
         if (!ev.isPrimaryButtonDown()) {
             //ev.consume();
             return;
         }
-        System.err.println("mousePressed " + ev.getSource());
         Point2D p = dockable.node().localToScreen(0, 0);
         startMousePos = new Point2D(ev.getX(), ev.getY());
     }
@@ -191,7 +213,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      *
      * @param ev the event that describes the mouse events
      */
-    public void mouseDragged1(MouseEvent ev) {
+/*    public void mouseDragged1(MouseEvent ev) {
         //System.err.println("MOUSE DRAGGED");
 
         if (!ev.isPrimaryButtonDown()) {
@@ -199,7 +221,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
             return;
         }
         if (!dockable.dockableController().isFloating()) {
-            //!!!!! 05.08     return;
+            return;
         }
 
         double leftDelta = 0;
@@ -229,11 +251,11 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
             resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), (Stage) stage);
         }
 
-       // System.err.println("MOUSE DRAGGED 3");
+        // System.err.println("MOUSE DRAGGED 3");
         Node root = null;
 
         if (resultStage == null) {
-         //   System.err.println("MOUSE DRAGGED 4");
+            //   System.err.println("MOUSE DRAGGED 4");
             Object obj = dockable.node().getProperties().get("fxdocking:dockable:scene");
             if (obj != null && (obj instanceof Scene)) {
                 System.err.println("MOUSE DRAGGED 5");
@@ -244,7 +266,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
                     return;
                 }
             } else {
-           //     System.err.println("MOUSE DRAGGED 6");
+                //     System.err.println("MOUSE DRAGGED 6");
                 return;
             }
 
@@ -268,7 +290,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
         if (!DockRegistry.dockTarget(root).targetController().isAcceptable(dockable.node())) {
             return;
         }
-       // System.err.println("MOUSE DRAGGED 7");
+        // System.err.println("MOUSE DRAGGED 7");
 
         if (!DockRegistry.dockTarget(root).targetController().isUsedAsDockTarget()) {
             return;
@@ -298,9 +320,143 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
         popup.handle(ev.getScreenX(), ev.getScreenY());
 
     }
-
+*/
     @Override
     public void mouseDragged(MouseEvent ev) {
+        //System.err.println("MOUSE DRAGGED");
+        System.err.println("***** mouseDragged " + ev.getSource());
+
+        if (!ev.isPrimaryButtonDown()) {
+            ev.consume();
+            return;
+        }
+        if (!dockable.dockableController().isFloating()) {
+            return;
+        }
+
+        double leftDelta = 0;
+        double topDelta = 0;
+        //
+        // The stage where the floating dockable resides may have a root node as a Borderpane
+        //
+        if (dockable.node().getScene() == null) {
+            //dockable.dockableController().setFloating(false);
+            //dockable.dockableController().setFloating(true);
+
+        }
+        //System.err.println("MouseDragged popup dockable.scene=" + dockable.node().getScene());
+        if (dockable.node().getScene() != null) {
+            //System.err.println("MouseDragged popup dockable.scene.window=" + dockable.node().getScene().getWindow());
+            //System.err.println("MouseDragged popup PROP=" + dockable.node().getScene().getProperties().get("POPUP"));
+        }
+
+        /*        Parent p = dockable.node().getParent();
+        while ( p != null ) {
+            System.err.println("PARENT in Popup = " + p.getClass().getName());
+            p = p.getParent();
+        }
+         */
+        if (dockable.dockableController().isFloating() && (floatPopup instanceof Popup)
+                && (((Popup) floatPopup).getContent() instanceof BorderPane)) {
+            Insets insets = ((BorderPane) ((Popup) floatPopup).getContent()).getInsets();
+            leftDelta = insets.getLeft();
+            topDelta = insets.getTop();
+        }
+
+        //
+        // get floating stage
+        //
+        //Window stage = (Stage) dockable.node().getScene().getWindow();
+        System.err.println("   --- mouseDragged FLOAT POPUP ="  + floatPopup);
+
+        floatPopup.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
+        floatPopup.setY(ev.getScreenY() - topDelta - startMousePos.getY());
+
+        if (popup != null && popup.isShowing()) {
+            //System.err.println("\"mouseDragged 1\" x=" + ev.getScreenX());
+            //System.err.println("");
+            popup.hideWhenOut(ev.getScreenX(), ev.getScreenY());            
+            //+System.err.println(" --- hidden=" + popup.hideWhenOut(ev.getScreenX(), ev.getScreenY()));
+        }
+        //System.err.println("MOUSE DRAGGED 2");
+
+        Window resultStage = null;
+        if (popup == null || !popup.isShowing()) {
+            //resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), (Stage) stage);
+        }
+
+        if (resultStage == null) {
+            //System.err.println("mouseDragget jfxWindow=" + jfxWindow);
+            resultStage = jfxWindow;
+        }
+
+        //System.err.println("MOUSE DRAGGED 3 resultStage=" + resultStage);
+        Node root = null;
+
+        root = resultStage.getScene().getRoot();
+        
+        root.localToScreen(root.getBoundsInLocal());
+        //if ( ! root.getBoundsInParent().contains(ev.getScreenX(), ev.getScreenY()) ) {
+        if (!root.localToScreen(root.getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY())) {
+            return;
+        }
+        //System.err.println("MOUSE DRAGGED 3.1 resultStage=" + resultStage);
+
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockTarget(root))) {
+            //System.err.println("MOUSE DRAGGED 4 root=" + root);
+            return;
+        }
+        //System.err.println("MOUSE DRAGGED 5");
+
+        Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+            return DockRegistry.isDockTarget(n);
+        });
+
+        if (topPane != null) {
+            root = topPane;
+            //System.err.println("MOUSE DRAGGED 6");
+        } else if (!DockRegistry.isDockTarget(root)) {
+            //System.err.println("MOUSE DRAGGED 7");
+            return;
+        }
+
+        if (!DockRegistry.dockTarget(root).targetController().isAcceptable(dockable.node())) {
+            //System.err.println("MOUSE DRAGGED 8");
+            return;
+        }
+        // System.err.println("MOUSE DRAGGED 7");
+
+        if (!DockRegistry.dockTarget(root).targetController().isUsedAsDockTarget()) {
+            return;
+        }
+        //System.err.println("MOUSE DRAGGED 9");
+
+        IndicatorPopup newPopup = DockRegistry.dockTarget(root).targetController().getIndicatorPopup();
+        if (popup != newPopup && popup != null) {
+            popup.hide();
+        }
+        if (newPopup == null) {
+            return;
+        }
+        popup = newPopup;
+        //14.05 DockTargetController ph = DockRegistry.dockTarget(root).targetController();
+
+        if (!popup.isShowing()) {
+            popup.showPopup();
+        }
+        //System.err.println("MOUSE DRAGGED 9");
+
+        if (popup == null) {
+            return;
+        }
+        System.err.println(" ------------- MOUSE DRAGGED 10");
+
+        popup.handle(ev.getScreenX(), ev.getScreenY());
+
+    }
+
+//    @Override
+/*    public void mouseDragged2(MouseEvent ev) {
         System.err.println("MOUSE DRAGGED");
 
         if (!ev.isPrimaryButtonDown()) {
@@ -322,9 +478,9 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
             topDelta = insets.getTop();
         }
 
-        Stage stage = (Stage) dockable.node().getScene().getWindow();
-        stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
-        stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
+//        Stage stage = (Stage) dockable.node().getScene().getWindow();
+//        stage.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
+//        stage.setY(ev.getScreenY() - topDelta - startMousePos.getY());
         System.err.println("MOUSE DRAGGED 1");
 
         if (popup != null && popup.isShowing()) {
@@ -333,7 +489,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
         System.err.println("MOUSE DRAGGED 2");
 
         if (popup == null || !popup.isShowing()) {
-            resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
+//            resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), stage);
         }
         System.err.println("MOUSE DRAGGED 3");
 
@@ -380,7 +536,7 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
         }
         popup.handle(ev.getScreenX(), ev.getScreenY());
     }
-
+*/
     /*    public void mouseDragged1(MouseEvent ev) {
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
@@ -470,12 +626,16 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mouseReleased(MouseEvent ev) {
+        System.err.println("***** mouseReleased " + ev.getSource());
+        
         if (popup != null && popup.isShowing()) {
             popup.handle(ev.getScreenX(), ev.getScreenY());
         }
 
         if (targetDockPane != null) {
-            targetDockPane.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
+            System.err.println("   --- mouseReleased removeEventHandlers");
+
+            targetDockPane.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
@@ -502,13 +662,13 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once
      * after the mouse is dragged. The method checks whether the
      * {@code dockable} objects is in a floating state and if not invokes the
-     * method {@link DockableController#setFloating(boolean) } with an argument
-     * set to {@code true}.
+     * method {@link DockableController#setFloating(boolean,boolean...) } with
+     * an argument set to {@code true}.
      *
      * @param ev the event that describes the mouse events.
      */
-    @Override
     public void mouseDragDetected(MouseEvent ev) {
+        System.err.println("***** mouseDragDetected " + ev.getSource());        
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
@@ -517,31 +677,53 @@ public class JFXDragManager implements DragManager, EventHandler<MouseEvent> {
             ev.consume();
             return;
         }
+         System.err.println("mouseDragDetected 1 targetDockPane isFloating = " + dockable.dockableController().isFloating());            
 
         if (!dockable.dockableController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            System.err.println("1 targetDockPane = " + ev.getSource());            
-/*            if (dockable.node() instanceof DockNode) {
+            
+            /*            if (dockable.node() instanceof DockNode) {
                 removeEventHandlers(dockable.dockableController().getTitleBar());
             }
-*/            
-            dockable.dockableController().setFloating(true);
-            Platform.runLater(() -> {
+             */
+            floatPopup = dockable.dockableController().setFloatingAsPopup(true);
+            System.err.println(" --- mouseDragDetected floatPopup = " + floatPopup);            
 
-                
-            //    Window stage = (Window) dockable.node().getScene().getWindow();
-            //    stage.setX(ev.getScreenX() + 400);
-            //    stage.setY(ev.getScreenY() + 500);
-            });
-            
-            System.err.println("targetDockPane = " + targetDockPane);
-            //dockable.node().setMouseTransparent(true);
-//            targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
         //ev.consume();
     }
 
+    @Override
+    public void hideFloatingStage(Window floatStage) {
+        System.err.println("HIDE FLOATING STAGE");
+        floatStage.hide();
+    }
 
+    /**
+     * The implementation of the interface {@code EventHandler<MouseEvent> }.
+     * Depending of the event type invokes one of the methods
+     * <ul>
+     * <li>{@link #mousePressed(javafx.scene.input.MouseEvent)}</li>
+     * <li>{@link #mouseReleased(javafx.scene.input.MouseEvent) }
+     * <li>{@link #mouseDragDetected(javafx.scene.input.MouseEvent)}</li>
+     * <li>{@link #mouseDragged(javafx.scene.input.MouseEvent)}</li>
+     * </ul>
+     *
+     * @param ev the event that describes the mouse events.
+     */
+    /*    @Override
+    public void handle(MouseEvent ev) {
+        if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+            mousePressed(ev);
+        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+            mouseDragDetected(ev);
+        } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+            mouseDragged(ev);
+        } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+            mouseReleased(ev);
+        }
+    }
+     */
 }

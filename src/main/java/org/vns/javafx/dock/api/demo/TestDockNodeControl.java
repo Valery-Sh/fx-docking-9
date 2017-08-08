@@ -39,6 +39,7 @@ public class TestDockNodeControl extends Application {
                 custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
             }
+            
         });
         
         //TitledPane tp = new TitledPane();
