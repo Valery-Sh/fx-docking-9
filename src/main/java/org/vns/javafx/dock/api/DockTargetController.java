@@ -152,18 +152,19 @@ public abstract class DockTargetController {
             return;
         }
         Node node = dockable.node();
-        Stage stage = null; 
-        if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-            stage = (Stage) node.getScene().getWindow();
+        Window stage = null; 
+        if (node.getScene() != null && node.getScene().getWindow() != null ) { //&& (node.getScene().getWindow() instanceof Stage)) {
+            stage = node.getScene().getWindow();
         }
 
-        if (doDock(mousePos, dockable.node())) {
+        if (doDock(mousePos, dockable.node()) && stage != null) {
             dockable.dockableController().setFloating(false);
-            if ( stage != null && stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) == null) {
-                System.err.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-                stage.close();
-            } else if ( stage != null) {
-                //stage.hide();
+            if ( (stage instanceof Stage)&& stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) == null) {
+                ((Stage)stage).close();
+            } else if ( (stage instanceof Stage)&& stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) != null) {
+                dockable.dockableController().getDragManager().hideFloatingStage(stage);
+            } else {
+                stage.hide();
             }
             dockable.dockableController().setTargetController(this);
         }

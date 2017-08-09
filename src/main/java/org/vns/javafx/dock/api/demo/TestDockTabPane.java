@@ -43,7 +43,7 @@ public class TestDockTabPane extends Application {
         Button b1 = new Button("b01 - DOCK");
         /*        b1.setOnAction(a -> {
             //new DragPopup(dpCenter);
-//            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
+//            System.err.println("STAGE COUNT=" + StageHelper.getWindows().size());
         });
          */
         //BorderPane rootPane = new BorderPane();

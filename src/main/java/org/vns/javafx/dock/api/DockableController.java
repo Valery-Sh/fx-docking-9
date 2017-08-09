@@ -101,8 +101,6 @@ public class DockableController {
     }
 
     protected void addShowingListeners() {
-        System.err.println("1 addShowingListeners " + dockable.node());
-        System.err.println("2 addShowingListeners " + dockable.node().getScene());
         dockable().node().sceneProperty().addListener(this::sceneChanged);
     }
 
@@ -114,11 +112,7 @@ public class DockableController {
             Platform.runLater(() -> {
                 titleBar.removeListener(this::titlebarChanged);
                 titleBar.addListener(this::titlebarChanged);
-                System.err.println("DockableController: sceneChanged addShowingListeners node = " + dockable.node());
-                System.err.println("   --- olvScene = " + oldValue);                
-                System.err.println("   --- newScene = " + newValue);                                
                 initDragManager();
-
             });
         }
     }
@@ -128,12 +122,7 @@ public class DockableController {
             Platform.runLater(() -> {
                 titleBar.removeListener(this::titlebarChanged);
                 titleBar.addListener(this::titlebarChanged);
-                System.err.println("DockableController: windowChanged addShowingListeners node = " + dockable.node());
-                System.err.println("   --- olvWindow = " + oldValue);                
-                System.err.println("   --- newWindow = " + newValue);                                
-                
                 initDragManager();
-
             });
         }
     }
@@ -154,7 +143,6 @@ public class DockableController {
      */
     public Node getDragNode() {
         return dragSource;
-        //return initDragManager().getDragNode();
     }
 
     /**
@@ -179,8 +167,6 @@ public class DockableController {
      * @return an object used as a manager when drag operation is detected.
      */
     protected DragManager initDragManager() {
-        System.err.println("DockableController initDragManager dockable=" + dockable());
-//        if (dragManager == null) {
         Window w = null;//
         if (dockable().node().getScene() != null && dockable().node().getScene().getWindow() != null) {
             w = dockable().node().getScene().getWindow();
@@ -192,44 +178,16 @@ public class DockableController {
             dragManager.removeEventHandlers(getTitleBar());
             dragManager.removeEventHandlers(getDragNode());
         }
-        //throw new IllegalStateException("The method getDragmanager() can be invoked only when the node is showing");
-        //if (w == null || (w instanceof Stage)) {
-        if (w instanceof Stage) {
-            System.err.println("   --- DockableController initDragManager is STAGE stage=" + w);            
-//                DragManager old = dragManager;
+        if ( (w instanceof Stage) || (w instanceof Popup )) {
             dragManager = new FxDragManager(dockable);
-            //System.err.println("!!!!!!!!! getTitleBar w = " + w);
-            //System.err.println("!!!!!!!!! getTitleBar=" + getTitleBar());
-            //dragManager.titlebarChanged(null, null, getTitleBar());
-            //dragManager.setDragNode(dragSource);
-        } else if (w instanceof Popup ) {
-            dragManager = new FxDragManager(dockable);
-            dragManager.addEventHandlers(getTitleBar());
-            dragManager.addEventHandlers(getDragNode());
         } else {
-/*            Stage floatStage = (Stage) w.getProperties().get(JFXDragManager.DRAG_FLOATING_STAGE);
-            Parent dragSource = (Parent) w.getProperties().get(JFXDragManager.DRAG_PANE_KEY);
-            System.err.println("DockableController dragSource=" + dragSource);
-            if (dragSource == null) {
-                return null;
-            }
-*/            
-            //dragManager = new JFXDragManager2(dockable, dragSource, floatStage);
-            System.err.println("   --- DockableController initDragManager is WINDOW stage=" + w);            
-            dragManager = new JFXDragManager(dockable);
-            dragManager.addEventHandlers(getTitleBar());
-            dragManager.addEventHandlers(getDragNode());
-
+            dragManager = new JFXDragManager1(dockable);
         }
-
-        //      }
+        dragManager.addEventHandlers(getTitleBar());
+        dragManager.addEventHandlers(getDragNode());
         return dragManager;
     }
 
-    /*    public void setDragManager(DragManager dragManager) {
-        this.dragManager = dragManager;
-    }
-     */
     /**
      * If {@code true} the node specified by the method {@code node()} may be
      * considered as a dock target. This means that an indicator pane which
@@ -362,8 +320,6 @@ public class DockableController {
      * @return Returns the value of {@code titleBar}. May be null.
      */
     public Region getTitleBar() {
-        System.err.println("getTitleBar " + dockable.node());
-
         return titleBar.get();
     }
 
@@ -533,7 +489,6 @@ public class DockableController {
         tb.getLabel().textProperty().bind(this.title);
         this.title.set(title);
         titleBarProperty().set(tb);
-        System.err.println("createDefaultTitleBar " + dockable.node());
         return tb;
     }
 
@@ -541,9 +496,7 @@ public class DockableController {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
 
-        if (dragManager != null && ( (dragManager instanceof FxDragManager) || (dragManager instanceof JFXDragManager))) {
-            System.err.println("DockableController: titlebarChanged " + dockable().node());
-            System.err.println("   --- DockableController: titlebarChanged titleBar=" + newValue);
+        if (dragManager != null && ( (dragManager instanceof FxDragManager) || (dragManager instanceof JFXDragManager1))) {
             dragManager.titlebarChanged(ov, oldValue, newValue);
         }
     }

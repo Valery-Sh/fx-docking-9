@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
@@ -135,8 +136,8 @@ public class DockTitleBar extends HBox {
         DockableController sp = dockNode.dockableController();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
-        } else {
-            //sp.setFloating(true);
+        } else if (getScene().getWindow() instanceof Popup) {
+            ((Popup) getScene().getWindow()).hide();
         }
 
     }
