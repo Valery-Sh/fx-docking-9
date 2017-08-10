@@ -55,7 +55,7 @@ public class ParentChainPopup {
         // Get a list of parent nodes
         //
         Predicate<Node> predicate = el -> {
-            return DockRegistry.isDockTarget(el);
+            return DockRegistry.instanceOfDockTarget(el);
         };
         show(x, y, predicate);
     }
@@ -174,11 +174,11 @@ public class ParentChainPopup {
 
     protected String getText(Node node) {
         String txt;//
-        if (DockRegistry.isDockTarget(node)) {
+        if (DockRegistry.instanceOfDockTarget(node)) {
             txt = DockRegistry.dockTarget(node).targetController().getTitle();
             return txt;
 
-        } else if (DockRegistry.isDockable(node)) {
+        } else if (DockRegistry.instanceOfDockable(node)) {
             txt = getButtonText(DockRegistry.dockable(node));
         } else {
             txt = node.getId();
@@ -201,7 +201,7 @@ public class ParentChainPopup {
 
     public ContextMenu createContextMenu(double x, double y) {
         Predicate<Node> predicate = el -> {
-            return DockRegistry.isDockTarget(el);
+            return DockRegistry.instanceOfDockTarget(el);
         };
 
         chain = TopNodeHelper.getParentChain(topNode, predicate);

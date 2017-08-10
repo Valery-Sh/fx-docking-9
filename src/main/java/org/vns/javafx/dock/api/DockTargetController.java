@@ -113,13 +113,13 @@ public abstract class DockTargetController {
 
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
-                return DockRegistry.isDockable(p);
+                return DockRegistry.instanceOfDockable(p);
             });
             if (newNode != null) {
                 DockRegistry.dockable(newNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
-                return DockRegistry.isDockable(p);
+                return DockRegistry.instanceOfDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
@@ -159,9 +159,9 @@ public abstract class DockTargetController {
 
         if (doDock(mousePos, dockable.node()) && stage != null) {
             dockable.dockableController().setFloating(false);
-            if ( (stage instanceof Stage)&& stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) == null) {
+            if ( (stage instanceof Stage)  && stage.getProperties().get(DragManager.DRAG_FLOATING_STAGE) == null) {
                 ((Stage)stage).close();
-            } else if ( (stage instanceof Stage)&& stage.getProperties().get(JFXDragManager2.DRAG_FLOATING_STAGE) != null) {
+            } else if ( (stage instanceof Stage)&& stage.getProperties().get(DragManager.DRAG_FLOATING_STAGE) != null) {
                 dockable.dockableController().getDragManager().hideFloatingStage(stage);
             } else {
                 stage.hide();
@@ -209,7 +209,7 @@ public abstract class DockTargetController {
     }
 
     public void undock(Node node) {
-        if (DockRegistry.isDockable(node)) {
+        if (DockRegistry.instanceOfDockable(node)) {
             DockableController dc = DockRegistry.dockable(node).dockableController();
             dc.getTargetController().remove(node);
             dc.setTargetController(null);

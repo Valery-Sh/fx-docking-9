@@ -39,7 +39,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         DockTarget dpt = DockUtil.getParentDockPane(this);
         if (dpt != null && getItems().size() > 0) {
             getItems().forEach(it -> {
-                if (DockRegistry.isDockable(it)) {
+                if (DockRegistry.instanceOfDockable(it)) {
                     DockRegistry.dockable(it).dockableController().setTargetController(dpt.targetController());
                 }
             });
@@ -64,7 +64,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                     dpt = DockUtil.getParentDockPane(list.get(0));
                 }
                 for (Node node : list) {
-                    if (dpt != null && DockRegistry.isDockable(node)) {
+                    if (dpt != null && DockRegistry.instanceOfDockable(node)) {
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneRemoved((SplitPane) node, dpt);
                     }
@@ -77,7 +77,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                     dpt = DockUtil.getParentDockPane(list.get(0));
                 }
                 for (Node node : list) {
-                    if (dpt != null && DockRegistry.isDockable(node)) {
+                    if (dpt != null && DockRegistry.instanceOfDockable(node)) {
                         DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneAdded((SplitPane) node, dpt);
@@ -93,7 +93,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
     protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.dockableController().setTargetController(ph);
                 /*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
@@ -124,7 +124,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         }
 
         sp.getItems().forEach((node) -> {
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
@@ -134,7 +134,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
 
     protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         sp.getItems().forEach((node) -> {
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
             } else if (node instanceof SplitPane) {
                 splitPaneRemoved(((SplitPane) node), dpt);
             }

@@ -97,7 +97,7 @@ public class DemoDockBorderPane implements DockTarget {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                if (DockRegistry.isDockable(node)) {
+                if (DockRegistry.instanceOfDockable(node)) {
                     list.add(DockRegistry.dockable(node));
                 }
             });

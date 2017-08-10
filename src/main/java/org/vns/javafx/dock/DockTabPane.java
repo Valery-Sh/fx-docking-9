@@ -222,7 +222,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         public ObservableList<Dockable> getDockables() {
             List<Dockable> list = FXCollections.observableArrayList();
             getTargetNode().getTabs().forEach(tab -> {
-                if (tab.getContent() != null && DockRegistry.isDockable(tab.getContent())) {
+                if (tab.getContent() != null && DockRegistry.instanceOfDockable(tab.getContent())) {
                     list.add(DockRegistry.dockable(tab.getContent()));
                 }
             });
@@ -301,7 +301,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             ((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
             ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
 
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 DockableController nodeHandler = DockRegistry.dockable(node).dockableController();
                 nodeHandler.setDragNode(newTab.getGraphic());
                 if (nodeHandler.getTargetController() == null || nodeHandler.getTargetController() != this) {
@@ -343,7 +343,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             ((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
             ((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
 
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 DockableController nodeHandler = DockRegistry.dockable(node).dockableController();
                 nodeHandler.setDragNode(newTab.getGraphic());
                 if (nodeHandler.getTargetController() == null || nodeHandler.getTargetController() != this) {
@@ -756,10 +756,10 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                     return pane;
                 }
                 
-                if (DockRegistry.isDockTarget(tab.getContent())) {
+                if (DockRegistry.instanceOfDockTarget(tab.getContent())) {
                     tab.setContent(restore(item));
                     pane.getTabs().add(i,tab);
-                } else if (DockRegistry.isDockable(tab.getContent())) {
+                } else if (DockRegistry.instanceOfDockable(tab.getContent())) {
                     if (DockRegistry.dockable(tab.getContent()).dockableController().getTargetController() != null) {
                         DockTargetController c = DockRegistry.dockable(tab.getContent()).dockableController().getTargetController();
                         if (c != getDockTarget().targetController()) {
@@ -791,10 +791,10 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             if (node == null) {
                 return tab;
             } 
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 node = restore(item);
                 tab.setContent(node);
-            } else if (DockRegistry.isDockable(node)) {
+            } else if (DockRegistry.instanceOfDockable(node)) {
                 tab.setContent(node);
             }
             return tab;
@@ -849,12 +849,12 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
                 notifyOnBuidItem(ti);
 
-                if (DockRegistry.isDockTarget(pane.getTabs().get(i).getContent())) {
+                if (DockRegistry.instanceOfDockTarget(pane.getTabs().get(i).getContent())) {
                     TreeItem contentItem = DockRegistry.dockTarget(pane.getTabs().get(i).getContent())
                             .targetController()
                             .getDockTreeTemBuilder().build();
                     ti.getChildren().add(contentItem);
-                } else if (DockRegistry.isDockable(pane.getTabs().get(i).getContent())) {
+                } else if (DockRegistry.instanceOfDockable(pane.getTabs().get(i).getContent())) {
                     TreeItem contentItem = DockTreeItemBuilder.build(pane.getTabs().get(i).getContent());
                     ti.getChildren().add(contentItem);
                 }

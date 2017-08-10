@@ -10,10 +10,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
-import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockTitleBar;
@@ -31,7 +30,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * </p>
  * <p>
  * In the <i>floating</i> state an object of type {@code Dockable} is
- * transformed when the method {@link DockableController#setFloating(boolean,boolean...)
+ * transformed when the method {@link DockableController#setFloating(boolean)
  * }
  * is applied to it with the parameter value equals to {#code true}.
  * </p>
@@ -174,14 +173,14 @@ public class DockableController {
         if (w == null) {
             return null;
         }
-        if ( dragManager != null ) {
+        if (dragManager != null) {
             dragManager.removeEventHandlers(getTitleBar());
             dragManager.removeEventHandlers(getDragNode());
         }
-        if ( (w instanceof Stage) || (w instanceof Popup )) {
+        if ((w instanceof Stage) || (w instanceof PopupWindow)) {
             dragManager = new FxDragManager(dockable);
         } else {
-            dragManager = new JFXDragManager1(dockable);
+            dragManager = new JFXDragManager(dockable);
         }
         dragManager.addEventHandlers(getTitleBar());
         dragManager.addEventHandlers(getDragNode());
@@ -351,10 +350,10 @@ public class DockableController {
         return this.floating.get();
     }
 
-    /*    public void setFloating(boolean floating, boolean... options) {
+    /*    public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            //07.05 FloatStageBuilder t = getStageBuilder();
-            FloatStageBuilder t = new FloatStageBuilder(this);
+            //07.05 FloatWindowBuilder t = getStageBuilder();
+            FloatWindowBuilder t = new FloatWindowBuilder(this);
             if (options.length > 0 && options[0]) {
                 this.floating.set(floating);
                 return;
@@ -368,8 +367,8 @@ public class DockableController {
      */
     public void setFloating(boolean floating, Stage floatStage) {
         if (!isFloating() && floating) {
-            //07.05 FloatStageBuilder t = getStageBuilder();
-            FloatStageBuilder t = new FloatStageBuilder(this);
+            //07.05 FloatWindowBuilder t = getStageBuilder();
+            FloatWindowBuilder t = new FloatWindowBuilder(this);
             t.makeFloating(floatStage);
             this.floating.set(floating);
         } else if (!floating) {
@@ -387,8 +386,8 @@ public class DockableController {
      */
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            //07.05 FloatStageBuilder t = getStageBuilder();
-            FloatStageBuilder t = new FloatStageBuilder(this);
+            //07.05 FloatWindowBuilder t = getStageBuilder();
+            FloatWindowBuilder t = new FloatWindowBuilder(this);
             t.makeFloating();
             this.floating.set(floating);
         } else if (!floating) {
@@ -396,25 +395,14 @@ public class DockableController {
         }
     }
 
-    /**
-     * Transfers the object into the <i>floating</i> state. If the current value
-     * of the property is {@code false} and the specified value is {@code true}
-     * then start creating of a new Stage and adds the node to it's root node.
-     * If the node is docked then it will be {@literal  undocked}.
-     *
-     * @param floating the new value to be set
-     */
-    public Window setFloatingAsPopup(boolean floating) {
-        Window retval = null;
+    public void setFloatingAsPopupControl(boolean floating) {
         if (!isFloating() && floating) {
-            //07.05 FloatStageBuilder t = getStageBuilder();
-            FloatStageBuilder t = new FloatStageBuilder(this);
+            FloatWindowBuilder t = new FloatWindowBuilder(this);
             this.floating.set(floating);
-            retval = t.makeFloatingPopup();
+            t.makeFloatingPopupControl();
         } else if (!floating) {
             this.floating.set(floating);
         }
-        return retval;
     }
 
     /**
@@ -424,9 +412,9 @@ public class DockableController {
      *
      * @return the new instance of type {@link FloatStageBuilder}
      */
-    //public FloatStageBuilder getStageBuilder() {
+    //public FloatWindowBuilder getStageBuilder() {
     //07.05 return getTargetController().getStageBuilder(dockable);
-    //    return new FloatStageBuilder(this);
+    //    return new FloatWindowBuilder(this);
     //}
     /**
      * Getter method of the {@code resizable} property
@@ -447,7 +435,7 @@ public class DockableController {
 
     /**
      * Specifies whether a floating window of the node can be resized. The
-     * floating window appears when applying the method {@link DockableController#setFloating(boolean, boolean...)
+     * floating window appears when applying the method {@link DockableController#setFloating(boolean)}
      * }
      * with the parameter value equals to {@code true}.
      *
@@ -496,8 +484,14 @@ public class DockableController {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
 
-        if (dragManager != null && ( (dragManager instanceof FxDragManager) || (dragManager instanceof JFXDragManager1))) {
-            dragManager.titlebarChanged(ov, oldValue, newValue);
+        if (dragManager != null) {
+            if (oldValue != null) {
+                dragManager.removeEventHandlers(oldValue);
+            }
+            if (newValue != null) {
+                dragManager.addEventHandlers(newValue);
+            }
+//            dragManager.titlebarChanged(ov, oldValue, newValue);
         }
     }
 }

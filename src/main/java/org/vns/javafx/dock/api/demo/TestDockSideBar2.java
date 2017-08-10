@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
@@ -18,16 +13,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.DockSideBar;
-import org.vns.javafx.dock.DockSideBar.Rotation;
+import org.vns.javafx.dock.DockSideBar2.Rotation;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockSideBar.SidePaneController;
+import org.vns.javafx.dock.DockSideBar2;
 
 /**
  *
  * @author Valery
  */
-public class TestDockSideBar1 extends Application {
+public class TestDockSideBar2 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -40,7 +34,7 @@ public class TestDockSideBar1 extends Application {
 
         stage.setTitle("Test DockSideBar");
 
-        DockSideBar sideBar01 = new DockSideBar();
+        DockSideBar2 sideBar01 = new DockSideBar2();
         sideBar01.setOrientation(Orientation.VERTICAL);
         sideBar01.setRotation(Rotation.UP_DOWN);
         sideBar01.setSide(Side.RIGHT);
@@ -116,12 +110,7 @@ public class TestDockSideBar1 extends Application {
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
         VBox vb2 = new VBox();
-        Button dn02Btn = new Button("dn02 button");
-        dn02.setContent(dn02Btn);
-        dn02Btn.setOnAction(a -> {
-            
-           // ((SidePaneController)sideBar01.targetController()).cont.changeSize();
-        });
+        dn02.setContent(new Button("dn02 button"));
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));
         //dn02.setPrefHeight(100);

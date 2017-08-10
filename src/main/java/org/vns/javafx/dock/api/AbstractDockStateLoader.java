@@ -121,8 +121,8 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         saved.clear();
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
-            //if (node != null && !saved.contains(node) && DockRegistry.isDockTarget(node)) {
-            if (node != null &&  DockRegistry.isDockTarget(node)) {
+            //if (node != null && !saved.contains(node) && DockRegistry.instanceOfDockTarget(node)) {
+            if (node != null &&  DockRegistry.instanceOfDockTarget(node)) {
                 save(DockRegistry.dockTarget(node));
                 //TreeItemStringConverter tc = new TreeItemStringConverter();
                 DockPreferences cp = new DockPreferences(getPreferencesRoot());
@@ -209,7 +209,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             if (store.contains(node)) {
                 continue;
             }
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 TreeItem<Properties> item = restore(DockRegistry.dockTarget(node));
                 markExists(item, store);
             }
@@ -225,7 +225,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
                 continue;
             }
             Node node = (Node) obj;
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 store.add(node);
             }
         }
@@ -425,17 +425,17 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         //
         // May be the dockable node is allready in registered map with another fieldName name
         //
-        if (DockRegistry.isDockable(node) && getExplicitlyRegistered().containsValue(node)) {
+        if (DockRegistry.instanceOfDockable(node) && getExplicitlyRegistered().containsValue(node)) {
             //getExplicitlyRegistered().remove(getEntryName(node));
             throw new IllegalArgumentException("Dublicate node. entryName: " + fieldName);
         }
 
-        if (!DockRegistry.isDockTarget(node) && !DockRegistry.isDockable(node)) {
+        if (!DockRegistry.instanceOfDockTarget(node) && !DockRegistry.instanceOfDockable(node)) {
             throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + node.getClass().getName());
         }
 
         getExplicitlyRegistered().put(fieldName, node);
-        if (DockRegistry.isDockTarget(node)) {
+        if (DockRegistry.instanceOfDockTarget(node)) {
             addListeners(node);
         }
     }
@@ -476,12 +476,12 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         try {
             retval = clazz.newInstance();
 
-            if (!DockRegistry.isDockTarget(retval) && !DockRegistry.isDockable(retval)) {
+            if (!DockRegistry.instanceOfDockTarget(retval) && !DockRegistry.instanceOfDockable(retval)) {
                 throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + clazz.getName());
             }
 
             getExplicitlyRegistered().put(fieldName, retval);
-            if (DockRegistry.isDockTarget(retval)) {
+            if (DockRegistry.instanceOfDockTarget(retval)) {
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
@@ -617,7 +617,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             tv.getTreeItem(i).getValue().setProperty(FIELD_NAME_ATTR, fieldName);
 
             if (!loaded) {
-                if ((obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+                if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
                     if (i == 0 && !getAllDockTargets().containsKey(fieldName)) {
                         getDefaultDockTargets().put(fieldName, tv.getTreeItem(i));
                     } else if (getAllDockTargets().containsKey(fieldName)) {
@@ -629,7 +629,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
                 registered.put(fieldName, obj);
             }
             idx++;
-            if ((obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+            if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
                 saved.add((Node) obj);
                 int l = tv.getTreeItemLevel(tv.getTreeItem(i));
                 if (l > level) {
@@ -650,7 +650,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             //
             // For now we don't use parent dock target anywhere in code
             //
-/*            if (i > 0 && (obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+/*            if (i > 0 && (obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
                 TreeItem<Properties> p = findParentDockTarget(tv, tv.getTreeItem(i));
                 String parentFieldName = p.getValue().getProperty(FIELD_NAME_ATTR);
                 tv.getTreeItem(i).getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
@@ -665,7 +665,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         TreeItem<Properties> parent = item.getParent();
         while (parent != null) {
             Object obj = parent.getValue().get(OBJECT_ATTR);
-            if ((obj instanceof Node) && DockRegistry.isDockTarget((Node) obj)) {
+            if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
                 retval = parent;
                 break;
             }

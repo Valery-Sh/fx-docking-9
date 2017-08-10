@@ -54,7 +54,7 @@ public class ScenePaneController extends DockTargetController {
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        if (DockRegistry.isDockable(node)) {
+        if (DockRegistry.instanceOfDockable(node)) {
             if (node.getParent() != null && (node.getParent() instanceof Pane)) {
                 retval = true;
             }

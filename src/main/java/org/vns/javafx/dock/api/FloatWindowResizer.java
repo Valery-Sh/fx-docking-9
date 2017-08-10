@@ -7,6 +7,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
@@ -16,7 +17,7 @@ import javafx.stage.Window;
  *
  * @author Valery
  */
-public class FloatStageResizer {
+public class FloatWindowResizer {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
@@ -27,7 +28,7 @@ public class FloatStageResizer {
     private final Set<Cursor> cursorTypes = new HashSet<>();
     
             
-    public FloatStageResizer() {
+    public FloatWindowResizer() {
         Collections.addAll(cursorTypes,
         Cursor.S_RESIZE,Cursor.E_RESIZE,Cursor.N_RESIZE,Cursor.W_RESIZE,
         Cursor.SE_RESIZE,Cursor.NE_RESIZE,Cursor.SW_RESIZE,Cursor.NW_RESIZE);
@@ -40,6 +41,10 @@ public class FloatStageResizer {
     }
     
     public void resize(double x, double y) {
+        if ( window instanceof PopupControl ) {
+            resizePopup(x, y);
+            return;
+        }
         if ( ! cursorTypes.contains(cursor) ) {
             //return;
         }
@@ -99,11 +104,91 @@ public class FloatStageResizer {
             mouseY.set(curY);
         }
     }
+    public void resizePopup(double x, double y) {
+
+        double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
+
+        double curX = mouseX.get();
+        double curY = mouseY.get();
+        if (cursor == Cursor.S_RESIZE) {
+            hDelta = y - this.mouseY.get();
+            curY = y;
+        } else if (cursor == Cursor.E_RESIZE) {
+            wDelta = x - this.mouseX.get();
+            curX = x;
+        } else if (cursor == Cursor.N_RESIZE) {
+            hDelta = this.mouseY.get() - y;
+            yDelta = -hDelta;
+            curY = y;
+        } else if (cursor == Cursor.W_RESIZE) {
+            
+            wDelta = this.mouseX.get() - x;
+            xDelta = -wDelta;
+            curX = x;
+        } else if (cursor == Cursor.SE_RESIZE) {
+            hDelta = y - this.mouseY.get();
+            curY = y;
+            wDelta = x - this.mouseX.get();
+            curX = x;
+
+        } else if (cursor == Cursor.NE_RESIZE) {
+            hDelta = this.mouseY.get() - y;
+            wDelta = x - this.mouseX.get();
+            yDelta = -hDelta;
+            curX = x;
+            curY = y;
+        } else if (cursor == Cursor.SW_RESIZE) {
+            hDelta = y - this.mouseY.get();
+            wDelta = this.mouseX.get() - x;
+            xDelta = -wDelta;
+            curX = x;
+            curY = y;
+        } else if (cursor == Cursor.NW_RESIZE) {
+            hDelta = this.mouseY.get() - y;
+            wDelta = this.mouseX.get() - x;
+            xDelta = -wDelta;
+            yDelta = -hDelta;
+            curX = x;
+            curY = y;
+        }
+        PopupControl pc = (PopupControl) window;
+        double w = -1;
+        double h = -1;
+//        System.err.println("CURSOR = " + cursor);
+        Region r = (Region) pc.getScene().getRoot();        
+        System.err.println("   --- ROOT = " + r + "; minWidth=" + getMinWidth() + "; maxWidth=" + r.getMaxWidth());
+        if ( (xDelta != 0 || wDelta != 0 ) &&  wDelta + window.getWidth() >= getMinWidth()) {
+        //if (wDelta + r.getWidth() >= getMinWidth()) {
+            System.err.println("   --- wDelta= " + wDelta + "; xDelta" + xDelta );
+            pc.setAnchorX(xDelta + pc.getAnchorX());
+            System.err.println("   --- oldW = " + r.getPrefWidth());
+            r.setPrefWidth(wDelta + r.getPrefWidth());
+            System.err.println("   --- newW = " + r.getPrefWidth());            
+            System.err.println("   --- win Width = " + pc.getScene().getWindow().getWidth());            
+            mouseX.set(curX);
+            
+        } else {
+            System.err.println("WWWWWWWWWWWWWWWWWWWWWWW ");
+        }
+        
+        if (hDelta + window.getHeight() >= getMinHeight()) {
+//            System.err.println("   --- hDelta= " + hDelta + "; yDelta" + yDelta );
+            pc.setAnchorY(yDelta + pc.getAnchorY());
+            r.setPrefHeight(hDelta + r.getPrefHeight());
+            mouseY.set(curY);
+        } else {
+            System.err.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH ");
+        }
+        
+        
+    }
     
     protected double getMinWidth() {
         double retval = 50.0;
-        if ( window instanceof Stage ) {
+        if ( window instanceof Stage  ) {
             retval = ((Stage)window).getMinWidth();
+        } else if ( window instanceof PopupControl  ) {
+            retval = ((PopupControl)window).getMinWidth();
         }
         return retval;
     }
@@ -111,6 +196,8 @@ public class FloatStageResizer {
         double retval = 50.0;
         if ( window instanceof Stage ) {
             retval = ((Stage)window).getMinHeight();
+        } else if ( window instanceof PopupControl  ) {
+            retval = ((PopupControl)window).getMinHeight();
         }
         return retval;
     }    

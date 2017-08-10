@@ -202,11 +202,11 @@ public interface DockTreeItemBuilder {
             props.put("id", node.getId());
         }
 
-        if (node != null && (DockRegistry.isDockable(node) || DockRegistry.isDockTarget(node))) {
-            if (DockRegistry.isDockable(node)) {
+        if (node != null && (DockRegistry.instanceOfDockable(node) || DockRegistry.instanceOfDockTarget(node))) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 props.put(ISDOCKABLE_ATTR, "yes");
             }
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 props.put(ISDOCKTARGET_ATTR, "yes");
             }
         }

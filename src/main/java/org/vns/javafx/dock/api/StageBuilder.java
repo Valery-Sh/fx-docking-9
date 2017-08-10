@@ -1,30 +1,28 @@
 package org.vns.javafx.dock.api;
 
-import java.util.List;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
+import javafx.scene.Parent;
+import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.PopupWindow;
 
 /**
  *
  * @author Valery
  */
-public class StageBuilder extends FloatStageBuilder {
+public class StageBuilder extends FloatWindowBuilder {
 
     public StageBuilder(DockableController nodeController) {
         super(nodeController);
     }
 
-    @Override
+    /*    @Override
     protected void makeFloating(Dockable dockable) {
 
         Node titleBar = dockable.dockableController().getTitleBar();
@@ -55,66 +53,114 @@ public class StageBuilder extends FloatStageBuilder {
         st.setMinHeight(borderPane.minHeight(dockable.node().getWidth()) + insetsHeight);
         st.setMinWidth(borderPane.minWidth(dockable.node().getHeight()) + insetsWidth);
     }
-
-    public Stage createStage(Dockable dockable) {
-        return this.createStage(dockable, null);
-    }
-
-    public Stage createStage(Dockable dockable, Region parentPane) {
+     */
+    @Override
+    public PopupControl createPopupControl(Dockable dockable) {
 
         Region node = dockable.node();
+        /*        if (node.getScene() == null || node.getScene().getWindow() == null) {
+            return null;
+        }
+         */
+        //Window owner = node.getScene().getWindow();
+
+        Point2D screenPoint = node.localToScreen(0, 0);
+        if (screenPoint == null) {
+            screenPoint = new Point2D(400, 400);
+        }
         Node titleBar = dockable.dockableController().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
 
-        Stage newStage = new Stage();
-
-        DockRegistry.register(newStage);
-        stageProperty().set(newStage);
-
-        newStage.setTitle("NEW STAGE");
-        Region lastDockPane = dockable.dockableController().getTargetController().getTargetNode();
-        if (lastDockPane != null && lastDockPane.getScene() != null
-                && lastDockPane.getScene().getWindow() != null) {
-            newStage.initOwner(lastDockPane.getScene().getWindow());
-        }
-        newStage.initStyle(getStageStyle());
-
-        setRootPane(new BorderPane());
-        Region pane = parentPane;
-        if (parentPane == null) {
-            pane = new StackPane();
+        /*        if (dockable.dockableController().isDocked() && dockable.dockableController().getTargetController().getTargetNode() != null) {
+            Window w = dockable.dockableController().getTargetController().getTargetNode().getScene().getWindow();
+            if (dockable.node().getScene().getWindow() != w) {
+                //??? rootPane = (Pane) dockable.node().getScene().getRoot();
+                setFloatingWindow((Stage) dockable.node().getScene().getWindow());
+                addResizer((Stage) dockable.node().getScene().getWindow(), dockable);
+                dockable.dockableController().getTargetController().undock(dockable.node());
+                return getFloatingWindow();
+            }
         }
 
-        //pane.setStyle("-fx-background-color: aqua");
-        
-        //dockPane.getChildren().add(dockable.node()); // we do not apply dock() 
-        //PaneHandler ph = dockable.dockableController().getTargetController();
-        //ph.dock(dockable, Side.TOP);
-        if (pane instanceof Pane) {
-            ((Pane) pane).getChildren().add(dockable.node());
-        } else if (pane instanceof SplitPane) {
-            ((SplitPane) pane).getItems().add(dockable.node());
+        if (dockable.dockableController().isDocked()) {
+            dockable.dockableController().getTargetController().undock(dockable.node());
         }
-        
+         */
+        final PopupControl floatPopup = new PopupControl();
 
-        ((BorderPane) getRootPane()).setCenter(pane);
+        setFloatingWindow(floatPopup);
 
-        Scene scene = new Scene(getRootPane());
+        Point2D stagePosition = screenPoint;
 
+        BorderPane borderPane = new BorderPane();
+        // ??? this.rootPane = borderPane;
+
+        //DockPane dockPane = new DockPane();
+
+        /*        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (floatPopup != null) {
+                    floatPopup.hide();
+                }
+                dockable.node().parentProperty().removeListener(this);
+            }
+        };
+         */
+        //
+        // Prohibit to use as a dock target
+        //
+        //dockPane.setUsedAsDockTarget(false);
+        //dockPane.getItems().add(dockable.node());
+        //borderPane.getStyleClass().add("dock-node-border");
+        borderPane.setCenter(dockable.node());
+        setRootPane(borderPane); // needs by resizer
+
+        //setDefaultCursors();
+        //??? floatingProperty.set(true);
         node.applyCss();
-        getRootPane().applyCss();
+        borderPane.applyCss();
 
-        newStage.setResizable(true);
-        newStage.setScene(scene);
-        if (getStageStyle() == StageStyle.TRANSPARENT) {
-            scene.setFill(null);
-        }
-        addResizer(newStage, dockable);
-        newStage.sizeToScene();
-        return newStage;
-    }
+        Insets insetsDelta = borderPane.getInsets();
+
+        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+        //floatPopup.setAutoFix(false);
+        Platform.runLater(() -> {
+//            floatPopup.setX(stagePosition.getX() - insetsDelta.getLeft());
+//            floatPopup.setY(stagePosition.getY() - insetsDelta.getTop());
+
+//            floatPopup.setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+//            floatPopup.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+            borderPane.setPrefSize(node.getWidth() + insetsWidth, node.getHeight() + insetsHeight);
+        });
+        floatPopup.setMinWidth(50);
+        floatPopup.setMaxWidth(500);
+        
+        borderPane.setPrefWidth(51);
+        borderPane.setMaxWidth(500);
+
+        floatPopup.getScene().setRoot(borderPane);
+        
+        borderPane.setStyle("-fx-background-color: aqua");
+        //dockPane.setStyle("-fx-background-color: blue");
+        node.setStyle("-fx-background-color: green");
+        floatPopup.setOnShown(e -> {
+            DockRegistry.register(floatPopup);
+        });
+        floatPopup.setOnHidden(e -> {
+            DockRegistry.unregister(floatPopup);
+        });
+        floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
+        //floatPopup.show(owner);
+        //dockable.node().parentProperty().addListener(pcl);
+        System.err.println("DOCABLE isFloating = " + dockable.dockableController().isFloating());
+        addResizer(floatPopup, dockable);
+
+        return floatPopup;
+    }//makeFloatingPopupControl
 
 }//class StageBuilder

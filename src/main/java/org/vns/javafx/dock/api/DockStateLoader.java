@@ -87,7 +87,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
         //
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
-            if (DockRegistry.isDockable(node) && !DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockable(node) && !DockRegistry.instanceOfDockTarget(node)) {
                 TreeItem item = DockTreeItemBuilder.build(key, node);
                 getDefaultDockables().put(key, item);
             }
@@ -106,7 +106,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 TreeItem<Properties> it = build(key, node);
                 if ("dockTabPane1".equals(key)) {
                     System.err.println("+++++++++++++++++++++++++++++++++++");
@@ -230,7 +230,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
         //save(true);
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 save(DockRegistry.dockTarget(node));
             }
         });
@@ -250,7 +250,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
     /*    protected void save(boolean loaded) {
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
-            if (DockRegistry.isDockTarget(node)) {
+            if (DockRegistry.instanceOfDockTarget(node)) {
                 save(DockRegistry.dockTarget(node), loaded);
             }
         });

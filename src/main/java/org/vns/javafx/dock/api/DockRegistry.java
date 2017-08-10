@@ -47,7 +47,6 @@ public class DockRegistry {
         getInstance().doRegister(window);
         if (!(window instanceof Stage)) {
             getInstance().getWindows().add(window);
-            System.err.println("doRegister window=" + window);
             if (window instanceof Popup) {
                 Popup p = (Popup) window;
                 if (p.getOwnerWindow() != null) {
@@ -212,24 +211,20 @@ public class DockRegistry {
         Window retval = null;
         List<Window> allStages = getWindows(x, y, excl);
         if (allStages.isEmpty()) {
-            System.err.println("DockRegistry getTarget allStages.isEmpty");
             return null;
         }
         List<Window> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
             Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
-                return isDockTarget(n);
+                return instanceOfDockTarget(n);
             });
-            System.err.println("DockRegistry topNode=" + topNode);
             if (topNode != null) {
                 targetStages.add(s);
             }
         });
         for (Window s1 : targetStages) {
-            System.err.println("DockRegistry target window=" + s1);
             retval = s1;
             for (Window s2 : allStages) {
-                System.err.println("   --- DockRegistry target allWindows el==" + s1);
                 if (s1 == s2) {
                     continue;
                 }
@@ -242,7 +237,6 @@ public class DockRegistry {
                 break;
             }
         }
-        System.err.println("   --- DockRegistry retval = " + retval);        
         return retval;
     }
 
@@ -415,6 +409,9 @@ public class DockRegistry {
         return d;
     }
 
+    public static boolean instanceOfDockable(Node node) {
+        return getInstance().isNodeDockable(node);
+    }
     public static boolean isDockable(Node node) {
         return getInstance().isNodeDockable(node);
     }
@@ -426,6 +423,9 @@ public class DockRegistry {
         return getInstance().dockables.get(node);
     }
 
+    public static boolean instanceOfDockTarget(Node node) {
+        return getInstance().isNodeDockTarget(node);
+    }
     public static boolean isDockTarget(Node node) {
         return getInstance().isNodeDockTarget(node);
     }

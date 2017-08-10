@@ -105,11 +105,11 @@ public class FXMLDockLoader extends DockStateLoader {
     }
 
     protected void registerAll(Parent node) {
-        if (isValidId(node.getId()) && (DockRegistry.isDockTarget(node) || DockRegistry.isDockable(node))) {
+        if (isValidId(node.getId()) && (DockRegistry.instanceOfDockTarget(node) || DockRegistry.instanceOfDockable(node))) {
             register(node.getId(), node);
         }
         for (Node n : ((Parent) node).getChildrenUnmodifiable()) {
-            if (isValidId(n.getId()) && (DockRegistry.isDockTarget(n) || DockRegistry.isDockable(n))) {
+            if (isValidId(n.getId()) && (DockRegistry.instanceOfDockTarget(n) || DockRegistry.instanceOfDockable(n))) {
                 //register(n.getId(),n);
             }
             if (!(n instanceof Parent)) {

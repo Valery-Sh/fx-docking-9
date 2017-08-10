@@ -121,7 +121,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         SplitPane sp = dsp;
         DockTargetController ph = targetController;
         for (Node node : dsp.getItems()) {
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.dockableController().setTargetController(ph);
             } else if (node instanceof DockSplitPane) {
@@ -133,7 +133,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
     protected void update(DockSplitPane split, DockTargetController ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.dockableController().setTargetController(ph);
                 /*                if (i < split.getDividers().size() && d.dockableController().getDividerPos() >= 0) {
@@ -155,7 +155,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
     protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 DockRegistry.dockable(node).dockableController().setTargetController(dpt.targetController());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
@@ -165,7 +165,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
     protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
             } else if (node instanceof SplitPane) {
                 splitPaneRemoved(((SplitPane) node), dpt);
             }

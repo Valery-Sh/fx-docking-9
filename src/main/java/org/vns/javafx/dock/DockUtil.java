@@ -99,7 +99,7 @@ public class DockUtil {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
 
         List<Dockable> list = findNodes(root, p -> {
-            return (DockRegistry.isDockable(p));
+            return (DockRegistry.instanceOfDockable(p));
         });
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach(d -> {
@@ -135,7 +135,7 @@ public class DockUtil {
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
-            if (DockRegistry.isDockable(node)) {
+            if (DockRegistry.instanceOfDockable(node)) {
                 b = true;
                 DockTargetController pd = DockRegistry.dockable(node).dockableController().getTargetController();
                 DockableController st = DockRegistry.dockable(node).dockableController();
@@ -314,7 +314,7 @@ public class DockUtil {
 
     public static DockTarget getParentDockPane(Node dockNode) {
         Node node = DockUtil.getImmediateParent(dockNode, p -> {
-            return (DockRegistry.isDockTarget(p));
+            return (DockRegistry.instanceOfDockTarget(p));
         });
         return DockRegistry.dockTarget(node);
     }

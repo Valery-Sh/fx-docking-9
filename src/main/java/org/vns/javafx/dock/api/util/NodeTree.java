@@ -30,7 +30,7 @@ public class NodeTree {
         //
         // Get a list of parent nodes
         //
-        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return DockRegistry.isDockTarget(node);}  );
+        List<Node> p = TopNodeHelper.getParentChain(node, el -> {return DockRegistry.instanceOfDockTarget(node);}  );
         root.getChildren().add(getRegion(p));
         Popup popup = new Popup();
         popup.show(root,x,y);
