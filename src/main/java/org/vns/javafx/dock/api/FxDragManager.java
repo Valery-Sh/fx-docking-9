@@ -12,7 +12,6 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.stage.Window;
 
 /**
@@ -96,6 +95,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      * @param oldValue the old drag node
      * @param newValue the new drag node
      */
+    @Override
     public void dragNodeChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if (oldValue != null) {
             removeEventHandlers(oldValue);
@@ -182,7 +182,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mousePressed(MouseEvent ev) {
-
+        System.err.println("MOUSE PRESSED");
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
@@ -208,6 +208,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mouseDragged(MouseEvent ev) {
+System.err.println("MOUSE DRAGGED");        
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
@@ -355,7 +356,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mouseDragDetected(MouseEvent ev) {
-
+System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
@@ -368,7 +369,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
         if (!dockable.dockableController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             setFloating(true);
-
+            System.err.println("1 MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }

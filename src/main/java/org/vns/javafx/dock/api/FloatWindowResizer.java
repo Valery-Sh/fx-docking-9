@@ -7,6 +7,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -27,12 +28,23 @@ public class FloatWindowResizer {
     
     private final Set<Cursor> cursorTypes = new HashSet<>();
     
+    private FloatWindowBuilder windowBuilder;
             
-    public FloatWindowResizer() {
+    protected FloatWindowResizer() {
         Collections.addAll(cursorTypes,
         Cursor.S_RESIZE,Cursor.E_RESIZE,Cursor.N_RESIZE,Cursor.W_RESIZE,
         Cursor.SE_RESIZE,Cursor.NE_RESIZE,Cursor.SW_RESIZE,Cursor.NW_RESIZE);
+    }
+    public FloatWindowResizer(FloatWindowBuilder windowBuilder) {
+        this();
+        this.windowBuilder = windowBuilder;
+    }
+    public FloatWindowBuilder getWindowBuilder() {
+        return windowBuilder;
+    }
 
+    public void setWindowBuilder(FloatWindowBuilder windowBuilder) {
+        this.windowBuilder = windowBuilder;
     }
     
     private void setCursorTypes(Cursor... cursors) {
@@ -105,11 +117,28 @@ public class FloatWindowResizer {
         }
     }
     public void resizePopup(double x, double y) {
-
+        PopupControl pc = (PopupControl) window;
+        Region r = (Region) pc.getScene().getRoot();        
+        double resizeMinWidth = getMinWidth();
+        double resizeMinHeight = getMinHeight();
+        if ( getWindowBuilder() != null) {
+        //    resizeMinWidth = dockable.dockableController().getTargetController().getResizeMinWidth();
+        //    resizeMinHeight = dockable.dockableController().getTargetController().getResizeMinHeight();
+            resizeMinWidth = windowBuilder.getMinWidth();
+            resizeMinHeight = windowBuilder.getMinHeight();
+            System.err.println("   --- root minWidth =" + resizeMinWidth);                            
+        }
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
-
+//        System.err.println("   --- root minWidth =" + getMinHeight());                
+/*        System.err.println("START RESIZE x=" + x);
+        System.err.println("   --- root minWidth =" + getMinWidth());        
+        System.err.println("   --- root prefWidth=" + r.getPrefWidth());        
+        System.err.println("   --- mouseX & curX =" + mouseX);                
+*/
         double curX = mouseX.get();
         double curY = mouseY.get();
+//        System.err.println("   ---           curX=" + curX );        
+//        System.err.println("----------------------------------------");                
         if (cursor == Cursor.S_RESIZE) {
             hDelta = y - this.mouseY.get();
             curY = y;
@@ -125,6 +154,12 @@ public class FloatWindowResizer {
             wDelta = this.mouseX.get() - x;
             xDelta = -wDelta;
             curX = x;
+/*            System.err.println("CALC DELTA:");            
+            System.err.println("RESIZE xDelta =" + xDelta );
+            System.err.println("RESIZE wDelta =" + wDelta );
+            System.err.println("RESIZE curX   =" + curX );
+            System.err.println("===========================================");            
+*/            
         } else if (cursor == Cursor.SE_RESIZE) {
             hDelta = y - this.mouseY.get();
             curY = y;
@@ -151,33 +186,28 @@ public class FloatWindowResizer {
             curX = x;
             curY = y;
         }
-        PopupControl pc = (PopupControl) window;
+        
         double w = -1;
         double h = -1;
 //        System.err.println("CURSOR = " + cursor);
-        Region r = (Region) pc.getScene().getRoot();        
-        System.err.println("   --- ROOT = " + r + "; minWidth=" + getMinWidth() + "; maxWidth=" + r.getMaxWidth());
-        if ( (xDelta != 0 || wDelta != 0 ) &&  wDelta + window.getWidth() >= getMinWidth()) {
+        //System.err.println("   --- ROOT = " + r + "; minWidth=" + getMinWidth() + "; maxWidth=" + r.getMaxWidth());
+        if ( (xDelta != 0 || wDelta != 0 ) &&  wDelta + window.getWidth() >= resizeMinWidth) {
         //if (wDelta + r.getWidth() >= getMinWidth()) {
-            System.err.println("   --- wDelta= " + wDelta + "; xDelta" + xDelta );
+            //System.err.println("   --- wDelta= " + wDelta + "; xDelta" + xDelta );
             pc.setAnchorX(xDelta + pc.getAnchorX());
-            System.err.println("   --- oldW = " + r.getPrefWidth());
+            //System.err.println("   --- oldW = " + r.getPrefWidth());
             r.setPrefWidth(wDelta + r.getPrefWidth());
-            System.err.println("   --- newW = " + r.getPrefWidth());            
-            System.err.println("   --- win Width = " + pc.getScene().getWindow().getWidth());            
+            //System.err.println("   --- newW = " + r.getPrefWidth());            
+            //System.err.println("   --- win Width = " + pc.getScene().getWindow().getWidth());            
             mouseX.set(curX);
             
-        } else {
-            System.err.println("WWWWWWWWWWWWWWWWWWWWWWW ");
-        }
+        } 
         
-        if (hDelta + window.getHeight() >= getMinHeight()) {
+        if (hDelta + window.getHeight() >= resizeMinHeight) {
 //            System.err.println("   --- hDelta= " + hDelta + "; yDelta" + yDelta );
             pc.setAnchorY(yDelta + pc.getAnchorY());
             r.setPrefHeight(hDelta + r.getPrefHeight());
             mouseY.set(curY);
-        } else {
-            System.err.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH ");
         }
         
         
@@ -188,7 +218,11 @@ public class FloatWindowResizer {
         if ( window instanceof Stage  ) {
             retval = ((Stage)window).getMinWidth();
         } else if ( window instanceof PopupControl  ) {
-            retval = ((PopupControl)window).getMinWidth();
+            //retval = ((PopupControl)window).getMinWidth();
+            Node root = ((PopupControl)window).getScene().getRoot();
+            if ( root instanceof Region ) {
+                retval = ((Region)root).getMinWidth();
+            }
         }
         return retval;
     }

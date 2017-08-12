@@ -71,6 +71,8 @@ public class DockableController {
     private DockTargetController scenePaneController;
 
     private boolean draggable;
+    
+    
     /**
      * dock target pane
      */
@@ -99,6 +101,7 @@ public class DockableController {
         targetController.addListener(this::targetControllerChanged);
     }
 
+    
     protected void addShowingListeners() {
         dockable().node().sceneProperty().addListener(this::sceneChanged);
     }
@@ -182,6 +185,7 @@ public class DockableController {
         } else {
             dragManager = new JFXDragManager(dockable);
         }
+        System.err.println("INIT DRAG MANAGER");
         dragManager.addEventHandlers(getTitleBar());
         dragManager.addEventHandlers(getDragNode());
         return dragManager;
@@ -350,7 +354,7 @@ public class DockableController {
         return this.floating.get();
     }
 
-    /*    public void setFloating(boolean floating) {
+    /*    public void markFloating(boolean floating) {
         if (!isFloating() && floating) {
             //07.05 FloatWindowBuilder t = getStageBuilder();
             FloatWindowBuilder t = new FloatWindowBuilder(this);
@@ -365,7 +369,7 @@ public class DockableController {
         }
     }
      */
-    public void setFloating(boolean floating, Stage floatStage) {
+/*    public void setFloating(boolean floating, Stage floatStage) {
         if (!isFloating() && floating) {
             //07.05 FloatWindowBuilder t = getStageBuilder();
             FloatWindowBuilder t = new FloatWindowBuilder(this);
@@ -375,7 +379,7 @@ public class DockableController {
             this.floating.set(floating);
         }
     }
-
+*/
     /**
      * Transfers the object into the <i>floating</i> state. If the current value
      * of the property is {@code false} and the specified value is {@code true}

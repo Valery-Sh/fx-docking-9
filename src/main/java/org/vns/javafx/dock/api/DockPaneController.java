@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.function.Consumer;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

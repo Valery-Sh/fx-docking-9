@@ -10,8 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.stage.Popup;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableController;

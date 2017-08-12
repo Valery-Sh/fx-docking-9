@@ -32,6 +32,10 @@ public abstract class DockTargetController {
     private boolean usedAsDockTarget = true;
 
     private IndicatorPopup indicatorPopup;
+    
+    private double resizeMinWidth = -1;
+    
+    private double resizeMinHeight = -1;
 
     protected DockTargetController(Region targetNode) {
         this.targetNode = targetNode;
@@ -62,6 +66,22 @@ public abstract class DockTargetController {
             title = getTargetNode().getClass().getName();
         }
         return title;
+    }
+
+    public double getResizeMinWidth() {
+        return resizeMinWidth;
+    }
+
+    protected void setResizeMinWidth(double resizeMinWidth) {
+        this.resizeMinWidth = resizeMinWidth;
+    }
+
+    public double getResizeMinHeight() {
+        return resizeMinHeight;
+    }
+
+    protected void setResizeMinHeight(double resizeMinHeight) {
+        this.resizeMinHeight = resizeMinHeight;
     }
 
     //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}

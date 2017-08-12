@@ -41,7 +41,6 @@ import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.StageBuilder;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.StageBuilder1;
 
@@ -241,15 +240,18 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
     }
 
     protected void windowChanged(Window oldValue, Window newValue) {
-        if (!(newValue instanceof Stage)) {
+/*        if (!(newValue instanceof Stage)) {
             return;
         }
+*/        
         Window window = (Window) newValue;
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_CLICKED, this::windowClicked);
         if ( window instanceof Stage ) {
             ((Stage)window).setTitle("owner");
         }
         getSideItems().values().forEach(d -> {
+                System.err.println("windowChanged call adjustScreenPos");                
+            
             d.adjustScreenPos();
         });
     }
@@ -440,9 +442,9 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             Dockable dockable = DockRegistry.dockable(node);
-            Stage nodeStage = null;
+            Stage priorStage = null;
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                nodeStage = (Stage) node.getScene().getWindow();
+                priorStage = (Stage) node.getScene().getWindow();
             }
 
             Button itemButton = new Button(getButtonText(dockable));
@@ -489,7 +491,7 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
             }
             container.getStageBuilder().setSupportedCursors(getSupportedCursors());
             Stage stage = container.getStageBuilder().createStage(dockable);
-            stage.setAlwaysOnTop(true);
+            //stage.setAlwaysOnTop(true);
             stage.setOnShowing(e -> {
                 if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null) {
                     if (stage.getOwner() == null) {
@@ -499,12 +501,13 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
             });
 
             if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null && getTargetNode().getScene().getWindow().isShowing()) {
+                System.err.println("DO DOCK call adjustScreenPos");                
                 container.adjustScreenPos();
             }
 
             //container.setDocked(true);
-            if (nodeStage != null) {
-                nodeStage.close();
+            if (priorStage != null) {
+                priorStage.close();
             }
             container.setDocked(true);
 
@@ -580,7 +583,6 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
                 itemMap.remove(r);
                 ((DockSideBar2) getTargetNode()).getDelegate().getItems().remove(r);
                 ((DockSideBar2) getTargetNode()).getItems().remove(DockRegistry.dockable(dockNode));
-
             }
         }
 
@@ -592,6 +594,7 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
             Group group = (Group) btn.getParent();
             Dockable dockable = getItemMap().get(group).getDockable();
             getItemMap().get(group).changeSize();
+            //((Stage) dockable.node().getScene().getWindow()).setAlwaysOnTop(true);
             ((Stage) dockable.node().getScene().getWindow()).show();
         }
 
@@ -766,12 +769,15 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
 
         public void adjustScreenPos() {
             SidePaneController handler = (SidePaneController) dockable.dockableController().getTargetController();
+            DockSideBar2 sb = (DockSideBar2) handler.getTargetNode();
+            ToolBar tb = sb.delegate;
             Window ownerStage = (Window) ((DockSideBar2) handler.getTargetNode()).getScene().getWindow();
-
+            System.err.println("adjustScreenPos ownerStage = " + ownerStage);
             ownerStage.xProperty().addListener(this);
             ownerStage.yProperty().addListener(this);
             ownerStage.widthProperty().addListener(this);
             ownerStage.heightProperty().addListener(this);
+            
 
             changeSize();
 
@@ -835,6 +841,7 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
 
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            System.err.println("CHANGED CHANGED CHANGED");
             changeSize();
         }
 

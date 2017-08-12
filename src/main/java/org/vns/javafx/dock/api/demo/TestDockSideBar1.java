@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
@@ -21,7 +16,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockSideBar.Rotation;
 import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockSideBar.SidePaneController;
 
 /**
  *
@@ -114,12 +108,16 @@ public class TestDockSideBar1 extends Application {
 
         //sideBar01.dock(dn01);
         DockNode dn02 = new DockNode();
+        //dn02.setPrefSize(150,100);
+        //dn02.setMinSize(100,50);
+        
         dn02.setId("dn02");
         VBox vb2 = new VBox();
-        Button dn02Btn = new Button("dn02 button");
+        Button dn02Btn = new Button("------------- dn02 button ---------------");
         dn02.setContent(dn02Btn);
         dn02Btn.setOnAction(a -> {
-            
+            System.err.println("SFFFFFFFFFF" + dn02.dockableController().isFloating());
+            System.err.println(" === " + dn02.getScene().getWindow());
            // ((SidePaneController)sideBar01.targetController()).cont.changeSize();
         });
         //dn02.setContent(vb2);

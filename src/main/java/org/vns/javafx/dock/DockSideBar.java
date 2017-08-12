@@ -3,6 +3,7 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -241,13 +242,14 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
     }
 
     protected void windowChanged(Window oldValue, Window newValue) {
-        if (!(newValue instanceof Stage)) {
+        /*        if (!(newValue instanceof Stage)) {
             return;
         }
+         */
         Window window = (Window) newValue;
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_CLICKED, this::windowClicked);
-        if ( window instanceof Stage ) {
-            ((Stage)window).setTitle("owner");
+        if (window instanceof Stage) {
+            ((Stage) window).setTitle("owner");
         }
         getSideItems().values().forEach(d -> {
             d.adjustScreenPos();
@@ -263,9 +265,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             if (d.getDockable().node().getScene() != null && d.getDockable().node().getScene().getWindow() != null) {
                 Window w = d.getDockable().node().getScene().getWindow();
                 if (w instanceof Stage) {
-                    ((Stage) w).close();
+                    //??? 11.08((Stage) w).close();
                 } else {
-                    w.hide();
+                    //??? 11.08 w.hide();
                 }
             }
         });
@@ -354,8 +356,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
     public static class SidePaneController extends DockTargetController {
 
+        Container container;
         private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
-public Container cont;
+
         public SidePaneController(Region dockPane) {
             super(dockPane);
             init();
@@ -391,16 +394,17 @@ public Container cont;
             }
             return retval;
         }
+
         public ObservableList<Dockable> getDockables() {
-            return ((DockSideBar)getTargetNode()).getItems();
+            return ((DockSideBar) getTargetNode()).getItems();
         }
-        
+
         protected void dock(Dockable dockable) {
 
             System.err.println("SideBar dock dockable=" + dockable);
             System.err.println("SideBar dock dockable.isFloation=" + dockable.dockableController().isFloating());
             System.err.println("SideBar dock dockable.dockTarget=" + dockable.dockableController().getTargetController());
-            
+
             if (doDock(null, dockable.node())) {
                 dockable.dockableController().setFloating(false);
             }
@@ -442,9 +446,10 @@ public Container cont;
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             Dockable dockable = DockRegistry.dockable(node);
-            Stage nodeStage = null;
-            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                nodeStage = (Stage) node.getScene().getWindow();
+
+            Window priorWindow = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) {
+                priorWindow = (Window) node.getScene().getWindow();
             }
 
             Button itemButton = new Button(getButtonText(dockable));
@@ -465,22 +470,27 @@ public Container cont;
             }
             Group item = new Group(itemButton);
             Container container = new Container(dockable);
-            cont = container;
             getItemMap().put(item, container);
-
             itemButton.setRotate(((DockSideBar) getTargetNode()).getRotation().getAngle());
             itemButton.setOnAction(a -> {
                 a.consume();
-                if (dockable.node().getScene().getWindow().isShowing()) {
-                    dockable.node().getScene().getWindow().hide();
-                    return;
+                PopupControl popup = container.getPopup();
+                if (popup == null) {
+                    popup = (PopupControl) container.getStageBuilder().createPopupControl(dockable, itemButton.getScene().getWindow());
+                    container.setPopup(popup);
+                    show(itemButton);
+                } else if (!popup.isShowing()) {
+                    show(itemButton);
+                } else {
+                    popup.hide();
                 }
-                getItemMap().values().forEach(d -> {
-                    d.getDockable().node().getScene().getWindow().hide();
-                });
-                show(itemButton);
-                container.changeSize();
+                for (Container c : getItemMap().values()) {
+                    if (c.getPopup() != null && c.getPopup() != popup) {
+                        c.getPopup().hide();
+                    }
+                }
             });
+
             if (idx >= 0) {
                 ((DockSideBar) getTargetNode()).getDelegate().getItems().add(idx, item);
             } else {
@@ -491,23 +501,25 @@ public Container cont;
                 nodeHandler.setTargetController(this);
             }
             container.getStageBuilder().setSupportedCursors(getSupportedCursors());
-            PopupControl stage = container.getStageBuilder().createPopupControl(dockable);
+//            PopupControl popup = (PopupControl) container.getStageBuilder().createPopupControl(dockable);
             //stage.setAlwaysOnTop(true);
-            stage.setOnShowing(e -> {
+            /*popup.setOnShowing(e -> {
                 if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null) {
-                    if (stage.getOwnerWindow()== null) {
-                        //stage.setOwnerWindow(getTargetNode().getScene().getWindow());
+                    if (popup.getOwnerWindow()== null) {
+                        //popup.setOwnerWindow(getTargetNode().getScene().getWindow());
                     }
                 }
             });
-
+             */
             if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null && getTargetNode().getScene().getWindow().isShowing()) {
                 container.adjustScreenPos();
             }
 
             //container.setDocked(true);
-            if (nodeStage != null) {
-                nodeStage.close();
+            if (priorWindow != null && (priorWindow instanceof Stage)) {
+                ((Stage) priorWindow).close();
+            } else if (priorWindow != null) {
+                priorWindow.hide();
             }
             container.setDocked(true);
 
@@ -570,6 +582,7 @@ public Container cont;
 
         @Override
         public void remove(Node dockNode) {
+            System.err.println("^^^^ remove(Node dockNode)");
             Group r = null;
             for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
                 if (en.getValue().getDockable().node() == dockNode) {
@@ -592,14 +605,16 @@ public Container cont;
 
         public void show(Button btn) {
             Group group = (Group) btn.getParent();
-            Dockable dockable = getItemMap().get(group).getDockable();
-            getItemMap().get(group).changeSize();
+            //Dockable dockable = getItemMap().get(group).getDockable();
+            Container container = getItemMap().get(group);
+            //container.changeSize();
             DockSideBar sb = (DockSideBar) getTargetNode();
             ToolBar tb = sb.getDelegate();
-            Bounds b = tb.localToScreen(tb.getBoundsInLocal());
-            ((PopupControl) dockable.node().getScene().getWindow())
-                    .show(tb.getScene().getWindow());
-                    //.show(tb, b.getMinX(), b.getMinY());
+            //Bounds b = tb.localToScreen(tb.getBoundsInLocal());
+            if (container.getPopup() != null && !container.getPopup().isShowing()) {
+                container.getPopup().show(tb.getScene().getWindow());
+            }
+            container.changeSize();
         }
 
         @Override
@@ -706,6 +721,7 @@ public Container cont;
 
     public static class Container implements ChangeListener<Number> {
 
+        private PopupControl popup;
         private final Dockable dockable;
         private final StageBuilder stageBuilder;
 
@@ -717,6 +733,14 @@ public Container cont;
         public Container(Dockable dockable) {
             this.dockable = dockable;
             stageBuilder = new StageBuilder(dockable.dockableController());
+        }
+
+        public PopupControl getPopup() {
+            return popup;
+        }
+
+        public void setPopup(PopupControl popup) {
+            this.popup = popup;
         }
 
         public void setDocked(boolean docked) {
@@ -797,15 +821,23 @@ public Container cont;
         protected void changeSide() {
             SidePaneController handler = (SidePaneController) dockable.dockableController().getTargetController();
             stageBuilder.setSupportedCursors(handler.getSupportedCursors());
-            
+
         }
 
         public void changeSize() {
-            System.err.println("+++++ CHANGE SIZE");
-            PopupControl popup = (PopupControl) dockable.node().getScene().getWindow();
-            
+            //System.err.println("+++++ CHANGE SIZE 111 ");
+            if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
+                //return;
+            }
+            if (getPopup() == null) {
+                return;
+            }
+            //PopupControl popup = (PopupControl) dockable.node().getScene().getWindow();
+
             DockSideBar sb = (DockSideBar) dockable.dockableController().getTargetController().getTargetNode();
+            System.err.println("!!!!!!!!!!!  changeSize SIDE=" + sb.getSide());
             if (!popup.isShowing()) {
+                System.err.println("!!!!!!!!!!! popup isShowing=" + popup.isShowing());
                 return;
             }
             Pane root = (Pane) popup.getScene().getRoot();
@@ -822,11 +854,15 @@ public Container cont;
                     root.setPrefWidth(sb.getWidth());
                     break;
                 case RIGHT:
+                    System.err.println("!!!!!!!!!!! RIGHT changeSize popup isShowing=" + popup.isShowing());
+
                     popup.setAnchorY(pos.getY());
                     popup.setAnchorX(pos.getX() - popup.getWidth());
                     root.setPrefHeight(sb.getHeight());
                     break;
                 case LEFT:
+                    System.err.println("!!!!!!!!!!! LEFT changeSize popup isShowing=" + popup.isShowing());
+
                     popup.setAnchorY(pos.getY());
                     popup.setAnchorX(pos.getX() + sb.getWidth());
                     root.setPrefHeight(sb.getHeight());
