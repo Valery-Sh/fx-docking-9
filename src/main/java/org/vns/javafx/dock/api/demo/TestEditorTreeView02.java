@@ -28,13 +28,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DragGesture;
-import org.vns.javafx.dock.api.editor.DragManager;
 import org.vns.javafx.dock.api.editor.DragNodeGesture;
 import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.NodeDragEvent;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
+import org.vns.javafx.dock.api.editor.DragAndDropManager;
 
 /**
  *
@@ -304,7 +304,7 @@ public class TestEditorTreeView02 extends Application {
             //tv.fireEvent(de);
         });
         
-        DragManager dm = NodeDragManager.getInstance();
+        DragAndDropManager dm = NodeDragManager.getInstance();
         //dm.enableDragAndDrop(dragButton,doAccept);
         dm.enableDragAndDrop("new Text",doAccept);
         //dm.enableDragAndDrop(doAccept);

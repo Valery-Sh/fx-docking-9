@@ -34,10 +34,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.DefaultTreeItemBuilder;
-import org.vns.javafx.dock.api.editor.DragManager;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
 import org.vns.javafx.dock.api.editor.TreeItemBuilder;
+import org.vns.javafx.dock.api.editor.DragAndDropManager;
 
 /**
  *
@@ -316,7 +316,7 @@ public class TestEditorControl01 extends Application {
         pp1 = null;
         
         
-        DragManager dm = NodeDragManager.getInstance();
+        DragAndDropManager dm = NodeDragManager.getInstance();
         //dm.enableDragAndDrop(dragButton,doAccept);
         dm.enableDragAndDrop("NEW TEXT", stringDrag);
         //dm.enableDragAndDrop(doAccept);

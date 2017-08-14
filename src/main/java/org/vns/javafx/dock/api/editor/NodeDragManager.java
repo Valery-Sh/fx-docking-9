@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
  *
  * @author Valery
  */
-public class NodeDragManager extends AbstractDragManager {
+public class NodeDragManager extends AbstractDragAndDropManager {
 
     private NodeDragManager() {
 

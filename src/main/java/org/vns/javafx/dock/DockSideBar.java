@@ -3,7 +3,6 @@ package org.vns.javafx.dock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -43,8 +42,9 @@ import org.vns.javafx.dock.api.DockableController;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.StageBuilder;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.view.FloatPopupControlView2;
+import org.vns.javafx.dock.api.view.FloatView;
 
 /**
  *
@@ -476,7 +476,10 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 a.consume();
                 PopupControl popup = container.getPopup();
                 if (popup == null) {
-                    popup = (PopupControl) container.getStageBuilder().createPopupControl(dockable, itemButton.getScene().getWindow());
+                    
+                    //popup = (PopupControl) container.getFloatView().createPopupControl(dockable, itemButton.getScene().getWindow());
+                    popup = (PopupControl) container.getFloatView().make(dockable, false);                    
+                    //container.getFloatView().addResizer(popup, dockable);
                     container.setPopup(popup);
                     show(itemButton);
                 } else if (!popup.isShowing()) {
@@ -500,8 +503,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             if (nodeHandler.getTargetController() == null || nodeHandler.getTargetController() != this) {
                 nodeHandler.setTargetController(this);
             }
-            container.getStageBuilder().setSupportedCursors(getSupportedCursors());
-//            PopupControl popup = (PopupControl) container.getStageBuilder().createPopupControl(dockable);
+            container.getFloatView().setSupportedCursors(getSupportedCursors());
+//            PopupControl popup = (PopupControl) container.getFloatView().createPopupControl(dockable);
             //stage.setAlwaysOnTop(true);
             /*popup.setOnShowing(e -> {
                 if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null) {
@@ -592,6 +595,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             }
             if (r != null) {
                 itemMap.get(r).removeListeners();
+                itemMap.get(r).getFloatView().setSupportedCursors(FloatView.DEFAULT_CURSORS);
                 itemMap.remove(r);
                 ((DockSideBar) getTargetNode()).getDelegate().getItems().remove(r);
                 ((DockSideBar) getTargetNode()).getItems().remove(DockRegistry.dockable(dockNode));
@@ -723,7 +727,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         private PopupControl popup;
         private final Dockable dockable;
-        private final StageBuilder stageBuilder;
+        private final FloatView windowBuilder;
 
         private final BooleanProperty hideOnExitProperty = new SimpleBooleanProperty(false);
         private final BooleanProperty floatingProperty = new SimpleBooleanProperty(false);
@@ -732,7 +736,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         public Container(Dockable dockable) {
             this.dockable = dockable;
-            stageBuilder = new StageBuilder(dockable.dockableController());
+            //stageBuilder = new StageBuilder(dockable);
+            windowBuilder = new FloatPopupControlView2(dockable);
         }
 
         public PopupControl getPopup() {
@@ -815,12 +820,12 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             ownerStage.yProperty().removeListener(this);
             ownerStage.widthProperty().removeListener(this);
             ownerStage.heightProperty().removeListener(this);
-            stageBuilder.removeListeners(dockable);
+            //stageBuilder.removeListeners(dockable);
         }
 
         protected void changeSide() {
             SidePaneController handler = (SidePaneController) dockable.dockableController().getTargetController();
-            stageBuilder.setSupportedCursors(handler.getSupportedCursors());
+            windowBuilder.setSupportedCursors(handler.getSupportedCursors());
 
         }
 
@@ -875,9 +880,14 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             changeSize();
         }
 
-        public StageBuilder getStageBuilder() {
-            return stageBuilder;
+/*        public StageBuilder getFloatView() {
+            return windowBuilder;
         }
+*/
+        public FloatView getFloatView() {
+            return windowBuilder;
+        }
+        
     }
 
     public static class CustomToolBar extends ToolBar {

@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,8 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
-import javafx.stage.Popup;
-import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 
 /**
@@ -22,8 +19,8 @@ import javafx.stage.Window;
  */
 public class StageBuilder extends FloatWindowBuilder {
 
-    public StageBuilder(DockableController nodeController) {
-        super(nodeController);
+    public StageBuilder(Dockable dockable) {
+        super(dockable);
     }
 
     public Window createPopupControl(Dockable dockable, Window owner) {
@@ -137,10 +134,11 @@ public class StageBuilder extends FloatWindowBuilder {
                 floatPopup.setOnShown(null);
                 floatPopup.setOnShowing(null);
 
-                System.err.println("popup width = " + floatPopup.getWidth());
+/*                System.err.println("popup width = " + floatPopup.getWidth());
                 System.err.println("popup getMinWidth = " + floatPopup.getMinWidth());
                 System.err.println("popup prefWidth = " + floatPopup.getPrefWidth());
                 System.err.println("popup minMidth = " + borderPane.minWidth(node.getHeight()));
+*/                
 //                dockable.dockableController().setResizeMinWidth(borderPane.minWidth(node.getHeight()));
 //                dockable.dockableController().setResizeMinHeight(borderPane.minWidth(node.getWidth()));
                 setMinWidth(borderPane.minWidth(node.getHeight()));
@@ -198,10 +196,12 @@ public class StageBuilder extends FloatWindowBuilder {
         floatPopup.setOnHidden(e -> {
             DockRegistry.unregister(floatPopup);
         });
+        floatPopup.setId("FLOAT_POPUP");
+        System.err.println("************** dockable.window=" + dockable.node().getScene().getWindow());
 
-        floatPopup.show(owner);
-        dockable.node().parentProperty().addListener(pcl);
-        addResizer(floatPopup, dockable);
+
+        //addResizer(floatPopup, dockable);
+        addResizer();        
 //        System.err.println("************** +++++++++++ *************");
         return floatPopup;
     }//makeFloatingPopupControl

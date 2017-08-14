@@ -26,11 +26,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.DragManager;
 import org.vns.javafx.dock.api.editor.EditorUtil;
 import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.NodeDragManager;
 import org.vns.javafx.dock.api.editor.SceneGraphView;
+import org.vns.javafx.dock.api.editor.DragAndDropManager;
 
 public class TestNodeDragManager  extends Application {
 

@@ -21,19 +21,19 @@ import javafx.scene.Node;
  *
  * @author Valery
  */
-public interface DragManager {
+public interface DragAndDropManager {
 
-    DragManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenRemover remover);
+    DragAndDropManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenRemover remover);
 
-    default DragManager enableDragAndDrop(Object gestureSourceObject, Node source) {
+    default DragAndDropManager enableDragAndDrop(Object gestureSourceObject, Node source) {
         return enableDragAndDrop(gestureSourceObject, source, null);
     }
 
-    default DragManager enableDragAndDrop(Node source) {
+    default DragAndDropManager enableDragAndDrop(Node source) {
         return this.enableDragAndDrop(null, source, null);
     }
 
-    default DragManager enableDragAndDrop(Node source, ChildrenRemover remover) {
+    default DragAndDropManager enableDragAndDrop(Node source, ChildrenRemover remover) {
         return this.enableDragAndDrop(null, source, remover);
     }
 

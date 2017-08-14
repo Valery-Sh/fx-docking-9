@@ -712,7 +712,7 @@ public class DockSideBar2 extends Control implements Dockable, DockTarget, ListC
 
         public Container(Dockable dockable) {
             this.dockable = dockable;
-            stageBuilder = new StageBuilder1(dockable.dockableController());
+            stageBuilder = new StageBuilder1(dockable);
         }
 
         public void setDocked(boolean docked) {

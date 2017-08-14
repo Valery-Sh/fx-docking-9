@@ -17,8 +17,8 @@ import javafx.stage.StageStyle;
  */
 public class StageBuilder1 extends FloatWindowBuilder {
 
-    public StageBuilder1(DockableController nodeController) {
-        super(nodeController);
+    public StageBuilder1(Dockable dockable) {
+        super(dockable);
     }
 
     @Override

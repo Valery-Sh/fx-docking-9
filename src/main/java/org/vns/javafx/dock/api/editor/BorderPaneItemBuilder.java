@@ -8,7 +8,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import org.vns.javafx.dock.api.editor.DragManager.ChildrenRemover;
+import org.vns.javafx.dock.api.editor.DragAndDropManager.ChildrenRemover;
 
 /**
  *

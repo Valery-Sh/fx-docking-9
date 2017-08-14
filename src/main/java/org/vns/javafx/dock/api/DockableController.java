@@ -15,8 +15,13 @@ import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
+import org.vns.javafx.dock.api.view.FloatPopupControlView;
+import org.vns.javafx.dock.api.view.FloatStageView;
+import org.vns.javafx.dock.api.view.FloatView;
+import org.vns.javafx.dock.api.view.FloatWindowView;
 
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
@@ -180,6 +185,7 @@ public class DockableController {
             dragManager.removeEventHandlers(getTitleBar());
             dragManager.removeEventHandlers(getDragNode());
         }
+        
         if ((w instanceof Stage) || (w instanceof PopupWindow)) {
             dragManager = new FxDragManager(dockable);
         } else {
@@ -390,9 +396,17 @@ public class DockableController {
      */
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            //07.05 FloatWindowBuilder t = getStageBuilder();
-            FloatWindowBuilder t = new FloatWindowBuilder(this);
-            t.makeFloating();
+            //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
+            //t.makeFloating();
+            
+            FloatView t = null;
+            System.err.println("DRAG MANAGER: " + getDragManager());
+            if ( getTargetController() instanceof DockSideBar.SidePaneController ) {
+                t = new FloatPopupControlView(dockable);
+            } else {
+                t = new FloatStageView(dockable);
+            }
+            t.make(dockable);
             this.floating.set(floating);
         } else if (!floating) {
             this.floating.set(floating);
@@ -401,9 +415,11 @@ public class DockableController {
 
     public void setFloatingAsPopupControl(boolean floating) {
         if (!isFloating() && floating) {
-            FloatWindowBuilder t = new FloatWindowBuilder(this);
+            //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
+            FloatView t= new FloatPopupControlView(dockable);
+            t.make(dockable);
             this.floating.set(floating);
-            t.makeFloatingPopupControl();
+            //t.makeFloatingPopupControl();
         } else if (!floating) {
             this.floating.set(floating);
         }

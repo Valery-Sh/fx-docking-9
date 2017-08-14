@@ -24,7 +24,7 @@ import static org.vns.javafx.dock.api.editor.TreeItemBuilder.NODE_UUID;
  *
  * @author Valery
  */
-public abstract class AbstractDragManager implements DragManager, EventHandler<MouseEvent> {
+public abstract class AbstractDragAndDropManager implements DragAndDropManager, EventHandler<MouseEvent> {
 
     /**
      * The method is called when the the drag-detected event is generated once
@@ -85,7 +85,7 @@ public abstract class AbstractDragManager implements DragManager, EventHandler<M
     }
 
     @Override
-    public DragManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenRemover remover) {
+    public DragAndDropManager enableDragAndDrop(Object gestureSourceObject, Node source, ChildrenRemover remover) {
         disableDragAndDrop(source);
 
         registerMousePressed(source);

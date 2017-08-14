@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
@@ -33,7 +34,11 @@ public class TestDockSideBar1 extends Application {
         StackPane root = new StackPane();
 
         stage.setTitle("Test DockSideBar");
-
+        SplitPane p = new SplitPane();
+        p.setId("Pane p");
+        Button pBtn = new Button("Pane Btn ");
+        p.getItems().add(pBtn);
+        
         DockSideBar sideBar01 = new DockSideBar();
         sideBar01.setOrientation(Orientation.VERTICAL);
         sideBar01.setRotation(Rotation.UP_DOWN);
@@ -49,6 +54,10 @@ public class TestDockSideBar1 extends Application {
         //((Region)root.getRight()).setMaxWidth(0);
         Scene scene = new Scene(root);
         //scene.getRoot().setStyle("-fx-background-color: yellow");
+        root.getChildren().add(p);
+        
+        System.err.println("SP PARENT = " + pBtn.getParent());
+        root.getChildren().remove(p);
 
         DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);

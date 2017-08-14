@@ -132,23 +132,6 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
         this.dragNode.set(dragNode);
     }
 
-    /**
-     * A handler function with is called when the title bar of the
-     * {@code dockable} object changes.
-     *
-     * @param ov doesn't used
-     * @param oldValue the old value of the object which represents a title bar
-     * @param newValue the new value of the object which represents a title bar
-     */
-/*    public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
-        if (oldValue != null) {
-            removeEventHandlers(oldValue);
-        }
-        if (newValue != null) {
-            addEventHandlers(newValue);
-        }
-    }
-*/
     @Override
     public void removeEventHandlers(Node node) {
         if (node == null) {

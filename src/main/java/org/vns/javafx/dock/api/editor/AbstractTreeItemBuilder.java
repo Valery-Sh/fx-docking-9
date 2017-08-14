@@ -43,7 +43,7 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
                 if (sourceTreeItem != null) {
                     TreeViewEx.updateOnMove(sourceTreeItem);
                 } else {
-                    DragManager.ChildrenRemover r = (DragManager.ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
+                    DragAndDropManager.ChildrenRemover r = (DragAndDropManager.ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
                     if (r != null) {
                         r.remove();
                     }

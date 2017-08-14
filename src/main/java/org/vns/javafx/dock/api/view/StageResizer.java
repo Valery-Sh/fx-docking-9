@@ -1,4 +1,19 @@
-package org.vns.javafx.dock.api;
+/*
+ * Copyright 2017 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.vns.javafx.dock.api.view;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,41 +28,40 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.WindowResizer;
 
 /**
  *
  * @author Valery
  */
-public class FloatWindowResizer implements WindowResizer {
+public class StageResizer implements WindowResizer {
+    
+    private Double resizeMinWidth;
+    private Double resizeMinHeight;
 
-    private final DoubleProperty mouseY = new SimpleDoubleProperty();
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
+    private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private Cursor cursor;
     private Window window;
 
     private final Set<Cursor> cursorTypes = new HashSet<>();
 
-    private FloatWindowBuilder windowBuilder;
+    private FloatWindowView windowView;
 
-    protected FloatWindowResizer() {
+    protected StageResizer() {
         Collections.addAll(cursorTypes,
                 Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
                 Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE);
-        
     }
 
-    public FloatWindowResizer(FloatWindowBuilder windowBuilder) {
+    public StageResizer(FloatWindowView windowView) {
         this();
-        this.windowBuilder = windowBuilder;
+        this.windowView = windowView;
     }
 
-    public FloatWindowBuilder getWindowBuilder() {
-        return windowBuilder;
-    }
-
-    public void setWindowBuilder(FloatWindowBuilder windowBuilder) {
-        this.windowBuilder = windowBuilder;
+    public void setWindowView(FloatWindowView windowView) {
+        this.windowView = windowView;
     }
 
     private void setCursorTypes(Cursor... cursors) {
@@ -55,53 +69,50 @@ public class FloatWindowResizer implements WindowResizer {
         Collections.addAll(this.cursorTypes, cursors);
     }
 
+    @Override
     public void resize(double x, double y) {
-        if (window instanceof PopupControl) {
-            resizePopup(x, y);
-            return;
-        }
         if (!cursorTypes.contains(cursor)) {
             //return;
         }
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
 
-        double curX = getMouseX().get();
+        double curX = mouseX.get();
         double curY = mouseY.get();
         if (cursor == Cursor.S_RESIZE) {
             hDelta = y - this.mouseY.get();
             curY = y;
         } else if (cursor == Cursor.E_RESIZE) {
-            wDelta = x - this.getMouseX().get();
+            wDelta = x - this.mouseX.get();
             curX = x;
         } else if (cursor == Cursor.N_RESIZE) {
             hDelta = this.mouseY.get() - y;
             yDelta = -hDelta;
             curY = y;
         } else if (cursor == Cursor.W_RESIZE) {
-            wDelta = this.getMouseX().get() - x;
+            wDelta = this.mouseX.get() - x;
             xDelta = -wDelta;
             curX = x;
         } else if (cursor == Cursor.SE_RESIZE) {
             hDelta = y - this.mouseY.get();
             curY = y;
-            wDelta = x - this.getMouseX().get();
+            wDelta = x - this.mouseX.get();
             curX = x;
 
         } else if (cursor == Cursor.NE_RESIZE) {
             hDelta = this.mouseY.get() - y;
-            wDelta = x - this.getMouseX().get();
+            wDelta = x - this.mouseX.get();
             yDelta = -hDelta;
             curX = x;
             curY = y;
         } else if (cursor == Cursor.SW_RESIZE) {
             hDelta = y - this.mouseY.get();
-            wDelta = this.getMouseX().get() - x;
+            wDelta = this.mouseX.get() - x;
             xDelta = -wDelta;
             curX = x;
             curY = y;
         } else if (cursor == Cursor.NW_RESIZE) {
             hDelta = this.mouseY.get() - y;
-            wDelta = this.getMouseX().get() - x;
+            wDelta = this.mouseX.get() - x;
             xDelta = -wDelta;
             yDelta = -hDelta;
             curX = x;
@@ -111,101 +122,15 @@ public class FloatWindowResizer implements WindowResizer {
         if (wDelta + window.getWidth() >= getMinWidth()) {
             window.setX(xDelta + window.getX());
             window.setWidth(wDelta + window.getWidth());
-            getMouseX().set(curX);
+            mouseX.set(curX);
         }
         if (hDelta + window.getHeight() >= getMinHeight()) {
             window.setY(yDelta + window.getY());
             window.setHeight(hDelta + window.getHeight());
-            getMouseX().set(curY);
+            mouseY.set(curY);
         }
     }
 
-    public void resizePopup(double x, double y) {
-        PopupControl pc = (PopupControl) window;
-        Region root = (Region) pc.getScene().getRoot();
-        double resizeMinWidth = getMinWidth();
-        double resizeMinHeight = getMinHeight();
-        if (getWindowBuilder() != null) {
-            //    resizeMinWidth = dockable.dockableController().getTargetController().getResizeMinWidth();
-            //    resizeMinHeight = dockable.dockableController().getTargetController().getResizeMinHeight();
-            resizeMinWidth = windowBuilder.getMinWidth();
-            resizeMinHeight = windowBuilder.getMinHeight();
-            System.err.println("   --- !!! root minWidth =" + resizeMinWidth);
-        }
-        double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
-//        System.err.println("   --- root minWidth =" + getMinHeight());                
-/*        System.err.println("START RESIZE x=" + x);
-        System.err.println("   --- root minWidth =" + getMinWidth());        
-        System.err.println("   --- root prefWidth=" + root.getPrefWidth());        
-        System.err.println("   --- mouseX & curX =" + mouseX);                
-         */
-        double curX = mouseX.get();
-        double curY = mouseY.get();
-
-        if (cursor == Cursor.S_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            curY = y;
-        } else if (cursor == Cursor.E_RESIZE) {
-            wDelta = x - this.mouseX.get();
-            curX = x;
-        } else if (cursor == Cursor.N_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            yDelta = -hDelta;
-            curY = y;
-        } else if (cursor == Cursor.W_RESIZE) {
-
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            curX = x;
-            /*            System.err.println("CALC DELTA:");            
-            System.err.println("RESIZE xDelta =" + xDelta );
-            System.err.println("RESIZE wDelta =" + wDelta );
-            System.err.println("RESIZE curX   =" + curX );
-            System.err.println("===========================================");            
-             */
-        } else if (cursor == Cursor.SE_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            curY = y;
-            wDelta = x - this.mouseX.get();
-            curX = x;
-
-        } else if (cursor == Cursor.NE_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            wDelta = x - this.mouseX.get();
-            yDelta = -hDelta;
-            curX = x;
-            curY = y;
-        } else if (cursor == Cursor.SW_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            curX = x;
-            curY = y;
-        } else if (cursor == Cursor.NW_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            yDelta = -hDelta;
-            curX = x;
-            curY = y;
-        }
-        //pc.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
-        double w = -1;
-        double h = -1;
-
-           if ((xDelta != 0 || wDelta != 0) && wDelta + window.getWidth() >= resizeMinWidth) {
-                root.setPrefWidth(wDelta + root.getPrefWidth());
-                pc.setAnchorX(xDelta + pc.getAnchorX());
-                //pc.setX(xDelta + pc.getX());
-                mouseX.set(curX);
-            }
-
-            if (hDelta + window.getHeight() >= resizeMinHeight) {
-                root.setPrefHeight(hDelta + root.getPrefHeight());
-                pc.setAnchorY(yDelta + pc.getAnchorY());
-                mouseY.set(curY);
-            }
-    }
 
     protected double getMinWidth() {
         double retval = 50.0;
@@ -216,7 +141,6 @@ public class FloatWindowResizer implements WindowResizer {
             Node root = ((PopupControl) window).getScene().getRoot();
             if (root instanceof Region) {
                 retval = ((Region) root).getMinWidth();
-                System.err.println("+++ RETVAL = " + retval);
             }
         }
         return retval;
@@ -236,10 +160,12 @@ public class FloatWindowResizer implements WindowResizer {
     public void resize(MouseEvent ev) {
         resize(ev.getScreenX(), ev.getScreenY());
     }
+
     @Override
     public boolean isStarted() {
         return getWindow() != null;
     }
+
     public Window getWindow() {
         return window;
     }
@@ -253,6 +179,7 @@ public class FloatWindowResizer implements WindowResizer {
 
         this.cursor = cursor;
         this.window = stage;
+        Region r = (Region) window.getScene().getRoot();
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {
@@ -308,17 +235,35 @@ public class FloatWindowResizer implements WindowResizer {
         return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
     }
 
-    public DoubleProperty getMouseX() {
-        return mouseX;
-    }
-
-    public DoubleProperty getMouseY() {
-        return mouseY;
-    }
-
     public Cursor getCursor() {
         return cursor;
     }
-    
+
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
+    }
+    public DoubleProperty mouseXProperty() {
+        return mouseX;
+    }
+    public DoubleProperty mouseYProperty() {
+        return mouseY;
+    }    
+    public Double getMouseX() {
+        return mouseX.get();
+    }
+
+    public Double getMouseY() {
+        return mouseY.get();
+    }
+    public void setMouseX(Double mX) {
+        this.mouseX.set(mX);
+    }
+    public void setMouseY(Double mY) {
+        this.mouseY.set(mY);
+    }
+
+    public FloatWindowView getWindowView() {
+        return windowView;
+    }
     
 }
