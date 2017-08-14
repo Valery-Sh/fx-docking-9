@@ -15,9 +15,6 @@
  */
 package org.vns.javafx.dock.api;
 
-import javafx.scene.Node;
-import javafx.stage.Popup;
-
 /**
  *
  * @author Valery
@@ -33,14 +30,5 @@ public class JFXDragManager extends FxDragManager {
         super(dockNode);
     }
 
-    @Override
-    protected void setFloating(boolean floating) {
-        //getDockable().dockableController().setFloatingAsPopup(floating);    
-        getDockable().dockableController().setFloatingAsPopupControl(floating);    
-    }
-/*    @Override
-    protected Node getFloatingWindowRoot() {
-        return getDockable().node().getScene().getRoot();
-    }
-*/
+
 }

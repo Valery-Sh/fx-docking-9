@@ -80,7 +80,7 @@ public class FloatStageView implements FloatWindowView{
     @Override
     public void initialize() { }
     
-    @Override
+/*    @Override
     public double getMinWidth() {
         return minWidth;
     }
@@ -97,7 +97,7 @@ public class FloatStageView implements FloatWindowView{
     public void setMinHeight(double minHeight) {
         this.minHeight = minHeight;
     }
-
+*/
     protected BooleanProperty floatingProperty() {
         return floating;
     }
@@ -240,16 +240,6 @@ System.err.println("2 FloatingStageView CONVERT THE SAME");
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
         Point2D stagePosition = screenPoint;
-        /*            if (isDecorated()) {
-                Window owner = floatingWindow.getOwner();
-                stagePosition = scenePoint.add(new Point2D(owner.getX(), owner.getY()));
-            } else {
-                stagePosition = screenPoint;
-            }
-            if (translation != null) {
-                stagePosition = stagePosition.add(translation);
-            }
-         */
 
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
@@ -295,10 +285,10 @@ System.err.println("2 FloatingStageView CONVERT THE SAME");
         newStage.setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         newStage.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
-        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
-        double prefWidth = borderPane.prefWidth(node.getHeight()) + insetsWidth;
+        double prefWidth  = borderPane.prefWidth(node.getHeight()) + insetsWidth;
         double prefHeight = borderPane.prefHeight(node.getWidth()) + insetsHeight;        
         
         borderPane.setPrefWidth(prefWidth);
@@ -372,8 +362,8 @@ System.err.println("2 FloatingStageView CONVERT THE SAME");
             addListeners(getFloatingWindow());
             
         }
-        //setResizer(new StageResizer(this));
-        setResizer(new PopupControlResizer(this));
+        setResizer(new StageResizer(this));
+        
     }
     
     protected void setResizer(WindowResizer resizer) {

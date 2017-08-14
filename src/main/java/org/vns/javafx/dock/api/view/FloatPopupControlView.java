@@ -132,8 +132,8 @@ public class FloatPopupControlView extends FloatStageView {
         floatPopup.setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         floatPopup.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
-        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+//        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+//        setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
         double prefWidth = borderPane.prefWidth(node.getHeight()) + insetsWidth;
         double prefHeight = borderPane.prefHeight(node.getWidth()) + insetsHeight;        
@@ -144,8 +144,8 @@ public class FloatPopupControlView extends FloatStageView {
         
         System.err.println("++++++ CreatePopup node = " + node.getWidth());
         System.err.println("++++++ CreatePopup node = " + node.getHeight());
-        System.err.println("*** CreatePopup mw = " + getMinWidth());
-        System.err.println("*** CreatePopup mh = " + getMinHeight());
+//        System.err.println("*** CreatePopup mw = " + getMinWidth());
+//        System.err.println("*** CreatePopup mh = " + getMinHeight());
         System.err.println("*** insetsWidth = " + insetsWidth);
         
         

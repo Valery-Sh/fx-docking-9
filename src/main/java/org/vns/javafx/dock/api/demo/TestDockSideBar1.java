@@ -85,14 +85,21 @@ public class TestDockSideBar1 extends Application {
         Button b03 = new Button("Change Side");
         b03.setOnAction(a -> {
 
-            if (sideBar01.getSide() == Side.RIGHT) {
-                sideBar01.setSide(Side.LEFT);
-            } else if (sideBar01.getSide() == Side.LEFT) {
-                sideBar01.setSide(Side.TOP);
-            } else if (sideBar01.getSide() == Side.TOP) {
-                sideBar01.setSide(Side.BOTTOM);
-            } else if (sideBar01.getSide() == Side.BOTTOM) {
-                sideBar01.setSide(Side.RIGHT);
+            if (null != sideBar01.getSide()) switch (sideBar01.getSide()) {
+                case RIGHT:
+                    sideBar01.setSide(Side.LEFT);
+                    break;
+                case LEFT:
+                    sideBar01.setSide(Side.TOP);
+                    break;
+                case TOP:
+                    sideBar01.setSide(Side.BOTTOM);
+                    break;
+                case BOTTOM:
+                    sideBar01.setSide(Side.RIGHT);
+                    break;
+                default:
+                    break;
             }
 
         });

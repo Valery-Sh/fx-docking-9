@@ -21,7 +21,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
 import org.vns.javafx.dock.api.view.FloatPopupControlView;
 import org.vns.javafx.dock.api.view.FloatStageView;
 import org.vns.javafx.dock.api.view.FloatView;
-import org.vns.javafx.dock.api.view.FloatWindowView;
+import org.vns.javafx.dock.api.view.FloatViewFactory;
 
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
@@ -399,13 +399,14 @@ public class DockableController {
             //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
             //t.makeFloating();
             
-            FloatView t = null;
-            System.err.println("DRAG MANAGER: " + getDragManager());
+            FloatView t = FloatViewFactory.getInstance().getFloatView(dockable);
+/*            System.err.println("DRAG MANAGER: " + getDragManager());
             if ( getTargetController() instanceof DockSideBar.SidePaneController ) {
                 t = new FloatPopupControlView(dockable);
             } else {
                 t = new FloatStageView(dockable);
             }
+*/            
             t.make(dockable);
             this.floating.set(floating);
         } else if (!floating) {
@@ -413,7 +414,7 @@ public class DockableController {
         }
     }
 
-    public void setFloatingAsPopupControl(boolean floating) {
+/*    public void setFloatingAsPopupControl(boolean floating) {
         if (!isFloating() && floating) {
             //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
             FloatView t= new FloatPopupControlView(dockable);
@@ -424,7 +425,7 @@ public class DockableController {
             this.floating.set(floating);
         }
     }
-
+*/
     /**
      * Returns a new instance of the utility class that help to create a new
      * stage which serves as a floating window for the node. This window may be

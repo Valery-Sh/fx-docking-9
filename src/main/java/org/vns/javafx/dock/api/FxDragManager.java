@@ -351,7 +351,7 @@ System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloa
 
         if (!dockable.dockableController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            setFloating(true);
+            dockable.dockableController().setFloating(true);
             System.err.println("1 MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
@@ -362,10 +362,10 @@ System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloa
         return dockable;
     }
 
-    protected void setFloating(boolean floating) {
+/*    protected void setFloating(boolean floating) {
         dockable.dockableController().setFloating(true);
     }
-
+*/
     protected Node getFloatingWindowRoot() {
         if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
             return null;

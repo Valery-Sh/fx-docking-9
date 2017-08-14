@@ -120,10 +120,10 @@ public class PopupControlResizer extends StageResizer {
         //if (getWindowBuilder() != null) {
             //    resizeMinWidth = dockable.dockableController().getTargetController().getResizeMinWidth();
             //    resizeMinHeight = dockable.dockableController().getTargetController().getResizeMinHeight();
-        double resizeMinWidth = getWindowView().getMinWidth();
-        double resizeMinHeight = getWindowView().getMinHeight();
-       System.err.println("   ++++ --- +++ !!! root minWidth =" + resizeMinWidth);
-       System.err.println("   ++++ --- +++ !!! root minWidth =" + resizeMinHeight);
+//        double resizeMinWidth = getWindowView().getMinWidth();
+//        double resizeMinHeight = getWindowView().getMinHeight();
+//       System.err.println("   ++++ --- +++ !!! root minWidth =" + resizeMinWidth);
+//       System.err.println("   ++++ --- +++ !!! root minWidth =" + resizeMinHeight);
        System.err.println("   ++++ --- +++ !!! getWindow().width =" + getWindow().getWidth());
        System.err.println("   ++++ --- +++ !!! root.width =" + getWindowView().getRootPane().getWidth());
        System.err.println("   ++++ --- +++ !!! root.frefWidth =" + getWindowView().getRootPane().getPrefWidth());
@@ -196,7 +196,7 @@ public class PopupControlResizer extends StageResizer {
 
             System.err.println("RESIZE getWindow().getWidth() =" + getWindow().getWidth() );
             System.err.println("   --- RESIZE wDelta =" + wDelta );
-            System.err.println("   --- RESIZE resizeMinWidth   =" + resizeMinWidth );
+//            System.err.println("   --- RESIZE resizeMinWidth   =" + resizeMinWidth );
             System.err.println("   --- RESIZE rootPrefWidth   =" + root.getPrefWidth() );
             System.err.println("     --- RESIZE new rootPrefWidth   =" + ( wDelta + root.getPrefWidth() ) );
             

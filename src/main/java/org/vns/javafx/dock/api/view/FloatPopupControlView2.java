@@ -23,9 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -108,8 +106,8 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         // We must prevent the window to end up positioning off the screen
         //
         floatPopup.setAutoFix(false);
-        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
         double prefWidth = borderPane.prefWidth(node.getHeight()) + insetsWidth;
         double prefHeight = borderPane.prefHeight(node.getWidth()) + insetsHeight;        
@@ -124,14 +122,14 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         System.err.println("   DSB ++++++ CreatePopup node minWidth = " + node.getMinWidth());
         System.err.println("   DSB ++++++ CreatePopup node pref Width = " + node.getMinWidth());
         //System.err.println("   DSB ++++++ CreatePopup node = " + node.getHeight());
-        System.err.println("   DSB *** CreatePopup mw = " + getMinWidth());
+//        System.err.println("   DSB *** CreatePopup mw = " + getMinWidth());
         //System.err.println("   DSB *** CreatePopup mh = " + getMinHeight());
         System.err.println("   DSB *** insetsWidth = " + insetsWidth);
         //System.err.println("   DSB *** insetsHeight = " + insetsHeight);
         
-        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        setMinHeight(borderPane.minWidth(node.getWidth()) + insetsHeight);
-        System.err.println("   DSB *** resizeMinWidthsWidth = " + getMinWidth());
+//        setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+//        setMinHeight(borderPane.minWidth(node.getWidth()) + insetsHeight);
+//        System.err.println("   DSB *** resizeMinWidthsWidth = " + getMinWidth());
         System.err.println("   DSB *** resizePrefWidth = " + prefWidth);
 
         borderPane.setStyle("-fx-background-color: aqua");

@@ -51,10 +51,10 @@ public interface FloatWindowView extends FloatView<Window> {
     
     
 
-    double getMinWidth();
+/*    double getMinWidth();
 
     double getMinHeight();
-
+*/
     void initialize();
     
     public void setSupportedCursors(Cursor[] supportedCursors);
