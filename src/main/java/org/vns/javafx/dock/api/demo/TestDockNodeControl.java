@@ -34,11 +34,13 @@ public class TestDockNodeControl extends Application {
         dockPane.getItems().add(custom);
         b1.setOnAction(a->{
             if ( custom.getTitleBar() == null ) {
-                custom.dockableController().createDefaultTitleBar("Now Not Null");
+                //custom.dockableController().createDefaultTitleBar("Now Not Null");
             } else {
-                custom.setTitleBar(null);
+                //custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
             }
+            b1.getScene().getWindow().setX(40);
+            b1.getScene().getWindow().setY(40);
             
         });
         

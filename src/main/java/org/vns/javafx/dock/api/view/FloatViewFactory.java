@@ -39,11 +39,12 @@ public class FloatViewFactory {
             v = new FloatPopupControlView(dockable);
         } else {
             v = new FloatStageView(dockable);
+//            v = new FloatPopupControlView(dockable);
+
         }
         return v;
     }
     private static class SingletonInstance {
-
         private static final FloatViewFactory INSTANCE = new FloatViewFactory();
     }
 }

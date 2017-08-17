@@ -9,17 +9,18 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
-import org.vns.javafx.dock.api.view.FloatPopupControlView;
-import org.vns.javafx.dock.api.view.FloatStageView;
 import org.vns.javafx.dock.api.view.FloatView;
 import org.vns.javafx.dock.api.view.FloatViewFactory;
 
@@ -69,15 +70,16 @@ public class DockableController {
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockTarget = true;
-
+    
     private DragManager dragManager;
-    private Node dragSource;
+    private DragDetector dragDetector;
+    //private Node dragNode;
+    private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
     private DockTargetController scenePaneController;
 
     private boolean draggable;
-    
-    
+
     /**
      * dock target pane
      */
@@ -98,6 +100,7 @@ public class DockableController {
 
     private void init() {
         draggable = true;
+        dragDetector = new DragDetector(this);
         //dragManager = initDragManager();
         addShowingListeners();
 
@@ -106,7 +109,6 @@ public class DockableController {
         targetController.addListener(this::targetControllerChanged);
     }
 
-    
     protected void addShowingListeners() {
         dockable().node().sceneProperty().addListener(this::sceneChanged);
     }
@@ -142,6 +144,10 @@ public class DockableController {
         this.draggable = draggable;
     }
 
+    public ObjectProperty<Node> dragNodeProperty() {
+        return dragNode;
+    }
+
     /**
      * Returns a node which is a children of the {@literal dockable} node and
      * which can be used to perform dragging.
@@ -149,7 +155,7 @@ public class DockableController {
      * @return a node which can be used to perform dragging. May be null.
      */
     public Node getDragNode() {
-        return dragSource;
+        return dragNode.get();
     }
 
     /**
@@ -160,7 +166,7 @@ public class DockableController {
      * null.
      */
     public void setDragNode(Node dragSource) {
-        this.dragSource = dragSource;
+        this.dragNode.set(dragSource);
         if (dragManager != null) {
             dragManager.setDragNode(dragSource);
         }
@@ -185,7 +191,7 @@ public class DockableController {
             dragManager.removeEventHandlers(getTitleBar());
             dragManager.removeEventHandlers(getDragNode());
         }
-        
+
         if ((w instanceof Stage) || (w instanceof PopupWindow)) {
             dragManager = new FxDragManager(dockable);
         } else {
@@ -375,7 +381,7 @@ public class DockableController {
         }
     }
      */
-/*    public void setFloating(boolean floating, Stage floatStage) {
+ /*    public void setFloating(boolean floating, Stage floatStage) {
         if (!isFloating() && floating) {
             //07.05 FloatWindowBuilder t = getStageBuilder();
             FloatWindowBuilder t = new FloatWindowBuilder(this);
@@ -385,7 +391,7 @@ public class DockableController {
             this.floating.set(floating);
         }
     }
-*/
+     */
     /**
      * Transfers the object into the <i>floating</i> state. If the current value
      * of the property is {@code false} and the specified value is {@code true}
@@ -396,17 +402,7 @@ public class DockableController {
      */
     public void setFloating(boolean floating) {
         if (!isFloating() && floating) {
-            //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
-            //t.makeFloating();
-            
             FloatView t = FloatViewFactory.getInstance().getFloatView(dockable);
-/*            System.err.println("DRAG MANAGER: " + getDragManager());
-            if ( getTargetController() instanceof DockSideBar.SidePaneController ) {
-                t = new FloatPopupControlView(dockable);
-            } else {
-                t = new FloatStageView(dockable);
-            }
-*/            
             t.make(dockable);
             this.floating.set(floating);
         } else if (!floating) {
@@ -414,7 +410,7 @@ public class DockableController {
         }
     }
 
-/*    public void setFloatingAsPopupControl(boolean floating) {
+    /*    public void setFloatingAsPopupControl(boolean floating) {
         if (!isFloating() && floating) {
             //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
             FloatView t= new FloatPopupControlView(dockable);
@@ -425,7 +421,7 @@ public class DockableController {
             this.floating.set(floating);
         }
     }
-*/
+     */
     /**
      * Returns a new instance of the utility class that help to create a new
      * stage which serves as a floating window for the node. This window may be
@@ -515,4 +511,65 @@ public class DockableController {
 //            dragManager.titlebarChanged(ov, oldValue, newValue);
         }
     }
-}
+
+    public class DragDetector implements EventHandler<MouseEvent> {
+
+        private final DockableController dockableController;
+
+        public Point2D startMousePos;
+
+        public DragDetector(DockableController dockableController) {
+            this.dockableController = dockableController;
+            init();
+        }
+
+        private void init() {
+
+            dockableController.titleBarProperty().addListener((ov, oldValue, newValue) -> {
+                if (oldValue != null) {
+                    oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+                    oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+                }
+                if (newValue != null) {
+                    newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
+                    newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+                }
+            });
+            dockableController.dragNodeProperty().addListener((ov, oldValue, newValue) -> {
+                if (oldValue != null) {
+                    oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+                    oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+                }
+                if (newValue != null) {
+                    newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
+                    newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+                }
+            });
+
+        }
+
+        public void mousePressed(MouseEvent ev) {
+            
+            System.err.println("DragDetector MOUSE PRESSED");
+            if (!ev.isPrimaryButtonDown()) {
+                return;
+            }
+            startMousePos = new Point2D(ev.getX(), ev.getY());
+        }
+
+        public void mouseDragDetected(MouseEvent ev) {
+            System.err.println("DragDetector MOUSE DRAG_DETECTED");
+            
+        }
+
+        @Override
+        public void handle(MouseEvent ev) {
+            if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                mousePressed(ev);
+            } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+                mouseDragDetected(ev);
+            }
+        }
+    }//DragDetector
+
+}//DockableController

@@ -165,15 +165,15 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mousePressed(MouseEvent ev) {
-        System.err.println("MOUSE PRESSED");
+//        System.err.println("MOUSE PRESSED");
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
 
         startMousePos = new Point2D(ev.getX(), ev.getY());
-        startScreenMousePos = new Point2D(ev.getScreenX(), ev.getScreenY());
+        //startScreenMousePos = new Point2D(ev.getScreenX(), ev.getScreenY());
     }
-    public Point2D startScreenMousePos;
+    //public Point2D startScreenMousePos;
 
     /**
      * The method is called when the user moves the mouse and the primary mouse
@@ -191,7 +191,7 @@ public class FxDragManager implements DragManager, EventHandler<MouseEvent> {
      */
     @Override
     public void mouseDragged(MouseEvent ev) {
-System.err.println("MOUSE DRAGGED");        
+//System.err.println("MOUSE DRAGGED");        
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
@@ -339,7 +339,7 @@ System.err.println("MOUSE DRAGGED");
      */
     @Override
     public void mouseDragDetected(MouseEvent ev) {
-System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
+//System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
@@ -352,7 +352,7 @@ System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloa
         if (!dockable.dockableController().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             dockable.dockableController().setFloating(true);
-            System.err.println("1 MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
+//            System.err.println("1 MOUSE DRAG DETECTED " + dockable.dockableController().isFloating());
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
@@ -374,9 +374,9 @@ System.err.println("MOUSE DRAG DETECTED " + dockable.dockableController().isFloa
         return r;
     }
 
-    @Override
+/*    @Override
     public void hideFloatingStage(Window floatStage) {
         floatStage.hide();
     }
-
+*/
 }

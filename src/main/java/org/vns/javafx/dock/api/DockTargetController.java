@@ -181,8 +181,6 @@ public abstract class DockTargetController {
             dockable.dockableController().setFloating(false);
             if ( (stage instanceof Stage)  && stage.getProperties().get(DragManager.DRAG_FLOATING_STAGE) == null) {
                 ((Stage)stage).close();
-            } else if ( (stage instanceof Stage)&& stage.getProperties().get(DragManager.DRAG_FLOATING_STAGE) != null) {
-                dockable.dockableController().getDragManager().hideFloatingStage(stage);
             } else {
                 stage.hide();
             }

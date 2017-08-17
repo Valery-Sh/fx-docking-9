@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -28,14 +29,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.WindowResizer;
 
 /**
  *
  * @author Valery
  */
 public class StageResizer implements WindowResizer {
-    
+
     private Double resizeMinWidth;
     private Double resizeMinHeight;
 
@@ -71,9 +71,6 @@ public class StageResizer implements WindowResizer {
 
     @Override
     public void resize(double x, double y) {
-        if (!cursorTypes.contains(cursor)) {
-            //return;
-        }
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
 
         double curX = mouseX.get();
@@ -118,30 +115,35 @@ public class StageResizer implements WindowResizer {
             curX = x;
             curY = y;
         }
-
-        if (wDelta + window.getWidth() >= getMinWidth()) {
+        Region root = (Region) window.getScene().getRoot();
+        if (wDelta + window.getWidth() > ((Stage) window).getMinWidth()) {
+            window.setX(xDelta + window.getX());
+            root.setPrefWidth(wDelta + root.getPrefWidth());
+            mouseX.set(curX);
+        }
+        if (hDelta + window.getHeight() > ((Stage) window).getMinHeight()) {
+            window.setY(yDelta + window.getY());
+            root.setPrefHeight(hDelta + root.getPrefHeight());
+            mouseY.set(curY);
+        }
+        ((Stage) window).sizeToScene();
+        /*        if (wDelta + window.getWidth() > getMinWidth()) {
             window.setX(xDelta + window.getX());
             window.setWidth(wDelta + window.getWidth());
             mouseX.set(curX);
         }
-        if (hDelta + window.getHeight() >= getMinHeight()) {
+        if (hDelta + window.getHeight() > getMinHeight()) {
             window.setY(yDelta + window.getY());
             window.setHeight(hDelta + window.getHeight());
             mouseY.set(curY);
         }
+         */
     }
-
 
     protected double getMinWidth() {
         double retval = 50.0;
         if (window instanceof Stage) {
             retval = ((Stage) window).getMinWidth();
-        } else if (window instanceof PopupControl) {
-            //retval = ((PopupControl)window).getMinWidth();
-            Node root = ((PopupControl) window).getScene().getRoot();
-            if (root instanceof Region) {
-                retval = ((Region) root).getMinWidth();
-            }
         }
         return retval;
     }
@@ -150,8 +152,6 @@ public class StageResizer implements WindowResizer {
         double retval = 50.0;
         if (window instanceof Stage) {
             retval = ((Stage) window).getMinHeight();
-        } else if (window instanceof PopupControl) {
-            retval = ((PopupControl) window).getMinHeight();
         }
         return retval;
     }
@@ -172,7 +172,7 @@ public class StageResizer implements WindowResizer {
 
     @Override
     public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
-        
+
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
@@ -189,7 +189,17 @@ public class StageResizer implements WindowResizer {
         e = nodeX > width - right;
         n = nodeY < top;
         s = nodeY > height - bottom;
-
+        System.err.println("*************************************");
+        System.err.println("w=" + w + "; noseX=" + nodeX + "; left=" + left);
+        if (w) {
+            System.err.println("   ---------- WEST");
+        } else {
+            System.err.println("   --- w=" + w + "; noseX=" + nodeX + "; left=" + left);
+        }
+        System.err.println("e=" + e);
+        System.err.println("n=" + n);
+        System.err.println("s=" + s);
+        System.err.println("*************************************");
         if (w) {
             if (n) {
                 cursor = Cursor.NW_RESIZE;
@@ -222,17 +232,86 @@ public class StageResizer implements WindowResizer {
     }
 
     public static Cursor cursorBy(MouseEvent ev, double width, double height, double left, double right, double top, double bottom) {
-        return cursorBy(ev.getX(), ev.getY(), width, height, left, right, top, bottom);
+        Window w = (Window) ev.getSource();
+        double x = ev.getX();
+        double y = ev.getY();
+        if ( w instanceof Stage ) {
+            return cursorBy(x, ev.getY(), width, height, left, right, top, bottom);            
+        } else {
+            x -= left;
+            y -= top;
+        }
+        return cursorBy(x, y, width, height, left, right, top, bottom);            
+        //return cursorBy(ev.getX(), ev.getY(), width, height, left, right, top, bottom);
+        //double x = ((PopupControl)ev.getSource()).getAnchorX();
+        //Region root = (Region) ((Window)ev.getSource()).getScene().getRoot();
+        //System.err.println("cursorBy win screenX =" + ev.getScreenX());
+        //System.err.println("cursorBy root screenX =" + root.localToScreen(x, bottom));
+        //System.err.println("cursorBy win screenX =" + ((PopupControl)ev.getSource()).getAnchorLocation());
+        //return cursorBy(ev.getSceneX() - left, ev.getSceneY() - top, width, height, left, right, top, bottom);
     }
 
     public static Cursor cursorBy(MouseEvent ev, Region r) {
         double x, y, w, h;
 
-        Insets ins = r.getPadding();
+        Insets ins = r.getInsets();
+        //test(ev, r);
         if (ins == Insets.EMPTY) {
+//            if (ins == Insets.EMPTY) {
             return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);
         }
-        return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
+        //return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5,  5, ins.getTop() + 5, 5);
+        if ( ev.getSource() instanceof Stage ) {
+            return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());            
+        } else {
+            
+        }
+        return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());            
+    }
+
+    public static void test(MouseEvent ev, Region r) {
+        Insets ins = r.getInsets();
+        Window w = (Window) ev.getSource();
+        //if (ev.getSource() instanceof PopupControl) {
+        if (w instanceof PopupControl) {        
+            PopupControl pc = (PopupControl) w;
+            System.err.println("INSETS: " + ins.toString());
+            System.err.println("popup.getY() = " + pc.getY());
+            System.err.println("popup.getAnchorY() = " + pc.getAnchorY());
+            System.err.println("ev.getY() = " + ev.getY());
+            System.err.println("ev.getScreenY() = " + ev.getScreenY());
+            Bounds rootB = r.localToScreen(r.getBoundsInLocal());
+            System.err.println("root.getScreenY() = " + rootB.getMinY());
+            System.err.println("root.getHeight() = " + r.getHeight());
+            System.err.println("root.bounds.getHeight() = " + rootB.getHeight());
+            System.err.println("popup.getHeight() = " + pc.getHeight());
+
+        } else {
+            Stage pc = (Stage)w;
+            
+            System.err.println("INSETS: " + ins.toString());
+            System.err.println("popup.getY() = " + pc.getY());
+            System.err.println("ev.getY() = " + ev.getY());
+            System.err.println("ev.getScreenY() = " + ev.getScreenY());
+            Bounds rootB = r.localToScreen(r.getBoundsInLocal());
+            System.err.println("root.getScreenY() = " + rootB.getMinY());
+            System.err.println("root.getHeight() = " + r.getHeight());
+            System.err.println("root.bounds.getHeight() = " + rootB.getHeight());
+            System.err.println("popup.getHeight() = " + pc.getHeight());
+            
+        }
+    }
+
+    public static void testStage(MouseEvent ev, Region r) {
+        Insets ins = r.getInsets();
+        Stage pc = (Stage) ev.getSource();
+        System.err.println("INSETS: " + ins.toString());
+        System.err.println("popup.getX() = " + pc.getX());
+        //System.err.println("popup.getAnchorX() = " + pc.getAnchorX());
+        System.err.println("ev.getX() = " + ev.getX());
+        System.err.println("ev.getScreenX() = " + ev.getScreenX());
+        Bounds rootB = r.localToScreen(r.getBoundsInLocal());
+        System.err.println("root.getScreenX() = " + rootB.getMinX());
     }
 
     public Cursor getCursor() {
@@ -242,12 +321,15 @@ public class StageResizer implements WindowResizer {
     public void setCursor(Cursor cursor) {
         this.cursor = cursor;
     }
+
     public DoubleProperty mouseXProperty() {
         return mouseX;
     }
+
     public DoubleProperty mouseYProperty() {
         return mouseY;
-    }    
+    }
+
     public Double getMouseX() {
         return mouseX.get();
     }
@@ -255,9 +337,11 @@ public class StageResizer implements WindowResizer {
     public Double getMouseY() {
         return mouseY.get();
     }
+
     public void setMouseX(Double mX) {
         this.mouseX.set(mX);
     }
+
     public void setMouseY(Double mY) {
         this.mouseY.set(mY);
     }
@@ -265,5 +349,5 @@ public class StageResizer implements WindowResizer {
     public FloatWindowView getWindowView() {
         return windowView;
     }
-    
+
 }

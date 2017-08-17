@@ -330,19 +330,58 @@
  * DockNode                                                                    *
  *                                                                             *
  ******************************************************************************/
-.dock-node-border {
+/*.dock-node-border {
     -fx-padding: 10;
     -fx-background-color: transparent;
     -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
 }
+*/
+/*.root.popup {
+    -fx-background-color: red;
+}
+*/
+.dock-node-border {
+  -fx-padding: 10;
+  -fx-background-color: transparent; 
+  -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
+}
+
+.my-test-css {
+  -fx-padding: 50 20 50 50;
+  -fx-background-color: transparent; 
+  -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+/*  -fx-border-width: 0 0 0 1;
+  -fx-border-color: blue;
+*/
+
+}
+.my-test-popup-css {
+  -fx-padding: 50;
+  -fx-background-color: green; 
+   -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+
+}
+
+.my-test-pane-css {
+  -fx-padding: 50;
+  -fx-background-color: transparent; 
+  -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+
+}
+
+.my-test-pane-mainroot-css {
+  -fx-background-color: transparent; 
+}
 .dock-node-border:maximized {
     -fx-padding: 0;
 }
-/*
+.float-popup-root {
+    -fx-background-color: -fx-background;
+}
 .dock-node {
     -fx-background-color: -fx-background;
 }
-*/
+
 .dock-title-bar {
     -fx-background-color: -fx-background;
     -fx-padding: 2;

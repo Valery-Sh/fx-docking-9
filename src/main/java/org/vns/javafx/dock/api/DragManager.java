@@ -67,7 +67,7 @@ public interface DragManager extends EventHandler<MouseEvent> {
      */
     void setDragNode(Node dragNode);
 
-    void hideFloatingStage(Window floatStage);
+    //void hideFloatingStage(Window floatStage);
 
     void removeEventHandlers(Node titleBar);
 
