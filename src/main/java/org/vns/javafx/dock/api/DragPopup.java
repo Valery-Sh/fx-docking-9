@@ -29,7 +29,7 @@ import org.vns.javafx.dock.DockUtil;
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
  * Most of the work with the object of the class is done in the method 
- * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the
+ * DragManager#mouseDragged(MouseEvent) . If the
  * mouse cursor resides above the {@code dockable node} then {@code DragPoup}
  * provides two panes of position indicators:
  * </p>
@@ -79,7 +79,7 @@ public class DragPopup extends IndicatorPopup {
     /**
      * The pop up window for dock nodes
      */
-    private Popup nodeIndicatorPopup;
+    private IndicatorPopup nodeIndicatorPopup;
     /**
      * The current target to which the mouse cursor points
      */
@@ -102,7 +102,8 @@ public class DragPopup extends IndicatorPopup {
      * @param paneController the owner of the object to be created
      */
     public DragPopup(DockTargetController paneController) {
-        super(paneController);
+        super(DockRegistry.dockTarget(paneController.getTargetNode()));
+        getProperties().put("POPUP", "Dragpopup = " + this);        
     }
 
     /**
@@ -123,8 +124,8 @@ public class DragPopup extends IndicatorPopup {
         Pane nodeIndicatorPane = getTargetController().getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
 
-        nodeIndicatorPopup = new Popup();
-
+        nodeIndicatorPopup = new IndicatorPopup(getTargetController());
+        nodeIndicatorPopup.getProperties().put("POPUP", "nodeIndicatorPopup");
         getPaneIndicator().getIndicatorPane().prefHeightProperty().bind(getTargetNode().heightProperty());
         getPaneIndicator().getIndicatorPane().prefWidthProperty().bind(getTargetNode().widthProperty());
 
@@ -133,7 +134,15 @@ public class DragPopup extends IndicatorPopup {
         nodeIndicatorPopup.getContent().add(nodeIndicatorPane);
         getContent().add(paneIndicatorPane);
     }
-
+    //@Override
+/*    public ObservableList<IndicatorPopup> getIndicatorPopupChain() {
+        ObservableList<IndicatorPopup> list = FXCollections.observableArrayList();
+        list.add(this);
+        list.addAll(this,nodeIndicatorPopup);
+        return list;
+        
+    }
+*/
     /**
      * Returns an object of type {@link SideIndicator} to display indicators for
      * an object of type {@link DockTarget}.

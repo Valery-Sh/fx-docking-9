@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
-
-import javafx.scene.Cursor;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Window;
+package org.vns.javafx.dock.api.dragging;
 
 /**
  *
  * @author Valery
  */
-public interface WindowResizer {
-    boolean isStarted();
-    void resize(double x, double y);
-    void resize(MouseEvent event);
-    void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors);    
+public enum DragType {
+    SIMPLE,
+    FULL,
+    DRAG_AND_DROP
+    
 }

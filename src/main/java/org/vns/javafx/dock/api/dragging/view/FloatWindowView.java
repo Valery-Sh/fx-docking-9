@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -88,7 +88,7 @@ public interface FloatWindowView extends FloatView<Window> {
         public void handle(MouseEvent ev) {
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-                System.err.println("1 FloatWindowView MouseHandler cursor = " + c);
+                //System.err.println("1 FloatWindowView MouseHandler cursor = " + c);
                 if (!isCursorSupported(c)) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                 } else {
@@ -163,7 +163,7 @@ public interface FloatWindowView extends FloatView<Window> {
         public void handle(MouseEvent ev) {
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-                System.err.println("!!!!  FloatWindowView MouseHandler cursor = " + c);
+                //System.err.println("!!!!  FloatWindowView MouseHandler cursor = " + c);
                 if (!isCursorSupported(c)) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                 } else {

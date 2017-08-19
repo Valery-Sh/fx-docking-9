@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *
@@ -19,9 +20,12 @@ import org.vns.javafx.dock.DockUtil;
  */
 public abstract class DockTargetController {
 
+    
     private Region targetNode;
     private String title;
     private PositionIndicator positionIndicator;
+    
+    private ObjectProperty<DragType> dragType = new SimpleObjectProperty<>(DragType.SIMPLE);
     
     private Predicate<Node> acceptableNode;
     
@@ -44,12 +48,28 @@ public abstract class DockTargetController {
 
     protected DockTargetController(Dockable dockable) {
         init();
+        
     }
 
     private void init() {
         inititialize();
     }
+    public abstract Object getRestorePosition(Dockable dockable);
+    
+    public abstract void restore(Dockable dockable,Object restoreposition);
+    
+    public ObjectProperty<DragType> dragTypeProperty() {
+        return dragType;
+    }
 
+    public DragType getDragType() {
+        return dragType.get();
+    }
+
+    public void setDragType(DragType dragType) {
+        this.dragType.set(dragType);
+    }
+    
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
      * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
@@ -106,7 +126,7 @@ public abstract class DockTargetController {
         //    indicatorPopup = new IndicatorPopup(this);
         //}
         //return indicatorPopup;
-        return new IndicatorPopup(this);
+        return new IndicatorPopup(DockRegistry.dockTarget(getTargetNode()));
     }
 
     public IndicatorPopup getIndicatorPopup() {
@@ -167,7 +187,7 @@ public abstract class DockTargetController {
         return  (dockLoader != null && dockLoader.isRegistered(node)) || dockLoader == null;
     }
     
-    protected void dock(Point2D mousePos, Dockable dockable) {
+    public void dock(Point2D mousePos, Dockable dockable) {
         if (isDocked(dockable.node())) {
             return;
         }
@@ -179,7 +199,7 @@ public abstract class DockTargetController {
 
         if (doDock(mousePos, dockable.node()) && stage != null) {
             dockable.dockableController().setFloating(false);
-            if ( (stage instanceof Stage)  && stage.getProperties().get(DragManager.DRAG_FLOATING_STAGE) == null) {
+            if ( (stage instanceof Stage)) {
                 ((Stage)stage).close();
             } else {
                 stage.hide();

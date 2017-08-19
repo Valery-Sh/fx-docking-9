@@ -1,7 +1,9 @@
 package org.vns.javafx.dock.api.demo;
 
+
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -12,6 +14,7 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *
@@ -21,6 +24,8 @@ public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
+        dockPane.targetController().setDragType(DragType.DRAG_AND_DROP);
+        //dockPane.addEventHandler( new );
         dockPane.setId("DOCK PANE");
         
         Button b1 = new Button("Add or Remove TitleBar");
@@ -32,6 +37,11 @@ public class TestDockNodeControl extends Application {
         Pane p1 = new HBox(b1);
         DockNode custom = new DockNode();
         dockPane.getItems().add(custom);
+        custom.setId("custom");
+        DockNode custom1 = new DockNode();
+        dockPane.getItems().add(custom1);
+        custom1.setId("custom1");        
+        
         b1.setOnAction(a->{
             if ( custom.getTitleBar() == null ) {
                 //custom.dockableController().createDefaultTitleBar("Now Not Null");
@@ -39,8 +49,9 @@ public class TestDockNodeControl extends Application {
                 //custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
             }
-            b1.getScene().getWindow().setX(40);
-            b1.getScene().getWindow().setY(40);
+            //b1.getScene().getWindow().setX(40);
+            //b1.getScene().getWindow().setY(40);
+            DockUtil.print(dockPane);
             
         });
         
@@ -64,6 +75,7 @@ public class TestDockNodeControl extends Application {
             //System.err.println("tp.lookup(arrowRegion)" + tp.);
             DockUtil.print(b1);
         });
+        stage.setAlwaysOnTop(true);
         stage.show();
         
         

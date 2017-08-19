@@ -94,4 +94,14 @@ public class ScenePaneController extends DockTargetController {
         return null;
     }
 
+    @Override
+    public Object getRestorePosition(Dockable dockable) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void restore(Dockable dockable, Object restoreposition) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

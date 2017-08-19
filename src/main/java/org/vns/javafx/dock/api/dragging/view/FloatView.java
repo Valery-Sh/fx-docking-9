@@ -1,5 +1,5 @@
 
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.scene.Cursor;
 import org.vns.javafx.dock.api.Dockable;

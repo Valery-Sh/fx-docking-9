@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.dragging.view;
 
-import org.vns.javafx.dock.api.dragging.SimpleDragManager;
+import javafx.scene.Cursor;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Window;
 
 /**
  *
  * @author Valery
  */
-public class JFXDragManager extends SimpleDragManager {
-
-    /**
-     * Create a new instance for the given dock node.
-     *
-     * @param dockNode the object to be dragged
-     */
-    public JFXDragManager(Dockable dockNode) {
-        super(dockNode);
-    }
-
-
+public interface WindowResizer {
+    boolean isStarted();
+    void resize(double x, double y);
+    void resize(MouseEvent event);
+    void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors);    
 }

@@ -43,8 +43,8 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTargetController;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.view.FloatPopupControlView2;
-import org.vns.javafx.dock.api.view.FloatView;
+import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -720,6 +720,16 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 }
             };
             return positionIndicator;
+        }
+
+        @Override
+        public Object getRestorePosition(Dockable dockable) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void restore(Dockable dockable, Object restoreposition) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }//class
 

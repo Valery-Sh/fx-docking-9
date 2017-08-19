@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -32,12 +32,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableController;
@@ -271,7 +269,7 @@ public class FloatStageView implements FloatWindowView{
         borderPane.setCenter(node);
         //borderPane.setStyle("-fx-background-color: aqua");
         Scene scene = new Scene(borderPane);
-
+        scene.setCursor(Cursor.HAND);
         floatingProperty.set(true);
         
         newStage.setScene(scene);

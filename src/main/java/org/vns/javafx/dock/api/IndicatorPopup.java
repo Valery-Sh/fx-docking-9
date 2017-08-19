@@ -1,14 +1,18 @@
 package org.vns.javafx.dock.api;
 
+import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 
@@ -25,10 +29,10 @@ import org.vns.javafx.dock.DockUtil;
  * object is given enum type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
- * Most of the work with the object of the class is done in the method 
- * {@link DragManager#mouseDragged(javafx.scene.input.MouseEvent) }. If the
- * mouse cursor resides above the {@code dockable node} then {@code DragPoup}
- * provides two panes of position indicators:
+ * Most of the work with the object of the class is done in the method
+ * DragManager.mouseDragged(MouseEvent) . If the mouse cursor resides above the
+ * {@code dockable node} then {@code DragPoup} provides two panes of position
+ * indicators:
  * </P>
  * <ul>
  * <li>The pane of indicators for the {@code dockable} node</li>
@@ -36,7 +40,7 @@ import org.vns.javafx.dock.DockUtil;
  * parent of the {@code dockable node} mentioned above
  * </li>
  * </ul>
- * 
+ *
  * If the mouse cursor resides above the {@code DockPaneTarget} then
  * {@code DragPoup} provides a single pane of position indicators.
  * <p>
@@ -74,16 +78,95 @@ public class IndicatorPopup extends Popup {
     /**
      * Creates a new instance for the specified pane handler.
      *
-     * @param targetController the owner of the object to be created
+     * @param target the owner of the object to be created
      */
-    public IndicatorPopup(DockTargetController targetController) {
-        this.targetController = targetController;
+    public IndicatorPopup(DockTarget target) {
+        this.targetController = target.targetController();
         init();
-
+    }
+    public IndicatorPopup(DockTargetController target) {
+        this.targetController = target;
+        init();
     }
 
     private void init() {
         initContent();
+    }
+
+    private ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
+
+    @Override
+    public void show(Window ownerWindow) {
+        if ( ! (ownerWindow instanceof IndicatorPopup) ) {
+            throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
+        }
+        super.show(ownerWindow);
+        if (getChildWindows().contains(ownerWindow)) {
+            return;
+        }
+        
+        check((IndicatorPopup) ownerWindow);
+        getChildWindows().add((IndicatorPopup)ownerWindow);
+
+    }
+
+    @Override
+    public void show(Window ownerWindow, double anchorX, double anchorY) {
+        if ( ! (ownerWindow instanceof IndicatorPopup) ) {
+            throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
+        }
+        
+        super.show(ownerWindow, anchorX, anchorY);
+        
+/*        System.err.println("SHOW " + this);
+        System.err.println("   --- property = " + this.getProperties().get("POPUP"));        
+        System.err.println("   --- SHOW owner=" + ownerWindow);
+        System.err.println("       --- property = " + ownerWindow.getProperties().get("POPUP"));        
+  */      
+        if (((IndicatorPopup)ownerWindow).getChildWindows().contains(this)) {
+//            System.err.println("   --- SHOW 1");
+            
+            return;
+        }
+//        System.err.println("   --- SHOW 2");
+
+        //check((IndicatorPopup) ownerWindow);
+        ((IndicatorPopup)ownerWindow).getChildWindows().add(this);
+    }
+    
+    private void check(IndicatorPopup popup) {
+        IndicatorPopup p = popup;
+        while ( p != null ) {
+            if ( !( p.getOwnerWindow() instanceof IndicatorPopup) ) {
+                break;
+            }
+            if ( p.getChildWindows().contains(popup)) {
+                p.getChildWindows().remove(popup);
+            }
+            p = (IndicatorPopup) p.getOwnerWindow();
+        }
+    }
+    
+    @Override
+    public void show(Node ownerNode, double anchorX, double anchorY) {
+        super.show(ownerNode, anchorX, anchorY);
+        System.err.println("SHOW 3 " +  this.getProperties().get("POPUP"));
+    }
+    
+    @Override
+    public void hide() {
+        if (getOwnerWindow() instanceof IndicatorPopup) {
+            IndicatorPopup p = (IndicatorPopup) getOwnerWindow();
+            if (p.getChildWindows().contains(this)) {
+                //p.getChildWindows().remove(this);
+            }
+        }
+        super.hide();
+
+    }
+
+    public ObservableList<IndicatorPopup> getChildWindows() {
+        return childWindows;
     }
 
     /**
@@ -97,7 +180,7 @@ public class IndicatorPopup extends Popup {
     }
 
     protected void initContent() {
-        
+
         //12.05
         if (targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null) {
             return;
@@ -113,6 +196,23 @@ public class IndicatorPopup extends Popup {
         indicatorPane.minWidthProperty().bind(getTargetNode().widthProperty());
 
         getContent().add(indicatorPane);
+    }
+
+    public ObservableList<IndicatorPopup> getAllChildIndicatorPopup() {
+        ObservableList<IndicatorPopup> list = FXCollections.observableArrayList();
+        
+        list.addAll(getChildWindows());
+        getChildWindows().forEach(w -> {
+            getAllChildIndicatorPopup(list, w);
+        });
+//        list.add(this);
+        return list;
+    }
+    private void getAllChildIndicatorPopup(ObservableList<IndicatorPopup> list, IndicatorPopup popup) {
+        list.addAll(popup.getChildWindows());
+        popup.getChildWindows().forEach(w -> {
+            //getAllChildIndicatorPopup(list, w); 
+        });
     }
 
     /**

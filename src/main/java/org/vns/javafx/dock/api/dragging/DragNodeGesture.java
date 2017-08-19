@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.editor;
+package org.vns.javafx.dock.api.dragging;
 
 import javafx.scene.Node;
 
@@ -7,7 +7,7 @@ import javafx.scene.Node;
  * {@code DragGesture} is created. The reference to the object is put as a value
  * to the {@code properties} collection of the node which is a source of the
  * event with event type {@code MouseEvent.DRAG_DETECTED}.. The key to this
- * {@code properties} collection is the value of the constant {@link EditorUtil#GESTURE_SOURCE_KEY
+ * {@code properties} collection is the value of the constant {@link DragGesture#GESTURE_SOURCE_KEY
  * }. Thus, when a gesture target handles the {@code DragEvent} it gets access
  * tho the instance of this class, for example
  * <pre>
@@ -18,7 +18,7 @@ import javafx.scene.Node;
  * </pre>
  *
  * @see DragGesture
- * @see DragTreeCellGesture * @author Valery Shyshkin
+
  */
 public class DragNodeGesture implements DragGesture {
 

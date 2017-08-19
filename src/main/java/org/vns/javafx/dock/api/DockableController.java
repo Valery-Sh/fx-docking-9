@@ -10,19 +10,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.stage.PopupWindow;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.api.dragging.DragManagerFactory;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
-import org.vns.javafx.dock.api.view.FloatView;
-import org.vns.javafx.dock.api.view.FloatViewFactory;
 
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
@@ -70,8 +66,8 @@ public class DockableController {
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockTarget = true;
-    
-    private DragManager dragManager;
+
+    //private DragManager dragManager;
     private DragDetector dragDetector;
     //private Node dragNode;
     private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
@@ -121,7 +117,7 @@ public class DockableController {
             Platform.runLater(() -> {
                 titleBar.removeListener(this::titlebarChanged);
                 titleBar.addListener(this::titlebarChanged);
-                initDragManager();
+                //initDragManager();
             });
         }
     }
@@ -131,7 +127,7 @@ public class DockableController {
             Platform.runLater(() -> {
                 titleBar.removeListener(this::titlebarChanged);
                 titleBar.addListener(this::titlebarChanged);
-                initDragManager();
+                //initDragManager();
             });
         }
     }
@@ -167,19 +163,20 @@ public class DockableController {
      */
     public void setDragNode(Node dragSource) {
         this.dragNode.set(dragSource);
-        if (dragManager != null) {
+/*        if (dragManager != null) {
             dragManager.setDragNode(dragSource);
         }
+*/
     }
 
-    public DragManager getDragManager() {
+/*    public DragManager getDragManager() {
         return dragManager;
     }
-
+*/
     /**
      * @return an object used as a manager when drag operation is detected.
      */
-    protected DragManager initDragManager() {
+/*    protected DragManager initDragManager() {
         Window w = null;//
         if (dockable().node().getScene() != null && dockable().node().getScene().getWindow() != null) {
             w = dockable().node().getScene().getWindow();
@@ -188,8 +185,8 @@ public class DockableController {
             return null;
         }
         if (dragManager != null) {
-            dragManager.removeEventHandlers(getTitleBar());
-            dragManager.removeEventHandlers(getDragNode());
+            //17.08dragManager.removeEventHandlers(getTitleBar());
+            //17.08dragManager.removeEventHandlers(getDragNode());
         }
 
         if ((w instanceof Stage) || (w instanceof PopupWindow)) {
@@ -202,7 +199,7 @@ public class DockableController {
         dragManager.addEventHandlers(getDragNode());
         return dragManager;
     }
-
+*/
     /**
      * If {@code true} the node specified by the method {@code node()} may be
      * considered as a dock target. This means that an indicator pane which
@@ -401,13 +398,15 @@ public class DockableController {
      * @param floating the new value to be set
      */
     public void setFloating(boolean floating) {
-        if (!isFloating() && floating) {
+        this.floating.set(floating);
+        /*        if (!isFloating() && floating) {
             FloatView t = FloatViewFactory.getInstance().getFloatView(dockable);
             t.make(dockable);
             this.floating.set(floating);
         } else if (!floating) {
             this.floating.set(floating);
         }
+         */
     }
 
     /*    public void setFloatingAsPopupControl(boolean floating) {
@@ -501,7 +500,7 @@ public class DockableController {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
 
-        if (dragManager != null) {
+/*        if (dragManager != null) {
             if (oldValue != null) {
                 dragManager.removeEventHandlers(oldValue);
             }
@@ -510,6 +509,7 @@ public class DockableController {
             }
 //            dragManager.titlebarChanged(ov, oldValue, newValue);
         }
+*/
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {
@@ -517,6 +517,7 @@ public class DockableController {
         private final DockableController dockableController;
 
         public Point2D startMousePos;
+        //private Parent targetDockPane; 
 
         public DragDetector(DockableController dockableController) {
             this.dockableController = dockableController;
@@ -549,17 +550,45 @@ public class DockableController {
         }
 
         public void mousePressed(MouseEvent ev) {
-            
-            System.err.println("DragDetector MOUSE PRESSED");
             if (!ev.isPrimaryButtonDown()) {
                 return;
             }
             startMousePos = new Point2D(ev.getX(), ev.getY());
+            System.err.println("DragDetected startMousePos " + startMousePos);
         }
 
         public void mouseDragDetected(MouseEvent ev) {
             System.err.println("DragDetector MOUSE DRAG_DETECTED");
+            if (!ev.isPrimaryButtonDown()) {
+                ev.consume();
+                return;
+            }
+            if (!dockable.dockableController().isDraggable()) {
+                ev.consume();
+                return;
+            }
             
+            //targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
+            
+            if (!dockable.dockableController().isFloating()) {
+                DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
+                //dm.setStartMousePos(startMousePos);
+                dm.dragDetected(ev, startMousePos);
+//                targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
+//                targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
+                dockable.dockableController().setFloating(true);
+                
+            } else {
+                System.err.println("FLOATING !!!");
+                DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
+                dm.dragDetected(ev, startMousePos);                
+                //dm.setStartMousePos(startMousePos);
+                
+//                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
+//                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
+                
+            }
+
         }
 
         @Override

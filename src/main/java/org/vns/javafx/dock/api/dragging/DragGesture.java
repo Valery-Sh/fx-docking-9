@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.editor;
+package org.vns.javafx.dock.api.dragging;
 
 import javafx.scene.Node;
 
@@ -8,7 +8,7 @@ import javafx.scene.Node;
  * The reference to the object is put as a value to the 
  * {@code properties} property of the node which is a source of the event.
  * The key to this {@code properties} collection is 
- * the value of the constant {@link EditorUtil#GESTURE_SOURCE_KEY }. 
+ * the value of the constant {@link #GESTURE_SOURCE_KEY }. 
  * Thus, when a gesture target handles the {@code DragEvent} it gets access
  * to the instance of this class, for example
  * <pre>
@@ -20,9 +20,13 @@ import javafx.scene.Node;
  *
  * 
  * @see DragNodeGesture
- * @see DragTreeCellGesture
+ *
  */
 public interface DragGesture {
+    
+    public static final String GESTURE_SOURCE_KEY = "drag-gesture-source-key";
+    public static final String DRAGBOARD_KEY = "dragboard-url-key";
+    
     /**
      * Returns a value of the property {@code gestureSource}.
      * @return the object of type Node which is the node that process 

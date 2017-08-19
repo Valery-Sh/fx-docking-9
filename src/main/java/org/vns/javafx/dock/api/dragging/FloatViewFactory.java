@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging;
 
+import com.sun.javafx.stage.EmbeddedWindow;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Node;
+import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DragManager;
 import org.vns.javafx.dock.api.JFXDragManager;
+import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
+import org.vns.javafx.dock.api.dragging.view.FloatStageView;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -32,16 +40,21 @@ public class FloatViewFactory {
         return SingletonInstance.INSTANCE;
     }
     
-    public FloatView getFloatView(Dockable dockable) {
+    public FloatView getFloatView(DragManager dragManager) {
         FloatView v = null;
-        DockableController ctrl = dockable.dockableController();
-        if ( ctrl.getDragManager() instanceof JFXDragManager) {
-            v = new FloatPopupControlView(dockable);
-        } else {
-            v = new FloatStageView(dockable);
-//            v = new FloatPopupControlView(dockable);
-
+        Node node = dragManager.getDockable().node();
+        Window w = null;
+        if ( node.getScene() != null && node.getScene().getWindow() != null) {
+            w = node.getScene().getWindow();
         }
+        if ( w == null ) {
+            v = new FloatStageView(dragManager.getDockable());
+        } else if ( w instanceof EmbeddedWindow ) {
+            v = new FloatPopupControlView(dragManager.getDockable());
+        } else {
+            v = new FloatStageView(dragManager.getDockable());
+        }
+    
         return v;
     }
     private static class SingletonInstance {

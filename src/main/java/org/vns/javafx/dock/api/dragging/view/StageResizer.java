@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging.view;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -189,7 +189,7 @@ public class StageResizer implements WindowResizer {
         e = nodeX > width - right;
         n = nodeY < top;
         s = nodeY > height - bottom;
-        System.err.println("*************************************");
+/*        System.err.println("*************************************");
         System.err.println("w=" + w + "; noseX=" + nodeX + "; left=" + left);
         if (w) {
             System.err.println("   ---------- WEST");
@@ -200,6 +200,7 @@ public class StageResizer implements WindowResizer {
         System.err.println("n=" + n);
         System.err.println("s=" + s);
         System.err.println("*************************************");
+*/
         if (w) {
             if (n) {
                 cursor = Cursor.NW_RESIZE;
@@ -275,7 +276,7 @@ public class StageResizer implements WindowResizer {
         //if (ev.getSource() instanceof PopupControl) {
         if (w instanceof PopupControl) {        
             PopupControl pc = (PopupControl) w;
-            System.err.println("INSETS: " + ins.toString());
+/*            System.err.println("INSETS: " + ins.toString());
             System.err.println("popup.getY() = " + pc.getY());
             System.err.println("popup.getAnchorY() = " + pc.getAnchorY());
             System.err.println("ev.getY() = " + ev.getY());
@@ -285,20 +286,11 @@ public class StageResizer implements WindowResizer {
             System.err.println("root.getHeight() = " + r.getHeight());
             System.err.println("root.bounds.getHeight() = " + rootB.getHeight());
             System.err.println("popup.getHeight() = " + pc.getHeight());
-
-        } else {
-            Stage pc = (Stage)w;
-            
-            System.err.println("INSETS: " + ins.toString());
-            System.err.println("popup.getY() = " + pc.getY());
-            System.err.println("ev.getY() = " + ev.getY());
-            System.err.println("ev.getScreenY() = " + ev.getScreenY());
-            Bounds rootB = r.localToScreen(r.getBoundsInLocal());
-            System.err.println("root.getScreenY() = " + rootB.getMinY());
+           System.err.println("root.getScreenY() = " + rootB.getMinY());
             System.err.println("root.getHeight() = " + r.getHeight());
             System.err.println("root.bounds.getHeight() = " + rootB.getHeight());
             System.err.println("popup.getHeight() = " + pc.getHeight());
-            
+ */           
         }
     }
 
@@ -307,7 +299,6 @@ public class StageResizer implements WindowResizer {
         Stage pc = (Stage) ev.getSource();
         System.err.println("INSETS: " + ins.toString());
         System.err.println("popup.getX() = " + pc.getX());
-        //System.err.println("popup.getAnchorX() = " + pc.getAnchorX());
         System.err.println("ev.getX() = " + ev.getX());
         System.err.println("ev.getScreenX() = " + ev.getScreenX());
         Bounds rootB = r.localToScreen(r.getBoundsInLocal());

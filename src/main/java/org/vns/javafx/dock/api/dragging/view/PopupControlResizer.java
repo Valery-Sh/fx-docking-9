@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.view;
+package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
@@ -21,7 +21,7 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.api.view.StageResizer.cursorBy;
+import static org.vns.javafx.dock.api.dragging.view.StageResizer.cursorBy;
 
 /**
  *

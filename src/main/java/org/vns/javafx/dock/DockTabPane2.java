@@ -358,7 +358,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         @Override
-        protected void dock(Point2D mousePos, Dockable dockable) {
+        public void dock(Point2D mousePos, Dockable dockable) {
             getDockExecutor().dock(mousePos, dockable);
         }
 
@@ -488,6 +488,16 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             }
 
             getContents().getChildren().remove(dockNode);
+        }
+
+        @Override
+        public Object getRestorePosition(Dockable dockable) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void restore(Dockable dockable, Object restoreposition) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }//class TabPaneController
