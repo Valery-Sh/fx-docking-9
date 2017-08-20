@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.indicator;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -14,6 +14,8 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.TargetContext;
 
 /**
  * An instance of the class is created for each object of type
@@ -23,7 +25,7 @@ import org.vns.javafx.dock.DockUtil;
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link Dockable} or {@link DockTarget}. The position of the
+ * object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}. The position of the
  * target object is set as a value of type {@code javafx.geometry.Side} the
  * object is given enum type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
@@ -212,7 +214,7 @@ public class IndicatorPopup extends Popup {
 
     /**
      * Returns an object of type {@link PositionIndicator} to display indicators
-     * for an object of type {@link DockPaneContext }
+     * for an object of type {@link org.vns.javafx.dock.api.DockPaneContext }
      *
      * @return Returns an object of type {@code PositionIndicator}
      */

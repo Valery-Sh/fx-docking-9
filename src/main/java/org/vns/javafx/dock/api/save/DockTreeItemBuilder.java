@@ -1,9 +1,10 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.save;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  * Defines the methods needed to convert a {@code Scene Graph } node to a tree
@@ -91,7 +92,7 @@ public interface DockTreeItemBuilder {
      * Such an important property as {@code FIELD_NAME_ATTR} is set only if the
      * value of the {@code fieldName} parameter is not null. Typically, this
      * value is different from {@code null} only for the root {@code TreeItem}.
-     * For its children, this value is set by the{@link org.vns.javafx.dock.api.DockStateLoader
+     * For its children, this value is set by the{@link org.vns.javafx.dock.api.save.DockStateLoader
      * }
      * </p>
      * <p>

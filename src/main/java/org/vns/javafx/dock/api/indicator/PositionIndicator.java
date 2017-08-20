@@ -1,9 +1,10 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.indicator;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import org.vns.javafx.dock.api.TargetContext;
 
 public abstract class PositionIndicator {
 

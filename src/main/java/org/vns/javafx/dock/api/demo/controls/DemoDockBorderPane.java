@@ -20,7 +20,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
  *

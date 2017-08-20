@@ -28,14 +28,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.vns.javafx.dock.api.AbstractDockTreeItemBuilder;
-import org.vns.javafx.dock.api.PositionIndicator;
+import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 
 /**
  *

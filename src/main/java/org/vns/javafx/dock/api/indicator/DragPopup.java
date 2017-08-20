@@ -1,5 +1,6 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.indicator;
 
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -14,16 +15,18 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.TargetContext;
 
 /**
  * An instance of the class is created for each object of type
- * {@link TargetContext} when the last is created.
+ * {@link org.vns.javafx.dock.api.TargetContext} when the last is created.
  *
- * The instance of the class is used by the object of type {@link DragManager}
+ * The instance of the class is used by the object of type {@link org.vns.javafx.dock.api.dragging.DragManager}
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link Dockable} or {@link DockTarget}. The position of
+ * object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}. The position of
  * the target object is set as a value of type {@code javafx.geometry.Side} the
  * object is given {@literal  enum} type Side and can take one of the values: Side.TOP,
  * Side.RIGHT, Side.BOTTOM or Side.LEFT.
@@ -73,7 +76,7 @@ import org.vns.javafx.dock.DockUtil;
 public class DragPopup extends IndicatorPopup {
 
     /**
-     * The popup window for dock nodes
+     * The {@code popup} window for dock nodes
      */
     private IndicatorPopup nodeIndicatorPopup;
     /**
@@ -151,7 +154,7 @@ public class DragPopup extends IndicatorPopup {
 */
     /**
      * Returns an object of type {@link SideIndicator} to display indicators for
-     * an object of type {@link DockTarget}.
+     * an object of type {@link org.vns.javafx.dock.api.DockTarget}.
      *
      * @return Returns an object of type {@code SideIndicator}
      */
@@ -161,7 +164,7 @@ public class DragPopup extends IndicatorPopup {
 
     /**
      * Returns an object of type {@link SideIndicator} to display indicators for
-     * an object of type {@link Dockable}.
+     * an object of type {@link org.vns.javafx.dock.api.Dockable}.
      *
      * @return Returns an object of type {@code SideIndicator}
      */
@@ -181,7 +184,7 @@ public class DragPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns an object of type {@link Dockable} or {@link DockTarget}
+     * Returns an object of type {@link org.vns.javafx.dock.api.Dockable} or {@link DockTarget}
      * depending on the user selection or null if no object has been selected.
      *
      * @return a target object to dock to or null.

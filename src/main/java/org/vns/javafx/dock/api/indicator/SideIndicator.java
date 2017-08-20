@@ -1,5 +1,6 @@
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.indicator;
 
+import org.vns.javafx.dock.api.indicator.DragPopup;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -14,6 +15,9 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.TargetContext;
 
 /**
  *

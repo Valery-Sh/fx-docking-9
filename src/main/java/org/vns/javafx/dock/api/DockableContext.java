@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.dock.api.dragging.DragManager;
 import java.util.Properties;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;

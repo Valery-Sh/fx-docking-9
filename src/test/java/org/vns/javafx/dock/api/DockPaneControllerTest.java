@@ -15,6 +15,11 @@
  */
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.save.DockStateLoader;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.SideIndicator;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import java.util.Properties;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;

@@ -1,5 +1,8 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.SideIndicator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

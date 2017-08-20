@@ -22,7 +22,7 @@ import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.DockStateLoader;
+import org.vns.javafx.dock.api.save.DockStateLoader;
 
 /**
  *

@@ -16,7 +16,6 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import javafx.scene.Node;
 
 /**
  *

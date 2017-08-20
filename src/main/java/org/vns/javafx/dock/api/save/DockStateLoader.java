@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.save;
 
+import org.vns.javafx.dock.api.save.AbstractDockStateLoader;
 import java.util.Properties;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
-import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
+import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.*;
 
 /**
  *

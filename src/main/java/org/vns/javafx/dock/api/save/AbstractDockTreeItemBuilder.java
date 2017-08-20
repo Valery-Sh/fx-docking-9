@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.save;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.DockTarget;
 
 /**
  * This is an implementation of the 
- * {@link  org.vns.javafx.dock.api.DockTreeItemBuilder } interface, intended for
+ * {@link  org.vns.javafx.dock.api.save.DockTreeItemBuilder } interface, intended for
  * use with {@link  org.vns.javafx.dock.api.DockTarget } objects.
  *
  * The class constructor requires an object of type {@code DockTarget} and

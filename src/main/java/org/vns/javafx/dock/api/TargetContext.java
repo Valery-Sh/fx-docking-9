@@ -1,5 +1,9 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.save.AbstractDockStateLoader;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import java.util.List;
 import java.util.function.Predicate;
 import javafx.beans.Observable;
@@ -26,7 +30,7 @@ public abstract class TargetContext {
     private String title;
     private PositionIndicator positionIndicator;
     
-    private ObjectProperty<DragType> dragType = new SimpleObjectProperty<>(DragType.SIMPLE);
+    private final ObjectProperty<DragType> dragType = new SimpleObjectProperty<>(DragType.SIMPLE);
     
     private Predicate<Node> acceptableNode;
     

@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.dragging;
+
+import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.dragging.SimpleDragManager;
 
 /**
  *
  * @author Valery
  */
-public class AbstractFloatingWindowBuilder {
-    
-    public Object getDefault() {
-        return new DefaultFactory();
+public class JFXDragManager extends SimpleDragManager {
+
+    /**
+     * Create a new instance for the given dock node.
+     *
+     * @param dockNode the object to be dragged
+     */
+    public JFXDragManager(Dockable dockNode) {
+        super(dockNode);
     }
-            
-    public static class DefaultFactory {
-    
-    }
+
+
 }

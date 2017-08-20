@@ -21,7 +21,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragManager;
 import org.vns.javafx.dock.api.editor.ItemValue;
 import org.vns.javafx.dock.api.editor.TreeItemEx;
 

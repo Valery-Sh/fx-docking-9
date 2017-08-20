@@ -1,5 +1,11 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.SideIndicator;
+import org.vns.javafx.dock.api.indicator.DragPopup;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +32,7 @@ import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.SideIndicator.PaneSideIndicator;
+import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
 
 public class DockPaneContext extends TargetContext {
 

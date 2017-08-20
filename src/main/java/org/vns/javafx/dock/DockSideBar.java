@@ -36,7 +36,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.PositionIndicator;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;

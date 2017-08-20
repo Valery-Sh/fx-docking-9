@@ -21,8 +21,6 @@ import javafx.scene.Node;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.DragManager;
-import org.vns.javafx.dock.api.JFXDragManager;
 import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
 import org.vns.javafx.dock.api.dragging.view.FloatStageView;
 import org.vns.javafx.dock.api.dragging.view.FloatView;

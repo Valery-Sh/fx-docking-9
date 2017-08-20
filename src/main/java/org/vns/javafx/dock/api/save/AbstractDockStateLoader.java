@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.save;
 
 import java.util.List;
 import java.util.Map;
@@ -32,17 +32,19 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import static org.vns.javafx.dock.api.DockStateLoader.DEFAULT;
-import static org.vns.javafx.dock.api.DockStateLoader.DESCRIPTOR;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockTarget;
+import static org.vns.javafx.dock.api.save.DockStateLoader.DEFAULT;
+import static org.vns.javafx.dock.api.save.DockStateLoader.DESCRIPTOR;
 
-import static org.vns.javafx.dock.api.DockTreeItemBuilder.*;
+import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.*;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 
 /**
  * The base implementation of the interface 
- * {@link org.vns.javafx.dock.api.StateLoader }. The class uses both {@code java.util.prefs.Preferences
+ * {@link org.vns.javafx.dock.api.save.StateLoader }. The class uses both {@code java.util.prefs.Preferences
  * } and {@code xml }
  * technology to save/restore state of objects of type 
  * {@link org.vns.javafx.dock.api.DockTarget } and 
@@ -557,7 +559,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
     /**
      * The handy method to access an object of type 
-     * {@link org.vns.javafx.dock.api.DockTreeItemBuilder } by the specified
+     * {@link org.vns.javafx.dock.api.save.DockTreeItemBuilder } by the specified
      * parameter.
      *
      * @param dockTarget the object which owns an instance of type {@code DockTreeItemBuilder

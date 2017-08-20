@@ -27,8 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragManager;
-import org.vns.javafx.dock.api.IndicatorPopup;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 
