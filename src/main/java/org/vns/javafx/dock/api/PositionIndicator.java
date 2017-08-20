@@ -3,19 +3,18 @@ package org.vns.javafx.dock.api;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
 public abstract class PositionIndicator {
 
-    private final DockTargetController targetController;
+    private final TargetContext targetContext;
 
     private Node dockPlace;
     private Pane indicatorPane;
 
 
-    protected PositionIndicator(DockTargetController targetController) {
-        this.targetController = targetController;
+    protected PositionIndicator(TargetContext targetContext) {
+        this.targetContext = targetContext;
         init();
     }
 
@@ -40,13 +39,13 @@ public abstract class PositionIndicator {
 
     }
 
-    protected void showIndicator(double screenX, double screenY, Region targetNode) {
+    protected void showIndicator(double screenX, double screenY, Node targetNode) {
         //showIndicator(screenX, screenY);
     }
     
     //public abstract void showIndicator(double screenX, double screenY);
     public void showIndicator(double screenX, double screenY) {
-        getTargetController().getIndicatorPopup().show(getTargetController().getTargetNode(), screenX, screenY);
+        getTargetContext().getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
 
     public Node getDockPlace() {
@@ -57,8 +56,8 @@ public abstract class PositionIndicator {
         getDockPlace().setVisible(true);
     }
 
-    public DockTargetController getTargetController() {
-        return targetController;
+    public TargetContext getTargetContext() {
+        return targetContext;
     }
 
     protected abstract Pane createIndicatorPane();

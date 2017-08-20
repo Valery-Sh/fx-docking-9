@@ -97,12 +97,12 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of getNodeIndicator method, of class DockPaneController.
+     * Test of getNodeIndicator method, of class DockPaneContext.
      */
     @Test
     public void testGetNodeIndicator() {
         System.out.println("getNodeIndicator");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         SideIndicator.NodeSideIndicator expResult = null;
         SideIndicator.NodeSideIndicator result = instance.getNodeIndicator();
         assertEquals(expResult, result);
@@ -111,12 +111,12 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of createIndicatorPopup method, of class DockPaneController.
+     * Test of createIndicatorPopup method, of class DockPaneContext.
      */
     @Test
     public void testCreateIndicatorPopup() {
         System.out.println("createIndicatorPopup");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         IndicatorPopup expResult = null;
         IndicatorPopup result = instance.createIndicatorPopup();
         assertEquals(expResult, result);
@@ -125,12 +125,12 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of createNodeIndicator method, of class DockPaneController.
+     * Test of createNodeIndicator method, of class DockPaneContext.
      */
     @Test
     public void testCreateNodeIndicator() {
         System.out.println("createNodeIndicator");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         SideIndicator.NodeSideIndicator expResult = null;
         SideIndicator.NodeSideIndicator result = instance.createNodeIndicator();
         assertEquals(expResult, result);
@@ -139,12 +139,12 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of createPositionIndicator method, of class DockPaneController.
+     * Test of createPositionIndicator method, of class DockPaneContext.
      */
     @Test
     public void testCreatePositionIndicator() {
         System.out.println("createPositionIndicator");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         PositionIndicator expResult = null;
         PositionIndicator result = instance.createPositionIndicator();
         assertEquals(expResult, result);
@@ -153,27 +153,27 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of getDockExecutor method, of class DockPaneController.
+     * Test of getDockExecutor method, of class DockPaneContext.
      */
     @Test
     public void testGetDockExecutor() {
         System.out.println("getDockExecutor");
-        DockPaneController instance = null;
-        DockPaneController.DockExecutor expResult = null;
-        DockPaneController.DockExecutor result = instance.getDockExecutor();
+        DockPaneContext instance = null;
+        DockPaneContext.DockExecutor expResult = null;
+        DockPaneContext.DockExecutor result = instance.getDockExecutor();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of isDocked method, of class DockPaneController.
+     * Test of isDocked method, of class DockPaneContext.
      */
     @Test
     public void testIsDocked() {
         System.out.println("isDocked");
         Node node = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         boolean expResult = false;
         boolean result = instance.isDocked(node);
         assertEquals(expResult, result);
@@ -182,28 +182,28 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of dock method, of class DockPaneController.
+     * Test of dock method, of class DockPaneContext.
      */
     @Test
     public void testDock_Point2D_Dockable() {
         System.out.println("dock");
         Point2D mousePos = null;
         Dockable dockable = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         instance.dock(mousePos, dockable);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of doDock method, of class DockPaneController.
+     * Test of doDock method, of class DockPaneContext.
      */
     @Test
     public void testDoDock() {
         System.out.println("doDock");
         Point2D mousePos = null;
         Node node = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         boolean expResult = false;
         boolean result = instance.doDock(mousePos, node);
         assertEquals(expResult, result);
@@ -212,21 +212,21 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of dock method, of class DockPaneController.
+     * Test of dock method, of class DockPaneContext.
      */
     @Test
     public void testDock_Dockable_Object() {
         System.out.println("dock");
         Dockable dockable = null;
         Object pos = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         //instance.dock(dockable, pos);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of dock method, of class DockPaneController.
+     * Test of dock method, of class DockPaneContext.
      */
     @Test
     public void testDock_3args() {
@@ -234,32 +234,32 @@ public class DockPaneControllerTest {
         Dockable dockNode = null;
         Side side = null;
         Dockable target = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         instance.dock(dockNode, side, target);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of remove method, of class DockPaneController.
+     * Test of remove method, of class DockPaneContext.
      */
     @Test
     public void testRemove() {
         System.out.println("remove");
         Node dockNode = null;
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         instance.remove(dockNode);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getDockTreeTemBuilder method, of class DockPaneController.
+     * Test of getDockTreeTemBuilder method, of class DockPaneContext.
      */
     @Test
     public void testGetPreferencesBuilder() {
         System.out.println("getPreferencesBuilder");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         DockTreeItemBuilder expResult = null;
         DockTreeItemBuilder result = instance.getDockTreeTemBuilder();
         assertEquals(expResult, result);
@@ -268,12 +268,12 @@ public class DockPaneControllerTest {
     }
 
     /**
-     * Test of getDockables method, of class DockPaneController.
+     * Test of getDockables method, of class DockPaneContext.
      */
     @Test
     public void testGetDockables() {
         System.out.println("getDockables");
-        DockPaneController instance = null;
+        DockPaneContext instance = null;
         ObservableList<Dockable> expResult = null;
         ObservableList<Dockable> result = instance.getDockables();
         assertEquals(expResult, result);
@@ -283,7 +283,7 @@ public class DockPaneControllerTest {
     @Test
     public void testPreferencesBuilder_build_1() {
         System.out.println("PreferencesBuilder_build");
-        DockPaneController instance = (DockPaneController) dockPane2.targetController();
+        DockPaneContext instance = (DockPaneContext) dockPane2.getTargetContext();
         TreeItem<Pair<ObjectProperty, Properties>> expResult = null;
 /*        TreeItem<Pair<ObjectProperty, Properties>> result = instance.getDockTreeTemBuilder().build(dockPane2);
         assertNotNull(result);
@@ -299,7 +299,7 @@ public class DockPaneControllerTest {
     @Test
     public void testPreferencesBuilder_restoreFrom_1() {
         System.out.println("PreferencesBuilder_restoreFrom");
-        DockPaneController instance = (DockPaneController) dockPane2.targetController();
+        DockPaneContext instance = (DockPaneContext) dockPane2.getTargetContext();
         TreeItem<Pair<ObjectProperty, Properties>> expResult = null;
 /*        TreeItem<Pair<ObjectProperty, Properties>> result = instance.getDockTreeTemBuilder().xmlBuild(dockPane2);
         assertNotNull(result);

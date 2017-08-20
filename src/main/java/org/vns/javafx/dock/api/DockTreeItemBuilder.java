@@ -10,12 +10,12 @@ import javafx.scene.control.TreeItem;
  * object of type {@code javafx.scene.control.TreeItem} and vice versa.
  *
  * Each class that inherits the
- * {@link org.vns.javafx.dock.api.DockTargetController}} provides a class object
+ * {@link org.vns.javafx.dock.api.TargetContext}} provides a class object
  * that implements this interface. The object is accessed using the following
- * method of the class {@code DockTargetController}:
+ * method of the class {@code TargetContext}:
  * <pre>
  *  public DockTreeItemBuilder getPreferencesBuilder()
- * </pre> In the {@code DockTargetController} class, the method returns
+ * </pre> In the {@code TargetContext} class, the method returns
  * {@code null}.
  *
  * @author Valery Shyshkin

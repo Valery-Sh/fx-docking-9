@@ -1,9 +1,7 @@
 package org.vns.javafx.dock.api.demo;
 
-
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -24,7 +22,7 @@ public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
-        dockPane.targetController().setDragType(DragType.DRAG_AND_DROP);
+        dockPane.getTargetContext().setDragType(DragType.DRAG_AND_DROP);
         //dockPane.addEventHandler( new );
         dockPane.setId("DOCK PANE");
         
@@ -44,7 +42,7 @@ public class TestDockNodeControl extends Application {
         
         b1.setOnAction(a->{
             if ( custom.getTitleBar() == null ) {
-                //custom.dockableController().createDefaultTitleBar("Now Not Null");
+                //custom.getDockableContext().createDefaultTitleBar("Now Not Null");
             } else {
                 //custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
@@ -64,7 +62,7 @@ public class TestDockNodeControl extends Application {
         
         p1.setId("pane p1");
         DockUtil.print(dockPane);
-        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).getDockableContext().setTitle("Pane p1");
         Scene scene = new Scene(dockPane);
         
         stage.setTitle("JavaFX and Maven");

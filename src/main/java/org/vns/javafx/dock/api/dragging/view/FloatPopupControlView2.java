@@ -26,6 +26,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -42,13 +43,13 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
     @Override
     public Window make(Dockable dockable, boolean show) {
 
-        Region node = dockable.node();
+        Node node = dockable.node();
 
         Point2D screenPoint = node.localToScreen(0, 0);
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
         }
-        Node titleBar = dockable.dockableController().getTitleBar();
+        Node titleBar = dockable.getDockableContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
@@ -100,8 +101,8 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
 
         //floatPopup.setX(stagePosition.getX() - insetsDelta.getLeft());
         //floatPopup.setY(stagePosition.getY() - insetsDelta.getTop());
-        floatPopup.setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        floatPopup.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        floatPopup.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        floatPopup.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
         //
         // We must prevent the window to end up positioning off the screen
         //
@@ -109,8 +110,8 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
 
-        double prefWidth = borderPane.prefWidth(node.getHeight()) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(node.getWidth()) + insetsHeight;
+        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);

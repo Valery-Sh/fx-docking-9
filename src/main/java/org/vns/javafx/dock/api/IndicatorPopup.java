@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -18,7 +17,7 @@ import org.vns.javafx.dock.DockUtil;
 
 /**
  * An instance of the class is created for each object of type
- * {@link DockTargetController} when the last is created.
+ * {@link TargetContext} when the last is created.
  *
  * The instance of the class is used by the object of type {@link DragManager}
  * and provides a pop up window in which the user can select a position on the
@@ -73,7 +72,7 @@ public class IndicatorPopup extends Popup {
     /**
      * The owner of this object
      */
-    private final DockTargetController targetController;
+    private final TargetContext targetContext;
 
     /**
      * Creates a new instance for the specified pane handler.
@@ -81,11 +80,11 @@ public class IndicatorPopup extends Popup {
      * @param target the owner of the object to be created
      */
     public IndicatorPopup(DockTarget target) {
-        this.targetController = target.targetController();
+        this.targetContext = target.getTargetContext();
         init();
     }
-    public IndicatorPopup(DockTargetController target) {
-        this.targetController = target;
+    public IndicatorPopup(TargetContext target) {
+        this.targetContext = target;
         init();
     }
 
@@ -118,19 +117,9 @@ public class IndicatorPopup extends Popup {
         
         super.show(ownerWindow, anchorX, anchorY);
         
-/*        System.err.println("SHOW " + this);
-        System.err.println("   --- property = " + this.getProperties().get("POPUP"));        
-        System.err.println("   --- SHOW owner=" + ownerWindow);
-        System.err.println("       --- property = " + ownerWindow.getProperties().get("POPUP"));        
-  */      
         if (((IndicatorPopup)ownerWindow).getChildWindows().contains(this)) {
-//            System.err.println("   --- SHOW 1");
-            
             return;
         }
-//        System.err.println("   --- SHOW 2");
-
-        //check((IndicatorPopup) ownerWindow);
         ((IndicatorPopup)ownerWindow).getChildWindows().add(this);
     }
     
@@ -157,9 +146,6 @@ public class IndicatorPopup extends Popup {
     public void hide() {
         if (getOwnerWindow() instanceof IndicatorPopup) {
             IndicatorPopup p = (IndicatorPopup) getOwnerWindow();
-            if (p.getChildWindows().contains(this)) {
-                //p.getChildWindows().remove(this);
-            }
         }
         super.hide();
 
@@ -175,25 +161,34 @@ public class IndicatorPopup extends Popup {
      *
      * @return Returns an object of type {@code Region}
      */
-    public Region getTargetNode() {
-        return targetController.getTargetNode();
+    public Node getTargetNode() {
+        return targetContext.getTargetNode();
     }
 
     protected void initContent() {
 
-        //12.05
-        if (targetController.getPositionIndicator() == null || targetController.getPositionIndicator().getIndicatorPane() == null) {
+        if (targetContext.getPositionIndicator() == null || targetContext.getPositionIndicator().getIndicatorPane() == null) {
             return;
         }
-        //end 12.05
-        Pane indicatorPane = targetController.getPositionIndicator().getIndicatorPane();
+        Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
+        
+        if (getTargetNode() instanceof Region) {
+            indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+            indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+
+            indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+            indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+        } else {
+            getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
+                indicatorPane.setPrefHeight(newValue.getHeight());
+                indicatorPane.setPrefWidth(newValue.getWidth());
+                indicatorPane.setMinHeight(newValue.getHeight());
+                indicatorPane.setMinWidth(newValue.getWidth());
+
+            });
+        }
         indicatorPane.setMouseTransparent(true);
 
-        indicatorPane.prefHeightProperty().bind(getTargetNode().heightProperty());
-        indicatorPane.prefWidthProperty().bind(getTargetNode().widthProperty());
-
-        indicatorPane.minHeightProperty().bind(getTargetNode().heightProperty());
-        indicatorPane.minWidthProperty().bind(getTargetNode().widthProperty());
 
         getContent().add(indicatorPane);
     }
@@ -217,12 +212,12 @@ public class IndicatorPopup extends Popup {
 
     /**
      * Returns an object of type {@link PositionIndicator} to display indicators
-     * for an object of type {@link DockPaneController}.
+     * for an object of type {@link DockPaneContext }
      *
      * @return Returns an object of type {@code PositionIndicator}
      */
     public PositionIndicator getPositionIndicator() {
-        return targetController.getPositionIndicator();
+        return targetContext.getPositionIndicator();
     }
 
     /**
@@ -230,8 +225,8 @@ public class IndicatorPopup extends Popup {
      *
      * @return the owner of this object used when the instance created.
      */
-    public DockTargetController getTargetController() {
-        return this.targetController;
+    public TargetContext getTargetContext() {
+        return this.targetContext;
     }
 
     /**
@@ -302,7 +297,7 @@ public class IndicatorPopup extends Popup {
      * proposed dock place
      */
     public Node getDockPlace() {
-        return targetController.getPositionIndicator().getDockPlace();
+        return targetContext.getPositionIndicator().getDockPlace();
     }
 
 }

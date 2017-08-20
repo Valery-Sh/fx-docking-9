@@ -96,7 +96,7 @@ public class TestPaneSizes1 extends Application {
             
         });
         // 1. setStyle("-fx-padding: 10")
-        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).getDockableContext().setTitle("Pane p1");
         
         
         scene.setFill(null);                

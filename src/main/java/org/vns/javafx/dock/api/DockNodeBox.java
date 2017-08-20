@@ -11,17 +11,17 @@ import javafx.scene.layout.VBox;
  */
 public class DockNodeBox  extends VBox implements Dockable{
     
-    DockableController dockableController = new DockableController(this);
+    DockableContext dockableContext = new DockableContext(this);
     
     public DockNodeBox() {
         init();
     }
     private void init() {
         //09.02Region titleBar = new DockTitleBar(this);
-        Region titleBar = dockableController.createDefaultTitleBar("");
+        Region titleBar = dockableContext.createDefaultTitleBar("");
         getChildren().add(titleBar);
-        dockableController.setTitleBar(titleBar);
-        dockableController.titleBarProperty().addListener(this::titlebarChanged);
+        dockableContext.setTitleBar(titleBar);
+        dockableContext.titleBarProperty().addListener(this::titlebarChanged);
         getStyleClass().add("dock-node");
     }
     @Override
@@ -30,16 +30,16 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     public String getTitle() {
-        return dockableController.getTitle();
+        return dockableContext.getTitle();
     }
 
     public void setTitle(String title) {
-        dockableController.setTitle(title);
+        dockableContext.setTitle(title);
     }
 
 
     public void setDragNode(Node dragSource) {
-        dockableController.setDragNode(dragSource);
+        dockableContext.setDragNode(dragSource);
     }
     @Override
     public Region node() {
@@ -47,8 +47,8 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     @Override
-    public DockableController dockableController() {
-        return dockableController;
+    public DockableContext getDockableContext() {
+        return dockableContext;
     }
     
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {

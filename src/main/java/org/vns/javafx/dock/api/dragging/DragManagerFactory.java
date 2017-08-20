@@ -15,7 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
-import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragManager;
 
@@ -27,7 +27,7 @@ public class DragManagerFactory {
     
     public DragManager getDragManager(Dockable dockable) {
         DragManager retval = null;
-        DockTargetController dtc = dockable.dockableController().getTargetController();
+        TargetContext dtc = dockable.getDockableContext().getTargetContext();
         if ( dtc != null  ) {
             if ( dtc.getDragType() == DragType.SIMPLE ) {
                 retval = new SimpleDragManager(dockable);

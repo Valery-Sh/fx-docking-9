@@ -1,6 +1,6 @@
 package org.vns.javafx.dock.api;
 
-import javafx.scene.layout.Region;
+import javafx.scene.Node;
 
 /**
  * The interface comprises the minimal requirements for an object which
@@ -23,18 +23,18 @@ public interface DockTarget {
      * 
      * @return an object of type {@code javafx.scene.layout.Region}
      */
-    Region target();
+    Node target();
     /**
      * Returns an object which provides a state and behavior of the target panel 
      * during a docking process. In contrast to the {@link Dockable} interface where
-     * a single class of type {@link DockableController} may be used for various
+     * a single class of type {@link DockableContext} may be used for various
      * implementations of the {@code Dockable} the method as a rule returns a 
      * an instance of specific  class depending on the target functionality.
      * For example, all such classes as {@code DockPane, DockSideBar, 
      * DockTabpane, DockTabPane2} provide their  own implementations of the class
-     * {@code DockTargetController}.
+     * {@code DockableContext}.
      * 
-     * @return an object of type {@link DockTargetController}
+     * @return an object of type {@link TargetContext}
      */    
-    DockTargetController targetController();
+    TargetContext getTargetContext();
 }

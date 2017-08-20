@@ -98,7 +98,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
         // 2. The method getDefaultDockables now contains only those dockable
         //    objects which are not childs of some DockTarget
         //
-        TreeItem<Properties> it1 = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).targetController()
+        TreeItem<Properties> it1 = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).getTargetContext()
                 .getDockTreeTemBuilder().build("dockTabPane1");
         System.err.println("------------- +++++++++++++++++++++++++++++++++++");
         test(it1);
@@ -367,7 +367,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
                 it.getValue().put(OBJECT_ATTR, getRegistered().get(fieldName));
             }
         }
-        dockTarget.targetController().getDockTreeTemBuilder().restore(item);
+        dockTarget.getTargetContext().getDockTreeTemBuilder().restore(item);
         return item;
     }
 

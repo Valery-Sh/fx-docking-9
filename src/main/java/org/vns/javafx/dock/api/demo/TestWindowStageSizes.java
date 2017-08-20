@@ -115,7 +115,7 @@ public class TestWindowStageSizes extends Application {
 
 ///////////////////////////////////////////////////////
         // 1. setStyle("-fx-padding: 10")
-        //dockPane.dock(p1, Side.TOP).dockableController().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).getDockableContext().setTitle("Pane p1");
         //scene.setFill(Color.rgb(0, 0, 0, 1d / 255d));
         scene.setFill(null);
         stage.setTitle("Stage Dimentions");

@@ -39,11 +39,11 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  *
  * The objects of typo {@code Dockable} can have a title bar. It is an object of
  * type {@code Region}, which is assigned by calling the method 
- * DockableController.setTitleBar(javafx.scene.layout.Region)  or by
- * applying the method DockableController.createDefaultTitleBar(java.lang.String). 
- * The title bar object automatically becomes a listener of mouse events by
- * executing the code below:
- * <pre>
+ DockableContext.setTitleBar(javafx.scene.layout.Region)  or by
+ applying the method DockableContext.createDefaultTitleBar(java.lang.String). 
+ The title bar object automatically becomes a listener of mouse events by
+ executing the code below:
+ <pre>
  *   titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED,  this);
  *   titleBar.addEventHandler(MouseEvent.DRAG_DETECTED,  this);
  *   titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED,  this);
@@ -51,8 +51,8 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  * </pre> Thus, if the object of type {@code Dockable} has a title bar and it is
  * visible on screen, then it can be used to perform mouse dragging.
  * <p>
- * The object of type {@code Dockable} has a method DockableController#setDragNode(javafx.scene.Node)
- * . The {@code Node } which has been set by the method may be used to drag the
+ * The object of type {@code Dockable} has a method DockableContext#setDragNode(javafx.scene.Node)
+ . The {@code Node } which has been set by the method may be used to drag the
  * {@literal dockable} in the same manner as the title bar is used. Thus, both
  * objects, such as a title bar and a drag node can be used to perform dragging.
  *
@@ -205,13 +205,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         this.startMousePos = startMousePos;
         this.dragSource = (Node) ev.getSource();
         
-        if (!dockable.dockableController().isFloating()) {
+        if (!dockable.getDockableContext().isFloating()) {
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             FloatView view = FloatViewFactory.getInstance().getFloatView(this);
             view.make(dockable);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            dockable.dockableController().setFloating(true);
+            dockable.getDockableContext().setFloating(true);
 
         } else {
             System.err.println("FLOATING !!!");
@@ -243,7 +243,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             ev.consume();
             return;
         }
-        if (!dockable.dockableController().isFloating()) {
+        if (!dockable.getDockableContext().isFloating()) {
             return;
         }
         //
@@ -301,13 +301,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).targetController().isAcceptable(dockable.node())) {
+        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(dockable.node())) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).targetController().isUsedAsDockTarget()) {
+        if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
-        IndicatorPopup newPopup = DockRegistry.dockTarget(root).targetController().getIndicatorPopup();
+        IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -358,12 +358,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
         if (popup != null && popup.isShowing()) {
-            popup.getTargetController().dock(pt, dockable);
+            popup.getTargetContext().dock(pt, dockable);
         } else if (popup != null && popup.getPositionIndicator() == null) {
             //
             // We use default indicatorPopup without position indicator
             //
-            popup.getTargetController().dock(pt, dockable);
+            popup.getTargetContext().dock(pt, dockable);
         }
 
         if (popup != null && popup.isShowing()) {
@@ -377,7 +377,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     /*    protected void setFloating(boolean floating) {
-        dockable.dockableController().setFloating(true);
+        dockable.getDockableContext().setFloating(true);
     }
      */
     protected Node getFloatingWindowRoot() {

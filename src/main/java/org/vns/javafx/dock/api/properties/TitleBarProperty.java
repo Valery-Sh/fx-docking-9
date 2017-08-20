@@ -37,7 +37,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         ownerWrapper.set(owner);
         init();
     }
-    public TitleBarProperty(Region owner) {
+    public TitleBarProperty(Node owner) {
         super();
         //ownerWrapper.set(owner);
         init();
@@ -106,7 +106,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                DockRegistry.dockable(f).dockableController().titleBarProperty().setActiveChoosedPseudoClass(false);
+                DockRegistry.dockable(f).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
@@ -115,7 +115,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                //DockRegistry.dockable(f).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                //DockRegistry.dockable(f).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         }
     }

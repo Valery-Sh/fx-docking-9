@@ -71,7 +71,7 @@ public interface DragManager { //extends EventHandler<MouseEvent> {
      * The method is called when the the drag-detected event is generated once
      * after the mouse is dragged. The method checks whether the
      * {@code dockable} objects is in a floating state and if not invokes the
-     * method {@link DockableController#setFloating(boolean) } with an argument
+     * method {@link DockableContext#setFloating(boolean) } with an argument
      * set to {@code true}.
      *
      * @param ev the event that describes the mouse events.

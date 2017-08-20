@@ -13,13 +13,13 @@ import javafx.scene.layout.Pane;
  *
  * @author Valery Shyshkin
  */
-public class ScenePaneController extends DockTargetController {
+public class ScenePaneContext extends TargetContext {
 
     private final Dockable dockable;
 
     private ChangeListener<? super Parent> parentListener;
 
-    public ScenePaneController(Dockable dockable) {
+    public ScenePaneContext(Dockable dockable) {
         super(dockable);
         this.dockable = dockable;
         init();

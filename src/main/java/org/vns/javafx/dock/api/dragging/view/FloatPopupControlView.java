@@ -27,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -43,7 +44,7 @@ public class FloatPopupControlView extends FloatStageView {
     @Override
     public Window make(Dockable dockable, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
-        Region node = dockable.node();
+        Node node = dockable.node();
         Window owner = null;
         if ( (node.getScene() == null || node.getScene().getWindow() == null) ) {
             return null;
@@ -55,25 +56,25 @@ public class FloatPopupControlView extends FloatStageView {
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
         }
-        Node titleBar = dockable.dockableController().getTitleBar();
+        Node titleBar = dockable.getDockableContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
 
-        if (dockable.dockableController().isDocked() && dockable.dockableController().getTargetController().getTargetNode() != null) {
-            Window w = dockable.dockableController().getTargetController().getTargetNode().getScene().getWindow();
+        if (dockable.getDockableContext().isDocked() && dockable.getDockableContext().getTargetContext().getTargetNode() != null) {
+            Window w = dockable.getDockableContext().getTargetContext().getTargetNode().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 setSupportedCursors(DEFAULT_CURSORS);
                 setRootPane((Pane) dockable.node().getScene().getRoot());
                 markFloating(dockable.node().getScene().getWindow());
-                dockable.dockableController().getTargetController().undock(dockable.node());
+                dockable.getDockableContext().getTargetContext().undock(dockable.node());
                 return getFloatingWindow();
             }
         }
 
-        if (dockable.dockableController().isDocked()) {
-            dockable.dockableController().getTargetController().undock(dockable.node());
+        if (dockable.getDockableContext().isDocked()) {
+            dockable.getDockableContext().getTargetContext().undock(dockable.node());
         }
 
         final PopupControl floatPopup = new PopupControl();
@@ -128,11 +129,11 @@ public class FloatPopupControlView extends FloatStageView {
         floatPopup.setX(stagePosition.getX() - insetsDelta.getLeft());
         floatPopup.setY(stagePosition.getY() - insetsDelta.getTop());
 
-        floatPopup.setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        floatPopup.setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        floatPopup.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        floatPopup.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 
-        double prefWidth = borderPane.prefWidth(node.getHeight()) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(node.getWidth()) + insetsHeight;
+        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
@@ -164,8 +165,8 @@ public class FloatPopupControlView extends FloatStageView {
 
     @Override
     public void addResizer() {
-        //if (getDockable().dockableController().isResizable()) {
-            removeListeners(getDockable().dockableController().dockable());
+        //if (getDockable().getDockableContext().isResizable()) {
+            removeListeners(getDockable().getDockableContext().dockable());
             addListeners(getFloatingWindow());
 
         //}

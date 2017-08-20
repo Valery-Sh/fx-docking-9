@@ -87,7 +87,7 @@ public class TestFxDockTabPane  extends Application {
         
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         DockPane stg01dp01 = new DockPane();
-        //stg01dp01.targetController().setUsedAsDockTarget(false);
+        //stg01dp01.getTargetContext().setUsedAsDockTarget(false);
         stg01dp01.setPrefHeight(200);
         stg01dp01.setPrefWidth(200);
         stg01dp01.setId("stg01dp01");
@@ -144,15 +144,15 @@ public class TestFxDockTabPane  extends Application {
         //tbRect.getStyleClass().add("drag-button");
         //tbIv.getStyleClass().add("drag-image-view");
         
-        //tabPane01.dockableController().setDragNode(tbIv);
+        //tabPane01.getDockableContext().setDragNode(tbIv);
         //tabPane01.getChildren().add(tbIv);
         //tbIv.toFront();
         //tbIv.setTranslateX(-5);
         //tbIv.setTranslateY(-5);
         
         
-        //tabPane01.targetController().dock(stg01dn02, Side.TOP);
-        //tabPane01.targetController().dock(stg01dn03, Side.TOP);        
+        //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
+        //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
         stg01dp01.dock(tabPane01, Side.TOP);
         //stg01dp01.dock(dockPane, Side.T);
         

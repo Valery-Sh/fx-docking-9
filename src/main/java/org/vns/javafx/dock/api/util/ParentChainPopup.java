@@ -175,7 +175,7 @@ public class ParentChainPopup {
     protected String getText(Node node) {
         String txt;//
         if (DockRegistry.instanceOfDockTarget(node)) {
-            txt = DockRegistry.dockTarget(node).targetController().getTitle();
+            txt = DockRegistry.dockTarget(node).getTargetContext().getTitle();
             return txt;
 
         } else if (DockRegistry.instanceOfDockable(node)) {
@@ -187,11 +187,11 @@ public class ParentChainPopup {
     }
 
     protected String getButtonText(Dockable d) {
-        String txt = d.dockableController().getTitle();
-        if (d.dockableController().getProperties().getProperty("user-title") != null) {
-            txt = d.dockableController().getProperties().getProperty("user-title");
-        } else if (d.dockableController().getProperties().getProperty("short-title") != null) {
-            txt = d.dockableController().getProperties().getProperty("short-title");
+        String txt = d.getDockableContext().getTitle();
+        if (d.getDockableContext().getProperties().getProperty("user-title") != null) {
+            txt = d.getDockableContext().getProperties().getProperty("user-title");
+        } else if (d.getDockableContext().getProperties().getProperty("short-title") != null) {
+            txt = d.getDockableContext().getProperties().getProperty("short-title");
         }
         if (txt == null || txt.trim().isEmpty()) {
             txt = "Dockable";

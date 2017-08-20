@@ -375,7 +375,7 @@ public class DockRegistry {
         }
         dockables.put(dockable.node(), dockable);
         if (dockable.node().getParent() != null) {
-            dockable.dockableController().getTargetController().setTargetNode((Region) dockable.node().getParent());
+            dockable.getDockableContext().getTargetContext().setTargetNode((Region) dockable.node().getParent());
         }
 
     }
@@ -389,7 +389,7 @@ public class DockRegistry {
         }
         dockTargets.put(dockTarget.target(), dockTarget);
         if (dockTarget.target().getParent() != null) {
-            //dockable.dockableController().getTargetController().setTargetNode((Region) dockTarget.node().getParent());
+            //dockable.getDockableContext().getTargetContext().setTargetNode((Region) dockTarget.node().getParent());
         }
 
     }
@@ -404,7 +404,7 @@ public class DockRegistry {
         Dockable d = new DefaultDockable((Region) node);
         dockables.put(node, d);
         if (d.node().getParent() != null) {
-            d.dockableController().getTargetController().setTargetNode((Region) d.node().getParent());
+            d.getDockableContext().getTargetContext().setTargetNode((Region) d.node().getParent());
         }
         return d;
     }
@@ -454,7 +454,7 @@ public class DockRegistry {
     public static class DefaultDockable implements Dockable {
 
         private final Region node;
-        private DockableController nodeHandler;
+        private DockableContext nodeHandler;
 
         public DefaultDockable(Region node) {
             this.node = node;
@@ -462,7 +462,7 @@ public class DockRegistry {
         }
 
         private void init() {
-            nodeHandler = new DockableController(this);
+            nodeHandler = new DockableContext(this);
         }
 
         @Override
@@ -471,7 +471,7 @@ public class DockRegistry {
         }
 
         @Override
-        public DockableController dockableController() {
+        public DockableContext getDockableContext() {
             return nodeHandler;
         }
 

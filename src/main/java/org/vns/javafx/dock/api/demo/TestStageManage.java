@@ -36,9 +36,9 @@ import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockStateLoader;
-import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *

@@ -52,7 +52,7 @@ public class NodeTree {
         return r;        
     }
     public Object getItem(Node node) {
-        String value = DockRegistry.dockTarget(node).targetController().getTitle();
+        String value = DockRegistry.dockTarget(node).getTargetContext().getTitle();
         TreeItem item = new TreeItem(value);
         return item;
     }

@@ -34,13 +34,13 @@ public class DemoDockablePane extends Application {
         StackPane dockablePane = new StackPane(dockButton);
                 
         Dockable dockableButton = DockRegistry.getInstance().getDefaultDockable(dockablePane);
-        dockableButton.dockableController().setDragNode(dockButton);
+        dockableButton.getDockableContext().setDragNode(dockButton);
         
         Button dockButton1 = new Button("To be docked 2");        
         StackPane dockablePane1 = new StackPane(dockButton1);
         
         Dockable dockableButton1 = DockRegistry.getInstance().getDefaultDockable(dockablePane1);
-        dockableButton1.dockableController().setDragNode(dockButton1);
+        dockableButton1.getDockableContext().setDragNode(dockButton1);
         
         root.getChildren().addAll(dockablePane, dockablePane1);
 

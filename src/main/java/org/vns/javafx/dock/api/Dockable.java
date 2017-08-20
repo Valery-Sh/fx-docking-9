@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api;
 
 import com.sun.javafx.css.StyleManager;
 import java.net.URL;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 
 /**
@@ -22,14 +23,14 @@ public interface Dockable {
      * 
      * @return an object of type {@code javafx.scene.layout.Region}
      */
-    Region node();
+    Node node();
     /**
      * Returns an object which provides a state and behavior during 
      * docking process.
      * 
-     * @return an object of type {@link DockableController}
+     * @return an object of type {@link DockableContext}
      */
-    DockableController dockableController();
+    DockableContext getDockableContext();
     
     /**
      * Initialize default {@code css} styles for all components of the docking api.

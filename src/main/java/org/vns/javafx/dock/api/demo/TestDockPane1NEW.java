@@ -84,7 +84,7 @@ public class TestDockPane1NEW extends Application {
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
         vs1.getItems().addAll(hs1, dnc3);
-        //TreeItem<PreferencesItem> items = dockPane1.targetController().getPreferencesBuilder().build(dockPane1);
+        //TreeItem<PreferencesItem> items = dockPane1.getTargetContext().getPreferencesBuilder().build(dockPane1);
 //        String s = loader.toString(dockPane1);
 //        System.err.print(s);
         
@@ -157,7 +157,7 @@ public class TestDockPane1NEW extends Application {
         });
 
         //cc.setRoot(vs1);
-        //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
+        //System.err.println("dn1 isDocked()=" + dn1.getDockableContext().isDocked());
         root.getChildren().add(dockPane1);
 
         scene = new Scene(root, 250, 250);

@@ -17,7 +17,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PositionIndicator;
 
@@ -28,7 +28,7 @@ import org.vns.javafx.dock.api.PositionIndicator;
 public class DockBorderPane extends BorderPane implements DockTarget {
 
     //private BorderPane targetPane;
-    private DockTargetController targetController;
+    private TargetContext targetContext;
 
     public DockBorderPane() {
     }
@@ -39,16 +39,16 @@ public class DockBorderPane extends BorderPane implements DockTarget {
     }
 
     @Override
-    public DockTargetController targetController() {
-        if (targetController == null) {
-            targetController = new DockBorderPaneController(this);
+    public TargetContext getTargetContext() {
+        if (targetContext == null) {
+            targetContext = new DockBorderPaneContext(this);
         }
-        return targetController;
+        return targetContext;
     }
 
-    public class DockBorderPaneController extends DockTargetController {
+    public class DockBorderPaneContext extends TargetContext {
 
-        public DockBorderPaneController(Region dockPane) {
+        public DockBorderPaneContext(Region dockPane) {
             super(dockPane);
         }
 
@@ -116,13 +116,13 @@ public class DockBorderPane extends BorderPane implements DockTarget {
 
     public static class BorderPanePositionIndicator extends PositionIndicator {
 
-        public BorderPanePositionIndicator(DockTargetController targetController) {
-            super(targetController);
+        public BorderPanePositionIndicator(TargetContext targetContext) {
+            super(targetContext);
         }
 
         @Override
         protected Pane createIndicatorPane() {
-            BorderPane borderPane = (BorderPane) getTargetController().getTargetNode();
+            BorderPane borderPane = (BorderPane) getTargetContext().getTargetNode();
             Label topNode = new Label("Top");
             Label rightNode = new Label("Right");
             Label bottomNode = new Label("Bottom");
@@ -171,7 +171,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
         public void showDockPlace(double x, double y) {
 
             boolean visible = true;
-            BorderPane target = (BorderPane) getTargetController().getTargetNode();
+            BorderPane target = (BorderPane) getTargetContext().getTargetNode();
 
             BorderPane bp = (BorderPane) getIndicatorPane();
 

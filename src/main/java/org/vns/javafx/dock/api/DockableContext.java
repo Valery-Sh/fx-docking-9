@@ -23,27 +23,27 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
  * provides a means to change the state. Any object that implements the
- * {@link Dockable} interface provides {@link Dockable#dockableController() }
+ * {@link Dockable} interface provides {@link Dockable#getDockableContext() }
  * method that returns an object of this type.
  * <p>
  * To describe the state of an object using multiple properties and methods. An
  * object of type {@code Dockable} is in a <i>docked</i> state, if the method
- * {@link DockableController#isDocked() } returns the true.
+ * {@link DockableContext#isDocked() } returns the true.
  * </p>
  * <p>
  * In the <i>floating</i> state an object of type {@code Dockable} is
- * transformed when the method {@link DockableController#setFloating(boolean)
+ * transformed when the method {@link DockableContext#setFloating(boolean)
  * }
  * is applied to it with the parameter value equals to {#code true}.
  * </p>
  * <p>
  * The {@literal dockable} node may have a title bar. The title bar may be an
  * object of any type that extends {@code javafx.scene.layout.Region }. The
- * class provides the method {@link DockableController#createDefaultTitleBar(java.lang.String)
+ * class provides the method {@link DockableContext#createDefaultTitleBar(java.lang.String)
  * }
  * which create a default title bar of type {@link org.vns.javafx.dock.DockTitleBar
  * }. You can replace it at any time by applying the method 
- * {@link DockableController#setTitleBar(javafx.scene.layout.Region) }. If the
+ * {@link DockableContext#setTitleBar(javafx.scene.layout.Region) }. If the
  * parameter of the method equals to {@code null} then the title bar will be
  * removed.
  * </p>
@@ -51,13 +51,15 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * By default if the {@literal dockable} node has a title bar then the title bar
  * may be used to perform dragging. You can assign any node that is a children
  * of the the {@literal  dockable} node as a drag node by applying the method 
- * {@link DockableController#setDragNode(javafx.scene.Node) }
+ * {@link DockableContext#setDragNode(javafx.scene.Node) }
  * </p>
  *
  * @author Valery Shyshkin
  */
-public class DockableController {
-
+public class DockableContext {
+    
+    private final ContextLookup lookup;
+            
     private final TitleBarProperty<Region> titleBar;
 
     private final StringProperty title = new SimpleStringProperty("");
@@ -72,14 +74,14 @@ public class DockableController {
     //private Node dragNode;
     private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
-    private DockTargetController scenePaneController;
+    private TargetContext scenePaneContext;
 
     private boolean draggable;
 
     /**
      * dock target pane
      */
-    private final ObjectProperty<DockTargetController> targetController = new SimpleObjectProperty<>();
+    private final ObjectProperty<TargetContext> targetContext = new SimpleObjectProperty<>();
 
     private Properties properties;
 
@@ -88,9 +90,10 @@ public class DockableController {
      *
      * @param dockable the object to create an instance for
      */
-    public DockableController(Dockable dockable) {
+    public DockableContext(Dockable dockable) {
         this.dockable = dockable;
         titleBar = new TitleBarProperty(dockable.node());
+        lookup = new DefaultContextLookup();
         init();
     }
 
@@ -100,9 +103,9 @@ public class DockableController {
         //dragManager = initDragManager();
         addShowingListeners();
 
-        scenePaneController = new ScenePaneController(dockable);
-        targetController.set(scenePaneController);
-        targetController.addListener(this::targetControllerChanged);
+        scenePaneContext = new ScenePaneContext(dockable);
+        targetContext.set(scenePaneContext);
+        targetContext.addListener(this::targetContextChanged);
     }
 
     protected void addShowingListeners() {
@@ -225,9 +228,9 @@ public class DockableController {
         this.usedAsDockTarget = usedAsDockTarget;
     }
 
-    protected void targetControllerChanged(ObservableValue<? extends DockTargetController> observable, DockTargetController oldValue, DockTargetController newValue) {
+    protected void targetContextChanged(ObservableValue<? extends TargetContext> observable, TargetContext oldValue, TargetContext newValue) {
         if (newValue == null) {
-            targetController.set(scenePaneController);
+            targetContext.set(scenePaneContext);
         }
     }
 
@@ -282,42 +285,42 @@ public class DockableController {
     }
 
     /**
-     * Specifies a DockTargetController currently assigned to this object. The
-     * controller is assigned to this object when the last is docked. When this
-     * object is created then the value of type {@link ScenePaneController} is
+     * Specifies a TargetContext currently assigned to this object. The
+     * context is assigned to this object when the last is docked. When this
+     * object is created then the value of type {@link ScenePaneContext} is
      * assigned.
      *
-     * @return an object of type {@link DockTargetController }
+     * @return an object of type {@link TargetContext }
      */
-    public ObjectProperty<DockTargetController> targetControllerProperty() {
-        return targetController;
+    public ObjectProperty<TargetContext> targetContextProperty() {
+        return targetContext;
     }
 
     /**
      * Returns an instance of type
-     * {@link org.vns.javafx.dock.api.DockTargetController}. The pane controller
+     * {@link org.vns.javafx.dock.api.TargetContext}. The pane context
      * is assigned to this object when the last is docked. When this object is
-     * created then the value of type {@link ScenePaneController} is assigned.
+     * created then the value of type {@link ScenePaneContext} is assigned.
      *
      * @return an instance of type
-     * {@link org.vns.javafx.dock.api.DockTargetController}.
+     * {@link org.vns.javafx.dock.api.TargetContext}.
      */
-    public DockTargetController getTargetController() {
-        return targetController.get();
+    public TargetContext getTargetContext() {
+        return targetContext.get();
     }
 
     /**
-     * Assigns the specified instance of type {@link DockTargetController }
+     * Assigns the specified instance of type {@link TargetContext }
      * to this object.
      *
-     * @param targetController the value to be assigned
+     * @param targetContext the value to be assigned
      */
-    public void setTargetController(DockTargetController targetController) {
-        this.targetController.set(targetController);
+    public void setTargetContext(TargetContext targetContext) {
+        this.targetContext.set(targetContext);
     }
 
     /**
-     * Returns the instance of type {@link Dockable} that this controller
+     * Returns the instance of type {@link Dockable} that this context
      * belongs to. The value is the same that was used to create this object.
      *
      * @return the instance of type {@link Dockable}
@@ -429,7 +432,7 @@ public class DockableController {
      * @return the new instance of type {@link FloatStageBuilder}
      */
     //public FloatWindowBuilder getStageBuilder() {
-    //07.05 return getTargetController().getStageBuilder(dockable);
+    //07.05 return getTargetContext().getStageBuilder(dockable);
     //    return new FloatWindowBuilder(this);
     //}
     /**
@@ -451,7 +454,7 @@ public class DockableController {
 
     /**
      * Specifies whether a floating window of the node can be resized. The
-     * floating window appears when applying the method {@link DockableController#setFloating(boolean)}
+     * floating window appears when applying the method {@link DockableContext#setFloating(boolean)}
      * }
      * with the parameter value equals to {@code true}.
      *
@@ -466,17 +469,17 @@ public class DockableController {
      * The node considers to be in {@code docked} state when both conditions
      * below are {@code true}.
      * <ul>
-     * <li>getTargetController() != null</li>
-     * <li>getTargetController().isDocked(node)</li>
+     * <li>getTargetContext() != null</li>
+     * <li>getTargetContext().isDocked(node)</li>
      * </ul>
      *
      * @return true if the node is in docked state
      */
     public boolean isDocked() {
-        if (getTargetController() == null) {
+        if (getTargetContext() == null) {
             return false;
         }
-        return getTargetController().isDocked(dockable().node());
+        return getTargetContext().isDocked(dockable().node());
 
     }
 
@@ -514,19 +517,19 @@ public class DockableController {
 
     public class DragDetector implements EventHandler<MouseEvent> {
 
-        private final DockableController dockableController;
+        private final DockableContext dockableContext;
 
         public Point2D startMousePos;
         //private Parent targetDockPane; 
 
-        public DragDetector(DockableController dockableController) {
-            this.dockableController = dockableController;
+        public DragDetector(DockableContext dockableContext) {
+            this.dockableContext = dockableContext;
             init();
         }
 
         private void init() {
 
-            dockableController.titleBarProperty().addListener((ov, oldValue, newValue) -> {
+            dockableContext.titleBarProperty().addListener((ov, oldValue, newValue) -> {
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
@@ -536,7 +539,7 @@ public class DockableController {
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
                 }
             });
-            dockableController.dragNodeProperty().addListener((ov, oldValue, newValue) -> {
+            dockableContext.dragNodeProperty().addListener((ov, oldValue, newValue) -> {
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
@@ -563,20 +566,20 @@ public class DockableController {
                 ev.consume();
                 return;
             }
-            if (!dockable.dockableController().isDraggable()) {
+            if (!dockable.getDockableContext().isDraggable()) {
                 ev.consume();
                 return;
             }
             
             //targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             
-            if (!dockable.dockableController().isFloating()) {
+            if (!dockable.getDockableContext().isFloating()) {
                 DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 //dm.setStartMousePos(startMousePos);
                 dm.dragDetected(ev, startMousePos);
 //                targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
 //                targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
-                dockable.dockableController().setFloating(true);
+                dockable.getDockableContext().setFloating(true);
                 
             } else {
                 System.err.println("FLOATING !!!");
@@ -601,4 +604,4 @@ public class DockableController {
         }
     }//DragDetector
 
-}//DockableController
+}//DockableContext

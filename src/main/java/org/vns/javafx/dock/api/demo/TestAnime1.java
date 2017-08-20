@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *

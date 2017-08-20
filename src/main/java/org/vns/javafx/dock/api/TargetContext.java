@@ -18,10 +18,11 @@ import org.vns.javafx.dock.api.dragging.DragType;
  *
  * @author Valery
  */
-public abstract class DockTargetController {
+public abstract class TargetContext {
 
+    private ContextLookup lookup;
     
-    private Region targetNode;
+    private Node targetNode;
     private String title;
     private PositionIndicator positionIndicator;
     
@@ -41,14 +42,14 @@ public abstract class DockTargetController {
     
     private double resizeMinHeight = -1;
 
-    protected DockTargetController(Region targetNode) {
+    protected TargetContext(Region targetNode) {
         this.targetNode = targetNode;
         init();
     }
 
-    protected DockTargetController(Dockable dockable) {
+    protected TargetContext(Dockable dockable) {
         init();
-        
+        lookup = new DefaultContextLookup();
     }
 
     private void init() {
@@ -156,16 +157,16 @@ public abstract class DockTargetController {
                 return DockRegistry.instanceOfDockable(p);
             });
             if (newNode != null) {
-                DockRegistry.dockable(newNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(newNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
                 return DockRegistry.instanceOfDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
-                DockRegistry.dockable(oldNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !DockRegistry.dockable(oldNode).dockableController().titleBarProperty().isActiveChoosedPseudoClass()) {
-                DockRegistry.dockable(oldNode).dockableController().titleBarProperty().setActiveChoosedPseudoClass(true);
+                DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().isActiveChoosedPseudoClass()) {
+                DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -198,13 +199,13 @@ public abstract class DockTargetController {
         }
 
         if (doDock(mousePos, dockable.node()) && stage != null) {
-            dockable.dockableController().setFloating(false);
+            dockable.getDockableContext().setFloating(false);
             if ( (stage instanceof Stage)) {
                 ((Stage)stage).close();
             } else {
                 stage.hide();
             }
-            dockable.dockableController().setTargetController(this);
+            dockable.getDockableContext().setTargetContext(this);
         }
     }
 
@@ -234,7 +235,7 @@ public abstract class DockTargetController {
     
     public abstract List<Dockable> getDockables();
 
-    public Region getTargetNode() {
+    public Node getTargetNode() {
         return this.targetNode;
     }
 
@@ -248,14 +249,14 @@ public abstract class DockTargetController {
 
     public void undock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
-            DockableController dc = DockRegistry.dockable(node).dockableController();
-            dc.getTargetController().remove(node);
-            dc.setTargetController(null);
+            DockableContext dc = DockRegistry.dockable(node).getDockableContext();
+            dc.getTargetContext().remove(node);
+            dc.setTargetContext(null);
         }
     }
 
     /*07.05    public FloatStageBuilder getStageBuilder(Dockable dockable) {
-        return new FloatStageBuilder(dockable.dockableController());
+        return new FloatStageBuilder(dockable.getDockableContext());
     }
      */
     public abstract void remove(Node dockNode);

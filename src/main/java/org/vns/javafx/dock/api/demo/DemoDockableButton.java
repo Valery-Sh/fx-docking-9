@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *
@@ -33,29 +33,29 @@ public class DemoDockableButton extends Application {
         Button dockButton = new Button("To be docked 1");
         
         Dockable dockableButton = DockRegistry.getInstance().getDefaultDockable(dockButton);
-        dockableButton.dockableController().setDragNode(dockButton);
+        dockableButton.getDockableContext().setDragNode(dockButton);
         
         Button dockButton1 = new Button("To be docked 2");        
         Dockable dockableButton1 = DockRegistry.getInstance().getDefaultDockable(dockButton1);
-        dockableButton1.dockableController().setDragNode(dockButton1);
+        dockableButton1.getDockableContext().setDragNode(dockButton1);
         //
         // Dynamically created Dockable Button
         //
         Button dockButton2 = new Button("To be docked 3");
         Dockable dockableButton2 = new Dockable() {
-            private DockableController c = new DockableController(this);
+            private DockableContext c = new DockableContext(this);
             @Override
             public Region node() {
                 return dockButton2;
             }
 
             @Override
-            public DockableController dockableController() {
+            public DockableContext getDockableContext() {
                 return c;
             }
             
         };
-        dockableButton2.dockableController().setDragNode(dockButton2);
+        dockableButton2.getDockableContext().setDragNode(dockButton2);
         DockRegistry.getInstance().register(dockableButton2);
         //
         //
@@ -63,8 +63,8 @@ public class DemoDockableButton extends Application {
         root.getChildren().addAll(dockButton, dockButton1, dockButton2);
         
 /*        if ( dockButton2.getParent() != null ) {
-            //09.02d.dockableController().getTargetController().changeDockedState(d, true);
-            dockableButton2.dockableController().getTargetController().setTargetNode((Region)dockableButton2.node().getParent());
+            //09.02d.getDockableContext().getTargetContext().changeDockedState(d, true);
+            dockableButton2.getDockableContext().getTargetContext().setTargetNode((Region)dockableButton2.node().getParent());
         }        
 */
         Stage stage1 = new Stage();

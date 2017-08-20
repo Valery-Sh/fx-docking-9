@@ -17,7 +17,7 @@ import org.vns.javafx.dock.DockUtil;
 
 /**
  * An instance of the class is created for each object of type
- * {@link DockTargetController} when the last is created.
+ * {@link TargetContext} when the last is created.
  *
  * The instance of the class is used by the object of type {@link DragManager}
  * and provides a pop up window in which the user can select a position on the
@@ -73,11 +73,7 @@ import org.vns.javafx.dock.DockUtil;
 public class DragPopup extends IndicatorPopup {
 
     /**
-     * The owner of this object
-     */
-    //private final DockTargetController paneController;
-    /**
-     * The pop up window for dock nodes
+     * The popup window for dock nodes
      */
     private IndicatorPopup nodeIndicatorPopup;
     /**
@@ -99,10 +95,10 @@ public class DragPopup extends IndicatorPopup {
     /**
      * Creates a new instance for the specified pane handler.
      *
-     * @param paneController the owner of the object to be created
+     * @param context the owner of the object to be created
      */
-    public DragPopup(DockTargetController paneController) {
-        super(DockRegistry.dockTarget(paneController.getTargetNode()));
+    public DragPopup(TargetContext context) {
+        super(DockRegistry.dockTarget(context.getTargetNode()));
         getProperties().put("POPUP", "Dragpopup = " + this);        
     }
 
@@ -113,24 +109,34 @@ public class DragPopup extends IndicatorPopup {
      * @return Returns an object of type {@code Region}
      */
     @Override
-    public Region getTargetNode() {
-        return getTargetController().getTargetNode();
+    public Node getTargetNode() {
+        return getTargetContext().getTargetNode();
     }
 
     @Override
     protected void initContent() {
-        Pane paneIndicatorPane = getTargetController().getPositionIndicator().getIndicatorPane();
+        Pane paneIndicatorPane = getTargetContext().getPositionIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        Pane nodeIndicatorPane = getTargetController().getNodeIndicator().getIndicatorPane();
+        Pane nodeIndicatorPane = getTargetContext().getNodeIndicator().getIndicatorPane();
         nodeIndicatorPane.setMouseTransparent(true);
 
-        nodeIndicatorPopup = new IndicatorPopup(getTargetController());
+        nodeIndicatorPopup = new IndicatorPopup(getTargetContext());
         nodeIndicatorPopup.getProperties().put("POPUP", "nodeIndicatorPopup");
-        getPaneIndicator().getIndicatorPane().prefHeightProperty().bind(getTargetNode().heightProperty());
-        getPaneIndicator().getIndicatorPane().prefWidthProperty().bind(getTargetNode().widthProperty());
+        if (getTargetNode() instanceof Region) {
+            getPaneIndicator().getIndicatorPane().prefHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+            getPaneIndicator().getIndicatorPane().prefWidthProperty().bind(((Region) getTargetNode()).widthProperty());
 
-        getPaneIndicator().getIndicatorPane().minHeightProperty().bind(getTargetNode().heightProperty());
-        getPaneIndicator().getIndicatorPane().minWidthProperty().bind(getTargetNode().widthProperty());
+            getPaneIndicator().getIndicatorPane().minHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+            getPaneIndicator().getIndicatorPane().minWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+        } else {
+            getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
+                getPaneIndicator().getIndicatorPane().setPrefHeight(newValue.getHeight());
+                getPaneIndicator().getIndicatorPane().setPrefWidth(newValue.getWidth());
+                getPaneIndicator().getIndicatorPane().setMinHeight(newValue.getHeight());
+                getPaneIndicator().getIndicatorPane().setMinWidth(newValue.getWidth());
+
+            });
+        }
         nodeIndicatorPopup.getContent().add(nodeIndicatorPane);
         getContent().add(paneIndicatorPane);
     }
@@ -150,7 +156,7 @@ public class DragPopup extends IndicatorPopup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getPaneIndicator() {
-        return (SideIndicator) getTargetController().getPositionIndicator();
+        return (SideIndicator) getTargetContext().getPositionIndicator();
     }
 
     /**
@@ -160,7 +166,7 @@ public class DragPopup extends IndicatorPopup {
      * @return Returns an object of type {@code SideIndicator}
      */
     public SideIndicator getNodeIndicator() {
-        return (SideIndicator) getTargetController().getNodeIndicator();
+        return (SideIndicator) getTargetContext().getNodeIndicator();
     }
 
     /**
@@ -336,7 +342,7 @@ public class DragPopup extends IndicatorPopup {
         // if the node exists but its property usedAsDockTarge==false then 
         // findDockable returns null
         //
-        Region targetNode = (Region) DockUtil.findDockable(getTargetNode(), screenX, screenY);
+        Node targetNode = DockUtil.findDockable(getTargetNode(), screenX, screenY);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
 
         getPaneIndicator().hideDockPlace();
@@ -402,9 +408,9 @@ public class DragPopup extends IndicatorPopup {
         //dockPos = side;           
         targetPaneSidePos = side;
         getPaneIndicator().showDockPlace(selected, side);
-        Region pane = getTargetNode();
+        Node pane = getTargetNode();
         if (selected != null && selected.getUserData() != null) {
-            pane = ((DockTargetController) selected.getUserData()).getTargetNode();
+            pane = ((TargetContext) selected.getUserData()).getTargetNode();
         }
         dragTarget = pane;
     }
@@ -418,7 +424,7 @@ public class DragPopup extends IndicatorPopup {
      * @param target a dock node which is used as a target to dock
      * @param side the position of the button on the node indicator pane
      */
-    public void showDockPlace(Button selected, Region target, Side side) {
+    public void showDockPlace(Button selected, Node target, Side side) {
         targetNodeSidePos = null;
         if (target == null) {
             return;
@@ -439,7 +445,7 @@ public class DragPopup extends IndicatorPopup {
      */
     @Override
     public Rectangle getDockPlace() {
-        return (Rectangle) getTargetController().getPositionIndicator().getDockPlace();
+        return (Rectangle) getTargetContext().getPositionIndicator().getDockPlace();
     }
 
 }

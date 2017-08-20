@@ -8,7 +8,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -18,7 +18,7 @@ import org.vns.javafx.dock.api.Dockable;
 public class DockToolBar extends ToolBar implements Dockable{
 
     StringProperty title = new SimpleStringProperty("Tool Bar Enabled");
-    DockableController nodeController = new DockableController(this);
+    DockableContext dockableContext = new DockableContext(this);
     
     private Dockable dockTarget;
     
@@ -28,7 +28,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     private void init() {
         Separator titleBar = new Separator();
         titleBar.setPrefWidth(USE_PREF_SIZE);
-        nodeController.setTitleBar(titleBar);
+        dockableContext.setTitleBar(titleBar);
         Button b1 = new Button("",new Circle(0, 0, 4));
         Button b2 = new Button("", new Rectangle(0,0,8,8));
         getItems().addAll(b1,b2, new Separator(), titleBar);
@@ -57,7 +57,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     }
 
     public void useAsTitleBar(Region titleBar) {
-        nodeController.setTitleBar(titleBar);
+        dockableContext.setTitleBar(titleBar);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     }
 
     @Override
-    public DockableController dockableController() {
-        return nodeController;
+    public DockableContext getDockableContext() {
+        return dockableContext;
     }
 }

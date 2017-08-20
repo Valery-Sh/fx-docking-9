@@ -565,14 +565,14 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * @return the object of type {@code DockTreeItemBuilder }
      */
     protected DockTreeItemBuilder builder(Node dockTarget) {
-        return DockRegistry.dockTarget(dockTarget).targetController()
+        return DockRegistry.dockTarget(dockTarget).getTargetContext()
                 .getDockTreeTemBuilder();
     }
 
     /**
      * Builds a tree item representation by the specified Node and it's field
      * name. First the method calls the method {@code build(String}} of the 
-     * {@link org.vns.javafx.dock.api.DockTargetController#getDockTreeTemBuilder() }
+     * {@link org.vns.javafx.dock.api.TargetContext#getDockTreeTemBuilder() }
      * instance and then invokes the method {@link #completeBuild(javafx.scene.control.TreeItem, boolean)
      * }
      *

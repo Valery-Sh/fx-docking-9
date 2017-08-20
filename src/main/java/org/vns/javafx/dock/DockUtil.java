@@ -13,10 +13,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
-import org.vns.javafx.dock.api.DockTargetController;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.DockTarget;
 
@@ -25,6 +25,24 @@ import org.vns.javafx.dock.api.DockTarget;
  * @author Valery
  */
 public class DockUtil {
+    public static double widthOf(Node node) {
+        double w = 0;
+        if ((node instanceof Region)) {
+            w = ((Region) node).getWidth();
+        } else {
+            w = node.getLayoutBounds().getWidth();
+        }
+        return w;
+    }
+    public static double heightOf(Node node) {
+        double h = 0;
+        if ((node instanceof Region)) {
+            h = ((Region) node).getHeight();
+        } else {
+            h = node.getLayoutBounds().getHeight();
+        }
+        return h;
+    }
 
     public static DockSplitPane getParentSplitPane(DockSplitPane root, Node childNode) {
         DockSplitPane retval = null;
@@ -130,15 +148,15 @@ public class DockUtil {
         return ls.get(0);
     }
      */
-    public static Node findDockable(Parent root, double screenX, double screenY) {
+    public static Node findDockable(Node root, double screenX, double screenY) {
 
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
             if (DockRegistry.instanceOfDockable(node)) {
                 b = true;
-                DockTargetController pd = DockRegistry.dockable(node).dockableController().getTargetController();
-                DockableController st = DockRegistry.dockable(node).dockableController();
+                TargetContext pd = DockRegistry.dockable(node).getDockableContext().getTargetContext();
+                DockableContext st = DockRegistry.dockable(node).getDockableContext();
                 if (pd == null) {
                     b = false;
                 } else {
@@ -148,7 +166,7 @@ public class DockUtil {
             }
             return b;
         };
-        return TopNodeHelper.getTopNode((Stage) root.getScene().getWindow(), screenX, screenY, predicate);
+        return TopNodeHelper.getTopNode(root.getScene().getWindow(), screenX, screenY, predicate);
     }
 
 

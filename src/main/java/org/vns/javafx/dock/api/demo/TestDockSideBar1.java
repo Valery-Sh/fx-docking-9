@@ -61,7 +61,7 @@ public class TestDockSideBar1 extends Application {
 
         DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);
-        dn01.dockableController().setTitle("DockNode: dn01");
+        dn01.getDockableContext().setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
             if (null != sideBar01.getRotation()) {
                 switch (sideBar01.getRotation()) {
@@ -132,14 +132,14 @@ public class TestDockSideBar1 extends Application {
         Button dn02Btn = new Button("------------- dn02 button ---------------");
         dn02.setContent(dn02Btn);
         dn02Btn.setOnAction(a -> {
-            System.err.println("SFFFFFFFFFF" + dn02.dockableController().isFloating());
+            System.err.println("SFFFFFFFFFF" + dn02.getDockableContext().isFloating());
             System.err.println(" === " + dn02.getScene().getWindow());
-           // ((SidePaneController)sideBar01.targetController()).cont.changeSize();
+           // ((SidePaneController)sideBar01.getTargetContext()).cont.changeSize();
         });
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));
         //dn02.setPrefHeight(100);
-        dn02.dockableController().setTitle("DockNode: dn02");
+        dn02.getDockableContext().setTitle("DockNode: dn02");
 
         //sideBar01.dock(dn02);
         //scene.getRoot().setStyle("-fx-background-color: yellow");
@@ -149,9 +149,9 @@ public class TestDockSideBar1 extends Application {
         DockNode dn03 = new DockNode();
 
         //dn03.setPrefHeight(100);
-        dn03.dockableController().setTitle("DockNode: dn03");
+        dn03.getDockableContext().setTitle("DockNode: dn03");
         DockNode dn04 = new DockNode();
-        dn04.dockableController().setTitle("DockNode: dn04");
+        dn04.getDockableContext().setTitle("DockNode: dn04");
 
 //        sideBar01.getItems().add(dn03);
         //sideBar01.dock(dn02);

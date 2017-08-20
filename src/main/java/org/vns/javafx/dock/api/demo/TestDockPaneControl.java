@@ -20,8 +20,8 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTargetController;
-import org.vns.javafx.dock.api.DockableController;
+import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockStateLoader;
 
 /**
@@ -98,7 +98,7 @@ public class TestDockPaneControl extends Application {
         //dockPane1.getRoot().getItems().addAll(dnc1, dnc2,dnc3);
         
         
-        //TreeItem<PreferencesItem> items = dockPane1.targetController().getPreferencesBuilder().build(dockPane1);
+        //TreeItem<PreferencesItem> items = dockPane1.getTargetContext().getPreferencesBuilder().build(dockPane1);
 //        String s = loader.toString(dockPane1);
 //        System.err.print(s);
 
@@ -125,13 +125,13 @@ public class TestDockPaneControl extends Application {
         dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
 
-        DockableController dc = DockRegistry.dockable(dnc3).dockableController();
-        DockTargetController dtc = dc.getTargetController();
+        DockableContext dc = DockRegistry.dockable(dnc3).getDockableContext();
+        TargetContext dtc = dc.getTargetContext();
         //loader.resetPreferences();
 /////// LOAD /////////////        
         loader.load();
         
-        //TreeItem ti = dockPane1.targetController().getPreferencesBuilder().build("dockPane1");
+        //TreeItem ti = dockPane1.getTargetContext().getPreferencesBuilder().build("dockPane1");
         //TreeItemStringConverter tc = new TreeItemStringConverter();
         //System.err.println("TC: ");
         //System.err.println(tc.toString(ti));
@@ -198,7 +198,7 @@ public class TestDockPaneControl extends Application {
         });
 
         //cc.setRoot(vs1);
-        //System.err.println("dn1 isDocked()=" + dn1.dockableController().isDocked());
+        //System.err.println("dn1 isDocked()=" + dn1.getDockableContext().isDocked());
         root.getChildren().add(dockPane1);
 
         scene = new Scene(root, 550, 550);
