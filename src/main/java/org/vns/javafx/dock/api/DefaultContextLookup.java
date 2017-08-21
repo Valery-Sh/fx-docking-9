@@ -50,7 +50,7 @@ public class DefaultContextLookup implements ContextLookup{
     }
 
     @Override
-    public <T> void addTolookup(T obj) {
+    public <T> void add(T obj) {
         if ( lookup.containsKey(obj.getClass())) {
             if ( ! lookup.get(obj.getClass()).contains(obj)) {
                 lookup.get(obj.getClass()).add(obj);
@@ -87,7 +87,7 @@ public class DefaultContextLookup implements ContextLookup{
     }
 
     @Override
-    public <T> void removeFromlookup(T obj) {
+    public <T> void remove(T obj) {
         List<Class> toDelete = new ArrayList<>();
         lookup.keySet().forEach(clazz -> {
             List<Object> list = lookup.get(clazz);

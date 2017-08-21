@@ -24,7 +24,7 @@ import org.vns.javafx.dock.api.dragging.DragType;
  */
 public abstract class TargetContext {
 
-    private ContextLookup lookup;
+    private ContextLookup lookup = new DefaultContextLookup();;
     
     private Node targetNode;
     private String title;
@@ -46,19 +46,29 @@ public abstract class TargetContext {
     
     private double resizeMinHeight = -1;
 
-    protected TargetContext(Region targetNode) {
+    protected TargetContext(Node targetNode) {
         this.targetNode = targetNode;
         init();
     }
 
     protected TargetContext(Dockable dockable) {
         init();
-        lookup = new DefaultContextLookup();
     }
-
+    
+    public ContextLookup getLookup() {
+        return lookup;
+    }
     private void init() {
         inititialize();
     }
+    
+    protected abstract boolean doDock(Point2D mousePos, Node node);
+
+    protected abstract PositionIndicator createPositionIndicator();
+    
+    //public abstract List<Dockable> getDockables();
+    
+    
     public abstract Object getRestorePosition(Dockable dockable);
     
     public abstract void restore(Dockable dockable,Object restoreposition);
@@ -127,10 +137,6 @@ public abstract class TargetContext {
     }
      */
     protected IndicatorPopup createIndicatorPopup() {
-        //if ( indicatorPopup == null ) {
-        //    indicatorPopup = new IndicatorPopup(this);
-        //}
-        //return indicatorPopup;
         return new IndicatorPopup(DockRegistry.dockTarget(getTargetNode()));
     }
 
@@ -215,7 +221,6 @@ public abstract class TargetContext {
 
 //    protected void dock(Dockable dockable, Object pos)  {
 //    }
-    protected abstract boolean doDock(Point2D mousePos, Node node);
 
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
@@ -235,15 +240,11 @@ public abstract class TargetContext {
         return null;
     }
 
-    protected abstract PositionIndicator createPositionIndicator();
-    
-    public abstract List<Dockable> getDockables();
-
     public Node getTargetNode() {
         return this.targetNode;
     }
 
-    public void setTargetNode(Region targetNode) {
+    public void setTargetNode(Node targetNode) {
         this.targetNode = targetNode;
     }
 

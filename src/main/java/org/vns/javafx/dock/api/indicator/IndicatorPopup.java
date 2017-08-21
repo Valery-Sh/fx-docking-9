@@ -21,7 +21,7 @@ import org.vns.javafx.dock.api.TargetContext;
  * An instance of the class is created for each object of type
  * {@link TargetContext} when the last is created.
  *
- * The instance of the class is used by the object of type {@link DragManager}
+ * The instance of the class is used by the object of type {@link org.vns.javafx.dock.api.dragging.DragManager}
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an

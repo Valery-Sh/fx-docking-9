@@ -64,7 +64,11 @@ public class ScenePaneContext extends TargetContext {
         }
         return retval;
     }
-    @Override
+    /**
+     * For test purpose
+     *
+     * @return the list of dockables
+     */    
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         

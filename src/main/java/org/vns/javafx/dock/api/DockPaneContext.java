@@ -46,14 +46,14 @@ public class DockPaneContext extends TargetContext {
      */
     private SideIndicator.NodeSideIndicator nodeIndicator;
 
-    public DockPaneContext(Region dockPane, DockSplitPane root) {
+    public DockPaneContext(Node dockPane, DockSplitPane root) {
         super(dockPane);
         this.root = root;
         init();
     }
 
     private void init() {
-        //dockDelegate = new DockDelegate((DockSplitPane) getTargetNode(), this);
+        
     }
 
     protected DockSplitPane getRoot() {
@@ -110,13 +110,10 @@ public class DockPaneContext extends TargetContext {
         DragPopup dp = (DragPopup) popup;
         Dockable d = DockRegistry.dockable(node);
         if (d.getDockableContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
-            //Dockable retval = null;
             if (dp.getTargetPaneSidePos() != null) {
-                //13.07getDockExecutor().dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
                 dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
             } else if (dp.getTargetNodeSidePos() != null) {
                 Dockable t = dp.getDragTarget() == null ? null : DockRegistry.dockable(dp.getDragTarget());
-                //13.07getDockExecutor().dock(DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
                 dock(DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
             }
         }
@@ -161,7 +158,8 @@ public class DockPaneContext extends TargetContext {
         commitDock(node);
         return true;
     }
-    protected void commitDock(Node node)  {
+
+    protected void commitDock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
             DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
@@ -169,8 +167,9 @@ public class DockPaneContext extends TargetContext {
             }
             dockableContext.setFloating(false);
         }
-        
+
     }
+
     /*13.07    private boolean doDock(Node node, Side dockPos, Dockable targetDockable) {
         if (isDocked(node)) {
             return false;
@@ -259,7 +258,11 @@ public class DockPaneContext extends TargetContext {
         return dockTreeItemBuilder;
     }
 
-    @Override
+    /**
+     * For test purpose
+     *
+     * @return the list of dockables
+     */
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         ((DockPane) getTargetNode()).getItems().forEach(node -> {

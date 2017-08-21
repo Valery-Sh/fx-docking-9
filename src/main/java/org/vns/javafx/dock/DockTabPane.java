@@ -218,7 +218,10 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
         }
 
-        @Override
+        /**
+         * For test purpose
+         * @return  th elis of dockables
+         */
         public ObservableList<Dockable> getDockables() {
             List<Dockable> list = FXCollections.observableArrayList();
             getTargetNode().getTabs().forEach(tab -> {
@@ -264,7 +267,9 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             int idx = -1;
             if (mousePos != null) {
                 idx = tabPane.indexOf(mousePos.getX(), mousePos.getY());
-                if (idx == 0) {
+// ??? ERROR when                 only if (idx == 0 ) {
+//                if (idx == 0 && !tabPane.getTabs().isEmpty()) {
+                if (idx == 0  ) {    
                     if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
                         idx++;
                     }
@@ -367,6 +372,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return positionIndicator;
         }
 
+        @Override
         public PositionIndicator createPositionIndicator() {
             positionIndicator = new PositionIndicator(this) {
                 private Rectangle tabDockPlace;

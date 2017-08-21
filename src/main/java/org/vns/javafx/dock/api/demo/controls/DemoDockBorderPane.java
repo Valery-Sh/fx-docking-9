@@ -92,7 +92,7 @@ public class DemoDockBorderPane implements DockTarget {
             //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Override
+/*        @Override
         public List<Dockable> getDockables() {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
@@ -103,7 +103,7 @@ public class DemoDockBorderPane implements DockTarget {
             });
             return list;
         }
-
+*/
         @Override
         public Object getRestorePosition(Dockable dockable) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

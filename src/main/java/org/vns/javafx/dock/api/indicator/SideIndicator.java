@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.indicator;
 
-import org.vns.javafx.dock.api.indicator.DragPopup;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;

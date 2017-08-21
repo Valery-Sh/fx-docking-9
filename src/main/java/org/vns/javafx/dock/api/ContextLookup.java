@@ -24,7 +24,7 @@ import java.util.List;
 public interface ContextLookup {
     <T> T lookup(Class<T> clazz);
     <T> List<? extends T> lookupAll(Class<T> clazz);    
-    <T> void addTolookup(T obj);
-    <T> void removeFromlookup(T obj);
+    <T> void add(T obj);
+    <T> void remove(T obj);
     
 }

@@ -17,6 +17,7 @@ import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  *
@@ -40,6 +41,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         root.setRoot(this);
         root.setId("rootSplitPane");
         targetContext = new DockPaneContext(this, root);
+        targetContext.getLookup().add(new DragPopup(targetContext));
     }
 
     protected DockSplitPane getRoot() {

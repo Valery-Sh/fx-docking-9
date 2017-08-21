@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.indicator;
 
-import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -101,8 +100,10 @@ public class DragPopup extends IndicatorPopup {
      * @param context the owner of the object to be created
      */
     public DragPopup(TargetContext context) {
-        super(DockRegistry.dockTarget(context.getTargetNode()));
-        getProperties().put("POPUP", "Dragpopup = " + this);        
+        //super(DockRegistry.dockTarget(context.getTargetNode()));
+        //super(DockRegistry.dockTarget(context.getTargetNode()));
+        super(context);
+        //getProperties().put("POPUP", "Dragpopup = " + this);        
     }
 
     /**
@@ -184,7 +185,7 @@ public class DragPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns an object of type {@link org.vns.javafx.dock.api.Dockable} or {@link DockTarget}
+     * Returns an object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}
      * depending on the user selection or null if no object has been selected.
      *
      * @return a target object to dock to or null.

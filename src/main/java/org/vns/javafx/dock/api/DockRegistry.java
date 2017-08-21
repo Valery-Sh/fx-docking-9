@@ -345,14 +345,14 @@ public class DockRegistry {
             }
         });
         getInstance().windows.forEach(s -> {
-            if ( ! ( s instanceof Stage) ) {
-            if (!((x < s.getX() || x > s.getX() + s.getWidth()
-                    || y < s.getY() || y > s.getY() + s.getHeight()))) {
-                if (s != excl) {
-                    retlist.add(s);
+            if (!(s instanceof Stage)) {
+                if (!((x < s.getX() || x > s.getX() + s.getWidth()
+                        || y < s.getY() || y > s.getY() + s.getHeight()))) {
+                    if (s != excl) {
+                        retlist.add(s);
+                    }
                 }
-            }
-                
+
             }
         });
         return retlist;
@@ -362,6 +362,12 @@ public class DockRegistry {
         boolean retval = node instanceof Dockable;
         if (!retval && dockables.get(node) != null) {
             retval = true;
+        } else if (!retval) {
+            Object d = node.getProperties().get(Dockable.DOCKABLE_KEY);
+
+            if (d != null && (d instanceof Dockable) && ((Dockable) d).node() == node) {
+                retval = true;
+            }
         }
         return retval;
     }
@@ -401,10 +407,10 @@ public class DockRegistry {
         if (dockables.get(node) != null) {
             return dockables.get(node);
         }
-        Dockable d = new DefaultDockable((Region) node);
+        Dockable d = new DefaultDockable(node);
         dockables.put(node, d);
         if (d.node().getParent() != null) {
-            d.getDockableContext().getTargetContext().setTargetNode((Region) d.node().getParent());
+            d.getDockableContext().getTargetContext().setTargetNode(d.node().getParent());
         }
         return d;
     }
@@ -412,20 +418,33 @@ public class DockRegistry {
     public static boolean instanceOfDockable(Node node) {
         return getInstance().isNodeDockable(node);
     }
+
     public static boolean isDockable(Node node) {
         return getInstance().isNodeDockable(node);
     }
 
     public static Dockable dockable(Node node) {
+        if ( node == null ) {
+            return null;
+        }
+        
         if (node instanceof Dockable) {
             return (Dockable) node;
         }
-        return getInstance().dockables.get(node);
+        Dockable retval = getInstance().dockables.get(node);
+        if (retval == null) {
+            Object d = node.getProperties().get(Dockable.DOCKABLE_KEY);
+            if (d != null && (d instanceof Dockable) && ((Dockable) d).node() == node) {
+                retval = (Dockable) d;
+            }
+        }
+        return retval;
     }
 
     public static boolean instanceOfDockTarget(Node node) {
         return getInstance().isNodeDockTarget(node);
     }
+
     public static boolean isDockTarget(Node node) {
         return getInstance().isNodeDockTarget(node);
     }
@@ -434,15 +453,31 @@ public class DockRegistry {
         boolean retval = node instanceof DockTarget;
         if (!retval && dockTargets.get(node) != null) {
             retval = true;
+        } else if (!retval) {
+            Object d = node.getProperties().get(DockTarget.DOCKTAEGER_KEY);
+
+            if (d != null && (d instanceof DockTarget) && ((DockTarget) d).target() == node) {
+                retval = true;
+            }
         }
         return retval;
     }
 
     public static DockTarget dockTarget(Node node) {
+        if ( node == null ) {
+            return null;
+        }
         if (node instanceof DockTarget) {
             return (DockTarget) node;
         }
-        return getInstance().dockTargets.get(node);
+        DockTarget retval = getInstance().dockTargets.get(node);
+        if (retval == null) {
+            Object d = node.getProperties().get(DockTarget.DOCKTAEGER_KEY);
+            if (d != null && (d instanceof DockTarget) && ((DockTarget) d).target() == node) {
+                retval = (DockTarget) d;
+            }
+        }        
+        return retval;
 
     }
 
@@ -453,26 +488,26 @@ public class DockRegistry {
 
     public static class DefaultDockable implements Dockable {
 
-        private final Region node;
-        private DockableContext nodeHandler;
+        private final Node node;
+        private DockableContext context;
 
-        public DefaultDockable(Region node) {
+        public DefaultDockable(Node node) {
             this.node = node;
             init();
         }
 
         private void init() {
-            nodeHandler = new DockableContext(this);
+            context = new DockableContext(this);
         }
 
         @Override
-        public Region node() {
+        public Node node() {
             return node;
         }
 
         @Override
         public DockableContext getDockableContext() {
-            return nodeHandler;
+            return context;
         }
 
     }

@@ -30,6 +30,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  * The class manages the process of dragging of the object of type
@@ -306,7 +307,22 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
+        /// test
+/*        if (popup != null) {
+            popup.hide();
+        } else {
+            popup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();            
+            popup.showPopup();
+        }// end test
+*/        
         IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
+        if ( newPopup instanceof DragPopup ) {
+            DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(DragPopup.class);
+        }
+        if ( popup != newPopup && (popup instanceof DragPopup) && (newPopup instanceof DragPopup) ) {
+            System.err.println("*********** POPUP = " + popup);
+            System.err.println("*********** NEW POPUP = " + newPopup);
+        }
         if (popup != newPopup && popup != null) {
             popup.hide();
         }

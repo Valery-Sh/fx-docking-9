@@ -90,7 +90,11 @@ public class DockBorderPane extends BorderPane implements DockTarget {
             //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Override
+        /**
+         * For test purpose
+         *
+         * @return th elis of dockables
+         */
         public List<Dockable> getDockables() {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
