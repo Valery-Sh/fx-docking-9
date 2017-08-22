@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.TargetContext;
 
 /**
  * Defines the methods needed to convert a {@code Scene Graph } node to a tree
@@ -212,6 +214,17 @@ public interface DockTreeItemBuilder {
             }
         }
         return retval;
+    }
+    default DockTreeItemBuilder getDockTreeItemBuilder(Node node) {
+        DockTreeItemBuilder retval = null;
+        DockTarget dockTarget = DockRegistry.dockTarget(node);
+        TargetContext context = dockTarget.getTargetContext();
+        DockTreeItemBuilderFactory f = context.getLookup().lookup(DockTreeItemBuilderFactory.class);
+        if (f != null) {
+            retval = f.getItemBuilder(dockTarget);
+        }
+        return retval;
+        //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
     }
 
 }

@@ -21,14 +21,16 @@ import org.vns.javafx.dock.api.TargetContext;
  * An instance of the class is created for each object of type
  * {@link TargetContext} when the last is created.
  *
- * The instance of the class is used by the object of type {@link org.vns.javafx.dock.api.dragging.DragManager}
- * and provides a pop up window in which the user can select a position on the
- * screen where the dragged node will be placed. As a rule, the position is
- * determined as a relative position to the target object, which can be an
- * object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}. The position of the
- * target object is set as a value of type {@code javafx.geometry.Side} the
- * object is given enum type Side and can take one of the values: Side.TOP,
- * Side.RIGHT, Side.BOTTOM or Side.LEFT.
+ * The instance of the class is used by the object of type
+ * {@link org.vns.javafx.dock.api.dragging.DragManager} and provides a pop up
+ * window in which the user can select a position on the screen where the
+ * dragged node will be placed. As a rule, the position is determined as a
+ * relative position to the target object, which can be an object of type
+ * {@link org.vns.javafx.dock.api.Dockable} or
+ * {@link org.vns.javafx.dock.api.DockTarget}. The position of the target object
+ * is set as a value of type {@code javafx.geometry.Side} the object is given
+ * enum type Side and can take one of the values: Side.TOP, Side.RIGHT,
+ * Side.BOTTOM or Side.LEFT.
  * <p>
  * Most of the work with the object of the class is done in the method
  * DragManager.mouseDragged(MouseEvent) . If the mouse cursor resides above the
@@ -81,10 +83,11 @@ public class IndicatorPopup extends Popup {
      *
      * @param target the owner of the object to be created
      */
-    public IndicatorPopup(DockTarget target) {
+    /*    public IndicatorPopup(DockTarget target) {
         this.targetContext = target.getTargetContext();
         init();
     }
+     */
     public IndicatorPopup(TargetContext target) {
         this.targetContext = target;
         init();
@@ -94,56 +97,60 @@ public class IndicatorPopup extends Popup {
         initContent();
     }
 
+    public static IndicatorPopup getInstance(TargetContext context) {
+        return context.getLookup().lookup(IndicatorPopup.class);
+    }
+
     private ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
 
     @Override
     public void show(Window ownerWindow) {
-        if ( ! (ownerWindow instanceof IndicatorPopup) ) {
+        if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
         super.show(ownerWindow);
         if (getChildWindows().contains(ownerWindow)) {
             return;
         }
-        
+
         check((IndicatorPopup) ownerWindow);
-        getChildWindows().add((IndicatorPopup)ownerWindow);
+        getChildWindows().add((IndicatorPopup) ownerWindow);
 
     }
 
     @Override
     public void show(Window ownerWindow, double anchorX, double anchorY) {
-        if ( ! (ownerWindow instanceof IndicatorPopup) ) {
+        if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
-        
+
         super.show(ownerWindow, anchorX, anchorY);
-        
-        if (((IndicatorPopup)ownerWindow).getChildWindows().contains(this)) {
+
+        if (((IndicatorPopup) ownerWindow).getChildWindows().contains(this)) {
             return;
         }
-        ((IndicatorPopup)ownerWindow).getChildWindows().add(this);
+        ((IndicatorPopup) ownerWindow).getChildWindows().add(this);
     }
-    
+
     private void check(IndicatorPopup popup) {
         IndicatorPopup p = popup;
-        while ( p != null ) {
-            if ( !( p.getOwnerWindow() instanceof IndicatorPopup) ) {
+        while (p != null) {
+            if (!(p.getOwnerWindow() instanceof IndicatorPopup)) {
                 break;
             }
-            if ( p.getChildWindows().contains(popup)) {
+            if (p.getChildWindows().contains(popup)) {
                 p.getChildWindows().remove(popup);
             }
             p = (IndicatorPopup) p.getOwnerWindow();
         }
     }
-    
+
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
         super.show(ownerNode, anchorX, anchorY);
-        System.err.println("SHOW 3 " +  this.getProperties().get("POPUP"));
+        System.err.println("SHOW 3 " + this.getProperties().get("POPUP"));
     }
-    
+
     @Override
     public void hide() {
         if (getOwnerWindow() instanceof IndicatorPopup) {
@@ -168,36 +175,41 @@ public class IndicatorPopup extends Popup {
     }
 
     protected void initContent() {
+        setOnShown(e -> {
+            if (targetContext.getPositionIndicator() == null || targetContext.getPositionIndicator().getIndicatorPane() == null) {
+                return;
+            }
+            if (targetContext.getPositionIndicator().getIndicatorPane() == null) {
+                return;
+            }
+            
+            Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
 
-        if (targetContext.getPositionIndicator() == null || targetContext.getPositionIndicator().getIndicatorPane() == null) {
-            return;
-        }
-        Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
-        
-        if (getTargetNode() instanceof Region) {
-            indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty());
-            indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+            if (getTargetNode() instanceof Region) {
+                indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+                indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty());
 
-            indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty());
-            indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty());
-        } else {
-            getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
-                indicatorPane.setPrefHeight(newValue.getHeight());
-                indicatorPane.setPrefWidth(newValue.getWidth());
-                indicatorPane.setMinHeight(newValue.getHeight());
-                indicatorPane.setMinWidth(newValue.getWidth());
+                indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty());
+                indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+            } else {
+                getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
+                    indicatorPane.setPrefHeight(newValue.getHeight());
+                    indicatorPane.setPrefWidth(newValue.getWidth());
+                    indicatorPane.setMinHeight(newValue.getHeight());
+                    indicatorPane.setMinWidth(newValue.getWidth());
 
-            });
-        }
-        indicatorPane.setMouseTransparent(true);
-
-
-        getContent().add(indicatorPane);
+                });
+            }
+            indicatorPane.setMouseTransparent(true);
+            if ( ! getContent().contains(indicatorPane)) {
+                getContent().add(indicatorPane);
+            }
+        });
     }
 
     public ObservableList<IndicatorPopup> getAllChildIndicatorPopup() {
         ObservableList<IndicatorPopup> list = FXCollections.observableArrayList();
-        
+
         list.addAll(getChildWindows());
         getChildWindows().forEach(w -> {
             getAllChildIndicatorPopup(list, w);
@@ -205,6 +217,7 @@ public class IndicatorPopup extends Popup {
 //        list.add(this);
         return list;
     }
+
     private void getAllChildIndicatorPopup(ObservableList<IndicatorPopup> list, IndicatorPopup popup) {
         list.addAll(popup.getChildWindows());
         popup.getChildWindows().forEach(w -> {

@@ -214,7 +214,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             dockable.getDockableContext().setFloating(true);
 
         } else {
-            System.err.println("FLOATING !!!");
+//            System.err.println("FLOATING !!!");
             ((Node) ev.getSource()).addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             ((Node) ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
@@ -236,8 +236,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events
      */
     protected void mouseDragged(MouseEvent ev) {
-        System.err.println("DragManager START MOUSE POS " + startMousePos);
-        System.err.println("DragManager = " + this);
+//        System.err.println("DragManager START MOUSE POS " + startMousePos);
+//        System.err.println("DragManager = " + this);
 //System.err.println("MOUSE DRAGGED");        
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
@@ -315,14 +315,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             popup.showPopup();
         }// end test
 */        
-        IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
-        if ( newPopup instanceof DragPopup ) {
-            DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(DragPopup.class);
-        }
-        if ( popup != newPopup && (popup instanceof DragPopup) && (newPopup instanceof DragPopup) ) {
-            System.err.println("*********** POPUP = " + popup);
-            System.err.println("*********** NEW POPUP = " + newPopup);
-        }
+        //IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
+        //if ( newPopup instanceof DragPopup ) {
+        IndicatorPopup newPopup =  DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorPopup.class);
+        //        if ( popup != newPopup && (popup instanceof DragPopup) && (newPopup instanceof DragPopup) ) {
+//            System.err.println("*********** POPUP = " + popup);
+//            System.err.println("*********** NEW POPUP = " + newPopup);
+        //}
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -376,7 +375,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             popup.getTargetContext().dock(pt, dockable);
         } else if (popup != null && popup.getPositionIndicator() == null) {
             //
-            // We use default indicatorPopup without position indicator
+           // We use default indicatorPopup without position indicator
             //
             popup.getTargetContext().dock(pt, dockable);
         }

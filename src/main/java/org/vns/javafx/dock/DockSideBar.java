@@ -36,6 +36,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 import org.vns.javafx.dock.api.DockableContext;
@@ -45,6 +46,7 @@ import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 
 /**
  *
@@ -361,10 +363,12 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         public SidePaneContext(Region dockPane) {
             super(dockPane);
-            init();
         }
 
-        private void init() {
+        @Override
+        protected void initLookup(ContextLookup lookup) {
+            super.initLookup(lookup);
+            lookup.putSingleton(PositionIndicator.class,new SideBarPositonIndicator(this));
         }
 
         @Override
@@ -431,17 +435,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             return retval;
         }
 
-        protected int indexOf(double x, double y) {
-            int idx = -1;
-            ToolBar tb = ((DockSideBar) getTargetNode()).getDelegate();
-            Node sb = findNode(tb.getItems(), x, y);
-            if (sb != null && (sb instanceof Group)) {
-                idx = tb.getItems().indexOf(sb);
-            } else if (sb == null && DockUtil.contains(tb, x, y)) {
-                idx = tb.getItems().size();
-            }
-            return idx;
-        }
 
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
@@ -476,9 +469,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 a.consume();
                 PopupControl popup = container.getPopup();
                 if (popup == null) {
-                    
+
                     //popup = (PopupControl) container.getFloatView().createPopupControl(dockable, itemButton.getScene().getWindow());
-                    popup = (PopupControl) container.getFloatView().make(dockable, false);                    
+                    popup = (PopupControl) container.getFloatView().make(dockable, false);
                     //container.getFloatView().addResizer(popup, dockable);
                     container.setPopup(popup);
                     show(itemButton);
@@ -621,7 +614,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             container.changeSize();
         }
 
-        @Override
+/*        @Override
         public PositionIndicator createPositionIndicator() {
             PositionIndicator positionIndicator = new PositionIndicator(this) {
                 private Rectangle tabDockPlace;
@@ -638,11 +631,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     return p;
                 }
 
-                //@Override
-                /*protected String getStylePrefix() {
-                    return "dock-indicator";
-                }
-                 */
                 protected Rectangle getTabDockPlace() {
                     if (tabDockPlace == null) {
                         tabDockPlace = new Rectangle();
@@ -721,7 +709,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             };
             return positionIndicator;
         }
-
+*/
         @Override
         public Object getRestorePosition(Dockable dockable) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -890,14 +878,14 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             changeSize();
         }
 
-/*        public StageBuilder getFloatView() {
+        /*        public StageBuilder getFloatView() {
             return windowBuilder;
         }
-*/
+         */
         public FloatView getFloatView() {
             return windowBuilder;
         }
-        
+
     }
 
     public static class CustomToolBar extends ToolBar {
@@ -941,4 +929,126 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         }
     }
 
+    public static class SideBarPositonIndicator extends PositionIndicator {
+
+        private Rectangle tabDockPlace;
+        private IndicatorPopup indicatorPopup;
+        
+        public SideBarPositonIndicator(TargetContext context) {
+            super(context);
+            //this.targetContext = targetContext;
+        }
+        private IndicatorPopup getIndicatorPopup() {
+            if ( indicatorPopup == null) {
+                indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
+            }
+            return indicatorPopup;
+        }
+
+        @Override
+        public void showIndicator(double screenX, double screenY) {
+            getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        }
+
+        @Override
+        protected Pane createIndicatorPane() {
+            Pane p = new Pane();
+            p.getStyleClass().add("drag-pane-indicator");
+            return p;
+        }
+
+        //@Override
+        /*protected String getStylePrefix() {
+                    return "dock-indicator";
+                }
+         */
+        protected Rectangle getTabDockPlace() {
+            if (tabDockPlace == null) {
+                tabDockPlace = new Rectangle();
+                tabDockPlace.getStyleClass().add("dock-place");
+                getIndicatorPane().getChildren().add(tabDockPlace);
+            }
+            return tabDockPlace;
+        }
+
+        @Override
+        public void hideDockPlace() {
+            getDockPlace().setVisible(false);
+            getTabDockPlace().setVisible(false);
+
+        }
+        protected int indexOf(double x, double y) {
+            int idx = -1;
+            ToolBar tb = ((DockSideBar) getTargetContext().getTargetNode()).getDelegate();
+            Node sb = ((SidePaneContext)getTargetContext()).findNode(tb.getItems(), x, y);
+            if (sb != null && (sb instanceof Group)) {
+                idx = tb.getItems().indexOf(sb);
+            } else if (sb == null && DockUtil.contains(tb, x, y)) {
+                idx = tb.getItems().size();
+            }
+            return idx;
+        }
+
+        @Override
+        public void showDockPlace(double x, double y) {
+            ToolBar tb = ((DockSideBar) getTargetContext().getTargetNode()).getDelegate();
+
+            int idx = indexOf(x, y);
+            if (idx < 0) {
+                return;
+            }
+            double tbHeight = tb.getHeight();
+
+            Rectangle dockPlace = (Rectangle) getDockPlace();
+
+            if (tb.getOrientation() == Orientation.HORIZONTAL) {
+                dockPlace.setHeight(tb.getHeight());
+                dockPlace.setWidth(5);
+            } else {
+                dockPlace.setWidth(tb.getWidth());
+                dockPlace.setHeight(5);
+            }
+            //dockPlace.setRotate(90);
+            Point2D p = dockPlace.localToParent(0, 0);
+
+            dockPlace.setX(p.getX());
+
+            Node node = null;
+            boolean before = false;
+
+            if (idx == 0 && tb.getItems().isEmpty()) {
+                dockPlace.setWidth(5);
+            } else if (idx == tb.getItems().size()) {
+                node = tb.getItems().get(idx - 1);
+            } else {
+                node = node = tb.getItems().get(idx);
+                before = true;
+            }
+            double pos = 0;
+            if (node != null) {
+                Bounds bnd = node.getBoundsInParent();
+                if (tb.getOrientation() == Orientation.HORIZONTAL) {
+                    if (before) {
+                        pos = bnd.getMinX();
+                    } else {
+                        pos = bnd.getMinX() + bnd.getWidth();
+                    }
+                    dockPlace.setX(pos);
+                    dockPlace.setY(0);
+                } else {
+                    if (before) {
+                        pos = bnd.getMinY();
+                    } else {
+                        pos = bnd.getMinY() + bnd.getHeight();
+                    }
+                    dockPlace.setX(0);
+                    dockPlace.setY(pos);
+
+                }
+            }
+            dockPlace.setVisible(true);
+            dockPlace.toFront();
+        }
+
+    }
 }//class

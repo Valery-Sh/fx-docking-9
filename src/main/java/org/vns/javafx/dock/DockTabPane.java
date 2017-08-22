@@ -28,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.DockableContext;
@@ -35,7 +36,10 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
+import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
+import org.vns.javafx.dock.api.save.builder.DockTabPaneTreeItemBuilder;
 
 /**
  *
@@ -67,6 +71,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
     }
 
     private void init() {
+        paneContext = new TabPaneContext(this);
+//        paneContext.getLookup().add(new IndicatorPopup(paneContext));
         dragShape = createDefaultDragNode();
         getChildren().add(dragShape);
         dockableContext.setDragNode(dragShape);
@@ -79,8 +85,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         getStyleClass().add("dock-tab-pane");
         getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
-
-        paneContext = new TabPaneContext(this);
 
         getDockableContext().setTitleBar(new DockTitleBar(this));
 
@@ -205,22 +209,38 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
 
         private void init() {
-            //12.05setIndicatorPopup(new IndicatorPopup(this));
+            //getLookup().putSingleton(PositionIndicator.class,new TabPanePositonIndicator(this));
+            // getLookup().putSingleton(IndicatorPopup.class,new IndicatorPopup(this));
         }
 
         @Override
-        public TabPane getTargetNode() {
-            return (TabPane) super.getTargetNode();
+        protected void initLookup(ContextLookup lookup) {
+            super.initLookup(lookup);
+            lookup.putSingleton(PositionIndicator.class, new TabPanePositonIndicator(this));
+            lookup.add(new DockTreeItemBuilderFactory());
         }
 
+        @Override
+        public DockTabPane getTargetNode() {
+            return (DockTabPane) super.getTargetNode();
+        }
+
+/*        
         @Override
         public DockTreeItemBuilder getDockTreeTemBuilder() {
-            return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
+            DockTreeItemBuilder retval = null;
+            DockTreeItemBuilderFactory f = getLookup().lookup(DockTreeItemBuilderFactory.class);
+            if ( f != null ) {
+                retval = f.getItemBuilder(getTargetNode());
+            }
+            return retval;
+            //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
         }
-
+*/
         /**
          * For test purpose
-         * @return  th elis of dockables
+         *
+         * @return th elis of dockables
          */
         public ObservableList<Dockable> getDockables() {
             List<Dockable> list = FXCollections.observableArrayList();
@@ -245,15 +265,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return retval;
         }
 
-        /*07.05        @Override
-        protected void dock(Point2D mousePos, Dockable dockable) {
-            if (dockable.getDockableContext().isFloating()) {
-                if (doDock(mousePos, dockable.tab())) {
-                    dockable.getDockableContext().setFloating(false);
-                }
-            }
-        }
-         */
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             Stage stage = null;
@@ -268,8 +279,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             if (mousePos != null) {
                 idx = tabPane.indexOf(mousePos.getX(), mousePos.getY());
 // ??? ERROR when                 only if (idx == 0 ) {
-//                if (idx == 0 && !tabPane.getTabs().isEmpty()) {
-                if (idx == 0  ) {    
+                if (idx == 0 && !tabPane.getTabs().isEmpty()) {
+//                if (idx == 0) {
                     if (tabPane.getTabs().get(0).getGraphic() == tabPane.getDragLabel()) {
                         idx++;
                     }
@@ -364,107 +375,14 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             }
         }
 
-        @Override
+        /*        @Override
         public PositionIndicator getPositionIndicator() {
             if (positionIndicator == null) {
                 createPositionIndicator();
             }
             return positionIndicator;
         }
-
-        @Override
-        public PositionIndicator createPositionIndicator() {
-            positionIndicator = new PositionIndicator(this) {
-                private Rectangle tabDockPlace;
-
-                @Override
-                public void showIndicator(double screenX, double screenY) {
-                    getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
-                }
-
-                @Override
-                protected Pane createIndicatorPane() {
-                    Pane p = new Pane();
-                    p.getStyleClass().add("drag-pane-indicator");
-                    return p;
-                }
-
-                //@Override
-                protected String getStylePrefix() {
-                    return "dock-indicator";
-                }
-
-                protected Rectangle getTabDockPlace() {
-                    if (tabDockPlace == null) {
-                        tabDockPlace = new Rectangle();
-                        tabDockPlace.getStyleClass().add("dock-place");
-                        getIndicatorPane().getChildren().add(tabDockPlace);
-                    }
-                    return tabDockPlace;
-                }
-
-                @Override
-                public void hideDockPlace() {
-                    getDockPlace().setVisible(false);
-                    getTabDockPlace().setVisible(false);
-
-                }
-
-                @Override
-                public void showDockPlace(double x, double y) {
-                    DockTabPane pane = (DockTabPane) getTargetNode();
-                    Bounds tabBounds = pane.screenBounds(x, y);
-                    if (tabBounds == null) {
-                        ((Rectangle) getDockPlace()).setVisible(false);
-                        ((Rectangle) getTabDockPlace()).setVisible(false);
-                        return;
-                    }
-
-                    double tabsHeight = pane.getTabAreaHeight();
-
-                    Rectangle dockPlace = (Rectangle) getDockPlace();
-                    Rectangle tabPlace = (Rectangle) getTabDockPlace();
-
-                    dockPlace.setWidth(pane.getWidth());
-                    dockPlace.setHeight(pane.getHeight() / 2);
-                    Point2D p = dockPlace.localToParent(0, 0);
-
-                    dockPlace.setX(p.getX());
-                    dockPlace.setY(p.getY() + tabsHeight);
-
-                    dockPlace.setVisible(true);
-                    dockPlace.toFront();
-
-                    if (!pane.getTabs().isEmpty()) {
-                        tabPlace.setWidth(75);
-                        Bounds b = tabPlace.getParent().screenToLocal(tabBounds);
-                        tabPlace.setHeight(b.getHeight());
-                        //
-                        // idx may be equal to size => the mouse is after last tab
-                        //
-                        tabPlace.setX(b.getMinX());
-                        tabPlace.setY(b.getMinY());
-                        tabPlace.setVisible(true);
-                        tabPlace.toFront();
-                    } else {
-                        tabPlace.setVisible(false);
-                    }
-
-                    tabPlace.strokeDashOffsetProperty().set(0);
-                    if (tabPlace.isVisible()) {
-                        Timeline placeTimeline = new Timeline();
-                        placeTimeline.setCycleCount(Timeline.INDEFINITE);
-                        KeyValue kv = new KeyValue(tabPlace.strokeDashOffsetProperty(), 12);
-                        KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-                        placeTimeline.getKeyFrames().add(kf);
-                        placeTimeline.play();
-                    }
-                }
-
-            };
-
-            return positionIndicator;
-        }
+         */
 
         protected String getButtonText(Dockable d) {
             String txt = d.getDockableContext().getTitle();
@@ -561,7 +479,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             boolean cond = ID.equals(getTabs().get(i).getGraphic().getId());
             if (cond && i == 0 && i + 1 < list.size()) {
 
-                b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() -  b.getMinX(), H);
+                b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() - b.getMinX(), H);
                 list.set(i, b);
             } else if (cond && i > 0 && i + 1 < list.size()) {
                 b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() - b.getMinX(), H);
@@ -605,8 +523,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         Bounds retval = null;
         for (int i = 0; i < list.size(); i++) {
-            System.err.println("bbbbbbbbbb i = " + i + ") b=" + list.get(i) + "; x=" + x + "; y=" + y);
-            
+//            System.err.println("bbbbbbbbbb i = " + i + ") b=" + list.get(i) + "; x=" + x + "; y=" + y);
+
             if (list.get(i).contains(x, y)) {
                 retval = list.get(i);
                 //System.err.println("SXEEEN BOUNDS bbbbbbbbbbbbbbbbbb i=" + i);
@@ -740,142 +658,101 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     }
 
-    public static class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
+    public static class TabPanePositonIndicator extends PositionIndicator {
 
-        public DockTabPaneTreeItemBuilder(DockTabPane tabPane) {
-            super(tabPane);
+        private Rectangle tabDockPlace;
+        //private TargetContext targetContext;
+
+        public TabPanePositonIndicator(TargetContext context) {
+            super(context);
+            //this.targetContext = targetContext;
         }
 
         @Override
-        public Node restore(TreeItem<Properties> targetRoot) {
-            Properties props = targetRoot.getValue();
-            if (!(props.get(OBJECT_ATTR) instanceof DockTabPane)) {
-                return null;
-            }
-            DockTabPane pane = (DockTabPane) props.get(OBJECT_ATTR);
-            targetRoot.setExpanded(true);
-
-            pane.getTabs().clear();
-            for ( int i=0; i < targetRoot.getChildren().size(); i++ ) {
-                
-                TreeItem<Properties> item = targetRoot.getChildren().get(i);
-            //for (TreeItem<Properties> item : targetRoot.getChildren()) {
-                Tab tab = (Tab) item.getValue().get(OBJECT_ATTR);
-                
-                if (tab == null) {
-                    tab = buildTab(item);
-                    //pane.getTabs().add(tab);
-                } 
-                
-                if ( tab.getContent() == null ) {
-                    pane.getTabs().add(i,tab);
-                    return pane;
-                }
-                
-                if (DockRegistry.instanceOfDockTarget(tab.getContent())) {
-                    tab.setContent(restore(item));
-                    pane.getTabs().add(i,tab);
-                } else if (DockRegistry.instanceOfDockable(tab.getContent())) {
-                    if (DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext() != null) {
-                        TargetContext c = DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext();
-                        if (c != getDockTarget().getTargetContext()) {
-                            c.undock(tab.getContent());
-                        }
-                    }
-                    String fnm = item.getValue().getProperty(FIELD_NAME_ATTR);
-                    pane.dock(i, DockRegistry.dockable(tab.getContent()));
-                    //pane.getTabs().add(tab);
-                } else {
-                    pane.getTabs().add(i,tab);
-                }
-            }
-            return pane;
+        public void showIndicator(double screenX, double screenY) {
+            //getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+            getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
         }
 
-        protected Tab buildTab(TreeItem<Properties> tabItem) {
-            Tab tab = (Tab) tabItem.getValue().get(OBJECT_ATTR);
-            if (tab == null) {
-                tab = buildTabInstance(tabItem);
-                tabItem.getValue().put(OBJECT_ATTR, tab);
-            }
-            if (tabItem.getChildren().isEmpty()) {
-                return tab;
-            }
-            TreeItem<Properties> item = tabItem.getChildren().get(0); 
-            item.setExpanded(true);
-            Node node = (Node) item.getValue().get(OBJECT_ATTR);
-            if (node == null) {
-                return tab;
-            } 
-            if (DockRegistry.instanceOfDockTarget(node)) {
-                node = restore(item);
-                tab.setContent(node);
-            } else if (DockRegistry.instanceOfDockable(node)) {
-                tab.setContent(node);
-            }
-            return tab;
-        }
-
-        protected Tab buildTabInstance(TreeItem<Properties> sourceItem) {
-            sourceItem.setExpanded(true);
-            Tab tab = new Tab();
-            tab.setId(sourceItem.getValue().getProperty("id"));
-            return tab;
-        }
-
-        /*
-        private void setProperties(PreferencesItem it) {
-            DockTabPane tabPane = (DockTabPane) it.getItemObject();
-            //it.getProperties().put("tabPane-pref-width", String.valueOf(tabPane.getWidth()));
-            //it.getProperties().put("tabPane-pref-height", String.valueOf(tabPane.getHeight()));
-            it.getProperties().put("tabPane-min-width", String.valueOf(tabPane.getMinWidth()));
-            it.getProperties().put("tabPane-max-width", String.valueOf(tabPane.getMaxWidth()));
-        }
-
-        public Map<String, String> getProperties(Object node) {
-            Map<String, String> props = FXCollections.observableHashMap();
-            if (node instanceof DockTabPane) {
-                //props.put("tabPane-pref-width", String.valueOf(((DockTabPane) tab).getWidth()));
-                //props.put("tabPane-pref-height", String.valueOf(((DockTabPane) tab).getHeight()));
-                props.put("tabPane-min-width", String.valueOf(((DockTabPane) node).getMinWidth()));
-                props.put("tabPane-max-width", String.valueOf(((DockTabPane) node).getMaxWidth()));
-            }
-            return props;
-        }
-         */
         @Override
-        public TreeItem<Properties> build(String fieldName) {
-            Node node = getDockTarget().target();
-            TreeItem<Properties> retval = DockTreeItemBuilder.build(fieldName, node);
-            retval.setExpanded(true);
-            int sz = retval.getChildren().size();
-            //setObjectProperties(retval.getValue());        
-            buildChildren(retval);
-            return retval;
+        protected Pane createIndicatorPane() {
+            Pane p = new Pane();
+            p.getStyleClass().add("drag-pane-indicator");
+            return p;
+        }
+
+        //@Override
+        protected String getStylePrefix() {
+            return "dock-indicator";
+        }
+
+        protected Rectangle getTabDockPlace() {
+            if (tabDockPlace == null) {
+                tabDockPlace = new Rectangle();
+                tabDockPlace.getStyleClass().add("dock-place");
+                getIndicatorPane().getChildren().add(tabDockPlace);
+            }
+            return tabDockPlace;
+        }
+
+        @Override
+        public void hideDockPlace() {
+            getDockPlace().setVisible(false);
+            getTabDockPlace().setVisible(false);
 
         }
 
-        protected void buildChildren(TreeItem<Properties> root) {
-            //DockPane tab = (DockPane) getTargetContext().getTargetNode();
-            DockTabPane pane = (DockTabPane) getDockTarget().target();
-            for (int i = 0; i < pane.getTabs().size(); i++) {
-                TreeItem ti = DockTreeItemBuilder.build(pane.getTabs().get(i));
-                root.getChildren().add(ti);
-                ti.setExpanded(true);
+        @Override
+        public void showDockPlace(double x, double y) {
+            DockTabPane pane = (DockTabPane) getTargetContext().getTargetNode();
+            Bounds tabBounds = pane.screenBounds(x, y);
+            if (tabBounds == null) {
+                ((Rectangle) getDockPlace()).setVisible(false);
+                ((Rectangle) getTabDockPlace()).setVisible(false);
+                return;
+            }
 
-                notifyOnBuidItem(ti);
+            double tabsHeight = pane.getTabAreaHeight();
 
-                if (DockRegistry.instanceOfDockTarget(pane.getTabs().get(i).getContent())) {
-                    TreeItem contentItem = DockRegistry.dockTarget(pane.getTabs().get(i).getContent())
-                            .getTargetContext()
-                            .getDockTreeTemBuilder().build();
-                    ti.getChildren().add(contentItem);
-                } else if (DockRegistry.instanceOfDockable(pane.getTabs().get(i).getContent())) {
-                    TreeItem contentItem = DockTreeItemBuilder.build(pane.getTabs().get(i).getContent());
-                    ti.getChildren().add(contentItem);
-                }
+            Rectangle dockPlace = (Rectangle) getDockPlace();
+            Rectangle tabPlace = (Rectangle) getTabDockPlace();
+
+            dockPlace.setWidth(pane.getWidth());
+            dockPlace.setHeight(pane.getHeight() / 2);
+            Point2D p = dockPlace.localToParent(0, 0);
+
+            dockPlace.setX(p.getX());
+            dockPlace.setY(p.getY() + tabsHeight);
+
+            dockPlace.setVisible(true);
+            dockPlace.toFront();
+
+            if (!pane.getTabs().isEmpty()) {
+                tabPlace.setWidth(75);
+                Bounds b = tabPlace.getParent().screenToLocal(tabBounds);
+                tabPlace.setHeight(b.getHeight());
+                //
+                // idx may be equal to size => the mouse is after last tab
+                //
+                tabPlace.setX(b.getMinX());
+                tabPlace.setY(b.getMinY());
+                tabPlace.setVisible(true);
+                tabPlace.toFront();
+            } else {
+                tabPlace.setVisible(false);
+            }
+
+            tabPlace.strokeDashOffsetProperty().set(0);
+            if (tabPlace.isVisible()) {
+                Timeline placeTimeline = new Timeline();
+                placeTimeline.setCycleCount(Timeline.INDEFINITE);
+                KeyValue kv = new KeyValue(tabPlace.strokeDashOffsetProperty(), 12);
+                KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+                placeTimeline.getKeyFrames().add(kf);
+                placeTimeline.play();
             }
         }
 
+//            return positionIndicator;
     }
 }//DockTabPane

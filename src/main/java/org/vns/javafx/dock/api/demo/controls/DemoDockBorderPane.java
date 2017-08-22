@@ -80,11 +80,6 @@ public class DemoDockBorderPane implements DockTarget {
         DockUtil.contains(node, mousePos.getX(), mousePos.getY());
     }
          */
-        @Override
-        protected PositionIndicator createPositionIndicator() {
-            //return null;
-            return new BorderPanePositionIndicator(this);
-        }
 
         @Override
         public void remove(Node dockNode) {

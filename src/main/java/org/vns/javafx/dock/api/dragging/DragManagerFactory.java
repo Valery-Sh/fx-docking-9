@@ -28,11 +28,14 @@ public class DragManagerFactory {
         DragManager retval = null;
         TargetContext dtc = dockable.getDockableContext().getTargetContext();
         if ( dtc != null  ) {
-            if ( dtc.getDragType() == DragType.SIMPLE ) {
+/*            if ( dtc.getDragType() == DragType.SIMPLE ) {
                 retval = new SimpleDragManager(dockable);
-            } else if ( dtc.getDragType() == DragType.DRAG_AND_DROP ) {
+            } else 
+                
+            if ( dtc.getDragType() == DragType.DRAG_AND_DROP ) {
                 retval = new DragAndDropManager(dockable);
             }
+*/
         }
         if ( retval == null ) {
             retval = new SimpleDragManager(dockable);

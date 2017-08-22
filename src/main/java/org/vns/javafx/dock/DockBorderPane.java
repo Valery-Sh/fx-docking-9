@@ -15,10 +15,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
+import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
@@ -50,8 +52,16 @@ public class DockBorderPane extends BorderPane implements DockTarget {
 
         public DockBorderPaneContext(Region dockPane) {
             super(dockPane);
+            init();
         }
-
+        private void init() {
+        }
+        @Override
+        protected void initLookup(ContextLookup lookup) {
+            super.initLookup(lookup);
+            lookup.putSingleton(PositionIndicator.class,new BorderPanePositionIndicator(this));
+        }
+        
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
@@ -78,11 +88,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
         DockUtil.contains(node, mousePos.getX(), mousePos.getY());
     }
          */
-        @Override
-        protected PositionIndicator createPositionIndicator() {
-            //return null;
-            return new BorderPanePositionIndicator(this);
-        }
+        
 
         @Override
         public void remove(Node dockNode) {

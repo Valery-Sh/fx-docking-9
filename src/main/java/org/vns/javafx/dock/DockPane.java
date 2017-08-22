@@ -41,7 +41,6 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         root.setRoot(this);
         root.setId("rootSplitPane");
         targetContext = new DockPaneContext(this, root);
-        targetContext.getLookup().add(new DragPopup(targetContext));
     }
 
     protected DockSplitPane getRoot() {

@@ -34,8 +34,7 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
-import static org.vns.javafx.dock.api.save.DockStateLoader.DEFAULT;
-import static org.vns.javafx.dock.api.save.DockStateLoader.DESCRIPTOR;
+import org.vns.javafx.dock.api.TargetContext;
 
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.*;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
@@ -124,7 +123,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
             //if (node != null && !saved.contains(node) && DockRegistry.instanceOfDockTarget(node)) {
-            if (node != null &&  DockRegistry.instanceOfDockTarget(node)) {
+            if (node != null && DockRegistry.instanceOfDockTarget(node)) {
                 save(DockRegistry.dockTarget(node));
                 //TreeItemStringConverter tc = new TreeItemStringConverter();
                 DockPreferences cp = new DockPreferences(getPreferencesRoot());
@@ -169,14 +168,16 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         System.err.println("Single Save time interval = " + (System.currentTimeMillis() - start));
 
     }
+
     protected void test(TreeItem<Properties> it) {
         TreeView<Properties> tv = new TreeView();
         tv.setRoot(it);
-        for ( int i=0; i < tv.getExpandedItemCount(); i++) {
+        for (int i = 0; i < tv.getExpandedItemCount(); i++) {
             System.err.println(tv.getTreeItem(i).getValue().getProperty(TAG_NAME_ATTR));
         }
-        
+
     }
+
     /**
      * Saves the current state of the specified object.
      *
@@ -559,16 +560,27 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
     /**
      * The handy method to access an object of type 
-     * {@link org.vns.javafx.dock.api.save.DockTreeItemBuilder } by the specified
-     * parameter.
+     * {@link org.vns.javafx.dock.api.save.DockTreeItemBuilder } by the
+     * specified parameter.
      *
      * @param dockTarget the object which owns an instance of type {@code DockTreeItemBuilder
      * }
      * @return the object of type {@code DockTreeItemBuilder }
      */
     protected DockTreeItemBuilder builder(Node dockTarget) {
-        return DockRegistry.dockTarget(dockTarget).getTargetContext()
-                .getDockTreeTemBuilder();
+        return getDockTreeTemBuilder(dockTarget);
+    }
+
+    public DockTreeItemBuilder getDockTreeTemBuilder(Node node) {
+        DockTreeItemBuilder retval = null;
+        DockTarget dockTarget = DockRegistry.dockTarget(node);
+        TargetContext context = dockTarget.getTargetContext();
+        DockTreeItemBuilderFactory f = context.getLookup().lookup(DockTreeItemBuilderFactory.class);
+        if (f != null) {
+            retval = f.getItemBuilder(dockTarget);
+        }
+        return retval;
+        //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
     }
 
     /**

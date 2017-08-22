@@ -37,11 +37,11 @@ public class ScenePaneContext extends TargetContext {
         dockable.node().parentProperty().addListener(parentListener);
     }
 
-    @Override
+/*    @Override
     protected PositionIndicator createPositionIndicator() {
         return new SideIndicator.PaneSideIndicator(this);
     }
-
+*/
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
         if (newValue != null && !(newValue instanceof Pane)) {
             return;
@@ -96,11 +96,11 @@ public class ScenePaneContext extends TargetContext {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+/*    @Override
     public DockTreeItemBuilder getDockTreeTemBuilder() {
         return null;
     }
-
+*/
     @Override
     public Object getRestorePosition(Dockable dockable) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

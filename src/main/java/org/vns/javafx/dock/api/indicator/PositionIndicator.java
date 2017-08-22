@@ -9,7 +9,9 @@ import org.vns.javafx.dock.api.TargetContext;
 public abstract class PositionIndicator {
 
     private final TargetContext targetContext;
-
+    
+    private IndicatorPopup indicatorPopup;
+    
     private Node dockPlace;
     private Pane indicatorPane;
 
@@ -46,7 +48,8 @@ public abstract class PositionIndicator {
     
     //public abstract void showIndicator(double screenX, double screenY);
     public void showIndicator(double screenX, double screenY) {
-        getTargetContext().getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        //21.08getTargetContext().getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        getIndicatorPpopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
 
     public Node getDockPlace() {
@@ -63,6 +66,13 @@ public abstract class PositionIndicator {
 
     protected abstract Pane createIndicatorPane();
 
+    public IndicatorPopup getIndicatorPpopup() {
+        if ( indicatorPopup == null ) {
+            indicatorPopup = targetContext.getLookup().lookup(IndicatorPopup.class);
+        }
+        return indicatorPopup;
+    }
+    
     public Pane getIndicatorPane() {
         return indicatorPane;
     }

@@ -46,6 +46,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  *
@@ -152,7 +153,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         //System.err.println("   --- DRAG MANGER dragSource=" + dragSource);
         //Dragboard dragboard = dragSource.startDragAndDrop(TransferMode.COPY_OR_MOVE);
         Dragboard dragboard = root.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-        DragGesture dg = new DragNodeGesture(dockable.node());
+        //DragGesture dg = new DragNodeGesture(dockable.node());
 //        treeView.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
         ClipboardContent content = new ClipboardContent();
         content.putUrl("fxdocking://DragAndDropManager");
@@ -301,7 +302,8 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
             return;
         }
         //System.err.println("DRAGOVER 4");
-        IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
+        //IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
+        IndicatorPopup newPopup =  DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorPopup.class);        
         newPopup.getProperties().put("POPUP", "newPopup");
         //newPopup.getScene().setFill(Color.AQUA);
         //newPopup.getScene().getRoot().setOpacity(0.1);

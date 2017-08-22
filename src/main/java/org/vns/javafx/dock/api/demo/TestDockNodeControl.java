@@ -22,7 +22,7 @@ public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
-        dockPane.getTargetContext().setDragType(DragType.DRAG_AND_DROP);
+        //dockPane.getTargetContext().setDragType(DragType.DRAG_AND_DROP);
         //dockPane.addEventHandler( new );
         dockPane.setId("DOCK PANE");
         
@@ -75,9 +75,6 @@ public class TestDockNodeControl extends Application {
         });
         stage.setAlwaysOnTop(true);
         stage.show();
-        
-        
-
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 

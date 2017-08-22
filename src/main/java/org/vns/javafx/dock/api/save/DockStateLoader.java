@@ -23,6 +23,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
@@ -101,8 +102,9 @@ public class DockStateLoader extends AbstractDockStateLoader {
         // 2. The method getDefaultDockables now contains only those dockable
         //    objects which are not childs of some DockTarget
         //
-        TreeItem<Properties> it1 = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).getTargetContext()
-                .getDockTreeTemBuilder().build("dockTabPane1");
+        TargetContext context = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).getTargetContext();
+        getDockTreeTemBuilder(context.getTargetNode());
+        TreeItem<Properties> it1 = getDockTreeTemBuilder(context.getTargetNode()).build("dockTabPane1");
         System.err.println("------------- +++++++++++++++++++++++++++++++++++");
         test(it1);
         System.err.println("------------- +++++++++++++++++++++++++++++++++++");
@@ -370,7 +372,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
                 it.getValue().put(OBJECT_ATTR, getRegistered().get(fieldName));
             }
         }
-        dockTarget.getTargetContext().getDockTreeTemBuilder().restore(item);
+        getDockTreeTemBuilder(dockTarget.getTargetContext().getTargetNode()).restore(item);
         return item;
     }
 

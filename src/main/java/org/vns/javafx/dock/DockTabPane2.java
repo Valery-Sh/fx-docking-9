@@ -35,12 +35,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 
 /**
  *
@@ -331,11 +333,12 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
         public TabPaneContext(Region dockPane) {
             super(dockPane);
-            init();
         }
 
-        private void init() {
-            //12.05setIndicatorPopup(new IndicatorPopup(this));
+        @Override
+        protected void initLookup(ContextLookup lookup) {
+            super.initLookup(lookup);
+            lookup.putSingleton(PositionIndicator.class,new TabPanePositonIndicator(this));
         }
 
         @Override
@@ -346,8 +349,9 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         private StackPane getContents() {
             return ((StackPane) getTargetNode().rootPane.getChildren().get(1));
         }
+
         public ObservableList<Dockable> getDockables() {
-            return ((DockTabPane2)getTargetNode()).getItems();
+            return ((DockTabPane2) getTargetNode()).getItems();
         }
 
         @Override
@@ -366,13 +370,14 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             return getDockExecutor().doDock(mousePos, node);
         }
 
-        @Override
+/*        @Override
         public PositionIndicator getPositionIndicator() {
             if (positionIndicator == null) {
                 createPositionIndicator();
             }
             return positionIndicator;
         }
+*/        
         private DockExecutor dockExecutor;
 
         protected DockExecutor getDockExecutor() {
@@ -382,101 +387,6 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             return dockExecutor;
         }
 
-        @Override
-        public PositionIndicator createPositionIndicator() {
-            positionIndicator = new PositionIndicator(this) {
-                private Rectangle tabDockPlace;
-
-                @Override
-                public void showIndicator(double screenX, double screenY) {
-                    getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
-                }
-
-                @Override
-                protected Pane createIndicatorPane() {
-                    Pane p = new Pane();
-                    p.getStyleClass().add("drag-pane-indicator");
-                    return p;
-                }
-
-               // @Override
-                protected String getStylePrefix() {
-                    return "dock-indicator";
-                }
-
-                protected Rectangle getTabDockPlace() {
-                    if (tabDockPlace == null) {
-                        tabDockPlace = new Rectangle();
-                        tabDockPlace.getStyleClass().add("dock-place");
-                        getIndicatorPane().getChildren().add(tabDockPlace);
-                    }
-                    return tabDockPlace;
-                }
-
-                @Override
-                public void hideDockPlace() {
-                    getDockPlace().setVisible(false);
-                    getTabDockPlace().setVisible(false);
-
-                }
-
-                @Override
-                public void showDockPlace(double x, double y) {
-                    int idx = getTargetNode().getItemIndex(x, y);
-                    if (idx < 0) {
-                        return;
-                    }
-
-                    DockTabPane2 pane = (DockTabPane2) getTargetNode();
-                    double tabsHeight = pane.tabArea.getPane().getHeight();
-
-                    Rectangle dockPlace = (Rectangle) getDockPlace();
-                    dockPlace.setWidth(pane.getWidth());
-                    dockPlace.setHeight(pane.getHeight() / 2);
-                    Point2D p = dockPlace.localToParent(0, 0);
-
-                    dockPlace.setX(p.getX());
-                    dockPlace.setY(p.getY() + tabsHeight);
-
-                    dockPlace.setVisible(true);
-                    dockPlace.toFront();
-
-                    Rectangle tabPlace = (Rectangle) getTabDockPlace();
-                    tabPlace.setWidth(75);
-                    tabPlace.setHeight(tabsHeight);
-                    p = tabPlace.localToParent(0, 0);
-
-                    Point2D pt = tabPlace.screenToLocal(x, y);
-
-                    double tabPlaceX = 0;
-
-                    Node node = null;
-                    //
-                    // idx may be equal to size => the mouse is after last tab
-                    //
-                    if (idx < pane.tabArea.getTitleBars().size()) {
-                        node = pane.tabArea.getTitleBars().get(idx);
-                    }
-                    int tabsSize = pane.tabArea.getTitleBars().size();
-                    if (node != null) {
-                        Point2D tabPt = node.localToParent(0, 0);
-                        tabPlaceX = tabPt.getX();
-                    } else if (tabsSize > 0) {
-                        node = pane.tabArea.getTitleBars().get(tabsSize - 1);
-                        Point2D tabPt = node.localToParent(node.getBoundsInParent().getWidth(), 0);
-                        tabPlaceX = tabPt.getX();
-                    }
-                    tabPlace.setX(tabPlaceX);
-                    tabPlace.setY(p.getY());
-
-                    tabPlace.setVisible(true);
-                    tabPlace.toFront();
-
-                }
-
-            };
-            return positionIndicator;
-        }
 
         @Override
         public void remove(Node dockNode) {
@@ -1014,5 +924,114 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
     }
+
+    public static class TabPanePositonIndicator extends PositionIndicator {
+
+        private Rectangle tabDockPlace;
+        
+        private IndicatorPopup indicatorPopup;
+        
+        public TabPanePositonIndicator(TargetContext context) {
+            super(context);
+            //this.targetContext = targetContext;
+        }
+        
+        @Override
+        public void showIndicator(double screenX, double screenY) {
+            getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        }
+
+        private IndicatorPopup getIndicatorPopup() {
+            if ( indicatorPopup == null) {
+                indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
+            }
+            return indicatorPopup;
+        }
+
+        @Override
+        protected Pane createIndicatorPane() {
+            Pane p = new Pane();
+            p.getStyleClass().add("drag-pane-indicator");
+            return p;
+        }
+
+        // @Override
+        protected String getStylePrefix() {
+            return "dock-indicator";
+        }
+
+        protected Rectangle getTabDockPlace() {
+            if (tabDockPlace == null) {
+                tabDockPlace = new Rectangle();
+                tabDockPlace.getStyleClass().add("dock-place");
+                getIndicatorPane().getChildren().add(tabDockPlace);
+            }
+            return tabDockPlace;
+        }
+
+        @Override
+        public void hideDockPlace() {
+            getDockPlace().setVisible(false);
+            getTabDockPlace().setVisible(false);
+
+        }
+
+        @Override
+        public void showDockPlace(double x, double y) {
+            int idx = ((DockTabPane2)getTargetContext().getTargetNode()).getItemIndex(x, y);
+            if (idx < 0) {
+                return;
+            }
+
+            DockTabPane2 pane = (DockTabPane2)getTargetContext().getTargetNode();
+            
+            double tabsHeight = pane.tabArea.getPane().getHeight();
+
+            Rectangle dockPlace = (Rectangle) getDockPlace();
+            dockPlace.setWidth(pane.getWidth());
+            dockPlace.setHeight(pane.getHeight() / 2);
+            Point2D p = dockPlace.localToParent(0, 0);
+
+            dockPlace.setX(p.getX());
+            dockPlace.setY(p.getY() + tabsHeight);
+
+            dockPlace.setVisible(true);
+            dockPlace.toFront();
+
+            Rectangle tabPlace = (Rectangle) getTabDockPlace();
+            tabPlace.setWidth(75);
+            tabPlace.setHeight(tabsHeight);
+            p = tabPlace.localToParent(0, 0);
+
+            Point2D pt = tabPlace.screenToLocal(x, y);
+
+            double tabPlaceX = 0;
+
+            Node node = null;
+            //
+            // idx may be equal to size => the mouse is after last tab
+            //
+            if (idx < pane.tabArea.getTitleBars().size()) {
+                node = pane.tabArea.getTitleBars().get(idx);
+            }
+            int tabsSize = pane.tabArea.getTitleBars().size();
+            if (node != null) {
+                Point2D tabPt = node.localToParent(0, 0);
+                tabPlaceX = tabPt.getX();
+            } else if (tabsSize > 0) {
+                node = pane.tabArea.getTitleBars().get(tabsSize - 1);
+                Point2D tabPt = node.localToParent(node.getBoundsInParent().getWidth(), 0);
+                tabPlaceX = tabPt.getX();
+            }
+            tabPlace.setX(tabPlaceX);
+            tabPlace.setY(p.getY());
+
+            tabPlace.setVisible(true);
+            tabPlace.toFront();
+
+        }
+
+    }
+
 }//DockTabPane
 

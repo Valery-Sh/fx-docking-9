@@ -16,6 +16,7 @@ import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
 
 /**
  * An instance of the class is created for each object of type
@@ -78,6 +79,8 @@ public class DragPopup extends IndicatorPopup {
      * The {@code popup} window for dock nodes
      */
     private IndicatorPopup nodeIndicatorPopup;
+    private NodeSideIndicator nodeIndicator;
+    
     /**
      * The current target to which the mouse cursor points
      */
@@ -121,7 +124,8 @@ public class DragPopup extends IndicatorPopup {
     protected void initContent() {
         Pane paneIndicatorPane = getTargetContext().getPositionIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        Pane nodeIndicatorPane = getTargetContext().getNodeIndicator().getIndicatorPane();
+        //Pane nodeIndicatorPane = getTargetContext().getNodeIndicator().getIndicatorPane();
+        Pane nodeIndicatorPane = getNodeIndicator().getIndicatorPane();        
         nodeIndicatorPane.setMouseTransparent(true);
 
         nodeIndicatorPopup = new IndicatorPopup(getTargetContext());
@@ -169,10 +173,18 @@ public class DragPopup extends IndicatorPopup {
      *
      * @return Returns an object of type {@code SideIndicator}
      */
-    public SideIndicator getNodeIndicator() {
+/*    public SideIndicator getNodeIndicator() {
         return (SideIndicator) getTargetContext().getNodeIndicator();
     }
-
+*/    
+    //@Override
+    public SideIndicator.NodeSideIndicator getNodeIndicator() {
+        
+        if (nodeIndicator == null) {
+            nodeIndicator = new SideIndicator.NodeSideIndicator(getTargetContext());
+        }
+        return nodeIndicator;
+    }
     /**
      * Returns a pop up window which is used to display a doc node side
      * indicators.

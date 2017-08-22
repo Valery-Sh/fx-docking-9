@@ -33,6 +33,8 @@ import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
+import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
+import org.vns.javafx.dock.api.save.builder.DockPaneTreeItemBuilder;
 
 public class DockPaneContext extends TargetContext {
 
@@ -49,39 +51,41 @@ public class DockPaneContext extends TargetContext {
     public DockPaneContext(Node dockPane, DockSplitPane root) {
         super(dockPane);
         this.root = root;
-        init();
-    }
-
-    private void init() {
-        
-    }
-
-    protected DockSplitPane getRoot() {
-        return root;
     }
 
     @Override
+    protected void initLookup(ContextLookup lookup) {
+        lookup.putSingleton(PositionIndicator.class, new PaneSideIndicator(this));
+        lookup.putSingleton(IndicatorPopup.class, new DragPopup(this));
+        lookup.add(new DockTreeItemBuilderFactory());        
+    }
+
+    public DockSplitPane getRoot() {
+        return root;
+    }
+
+    /*    @Override
     public SideIndicator.NodeSideIndicator getNodeIndicator() {
         if (nodeIndicator == null) {
             nodeIndicator = createNodeIndicator();
         }
         return nodeIndicator;
     }
-
-    @Override
+     */
+ /*    @Override
     protected IndicatorPopup createIndicatorPopup() {
         return new DragPopup(this);
     }
-
-    protected SideIndicator.NodeSideIndicator createNodeIndicator() {
+     */
+ /*    protected SideIndicator.NodeSideIndicator createNodeIndicator() {
         return new SideIndicator.NodeSideIndicator(this);
     }
-
-    @Override
+     */
+ /*    @Override
     protected PositionIndicator createPositionIndicator() {
         return new PaneSideIndicator(this);
     }
-
+     */
     protected DockExecutor getDockExecutor() {
         if (dockExecutor == null) {
             dockExecutor = new DockExecutor(this, root);
@@ -101,8 +105,10 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        //getDockExecutor().dock(dockable);
-        IndicatorPopup popup = getIndicatorPopup();
+
+        //21.08IndicatorPopup popup = getIndicatorPopup();
+        IndicatorPopup popup = getLookup().lookup(IndicatorPopup.class); //21.08
+        ///
         Node node = dockable.node();
         if (!(popup instanceof DragPopup)) {
             return;
@@ -250,14 +256,14 @@ public class DockPaneContext extends TargetContext {
 //        DockUtil.print(root);
     }
 
-    @Override
+/*    @Override
     public DockTreeItemBuilder getDockTreeTemBuilder() {
         if (dockTreeItemBuilder == null) {
-            dockTreeItemBuilder = new DockPanePreferencesBuilder(DockRegistry.dockTarget(getTargetNode()));
+            dockTreeItemBuilder = new DockPaneTreeItemBuilder(DockRegistry.dockTarget(getTargetNode()));
         }
         return dockTreeItemBuilder;
     }
-
+*/
     /**
      * For test purpose
      *
@@ -661,7 +667,7 @@ public class DockPaneContext extends TargetContext {
 
     }//DockExcecutor
 
-    public class DockPanePreferencesBuilder extends AbstractDockTreeItemBuilder {
+/*    public static class DockPanePreferencesBuilder extends AbstractDockTreeItemBuilder {
 
         public static final String DIVIDER_POSITIONS = "dividerPositions";
         public static final String ORIENTATION = "orientation";
@@ -947,4 +953,5 @@ public class DockPaneContext extends TargetContext {
         }
 
     }
+*/
 }//class DockPaneContext

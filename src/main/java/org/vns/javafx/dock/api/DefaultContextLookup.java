@@ -26,33 +26,32 @@ import javafx.collections.transformation.FilteredList;
  *
  * @author Valery
  */
-public class DefaultContextLookup implements ContextLookup{
-    
+public class DefaultContextLookup implements ContextLookup {
+
     private final ObservableMap<Class, List<Object>> lookup = FXCollections.observableHashMap();
-    
-    
+
     @Override
     public <T> T lookup(Class<T> clazz) {
         T retval = null;
-        if (  lookup.get(clazz) != null && ! lookup.get(clazz).isEmpty()) {
+        if (lookup.get(clazz) != null && !lookup.get(clazz).isEmpty()) {
             retval = (T) lookup.get(clazz).get(0);
-        }
-        return retval;
-    }
-    
-    @Override
-    public <T> List<? extends T> lookupAll(Class<T> clazz) {
-        List retval = FXCollections.observableArrayList();
-        if (  lookup.get(clazz) != null ) {
-            retval =  lookup.get(clazz);
         }
         return retval;
     }
 
     @Override
+    public <T> List<? extends T> lookupAll(Class<T> clazz) {
+        List retval = FXCollections.observableArrayList();
+        if (lookup.get(clazz) != null) {
+            retval = lookup.get(clazz);
+        }
+        return retval;
+    }
+
+    //@Override
     public <T> void add(T obj) {
-        if ( lookup.containsKey(obj.getClass())) {
-            if ( ! lookup.get(obj.getClass()).contains(obj)) {
+        if (lookup.containsKey(obj.getClass())) {
+            if (!lookup.get(obj.getClass()).contains(obj)) {
                 lookup.get(obj.getClass()).add(obj);
             }
             return;
@@ -61,39 +60,52 @@ public class DefaultContextLookup implements ContextLookup{
         ifs.addAll(obj.getClass().getInterfaces());
         ObservableList<Class> classes = FXCollections.observableArrayList();
         Class sc = obj.getClass();
-        while( ! Object.class.equals(sc) ) {
+        while (!Object.class.equals(sc)) {
             FilteredList<Class> fl = ifs.filtered(c -> {
-                return ! ifs.contains(c);
+                return !ifs.contains(c);
             });
             ifs.addAll(fl);
-            if ( ! classes.contains(sc)) {
+            if (!classes.contains(sc)) {
                 classes.add(sc);
             }
             sc = sc.getSuperclass();
         }
         classes.addAll(ifs);
-        classes.forEach( c -> {
-            if ( ! lookup.containsKey(c)) {
+        classes.forEach(c -> {
+            if (!lookup.containsKey(c)) {
                 List<Object> list = FXCollections.observableArrayList();
                 list.add(obj);
-                lookup.put(c,list);
+                lookup.put(c, list);
             } else {
-                if ( ! lookup.get(c).contains(obj) ) {
+                if (!lookup.get(c).contains(obj)) {
                     lookup.get(c).add(obj);
                 }
             }
-            
+
         });
     }
 
-    @Override
+    protected <T> void put(Class key, T obj) {
+        if (lookup.containsKey(key)) {
+            if (!lookup.get(key).contains(obj)) {
+                lookup.get(key).add(obj);
+            }
+        } else {
+            List<Object> list = FXCollections.observableArrayList();
+            list.add(obj);
+            lookup.put(key, list);
+        }
+
+    }
+//    @Override
+
     public <T> void remove(T obj) {
         List<Class> toDelete = new ArrayList<>();
         lookup.keySet().forEach(clazz -> {
             List<Object> list = lookup.get(clazz);
-            if ( list.contains(obj)) {
+            if (list.contains(obj)) {
                 list.remove(obj);
-                if ( list.isEmpty()) {
+                if (list.isEmpty()) {
                     toDelete.add(clazz);
                 }
             }
@@ -102,5 +114,22 @@ public class DefaultContextLookup implements ContextLookup{
             lookup.remove(clazz);
         });
     }
-    
+
+    @Override
+    public <T> void remove(Class key, T obj) {
+        if (lookup.containsKey(key)) {
+            if (lookup.get(key).contains(obj)) {
+                lookup.get(key).remove(obj);
+            }
+        }
+    }
+
+    @Override
+    public <T> void putSingleton(Class key, T obj) {
+        if (lookup.containsKey(key)) {
+            lookup.get(key).clear();
+        }
+        put(key,obj);
+    }
+
 }

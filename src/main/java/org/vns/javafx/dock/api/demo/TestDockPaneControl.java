@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.demo;
 
-
 import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ObservableList;

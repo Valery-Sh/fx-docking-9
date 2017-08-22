@@ -16,7 +16,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *
@@ -24,15 +23,12 @@ import org.vns.javafx.dock.api.dragging.DragType;
  */
 public abstract class TargetContext {
 
-    private ContextLookup lookup = new DefaultContextLookup();;
+    private ContextLookup lookup;
     
     private Node targetNode;
     private String title;
     private PositionIndicator positionIndicator;
     
-    private final ObjectProperty<DragType> dragType = new SimpleObjectProperty<>(DragType.SIMPLE);
-    
-    private Predicate<Node> acceptableNode;
     
     private AbstractDockStateLoader dockLoader;
 
@@ -56,15 +52,23 @@ public abstract class TargetContext {
     }
     
     public ContextLookup getLookup() {
+        if ( lookup == null ) {
+            lookup = new DefaultContextLookup();
+            initLookup(lookup);
+        }
         return lookup;
     }
     private void init() {
         inititialize();
+        getLookup().add(new IndicatorPopup(this));
     }
-    
+    protected void initLookup(ContextLookup lookup) {
+        
+    }
+            
     protected abstract boolean doDock(Point2D mousePos, Node node);
 
-    protected abstract PositionIndicator createPositionIndicator();
+    //protected abstract PositionIndicator createPositionIndicator();
     
     //public abstract List<Dockable> getDockables();
     
@@ -73,17 +77,6 @@ public abstract class TargetContext {
     
     public abstract void restore(Dockable dockable,Object restoreposition);
     
-    public ObjectProperty<DragType> dragTypeProperty() {
-        return dragType;
-    }
-
-    public DragType getDragType() {
-        return dragType.get();
-    }
-
-    public void setDragType(DragType dragType) {
-        this.dragType.set(dragType);
-    }
     
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
@@ -103,7 +96,7 @@ public abstract class TargetContext {
         return title;
     }
 
-    public double getResizeMinWidth() {
+/*    public double getResizeMinWidth() {
         return resizeMinWidth;
     }
 
@@ -118,7 +111,7 @@ public abstract class TargetContext {
     protected void setResizeMinHeight(double resizeMinHeight) {
         this.resizeMinHeight = resizeMinHeight;
     }
-
+*/
     //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
@@ -132,11 +125,7 @@ public abstract class TargetContext {
     }
 
 
-    /*12.05protected void setIndicatorPopup(IndicatorPopup indicatorPopup) {
-        this.indicatorPopup = indicatorPopup;
-    }
-     */
-    protected IndicatorPopup createIndicatorPopup() {
+/*    protected IndicatorPopup createIndicatorPopup() {
         return new IndicatorPopup(DockRegistry.dockTarget(getTargetNode()));
     }
 
@@ -146,7 +135,7 @@ public abstract class TargetContext {
         }
         return indicatorPopup;
     }
-
+*/
     protected void inititialize() {
         DockRegistry.start();
         initListeners();
@@ -232,14 +221,15 @@ public abstract class TargetContext {
 
     public PositionIndicator getPositionIndicator() {
         if (positionIndicator == null) {
-            positionIndicator = createPositionIndicator();
+            //positionIndicator = createPositionIndicator();
+            positionIndicator = getLookup().lookup(PositionIndicator.class);
         }
         return positionIndicator;
     }
-    public PositionIndicator getNodeIndicator() {
+/*    public PositionIndicator getNodeIndicator() {
         return null;
     }
-
+*/
     public Node getTargetNode() {
         return this.targetNode;
     }
@@ -266,8 +256,5 @@ public abstract class TargetContext {
      */
     public abstract void remove(Node dockNode);
     
-    public DockTreeItemBuilder getDockTreeTemBuilder() {
-        return null;
-    }
     
 }//class

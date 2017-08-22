@@ -264,7 +264,10 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         protected Window getIndicatorPopup() {
-            return ((DragPopup) getTargetContext().getIndicatorPopup()).getNodeIndicatorPopup();
+            DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorPopup.class);
+            //return ((DragPopup) getTargetContext().getIndicatorPopup()).getNodeIndicatorPopup();
+            //return super.getIndicatorPopup().getNodeIndicatorPopup();                    
+            return ip.getNodeIndicatorPopup();                                
         }
 
         @Override
@@ -282,11 +285,13 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
-                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                ((Popup) getIndicatorPopup()).show(getTargetContext().getLookup().lookup(IndicatorPopup.class), newPos.getX(), newPos.getY());                
+//                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
-                    ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                    //((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                    ((Popup) getIndicatorPopup()).show(getTargetContext().getLookup().lookup(IndicatorPopup.class), newPos.getX(), newPos.getY());
                 } else {
                     getIndicatorPopup().hide();
                 }
@@ -389,20 +394,20 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (getTargetContext() != null) {
 
-                Node node = ((DragPopup) getTargetContext().getIndicatorPopup()).getPaneIndicator().getTopButtons();
+                Node node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorPopup.class)).getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getIndicatorPopup()).getPaneIndicator().getRightButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorPopup.class)).getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getIndicatorPopup()).getPaneIndicator().getBottomButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorPopup.class)).getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getIndicatorPopup()).getPaneIndicator().getLeftButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorPopup.class)).getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
@@ -430,7 +435,8 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         protected Popup getIndicatorPopup() {
-            return getTargetContext().getIndicatorPopup();
+            //return getTargetContext().getIndicatorPopup();
+            return getTargetContext().getLookup().lookup(IndicatorPopup.class);
         }
 
         @Override
