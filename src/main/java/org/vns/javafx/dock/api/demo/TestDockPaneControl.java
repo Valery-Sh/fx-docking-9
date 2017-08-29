@@ -130,7 +130,7 @@ public class TestDockPaneControl extends Application {
         //loader.resetPreferences();
 /////// LOAD /////////////        
         loader.load();
-        
+   
         //TreeItem ti = dockPane1.getTargetContext().getPreferencesBuilder().build("dockPane1");
         //TreeItemStringConverter tc = new TreeItemStringConverter();
         //System.err.println("TC: ");

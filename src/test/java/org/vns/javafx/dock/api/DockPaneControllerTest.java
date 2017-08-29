@@ -108,11 +108,6 @@ public class DockPaneControllerTest {
     public void testGetNodeIndicator() {
         System.out.println("getNodeIndicator");
         DockPaneContext instance = null;
-        SideIndicator.NodeSideIndicator expResult = null;
-        SideIndicator.NodeSideIndicator result = instance.getNodeIndicator();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -123,10 +118,6 @@ public class DockPaneControllerTest {
         System.out.println("createIndicatorPopup");
         DockPaneContext instance = null;
         IndicatorPopup expResult = null;
-        IndicatorPopup result = instance.createIndicatorPopup();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -137,10 +128,6 @@ public class DockPaneControllerTest {
         System.out.println("createNodeIndicator");
         DockPaneContext instance = null;
         SideIndicator.NodeSideIndicator expResult = null;
-        SideIndicator.NodeSideIndicator result = instance.createNodeIndicator();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -151,10 +138,6 @@ public class DockPaneControllerTest {
         System.out.println("createPositionIndicator");
         DockPaneContext instance = null;
         PositionIndicator expResult = null;
-        PositionIndicator result = instance.createPositionIndicator();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -266,10 +249,6 @@ public class DockPaneControllerTest {
         System.out.println("getPreferencesBuilder");
         DockPaneContext instance = null;
         DockTreeItemBuilder expResult = null;
-        DockTreeItemBuilder result = instance.getDockTreeTemBuilder();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**

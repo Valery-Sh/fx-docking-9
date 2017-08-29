@@ -558,11 +558,11 @@ public class DockableContext {
                 return;
             }
             startMousePos = new Point2D(ev.getX(), ev.getY());
-            System.err.println("DragDetected startMousePos " + startMousePos);
+//            System.err.println("DragDetected startMousePos " + startMousePos);
         }
 
         public void mouseDragDetected(MouseEvent ev) {
-            System.err.println("DragDetector MOUSE DRAG_DETECTED");
+//            System.err.println("DragDetector MOUSE DRAG_DETECTED");
             if (!ev.isPrimaryButtonDown()) {
                 ev.consume();
                 return;
@@ -583,7 +583,7 @@ public class DockableContext {
                 dockable.getDockableContext().setFloating(true);
                 
             } else {
-                System.err.println("FLOATING !!!");
+//                System.err.println("FLOATING !!!");
                 DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 dm.dragDetected(ev, startMousePos);                
                 //dm.setStartMousePos(startMousePos);

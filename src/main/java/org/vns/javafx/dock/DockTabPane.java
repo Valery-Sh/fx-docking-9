@@ -65,11 +65,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         init();
     }
 
-    @Override
-    public ObservableList<Node> getChildren() {
-        return super.getChildren();
-    }
-
     private void init() {
         paneContext = new TabPaneContext(this);
 //        paneContext.getLookup().add(new IndicatorPopup(paneContext));
@@ -90,6 +85,11 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         setRotateGraphic(true);
 
+    }
+
+    @Override
+    public ObservableList<Node> getChildren() {
+        return super.getChildren();
     }
 
     @Override
@@ -225,7 +225,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return (DockTabPane) super.getTargetNode();
         }
 
-/*        
+        /*        
         @Override
         public DockTreeItemBuilder getDockTreeTemBuilder() {
             DockTreeItemBuilder retval = null;
@@ -236,7 +236,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return retval;
             //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
         }
-*/
+         */
         /**
          * For test purpose
          *
@@ -383,7 +383,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             return positionIndicator;
         }
          */
-
         protected String getButtonText(Dockable d) {
             String txt = d.getDockableContext().getTitle();
             if (d.getDockableContext().getProperties().getProperty("user-title") != null) {
@@ -562,32 +561,6 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
         return idx;
 
-    }
-
-    protected int indexOf_old(double x, double y) {
-        List<Node> list = getTabGraphics();
-        int retval = -1;
-        if (list.isEmpty()) {
-            return retval;
-        }
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof Region) {
-                if (list.get(i).localToScreen(list.get(i).getBoundsInLocal()) == null) {
-                    continue;
-                }
-                boolean b = list.get(i).localToScreen(list.get(i).getBoundsInLocal()).contains(x, y);
-                if (b) {
-                    retval = i;
-                    break;
-                }
-            }
-        }
-        if (retval < 0
-                && localToScreen(getBoundsInLocal()).contains(x, y)
-                && contentIndexOf(x, y) < 0) {
-            retval = getTabs().size();
-        }
-        return retval;
     }
 
     protected double getTabAreaHeight() {

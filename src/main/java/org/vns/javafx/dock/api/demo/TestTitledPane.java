@@ -33,7 +33,6 @@ public class TestTitledPane extends Application {
         scene.getRoot().setStyle("-fx-background-color: rgb(223,223,223)");
         HBox content = new HBox();
         TitledPane tp = new TitledPane();
-        tp.setContent(content);
         tp.setCollapsible(false);
         tp.setExpanded(false);
         //tp.setClip(new Button("Button"));
@@ -42,6 +41,8 @@ public class TestTitledPane extends Application {
         root.getChildren().add(tp);
         stage.setScene(scene);
         stage.show();
+        tp.setContent(content);
+        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

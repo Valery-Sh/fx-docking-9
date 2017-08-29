@@ -18,8 +18,6 @@ import javafx.scene.Node;
  *   }
  * </pre>
  *
- * 
- * @see DragNodeGesture
  *
  */
 public interface DragGesture {

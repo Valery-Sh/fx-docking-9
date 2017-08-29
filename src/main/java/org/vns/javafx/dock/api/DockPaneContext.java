@@ -141,12 +141,12 @@ public class DockPaneContext extends TargetContext {
     //@Override
     public void dock(Dockable dockable, Side pos) {
         if (isDocked(dockable.node())) {
-            System.err.println("DOCK 1");
+//            System.err.println("DOCK 1");
             return;
         }
 
         if (doDock(dockable.node(), pos)) {
-            System.err.println("DOCK 2");
+//            System.err.println("DOCK 2");
 
             dockable.getDockableContext().setFloating(false);
         }
@@ -307,8 +307,8 @@ public class DockPaneContext extends TargetContext {
         if (dsp != null) {
             idx = dsp.getItems().indexOf(dockable.node());
         }
-        System.err.println("    *** DockPaneController idx = " + idx);
-        System.err.println("    *** DockPaneController (root == dsp) = " + (root == dsp));
+//        System.err.println("    *** DockPaneController idx = " + idx);
+//        System.err.println("    *** DockPaneController (root == dsp) = " + (root == dsp));
 
         return new Object[]{dsp, idx};
     }
@@ -478,7 +478,7 @@ public class DockPaneContext extends TargetContext {
 
             if (root.getItems().isEmpty()) {
                 root.getItems().add(node);
-                System.err.println("!!!!! dock(Node node, Side dockPos)");
+//                System.err.println("!!!!! dock(Node node, Side dockPos)");
 //19.08                clear();
                 return;
             }

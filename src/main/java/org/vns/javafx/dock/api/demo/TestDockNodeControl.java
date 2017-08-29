@@ -28,20 +28,20 @@ public class TestDockNodeControl extends Application {
         
         Button b1 = new Button("Add or Remove TitleBar");
         Button b2 = new Button("b2r");
-        b1.setGraphic(b2);
-        b1.setOnAction(a->{
-            
-        });
+        //b1.setGraphic(b2);
         Pane p1 = new HBox(b1);
         DockNode custom = new DockNode();
         dockPane.getItems().add(custom);
         custom.setId("custom");
         DockNode custom1 = new DockNode();
+        custom1.setTitle("CUSTOM 1");
         dockPane.getItems().add(custom1);
         custom1.setId("custom1");        
-        
+        //custom1.setContent(b2);                
         b1.setOnAction(a->{
+            custom1.setContent(b2);
             if ( custom.getTitleBar() == null ) {
+                custom1.setContent(b2);                
                 //custom.getDockableContext().createDefaultTitleBar("Now Not Null");
             } else {
                 //custom.setTitleBar(null);

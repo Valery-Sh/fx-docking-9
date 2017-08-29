@@ -36,9 +36,6 @@ import javafx.stage.Window;
  */
 public class StageResizer implements WindowResizer {
 
-    private Double resizeMinWidth;
-    private Double resizeMinHeight;
-
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 

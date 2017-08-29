@@ -1,13 +1,27 @@
-package org.vns.javafx.dock;
+/*
+ * Copyright 2017 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.vns.javafx.dock.incubator;
+
 
 import javafx.beans.DefaultProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -19,49 +33,36 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 @DefaultProperty(value = "content")
-public class DockNode extends Control implements Dockable {
+public class DockNodeOld extends TitledPane implements Dockable {
 
     private DockableContext dockableContext;
-    ObjectProperty<Node> content = new SimpleObjectProperty<>();
-    
-    private VBox delegate;
 
-    public DockNode() {
+    private VBoxCustom delegate;
+
+    public DockNodeOld() {
         init(null, null);
     }
 
-    public DockNode(String title) {
+    public DockNodeOld(String title) {
         init(null, title);
     }
 
-    public DockNode(String id, String title) {
+    public DockNodeOld(String id, String title) {
         init(null, title);
     }
 
     private void init(String id, String title) {
+        setContent(new StackPane());
         contentProperty().addListener(this::contentChanged);
-        
         getStyleClass().add("dock-node");
         dockableContext = new DockableContext(this);
-        dockableContext.titleBarProperty().addListener(this::titlebarChanged);
         dockableContext.createDefaultTitleBar(title);
-        
+        dockableContext.titleBarProperty().addListener(this::titlebarChanged);
         if (id != null) {
             setId(id);
         }
-        
-        setContent(new StackPane());
-        
     }
-    public ObjectProperty<Node> contentProperty() { 
-        return content;
-    }
-    public Node getContent() {
-        return content.get();
-    }
-    public void setContent(Node content) {
-        this.content.set(content);
-    }    
+
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
@@ -76,9 +77,9 @@ public class DockNode extends Control implements Dockable {
         }
     }
 
-    protected VBox getDelegate() {
+    protected VBoxCustom getDelegate() {
         if (delegate == null) {
-            delegate = new VBox();
+            delegate = new VBoxCustom();
         }
         return delegate;
     }
@@ -140,7 +141,7 @@ public class DockNode extends Control implements Dockable {
     protected Skin<?> createDefaultSkin() {
         return new DockNodeSkin(this);
     }
-/*
+
     @Override
     protected double computePrefHeight(double h) {
         return delegate.computePrefHeight(h);
@@ -170,24 +171,23 @@ public class DockNode extends Control implements Dockable {
     protected double computeMaxWidth(double w) {
         return delegate.computeMaxWidth(w);
     }
-*/
-    public static class DockNodeSkin extends SkinBase<DockNode> {
 
-        public DockNodeSkin(DockNode control) {
+    public static class DockNodeSkin extends SkinBase<DockNodeOld> {
+
+        public DockNodeSkin(DockNodeOld control) {
             super(control);
             if (!getChildren().isEmpty()) {
                 getChildren().clear();
             }
             getChildren().add(control.getDelegate());
-/*            if (control.getTitleBar() != null && !control.getDelegate().getChildren().contains(control.getTitleBar())) {
+            if (control.getTitleBar() != null && !control.getDelegate().getChildren().contains(control.getTitleBar())) {
                 control.getDelegate().getChildren().add(control.getTitleBar());
             }
             control.getDelegate().getChildren().add(control.getContent());
-*/
         }
     }
 
-/*    public static class VBoxCustom extends VBox {
+    public static class VBoxCustom extends VBox {
 
         public VBoxCustom() {
         }
@@ -233,6 +233,6 @@ public class DockNode extends Control implements Dockable {
         protected double computeMaxWidth(double w) {
             return super.computeMaxWidth(w);
         }
+
     }
-*/
 }
