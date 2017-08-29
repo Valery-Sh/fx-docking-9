@@ -368,7 +368,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putSingleton(PositionIndicator.class,new SideBarPositonIndicator(this));
+            lookup.putUnique(PositionIndicator.class,new SideBarPositonIndicator(this));
         }
 
         @Override

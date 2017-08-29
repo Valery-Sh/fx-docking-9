@@ -48,7 +48,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
         return targetContext;
     }
 
-    public class DockBorderPaneContext extends TargetContext {
+    public static class DockBorderPaneContext extends TargetContext {
 
         public DockBorderPaneContext(Region dockPane) {
             super(dockPane);
@@ -59,7 +59,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putSingleton(PositionIndicator.class,new BorderPanePositionIndicator(this));
+            lookup.putUnique(PositionIndicator.class,new BorderPanePositionIndicator(this));
         }
         
         @Override
@@ -67,7 +67,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
             boolean retval = true;
             BorderPane target = (BorderPane) getTargetNode();
             BorderPane bp = (BorderPane) getPositionIndicator().getIndicatorPane();
-
+            
             if (target.getTop() == null && DockUtil.contains(bp.getTop(), mousePos.getX(), mousePos.getY())) {
                 target.setTop(node);
             } else if (target.getRight() == null && DockUtil.contains(bp.getRight(), mousePos.getX(), mousePos.getY())) {
@@ -132,31 +132,31 @@ public class DockBorderPane extends BorderPane implements DockTarget {
 
         @Override
         protected Pane createIndicatorPane() {
-            BorderPane borderPane = (BorderPane) getTargetContext().getTargetNode();
+            Pane targetPane = (Pane) getTargetContext().getTargetNode();
             Label topNode = new Label("Top");
             Label rightNode = new Label("Right");
             Label bottomNode = new Label("Bottom");
             Label leftNode = new Label("Left");
             Label centerNode = new Label("Center");
 
-            topNode.prefWidthProperty().bind(borderPane.widthProperty());
-            topNode.prefHeightProperty().bind(borderPane.heightProperty().divide(4));
+            topNode.prefWidthProperty().bind(targetPane.widthProperty());
+            topNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
             topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
-            rightNode.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
-            rightNode.prefWidthProperty().bind(borderPane.widthProperty().divide(4));
+            rightNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
+            rightNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
             leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
-            leftNode.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
-            leftNode.prefWidthProperty().bind(borderPane.widthProperty().divide(4));
+            leftNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
+            leftNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
-            bottomNode.prefWidthProperty().bind(borderPane.widthProperty());
-            bottomNode.prefHeightProperty().bind(borderPane.heightProperty().divide(4));
+            bottomNode.prefWidthProperty().bind(targetPane.widthProperty());
+            bottomNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
             bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-            centerNode.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
-            centerNode.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
+            centerNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
+            centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
             centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode);

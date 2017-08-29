@@ -209,14 +209,14 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
 
         private void init() {
-            //getLookup().putSingleton(PositionIndicator.class,new TabPanePositonIndicator(this));
-            // getLookup().putSingleton(IndicatorPopup.class,new IndicatorPopup(this));
+            //getLookup().putUnique(PositionIndicator.class,new TabPanePositonIndicator(this));
+            // getLookup().putUnique(IndicatorPopup.class,new IndicatorPopup(this));
         }
 
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putSingleton(PositionIndicator.class, new TabPanePositonIndicator(this));
+            lookup.putUnique(PositionIndicator.class, new TabPanePositonIndicator(this));
             lookup.add(new DockTreeItemBuilderFactory());
         }
 

@@ -1,18 +1,14 @@
 package org.vns.javafx.dock.api;
 
-import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 import org.vns.javafx.dock.api.save.AbstractDockStateLoader;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
-import java.util.List;
-import java.util.function.Predicate;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
@@ -38,9 +34,9 @@ public abstract class TargetContext {
 
     private IndicatorPopup indicatorPopup;
     
-    private double resizeMinWidth = -1;
+   // private double resizeMinWidth = -1;
     
-    private double resizeMinHeight = -1;
+   // private double resizeMinHeight = -1;
 
     protected TargetContext(Node targetNode) {
         this.targetNode = targetNode;

@@ -106,7 +106,14 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         }
         targetContext.dock(dockable, side);
     }
+    public void dockNode(Node dockableNode, Side side) {
+        dock( DockRegistry.dockable(dockableNode), side);
+    }
 
+    public void dockNode(Node dockableNode, Side side, Dockable target) {
+        dock( DockRegistry.dockable(dockableNode), side, target);
+    }
+    
     public void dock(Dockable dockable, Side side, Dockable target) {
         if (!getTargetContext().isAcceptable(dockable.node())) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");

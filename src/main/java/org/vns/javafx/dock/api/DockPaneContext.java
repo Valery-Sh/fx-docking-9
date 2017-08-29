@@ -1,21 +1,14 @@
 package org.vns.javafx.dock.api;
 
 import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
-import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.SideIndicator;
 import org.vns.javafx.dock.api.indicator.DragPopup;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Stack;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -23,8 +16,6 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
@@ -32,9 +23,9 @@ import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
+import org.vns.javafx.dock.api.event.DockEvent;
 import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
-import org.vns.javafx.dock.api.save.builder.DockPaneTreeItemBuilder;
 
 public class DockPaneContext extends TargetContext {
 
@@ -55,8 +46,8 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     protected void initLookup(ContextLookup lookup) {
-        lookup.putSingleton(PositionIndicator.class, new PaneSideIndicator(this));
-        lookup.putSingleton(IndicatorPopup.class, new DragPopup(this));
+        lookup.putUnique(PositionIndicator.class, new PaneSideIndicator(this));
+        lookup.putUnique(IndicatorPopup.class, new DragPopup(this));
         lookup.add(new DockTreeItemBuilderFactory());        
     }
 
@@ -144,14 +135,10 @@ public class DockPaneContext extends TargetContext {
 //            System.err.println("DOCK 1");
             return;
         }
-
         if (doDock(dockable.node(), pos)) {
-//            System.err.println("DOCK 2");
-
             dockable.getDockableContext().setFloating(false);
+            getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode()));
         }
-        //return dockable;
-
     }
 /////
 
@@ -212,9 +199,12 @@ public class DockPaneContext extends TargetContext {
 
         //doDock(dockable.node(), side, target);
         Node node = dockable.node();
-
+        
+        DockEvent event = null;
+                
         if (target == null) {
             dock(dockable, side);
+            event = new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode(), side, null);
         } else {
 
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
@@ -224,12 +214,16 @@ public class DockPaneContext extends TargetContext {
             dockable.getDockableContext().setFloating(false);
 //            }
             getDockExecutor().dock(node, side, target);
+            event = new DockEvent(DockEvent.NODE_DOCKED, dockable.node(), getTargetNode(),side, target);
+            
         }
 //        if (DockRegistry.instanceOfDockable(node)) {
         DockableContext nodeController = dockable.getDockableContext();
         if (nodeController.getTargetContext() == null || nodeController.getTargetContext() != this) {
             nodeController.setTargetContext(this);
         }
+        
+        getTargetNode().fireEvent(event);
 //        }
 
     }
@@ -250,6 +244,7 @@ public class DockPaneContext extends TargetContext {
             dsp.getItems().remove(dockNode);
             DockRegistry.dockable(dockNode).getDockableContext().setTargetContext(ph);
             clearEmptySplitPanes(root, dsp);
+            getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_UNDOCKED, dockNode, getTargetNode()));
         }
 //        System.err.println("AFTER remove:");
 //        System.err.println("===================================");

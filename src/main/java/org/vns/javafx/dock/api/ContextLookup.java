@@ -27,7 +27,7 @@ public interface ContextLookup {
     <T> void add(T obj);
     <T> void remove(T obj);
     //<T> void put(Class key, T obj);
-    <T> void putSingleton(Class key, T obj);
+    <T> void putUnique(Class key, T obj);
     <T> void remove(Class key, T obj);
     
 }

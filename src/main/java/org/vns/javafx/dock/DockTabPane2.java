@@ -338,7 +338,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putSingleton(PositionIndicator.class,new TabPanePositonIndicator(this));
+            lookup.putUnique(PositionIndicator.class,new TabPanePositonIndicator(this));
         }
 
         @Override

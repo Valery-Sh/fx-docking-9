@@ -13,6 +13,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.dragging.DragType;
+import org.vns.javafx.dock.api.event.DockEvent;
 
 /**
  *
@@ -22,10 +23,23 @@ public class TestDockNodeControl extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         DockPane dockPane = new DockPane();
+        dockPane.addEventFilter(DockEvent.NODE_DOCKED, ev -> {
+            System.err.println("DockPane eventFilter: getSource()       = " + ev.getSource());
+            System.err.println("DockPane eventFilter: getDockedNode()   = " + ev.getDockedNode());            
+            System.err.println("DockPane eventFilter: getTarget() = " + ev.getTarget());                        
+            System.err.println("DockPane eventFilter: getTargetNode() = " + ev.getTargetNode());                                    
+            System.err.println("DockPane eventFilter: getDockPosition()  0 = " + ev.getDockPosition()[0] + "; 1 = " + ev.getDockPosition()[1] );                                                
+        });
+        dockPane.addEventFilter(DockEvent.NODE_UNDOCKED, ev -> {
+            System.err.println("DockPane eventFilter: getDockedNode()   = " + ev.getDockedNode());            
+            System.err.println("DockPane eventFilter: getTargetNode() = " + ev.getTargetNode());                                    
+            System.err.println("DockPane eventFilter: getDockPosition().length = " + ev.getDockPosition().length);
+        });
+        
         //dockPane.getTargetContext().setDragType(DragType.DRAG_AND_DROP);
         //dockPane.addEventHandler( new );
         dockPane.setId("DOCK PANE");
-        
+        //DockEvent ev = new DockEvent(null, dockPane,DockEvent.NODE_DOCKED);
         Button b1 = new Button("Add or Remove TitleBar");
         Button b2 = new Button("b2r");
         //b1.setGraphic(b2);
