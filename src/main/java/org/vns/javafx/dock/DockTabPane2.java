@@ -102,7 +102,6 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
     @Override
     public void onChanged(ListChangeListener.Change change) {
         itemsChanged(change);
-
     }
 
     protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {

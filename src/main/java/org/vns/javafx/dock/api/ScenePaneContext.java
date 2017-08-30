@@ -36,6 +36,9 @@ public class ScenePaneContext extends TargetContext {
         }
         dockable.node().parentProperty().addListener(parentListener);
     }
+        @Override
+        protected void initLookup(ContextLookup lookup) {
+        }
 
 /*    @Override
     protected PositionIndicator createPositionIndicator() {

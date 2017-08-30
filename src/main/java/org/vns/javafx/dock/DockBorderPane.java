@@ -43,18 +43,53 @@ public class DockBorderPane extends BorderPane implements DockTarget {
     @Override
     public TargetContext getTargetContext() {
         if (targetContext == null) {
-            targetContext = new DockBorderPaneContext(this);
+            targetContext = new BorderPaneContext(this);
         }
         return targetContext;
     }
 
-    public static class DockBorderPaneContext extends TargetContext {
+    public static class BorderPaneContext extends TargetContext {
 
-        public DockBorderPaneContext(Region dockPane) {
+        public BorderPaneContext(Node dockPane) {
             super(dockPane);
             init();
         }
         private void init() {
+            BorderPane pane = (BorderPane) getTargetNode();
+            pane.topProperty().addListener( (ov, oldValue, newValue) -> {
+                if ( oldValue != null ) {
+                    undock(oldValue);
+                }
+                if ( newValue != null ) {
+                    commitDock(newValue);
+                }
+            });
+            pane.rightProperty().addListener( (ov, oldValue, newValue) -> {
+                if ( oldValue != null ) {
+                    undock(oldValue);
+                }
+                if ( newValue != null ) {
+                    commitDock(newValue);
+                }
+            });
+            pane.bottomProperty().addListener( (ov, oldValue, newValue) -> {
+                if ( oldValue != null ) {
+                    undock(oldValue);
+                }
+                if ( newValue != null ) {
+                    commitDock(newValue);
+                }
+            });
+            
+            pane.leftProperty().addListener( (ov, oldValue, newValue) -> {
+                if ( oldValue != null ) {
+                    undock(oldValue);
+                }
+                if ( newValue != null ) {
+                    commitDock(newValue);
+                }
+            });
+            
         }
         @Override
         protected void initLookup(ContextLookup lookup) {

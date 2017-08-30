@@ -32,7 +32,7 @@ public abstract class TargetContext {
 
     private boolean usedAsDockTarget = true;
 
-    private IndicatorPopup indicatorPopup;
+    //private IndicatorPopup indicatorPopup;
     
    // private double resizeMinWidth = -1;
     
@@ -58,9 +58,7 @@ public abstract class TargetContext {
         inititialize();
         getLookup().add(new IndicatorPopup(this));
     }
-    protected void initLookup(ContextLookup lookup) {
-        
-    }
+    protected void initLookup(ContextLookup lookup) { }
             
     protected abstract boolean doDock(Point2D mousePos, Node node);
 
@@ -72,6 +70,16 @@ public abstract class TargetContext {
     public abstract Object getRestorePosition(Dockable dockable);
     
     public abstract void restore(Dockable dockable,Object restoreposition);
+    
+    protected void commitDock(Node node) {
+        if (DockRegistry.instanceOfDockable(node)) {
+            DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
+            if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
+                dockableContext.setTargetContext(this);
+            }
+            dockableContext.setFloating(false);
+        }
+    }
     
     
     /**

@@ -8,6 +8,7 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
@@ -25,7 +26,7 @@ import org.vns.javafx.dock.api.DockRegistry;
  *
  * @author Valery
  */
-public class TestDockTabPane extends Application {
+public class TestTabPaneTargetContext1 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -139,7 +140,9 @@ public class TestDockTabPane extends Application {
         stg01tab01.setTitle("DockTab 01");
         stg01dp01.dock(stg01tab01, Side.RIGHT);
          */
-        DockTabPane tabPane01 = new DockTabPane();
+        TabPane tabPane01 = new TabPane();
+        DockRegistry.getInstance().registerAsDockTarget(tabPane01);
+        
 //        tabPane01.setPrefSize(100, 100);
 //        tabPane01.setMinSize(100, 100);
         tabPane01.setSide(Side.TOP);
@@ -161,12 +164,12 @@ public class TestDockTabPane extends Application {
         //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
         //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
         
-        stg01dp01.dock(tabPane01, Side.TOP);
+        stg01dp01.dock(DockRegistry.getInstance().getDefaultDockable(tabPane01), Side.TOP);
         
 
         //tabPane01.setSide(Side.RIGHT);
         btn03.setOnAction(a -> {
-            System.err.println("tabPane01.getChildren().size()=" + tabPane01.getChildren().size());
+/*            System.err.println("tabPane01.getChildren().size()=" + tabPane01.getChildren().size());
             tabPane01.getChildren().forEach(n -> {
                 System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
 
@@ -184,6 +187,7 @@ public class TestDockTabPane extends Application {
                 System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
 
             });
+            */
         });
 
         stage.show();

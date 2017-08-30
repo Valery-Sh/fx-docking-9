@@ -18,7 +18,6 @@ package org.vns.javafx.dock.api.dragging;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *

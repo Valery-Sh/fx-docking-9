@@ -196,9 +196,6 @@ public class DockUtil {
         });
     }
 
-    public static boolean contains(Region node, double x, double y) {
-        return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
-    }
     public static boolean contains(Node node, double x, double y) {
         return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
     }    

@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -29,8 +30,10 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.DockTabPane.TabPaneContext;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.save.DockStateLoader;
 
@@ -38,7 +41,7 @@ import org.vns.javafx.dock.api.save.DockStateLoader;
  *
  * @author Valery
  */
-public class TestDockPane1NEW extends Application {
+public class TestDockPane1NEW2 extends Application {
 
     Stage stage;
     Scene scene;
@@ -88,16 +91,19 @@ public class TestDockPane1NEW extends Application {
 //        String s = loader.toString(dockPane1);
 //        System.err.print(s);
         
-        DockTabPane dockTabPane1 = new DockTabPane();
-        loader.register("dockTabPane1", dockTabPane1);
+        TabPane dockTabPane1 = new TabPane();
+        DockRegistry.getInstance().registerAsDockTarget(dockTabPane1);
+        
+        //loader.register("dockTabPane1", dockTabPane1);
         Button tabButton1 = new Button("Tab Button1");
         DockNode tabDnc1 = new DockNode(" tab Dnc1");
         tabDnc1.setId("tabDnc1");
         DockNode tabDnc2 = new DockNode(" tab Dnc2");
         tabDnc2.setId("tabDnc2");
+        TabPaneContext ctx = (TabPaneContext) DockRegistry.dockTarget(dockTabPane1).getTargetContext();
+        ctx.doDock(0,(Node)tabDnc1);
+        ctx.doDock(1,(Node)tabDnc2);
         
-        dockTabPane1.dock(tabDnc1);
-        dockTabPane1.dock(tabDnc2);
         Tab tab = new Tab("Not dock Tab",tabButton1);
         //dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);

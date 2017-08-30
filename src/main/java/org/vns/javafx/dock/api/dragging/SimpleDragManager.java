@@ -318,6 +318,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         //IndicatorPopup newPopup = DockRegistry.dockTarget(root).getTargetContext().getIndicatorPopup();
         //if ( newPopup instanceof DragPopup ) {
         IndicatorPopup newPopup =  DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorPopup.class);
+        newPopup.setDraggedNode(getDockable().node());
         //        if ( popup != newPopup && (popup instanceof DragPopup) && (newPopup instanceof DragPopup) ) {
 //            System.err.println("*********** POPUP = " + popup);
 //            System.err.println("*********** NEW POPUP = " + newPopup);

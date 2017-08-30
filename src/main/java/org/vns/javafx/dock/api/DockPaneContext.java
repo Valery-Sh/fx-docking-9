@@ -160,7 +160,6 @@ public class DockPaneContext extends TargetContext {
             }
             dockableContext.setFloating(false);
         }
-
     }
 
     /*13.07    private boolean doDock(Node node, Side dockPos, Dockable targetDockable) {

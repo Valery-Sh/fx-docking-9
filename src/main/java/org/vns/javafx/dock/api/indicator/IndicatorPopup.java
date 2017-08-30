@@ -78,6 +78,18 @@ public class IndicatorPopup extends Popup {
      */
     private final TargetContext targetContext;
 
+    public Node getDraggedNode() {
+        return draggedNode;
+    }
+
+    public void setDraggedNode(Node draggedNode) {
+        this.draggedNode = draggedNode;
+    }
+    
+    private ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
+    
+    private Node draggedNode;
+
     /**
      * Creates a new instance for the specified pane handler.
      *
@@ -101,7 +113,6 @@ public class IndicatorPopup extends Popup {
         return context.getLookup().lookup(IndicatorPopup.class);
     }
 
-    private ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
 
     @Override
     public void show(Window ownerWindow) {

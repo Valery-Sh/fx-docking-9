@@ -399,6 +399,19 @@ public class DockRegistry {
         }
 
     }
+    public DockTarget registerAsDockTarget(Node node) {
+        if (isDockTarget(node)) {
+            return dockTarget(node);
+        }
+        TargetContextFactory f = new TargetContextFactory();
+        TargetContext c = f.getContext(node);
+        if ( c == null ) {
+            return null;
+        }
+        DockTarget dt = new DefaultDockTarget(node, c);
+        register(dt);
+        return dt;
+    }
 
     public Dockable getDefaultDockable(Node node) {
         if (node instanceof Dockable) {
@@ -511,4 +524,27 @@ public class DockRegistry {
         }
 
     }
+    public static class DefaultDockTarget implements DockTarget {
+
+        private final Node node;
+        private TargetContext context;
+
+        public DefaultDockTarget(Node node, TargetContext context) {
+            super();
+            this.node = node;
+            this.context = context;
+        }
+
+        @Override
+        public Node target() {
+            return node;
+        }
+
+        @Override
+        public TargetContext getTargetContext() {
+            return context;
+        }
+
+    }
+    
 }
