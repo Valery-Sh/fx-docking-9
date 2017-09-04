@@ -31,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -39,6 +40,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextFlow;
 import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.DockBorderPane.BorderPaneContext;
 import org.vns.javafx.dock.DockTabPane.TabPaneContext;
@@ -76,6 +78,10 @@ public class TargetContextFactory {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof TabPane) {
             retval = new TabPaneContext(targetNode);
+        } else if (targetNode instanceof TextFlow) {
+            retval = new ListBasedTargetContext(targetNode);
+        }  else if (targetNode instanceof AnchorPane) {
+            retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof Pane) {
             retval = getPaneContext((Pane) targetNode);
         }
@@ -104,34 +110,7 @@ public class TargetContextFactory {
         }
 
         private void init() {
-        
             ((StackPane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this)); 
-            /*{
-                @Override
-                public void onChanged(ListChangeListener.Change<? extends Node> change) {
-                    while (change.next()) {
-                        if (change.wasRemoved()) {
-                            List<? extends Node> list = change.getRemoved();
-                            for (Node d : list) {
-                                if (DockRegistry.isDockable(d)) {
-                                    undock(d);
-                                }
-                            }
-
-                        }
-                        if (change.wasAdded()) {
-                            for (int i = change.getFrom(); i < change.getTo(); i++) {
-                                if (DockRegistry.isDockable(change.getList().get(i))) {
-                                    commitDock(change.getList().get(i));
-                                }
-
-                            }
-                        }
-                    }//while
-                }
-
-            });
-*/
         }
 
         @Override
@@ -175,6 +154,7 @@ public class TargetContextFactory {
         @Override
         public void remove(Node dockNode) {
             System.err.println("REMOVE ____________________");
+            ((StackPane)getTargetNode()).getChildren().remove(dockNode);
             //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -530,34 +510,8 @@ public class TargetContextFactory {
 
         private void init() {
             listBased = true;
-
             items = getNodeList(getTargetNode());
             items.addListener(new NodeListChangeListener(this));
-/*                @Override
-                public void onChanged(ListChangeListener.Change<? extends Node> change) {
-                    while (change.next()) {
-                        if (change.wasRemoved()) {
-                            List<? extends Node> list = change.getRemoved();
-                            for (Node d : list) {
-                                if (DockRegistry.isDockable(d)) {
-                                    undock(d);
-                                }
-                            }
-
-                        }
-                        if (change.wasAdded()) {
-                            for (int i = change.getFrom(); i < change.getTo(); i++) {
-                                if (DockRegistry.isDockable(change.getList().get(i))) {
-                                    commitDock(change.getList().get(i));
-                                }
-
-                            }
-                        }
-                    }//while
-                }
-
-            });
-*/                
         }
 
         @Override

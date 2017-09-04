@@ -114,7 +114,7 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            dockNode.getDockableContext().dockable().node().toFront();
+            //03.09 dockNode.getDockableContext().dockable().node().toFront();
         });
         closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
         stateButton.setTooltip(new Tooltip("Undock pane"));

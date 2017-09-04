@@ -213,9 +213,6 @@ public class FloatStageView implements FloatWindowView{
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
 
-                //addResizer(getDockable.node().getScene().getWindow(), getDockable);
-//System.err.println("2 FloatingStageView CONVERT THE SAME");                
-                //addResizer();
                 dockable.getDockableContext().getTargetContext().undock(dockable.node());
                 return dockable.node().getScene().getWindow();
             }

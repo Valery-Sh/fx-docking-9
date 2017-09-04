@@ -75,7 +75,7 @@ public interface FloatWindowView extends FloatView<Window> {
         return bp;
     }
     
-    public static class MouseResizeHandler1 implements EventHandler<MouseEvent> {
+/*    public static class MouseResizeHandler1 implements EventHandler<MouseEvent> {
 
         private boolean cursorSupported = false;
         private FloatWindowView windowView;
@@ -150,6 +150,7 @@ public interface FloatWindowView extends FloatView<Window> {
         }
 
     }//class MouseResizeHandler
+*/
     public static class MouseResizeHandler implements EventHandler<MouseEvent> {
 
         private boolean cursorSupported = false;
@@ -191,9 +192,6 @@ public interface FloatWindowView extends FloatView<Window> {
                     return;
                 }
                 if ( ! windowView.getResizer().isStarted()) {
-//                System.err.println("4 FloatWindowView MouseHandler. resizer = " + windowView.getResizer());                
-//                System.err.println("4 FloatWindowView befor start MouseHandler. cursor = " + windowView.getFloatingWindow().getScene().getCursor());                                
-        
                    windowView. getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
                 } else {
                     Platform.runLater(() -> {
