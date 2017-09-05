@@ -28,7 +28,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.api.dragging.view.NodeResizer3.windowBounds;
+import static org.vns.javafx.dock.api.dragging.view.NodeResizer.windowBounds;
 
 /**
  *
@@ -41,11 +41,11 @@ public class NodeResizeExecutor implements WindowResizer{
 
     private Cursor cursor;
     //private Window window;
-    private NodeResizer3 nodeResizer;
+    private NodeResizer nodeResizer;
 
     private Region node;
 
-    public NodeResizer3 getNodeResizer() {
+    public NodeResizer getNodeResizer() {
         return nodeResizer;
     }
 
@@ -55,7 +55,7 @@ public class NodeResizeExecutor implements WindowResizer{
     private Window window;
     private final Set<Cursor> cursorTypes = new HashSet<>();
 
-    public NodeResizeExecutor(NodeResizer3 nodeResizer) {
+    public NodeResizeExecutor(NodeResizer nodeResizer) {
         this(nodeResizer.getWindow(), nodeResizer.getNode());
         this.nodeResizer = nodeResizer;
     }
@@ -78,6 +78,7 @@ public class NodeResizeExecutor implements WindowResizer{
     }
 //static int COUNT = 0;
 
+    @Override
     public void resize(double x, double y) {
         if (!node.isManaged()) {
             resizeUnmanaged(x, y);
@@ -134,60 +135,13 @@ public class NodeResizeExecutor implements WindowResizer{
         }
         Region root = (Region) getWindow().getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        //NodeResizer3.NodeLayout nodeLayout = getNodeResizer().nodeLayout;
+        
             if (wDelta + getWindow().getWidth() > getMinWidth()) {
                 if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
                     double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
-         /*           if (cursor == Cursor.W_RESIZE) {
-                        if (wDelta < 0 && nodeLayout.getPrefWidth() > nodeLayout.getWidth()) {
-
-                        } else if (wDelta < 0 && wDelta + node.getPrefWidth() > nodeLayout.actualMinWidth()
-                                && nodeLayout.getPrefWidth() == node.getWidth()) {
-                            System.err.println("1 wDelta =  = " + wDelta);
-                            System.err.println("2 node.geWidth = " + node.getWidth());
-                            System.err.println("3 layout.actualMaxWidth = " + nodeLayout.actualMaxWidth());
-                            System.err.println("3.1 node.getMaxWidth = " + node.getMaxWidth());
-                            System.err.println("3.2 node.maxWidth(-1) = " + node.maxWidth(-1));
-                            System.err.println("3.3 node.maxWidth(h) = " + node.maxWidth(node.getMinHeight()));
-                            System.err.println("3.4 node.maxWidth(h) = " + node.maxWidth(node.getHeight()));
-
-                            System.err.println("----------------------------------------------");
-
-                            node.setTranslateX(nodeNewX + xDelta);
-                            node.setPrefWidth(wDelta + node.getPrefWidth());
-                        } else if (wDelta < 0 && wDelta + node.getPrefWidth() > nodeLayout.actualMinWidth()
-                                && nodeLayout.getPrefWidth() > node.getWidth()) {
-                            System.err.println("--.1 wDelta =  = " + wDelta);
-                            System.err.println("--- 2 node.geWidth = " + node.getWidth());
-                            System.err.println("--- 3 layout.actualMaxWidth = " + nodeLayout.actualMaxWidth());
-                            System.err.println("--- 3.1 node.getMaxWidth = " + node.getMaxWidth());
-                            System.err.println("--- 3.2 node.maxWidth(-1) = " + node.maxWidth(-1));
-                            System.err.println("--- 3.3 node.maxWidth(h) = " + node.maxWidth(node.getMinHeight()));
-                            System.err.println("--- 3.4 node.maxWidth(h) = " + node.maxWidth(node.getHeight()));
-
-                            System.err.println("----------------------------------------------");
-                        } else if (wDelta > 0 && nodeLayout.getPrefWidth() <= nodeLayout.getWidth() && node.getWidth() < nodeLayout.actualMaxWidth()) {
-                            System.err.println("3 wDelta =  = " + wDelta);
-                            System.err.println("4 node.geWidth = " + node.getWidth());
-                            System.err.println("5 layout.actualMaxWidth = " + nodeLayout.actualMaxWidth());
-
-                            System.err.println("----------------------------------------------");
-                            node.setTranslateX(nodeNewX + xDelta);
-                            node.setPrefWidth(wDelta + node.getPrefWidth());
-                        } else if (wDelta > 0 && nodeNewX + xDelta > 0) {
-                            System.err.println("6 wDelta =  = " + wDelta);
-                            System.err.println("7 node.geWidth = " + node.getWidth());
-                            System.err.println("8 layout.actualMaxWidth = " + nodeLayout.actualMaxWidth());
-                            System.err.println("----------------------------------------------");
-                            node.setTranslateX(nodeNewX + xDelta);
-                            node.setPrefWidth(wDelta + node.getPrefWidth());
-                        }
-*/                        
-//                    } else {
                     if (cursor == Cursor.W_RESIZE) {
                         node.setTranslateX(nodeNewX + xDelta);
                         node.setPrefWidth(wDelta + node.getPrefWidth());
-                        //nodeResizer.savePrefWidth(wDelta + node.getPrefWidth());
                     } else {
                         node.setPrefWidth(wDelta + node.getPrefWidth());
                     }
@@ -204,15 +158,11 @@ public class NodeResizeExecutor implements WindowResizer{
                         node.setPrefHeight(hDelta + node.getPrefHeight());
                     } else {
                         node.setPrefHeight(hDelta + node.getPrefHeight());
-                        //nodeResizer.savePrefHeight(hDelta + node.getPrefHeight());
                     }
 
-                    // double h = ((Region) node).getHeight();
                     mouseY.set(curY);
                 }
             }
-            //node.autosize();
-            //node.getParent().layout();
             windowBounds(window, (Region) node);
          
     }
@@ -275,11 +225,7 @@ public class NodeResizeExecutor implements WindowResizer{
         double oldHeight = node.getHeight();
 
         double newX = oldX + xDelta;
-        //double Y = node.getBoundsInParent().getMinY() - node.getLayoutY();                    
         double newY = oldY + yDelta;
-        //((Region) node).setTranslateX(newX + xDelta);
-        //((Region) node).setPrefWidth(wDelta + ((Region) node).getPrefWidth());
-        //System.err.println("NODE isManaged=" + node.isManaged());
         double newWidth = wDelta + oldWidth;
         double newHeight = hDelta + oldHeight;
 

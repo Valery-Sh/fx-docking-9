@@ -28,7 +28,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.api.dragging.view.NodeResizer2.windowBounds;
 
 /**
  *
@@ -282,7 +281,7 @@ public class PopupBasedNodeResizeExecutor {
         double newHeight = hDelta + oldHeight;
 
         node.resizeRelocate(newX, newY, newWidth, newHeight);
-        windowBounds(window, (Region) node);
+        //windowBounds(window, (Region) node);
         mouseX.set(curX);
         mouseY.set(curY);
     }

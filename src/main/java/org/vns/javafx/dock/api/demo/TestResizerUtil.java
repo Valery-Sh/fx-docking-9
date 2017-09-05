@@ -33,7 +33,6 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.view.NodeResizer;
-import org.vns.javafx.dock.api.dragging.view.NodeResizer.Options;
 
 /**
  *
@@ -93,9 +92,11 @@ public class TestResizerUtil extends Application {
         stage2.setAlwaysOnTop(true);
         stage2.show();
 
-        NodeResizer nr = new NodeResizer(custom1, Options.POPUPCONTROL, Options.APPLY_TRANSLATE_TRANSFORS);
+        NodeResizer nr = new NodeResizer(custom1);
         custom1.setTranslateX(50);
-        nr.start();
+        //nr.setWindowType(NodeResizer.WindowType.STAGE);
+        nr.setApplyFtranslateXY(true);
+        nr.show();
         
         //ResizeUtil.start(custom1, false);
 

@@ -32,7 +32,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.dragging.view.NodeResizer3;
+import org.vns.javafx.dock.api.dragging.view.NodeResizer;
 import org.vns.javafx.dock.api.dragging.view.PopupBasedNodeResizer;
 
 /**
@@ -97,9 +97,9 @@ public class TestResizerUtilForVbox extends Application {
         stage2.setAlwaysOnTop(true);
         stage2.show();
 
-        NodeResizer3 nr = new NodeResizer3(btn);
+        NodeResizer nr = new NodeResizer(btn);
         //btn.setManaged(false);
-        nr.setWindowType(NodeResizer3.WindowType.STAGE);
+        nr.setWindowType(NodeResizer.WindowType.STAGE);
         //custom1.setTranslateX(50);
         nr.show();
         //PopupBasedNodeResizer pnr = new PopupBasedNodeResizer(btn);
