@@ -100,6 +100,7 @@ public class DefaultContextLookup implements ContextLookup {
     }
 //    @Override
 
+    @Override
     public <T> void remove(T obj) {
         List<Class> toDelete = new ArrayList<>();
         lookup.keySet().forEach(clazz -> {

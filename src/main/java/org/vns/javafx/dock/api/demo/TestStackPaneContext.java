@@ -2,6 +2,7 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -24,6 +25,7 @@ public class TestStackPaneContext extends Application {
     public void start(Stage primaryStage) throws Exception {
         StackPane primaryRoot = new StackPane();
         DockRegistry.getInstance().registerAsDockTarget(primaryRoot);
+        primaryRoot.setAlignment(Pos.TOP_LEFT);
         
         primaryRoot.addEventFilter(DockEvent.NODE_DOCKED, ev -> {
             System.err.println("DockPane eventFilter: getSource()       = " + ev.getSource());

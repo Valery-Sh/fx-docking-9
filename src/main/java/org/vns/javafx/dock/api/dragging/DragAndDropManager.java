@@ -142,7 +142,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         ev.consume();
     }
      */
-    public void dragDetected(MouseEvent ev, Point2D startMousePos) {
+    public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
         System.err.println("DRAG MANGER " + this);
         System.err.println("dragDetected targetController " + dockable.getDockableContext().getTargetContext());
         dragSource = (Node) ev.getSource();

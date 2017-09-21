@@ -200,7 +200,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      */
     //public Point2D startScreenMousePos;
     @Override
-    public void dragDetected(MouseEvent ev, Point2D startMousePos) {
+    public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
         
         this.startMousePos = startMousePos;
         this.dragSource = (Node) ev.getSource();

@@ -58,9 +58,9 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * @author Valery Shyshkin
  */
 public class DockableContext {
-    
-    private final ContextLookup lookup;
-            
+
+    private ContextLookup lookup;
+
     private final TitleBarProperty<Region> titleBar;
 
     private final StringProperty title = new SimpleStringProperty("");
@@ -107,6 +107,17 @@ public class DockableContext {
         scenePaneContext = new ScenePaneContext(dockable);
         targetContext.set(scenePaneContext);
         targetContext.addListener(this::targetContextChanged);
+    }
+
+    public ContextLookup getLookup() {
+        if (lookup == null) {
+            lookup = new DefaultContextLookup();
+            initLookup(lookup);
+        }
+        return lookup;
+    }
+
+    protected void initLookup(ContextLookup lookup) {
     }
 
     protected void addShowingListeners() {
@@ -167,20 +178,20 @@ public class DockableContext {
      */
     public void setDragNode(Node dragSource) {
         this.dragNode.set(dragSource);
-/*        if (dragManager != null) {
+        /*        if (dragManager != null) {
             dragManager.setDragNode(dragSource);
         }
-*/
+         */
     }
 
-/*    public DragManager getDragManager() {
+    /*    public DragManager getDragManager() {
         return dragManager;
     }
-*/
+     */
     /**
      * @return an object used as a manager when drag operation is detected.
      */
-/*    protected DragManager initDragManager() {
+    /*    protected DragManager initDragManager() {
         Window w = null;//
         if (dockable().node().getScene() != null && dockable().node().getScene().getWindow() != null) {
             w = dockable().node().getScene().getWindow();
@@ -203,7 +214,7 @@ public class DockableContext {
         dragManager.addEventHandlers(getDragNode());
         return dragManager;
     }
-*/
+     */
     /**
      * If {@code true} the node specified by the method {@code node()} may be
      * considered as a dock target. This means that an indicator pane which
@@ -286,10 +297,9 @@ public class DockableContext {
     }
 
     /**
-     * Specifies a TargetContext currently assigned to this object. The
-     * context is assigned to this object when the last is docked. When this
-     * object is created then the value of type {@link ScenePaneContext} is
-     * assigned.
+     * Specifies a TargetContext currently assigned to this object. The context
+     * is assigned to this object when the last is docked. When this object is
+     * created then the value of type {@link ScenePaneContext} is assigned.
      *
      * @return an object of type {@link TargetContext }
      */
@@ -299,8 +309,8 @@ public class DockableContext {
 
     /**
      * Returns an instance of type
-     * {@link org.vns.javafx.dock.api.TargetContext}. The pane context
-     * is assigned to this object when the last is docked. When this object is
+     * {@link org.vns.javafx.dock.api.TargetContext}. The pane context is
+     * assigned to this object when the last is docked. When this object is
      * created then the value of type {@link ScenePaneContext} is assigned.
      *
      * @return an instance of type
@@ -321,8 +331,8 @@ public class DockableContext {
     }
 
     /**
-     * Returns the instance of type {@link Dockable} that this context
-     * belongs to. The value is the same that was used to create this object.
+     * Returns the instance of type {@link Dockable} that this context belongs
+     * to. The value is the same that was used to create this object.
      *
      * @return the instance of type {@link Dockable}
      */
@@ -504,7 +514,7 @@ public class DockableContext {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
 
-/*        if (dragManager != null) {
+        /*        if (dragManager != null) {
             if (oldValue != null) {
                 dragManager.removeEventHandlers(oldValue);
             }
@@ -513,7 +523,7 @@ public class DockableContext {
             }
 //            dragManager.titlebarChanged(ov, oldValue, newValue);
         }
-*/
+         */
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {
@@ -571,26 +581,24 @@ public class DockableContext {
                 ev.consume();
                 return;
             }
-            
+
             //targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            
             if (!dockable.getDockableContext().isFloating()) {
                 DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 //dm.setStartMousePos(startMousePos);
-                dm.dragDetected(ev, startMousePos);
+                dm.mouseDragDetected(ev, startMousePos);
 //                targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
 //                targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
                 dockable.getDockableContext().setFloating(true);
-                
+
             } else {
 //                System.err.println("FLOATING !!!");
                 DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
-                dm.dragDetected(ev, startMousePos);                
+                dm.mouseDragDetected(ev, startMousePos);
                 //dm.setStartMousePos(startMousePos);
-                
+
 //                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
 //                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
-                
             }
 
         }

@@ -33,74 +33,33 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.view.NodeResizer;
-import org.vns.javafx.dock.api.dragging.view.PopupBasedNodeResizer;
 
 /**
  *
  * @author Valery
  */
-public class TestResizerUtilForVbox extends Application {
+public class TestNodeResizerForDoc extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        DockPane rootPane = new DockPane();
-        Button b1 = new Button("Add or Remove TitleBar");
-        Button b2 = new Button("b2r");
-        //b1.setGraphic(b2);
-        Pane p1 = new HBox(b1);
-        DockNode custom = new DockNode();
-        rootPane.dock(custom, Side.TOP);
 
-        DockNode custom1 = new DockNode();
-        custom1.setTitle("CUSTOM 1");
-        custom1.setId("custom1");
-        custom.setContent(p1);
-
-        StackPane sp = new StackPane();
-        sp.setStyle("-fx-border-width:5; -fx-border-color:red;-fx-background-color: transparent");
-        //sp.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
-        Scene scene = new Scene(sp);
-        scene.setFill(null);
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setTitle("JavaFX and Maven");
-        stage.setScene(scene);
-
-        stage.setOnShown(s -> {
-            DockUtil.print(b1);
-        });
-        stage.setAlwaysOnTop(true);
-        stage.setWidth(200);
-        stage.setHeight(100);
-        stage.show();
-
-        VBox rootPane2 = new VBox();
+        VBox root = new VBox();
         
-        rootPane2.setPadding(new Insets(10d, 10d, 10d, 10d));
-        rootPane2.setStyle("-fx-background-color: green");
-        custom1.setStyle("-fx-border-color: blue; -fx-border-width: 2; -fx-background-color: yellow");
-        rootPane2.setMinWidth(200);
-        rootPane2.setMinHeight(100);
+        //rootPane2.setStyle("-fx-background-color: green");
+        root.setMinWidth(200);
+        root.setMinHeight(100);
         //rootPane2.getChildren().add(custom1);
         Button btn = new Button("Button 1");
-        Button btn2 = new Button("Button 2");
-        rootPane2.getChildren().addAll(custom1, btn);
-        custom1.setMinHeight(50);
-        Stage stage2 = new Stage();
-        //stage2.initStyle(StageStyle.TRANSPARENT);
-        Scene scene2 = new Scene(rootPane2);
-        stage2.setScene(scene2);
-        stage2.setY(stage.getY() + stage.getHeight() + 20);
-        //stage2.setWidth(200);
-        //stage2.setHeight(100);
-        //stage2.sizeToScene();
-        //custom1.setTitleBar(null);
-        stage2.setAlwaysOnTop(true);
-        stage2.show();
+        root.getChildren().addAll(btn);
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
 
         NodeResizer nr = new NodeResizer(btn);
-        //btn.setManaged(false);
         nr.setWindowType(NodeResizer.WindowType.STAGE);
-        //custom1.setTranslateX(50);
+        btn.setTranslateX(50);
+        nr.setApplyFtranslateXY(true);
+        nr.setHideOnMouseRelease(true);
         nr.show();
         //PopupBasedNodeResizer pnr = new PopupBasedNodeResizer(btn);
         //pnr.show();

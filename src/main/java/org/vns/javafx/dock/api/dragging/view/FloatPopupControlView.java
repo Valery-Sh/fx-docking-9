@@ -24,7 +24,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;

@@ -16,10 +16,8 @@
 package org.vns.javafx.dock.api.event;
 
 import javafx.event.Event;
-import javafx.event.EventTarget;
 import javafx.event.EventType;
 import javafx.scene.Node;
-import javafx.stage.WindowEvent;
 
 /**
  *
@@ -30,13 +28,14 @@ public class DockEvent extends Event {
     public static final EventType<DockEvent> NODE_DOCKED = new EventType<>("node-docked");    
     public static final EventType<DockEvent> NODE_UNDOCKED  = new EventType<>("node-undocked");    ;    
     
-    private Node dockedNode;
-    private Node targetNode;
+    private final Node dockedNode;
+    private final Node targetNode;
     
-    private Object[] dockPosition;
+    private final Object[] dockPosition;
             
     public DockEvent(EventType<? extends Event> eventType, Node dockedNode, Node targetNode, Object... dockPosition) {
         super(eventType);
+        
         this.dockedNode = dockedNode;
         this.targetNode = targetNode;
         this.dockPosition = dockPosition;

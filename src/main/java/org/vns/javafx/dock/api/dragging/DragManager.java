@@ -29,7 +29,7 @@ public interface DragManager { //extends EventHandler<MouseEvent> {
     
     Dockable getDockable();
     
-    void dragDetected(MouseEvent ev, Point2D startMousePos);
+    void mouseDragDetected(MouseEvent ev, Point2D startMousePos);
     /**
      * The method is called when the user presses a primary mouse button. Saves
      * the screen position of the mouse screen cursor.
