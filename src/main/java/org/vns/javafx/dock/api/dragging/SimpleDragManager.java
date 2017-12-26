@@ -30,7 +30,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
-import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  * The class manages the process of dragging of the object of type

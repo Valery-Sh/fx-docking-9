@@ -45,12 +45,10 @@ public class FloatViewFactory {
         if ( node.getScene() != null && node.getScene().getWindow() != null) {
             w = node.getScene().getWindow();
         }
-        if ( w == null ) {
+        if ( w == null || !(w instanceof EmbeddedWindow)) {
             v = new FloatStageView(dragManager.getDockable());
         } else if ( w instanceof EmbeddedWindow ) {
             v = new FloatPopupControlView(dragManager.getDockable());
-        } else {
-            v = new FloatStageView(dragManager.getDockable());
         }
     
         return v;
