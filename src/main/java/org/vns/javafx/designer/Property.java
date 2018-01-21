@@ -15,18 +15,18 @@
  */
 package org.vns.javafx.designer;
 
-import javafx.beans.DefaultProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Control;
-import javafx.scene.layout.Pane;
+/**
+ *
+ * @author Valery
+ */
+public class Property {
+    private String name;
 
-@DefaultProperty("descriptors")
-public class GraphDescriptor extends Control {
-    private ObservableList<NodeDescriptor> descriptors = FXCollections.observableArrayList();
-
-    public ObservableList<NodeDescriptor> getDescriptors() {
-        return descriptors;
+    public String getName() {
+        return name;
     }
-    
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

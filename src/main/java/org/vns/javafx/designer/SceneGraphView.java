@@ -154,11 +154,6 @@ public class SceneGraphView extends Control {
     }
 
     protected TreeItemEx createSceneGraph(Node node) {
-//20.01        TreeItemEx item = null;
-//20.01        if (TreeItemBuilderRegistry.getInstance().exists(node)) {
-
-//20.01item = TreeItemBuilderRegistry.getInstance().getBuilder(node).build(node);
-//20.01        }
         TreeItemBuilder builder = new TreeItemBuilder();
         TreeItemEx item = builder.build(node);
         item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
@@ -292,19 +287,9 @@ public class SceneGraphView extends Control {
             //
             // Try transfer data to the place
             //
-//            System.err.println("ev modif = " + ev.getAcceptedTransferMode() + "; isDropCompleted=" + ev.isDropCompleted());
             if (targetItem != null && !ev.isDropCompleted()) {
                 ItemValue targetValue = targetItem.getValue();
                 TreeItem place = ((TreeCell) ev.getGestureTarget()).getTreeItem();
-                /*                TreeItemBuilder targetBuilder;
-                if (targetValue.isPlaceholder() && targetValue.getTreeItemObject() == null) {
-                    TreeItemEx p = (TreeItemEx) targetItem.getParent();
-                    targetBuilder = p.getValue().getBuilder().getPlaceHolderBuilder(targetItem);
-                } else {
-                    targetBuilder = TreeItemBuilderRegistry.getInstance().getBuilder(targetValue.getTreeItemObject());
-                }
-                targetBuilder.accept(treeView, (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
-                 */
                 //20.01targetValue.getBuilder().accept(treeView, (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
 
                 ev.setDropCompleted(true);

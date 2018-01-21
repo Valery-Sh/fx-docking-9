@@ -46,25 +46,34 @@ public class TreeItemBuilder {
 
         nc.getContentProperties().forEach(cp -> {
             Object cpObj = adapter.get(cp.getName());
-            boolean isplaceholder = cp.isPlaceholder();
-            boolean hideIfNull = cp.isHideIfNull();
+            boolean isplaceholder = false;
+            boolean hideIfNull = false;
 
+            if ( cp instanceof PlaceholderProperty ) {
+                isplaceholder = true;
+                hideIfNull = ((PlaceholderProperty)cp).isHideIfNull();
+            }
             if (!isplaceholder && cpObj != null) {
                 if (List.class.isAssignableFrom(cpObj.getClass())) {
                     List ls = (List) cpObj;
+                    int cpIdx = nc.getContentProperties().indexOf(cp);
                     for (int i = 0; i < ls.size(); i++) {
-                        retval.getChildren().add(build(ls.get(i)));
+                        TreeItemEx item = build(ls.get(i));
+                        item.getValue().setPlaceholderIndex(cpIdx);
+                        retval.getChildren().add(item);
                     }
                 } else {
-                    retval.getChildren().add(build(cpObj));
+                    TreeItemEx item = build(cpObj);
+                    item.getValue().setPlaceholderIndex(nc.getContentProperties().indexOf(cp));
+                    retval.getChildren().add(item);
                 }
             } else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
                 // Do nothing
             } else {
-                TreeItemEx item = createPlaceholder(cpObj, cp);
+                TreeItemEx item = createPlaceholder(cpObj, (PlaceholderProperty)cp);
                 item.getValue().setPlaceholderIndex(nc.getContentProperties().indexOf(cp));
                 retval.getChildren().add(item);
-                if ( cpObj != null ) {
+                if (cpObj != null) {
                     build(cpObj);
                 }
             }
@@ -109,7 +118,7 @@ public class TreeItemBuilder {
         return retval;
     }
      */
-    protected HBox createPlaceholderContent(Object obj, ContentProperty cp) {
+    protected HBox createPlaceholderContent(Object obj, PlaceholderProperty cp) {
         Label iconLabel = new Label();
         HBox retval = new HBox(iconLabel);
         //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
@@ -190,7 +199,7 @@ public class TreeItemBuilder {
         return item;
     }
 
-    public final TreeItemEx createPlaceholder(Object obj, ContentProperty cp) {
+    public final TreeItemEx createPlaceholder(Object obj, PlaceholderProperty cp) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -215,7 +224,7 @@ public class TreeItemBuilder {
 
     ////////////////////////////////////////////////////////////
     protected boolean isAcceptable(TreeItemEx target, Object toAccept) {
-        if ( toAccept == null ) {
+        if (toAccept == null) {
             return false;
         }
         boolean retval = true;
@@ -226,7 +235,7 @@ public class TreeItemBuilder {
             //
             TreeItemEx parent = (TreeItemEx) target.getParent();
             nc = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getObject());
-            ContentProperty cp = nc.getContentProperties().get(target.getValue().getPlaceholderIndex());
+            Property cp = nc.getContentProperties().get(target.getValue().getPlaceholderIndex());
             BeanAdapter adapter = new BeanAdapter(parent.getObject());
             retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
         } else {

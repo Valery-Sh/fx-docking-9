@@ -15,16 +15,12 @@
  */
 package org.vns.javafx.designer;
 
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
-
 /**
  *
  * @author Valery Shyshkin
  */
-public class ContentProperty extends HeaderProperty {
+public class PlaceholderProperty extends HeaderProperty {
 
-    private boolean placeholder;
-    
 
     private boolean hideIfNull;
 
@@ -32,14 +28,7 @@ public class ContentProperty extends HeaderProperty {
     
     //private String nodeClass;
     
-    public ContentProperty() {
-    }
-    public boolean isPlaceholder() {
-        return placeholder;
-    }
-
-    public void setPlaceholder(boolean placeholder) {
-        this.placeholder = placeholder;
+    public PlaceholderProperty() {
     }
 
     public boolean isHideIfNull() {

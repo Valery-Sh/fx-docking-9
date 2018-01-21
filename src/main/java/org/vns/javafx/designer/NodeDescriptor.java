@@ -35,13 +35,13 @@ public class NodeDescriptor {
      */
     private String titleProperty;
     
-    private final ObservableList<ContentProperty> contentProperties = FXCollections.observableArrayList();
+    private final ObservableList<Property> contentProperties = FXCollections.observableArrayList();
 
     public NodeDescriptor() {
     }
 
 
-    public ObservableList<ContentProperty> getContentProperties() {
+    public ObservableList<Property> getContentProperties() {
         return contentProperties;
     }
 

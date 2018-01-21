@@ -71,8 +71,8 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeItemBuilder builder = new TreeItemBuilder();
         //TreeItem rootItem = builder.build(root);
         //TreeView treeView = new TreeView(rootItem);
-        SceneGraphView sgv = new SceneGraphView(root);
-        Scene tvScene = new Scene(sgv);
+        SceneGraphView sceneGraphView = new SceneGraphView(root);
+        Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();
         tvStage.setHeight(300);
         tvStage.setWidth(300);
@@ -89,10 +89,6 @@ public class TestTreeItemBuilder03 extends Application {
         scene.setFill(null);
         stage.setTitle("Stage TestTreeItemBuilder01");
         //NodeDescriptor labeledNd = new NodeDescriptor(btn1);
-        NodeDescriptor labeledNd = NodeDescriptorRegistry.getInstance().getDescriptor(btn1);
-        ContentProperty child1 = labeledNd.getContentProperties().get(0);
-        
-        child1.setName("graphic");
         stage.setScene(scene);
         ObservableList<Node> ol = FXCollections.observableArrayList();
         stage.setOnShown(s -> {

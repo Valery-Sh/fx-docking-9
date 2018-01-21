@@ -21,19 +21,51 @@ import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
  *
  * @author Valery Shyshkin
  */
-public class ContentProperty extends HeaderProperty {
+public class ContentProperty1 {
 
+    /**
+     * <code>nodeObject</code> may be of any type not only <code>Node</code>
+     */
+    private NodeDescriptor nodeDescriptor;
+    /**
+     * Property name
+     */
+    private String name;
     private boolean placeholder;
     
-
+    private String styleClass;
+    /**
+     * Used for empty placeholder
+     */
+    private String title; 
+    /**
+     * Used only for placeholder
+     */
+    //private Node icon;
+    /**
+     * Used only for placeholder
+     */
     private boolean hideIfNull;
 
     private boolean defaultTarget;
     
     //private String nodeClass;
     
-    public ContentProperty() {
+    public ContentProperty1() {
     }
+
+    public ContentProperty1(NodeDescriptor owner) {
+        this.nodeDescriptor = owner;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isPlaceholder() {
         return placeholder;
     }
@@ -50,7 +82,28 @@ public class ContentProperty extends HeaderProperty {
         this.hideIfNull = hideIfNull;
     }
 
+    public NodeDescriptor getNodeDescriptor() {
+        return nodeDescriptor;
+    }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setNodeDescriptor(NodeDescriptor owner) {
+        this.nodeDescriptor = owner;
+    }
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 
 /*    public ContentProperty cloneFor(NodeDescriptor forDescr) {
         ContentProperty retval = new ContentProperty(forDescr);

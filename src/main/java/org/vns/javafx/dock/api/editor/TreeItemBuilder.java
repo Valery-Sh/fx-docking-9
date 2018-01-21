@@ -56,7 +56,7 @@ public interface TreeItemBuilder {
             return false;
         }
         //System.err.println("TreeItemBuilder isAdmissiblePosition 1 " );
-        TreeItem<ItemValue> dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
+        TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
         //
         // We do not want to insert the draggedItem before or after itself
         //

@@ -10,17 +10,18 @@
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <NodeDescriptor nodeClass="javafx.scene.control.Labeled" titleProperty="text">
-        <ContentProperty name="graphic" title="graphic" placeholder="true" hideIfNull="true" styleClass="labeled-insert-graphic"/>
+        <HeaderProperty name="List"/>
+        <PlaceholderProperty name="graphic" title="graphic" hideIfNull="true" styleClass="labeled-insert-graphic"/>
     </NodeDescriptor>
     <NodeDescriptor nodeClass="javafx.scene.layout.Pane">
         <ContentProperty name="children"/>
     </NodeDescriptor>
     
     <NodeDescriptor nodeClass="javafx.scene.layout.BorderPane">
-        <ContentProperty name="top" title="insert TOP" placeholder="true" styleClass="borderpane-insert-top"/>
-        <ContentProperty name="right" title="insert RIGHT" placeholder="true" styleClass="borderpane-insert-right"/>
-        <ContentProperty name="bottom" title="insert BOTTOM" placeholder="true" styleClass="borderpane-insert-bottom"/>
-        <ContentProperty name="left" title="insert LEFT" placeholder="true" styleClass="borderpane-insert-left"/>
-        <ContentProperty name="center" title="insert CENTER" placeholder="true" styleClass="borderpane-insert-center"/>
+        <PlaceholderProperty name="top" title="insert TOP" styleClass="borderpane-insert-top"/>
+        <PlaceholderProperty name="right" title="insert RIGHT" styleClass="borderpane-insert-right"/>
+        <PlaceholderProperty name="bottom" title="insert BOTTOM" styleClass="borderpane-insert-bottom"/>
+        <PlaceholderProperty name="left" title="insert LEFT"  styleClass="borderpane-insert-left"/>
+        <PlaceholderProperty name="center" title="insert CENTER" styleClass="borderpane-insert-center"/>
     </NodeDescriptor>
 </GraphDescriptor>

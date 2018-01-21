@@ -2,6 +2,7 @@ package org.vns.javafx.designer;
 
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 
 /**
  *
@@ -66,5 +67,36 @@ public class TreeItemEx extends TreeItem<ItemValue> {
         //20.01}
         return ph;
     }
-    
+/*    public boolean isAdmissiblePosition(TreeView treeView, org.vns.javafx.dock.api.editor.TreeItemEx target,
+            org.vns.javafx.dock.api.editor.TreeItemEx place,
+            Object dragObject) {
+        if (target.getValue().getTreeItemObject() == dragObject) {
+            return false;
+        }
+        //System.err.println("TreeItemBuilder isAdmissiblePosition 1 " );
+        org.vns.javafx.dock.api.editor.TreeItemEx dragItem = org.vns.javafx.dock.api.editor.EditorUtil.findTreeItemByObject(treeView, dragObject);
+        //
+        // We do not want to insert the draggedItem before or after itself
+        //
+        if (target == place.getParent() && dragItem != null) {
+            if (dragItem == place || dragItem.previousSibling() == place) {
+                //System.err.println("TreeItemBuilder isAdmissiblePosition 2 " + ((TreeItemEx)dragItem).getObject() );
+
+                return false;
+            }
+        } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
+            int level = treeView.getTreeItemLevel(target) + 1;
+            TreeItem<org.vns.javafx.dock.api.editor.ItemValue> actualPlace = org.vns.javafx.dock.api.editor.EditorUtil.parentOfLevel(treeView, place, level);
+            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+//                System.err.println("builder 2");
+                //System.err.println("TreeItemBuilder isAdmissiblePosition 3 " );
+
+                return false;
+            }
+        }
+        //System.err.println("TreeItemBuilder isAdmissiblePosition 4 " );
+
+        return isAcceptable(target.getObject(), dragObject);
+    }
+*/    
 }

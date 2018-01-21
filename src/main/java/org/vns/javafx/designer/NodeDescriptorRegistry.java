@@ -50,7 +50,8 @@ public class NodeDescriptorRegistry {
                 retval = new NodeDescriptor();
                 retval.setNodeClass(o.getClass().getName());
                 //retval.setStyleClass("tree-item-node-unknownnode");
-                ContentProperty cp = new ContentProperty(retval);
+                //20.01ContentProperty cp = new ContentProperty(retval);
+                ContentProperty cp = new ContentProperty();
                 cp.setName(name);
                 retval.getContentProperties().add(cp);
             }
@@ -169,7 +170,8 @@ public class NodeDescriptorRegistry {
         NodeDescriptor nd = new NodeDescriptor();
         register(Labeled.class, nd);
         nd.setTitleProperty("text");
-        ContentProperty nc = new ContentProperty(nd);
+        //20.01ContentProperty nc = new ContentProperty(nd);
+        ContentProperty nc = new ContentProperty();
         nd.getContentProperties().add(nc);
         nc.setName("graphic");
         nc.setPlaceholder(true);
@@ -179,7 +181,8 @@ public class NodeDescriptorRegistry {
 
         nd = new NodeDescriptor();
         register(Pane.class, nd);
-        nc = new ContentProperty(nd);
+        nc = new ContentProperty();
+        //nc = new ContentProperty(nd);
         nd.getContentProperties().add(nc);
         nc.setName("children");
 
