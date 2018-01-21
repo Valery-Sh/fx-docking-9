@@ -1,7 +1,5 @@
 package org.vns.javafx.dock.api.editor;
 
-import java.util.List;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

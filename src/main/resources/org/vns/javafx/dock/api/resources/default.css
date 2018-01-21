@@ -84,6 +84,11 @@
 .borderpane-insert-center {
  -fx-graphic: url(insert-center-16x16.png);    
 }
+
+.tree-item-node-unknownnode {
+    -fx-graphic: url(question-16x16.png);
+}
+
 .tree-item-node-anchorpane {
     -fx-graphic: url(anchorpane-16x16.png);
 }
