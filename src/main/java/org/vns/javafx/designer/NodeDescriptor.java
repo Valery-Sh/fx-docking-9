@@ -23,34 +23,34 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("contentProperties")
+@DefaultProperty("properties")
 public class NodeDescriptor {
     
-    private String nodeClass;
+    private String type;
     private String styleClass;
-            
+    private String defaultProperty;        
     /**
      * Contains a name of the property which value can be used as a title 
      * in a TreeItem
      */
     private String titleProperty;
     
-    private final ObservableList<Property> contentProperties = FXCollections.observableArrayList();
+    private final ObservableList<Property> properties = FXCollections.observableArrayList();
 
     public NodeDescriptor() {
     }
 
 
-    public ObservableList<Property> getContentProperties() {
-        return contentProperties;
+    public ObservableList<Property> getProperties() {
+        return properties;
     }
 
-    public String getNodeClass() {
-        return nodeClass;
+    public String getType() {
+        return type;
     }
 
-    public void setNodeClass(String nodeClass) {
-        this.nodeClass = nodeClass;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getStyleClass() {
@@ -67,6 +67,14 @@ public class NodeDescriptor {
 
     public void setTitleProperty(String titleProperty) {
         this.titleProperty = titleProperty;
+    }
+
+    public String getDefaultProperty() {
+        return defaultProperty;
+    }
+
+    public void setDefaultProperty(String defaultProperty) {
+        this.defaultProperty = defaultProperty;
     }
     
 }

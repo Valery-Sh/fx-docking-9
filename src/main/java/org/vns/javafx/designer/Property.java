@@ -21,6 +21,9 @@ package org.vns.javafx.designer;
  */
 public class Property {
     private String name;
+    private String styleClass;
+    private String title; 
+    private boolean defaultTarget;
 
     public String getName() {
         return name;
@@ -29,4 +32,29 @@ public class Property {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    protected boolean isDefaultTarget() {
+        return defaultTarget;
+    }
+
+    protected void setDefaultTarget(boolean defaultTarget) {
+        this.defaultTarget = defaultTarget;
+    }
+    
 }

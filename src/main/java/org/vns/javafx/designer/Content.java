@@ -15,31 +15,25 @@
  */
 package org.vns.javafx.designer;
 
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
+
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class HeaderProperty extends Property {
-    private String styleClass;
-    private String title; 
+public class Content extends Property {
 
-
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
     
-    
-    
+    public Content() {
+    }
+    @Override
+    public boolean isDefaultTarget() {
+        return super.isDefaultTarget();
+    }
+
+    @Override
+    public void setDefaultTarget(boolean defaultTarget) {
+        super.setDefaultTarget(defaultTarget);
+    }
+  
 }

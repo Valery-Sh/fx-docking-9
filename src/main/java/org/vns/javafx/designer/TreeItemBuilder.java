@@ -36,126 +36,89 @@ public class TreeItemBuilder {
 
     //private final Object nodeObject;
     public TreeItemBuilder() {
+        
+        
     }
 
     public TreeItemEx build(Object obj) {
-        TreeItemEx retval = createItem(obj);
+        return build(obj, null);
+    }
+    
+    protected TreeItemEx build(Object obj, Property p) {
+        TreeItemEx retval;
+        if ( p != null && (p instanceof Placeholder) ) {
+            retval = createPlaceholder(obj, (Placeholder)p);
+        }  else if ( p != null && (p instanceof Header) ) {
+            retval = createHeaderItem(obj, (Header)p);
+        } else {
+            retval = createItem(obj);
+        }
+        if ( obj == null && ! (p instanceof Header)) {
+            return retval;
+        }
         NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
 
         BeanAdapter adapter = new BeanAdapter(obj);
 
-        nc.getContentProperties().forEach(cp -> {
+        nc.getProperties().forEach(cp -> {
+            int cpIdx = nc.getProperties().indexOf(cp);
             Object cpObj = adapter.get(cp.getName());
             boolean isplaceholder = false;
             boolean hideIfNull = false;
-
-            if ( cp instanceof PlaceholderProperty ) {
+            if (cp instanceof Placeholder) {
                 isplaceholder = true;
-                hideIfNull = ((PlaceholderProperty)cp).isHideIfNull();
+                hideIfNull = ((Placeholder) cp).isHideNull();
             }
-            if (!isplaceholder && cpObj != null) {
+            
+            if (cp instanceof Header) {
+                TreeItemEx headerItem = build(cpObj, (Header) cp);
+                headerItem.getValue().setIndex(cpIdx);
+                retval.getChildren().add(headerItem);                
+                retval.getValue().setIndex(cpIdx);
+                
                 if (List.class.isAssignableFrom(cpObj.getClass())) {
+                    
                     List ls = (List) cpObj;
-                    int cpIdx = nc.getContentProperties().indexOf(cp);
+
                     for (int i = 0; i < ls.size(); i++) {
                         TreeItemEx item = build(ls.get(i));
-                        item.getValue().setPlaceholderIndex(cpIdx);
+                        item.getValue().setIndex(cpIdx);
+                        headerItem.getChildren().add(item);
+                    }
+                } else {
+                    TreeItemEx item = build(cpObj);
+                    item.getValue().setIndex(cpIdx);
+                    retval.getChildren().add(item);
+                }
+            } else if (!isplaceholder && cpObj != null) {
+                if (List.class.isAssignableFrom(cpObj.getClass())) {
+                    List ls = (List) cpObj;
+                    for (int i = 0; i < ls.size(); i++) {
+                        TreeItemEx item = build(ls.get(i));
+                        item.getValue().setIndex(cpIdx);
                         retval.getChildren().add(item);
                     }
                 } else {
                     TreeItemEx item = build(cpObj);
-                    item.getValue().setPlaceholderIndex(nc.getContentProperties().indexOf(cp));
+                    item.getValue().setIndex(nc.getProperties().indexOf(cp));
                     retval.getChildren().add(item);
                 }
-            } else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
+            //} else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
                 // Do nothing
-            } else {
-                TreeItemEx item = createPlaceholder(cpObj, (PlaceholderProperty)cp);
-                item.getValue().setPlaceholderIndex(nc.getContentProperties().indexOf(cp));
+            } else if ( isplaceholder && ( cpObj != null || ! hideIfNull ) )  {
+                    
+//            } else {
+                //TreeItemEx item = createPlaceholder(cpObj, (Placeholder) cp);
+                TreeItemEx item = build(cpObj, (Placeholder) cp);
+                item.getValue().setIndex(cpIdx);
                 retval.getChildren().add(item);
-                if (cpObj != null) {
-                    build(cpObj);
-                }
             }
         });
         return retval;
     }
-
-    /*    public TreeItemEx build1(Object obj, ContentProperty cprop) {
-        if (obj == null) {
-            return createPlaceholder(obj, cprop);
-        }
-
-        TreeItemEx retval = createPlaceholder(obj, cprop);
-
-        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
-        BeanAdapter adapter = new BeanAdapter(obj);
-
-        nc.getContentProperties().forEach(cp -> {
-            Object cpObj = adapter.get(cp.getName());
-            boolean isplaceholder = cp.isPlaceholder();
-            boolean hideIfNull = cp.isHideIfNull();
-            //TreeItemEx retval;
-            if (!isplaceholder && cpObj != null) {
-                if (List.class.isAssignableFrom(cpObj.getClass())) {
-                    List ls = (List) cpObj;
-                    for (int i = 0; i < ls.size(); i++) {
-                        retval.getChildren().add(build(ls.get(i)));
-                    }
-                } else {
-                    retval.getChildren().add(build(cpObj));
-                }
-            } else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
-                // Do nothing
-            } else {
-                TreeItemEx item = build1(cpObj, cp);
-                if (item != null) {
-                    item.getValue().setPlaceholderIndex(nc.getContentProperties().indexOf(cp));
-                    retval.getChildren().add(item);
-                }
-            }
-        });
-        return retval;
-    }
-     */
-    protected HBox createPlaceholderContent(Object obj, PlaceholderProperty cp) {
-        Label iconLabel = new Label();
-        HBox retval = new HBox(iconLabel);
-        //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
-        //BeanAdapter adapter = new BeanAdapter(obj);
-        String style = cp.getStyleClass();
-        if (style != null) {
-            iconLabel.getStyleClass().add(style);
-        }
-        System.err.println("iconLabel style=" + style);
-        String title = cp.getTitle();
-        if (title == null) {
-            title = "";
-        }
-
-        if (obj == null) {
-            iconLabel.setText(title.trim());
-        } else {
-
-            NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
-            title = "";
-            String tp = nc.getTitleProperty();
-            if (tp != null) {
-                BeanAdapter adapter = new BeanAdapter(obj);
-                title = (String) adapter.get(tp);
-                if (title == null) {
-                    title = "";
-                }
-            }
-            Label glb = new Label(obj.getClass().getSimpleName());
-
-            glb.getStyleClass().add("tree-item-node-" + obj.getClass().getSimpleName().toLowerCase());
-            retval.getChildren().add(glb);
-
-            glb.setText(glb.getText() + " " + title.trim());
-        }
-        //hb.applyCss();
-        return retval;
+    
+    public final Node createItemContent(Object obj) {
+        return createDefaultContent(obj);
     }
 
     protected HBox createDefaultContent(Object obj) {
@@ -198,8 +161,44 @@ public class TreeItemBuilder {
 
         return item;
     }
+    
+    protected HBox createHeaderContent(Object obj, Header h) {
+        HBox box = new HBox(new HBox()); // placeholder 
+        String title = h.getTitle();
+        
+        if (title == null) {
+            title = "";
+        }
+        Label label = new Label(title.trim());
+        String styleClass = h.getStyleClass();
+        if (styleClass == null) {
+            styleClass = "tree-item-list-header";
+        }
+        label.getStyleClass().add(styleClass);
+        box.getChildren().add(label);
+        return box;
+    }
 
-    public final TreeItemEx createPlaceholder(Object obj, PlaceholderProperty cp) {
+    public final TreeItemEx createHeaderItem(Object obj, Header h) {
+        HBox box = new HBox();
+        AnchorPane anchorPane = new AnchorPane(box);
+        AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
+        AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
+        //anchorPane.setStyle("-fx-background-color: yellow");
+
+        TreeItemEx item = new TreeItemEx();
+        ItemValue itemValue = new ItemValue(item);
+        item.setValue(itemValue);
+
+        box.getChildren().add(createHeaderContent(obj, h));
+
+        itemValue.setCellGraphic(anchorPane);
+        itemValue.setTreeItemObject(obj);
+
+        return item;
+    }
+
+    public final TreeItemEx createPlaceholder(Object obj, Placeholder cp) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -218,8 +217,43 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    public final Node createItemContent(Object obj) {
-        return createDefaultContent(obj);
+    protected HBox createPlaceholderContent(Object obj, Placeholder cp) {
+        Label iconLabel = new Label();
+        HBox retval = new HBox(iconLabel);
+
+        String style = cp.getStyleClass();
+        if (style != null) {
+            iconLabel.getStyleClass().add(style);
+        }
+
+        String title = cp.getTitle();
+        if (title == null) {
+            title = "";
+        }
+
+        if (obj == null) {
+            iconLabel.setText(title.trim());
+        } else {
+
+            NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
+            title = "";
+            String tp = nc.getTitleProperty();
+            if (tp != null) {
+                BeanAdapter adapter = new BeanAdapter(obj);
+                title = (String) adapter.get(tp);
+                if (title == null) {
+                    title = "";
+                }
+            }
+            Label glb = new Label(obj.getClass().getSimpleName());
+
+            glb.getStyleClass().add("tree-item-node-" + obj.getClass().getSimpleName().toLowerCase());
+            retval.getChildren().add(glb);
+
+            glb.setText(glb.getText() + " " + title.trim());
+        }
+        //hb.applyCss();
+        return retval;
     }
 
     ////////////////////////////////////////////////////////////
@@ -235,7 +269,7 @@ public class TreeItemBuilder {
             //
             TreeItemEx parent = (TreeItemEx) target.getParent();
             nc = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getObject());
-            Property cp = nc.getContentProperties().get(target.getValue().getPlaceholderIndex());
+            Property cp = nc.getProperties().get(target.getValue().getIndex());
             BeanAdapter adapter = new BeanAdapter(parent.getObject());
             retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
         } else {

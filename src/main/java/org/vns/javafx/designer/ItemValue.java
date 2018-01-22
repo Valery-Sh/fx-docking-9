@@ -27,7 +27,7 @@ public class ItemValue {
     private Object changeListener;
     ///////////////////////////////
     ///////////////////////////////
-    private int placeholderIndex;
+    private int index;
 
     /**
      * Creates a new instance of the class for the specified {@code TreeItem}.
@@ -240,12 +240,12 @@ public class ItemValue {
      * 
      * @return 
      */
-    public int getPlaceholderIndex() {
-        return placeholderIndex;
+    public int getIndex() {
+        return index;
     }
 
-    public void setPlaceholderIndex(int placeholderIndex) {
-        this.placeholderIndex = placeholderIndex;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     

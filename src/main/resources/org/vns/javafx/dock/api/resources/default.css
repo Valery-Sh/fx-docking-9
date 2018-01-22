@@ -89,6 +89,10 @@
     -fx-graphic: url(question-16x16.png);
 }
 
+.tree-item-list-header {
+    -fx-graphic: url(list-16x16.png);
+}
+
 .tree-item-node-anchorpane {
     -fx-graphic: url(anchorpane-16x16.png);
 }
@@ -116,6 +120,7 @@
 .tree-item-node-rectangle {
     -fx-graphic: url(rectangle-16x16.png);
 }
+
 
 .tree-item-node-accordion {
     -fx-graphic: url(accordion-16x16.png);

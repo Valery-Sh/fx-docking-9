@@ -48,17 +48,17 @@ public class NodeDescriptorRegistry {
             if (annotation != null) {
                 String name = ((DefaultProperty) annotation).value();
                 retval = new NodeDescriptor();
-                retval.setNodeClass(o.getClass().getName());
+                retval.setType(o.getClass().getName());
                 //retval.setStyleClass("tree-item-node-unknownnode");
-                //20.01ContentProperty cp = new ContentProperty(retval);
-                ContentProperty cp = new ContentProperty();
+                //20.01ContentProperty cp = new Content(retval);
+                Content cp = new Content();
                 cp.setName(name);
-                retval.getContentProperties().add(cp);
+                retval.getProperties().add(cp);
             }
         }
         if (retval == null && !(o instanceof Class)) {
             retval = new NodeDescriptor();
-            retval.setNodeClass(o.getClass().getName());
+            retval.setType(o.getClass().getName());
             retval.setStyleClass("tree-item-node-unknownnode");
         }
         return retval;
@@ -146,7 +146,7 @@ public class NodeDescriptorRegistry {
             root = loader.load(getClass().getResourceAsStream("/org/vns/javafx/designer/resources/DesignFXML01.fxml"));
             //root = loader.load(getClass().getClassLoader().getResourceAsStream("org/vns/javafx/designer/resources/DesignFXML01.fxml"));
             root.getDescriptors().forEach(d -> {
-                String className = d.getNodeClass();
+                String className = d.getType();
                 Class clazz;//
                 try {
                     clazz = Class.forName(className);
@@ -163,50 +163,6 @@ public class NodeDescriptorRegistry {
 
     }
 
-    protected void createDefaultDescriptors() {
-        /**
-         * Labeled
-         */
-        NodeDescriptor nd = new NodeDescriptor();
-        register(Labeled.class, nd);
-        nd.setTitleProperty("text");
-        //20.01ContentProperty nc = new ContentProperty(nd);
-        ContentProperty nc = new ContentProperty();
-        nd.getContentProperties().add(nc);
-        nc.setName("graphic");
-        nc.setPlaceholder(true);
-        nc.setHideIfNull(false);
-        nc.setTitle("graphic");
-        nc.setStyleClass("labeled-insert-graphic");
-
-        nd = new NodeDescriptor();
-        register(Pane.class, nd);
-        nc = new ContentProperty();
-        //nc = new ContentProperty(nd);
-        nd.getContentProperties().add(nc);
-        nc.setName("children");
-
-        /*        register(Node.class, new DefaultTreeItemBuilder());
-        register(Labeled.class, new LabeledItemBuilder());
-        register(TabPane.class, new TabPaneItemBuilder());
-        register(Accordion.class, new AccordionItemBuilder());
-        register(AnchorPane.class, new PaneItemBuilder());
-        register(FlowPane.class, new PaneItemBuilder());
-        register(TextFlow.class, new PaneItemBuilder());
-        register(ListView.class, new ListViewItemBuilder());
-        register(String.class, new StringTreeItemBuilder());
-        
-        register(Pane.class, new PaneItemBuilder());
-        register(TilePane.class, new PaneItemBuilder());
-        
-        register(Shape.class, new ShapeItemBuilder());
-        register(Tab.class, new TabItemBuilder());
-        register(BorderPane.class, new BorderPaneItemBuilder());
-        register(TextInputControl.class, new TextInputControlItemBuilder());
-        register(Text.class, new TextBasedTreeItemBuilder());
-        register(TitledPane.class, new NodeContentBasedItemBuilder());
-         */
-    }
 
     private static class SingletonInstance {
 

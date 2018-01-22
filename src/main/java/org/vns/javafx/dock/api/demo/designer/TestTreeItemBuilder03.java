@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.demo.designer;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -31,43 +32,70 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 import javafx.stage.Stage;
-import org.vns.javafx.designer.ContentProperty;
 import org.vns.javafx.designer.ItemValue;
-import org.vns.javafx.designer.NodeDescriptor;
-import org.vns.javafx.designer.NodeDescriptorRegistry;
 import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.dock.api.Dockable;
-
-
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 
 public class TestTreeItemBuilder03 extends Application {
 
+    private ObservableList<? extends VBox> nodeList = FXCollections.observableArrayList();
+
+    public ObservableList<? extends VBox> getNodeList() {
+        return nodeList;
+    }
+
+
+  
+
+   
+
     @Override
     public void start(Stage stage) throws Exception {
+/*        BeanAdapter ba = new BeanAdapter(this);
+        Class cl = ba.getType("nodeList");
         
+        System.err.println("isAssignable = " + cl.isAssignableFrom(VBox.class));
+        Type tp = ba.getGenericType("nodeList");
+        Type tpl = BeanAdapter.getGenericListItemType(tp);
+        System.err.println("List Item Type name= " + tpl.getTypeName());
+        //System.err.println("List Item Type = " + BeanAdapter.getGenericListItemType(tp));
+        //System.err.println("List Item Type = " + BeanAdapter.getListItemType(tp).getName());
+        System.err.println("cl = " + cl.getName());
+*/        
         VBox root = new VBox();
+//        Pane p;
+//        nodeList.add(root);
         Label btn1Graphic = new Label("btn1Graphic");
-        
+        Label lbGraphic = new Label("lbGraphic");
+        btn1Graphic.setGraphic(lbGraphic);
+
         root.setId("ROOT");
         Button btn1 = new Button("btn1");
         btn1.setGraphic(btn1Graphic);
-        
+
         root.getChildren().add(btn1);
         BorderPane borderPane1 = new BorderPane();
-        HBox hbox1 = new HBox();
+        Label lb1 = new Label("lb1");
+        HBox hbox1 = new HBox(lb1);
         borderPane1.setRight(hbox1);
+
         root.getChildren().add(borderPane1);
-        
+
         TabPane tabPane1 = new TabPane();
         root.getChildren().add(tabPane1);
         Tab tab1 = new Tab("Tab01");
         tabPane1.getTabs().add(tab1);
         Arc arc1 = new Arc();
         root.getChildren().add(arc1);
-        
+        Label lb2 = new Label("lb2");
+        HBox hbox2 = new HBox(lb2);
+        root.getChildren().add(hbox2);
+
         //TreeItemBuilder builder = new TreeItemBuilder();
         //TreeItem rootItem = builder.build(root);
         //TreeView treeView = new TreeView(rootItem);
@@ -76,8 +104,8 @@ public class TestTreeItemBuilder03 extends Application {
         Stage tvStage = new Stage();
         tvStage.setHeight(300);
         tvStage.setWidth(300);
-        
-        tvStage.setScene(tvScene);        
+
+        tvStage.setScene(tvScene);
         //rootItem.setExpanded(true);
         //rootItem.setValue(itemLabel);        
         //root.getChildren().add(treeView);
@@ -92,16 +120,16 @@ public class TestTreeItemBuilder03 extends Application {
         stage.setScene(scene);
         ObservableList<Node> ol = FXCollections.observableArrayList();
         stage.setOnShown(s -> {
-/*            System.err.println("titleProperty = " + labeledNd.getTitleProperty()); 
+            /*            System.err.println("titleProperty = " + labeledNd.getTitleProperty()); 
             System.err.println("name = " + child1.getName()); 
             System.err.println("isPlaceholder  = " + child1.isPlaceholder()); 
             System.err.println("placeholder isHideIfNull = " + child1.isHideIfNull()); 
             System.err.println("placeholder title = " + child1.getTitle()); 
             
             System.err.println("placeholderStyleClass  = " + child1.getStyleClass()); 
-*/
+             */
             System.err.println("isAssignable " + Set.class.isAssignableFrom(ol.getClass()));
-            
+
         });
         stage.setMinHeight(100);
         root.setMinHeight(100);
@@ -127,6 +155,7 @@ public class TestTreeItemBuilder03 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     protected void customizeCell(TreeView treeView) {
         TreeView<ItemValue> t = treeView;
         t.setCellFactory((TreeView<ItemValue> tv) -> {
