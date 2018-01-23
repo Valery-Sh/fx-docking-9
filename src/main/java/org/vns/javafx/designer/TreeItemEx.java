@@ -11,7 +11,6 @@ import javafx.scene.control.TreeItem;
 public class TreeItemEx extends TreeItem<Object> {
 
     //private TreeItemBuilder placeholderBuilder; 
-    
     public TreeItemEx() {
 
     }
@@ -24,7 +23,7 @@ public class TreeItemEx extends TreeItem<Object> {
         super(value, graphic);
     }
 
-/*!!!23.01    public TreeItemBuilder getBuilder() {
+    /*!!!23.01    public TreeItemBuilder getBuilder() {
         TreeItemBuilder retval = null;
         if (getValue().isPlaceholder() && getValue().getTreeItemObject() == null ) {
             ////20.01retval = this.getPlaceholderBuilder();
@@ -33,9 +32,9 @@ public class TreeItemEx extends TreeItem<Object> {
         }
         return retval;
     }    
-*/    
+     */
 
-/*    public TreeItemEx treeItemOf(Object obj) {
+ /*    public TreeItemEx treeItemOf(Object obj) {
         TreeItemEx retval = null;
         TreeItemEx t = (TreeItemEx) EditorUtil.findRootTreeItem(this);
         if (t == null) {
@@ -47,15 +46,15 @@ public class TreeItemEx extends TreeItem<Object> {
         }
         return retval;
     }
-*/    
-/*    public TreeItemBuilder getPlaceholderBuilder() {
+     */
+ /*    public TreeItemBuilder getPlaceholderBuilder() {
         return placeholderBuilder;
     }
     public void setPlaceholderBuilder(TreeItemBuilder placeholderBuilder) {
         this.placeholderBuilder = placeholderBuilder;
     }
-*/    
-/*    public TreeItemEx createPlaceholder(int placeholderId, Object newValue)  {
+     */
+ /*    public TreeItemEx createPlaceholder(int placeholderId, Object newValue)  {
         TreeItemEx ph = null; 
         //20.01if ( getBuilder() instanceof PlaceholderBuilderFactory ) {
             //20.01PlaceholderBuilder pb = ((PlaceholderBuilderFactory)getBuilder()).getPlaceholderBuilder(placeholderId);            
@@ -64,8 +63,8 @@ public class TreeItemEx extends TreeItem<Object> {
         //20.01}
         return ph;
     }
-*/    
-/*    public boolean isAdmissiblePosition(TreeView treeView, org.vns.javafx.dock.api.editor.TreeItemEx target,
+     */
+ /*    public boolean isAdmissiblePosition(TreeView treeView, org.vns.javafx.dock.api.editor.TreeItemEx target,
             org.vns.javafx.dock.api.editor.TreeItemEx place,
             Object dragObject) {
         if (target.getValue().getTreeItemObject() == dragObject) {
@@ -96,18 +95,17 @@ public class TreeItemEx extends TreeItem<Object> {
 
         return isAcceptable(target.getObject(), dragObject);
     }
-*/    
-    
+     */
     private String propertyName;
     private int index;
     private int dragDropQualifier;
-    
+
     private ItemType itemType = ItemType.CONTENT;
-    
+
     public static enum ItemType {
         CONTENT, HEADER, PLACEHOLDER
     }
-    
+
     private Node cellGraphic;
 
     public Node getCellGraphic() {
@@ -117,7 +115,7 @@ public class TreeItemEx extends TreeItem<Object> {
     public void setCellGraphic(Node cellGraphic) {
         this.cellGraphic = cellGraphic;
     }
-    
+
     public String getPropertyName() {
         return propertyName;
     }
@@ -125,7 +123,6 @@ public class TreeItemEx extends TreeItem<Object> {
     public void setPropertyName(String propertyName) {
         this.propertyName = propertyName;
     }
-
 
     public int getIndex() {
         return index;
@@ -146,5 +143,59 @@ public class TreeItemEx extends TreeItem<Object> {
     protected void setItemType(ItemType itemType) {
         this.itemType = itemType;
     }
-    
+
+    public TreeItemEx getTreeItem(String propertyName) {
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
+        int idx = -1;
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+            if (propertyName.equals(nd.getProperties().get(i).getName())) {
+                idx = i;
+                break;
+            }
+        }
+        Property prop = nd.getProperties().get(idx);
+
+        TreeItemEx propTreeItem = null;
+
+        for (int i = 0; i < this.getChildren().size(); i++) {
+            TreeItemEx it = (TreeItemEx) this.getChildren().get(i);
+            if (idx == it.getIndex()) {
+                propTreeItem = it;
+                break;
+            }
+        }
+        return propTreeItem;
+    }
+
+    public Property getProperty(String propertyName) {
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
+        int idx = -1;
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+            if (propertyName.equals(nd.getProperties().get(i).getName())) {
+                idx = i;
+                break;
+            }
+        }
+        Property prop = nd.getProperties().get(idx);
+
+        return prop;
+    }
+
+    public int getInsertPos(TreeItemEx propTreeItem) {
+        
+        int idx = propTreeItem.getIndex();
+        int insertPos = -1;  //use it when propTreeItem is null
+
+        for (int i = 0; i < getChildren().size(); i++) {
+            TreeItemEx it = (TreeItemEx) getChildren().get(i);
+            if (idx == it.getIndex()) {
+                break;
+            }
+            if (it.getIndex() >= insertPos && i < idx) {
+                insertPos = i;
+            }
+        }
+
+        return ++insertPos;
+    }
 }

@@ -35,6 +35,44 @@ public class TreeItemObjectChangeListener implements ChangeListener {
 
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+        Property prop = treeItem.getProperty(propertyName);
+        TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
+        
+        int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propTreeItem);
+        
+        if (propTreeItem == null) {
+            if (oldValue == null && newValue != null) {
+                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
+                treeItem.getChildren().add(insertPos, item);
+            }
+        } else {
+            
+            TreeItem p = propTreeItem.getParent();
+            
+            if (oldValue != null && newValue == null) {
+                propTreeItem.getChildren().clear();
+                if ( (prop instanceof Content) || ( (prop instanceof Placeholder) && ((Placeholder)prop).isHideNull()) ) {
+                    ///!!! must consider root node
+                    p.getChildren().remove(propTreeItem);
+                    
+                }
+            }  else if (oldValue == null && newValue != null) {
+                // May be is Placeholder and not hidden when null
+                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
+                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
+            } else if (oldValue != null && newValue != null) {
+                //23TreeItemEx item = treeItem.treeItemOf(oldValue);
+                //23if (item != null) {
+                    //23TreeViewEx.updateOnMove(item);
+                //23}
+                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
+                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
+            
+            }
+        }
+    }
+
+    public void changed1(ObservableValue observable, Object oldValue, Object newValue) {
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(treeItem.getValue());
         int idx = -1;
         for (int i = 0; i < nd.getProperties().size(); i++) {
@@ -96,7 +134,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
             }
         }
     }
-
+    
     protected Object getPropertyValue() {
         Object retval = null;
         return retval;

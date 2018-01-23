@@ -347,14 +347,15 @@ public class SceneGraphView extends Control {
                 ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(false);
                 TreeView tv = getEditor().getTreeView();
                 getEditor().getDragIndicator().hideDrawShapes();
-                System.err.println("HANDLE 1");
+                System.err.println("HANDLE DRAG OVER");
                 if (!isAdmissiblePosition(ev)) {
 //                    System.err.println("=== HANDLE NOT isAdmissiblePosition");
 //                    ev.acceptTransferModes(TransferMode.NONE);
                     //ev.setDropCompleted(true)
-                    System.err.println("HANDLE 2");
+                    System.err.println("HANDLE NOT ADMIS");
                     ev.consume();
                 } else {
+                    System.err.println("HANDLE 3");
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
 //                    System.err.println("handle acceptingMode = " + ev.getAcceptedTransferMode());                    
                     ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);

@@ -71,10 +71,8 @@ public class TreeItemBuilder {
             
             if (cp instanceof Header) {
                 TreeItemEx headerItem = build(cpObj, (Header) cp);
-                //23headerItem.getValue().setIndex(cpIdx);
                 headerItem.setPropertyName(cp.getName());
                 retval.getChildren().add(headerItem);                
-                //23retval.getValue().setIndex(cpIdx);
                 retval.setPropertyName(cp.getName());
                 if (List.class.isAssignableFrom(cpObj.getClass())) {
                     
@@ -82,13 +80,11 @@ public class TreeItemBuilder {
 
                     for (int i = 0; i < ls.size(); i++) {
                         TreeItemEx item = build(ls.get(i));
-                        //23item.getValue().setIndex(cpIdx);
                         item.setPropertyName(cp.getName());
                         headerItem.getChildren().add(item);
                     }
                 } else {
                     TreeItemEx item = build(cpObj);
-                    //23item.getValue().setIndex(cpIdx);
                     item.setPropertyName(cp.getName());
                     retval.getChildren().add(item);
                 }
@@ -97,24 +93,16 @@ public class TreeItemBuilder {
                     List ls = (List) cpObj;
                     for (int i = 0; i < ls.size(); i++) {
                         TreeItemEx item = build(ls.get(i));
-                        //23item.getValue().setIndex(cpIdx);
                         item.setPropertyName(cp.getName());
                         retval.getChildren().add(item);
                     }
                 } else {
                     TreeItemEx item = build(cpObj);
-                    //23item.getValue().setIndex(nc.getProperties().indexOf(cp));
                     item.setPropertyName(cp.getName());
                     retval.getChildren().add(item);
                 }
-            //} else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
-                // Do nothing
             } else if ( isplaceholder && ( cpObj != null || ! hideIfNull ) )  {
-                    
-//            } else {
-                //TreeItemEx retval = createPlaceholder(cpObj, (Placeholder) cp);
                 TreeItemEx item = build(cpObj, (Placeholder) cp);
-                //23item.getValue().setIndex(cpIdx);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
             }
@@ -122,11 +110,8 @@ public class TreeItemBuilder {
         return retval;
     }
     
-    public final Node createItemContent(Object obj) {
-        return createDefaultContent(obj);
-    }
 
-    protected HBox createDefaultContent(Object obj) {
+    public final HBox createItemContent(Object obj) {
         HBox box = new HBox(new HBox()); // placeholder 
         NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
         String tp = nc.getTitleProperty();
@@ -156,15 +141,13 @@ public class TreeItemBuilder {
         //anchorPane.setStyle("-fx-background-color: yellow");
 
         TreeItemEx retval = new TreeItemEx();
-        //ItemValue itemValue = new ItemValue(retval);
+
         retval.setValue(obj);
 
         box.getChildren().add(createItemContent(obj));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
-
-        //itemValue.setTreeItemObject(obj);
 
         return retval;
     }
@@ -195,14 +178,12 @@ public class TreeItemBuilder {
 
         TreeItemEx retval = new TreeItemEx();
         
-        retval.setValue(obj);
+        //retval.setValue(obj);
 
         box.getChildren().add(createHeaderContent(obj, h));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.HEADER);
-        // header cannot have an object
-        //itemValue.setTreeItemObject(obj);
 
         return retval;
     }
@@ -318,4 +299,6 @@ public class TreeItemBuilder {
     }
     public void removeTreeItemObjectChangeListener(TreeItemEx item) {
     }    
+    
+    
 }

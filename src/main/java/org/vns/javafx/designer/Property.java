@@ -57,5 +57,13 @@ public class Property {
     protected void setDefaultTarget(boolean defaultTarget) {
         this.defaultTarget = defaultTarget;
     }
+
+    /**
+     *  ------ STATIC HELPER METHODS -------
+     */
+     public static Object getValue(TreeItemEx item, String propertyName) {
+         Object retval = null;
+         return retval;
+     }
     
 }

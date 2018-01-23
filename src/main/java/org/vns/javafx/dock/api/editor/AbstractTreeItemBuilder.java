@@ -28,7 +28,6 @@ public abstract class AbstractTreeItemBuilder implements TreeItemBuilder {
     public TreeItem accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         TreeItem retval = null;
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-
         Object value = dg.getGestureSourceObject();
 
         if (target != null && place != null && value != null) {

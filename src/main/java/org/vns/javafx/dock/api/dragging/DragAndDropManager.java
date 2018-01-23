@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
-import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -23,10 +22,8 @@ import javafx.event.EventType;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
@@ -35,18 +32,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Popup;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
-import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  *
@@ -142,6 +134,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         ev.consume();
     }
      */
+    @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
         System.err.println("DRAG MANGER " + this);
         System.err.println("dragDetected targetController " + dockable.getDockableContext().getTargetContext());

@@ -27,9 +27,12 @@ import javafx.scene.control.TreeItem;
 public class TreeItemListObjectChangeListener implements ListChangeListener {
 
     private final TreeItemEx treeItem;
+    private String propertyName;
 
-    public TreeItemListObjectChangeListener(TreeItemEx treeItem) {
+
+    public TreeItemListObjectChangeListener(TreeItemEx treeItem, String propertyName) {
         this.treeItem = treeItem;
+        this.propertyName = propertyName;
     }
 
     @Override

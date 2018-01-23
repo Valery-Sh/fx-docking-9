@@ -60,6 +60,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         this.dragEvent = dragEvent;
     }
     public void notifyDragAccepted(boolean dragAccepted) {
+        System.err.println("NOTIFYDRAGACCEPTED " + dragAccepted);
         this.dragAccepted = dragAccepted;
     }
 
