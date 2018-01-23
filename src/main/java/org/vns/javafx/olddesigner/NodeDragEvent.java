@@ -1,5 +1,6 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
+import org.vns.javafx.dock.api.editor.*;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.Node;

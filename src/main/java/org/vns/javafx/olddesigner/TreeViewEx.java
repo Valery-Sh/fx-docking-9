@@ -1,4 +1,4 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.event.EventHandler;
@@ -131,7 +131,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
     @Override
     public void handle(NodeDragEvent ev) {
-        TreeItemEx item = EditorUtil.findTreeItem(this, ev.getMouseEvent().getScreenX(), ev.getMouseEvent().getScreenY());
+        TreeItem<ItemValue> item = EditorUtil.findTreeItem(this, ev.getMouseEvent().getScreenX(), ev.getMouseEvent().getScreenY());
 
         DragEvent dragEvent;
 
@@ -150,10 +150,10 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         }
         dragEvent = createDragEvent(ev.getMouseEvent(), dragEventType,
                 ev.getGestureSource(),
-                item != null ? item.getCellGraphic().getParent() : this);
+                item != null ? item.getValue().getCellGraphic().getParent() : this);
 
         if (item != null) {
-            item.getCellGraphic().getParent().fireEvent(dragEvent);
+            item.getValue().getCellGraphic().getParent().fireEvent(dragEvent);
 
         } else if (isInsideTreeView(ev.getMouseEvent())) {
             fireEvent(dragEvent);

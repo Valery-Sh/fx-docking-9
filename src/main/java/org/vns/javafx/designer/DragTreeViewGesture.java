@@ -59,7 +59,7 @@ public class DragTreeViewGesture extends DragNodeGesture{
         init();
     }
     private void init() {
-        setSourceGestureObject(sourceTreeItem.getValue().getTreeItemObject());
+        setSourceGestureObject(sourceTreeItem.getValue());
     } 
 
     public TreeItemEx getGestureSourceTreeItem() {

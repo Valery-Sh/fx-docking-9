@@ -1,4 +1,4 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -9,6 +9,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Labeled;
+import javafx.scene.layout.Pane;
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 
 /**
  *

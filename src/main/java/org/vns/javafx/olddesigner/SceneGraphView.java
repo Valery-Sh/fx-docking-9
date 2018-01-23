@@ -1,4 +1,4 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Platform;
@@ -24,7 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import static org.vns.javafx.designer.TreeItemBuilder.CELL_UUID;
+import static org.vns.javafx.olddesigner.TreeItemBuilder.CELL_UUID;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -39,7 +39,7 @@ public class SceneGraphView extends Control {
 
     public static double ANCHOR_OFFSET = 4;
 
-    private final TreeViewEx treeView;
+    private final TreeViewEx<ItemValue> treeView;
     private Node rootNode;
 
     private final Pane treeViewPane = new StackPane();
@@ -134,7 +134,7 @@ public class SceneGraphView extends Control {
         return treeViewPane;
     }
 
-    public TreeViewEx getTreeView() {
+    public TreeViewEx<ItemValue> getTreeView() {
         return treeView;
     }
 
@@ -151,7 +151,7 @@ public class SceneGraphView extends Control {
             }
         }
     }
-     */
+    */
     protected TreeItemEx createSceneGraph(Node node) {
         TreeItemBuilder builder = new TreeItemBuilder();
         TreeItemEx item = builder.build(node);
@@ -180,7 +180,7 @@ public class SceneGraphView extends Control {
         if (rootNode == null) {
             return;
         }
-        TreeItemEx it = createSceneGraph(rootNode);
+        TreeItem<ItemValue> it = createSceneGraph(rootNode);
         it.setExpanded(true);
         treeView.setRoot(it);
         Platform.runLater(() -> {
@@ -216,14 +216,14 @@ public class SceneGraphView extends Control {
     }
 
     protected void customizeCell() {
-        TreeView<Object> t = treeView;
-        t.setCellFactory((TreeView<Object> tv) -> {
-            TreeCell cell = new TreeCell() {
+        TreeView<ItemValue> t = treeView;
+        t.setCellFactory((TreeView<ItemValue> tv) -> {
+            TreeCell<ItemValue> cell = new TreeCell<ItemValue>() {
                 @Override
-                public void updateItem(Object value, boolean empty) {
+                public void updateItem(ItemValue value, boolean empty) {
                     super.updateItem(value, empty);
 
-                    if (empty) {
+                    if (empty || value == null) {
                         setText(null);
                         setGraphic(null);
                         if (this.getUserData() != null) {
@@ -236,9 +236,9 @@ public class SceneGraphView extends Control {
                         this.setOnDragDropped(null);
                         this.setOnDragDone(null);
                     } else {
-                        this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
-                        if ( value != null && (value instanceof Node)) {
-                            setId(((Node) value).getId());
+                        this.setGraphic(value.getCellGraphic());
+                        if (value.getTreeItemObject() instanceof Node) {
+                            setId(((Node) value.getTreeItemObject()).getId());
                         }
                         TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphView.this, this);
 
@@ -248,6 +248,7 @@ public class SceneGraphView extends Control {
                         registerDragDetected(this);
                         registerDragDropped(this);
                         registerDragDone(this);
+
                     }
                 }
             };
@@ -286,7 +287,7 @@ public class SceneGraphView extends Control {
             // Try transfer data to the place
             //
             if (targetItem != null && !ev.isDropCompleted()) {
-                //ItemValue targetValue = targetItem.getValue();
+                ItemValue targetValue = targetItem.getValue();
                 TreeItem place = ((TreeCell) ev.getGestureTarget()).getTreeItem();
                 //20.01targetValue.getBuilder().accept(treeView, (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
 
@@ -402,8 +403,8 @@ public class SceneGraphView extends Control {
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
                 getEditor().getDragIndicator().hideDrawShapes();
-                TreeItemEx targetItem = (TreeItemEx) getEditor().getTreeView().getRoot();
-                //ItemValue targetValue = targetItem.getValue();
+                TreeItem<ItemValue> targetItem = getEditor().getTreeView().getRoot();
+                ItemValue targetValue = targetItem.getValue();
                 //
                 // Transfer the data to the place
                 //

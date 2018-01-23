@@ -1,5 +1,6 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
+import org.vns.javafx.dock.api.editor.*;
 import com.sun.javafx.stage.StageHelper;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class EditorUtil {
     }
 
     public static TreeCell getCell(TreeItemEx item) {
-        return (TreeCell) ((AnchorPane) item.getCellGraphic()).getParent();
+        return (TreeCell) ((AnchorPane) item.getValue().getCellGraphic()).getParent();
     }
 
     /*    public static Bounds screenTreeViewBounds(TreeView treeView) {
@@ -48,7 +49,7 @@ public class EditorUtil {
     }
      */
     public static Bounds screenTreeItemBounds(TreeItemEx treeItem) {
-        Node node = treeItem.getCellGraphic().getParent();
+        Node node = treeItem.getValue().getCellGraphic().getParent();
         //Bounds b1 = node.localToScreen(node.getBoundsInLocal());
         //System.err.println("=============== b1=" + b1);
         return node.localToScreen(node.getBoundsInLocal());
@@ -65,7 +66,7 @@ public class EditorUtil {
      * @return ???
      */
     public static Bounds screenHorVisibleBounds(TreeViewEx treeView, TreeItemEx treeItem) {
-        Node node = treeItem.getCellGraphic().getParent();
+        Node node = treeItem.getValue().getCellGraphic().getParent();
         Bounds retval = node.localToScreen(node.getBoundsInLocal());
         if (treeView.getHScrollBar().isVisible()) {
             double vertSrollBarWidth = treeView.getVScrollBar().getWidth();
@@ -183,8 +184,8 @@ public class EditorUtil {
         if ( item.getChildren() == null ) {
             return null;
         }
-        for (TreeItem it : item.getChildren()) {
-            if ( it.getValue() == sourceGesture) {
+        for (TreeItem<ItemValue> it : item.getChildren()) {
+            if (it.getValue().getTreeItemObject() == sourceGesture) {
                 retval = (TreeItemEx) it;
                 break;
             }
@@ -196,11 +197,11 @@ public class EditorUtil {
         return retval;
     }
     protected static TreeItemEx findByTreeItemObject(TreeItemEx item) {
-        if ( item.getValue() == null ) {
+        if ( item.getValue().getTreeItemObject() == null ) {
             return null;
         }
         TreeItemEx  root = findRootTreeItem(item);
-        return findChildTreeItem(root, item.getValue());
+        return findChildTreeItem(root, item.getValue().getTreeItemObject());
     }    
     protected static TreeItemEx findRootTreeItem(TreeItemEx item) {
         TreeItemEx  root = item;
@@ -212,11 +213,11 @@ public class EditorUtil {
         }
         return retval;
     }
-    public static TreeItemEx findTreeItem(TreeViewEx treeView, double x, double y) {
+    public static TreeItemEx findTreeItem(TreeView<ItemValue> treeView, double x, double y) {
         TreeItemEx retval = null;
         int count = treeView.getExpandedItemCount();
         for (int i = 0; i < count; i++) {
-            TreeCell cell = (TreeCell) ((TreeItemEx)treeView.getTreeItem(i)).getCellGraphic().getParent();
+            TreeCell cell = (TreeCell) treeView.getTreeItem(i).getValue().getCellGraphic().getParent();
             if (cell == null) {
                 continue;
             }

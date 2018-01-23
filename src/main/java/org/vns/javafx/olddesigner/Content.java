@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class Header extends Property {
+public class Content extends Property {
+
     
+    public Content() {
+    }
+    @Override
+    public boolean isDefaultTarget() {
+        return super.isDefaultTarget();
+    }
+
+    @Override
+    public void setDefaultTarget(boolean defaultTarget) {
+        super.setDefaultTarget(defaultTarget);
+    }
+  
 }

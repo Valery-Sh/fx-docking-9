@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
+import javafx.beans.DefaultProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 
-/**
- *
- * @author Valery
- */
-public class Header extends Property {
+@DefaultProperty("descriptors")
+public class GraphDescriptor extends Control {
+    private final ObservableList<NodeDescriptor> descriptors = FXCollections.observableArrayList();
+
+    public ObservableList<NodeDescriptor> getDescriptors() {
+        return descriptors;
+    }
     
 }

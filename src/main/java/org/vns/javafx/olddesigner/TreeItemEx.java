@@ -1,4 +1,4 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -8,7 +8,7 @@ import javafx.scene.control.TreeItem;
  * @author Valery
  *
  */
-public class TreeItemEx extends TreeItem<Object> {
+public class TreeItemEx extends TreeItem<ItemValue> {
 
     //private TreeItemBuilder placeholderBuilder; 
     
@@ -16,11 +16,11 @@ public class TreeItemEx extends TreeItem<Object> {
 
     }
 
-    public TreeItemEx(Object value) {
+    public TreeItemEx(ItemValue value) {
         super(value);
     }
 
-    public TreeItemEx(Object value, Node graphic) {
+    public TreeItemEx(ItemValue value, Node graphic) {
         super(value, graphic);
     }
 
@@ -34,8 +34,11 @@ public class TreeItemEx extends TreeItem<Object> {
         return retval;
     }    
 */    
+    public Object getObject1() {
+        return getValue().getTreeItemObject();
+    }
 
-/*    public TreeItemEx treeItemOf(Object obj) {
+    public TreeItemEx treeItemOf(Object obj) {
         TreeItemEx retval = null;
         TreeItemEx t = (TreeItemEx) EditorUtil.findRootTreeItem(this);
         if (t == null) {
@@ -47,7 +50,7 @@ public class TreeItemEx extends TreeItem<Object> {
         }
         return retval;
     }
-*/    
+    
 /*    public TreeItemBuilder getPlaceholderBuilder() {
         return placeholderBuilder;
     }
@@ -97,54 +100,4 @@ public class TreeItemEx extends TreeItem<Object> {
         return isAcceptable(target.getObject(), dragObject);
     }
 */    
-    
-    private String propertyName;
-    private int index;
-    private int dragDropQualifier;
-    
-    private ItemType itemType = ItemType.CONTENT;
-    
-    public static enum ItemType {
-        CONTENT, HEADER, PLACEHOLDER
-    }
-    
-    private Node cellGraphic;
-
-    public Node getCellGraphic() {
-        return cellGraphic;
-    }
-
-    public void setCellGraphic(Node cellGraphic) {
-        this.cellGraphic = cellGraphic;
-    }
-    
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
-
-    public int getIndex() {
-        return index;
-    }
-
-    public int getDragDropQualifier() {
-        return dragDropQualifier;
-    }
-
-    public void setDragDropQualifier(int dragDropQualifier) {
-        this.dragDropQualifier = dragDropQualifier;
-    }
-
-    public ItemType getItemType() {
-        return itemType;
-    }
-
-    protected void setItemType(ItemType itemType) {
-        this.itemType = itemType;
-    }
-    
 }

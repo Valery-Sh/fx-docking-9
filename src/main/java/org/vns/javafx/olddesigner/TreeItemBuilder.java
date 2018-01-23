@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import static org.vns.javafx.designer.SceneGraphView.ANCHOR_OFFSET;
+import static org.vns.javafx.olddesigner.SceneGraphView.ANCHOR_OFFSET;
 import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 
 /**
@@ -72,10 +73,10 @@ public class TreeItemBuilder {
             if (cp instanceof Header) {
                 TreeItemEx headerItem = build(cpObj, (Header) cp);
                 //23headerItem.getValue().setIndex(cpIdx);
-                headerItem.setPropertyName(cp.getName());
+                headerItem.getValue().setPropertyName(cp.getName());
                 retval.getChildren().add(headerItem);                
                 //23retval.getValue().setIndex(cpIdx);
-                retval.setPropertyName(cp.getName());
+                retval.getValue().setPropertyName(cp.getName());
                 if (List.class.isAssignableFrom(cpObj.getClass())) {
                     
                     List ls = (List) cpObj;
@@ -83,13 +84,13 @@ public class TreeItemBuilder {
                     for (int i = 0; i < ls.size(); i++) {
                         TreeItemEx item = build(ls.get(i));
                         //23item.getValue().setIndex(cpIdx);
-                        item.setPropertyName(cp.getName());
+                        item.getValue().setPropertyName(cp.getName());
                         headerItem.getChildren().add(item);
                     }
                 } else {
                     TreeItemEx item = build(cpObj);
                     //23item.getValue().setIndex(cpIdx);
-                    item.setPropertyName(cp.getName());
+                    item.getValue().setPropertyName(cp.getName());
                     retval.getChildren().add(item);
                 }
             } else if (!isplaceholder && cpObj != null) {
@@ -98,13 +99,13 @@ public class TreeItemBuilder {
                     for (int i = 0; i < ls.size(); i++) {
                         TreeItemEx item = build(ls.get(i));
                         //23item.getValue().setIndex(cpIdx);
-                        item.setPropertyName(cp.getName());
+                        item.getValue().setPropertyName(cp.getName());
                         retval.getChildren().add(item);
                     }
                 } else {
                     TreeItemEx item = build(cpObj);
                     //23item.getValue().setIndex(nc.getProperties().indexOf(cp));
-                    item.setPropertyName(cp.getName());
+                    item.getValue().setPropertyName(cp.getName());
                     retval.getChildren().add(item);
                 }
             //} else if ((!isplaceholder && cpObj == null) || (isplaceholder && hideIfNull && cpObj == null)) {
@@ -112,10 +113,10 @@ public class TreeItemBuilder {
             } else if ( isplaceholder && ( cpObj != null || ! hideIfNull ) )  {
                     
 //            } else {
-                //TreeItemEx retval = createPlaceholder(cpObj, (Placeholder) cp);
+                //TreeItemEx item = createPlaceholder(cpObj, (Placeholder) cp);
                 TreeItemEx item = build(cpObj, (Placeholder) cp);
                 //23item.getValue().setIndex(cpIdx);
-                item.setPropertyName(cp.getName());
+                item.getValue().setPropertyName(cp.getName());
                 retval.getChildren().add(item);
             }
         });
@@ -155,18 +156,16 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         //anchorPane.setStyle("-fx-background-color: yellow");
 
-        TreeItemEx retval = new TreeItemEx();
-        //ItemValue itemValue = new ItemValue(retval);
-        retval.setValue(obj);
+        TreeItemEx item = new TreeItemEx();
+        ItemValue itemValue = new ItemValue(item);
+        item.setValue(itemValue);
 
         box.getChildren().add(createItemContent(obj));
 
-        retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.CONTENT);
+        itemValue.setCellGraphic(anchorPane);
+        itemValue.setTreeItemObject(obj);
 
-        //itemValue.setTreeItemObject(obj);
-
-        return retval;
+        return item;
     }
     
     protected HBox createHeaderContent(Object obj, Header h) {
@@ -193,18 +192,17 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         //anchorPane.setStyle("-fx-background-color: yellow");
 
-        TreeItemEx retval = new TreeItemEx();
-        
-        retval.setValue(obj);
+        TreeItemEx item = new TreeItemEx();
+        ItemValue itemValue = new ItemValue(item);
+        item.setValue(itemValue);
 
         box.getChildren().add(createHeaderContent(obj, h));
 
-        retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.HEADER);
+        itemValue.setCellGraphic(anchorPane);
         // header cannot have an object
         //itemValue.setTreeItemObject(obj);
 
-        return retval;
+        return item;
     }
 
     public final TreeItemEx createPlaceholder(Object obj, Placeholder cp) {
@@ -214,13 +212,12 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         //anchorPane.setStyle("-fx-background-color: yellow");
         TreeItemEx retval = new TreeItemEx();
-       
-        retval.setValue(obj);
+        ItemValue itv = new ItemValue(retval);
+        retval.setValue(itv);
 
         box.getChildren().add(createPlaceholderContent(obj, cp));
-        retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.PLACEHOLDER);
-        
+        itv.setCellGraphic(anchorPane);
+        itv.setTreeItemObject(obj);
 
         //box.getChildren().add(createItemContent(obj));
         //23retval.getValue().setPlaceholder(true);
@@ -273,20 +270,23 @@ public class TreeItemBuilder {
         }
         boolean retval = true;
         NodeDescriptor nc;
-        if (target.getValue() == null) {
+        if (target.getObject() == null) {
             //
             // This is possible when target is a placeholder
             //
             TreeItemEx parent = (TreeItemEx) target.getParent();
-            nc = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
-            Property cp = nc.getProperties().get(target.getIndex());
-            BeanAdapter adapter = new BeanAdapter(parent.getValue());
+            nc = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getObject());
+            Property cp = nc.getProperties().get(target.getValue().getIndex());
+            BeanAdapter adapter = new BeanAdapter(parent.getObject());
             retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
         } else {
-            nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+            nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getObject());
         }
 
         return retval;
+    }
+    private Object getObject(TreeItemEx item) {
+        if ( (item instanceof  )
     }
     ////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////
@@ -307,14 +307,14 @@ public class TreeItemBuilder {
 */
     public void addTreeItemObjectChangeListener(TreeItemEx item) {
 
-        if (item.getValue() == null) {
+        if (item.getObject() == null) {
             return;
         }
         removeTreeItemObjectChangeListener(item);
         Object listener = null;
         
 
-        //!!!23.01item.getValue().setChangeListener(listener);
+        item.getValue().setChangeListener(listener);
     }
     public void removeTreeItemObjectChangeListener(TreeItemEx item) {
     }    

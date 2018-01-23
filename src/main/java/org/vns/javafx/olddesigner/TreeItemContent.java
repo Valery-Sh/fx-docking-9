@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
-
+package org.vns.javafx.olddesigner;
 
 /**
  *
  * @author Valery
  */
-public class Header extends Property {
+public class TreeItemContent extends TreeItemEx{
     
 }

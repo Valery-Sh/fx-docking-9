@@ -13,13 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
-
+package org.vns.javafx.olddesigner;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class Header extends Property {
+public class Placeholder extends Property {
+
+
+    private boolean hideNull;
+
+    public Placeholder() {
+    }
+
+    public boolean isHideNull() {
+        return hideNull;
+    }
+
+    public void setHideNull(boolean hideNull) {
+        this.hideNull = hideNull;
+    }
+    
+    @Override
+    public boolean isDefaultTarget() {
+        return super.isDefaultTarget();
+    }
+
+    @Override
+    public void setDefaultTarget(boolean defaultTarget) {
+        super.setDefaultTarget(defaultTarget);
+    }
     
 }

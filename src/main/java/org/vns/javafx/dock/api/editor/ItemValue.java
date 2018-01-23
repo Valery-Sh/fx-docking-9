@@ -49,14 +49,6 @@ public class ItemValue {
         if (treeItemObjectListener != null) {
             treeItemObject.removeListener(treeItemObjectListener);
         }
-        System.err.println("ItemValue INIT " + treeItemObject.get());
-
-        if (treeItemObject.get() instanceof Node) {
-            Node n = (Node) treeItemObject.get();
-            if ("graphicLb".equals(n.getId())) {
-                System.err.println("ItemValue REGICTER graphicLb");
-            }
-        }
 
         treeItemObjectListener = new ChangeListener() {
             @Override

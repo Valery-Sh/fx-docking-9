@@ -15,11 +15,14 @@
  */
 package org.vns.javafx.dock.api.demo.designer;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.Method;
 import java.util.Set;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,28 +30,27 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 import javafx.stage.Stage;
-import org.vns.javafx.designer.ItemValue;
 import org.vns.javafx.designer.SceneGraphView;
+import org.vns.javafx.designer.TreeItemBuilder;
+import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
 
 public class TestTreeItemBuilder03 extends Application {
 
-    private ObservableList<? extends VBox> nodeList = FXCollections.observableArrayList();
+    private ObservableList<VBox> nodeList = FXCollections.observableArrayList();
 
-    public ObservableList<? extends VBox> getNodeList() {
+    public ObservableList<VBox> getNodeList() {
         return nodeList;
     }
-
+    
+    Label testLb = new Label("testLb");
+    Label gLb = new Label("glb");
 
   
 
@@ -56,6 +58,23 @@ public class TestTreeItemBuilder03 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        testLb.setGraphic(gLb);
+        Method m1 = MethodUtil.getMethod(testLb.getClass(), "graphicProperty", new Class[0]);
+        Object obj = MethodUtil.invoke(m1, testLb, new Object[0]);
+        System.err.println("Method m1=" + m1);
+        System.err.println("Method m1 invoke = " + obj);
+        System.err.println("Method obj class = " + obj);        
+        
+        TreeItemEx titem = new TreeItemBuilder().build(gLb);
+        titem.setValue(gLb);
+        Method m2 = MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[] {ChangeListener.class} );
+        //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem)});        
+        testLb.setGraphic(null);
+        //
+        Method m3 = MethodUtil.getMethod(ObservableList.class, "addListener", new Class[] {ListChangeListener.class} );
+        //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem)});        
+        System.err.println("Method m3=" + m3);
+        
 /*        BeanAdapter ba = new BeanAdapter(this);
         Class cl = ba.getType("nodeList");
         
@@ -156,8 +175,8 @@ public class TestTreeItemBuilder03 extends Application {
         launch(args);
     }
 
-    protected void customizeCell(TreeView treeView) {
-        TreeView<ItemValue> t = treeView;
+ /*   protected void customizeCell(TreeView treeView) {
+        TreeViewEx t = treeView;
         t.setCellFactory((TreeView<ItemValue> tv) -> {
             TreeCell<ItemValue> cell = new TreeCell<ItemValue>() {
                 @Override
@@ -187,5 +206,5 @@ public class TestTreeItemBuilder03 extends Application {
             return cell;
         });
     }
-
+*/
 }

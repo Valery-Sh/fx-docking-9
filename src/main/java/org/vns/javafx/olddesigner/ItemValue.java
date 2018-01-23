@@ -1,11 +1,12 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import static org.vns.javafx.designer.SceneGraphView.FIRST;
+import javafx.scene.control.TreeItem;
+import static org.vns.javafx.olddesigner.SceneGraphView.FIRST;
 
 /**
  * An Instance of the class is used as a {@code value} property of the item of
@@ -20,7 +21,7 @@ public class ItemValue {
     private final ObjectProperty treeItemObjectChangeHandler = new SimpleObjectProperty();
 
     //private Object treeItemObject;
-    private boolean placeholder;
+    //23private boolean placeholder;
     private Node cellGraphic;
     private String title;
     private int dragDropQualifier;
@@ -28,6 +29,8 @@ public class ItemValue {
     ///////////////////////////////
     ///////////////////////////////
     private int index;
+
+    private String propertyName;
 
     /**
      * Creates a new instance of the class for the specified {@code TreeItem}.
@@ -64,7 +67,7 @@ public class ItemValue {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 TreeItemBuilder b = null;
-                updateContent(oldValue, newValue);
+                //!!!23.01updateContent(oldValue, newValue);
                 if (newValue != null) {
                     //20.01b = TreeItemBuilderRegistry.getInstance().getBuilder(newValue);
                     if (b != null) {
@@ -82,16 +85,16 @@ public class ItemValue {
         treeItemObject.addListener(treeItemObjectListener);
     }
 
-    protected void updateContent(Object oldValue, Object newValue) {
+/*!!!2301    protected void updateContent(Object oldValue, Object newValue) {
         TreeItemBuilder builder;
         if (isPlaceholder()) {
-            builder = treeItem.getPlaceholderBuilder();
+            //!!!23.01builder = treeItem.getPlaceholderBuilder();
         } else {
             builder = getBuilder();
         }
         //20.01 builder.updateTreeItemContent(treeItem, oldValue, newValue);
     }
-
+*/
     /**
      * Returns the owner of this object.
      *
@@ -176,7 +179,7 @@ public class ItemValue {
         return builder;
     }
      */
-    public TreeItemBuilder getBuilder() {
+/*!!!23.01    public TreeItemBuilder getBuilder() {
         TreeItemBuilder builder = null;
         if (isPlaceholder() && getTreeItemObject() == null) {
             ////20.01 builder = treeItem.getPlaceholderBuilder();
@@ -185,16 +188,26 @@ public class ItemValue {
         }
         return builder;
     }
-
-    public boolean isPlaceholder() {
-        return placeholder;
-        //20.01 return treeItem.getPlaceholderBuilder() != null;
-    }
-
-    public void setPlaceholder(boolean placeholder) {
+*/
+/*!!!23.01    public boolean isPlaceholder() {
+        
+        boolean retval = false;
+        TreeItemEx p = (TreeItemEx) getTreeItem().getParent();
+        if (p != null) {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(p.getObject());
+            retval = nd.getProperties().get(getIndex()) instanceof Placeholder;
+        }
+        return retval;
+    }   
+  */  
+/*    public boolean isHeader() {
+        return !isPlaceholder() && getTreeItemObject() == null;
+    }    
+*/
+/*23    public void setPlaceholder(boolean placeholder) {
         this.placeholder = placeholder;
     }
-
+*/
     /*    public void setPlaceholder(boolean placeholder) {
         this.placeholder = placeholder;
     }
@@ -234,19 +247,46 @@ public class ItemValue {
     public void setCellGraphic(Node cellGraphic) {
         this.cellGraphic = cellGraphic;
     }
+
     ////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public int getIndex() {
         return index;
     }
 
-    public void setIndex(int index) {
+    private void setIndex(int index) {
         this.index = index;
     }
 
-    
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
+        
+        TreeItemEx p = (TreeItemEx) getTreeItem().getParent();
+        
+        //while ( p != null && p.getValue().isHeader()  ) {
+        while ( p != null && (p instanceof TreeItemHeader)  ) {            
+            p = (TreeItemEx) p.getParent();
+        }
+        
+        if (p == null) {
+            setIndex(0);
+        } else {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(p.getValue().getTreeItemObject());
+            for (int i = 0; i < nd.getProperties().size(); i++) {
+                if (propertyName.equals(nd.getProperties().get(i).getName())) {
+                    setIndex(i);
+                    break;
+                }
+            }
+        }
+    }
+
 }//ItemValue

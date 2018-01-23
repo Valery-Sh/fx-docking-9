@@ -1,9 +1,21 @@
-package org.vns.javafx.designer;
+/*
+ * Copyright 2017 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.vns.javafx.olddesigner;
 
 import javafx.scene.Node;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.input.DragEvent;
 
 /**
  * 
@@ -26,7 +38,9 @@ import javafx.scene.input.DragEvent;
  * 
  * @author Valery Shyshkin
  */
-public class DragTreeCellGesture extends DragNodeGesture{
+public class DragTreeViewGesture extends DragNodeGesture{
+    
+    private TreeItemEx sourceTreeItem;
     /**
      * Creates a new instance of the class for the specified parameter.
      * the following code sets the value of the property {@code gestureSourceObject}
@@ -37,14 +51,20 @@ public class DragTreeCellGesture extends DragNodeGesture{
      * 
      * @param gestureSource the object of type {@code TreeCell} on which the 
      *    gesture is initiated.
+     * @param treeItem ???
      */
-    public DragTreeCellGesture(Node gestureSource) {
+    public DragTreeViewGesture(Node gestureSource, TreeItemEx treeItem) {
         super(gestureSource);
-        DragEvent ev;
+        this.sourceTreeItem = treeItem;
         init();
     }
     private void init() {
-        TreeItem it = ((TreeCell)getGestureSource()).getTreeItem();
-        setSourceGestureObject(it.getValue());
+        setSourceGestureObject(sourceTreeItem.getValue().getTreeItemObject());
     } 
+
+    public TreeItemEx getGestureSourceTreeItem() {
+        return sourceTreeItem;
+    }
+    
+    
 }

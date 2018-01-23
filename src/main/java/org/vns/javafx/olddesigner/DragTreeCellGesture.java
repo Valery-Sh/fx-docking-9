@@ -1,5 +1,6 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.olddesigner;
 
+import org.vns.javafx.dock.api.editor.*;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -45,6 +46,6 @@ public class DragTreeCellGesture extends DragNodeGesture{
     }
     private void init() {
         TreeItem it = ((TreeCell)getGestureSource()).getTreeItem();
-        setSourceGestureObject(it.getValue());
+        setSourceGestureObject(((ItemValue)it.getValue()).getTreeItemObject());
     } 
 }

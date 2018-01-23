@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.designer;
 
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
-
 /**
  *
  * @author Valery Shyshkin
