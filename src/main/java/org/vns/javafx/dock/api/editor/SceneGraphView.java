@@ -480,12 +480,14 @@ public class SceneGraphView extends Control {
                 }
             }
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
+                System.err.println("HANDLE ---1");
                 if (isAdmissiblePosition(ev)) {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                     drawIndicator(ev);
                 }
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
+                System.err.println("HANDLE ---2");
                 getEditor().getDragIndicator().hideDrawShapes();
                 TreeItem<ItemValue> targetItem = getEditor().getTreeView().getRoot();
                 ItemValue targetValue = targetItem.getValue();

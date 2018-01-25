@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.designer.TreeItemEx.ItemType;
 
 /**
  *
@@ -28,7 +29,6 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
 
     private final TreeItemEx treeItem;
     private String propertyName;
-
 
     public TreeItemListObjectChangeListener(TreeItemEx treeItem, String propertyName) {
         this.treeItem = treeItem;
@@ -45,7 +45,16 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
                     for (TreeItem it : treeItem.getChildren()) {
-                        if (((TreeItemEx)it).getValue() == elem) {
+                        if (((TreeItemEx) it).getItemType().equals(ItemType.HEADER)) {
+                            for (TreeItem ith : ((TreeItemEx)it).getChildren()) {
+                                if (((TreeItemEx) ith).getValue() == elem) {
+                                    toRemove = (TreeItemEx) ith;
+                                    it.getChildren().remove(toRemove);
+                                    return;
+                                }
+                            }
+                        }
+                        if (((TreeItemEx) it).getValue() == elem) {
                             toRemove = (TreeItemEx) it;
                             break;
                         }

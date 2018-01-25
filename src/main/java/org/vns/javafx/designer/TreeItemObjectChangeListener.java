@@ -37,9 +37,9 @@ public class TreeItemObjectChangeListener implements ChangeListener {
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
         Property prop = treeItem.getProperty(propertyName);
         TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
-        
-        int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propTreeItem);
-        
+        System.err.println("BEFORE GETINSERT POS propName=" + propertyName);
+        int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propertyName);
+        System.err.println("AFTER GETINSERT POS  propName=" + propertyName);        
         if (propTreeItem == null) {
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
@@ -50,90 +50,30 @@ public class TreeItemObjectChangeListener implements ChangeListener {
             TreeItem p = propTreeItem.getParent();
             
             if (oldValue != null && newValue == null) {
-                propTreeItem.getChildren().clear();
+                //propTreeItem.getChildren().clear();
                 if ( (prop instanceof Content) || ( (prop instanceof Placeholder) && ((Placeholder)prop).isHideNull()) ) {
                     ///!!! must consider root node
                     p.getChildren().remove(propTreeItem);
                     
+                } else {
+                    
+                    TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
+                    System.err.println("1) item.propName=" + item.getPropertyName());                    
+                    System.err.println("2) prop=" + prop);                                                            
+                    System.err.println("3) prop.name=" + prop.getName());                                        
+                    p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
                 }
             }  else if (oldValue == null && newValue != null) {
                 // May be is Placeholder and not hidden when null
                 TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
                 p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
             } else if (oldValue != null && newValue != null) {
-                //23TreeItemEx item = treeItem.treeItemOf(oldValue);
-                //23if (item != null) {
-                    //23TreeViewEx.updateOnMove(item);
-                //23}
                 TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
                 p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-            
             }
         }
     }
 
-    public void changed1(ObservableValue observable, Object oldValue, Object newValue) {
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(treeItem.getValue());
-        int idx = -1;
-        for (int i = 0; i < nd.getProperties().size(); i++) {
-            if (propertyName.equals(nd.getProperties().get(i).getName())) {
-                idx = i;
-                break;
-            }
-        }
-        Property prop = nd.getProperties().get(idx);
-
-        TreeItemEx propTreeItem = null;
-        int insertPos = -1;  //use it when propTreeItem is null
-        for (int i = 0; i < treeItem.getChildren().size(); i++) {
-            TreeItemEx it = (TreeItemEx) treeItem.getChildren().get(i);
-            if (idx == it.getIndex()) {
-                propTreeItem = it;
-                break;
-            }
-            if (it.getIndex() >= insertPos && i < idx) {
-                insertPos = i;
-            }
-        }
-        if (propTreeItem == null) {
-            if (insertPos == -1) {
-                insertPos = 0;
-            } else {
-                insertPos++;
-            }
-
-        }
-        if (propTreeItem == null) {
-            if (oldValue == null && newValue != null) {
-                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                treeItem.getChildren().add(insertPos, item);
-            }
-        } else {
-            
-            TreeItem p = propTreeItem.getParent();
-            
-            if (oldValue != null && newValue == null) {
-                propTreeItem.getChildren().clear();
-                if ( (prop instanceof Content) || ( (prop instanceof Placeholder) && ((Placeholder)prop).isHideNull()) ) {
-                    ///!!! must consider root node
-                    p.getChildren().remove(propTreeItem);
-                    
-                }
-            }  else if (oldValue == null && newValue != null) {
-                // May be is Placeholder and not hidden when null
-                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-            } else if (oldValue != null && newValue != null) {
-                //23TreeItemEx item = treeItem.treeItemOf(oldValue);
-                //23if (item != null) {
-                    //23TreeViewEx.updateOnMove(item);
-                //23}
-                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-            
-            }
-        }
-    }
     
     protected Object getPropertyValue() {
         Object retval = null;

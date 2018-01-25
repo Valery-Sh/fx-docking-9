@@ -38,6 +38,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
+import org.vns.javafx.designer.TreeItemObjectChangeListener;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
 
@@ -68,7 +69,7 @@ public class TestTreeItemBuilder03 extends Application {
         TreeItemEx titem = new TreeItemBuilder().build(gLb);
         titem.setValue(gLb);
         Method m2 = MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[] {ChangeListener.class} );
-        //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem)});        
+        //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem,"graphicProperty")});        
         testLb.setGraphic(null);
         //
         Method m3 = MethodUtil.getMethod(ObservableList.class, "addListener", new Class[] {ListChangeListener.class} );
@@ -112,8 +113,12 @@ public class TestTreeItemBuilder03 extends Application {
         Arc arc1 = new Arc();
         root.getChildren().add(arc1);
         Label lb2 = new Label("lb2");
+        lb2.setGraphic(btn1Graphic);
         HBox hbox2 = new HBox(lb2);
         root.getChildren().add(hbox2);
+        Label lb3 = new Label("lb3");
+        VBox vbox2 = new VBox(lb3);
+        //hbox2.getChildren().add(vbox2);
 
         //TreeItemBuilder builder = new TreeItemBuilder();
         //TreeItem rootItem = builder.build(root);
@@ -139,6 +144,7 @@ public class TestTreeItemBuilder03 extends Application {
         stage.setScene(scene);
         ObservableList<Node> ol = FXCollections.observableArrayList();
         stage.setOnShown(s -> {
+            System.err.println("hbox2 children.size()=" + hbox2.getChildren().size());
             /*            System.err.println("titleProperty = " + labeledNd.getTitleProperty()); 
             System.err.println("name = " + child1.getName()); 
             System.err.println("isPlaceholder  = " + child1.isPlaceholder()); 

@@ -1,7 +1,19 @@
 package org.vns.javafx.designer;
 
+import com.sun.corba.se.impl.orbutil.graph.NodeData;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 
 /**
  *
@@ -10,7 +22,18 @@ import javafx.scene.control.TreeItem;
  */
 public class TreeItemEx extends TreeItem<Object> {
 
-    //private TreeItemBuilder placeholderBuilder; 
+    private String propertyName;
+    private Node cellGraphic;
+
+    private int dragDropQualifier;
+    private Map<String, Object> changeListeners = FXCollections.observableHashMap();
+
+    private ItemType itemType = ItemType.CONTENT;
+
+    public static enum ItemType {
+        CONTENT, HEADER, PLACEHOLDER
+    }
+
     public TreeItemEx() {
 
     }
@@ -22,91 +45,6 @@ public class TreeItemEx extends TreeItem<Object> {
     public TreeItemEx(Object value, Node graphic) {
         super(value, graphic);
     }
-
-    /*!!!23.01    public TreeItemBuilder getBuilder() {
-        TreeItemBuilder retval = null;
-        if (getValue().isPlaceholder() && getValue().getTreeItemObject() == null ) {
-            ////20.01retval = this.getPlaceholderBuilder();
-        } else {
-            ////20.01retval = TreeItemBuilderRegistry.getInstance().getBuilder(getValue().getTreeItemObject());
-        }
-        return retval;
-    }    
-     */
-
- /*    public TreeItemEx treeItemOf(Object obj) {
-        TreeItemEx retval = null;
-        TreeItemEx t = (TreeItemEx) EditorUtil.findRootTreeItem(this);
-        if (t == null) {
-            return null;
-        }
-        t = (TreeItemEx) EditorUtil.findChildTreeItem(t, obj);
-        if (t != null) {
-            retval = t;
-        }
-        return retval;
-    }
-     */
- /*    public TreeItemBuilder getPlaceholderBuilder() {
-        return placeholderBuilder;
-    }
-    public void setPlaceholderBuilder(TreeItemBuilder placeholderBuilder) {
-        this.placeholderBuilder = placeholderBuilder;
-    }
-     */
- /*    public TreeItemEx createPlaceholder(int placeholderId, Object newValue)  {
-        TreeItemEx ph = null; 
-        //20.01if ( getBuilder() instanceof PlaceholderBuilderFactory ) {
-            //20.01PlaceholderBuilder pb = ((PlaceholderBuilderFactory)getBuilder()).getPlaceholderBuilder(placeholderId);            
-            //20.01ph = pb.buildPlaceholder(newValue);
-            //20.01ph.setPlaceholderBuilder((TreeItemBuilder) pb);
-        //20.01}
-        return ph;
-    }
-     */
- /*    public boolean isAdmissiblePosition(TreeView treeView, org.vns.javafx.dock.api.editor.TreeItemEx target,
-            org.vns.javafx.dock.api.editor.TreeItemEx place,
-            Object dragObject) {
-        if (target.getValue().getTreeItemObject() == dragObject) {
-            return false;
-        }
-        //System.err.println("TreeItemBuilder isAdmissiblePosition 1 " );
-        org.vns.javafx.dock.api.editor.TreeItemEx dragItem = org.vns.javafx.dock.api.editor.EditorUtil.findTreeItemByObject(treeView, dragObject);
-        //
-        // We do not want to insert the draggedItem before or after itself
-        //
-        if (target == place.getParent() && dragItem != null) {
-            if (dragItem == place || dragItem.previousSibling() == place) {
-                //System.err.println("TreeItemBuilder isAdmissiblePosition 2 " + ((TreeItemEx)dragItem).getObject() );
-
-                return false;
-            }
-        } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
-            int level = treeView.getTreeItemLevel(target) + 1;
-            TreeItem<org.vns.javafx.dock.api.editor.ItemValue> actualPlace = org.vns.javafx.dock.api.editor.EditorUtil.parentOfLevel(treeView, place, level);
-            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
-//                System.err.println("builder 2");
-                //System.err.println("TreeItemBuilder isAdmissiblePosition 3 " );
-
-                return false;
-            }
-        }
-        //System.err.println("TreeItemBuilder isAdmissiblePosition 4 " );
-
-        return isAcceptable(target.getObject(), dragObject);
-    }
-     */
-    private String propertyName;
-    private int index;
-    private int dragDropQualifier;
-
-    private ItemType itemType = ItemType.CONTENT;
-
-    public static enum ItemType {
-        CONTENT, HEADER, PLACEHOLDER
-    }
-
-    private Node cellGraphic;
 
     public Node getCellGraphic() {
         return cellGraphic;
@@ -124,9 +62,6 @@ public class TreeItemEx extends TreeItem<Object> {
         this.propertyName = propertyName;
     }
 
-    public int getIndex() {
-        return index;
-    }
 
     public int getDragDropQualifier() {
         return dragDropQualifier;
@@ -146,20 +81,11 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public TreeItemEx getTreeItem(String propertyName) {
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
-        int idx = -1;
-        for (int i = 0; i < nd.getProperties().size(); i++) {
-            if (propertyName.equals(nd.getProperties().get(i).getName())) {
-                idx = i;
-                break;
-            }
-        }
-        Property prop = nd.getProperties().get(idx);
-
         TreeItemEx propTreeItem = null;
 
         for (int i = 0; i < this.getChildren().size(); i++) {
             TreeItemEx it = (TreeItemEx) this.getChildren().get(i);
-            if (idx == it.getIndex()) {
+            if (propertyName.equals(it.getPropertyName()) ) {
                 propTreeItem = it;
                 break;
             }
@@ -169,33 +95,109 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public Property getProperty(String propertyName) {
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
-        int idx = -1;
+        Property prop = null;
         for (int i = 0; i < nd.getProperties().size(); i++) {
             if (propertyName.equals(nd.getProperties().get(i).getName())) {
-                idx = i;
+                prop = nd.getProperties().get(i);
                 break;
             }
         }
-        Property prop = nd.getProperties().get(idx);
 
         return prop;
     }
 
-    public int getInsertPos(TreeItemEx propTreeItem) {
-        
-        int idx = propTreeItem.getIndex();
+    protected int getIndex(String propertyName) {
+        int index = -1;
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        for (int i=0; i < nd.getProperties().size(); i++) {
+            if ( propertyName.equals(nd.getProperties().get(i).getName())) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }    
+    public int getInsertPos(String propName) {
+
+        int index = getIndex(propName);
         int insertPos = -1;  //use it when propTreeItem is null
 
         for (int i = 0; i < getChildren().size(); i++) {
             TreeItemEx it = (TreeItemEx) getChildren().get(i);
-            if (idx == it.getIndex()) {
+            int idx = getIndex(it.getPropertyName());
+            if ( idx > index ) {
+                insertPos = i - 1;
                 break;
+            } else {
+                insertPos = i + 1;
             }
-            if (it.getIndex() >= insertPos && i < idx) {
-                insertPos = i;
+            
+        }
+
+        return insertPos;
+    }
+
+    public TreeItemEx getParentSkipHeader() {
+        TreeItemEx retval = (TreeItemEx) getParent();
+        if (retval.getItemType().equals(TreeItemEx.ItemType.HEADER)) {
+            retval = (TreeItemEx) retval.getParent();
+        }
+        return retval;
+    }
+
+    public void registerChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        if (getValue() == null) {
+            return;
+        }
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+            Object changeListener; // = changeListeners.get(propertyName);
+            //unregisterChangeHandler();
+            Property p = nd.getProperties().get(i);
+            Object v = new BeanAdapter(getValue()).get(p.getName());
+            if ( v != null && (v instanceof List)) {
+                changeListener = new TreeItemListObjectChangeListener(this, p.getName());
+                Object propValue = new BeanAdapter(getValue()).get(p.getName());
+                //Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName(), new Class[0]);
+                //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
+                ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
+                changeListeners.put(p.getName(), changeListener);
+
+            } else {
+                changeListener = new TreeItemObjectChangeListener(this, p.getName());
+                Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
+                Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
+                ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
+                changeListeners.put(p.getName(), changeListener);
+            }
+        }
+    }
+
+    public void unregisterChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        if (getValue() == null || changeListeners.isEmpty()) {
+            return;
+        }
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+            Object changeListener; // = changeListeners.get(propertyName);
+            //unregisterChangeHandler();
+            Property p = nd.getProperties().get(i);
+            if (List.class.isAssignableFrom(getValue().getClass())) {
+
+            } else {
+                changeListener = changeListeners.get(p.getName());
+                Method propMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, p.getName() + "Property", new Class[0]);
+                Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
+                ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
+                changeListeners.remove(p.getName());
             }
         }
 
-        return ++insertPos;
     }
 }
