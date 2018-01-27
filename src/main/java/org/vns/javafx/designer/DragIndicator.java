@@ -93,25 +93,6 @@ public class DragIndicator {
         }
     }
 
-    /*    protected Bounds getDisclosureBounds() {
-        TreeItem<ItemValue> root = treeView.getRoot();
-        boolean b = false;
-        if (!isVisibleOnTop(root)) {
-            return disclosureBounds;
-        }
-        TreeCell c = EditorUtil.getCell(root);
-        if (c.getDisclosureNode() == null || ((Pane) c.getDisclosureNode()).getChildren().isEmpty()) {
-            System.err.println("EMPTY !!!!!!!!!!!!!!!!!!!!!!");
-
-            return disclosureBounds;
-        }
-        Node dn = ((Pane) c.getDisclosureNode()).getChildren().get(0);
-        //Node dn = ((Pane) c.getDisclosureNode());
-        disclosureBounds = c.screenToLocal(dn.localToScreen(dn.getBoundsInLocal()));
-
-        return disclosureBounds;
-    }
-     */
     protected void setDisclosureBounds(TreeCell cell) {
         Pane d = (Pane) cell.getDisclosureNode();
 
@@ -496,13 +477,13 @@ public class DragIndicator {
         TreeCell cell = (TreeCell) item.getCellGraphic().getParent();
 
         if (cell == null || !(cell.getScene() != null && cell.getScene().getWindow() != null)) {
-            System.err.println("printBounds =  NULL");
+            //System.err.println("printBounds =  NULL");
         }
-        System.err.println("cell.bounds     = " + cell.getBoundsInLocal());
+/*        System.err.println("cell.bounds     = " + cell.getBoundsInLocal());
         System.err.println("treeView.bounds = " + treeView.getBoundsInLocal());
         System.err.println("cell.boundsInParent    = " + cell.getBoundsInParent());
         System.err.println("treeView.boundsParent  = " + treeView.getBoundsInParent());
-
+*/
         treeView.intersects(cell.getBoundsInLocal());
     }
 

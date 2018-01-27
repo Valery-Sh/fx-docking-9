@@ -1,7 +1,6 @@
 
 package org.vns.javafx.designer;
 
-import org.vns.javafx.dock.api.editor.*;
 import com.sun.javafx.scene.control.skin.TreeViewSkin;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;

@@ -432,12 +432,12 @@ public class SceneGraphView extends Control {
                 ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(false);
                 TreeView tv = getEditor().getTreeView();
                 getEditor().getDragIndicator().hideDrawShapes();
-                System.err.println("HANDLE 1");
+//                System.err.println("HANDLE 1");
                 if (!isAdmissiblePosition(ev)) {
 //                    System.err.println("=== HANDLE NOT isAdmissiblePosition");
 //                    ev.acceptTransferModes(TransferMode.NONE);
                     //ev.setDropCompleted(true)
-                    System.err.println("HANDLE 2");
+//                    System.err.println("HANDLE 2");
                     ev.consume();
                 } else {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -480,14 +480,14 @@ public class SceneGraphView extends Control {
                 }
             }
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-                System.err.println("HANDLE ---1");
+//                System.err.println("HANDLE ---1");
                 if (isAdmissiblePosition(ev)) {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                     drawIndicator(ev);
                 }
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
-                System.err.println("HANDLE ---2");
+//                System.err.println("HANDLE ---2");
                 getEditor().getDragIndicator().hideDrawShapes();
                 TreeItem<ItemValue> targetItem = getEditor().getTreeView().getRoot();
                 ItemValue targetValue = targetItem.getValue();

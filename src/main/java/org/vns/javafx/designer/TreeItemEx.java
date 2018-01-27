@@ -1,6 +1,5 @@
 package org.vns.javafx.designer;
 
-import com.sun.corba.se.impl.orbutil.graph.NodeData;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -31,7 +30,7 @@ public class TreeItemEx extends TreeItem<Object> {
     private ItemType itemType = ItemType.CONTENT;
 
     public static enum ItemType {
-        CONTENT, HEADER, PLACEHOLDER
+        CONTENT, LISTCONTENT, PLACEHOLDER, ELEMENT
     }
 
     public TreeItemEx() {
@@ -94,6 +93,9 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public Property getProperty(String propertyName) {
+        if ( propertyName == null ) {
+            return null;
+        }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
         Property prop = null;
         for (int i = 0; i < nd.getProperties().size(); i++) {
@@ -139,7 +141,7 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public TreeItemEx getParentSkipHeader() {
         TreeItemEx retval = (TreeItemEx) getParent();
-        if (retval.getItemType().equals(TreeItemEx.ItemType.HEADER)) {
+        if (retval != null && retval.getItemType().equals(TreeItemEx.ItemType.LISTCONTENT)) {
             retval = (TreeItemEx) retval.getParent();
         }
         return retval;

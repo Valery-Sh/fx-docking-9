@@ -20,10 +20,8 @@ package org.vns.javafx.designer;
  *
  * @author Valery
  */
-public class Property {
+public class Property extends PropertyElement{
     private String name;
-    private String styleClass;
-    private String title; 
     private boolean defaultTarget;
 
     public String getName() {
@@ -32,22 +30,6 @@ public class Property {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     protected boolean isDefaultTarget() {

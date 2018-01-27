@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.olddesigner;
+package org.vns.javafx.designer;
 
-import javafx.beans.DefaultProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Control;
 
-@DefaultProperty("descriptors")
-public class GraphDescriptor extends Control {
-    private final ObservableList<NodeDescriptor> descriptors = FXCollections.observableArrayList();
+/**
+ *
+ * @author Valery
+ */
+public class ListContent extends Property {
+    private boolean alwaysVisible;
 
-    public ObservableList<NodeDescriptor> getDescriptors() {
-        return descriptors;
+    public boolean isAlwaysVisible() {
+        return alwaysVisible;
+    }
+
+    public void setAlwaysVisible(boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
     }
     
 }

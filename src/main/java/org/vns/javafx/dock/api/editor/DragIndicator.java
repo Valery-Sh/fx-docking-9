@@ -498,11 +498,11 @@ public class DragIndicator {
         if (cell == null || !(cell.getScene() != null && cell.getScene().getWindow() != null)) {
             System.err.println("printBounds =  NULL");
         }
-        System.err.println("cell.bounds     = " + cell.getBoundsInLocal());
+/*        System.err.println("cell.bounds     = " + cell.getBoundsInLocal());
         System.err.println("treeView.bounds = " + treeView.getBoundsInLocal());
         System.err.println("cell.boundsInParent    = " + cell.getBoundsInParent());
         System.err.println("treeView.boundsParent  = " + treeView.getBoundsInParent());
-
+*/
         treeView.intersects(cell.getBoundsInLocal());
     }
 

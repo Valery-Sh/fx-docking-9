@@ -52,6 +52,69 @@ public interface TreeItemBuilder {
     default boolean isAdmissiblePosition(TreeView treeView, TreeItemEx target,
             TreeItemEx place,
             Object dragObject) {
+        if ( true ) {
+            return true;
+        }
+        System.err.println("!! target = " + target.getObject());
+        System.err.println("!! place = " + place.getObject());
+        //
+        // Check if the dragObject equals to targetItemObject 
+        //
+        if (target.getValue().getTreeItemObject() == dragObject) {
+            return false;
+        }
+        System.err.println("   ---  1 ");
+        
+        //System.err.println("TreeItemBuilder isAdmissiblePosition 1 " );
+        TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
+        System.err.println("   ---  2 ");
+        
+        //
+        // We do not want to insert the draggedItem before or after itself
+        //
+        if (target == place.getParent() && dragItem != null) {
+        System.err.println("   ---  3 ");
+            
+            if (dragItem == place || dragItem.previousSibling() == place) {
+                //System.err.println("TreeItemBuilder isAdmissiblePosition 2 " + ((TreeItemEx)dragItem).getObject() );
+        System.err.println("   ---  4 ");
+
+                return false;
+            }
+        } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
+        System.err.println("   ---  5 ");
+            
+            System.err.println("PLACE = " + place);
+            int level = treeView.getTreeItemLevel(target) + 1;
+            if ( place.nextSibling() != null ) {
+                System.err.println("place.nextSibling = NOTNULL");
+            } else {
+                System.err.println("place.nextSibling = EQNULL" );
+            }
+            if ( place.nextSibling() != null ) {
+                
+                return false;
+            }
+            TreeItem<ItemValue> actualPlace = EditorUtil.parentOfLevel(treeView, place, level);
+            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+//                System.err.println("builder 2");
+                //System.err.println("TreeItemBuilder isAdmissiblePosition 3 " );
+
+                //return false;
+            }
+        }
+        //System.err.println("TreeItemBuilder isAdmissiblePosition 4 " );
+        System.err.println("   ---  6 end ");
+
+        return isAcceptable(target.getObject(), dragObject);
+    }
+
+    default boolean isAdmissiblePosition_OLD(TreeView treeView, TreeItemEx target,
+            TreeItemEx place,
+            Object dragObject) {
+        //
+        // Check if the dragObject equals to targetItemObject 
+        //
         if (target.getValue().getTreeItemObject() == dragObject) {
             return false;
         }
@@ -80,7 +143,7 @@ public interface TreeItemBuilder {
 
         return isAcceptable(target.getObject(), dragObject);
     }
-
+    
     //boolean isAcceptable(Object obj);
     boolean isAcceptable(Object target, Object accepting);
 

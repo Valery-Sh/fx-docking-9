@@ -13,25 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.olddesigner;
+package org.vns.javafx.designer;
 
 /**
  *
  * @author Valery
  */
-public class Property {
-    private String name;
+public class PropertyElement {
     private String styleClass;
     private String title; 
-    private boolean defaultTarget;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getStyleClass() {
         return styleClass;
@@ -47,14 +37,6 @@ public class Property {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    protected boolean isDefaultTarget() {
-        return defaultTarget;
-    }
-
-    protected void setDefaultTarget(boolean defaultTarget) {
-        this.defaultTarget = defaultTarget;
     }
     
 }

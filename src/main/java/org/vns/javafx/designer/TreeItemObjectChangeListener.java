@@ -37,9 +37,9 @@ public class TreeItemObjectChangeListener implements ChangeListener {
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
         Property prop = treeItem.getProperty(propertyName);
         TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
-        System.err.println("BEFORE GETINSERT POS propName=" + propertyName);
+        //System.err.println("BEFORE GETINSERT POS propName=" + propertyName);
         int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propertyName);
-        System.err.println("AFTER GETINSERT POS  propName=" + propertyName);        
+        //System.err.println("AFTER GETINSERT POS  propName=" + propertyName);        
         if (propTreeItem == null) {
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
@@ -58,9 +58,9 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                 } else {
                     
                     TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                    System.err.println("1) item.propName=" + item.getPropertyName());                    
-                    System.err.println("2) prop=" + prop);                                                            
-                    System.err.println("3) prop.name=" + prop.getName());                                        
+                    //System.err.println("1) item.propName=" + item.getPropertyName());                    
+                    //System.err.println("2) prop=" + prop);                                                            
+                    //System.err.println("3) prop.name=" + prop.getName());                                        
                     p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
                 }
             }  else if (oldValue == null && newValue != null) {

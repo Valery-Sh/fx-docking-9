@@ -67,22 +67,13 @@ public class SceneGraphView extends Control {
 
     private void init() {
         dragIndicator = new DragIndicator(this);
-        getTreeViewPane().getChildren().add(treeView);
+        treeViewPane.getChildren().add(treeView);
 
         sceneProperty().addListener(this::sceneChanged);
         customizeCell();
         dragIndicator.initIndicatorPane();
-        //treeView.setStyle("-fx-border-width:  0 0 10 0; ;-fx-border-color: blue; -fx-background-color: aqua");
-
-        //treeView.setPadding(new Insets(2,2,2,2));
         scrollAnimation = new ScrollAnimation((TreeViewEx) treeView);
         treeView.addEventHandler(DragEvent.ANY, new TreeViewDragEventHandler(this));
-
-        //
-        // TO DELETE
-        treeViewPane.setStyle("-fx-background-color: green;-fx-insets: 0;-fx-border-width: 0;  ");
-        /*-fx-padding: 0 3 0 3; */
-        //END TO DELETE    
 
     }
 
@@ -153,8 +144,11 @@ public class SceneGraphView extends Control {
     }
      */
     protected TreeItemEx createSceneGraph(Node node) {
-        TreeItemBuilder builder = new TreeItemBuilder();
-        TreeItemEx item = builder.build(node);
+        //TreeItemBuilder builder = new TreeItemBuilder();
+        TreeItemEx item = new TreeItemBuilder().build(node);
+        //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(node);
+        
+        
         //!!!23.01item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
         //        this::childrenModification);
         return item;
@@ -340,22 +334,22 @@ public class SceneGraphView extends Control {
 
         @Override
         public void handle(DragEvent ev) {
-            System.err.println("BEFORE NOTIFY DRAG EVENT");
+//            System.err.println("BEFORE NOTIFY DRAG EVENT");
             ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);
 
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
                 ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(false);
                 TreeView tv = getEditor().getTreeView();
                 getEditor().getDragIndicator().hideDrawShapes();
-                System.err.println("HANDLE DRAG OVER");
+//                System.err.println("HANDLE DRAG OVER");
                 if (!isAdmissiblePosition(ev)) {
 //                    System.err.println("=== HANDLE NOT isAdmissiblePosition");
 //                    ev.acceptTransferModes(TransferMode.NONE);
                     //ev.setDropCompleted(true)
-                    System.err.println("HANDLE NOT ADMIS");
+//                    System.err.println("HANDLE NOT ADMIS");
                     ev.consume();
                 } else {
-                    System.err.println("HANDLE 3");
+//                    System.err.println("HANDLE 3");
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
 //                    System.err.println("handle acceptingMode = " + ev.getAcceptedTransferMode());                    
                     
@@ -397,14 +391,14 @@ public class SceneGraphView extends Control {
                 }
             }
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-                System.err.println("TreeViewDragEventHandler DRAG OVER");
+//                System.err.println("TreeViewDragEventHandler DRAG OVER");
                 if (isAdmissiblePosition(ev)) {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                     drawIndicator(ev);
                 }
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
-                System.err.println("TreeViewDragEventHandler DRAG DROPPED");                
+//                System.err.println("TreeViewDragEventHandler DRAG DROPPED");                
                 getEditor().getDragIndicator().hideDrawShapes();
                 TreeItemEx targetItem = (TreeItemEx) getEditor().getTreeView().getRoot();
                 //ItemValue targetValue = targetItem.getValue();
@@ -422,7 +416,7 @@ public class SceneGraphView extends Control {
                 }
 
             } else if (ev.getEventType() == DragEvent.DRAG_DONE) {
-                System.err.println("TreeViewDragEventHandler DRAG DONE");                
+//                System.err.println("TreeViewDragEventHandler DRAG DONE");                
                 getEditor().getDragIndicator().hideDrawShapes();
             }
             ev.consume();

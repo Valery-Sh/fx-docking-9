@@ -18,6 +18,7 @@ package org.vns.javafx.designer;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.vns.javafx.designer.TreeItemEx.ItemType;
 
 /**
  *
@@ -75,6 +76,23 @@ public class NodeDescriptor {
 
     public void setDefaultProperty(String defaultProperty) {
         this.defaultProperty = defaultProperty;
+    }
+    
+    public static Property getProperty(String propertyName, TreeItemEx item) {
+        Property retval = null;
+        
+        return retval;
+    }
+    public static ItemType getItemType(TreeItemEx item) {
+        ItemType retval = null;
+        if ( item.getParent() == null ) {
+            retval = ItemType.CONTENT;
+        } else if (item.getParent().getParent() == null ){
+            // item.getParent() is root Item
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getParent().getValue());
+            
+        }
+        return retval;
     }
     
 }

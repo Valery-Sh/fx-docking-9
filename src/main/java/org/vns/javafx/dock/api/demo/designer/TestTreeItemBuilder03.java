@@ -15,8 +15,11 @@
  */
 package org.vns.javafx.dock.api.demo.designer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -40,6 +44,7 @@ import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.designer.TreeItemObjectChangeListener;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
 
 public class TestTreeItemBuilder03 extends Application {
@@ -49,13 +54,9 @@ public class TestTreeItemBuilder03 extends Application {
     public ObservableList<VBox> getNodeList() {
         return nodeList;
     }
-    
+
     Label testLb = new Label("testLb");
     Label gLb = new Label("glb");
-
-  
-
-   
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -64,19 +65,19 @@ public class TestTreeItemBuilder03 extends Application {
         Object obj = MethodUtil.invoke(m1, testLb, new Object[0]);
         System.err.println("Method m1=" + m1);
         System.err.println("Method m1 invoke = " + obj);
-        System.err.println("Method obj class = " + obj);        
-        
+        System.err.println("Method obj class = " + obj);
+
         TreeItemEx titem = new TreeItemBuilder().build(gLb);
         titem.setValue(gLb);
-        Method m2 = MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[] {ChangeListener.class} );
+        Method m2 = MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
         //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem,"graphicProperty")});        
         testLb.setGraphic(null);
         //
-        Method m3 = MethodUtil.getMethod(ObservableList.class, "addListener", new Class[] {ListChangeListener.class} );
+        Method m3 = MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
         //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem)});        
         System.err.println("Method m3=" + m3);
-        
-/*        BeanAdapter ba = new BeanAdapter(this);
+
+        /*        BeanAdapter ba = new BeanAdapter(this);
         Class cl = ba.getType("nodeList");
         
         System.err.println("isAssignable = " + cl.isAssignableFrom(VBox.class));
@@ -86,7 +87,7 @@ public class TestTreeItemBuilder03 extends Application {
         //System.err.println("List Item Type = " + BeanAdapter.getGenericListItemType(tp));
         //System.err.println("List Item Type = " + BeanAdapter.getListItemType(tp).getName());
         System.err.println("cl = " + cl.getName());
-*/        
+         */
         VBox root = new VBox();
 //        Pane p;
 //        nodeList.add(root);
@@ -144,6 +145,40 @@ public class TestTreeItemBuilder03 extends Application {
         stage.setScene(scene);
         ObservableList<Node> ol = FXCollections.observableArrayList();
         stage.setOnShown(s -> {
+            System.err.println("p1 = " + btn1Graphic.getParent());
+            BeanAdapter pba = new BeanAdapter(btn1Graphic.getParent());
+            ObservableList l = (ObservableList) pba.get("children");
+            //l.remove(btn1Graphic);
+            Method method;
+            Node nd = btn1Graphic.getParent();
+            Class cl = nd.getClass();
+            try {
+                while ( ! Parent.class.equals(cl)) {
+                    cl = cl.getSuperclass();    
+                }
+                
+                method = cl.getDeclaredMethod("getChildren");
+                method.setAccessible(true);
+                ObservableList list = (ObservableList) method.invoke(nd);
+                System.err.println("List size() = " + list.size());
+                list.forEach(el -> {
+                    System.err.println("  --- List el = " + el);
+                });
+                
+            } catch (NoSuchMethodException ex) {
+                Logger.getLogger(TestTreeItemBuilder03.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(TestTreeItemBuilder03.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(TestTreeItemBuilder03.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(TestTreeItemBuilder03.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(TestTreeItemBuilder03.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            System.err.println("p2 = " + btn1Graphic.getParent().getParent());
+            System.err.println("p3 = " + btn1Graphic.getParent().getParent().getParent());
             System.err.println("hbox2 children.size()=" + hbox2.getChildren().size());
             /*            System.err.println("titleProperty = " + labeledNd.getTitleProperty()); 
             System.err.println("name = " + child1.getName()); 
@@ -181,7 +216,7 @@ public class TestTreeItemBuilder03 extends Application {
         launch(args);
     }
 
- /*   protected void customizeCell(TreeView treeView) {
+    /*   protected void customizeCell(TreeView treeView) {
         TreeViewEx t = treeView;
         t.setCellFactory((TreeView<ItemValue> tv) -> {
             TreeCell<ItemValue> cell = new TreeCell<ItemValue>() {
@@ -212,5 +247,5 @@ public class TestTreeItemBuilder03 extends Application {
             return cell;
         });
     }
-*/
+     */
 }

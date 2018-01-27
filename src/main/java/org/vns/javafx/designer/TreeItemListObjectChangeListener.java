@@ -45,7 +45,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
                     for (TreeItem it : treeItem.getChildren()) {
-                        if (((TreeItemEx) it).getItemType().equals(ItemType.HEADER)) {
+                        if (((TreeItemEx) it).getItemType().equals(ItemType.LISTCONTENT)) {
                             for (TreeItem ith : ((TreeItemEx)it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
@@ -69,7 +69,8 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 if (!list.isEmpty()) {
                 }
                 for (Object elem : list) {
-                    TreeItem it = new TreeItemBuilder().build(elem);
+                    TreeItemEx it = new TreeItemBuilder().build(elem);
+                    it.setPropertyName(propertyName);
                     itemList.add(it);
                 }
                 treeItem.getChildren().addAll(change.getFrom(), itemList);

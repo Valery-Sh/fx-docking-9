@@ -166,8 +166,8 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
             return false;
         }
 
-//20.01        return target.getValue().getBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
-        return true;
+        return new TreeItemBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
+
     }
 
     /**
