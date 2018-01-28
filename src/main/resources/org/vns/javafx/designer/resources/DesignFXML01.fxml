@@ -13,13 +13,13 @@
         <Placeholder name="graphic" defaultTarget="true" title="graphic" hideNull="true" styleClass="labeled-insert-graphic"/>
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.Pane">
-        <ListContent name="children" />
+        <NodeList name="children" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.VBox">
-        <ListContent name="children" title="List of Child" />
+        <NodeList name="children" title="List of Child" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.HBox">
-        <ListContent name="children" title="List of Child" alwaysVisible="true" />
+        <NodeList name="children" title="List of Child" alwaysVisible="true" />
     </NodeDescriptor>
     
     <NodeDescriptor type="javafx.scene.layout.BorderPane">

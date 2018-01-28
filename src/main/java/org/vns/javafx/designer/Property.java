@@ -20,7 +20,7 @@ package org.vns.javafx.designer;
  *
  * @author Valery
  */
-public class Property extends PropertyElement{
+public class Property extends ListElement{
     private String name;
     private boolean defaultTarget;
 

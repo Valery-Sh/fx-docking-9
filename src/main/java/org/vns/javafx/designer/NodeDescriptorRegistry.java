@@ -47,8 +47,8 @@ public class NodeDescriptorRegistry {
                 retval = new NodeDescriptor();
                 retval.setType(o.getClass().getName());
                 //retval.setStyleClass("tree-item-node-unknownnode");
-                //20.01ContentProperty cp = new Content(retval);
-                Content cp = new Content();
+                //20.01ContentProperty cp = new NodeContent(retval);
+                NodeContent cp = new NodeContent();
                 cp.setName(name);
                 retval.getProperties().add(cp);
             }

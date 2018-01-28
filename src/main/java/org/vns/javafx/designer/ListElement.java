@@ -15,20 +15,28 @@
  */
 package org.vns.javafx.designer;
 
-
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class ListContent extends Property {
-    private boolean alwaysVisible;
+public class ListElement {
+    private String styleClass;
+    private String title; 
 
-    public boolean isAlwaysVisible() {
-        return alwaysVisible;
+    public String getStyleClass() {
+        return styleClass;
     }
 
-    public void setAlwaysVisible(boolean alwaysVisible) {
-        this.alwaysVisible = alwaysVisible;
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
     
 }

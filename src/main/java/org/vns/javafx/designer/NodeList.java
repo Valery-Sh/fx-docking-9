@@ -15,23 +15,20 @@
  */
 package org.vns.javafx.designer;
 
+
 /**
  *
- * @author Valery Shyshkin
+ * @author Valery
  */
-public class Content extends Property {
+public class NodeList extends Property {
+    private boolean alwaysVisible;
 
+    public boolean isAlwaysVisible() {
+        return alwaysVisible;
+    }
+
+    public void setAlwaysVisible(boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
+    }
     
-    public Content() {
-    }
-    @Override
-    public boolean isDefaultTarget() {
-        return super.isDefaultTarget();
-    }
-
-    @Override
-    public void setDefaultTarget(boolean defaultTarget) {
-        super.setDefaultTarget(defaultTarget);
-    }
-  
 }

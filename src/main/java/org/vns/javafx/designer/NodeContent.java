@@ -17,26 +17,21 @@ package org.vns.javafx.designer;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class PropertyElement {
-    private String styleClass;
-    private String title; 
+public class NodeContent extends Property {
 
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
     
+    public NodeContent() {
+    }
+    @Override
+    public boolean isDefaultTarget() {
+        return super.isDefaultTarget();
+    }
+
+    @Override
+    public void setDefaultTarget(boolean defaultTarget) {
+        super.setDefaultTarget(defaultTarget);
+    }
+  
 }

@@ -48,24 +48,24 @@ public class TreeItemBuilder {
         return build(obj, null);
     }
 
-    protected TreeItemEx build(Object obj, PropertyElement p) {
+    protected TreeItemEx build(Object obj, ListElement p) {
         TreeItemEx retval;
 
         if (p != null && (p instanceof Placeholder)) {
             retval = createPlaceholder(obj, (Placeholder) p);
-        } else if (p != null && (p instanceof ListContent)) {
-            retval = createListContentItem(obj, (ListContent) p);
-        } else if (p != null && (p instanceof Content)) {
-            retval = createItem(obj);
+        } else if (p != null && (p instanceof NodeList)) {
+            retval = createListContentItem(obj, (NodeList) p);
+        } else if (p != null && (p instanceof NodeContent)) {
+            retval = createContentItem(obj);
         } else {
-            retval = createBaseItem(obj);
+            retval = createListElementItem(obj);
         }
         if (p != null && (p instanceof Property)) {
-            retval.setPropertyName(((Property)p).getName());
+            retval.setPropertyName(((Property) p).getName());
         }
         //System.err.println("p=" + p);
-        if (p != null && (p instanceof ListContent)) {
-            retval.setValue(obj);
+        if (p != null && (p instanceof NodeList)) {
+            //retval.setValue(obj);
             ObservableList ol = (ObservableList) obj;
             System.err.println("ol.size()=" + ol.size());
             for (int i = 0; i < ol.size(); i++) {
@@ -73,7 +73,7 @@ public class TreeItemBuilder {
             }
             return retval;
         }
-        if (obj == null && !(p instanceof ListContent)) {
+        if (obj == null && !(p instanceof NodeList)) {
             return retval;
         }
 
@@ -91,8 +91,8 @@ public class TreeItemBuilder {
                 hideIfNull = ((Placeholder) cp).isHideNull();
             }
 
-            if ((cp instanceof ListContent)) {
-                if (nc.getProperties().size() == 1 && !((ListContent) cp).isAlwaysVisible()) {
+            if ((cp instanceof NodeList)) {
+                if (nc.getProperties().size() == 1 && !((NodeList) cp).isAlwaysVisible()) {
                     //
                     // Omit TreeItem for ListItem
                     //
@@ -101,7 +101,7 @@ public class TreeItemBuilder {
                         retval.getChildren().add(build(ol.get(i)));
                     }
                 } else {
-                    TreeItemEx listItem = build(cpObj, (ListContent) cp);
+                    TreeItemEx listItem = build(cpObj, (NodeList) cp);
                     retval.getChildren().add(listItem);
                     listItem.setPropertyName(cp.getName());
 
@@ -109,21 +109,11 @@ public class TreeItemBuilder {
 
             } else if (!isplaceholder && cpObj != null) {
                 //
-                // This is a Content ItemType
+                // This is a NodeContent ItemType
                 //
-/*                if (List.class.isAssignableFrom(cpObj.getClass())) {
-                    List ls = (List) cpObj;
-                    for (int i = 0; i < ls.size(); i++) {
-                        TreeItemEx item = build(ls.get(i));
-                        item.setPropertyName(cp.getName());
-                        retval.getChildren().add(item);
-                    }
-                } else {
-                 */
-                TreeItemEx item = build(cpObj, (Content) cp);
+                TreeItemEx item = build(cpObj, (NodeContent) cp);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
-//                }
             } else if (isplaceholder && (cpObj != null || !hideIfNull)) {
                 TreeItemEx item = build(cpObj, (Placeholder) cp);
                 item.setPropertyName(cp.getName());
@@ -133,7 +123,7 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    public final HBox createItemContent(Object obj) {
+    public final HBox createContentItemContent(Object obj) {
 
         HBox box = new HBox(new HBox()); // placeholder 
         NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
@@ -156,7 +146,7 @@ public class TreeItemBuilder {
         return box;
     }
 
-    public final TreeItemEx createItem(Object obj) {
+    public final TreeItemEx createContentItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -167,7 +157,7 @@ public class TreeItemBuilder {
 
         retval.setValue(obj);
 
-        box.getChildren().add(createItemContent(obj));
+        box.getChildren().add(createContentItemContent(obj));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
@@ -179,18 +169,17 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    public final TreeItemEx createBaseItem(Object obj) {
+    public final TreeItemEx createListElementItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
-        //anchorPane.setStyle("-fx-background-color: yellow");
 
         TreeItemEx retval = new TreeItemEx();
 
         retval.setValue(obj);
 
-        box.getChildren().add(createItemContent(obj));
+        box.getChildren().add(createContentItemContent(obj));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.ELEMENT);
@@ -202,7 +191,7 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    protected HBox createListContent(Object obj, ListContent h) {
+    protected HBox createListContentContent(Object obj, NodeList h) {
         HBox box = new HBox(new HBox()); // placeholder 
         String title = h.getTitle();
 
@@ -220,21 +209,25 @@ public class TreeItemBuilder {
         return box;
     }
 
-    public final TreeItemEx createListContentItem(Object obj, ListContent h) {
+    public final TreeItemEx createListContentItem(Object obj, NodeList h) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
-        //anchorPane.setStyle("-fx-background-color: yellow");
 
         TreeItemEx retval = new TreeItemEx();
 
-        //retval.setValue(obj);
-        box.getChildren().add(createListContent(obj, h));
+        retval.setValue(obj);
+        box.getChildren().add(createListContentContent(obj, h));
 
         retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.LISTCONTENT);
 
+        retval.setItemType(TreeItemEx.ItemType.LIST);
+        try {
+            retval.registerChangeHandlers();
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+            Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return retval;
     }
 
@@ -463,11 +456,12 @@ public class TreeItemBuilder {
             // root item
             return;
         }
-        if (parent.getItemType() == ItemType.LISTCONTENT) {
+        if (parent.getItemType() == ItemType.LIST) {
             ((ObservableList) parent.getValue()).remove(child.getValue());
-        } else if (parent.getItemType() == ItemType.CONTENT) {
+        } else { //if (parent.getItemType() == ItemType.CONTENT || parent.getItemType() == ItemType.PLACEHOLDER ) {
+            System.err.println("updateOnMove: ");
             NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
-            if (nd.getProperties().size() == 1 && (nd.getProperties().get(0) instanceof ListContent)) {
+            if (nd.getProperties().size() == 1 && (nd.getProperties().get(0) instanceof NodeList)) {
                 BeanAdapter ba = new BeanAdapter(parent.getValue());
                 ((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
             } else {
@@ -537,8 +531,38 @@ public class TreeItemBuilder {
         System.err.println("update: place = " + place);
         System.err.println("update:  place.getPropertyName = " + place.getPropertyName());
         System.err.println("-----------------------------------------");
-        int idx = getIndex(treeView, target, place);
-        System.err.println("update: idx = " + idx);
+
+        //System.err.println("update: idx = " + idx);
+/*        if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+            Property p = nd.getProperties().get(0);
+            if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
+                BeanAdapter ba = new BeanAdapter(target.getValue());
+                ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
+                int idx = getIndex(treeView, target, place);
+                ol.add(idx, sourceObject);
+
+                return;
+            }
+        }
+*/        
+        switch (target.getItemType()) {
+            case LIST:
+                int idx = getIndex(treeView, target, place);
+                ((ObservableList) target.getValue()).add(idx, sourceObject);
+                break;
+            case CONTENT:
+                if ( ! addToList(treeView, target, place, sourceObject) ) {
+                    
+                }
+                break;
+            case PLACEHOLDER:
+                break;
+            default:
+                break;
+
+        }
+
         NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
         BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
         Class propType = ba.getType(place.getPropertyName());
@@ -567,6 +591,24 @@ public class TreeItemBuilder {
         //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
         //Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
         //ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
+    }
+
+    protected boolean addToList(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
+        boolean retval = false;
+        
+        if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+            Property p = nd.getProperties().get(0);
+            if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
+                BeanAdapter ba = new BeanAdapter(target.getValue());
+                ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
+                int idx = getIndex(treeView, target, place);
+                ol.add(idx, sourceObject);
+                retval = true;
+            }
+        }
+
+        return retval;
     }
 
     /**
