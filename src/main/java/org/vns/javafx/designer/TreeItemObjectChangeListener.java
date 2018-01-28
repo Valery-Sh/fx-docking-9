@@ -51,7 +51,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
             
             if (oldValue != null && newValue == null) {
                 //propTreeItem.getChildren().clear();
-                if ( (prop instanceof NodeContent) || ( (prop instanceof Placeholder) && ((Placeholder)prop).isHideNull()) ) {
+                if ( ( (prop instanceof NodeContent) && ((NodeContent)prop).isHideWhenNull()) ) {
                     ///!!! must consider root node
                     p.getChildren().remove(propTreeItem);
                     
@@ -64,7 +64,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
                 }
             }  else if (oldValue == null && newValue != null) {
-                // May be is Placeholder and not hidden when null
+                // May be is NodeContent and not hidden when null
                 TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
                 p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
             } else if (oldValue != null && newValue != null) {

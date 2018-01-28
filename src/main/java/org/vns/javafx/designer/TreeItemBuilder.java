@@ -23,10 +23,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import static org.vns.javafx.designer.SceneGraphView.ANCHOR_OFFSET;
 import static org.vns.javafx.designer.SceneGraphView.FIRST;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
+import static org.vns.javafx.designer.TreeItemEx.ItemType.CONTENT;
+import static org.vns.javafx.designer.TreeItemEx.ItemType.LIST;
 import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 
 /**
@@ -50,13 +54,13 @@ public class TreeItemBuilder {
 
     protected TreeItemEx build(Object obj, ListElement p) {
         TreeItemEx retval;
-
-        if (p != null && (p instanceof Placeholder)) {
-            retval = createPlaceholder(obj, (Placeholder) p);
+        if (obj instanceof BorderPane) {
+            System.err.println("BORDER PANE");
+        }
+        if (p != null && (p instanceof NodeContent)) {
+            retval = createContentItem(obj, (NodeContent) p);
         } else if (p != null && (p instanceof NodeList)) {
             retval = createListContentItem(obj, (NodeList) p);
-        } else if (p != null && (p instanceof NodeContent)) {
-            retval = createContentItem(obj);
         } else {
             retval = createListElementItem(obj);
         }
@@ -86,9 +90,9 @@ public class TreeItemBuilder {
             Object cpObj = adapter.get(cp.getName());
             boolean isplaceholder = false;
             boolean hideIfNull = false;
-            if (cp instanceof Placeholder) {
+            if (cp instanceof NodeContent) {
                 isplaceholder = true;
-                hideIfNull = ((Placeholder) cp).isHideNull();
+                hideIfNull = ((NodeContent) cp).isHideWhenNull();
             }
 
             if ((cp instanceof NodeList)) {
@@ -107,15 +111,16 @@ public class TreeItemBuilder {
 
                 }
 
-            } else if (!isplaceholder && cpObj != null) {
+            } /*            else if (!isplaceholder && cpObj != null) {
                 //
                 // This is a NodeContent ItemType
                 //
                 TreeItemEx item = build(cpObj, (NodeContent) cp);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
-            } else if (isplaceholder && (cpObj != null || !hideIfNull)) {
-                TreeItemEx item = build(cpObj, (Placeholder) cp);
+            } 
+             */ else if (isplaceholder && (cpObj != null || !hideIfNull)) {
+                TreeItemEx item = build(cpObj, (NodeContent) cp);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
             }
@@ -123,7 +128,7 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    public final HBox createContentItemContent(Object obj) {
+    public final HBox createListElementItemContent(Object obj) {
 
         HBox box = new HBox(new HBox()); // placeholder 
         NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
@@ -146,7 +151,7 @@ public class TreeItemBuilder {
         return box;
     }
 
-    public final TreeItemEx createContentItem(Object obj) {
+/*    public final TreeItemEx createContentItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -157,7 +162,7 @@ public class TreeItemBuilder {
 
         retval.setValue(obj);
 
-        box.getChildren().add(createContentItemContent(obj));
+        box.getChildren().add(createListElementItemContent(obj));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
@@ -168,7 +173,7 @@ public class TreeItemBuilder {
         }
         return retval;
     }
-
+*/
     public final TreeItemEx createListElementItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
@@ -179,7 +184,7 @@ public class TreeItemBuilder {
 
         retval.setValue(obj);
 
-        box.getChildren().add(createContentItemContent(obj));
+        box.getChildren().add(createListElementItemContent(obj));
 
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.ELEMENT);
@@ -231,7 +236,7 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    public final TreeItemEx createPlaceholder(Object obj, Placeholder cp) {
+    public final TreeItemEx createContentItem(Object obj, NodeContent cp) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -241,9 +246,9 @@ public class TreeItemBuilder {
 
         retval.setValue(obj);
 
-        box.getChildren().add(createPlaceholderContent(obj, cp));
+        box.getChildren().add(createContentItemContent(obj, cp));
         retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.PLACEHOLDER);
+        retval.setItemType(TreeItemEx.ItemType.CONTENT);
         try {
             retval.registerChangeHandlers();
         } catch (NoSuchMethodException ex) {
@@ -257,7 +262,7 @@ public class TreeItemBuilder {
         return retval;
     }
 
-    protected HBox createPlaceholderContent(Object obj, Placeholder cp) {
+    protected HBox createContentItemContent(Object obj, NodeContent cp) {
         Label iconLabel = new Label();
         HBox retval = new HBox(iconLabel);
 
@@ -310,6 +315,7 @@ public class TreeItemBuilder {
     public boolean isAdmissiblePosition(TreeViewEx treeView, TreeItemEx target,
             TreeItemEx place,
             Object dragObject) {
+
         //
         // Check if the dragObject equals to targetItemObject 
         //
@@ -317,115 +323,74 @@ public class TreeItemBuilder {
             return false;
         }
         TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
-        System.err.println("dragItem = " + dragItem);
+        /*        System.err.println("dragItem = " + dragItem);
         System.err.println("target = " + target);
         System.err.println("place = " + place);
         System.err.println("place.getParent = " + place.getParentSkipHeader());
         System.err.println("dragItem.previousSibling() = " + dragItem.previousSibling());
         System.err.println("-----------------------------------------");
-
-        //
-        // We do not want to insert the draggedItem before or after itself
-        //
-        if (target == place && dragItem != null) {
-            if (target.getChildren().indexOf(dragItem) == 0) {
-                return false;
-            }
-        }
-        if (target == place.getParentSkipHeader() && dragItem != null) {
-            System.err.println(" --- ELSE 3");
-            if (dragItem == place || dragItem.previousSibling() == place) {
-                System.err.println(" --- ELSE 4");
-                return false;
-            }
-            System.err.println(" --- ELSE 5");
-
-        } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
-            System.err.println("ELSE 1");
-
-            int level = treeView.getTreeItemLevel(target) + 1;
-            System.err.println("ELSE 2");
-
-            TreeItemEx actualPlace = (TreeItemEx) EditorUtil.parentOfLevel(treeView, place, level);
-            System.err.println("  --- level = " + level);
-            System.err.println("  --- actualPlace = " + actualPlace);
-            System.err.println("  --- dragItem.previousSibling() = " + dragItem.previousSibling());
-            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
-                return false;
-            }
-        }
-        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-        System.err.println("target.getPropertyName = " + target.getPropertyName());
-        //Property cp = target.getProperty(target.getPropertyName());//nc.getProperties().get(target.getIndex());
-        //BeanAdapter adapter = new BeanAdapter(target.getValue());
-        //retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
-
-        return isAcceptable(target, dragObject);
-    }
-
-    public boolean isAdmissiblePosition__(TreeViewEx treeView, TreeItemEx target,
-            TreeItemEx place,
-            Object dragObject) {
-        //
-        // Check if the dragObject equals to targetItemObject 
-        //
-        if (target.getValue() == dragObject) {
-            return false;
-        }
-        TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
-        System.err.println("dragItem = " + dragItem);
-        System.err.println("target = " + target);
-        System.err.println("place = " + place);
-        System.err.println("place.getParent = " + place.getParentSkipHeader());
-        System.err.println("dragItem.previousSibling() = " + dragItem.previousSibling());
-        System.err.println("-----------------------------------------");
-
-        //
-        // We do not want to insert the draggedItem before or after itself
-        //
-
-        /*        if (target == place && dragItem != null) {
-            if (target.getChildren().indexOf(dragItem) == 0) {
-                return false;
-            }
-        }
          */
-        if (target == place.getParentSkipHeader() && dragItem != null) {
-            System.err.println(" --- ELSE 3");
+        if ((target.getValue() instanceof VBox) && (dragItem.getValue() instanceof BorderPane)) {
+            System.err.println("-----------------------------------------");
+        }
+        //
+        // First check if the target item corresponds to LIST ItemType
+        //
+        boolean isList = target.getItemType() == LIST;
+        NodeDescriptor nd;
+        if (target.getValue() == null) {
+            nd = null;
+        } else {
+            nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+        }
+
+        if (!isList && target.getValue() != null && nd.getProperties().size() == 1) {
+            Property p = nd.getProperties().get(0);
+            if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
+                isList = true;
+            }
+        }
+        if (isList) {
             if (dragItem == place || dragItem.previousSibling() == place) {
-                System.err.println(" --- ELSE 4");
                 return false;
             }
-            System.err.println(" --- ELSE 5");
+            int insPos = getIndex(treeView, target, place);
+            int dragPos = target.getChildren().indexOf(dragItem);
+            int targetSize = target.getChildren().size();
 
-        } else if (target == place.getParentSkipHeader() && dragItem == null) {
-        } else if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
-            //
-            // Now: target != place.getParentSkipHeader()
-            //
-            System.err.println("ELSE 1");
-
-            int level = treeView.getTreeItemLevel(target) + 1;
-            System.err.println("ELSE 2");
-
-            TreeItemEx actualPlace = (TreeItemEx) EditorUtil.parentOfLevel(treeView, place, level);
-            System.err.println("  --- level = " + level);
-            System.err.println("  --- actualPlace = " + actualPlace);
-            System.err.println("  --- dragItem.previousSibling() = " + dragItem.previousSibling());
-            if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+            if (target == place && target.getChildren().contains(dragItem)) {
+                if (insPos == 0 && dragPos == 0) {
+                    return false;
+                }
+                if (insPos == targetSize && dragPos == targetSize - 1) {
+                    return false;
+                }
+            }
+        } else if (target.getItemType() != CONTENT) {
+            if (target != place) {
+                return false;
+            }
+            if (nd.getDefaultProperty() == null && nd.getProperties().size() != 1) {
+                return false;
+            }
+            Property prop;
+            if (nd.getProperties().size() == 1) {
+                prop = nd.getProperties().get(0);
+            } else {
+                prop = nd.getProperty(nd.getDefaultProperty());
+            }
+            if (!(prop instanceof NodeContent)) {
+                return false;
+            }
+            BeanAdapter ba = new BeanAdapter(target.getValue());
+            Object o = ba.get(prop.getName());
+            if (o != null) {
                 return false;
             }
         }
-        //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-        //System.err.println("target.getPropertyName = " + target.getPropertyName());
-        //Property cp = target.getProperty(target.getPropertyName());//nc.getProperties().get(target.getIndex());
-        //BeanAdapter adapter = new BeanAdapter(target.getValue());
-        //retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
-        System.err.println("BEFORE isAcceptable");
         return isAcceptable(target, dragObject);
     }
 
-    ////////////////////////////////////////////////////////////
     protected boolean isAcceptable(TreeItemEx target, Object toAccept) {
         if (toAccept == null) {
             return false;
@@ -523,47 +488,27 @@ public class TreeItemBuilder {
     }
 
     protected void update(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
-        //setContent(target.getObject(), (T) sourceObject);
-        //int idx = getIndex(treeView, target, place);
-        //getList(target.getObject()).add(idx, (T)sourceObject);        
 
         System.err.println("update: target = " + target);
         System.err.println("update: place = " + place);
         System.err.println("update:  place.getPropertyName = " + place.getPropertyName());
         System.err.println("-----------------------------------------");
-
-        //System.err.println("update: idx = " + idx);
-/*        if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-            Property p = nd.getProperties().get(0);
-            if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
-                BeanAdapter ba = new BeanAdapter(target.getValue());
-                ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
-                int idx = getIndex(treeView, target, place);
-                ol.add(idx, sourceObject);
-
-                return;
-            }
-        }
-*/        
         switch (target.getItemType()) {
             case LIST:
                 int idx = getIndex(treeView, target, place);
                 ((ObservableList) target.getValue()).add(idx, sourceObject);
                 break;
-            case CONTENT:
-                if ( ! addToList(treeView, target, place, sourceObject) ) {
-                    
-                }
-                break;
-            case PLACEHOLDER:
-                break;
             default:
+                if (!addToList(treeView, target, place, sourceObject)) {
+                    NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+                    BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
+                    ba.put(target.getPropertyName(), sourceObject);
+                }
                 break;
 
         }
 
-        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+        /*        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
         BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
         Class propType = ba.getType(place.getPropertyName());
 
@@ -576,26 +521,12 @@ public class TreeItemBuilder {
             //ba.get(target.getPropertyName());
             ba.put(target.getPropertyName(), sourceObject);
         }
-
-        //ba.put(target.getPropertyName(), sourceObject);
-        /*        System.err.println("update obj=" + parent.getValue());
-        if (parent.getValue() instanceof BorderPane) {
-            System.err.println("borderPane SIZE = " + ((BorderPane)parent.getValue()).getChildren().size());
-            for (TreeItem it : parent.getChildren()) {
-                System.err.println("   --- BorderPane update propNeme=" + ((TreeItemEx) it).getPropertyName());
-            }
-        }
          */
-        //String nm = target.getPropertyName();
-        //Method propMethod = ReflectHelper.MethodUtil.getMethod(parent.getValue().getClass(), nm + "Property", new Class[0]);
-        //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
-        //Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
-        //ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
     }
 
     protected boolean addToList(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {
         boolean retval = false;
-        
+
         if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
             NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
             Property p = nd.getProperties().get(0);

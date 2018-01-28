@@ -22,7 +22,9 @@ package org.vns.javafx.designer;
  */
 public class Property extends ListElement{
     private String name;
-    private boolean defaultTarget;
+    
+    private NodeDescriptor descriptor;
+    //private boolean defaultTarget;
 
     public String getName() {
         return name;
@@ -32,13 +34,18 @@ public class Property extends ListElement{
         this.name = name;
     }
 
-    protected boolean isDefaultTarget() {
-        return defaultTarget;
+    protected boolean isDefault() {
+        return getName().equals(getDescriptor().getDefaultProperty());
     }
 
-    protected void setDefaultTarget(boolean defaultTarget) {
-        this.defaultTarget = defaultTarget;
+    protected NodeDescriptor getDescriptor() {
+        return descriptor;
     }
+
+    protected void setDescriptor(NodeDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+
 
     /**
      *  ------ STATIC HELPER METHODS -------

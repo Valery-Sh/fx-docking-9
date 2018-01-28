@@ -10,7 +10,7 @@
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text">
-        <Placeholder name="graphic" defaultTarget="true" title="graphic" hideNull="true" styleClass="labeled-insert-graphic"/>
+        <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"/>
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.Pane">
         <NodeList name="children" />
@@ -18,15 +18,20 @@
     <NodeDescriptor type="javafx.scene.layout.VBox">
         <NodeList name="children" title="List of Child" />
     </NodeDescriptor>
-    <NodeDescriptor type="javafx.scene.layout.HBox">
-        <NodeList name="children" title="List of Child" alwaysVisible="true" />
+    <NodeDescriptor type="javafx.scene.layout.HBox" defaultProperty="children" >
+        <NodeList name="children" title="List of Child" alwaysVisible="true"  />
     </NodeDescriptor>
     
-    <NodeDescriptor type="javafx.scene.layout.BorderPane">
-        <Placeholder name="top" title="insert TOP" styleClass="borderpane-insert-top"/>
-        <Placeholder name="right" title="insert RIGHT" styleClass="borderpane-insert-right"/>
-        <Placeholder name="bottom" title="insert BOTTOM" styleClass="borderpane-insert-bottom"/>
-        <Placeholder name="left" title="insert LEFT"  styleClass="borderpane-insert-left"/>
-        <Placeholder name="center" title="insert CENTER" styleClass="borderpane-insert-center"/>
+    <NodeDescriptor type="javafx.scene.control.TitledPane" defaultProperty="content" >
+        <NodeContent name="graphic" title="graphic"  />
+        <NodeContent name="content" title="content"  />
+    </NodeDescriptor>
+    
+    <NodeDescriptor type="javafx.scene.layout.BorderPane" defaultProperty="center">
+        <NodeContent name="top" title="insert TOP" styleClass="borderpane-insert-top"/>
+        <NodeContent name="right" title="insert RIGHT" styleClass="borderpane-insert-right"/>
+        <NodeContent name="bottom" title="insert BOTTOM" styleClass="borderpane-insert-bottom"/>
+        <NodeContent name="left" title="insert LEFT"  styleClass="borderpane-insert-left"/>
+        <NodeContent name="center" title="insert CENTER" styleClass="borderpane-insert-center"/>
     </NodeDescriptor>
 </GraphDescriptor>

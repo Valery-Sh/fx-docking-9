@@ -34,6 +34,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -42,7 +43,6 @@ import javafx.stage.Stage;
 import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
-import org.vns.javafx.designer.TreeItemObjectChangeListener;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
@@ -106,7 +106,8 @@ public class TestTreeItemBuilder03 extends Application {
         borderPane1.setRight(hbox1);
 
         root.getChildren().add(borderPane1);
-
+        TitledPane titledPane1 = new TitledPane();
+        root.getChildren().add(titledPane1);
         TabPane tabPane1 = new TabPane();
         root.getChildren().add(tabPane1);
         Tab tab1 = new Tab("Tab01");
@@ -115,10 +116,15 @@ public class TestTreeItemBuilder03 extends Application {
         root.getChildren().add(arc1);
         Label lb2 = new Label("lb2");
         lb2.setGraphic(btn1Graphic);
-        HBox hbox2 = new HBox(lb2);
-        root.getChildren().add(hbox2);
         Label lb3 = new Label("lb3");
-        VBox vbox2 = new VBox(lb3);
+        Label lb4 = new Label("lb4");        
+        Label lb5 = new Label("lb5");        
+        
+        HBox hbox2 = new HBox(lb2,lb3,lb4,lb5);
+        root.getChildren().add(hbox2);
+        
+        
+        //VBox vbox2 = new VBox(lb3);
         //hbox2.getChildren().add(vbox2);
 
         //TreeItemBuilder builder = new TreeItemBuilder();

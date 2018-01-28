@@ -15,23 +15,39 @@
  */
 package org.vns.javafx.designer;
 
+
 /**
  *
  * @author Valery Shyshkin
  */
 public class NodeContent extends Property {
 
+    private boolean hideWhenNull;
+    private boolean replaceable;
     
     public NodeContent() {
     }
-    @Override
-    public boolean isDefaultTarget() {
-        return super.isDefaultTarget();
+
+    public boolean isHideWhenNull() {
+        return hideWhenNull;
     }
 
-    @Override
-    public void setDefaultTarget(boolean defaultTarget) {
-        super.setDefaultTarget(defaultTarget);
+    public void setHideWhenNull(boolean hideWhenNull) {
+        this.hideWhenNull = hideWhenNull;
     }
-  
+
+    public boolean isReplaceable() {
+        return replaceable;
+    }
+
+    public void setReplaceable(boolean replaceable) {
+        this.replaceable = replaceable;
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return super.isDefault();
+    }
+
+    
 }

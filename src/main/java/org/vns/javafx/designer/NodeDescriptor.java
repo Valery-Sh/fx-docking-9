@@ -15,9 +15,15 @@
  */
 package org.vns.javafx.designer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TreeItem;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 
 /**
@@ -26,21 +32,38 @@ import org.vns.javafx.designer.TreeItemEx.ItemType;
  */
 @DefaultProperty("properties")
 public class NodeDescriptor {
-    
+
     private String type;
     private String styleClass;
-    private String defaultProperty;        
+    private String defaultProperty;
+    private String annotationDefaultProperty;
+    
     /**
-     * Contains a name of the property which value can be used as a title 
-     * in a TreeItem
+     * Contains a name of the property which value can be used as a title in a
+     * TreeItem
      */
     private String titleProperty;
-    
+
     private final ObservableList<Property> properties = FXCollections.observableArrayList();
 
     public NodeDescriptor() {
+        init();
     }
 
+    private void init() {
+        properties.addListener(this::propertiesChanged);
+    }
+
+    public void propertiesChanged(ListChangeListener.Change<? extends Property> change) {
+        while (change.next()) {
+            if (change.wasAdded()) {
+                List<Property> list = (List<Property>) change.getAddedSubList();
+                for (Property elem : list) {
+                    elem.setDescriptor(this);
+                }
+            }
+        }//while
+    }
 
     public ObservableList<Property> getProperties() {
         return properties;
@@ -52,6 +75,17 @@ public class NodeDescriptor {
 
     public void setType(String type) {
         this.type = type;
+        try {
+            Class clazz = Class.forName(type);
+            DefaultProperty[] dp = (DefaultProperty[]) clazz.getAnnotationsByType(DefaultProperty.class);
+            if (dp.length > 0) {
+                annotationDefaultProperty = dp[0].value();
+            }
+        } catch (ClassNotFoundException ex) {
+            System.err.println("EXCEPTION");
+            Logger.getLogger(NodeDescriptor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public String getStyleClass() {
@@ -71,28 +105,50 @@ public class NodeDescriptor {
     }
 
     public String getDefaultProperty() {
-        return defaultProperty;
+        String retval = defaultProperty;
+        if ( defaultProperty == null && getProperty(annotationDefaultProperty) != null) {
+            defaultProperty = annotationDefaultProperty;
+        }
+        return retval;
     }
 
     public void setDefaultProperty(String defaultProperty) {
         this.defaultProperty = defaultProperty;
     }
-    
-    public static Property getProperty(String propertyName, TreeItemEx item) {
+
+    public Property getProperty(String propertyName) {
         Property retval = null;
-        
+        for ( Property p : properties) {
+            if ( p.getName().equals(propertyName)) {
+                retval = p;
+                break;
+            }
+        }
         return retval;
     }
-    public static ItemType getItemType(TreeItemEx item) {
-        ItemType retval = null;
-        if ( item.getParent() == null ) {
-            retval = ItemType.CONTENT;
-        } else if (item.getParent().getParent() == null ){
-            // item.getParent() is root Item
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getParent().getValue());
+    public int indexOf(String propertyName) {
+        int retval = -1;
+        for ( int i=0; i < properties.size(); i++) {
             
+            if ( properties.get(i).getName().equals(propertyName)) {
+                retval = i;
+                break;
+            }
         }
         return retval;
     }
     
+    
+    public static ItemType getItemType(TreeItemEx item) {
+        ItemType retval = null;
+        if (item.getParent() == null) {
+            retval = ItemType.CONTENT;
+        } else if (item.getParent().getParent() == null) {
+            // item.getParent() is root Item
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getParent().getValue());
+
+        }
+        return retval;
+    }
+
 }
