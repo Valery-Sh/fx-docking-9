@@ -2,13 +2,19 @@ package org.vns.javafx.designer;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.TabPane;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
 
 /**
  *
@@ -46,11 +52,27 @@ public class NodeDescriptorRegistry {
                 String name = ((DefaultProperty) annotation).value();
                 retval = new NodeDescriptor();
                 retval.setType(o.getClass().getName());
-                //retval.setStyleClass("tree-item-node-unknownnode");
-                //20.01ContentProperty cp = new NodeContent(retval);
-                NodeContent cp = new NodeContent();
-                cp.setName(name);
-                retval.getProperties().add(cp);
+                try {
+                    //retval.setStyleClass("tree-item-node-unknownnode");
+                    //20.01ContentProperty cp = new NodeContent(retval);
+                    //o.getClass().getDeclaredField(name).
+                    if (o.getClass().equals(TabPane.class)) {
+                        System.err.println("TabPane Found");
+                    }
+                    Method method = MethodUtil.getMethod(o.getClass(), "get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
+                    Class returnType = method.getReturnType();
+                    Property p;
+                    if (ObservableList.class.equals(returnType)) {
+                        p = new NodeList();
+                    } else {
+                        p = new NodeContent();
+//                        p.setTitle("insert content");
+                    }
+                    p.setName(name);
+                    retval.getProperties().add(p);
+                } catch (NoSuchMethodException ex) {
+                    Logger.getLogger(NodeDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         if (retval == null && !(o instanceof Class)) {
@@ -159,7 +181,6 @@ public class NodeDescriptorRegistry {
         }
 
     }
-
 
     private static class SingletonInstance {
 

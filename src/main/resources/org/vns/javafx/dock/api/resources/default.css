@@ -25,6 +25,9 @@
     -fx-graphic: url(graphic-frame-16x16.png);
 }
 
+.node-insert-content {
+    -fx-graphic: url(content-16x16.png);
+}
 .tree-view {
     -fx-border-width:  0 0 2 0;
     -fx-border-color: transparent;

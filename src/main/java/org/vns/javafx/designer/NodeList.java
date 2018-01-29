@@ -21,6 +21,10 @@ package org.vns.javafx.designer;
  * @author Valery
  */
 public class NodeList extends Property {
+
+    public static String DEFAULT_STYLE_CLASS = "tree-item-list-header";;
+    public static String DEFAULT_TITLE = "List of nodes";
+    
     private boolean alwaysVisible;
 
     public boolean isAlwaysVisible() {

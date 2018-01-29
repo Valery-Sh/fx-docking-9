@@ -37,7 +37,7 @@ public class NodeDescriptor {
     private String styleClass;
     private String defaultProperty;
     private String annotationDefaultProperty;
-    
+
     /**
      * Contains a name of the property which value can be used as a title in a
      * TreeItem
@@ -105,11 +105,15 @@ public class NodeDescriptor {
     }
 
     public String getDefaultProperty() {
-        String retval = defaultProperty;
-        if ( defaultProperty == null && getProperty(annotationDefaultProperty) != null) {
-            defaultProperty = annotationDefaultProperty;
-        }
-        return retval;
+        return defaultProperty;
+    }
+
+    public String getAnnotationDefaultProperty() {
+        return annotationDefaultProperty;
+    }
+
+    public void setAnnotationDefaultProperty(String annotationDefaultProperty) {
+        this.annotationDefaultProperty = annotationDefaultProperty;
     }
 
     public void setDefaultProperty(String defaultProperty) {
@@ -118,19 +122,20 @@ public class NodeDescriptor {
 
     public Property getProperty(String propertyName) {
         Property retval = null;
-        for ( Property p : properties) {
-            if ( p.getName().equals(propertyName)) {
+        for (Property p : properties) {
+            if (p.getName().equals(propertyName)) {
                 retval = p;
                 break;
             }
         }
         return retval;
     }
+
     public int indexOf(String propertyName) {
         int retval = -1;
-        for ( int i=0; i < properties.size(); i++) {
-            
-            if ( properties.get(i).getName().equals(propertyName)) {
+        for (int i = 0; i < properties.size(); i++) {
+
+            if (properties.get(i).getName().equals(propertyName)) {
                 retval = i;
                 break;
             }
@@ -138,17 +143,27 @@ public class NodeDescriptor {
         return retval;
     }
     
+    public Property getByDefaultProperty() {
+        return calculateDefaultProperty();
+    }
     
-    public static ItemType getItemType(TreeItemEx item) {
-        ItemType retval = null;
-        if (item.getParent() == null) {
-            retval = ItemType.CONTENT;
-        } else if (item.getParent().getParent() == null) {
-            // item.getParent() is root Item
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getParent().getValue());
-
+    private Property calculateDefaultProperty() {
+        Property retval = null;
+        if ( getProperties().size() == 1) {
+            if (  getProperties().get(0) instanceof NodeContent ) {
+                retval =  getProperties().get(0);
+            }
         }
+        Property p = null ;
+        if ( retval == null && getDefaultProperty() != null ) {
+            p = getProperty(getDefaultProperty());
+        } else if ( getDefaultProperty() == null ) {
+            p = getProperty(getAnnotationDefaultProperty());
+        }
+        if ( p != null && (p instanceof NodeContent) ) {
+                retval = p;
+        }
+        
         return retval;
     }
-
 }

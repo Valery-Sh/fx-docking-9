@@ -35,7 +35,7 @@ public class Property extends ListElement{
     }
 
     protected boolean isDefault() {
-        return getName().equals(getDescriptor().getDefaultProperty());
+        return getName().equals(getDescriptor().getByDefaultProperty().getName());
     }
 
     protected NodeDescriptor getDescriptor() {
@@ -47,8 +47,10 @@ public class Property extends ListElement{
     }
 
 
-    /**
+    /*
      *  ------ STATIC HELPER METHODS -------
+     * 
+     * 
      */
      public static Object getValue(TreeItemEx item, String propertyName) {
          Object retval = null;

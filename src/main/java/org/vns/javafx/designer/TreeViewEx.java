@@ -65,20 +65,6 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         this.dragAccepted = dragAccepted;
     }
 
-    /**
-     * Removes the object specified by the parameter {@code sourceTreeItem}. 
-     * When a tree item @code sourceTreeItem} is dragged and dropped on another item
-     * {@code item2}
-     *
-     * @param sourceTreeItem ??
-     */
-/*    public static void updateOnMove(TreeItemEx sourceTreeItem) {
-        if (sourceTreeItem != null && sourceTreeItem.getParent() != null) {
-            TreeItemEx parentItem = (TreeItemEx) sourceTreeItem.getParent();
-            new TreeItemBuilder().updateOnMove(sourceTreeItem);
-        }
-    }
-*/
     public SceneGraphView getSceneGraphView() {
         return sceneGraphView;
     }

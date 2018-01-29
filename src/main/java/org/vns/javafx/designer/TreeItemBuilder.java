@@ -151,7 +151,7 @@ public class TreeItemBuilder {
         return box;
     }
 
-/*    public final TreeItemEx createContentItem(Object obj) {
+    /*    public final TreeItemEx createContentItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
         AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
@@ -173,7 +173,7 @@ public class TreeItemBuilder {
         }
         return retval;
     }
-*/
+     */
     public final TreeItemEx createListElementItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
@@ -201,13 +201,13 @@ public class TreeItemBuilder {
         String title = h.getTitle();
 
         if (title == null) {
-            title = "";
+            title = NodeContent.DEFAULT_TITLE;
         }
 
         Label label = new Label(title.trim());
         String styleClass = h.getStyleClass();
         if (styleClass == null) {
-            styleClass = "tree-item-list-header";
+            styleClass = NodeList.DEFAULT_STYLE_CLASS;
         }
         label.getStyleClass().add(styleClass);
         box.getChildren().add(label);
@@ -267,13 +267,15 @@ public class TreeItemBuilder {
         HBox retval = new HBox(iconLabel);
 
         String style = cp.getStyleClass();
-        if (style != null) {
-            iconLabel.getStyleClass().add(style);
+        if (style == null) {
+            style = NodeContent.DEFAULT_STYLE_CLASS;
         }
+
+        iconLabel.getStyleClass().add(style);
 
         String title = cp.getTitle();
         if (title == null) {
-            title = "";
+            title = NodeContent.DEFAULT_TITLE;
         }
 
         if (obj == null) {
@@ -315,7 +317,6 @@ public class TreeItemBuilder {
     public boolean isAdmissiblePosition(TreeViewEx treeView, TreeItemEx target,
             TreeItemEx place,
             Object dragObject) {
-
         //
         // Check if the dragObject equals to targetItemObject 
         //
@@ -323,16 +324,16 @@ public class TreeItemBuilder {
             return false;
         }
         TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
-        /*        System.err.println("dragItem = " + dragItem);
+        System.err.println("dragItem = " + dragItem);
         System.err.println("target = " + target);
         System.err.println("place = " + place);
         System.err.println("place.getParent = " + place.getParentSkipHeader());
         System.err.println("dragItem.previousSibling() = " + dragItem.previousSibling());
         System.err.println("-----------------------------------------");
-         */
-        if ((target.getValue() instanceof VBox) && (dragItem.getValue() instanceof BorderPane)) {
-            System.err.println("-----------------------------------------");
-        }
+
+        //if ((target.getValue() instanceof VBox) && (dragItem.getValue() instanceof BorderPane)) {
+        //    System.err.println("-----------------------------------------");
+        //}
         //
         // First check if the target item corresponds to LIST ItemType
         //
@@ -350,9 +351,21 @@ public class TreeItemBuilder {
                 isList = true;
             }
         }
+
         if (isList) {
-            if (dragItem == place || dragItem.previousSibling() == place) {
+            if (dragItem.previousSibling() == place) {
                 return false;
+            }
+            if (dragItem == place) {
+                if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
+
+                    int level = treeView.getTreeItemLevel(target) + 1;
+
+                    TreeItemEx actualPlace = (TreeItemEx) EditorUtil.parentOfLevel(treeView, place, level);
+                    if (dragItem == actualPlace || dragItem.previousSibling() == actualPlace) {
+                        return false;
+                    }
+                }
             }
             int insPos = getIndex(treeView, target, place);
             int dragPos = target.getChildren().indexOf(dragItem);
@@ -366,14 +379,23 @@ public class TreeItemBuilder {
                     return false;
                 }
             }
-        } else if (target.getItemType() != CONTENT) {
+//        } else if (target.getItemType() == CONTENT) {
+        } else if (target.getValue() != null) {
+            //System.err.println("target.getValue = " + target.getValue());
+            //System.err.println("place = " + place.getPropertyName());
+
             if (target != place) {
                 return false;
             }
-            if (nd.getDefaultProperty() == null && nd.getProperties().size() != 1) {
+//            if ("bottom".equals(target.getPropertyName())) {
+//                System.err.println("--- 1");
+//            }
+//            if (nd.getByDefaultProperty() == null && nd.getProperties().size() != 1) {
+            Property prop = nd.getByDefaultProperty();
+            if (prop == null) {
                 return false;
             }
-            Property prop;
+            /*            Property prop;
             if (nd.getProperties().size() == 1) {
                 prop = nd.getProperties().get(0);
             } else {
@@ -382,13 +404,20 @@ public class TreeItemBuilder {
             if (!(prop instanceof NodeContent)) {
                 return false;
             }
-            BeanAdapter ba = new BeanAdapter(target.getValue());
-            Object o = ba.get(prop.getName());
-            if (o != null) {
-                return false;
+             */
+            //
+            // target.getValue() may be null for NodeContent
+            //
+            if (target.getValue() != null) {
+                BeanAdapter ba = new BeanAdapter(target.getValue());
+                Object o = ba.get(prop.getName());
+                if (o != null) {
+                    return false;
+                }
             }
         }
-        return isAcceptable(target, dragObject);
+        return true;
+        //return isAcceptable(target, dragObject);
     }
 
     protected boolean isAcceptable(TreeItemEx target, Object toAccept) {
@@ -409,7 +438,7 @@ public class TreeItemBuilder {
         } else {
             nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
         }
-        System.err.println("isAcceptable = " + retval);
+        //System.err.println("isAcceptable = " + retval);
         return retval;
     }
 
@@ -436,20 +465,6 @@ public class TreeItemBuilder {
         }
     }
 
-    public void addTreeItemObjectChangeListener(TreeItemEx item) {
-
-        if (item.getValue() == null) {
-            return;
-        }
-        removeTreeItemObjectChangeListener(item);
-        Object listener = null;
-
-        //!!!23.01item.getValue().setChangeListener(listener);
-    }
-
-    public void removeTreeItemObjectChangeListener(TreeItemEx item) {
-    }
-
     public void accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         //TreeItem retval = null;
         System.err.println("ACCEPTL target = " + target);
@@ -472,17 +487,9 @@ public class TreeItemBuilder {
                 if (sourceTreeItem != null) {
                     System.err.println("ACCEPTL before updateOnMove 2");
                     updateOnMove(sourceTreeItem);
-                } else {
-                    System.err.println("ACCEPTL before remove");
-
-                    DragAndDropManager.ChildrenRemover r = (DragAndDropManager.ChildrenRemover) dg.getGestureSource().getProperties().get(EditorUtil.REMOVER_KEY);
-                    if (r != null) {
-                        r.remove();
-                    }
                 }
             }
         }
-        System.err.println("BEFORE UPDATE");
         update(treeView, target, place, value);
 
     }
@@ -500,28 +507,20 @@ public class TreeItemBuilder {
                 break;
             default:
                 if (!addToList(treeView, target, place, sourceObject)) {
-                    NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-                    BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
-                    ba.put(target.getPropertyName(), sourceObject);
+                    NodeDescriptor nd;
+                    if (target.getValue() == null) {
+                        //nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getParent().getValue());
+                        BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
+                        ba.put(target.getPropertyName(), sourceObject);
+                    } else {
+                        nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+                        BeanAdapter ba = new BeanAdapter(target.getValue());
+                        ba.put(nd.getByDefaultProperty().getName(), sourceObject);
+                    }
                 }
                 break;
 
         }
-
-        /*        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-        BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
-        Class propType = ba.getType(place.getPropertyName());
-
-        if (List.class.isAssignableFrom(propType)) {
-            List ls = (List) ba.get(place.getPropertyName());
-            System.err.println("getIndex = " + getIndex(treeView, target, place));
-
-            ls.add(getIndex(treeView, target, place), sourceObject);
-        } else {
-            //ba.get(target.getPropertyName());
-            ba.put(target.getPropertyName(), sourceObject);
-        }
-         */
     }
 
     protected boolean addToList(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object sourceObject) {

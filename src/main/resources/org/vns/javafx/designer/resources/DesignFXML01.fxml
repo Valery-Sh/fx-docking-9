@@ -9,7 +9,7 @@
 <?import org.vns.javafx.designer.*?>
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text">
+    <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text"  defaultProperty="graphic">
         <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"/>
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.Pane">
@@ -19,12 +19,19 @@
         <NodeList name="children" title="List of Child" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.HBox" defaultProperty="children" >
-        <NodeList name="children" title="List of Child" alwaysVisible="true"  />
+        <NodeList name="children" alwaysVisible="true"  />
     </NodeDescriptor>
-    
-    <NodeDescriptor type="javafx.scene.control.TitledPane" defaultProperty="content" >
-        <NodeContent name="graphic" title="graphic"  />
-        <NodeContent name="content" title="content"  />
+    <!--
+    <NodeDescriptor type="javafx.scene.control.TabPane" defaultProperty="tabs" >
+        <NodeList name="tabs" title="List of Tab" />
+    </NodeDescriptor>
+    <NodeDescriptor type="javafx.scene.control.Tab" defaultProperty="content" >
+        <NodeContent name="content" title="insert content" styleClass="node-insert-content"/>
+    </NodeDescriptor>
+    -->
+    <NodeDescriptor type="javafx.scene.control.TitledPane">
+        <NodeContent name="graphic" title="insert graphic"  styleClass="labeled-insert-graphic" />
+        <NodeContent name="content"  />
     </NodeDescriptor>
     
     <NodeDescriptor type="javafx.scene.layout.BorderPane" defaultProperty="center">

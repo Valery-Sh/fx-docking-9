@@ -21,7 +21,10 @@ package org.vns.javafx.designer;
  * @author Valery Shyshkin
  */
 public class NodeContent extends Property {
-
+    
+    public static String DEFAULT_STYLE_CLASS = "node-insert-content";
+    public static String DEFAULT_TITLE = "insert content";
+    
     private boolean hideWhenNull;
     private boolean replaceable;
     
