@@ -25,6 +25,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
+import static org.vns.javafx.designer.TreeItemEx.ItemType.LIST;
 
 /**
  *
@@ -142,28 +143,62 @@ public class NodeDescriptor {
         }
         return retval;
     }
-    
+
     public Property getByDefaultProperty() {
         return calculateDefaultProperty();
     }
-    
+
     private Property calculateDefaultProperty() {
         Property retval = null;
-        if ( getProperties().size() == 1) {
-            if (  getProperties().get(0) instanceof NodeContent ) {
-                retval =  getProperties().get(0);
+        if (getProperties().size() == 1) {
+            if (getProperties().get(0) instanceof NodeContent) {
+                retval = getProperties().get(0);
             }
         }
-        Property p = null ;
-        if ( retval == null && getDefaultProperty() != null ) {
+        Property p = null;
+        if (retval == null && getDefaultProperty() != null) {
             p = getProperty(getDefaultProperty());
-        } else if ( getDefaultProperty() == null ) {
+        } else if (getDefaultProperty() == null) {
             p = getProperty(getAnnotationDefaultProperty());
         }
-        if ( p != null && (p instanceof NodeContent) ) {
-                retval = p;
+        if (p != null && (p instanceof NodeContent)) {
+            retval = p;
         }
-        
+
         return retval;
     }
+
+    public static boolean isList(Object value) {
+        //boolean isList = target.getItemType() == LIST;
+        boolean retval = false;
+        NodeDescriptor nd;
+        if (value != null) {
+            nd = NodeDescriptorRegistry.getInstance().getDescriptor(value);
+            if (value != null && nd.getProperties().size() == 1) {
+                Property p = nd.getProperties().get(0);
+                if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
+                    retval = true;
+                }
+            }
+        }
+        return retval;
+
+    }
+    public static String gatListPropertyName(Object value) {
+        //boolean isList = target.getItemType() == LIST;
+        String retval = null;
+        NodeDescriptor nd;
+        if (value != null) {
+            nd = NodeDescriptorRegistry.getInstance().getDescriptor(value);
+            if (value != null && nd.getProperties().size() == 1) {
+                Property p = nd.getProperties().get(0);
+                if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
+                    retval = p.getName();
+                }
+            }
+        }
+        return retval;
+
+    }
+    
 }

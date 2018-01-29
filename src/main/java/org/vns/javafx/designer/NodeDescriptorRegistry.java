@@ -53,12 +53,7 @@ public class NodeDescriptorRegistry {
                 retval = new NodeDescriptor();
                 retval.setType(o.getClass().getName());
                 try {
-                    //retval.setStyleClass("tree-item-node-unknownnode");
-                    //20.01ContentProperty cp = new NodeContent(retval);
-                    //o.getClass().getDeclaredField(name).
-                    if (o.getClass().equals(TabPane.class)) {
-                        System.err.println("TabPane Found");
-                    }
+
                     Method method = MethodUtil.getMethod(o.getClass(), "get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
                     Class returnType = method.getReturnType();
                     Property p;

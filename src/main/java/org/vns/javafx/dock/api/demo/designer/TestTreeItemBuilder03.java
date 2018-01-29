@@ -17,6 +17,8 @@ package org.vns.javafx.dock.api.demo.designer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,19 +41,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
+import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
 import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
+import sun.reflect.misc.ReflectUtil;
 
 public class TestTreeItemBuilder03 extends Application {
 
-    private ObservableList<VBox> nodeList = FXCollections.observableArrayList();
+    private ObservableList<Shape> nodeList = FXCollections.observableArrayList();
 
-    public ObservableList<VBox> getNodeList() {
+    public ObservableList<Shape> getNodeList() {
         return nodeList;
     }
 
@@ -77,17 +82,25 @@ public class TestTreeItemBuilder03 extends Application {
         //MethodUtil.invoke(m2, obj, new Object[] {new TreeItemObjectChangeListener(titem)});        
         System.err.println("Method m3=" + m3);
 
-        /*        BeanAdapter ba = new BeanAdapter(this);
+        BeanAdapter ba = new BeanAdapter(this);
         Class cl = ba.getType("nodeList");
+        System.err.println("0 !!!!!!!!!!!!!!!!!!!!" + cl.isAssignableFrom(Shape.class));
         
-        System.err.println("isAssignable = " + cl.isAssignableFrom(VBox.class));
+        System.err.println(" ******** isAssignable = " + cl.isAssignableFrom(Shape.class));
         Type tp = ba.getGenericType("nodeList");
         Type tpl = BeanAdapter.getGenericListItemType(tp);
-        System.err.println("List Item Type name= " + tpl.getTypeName());
+        System.err.println(" ******** List Item Type name= " + tpl.getTypeName());
+        System.err.println(" ******** tp1 instanceof Class = " + (tpl instanceof Class));
+        System.err.println(" ******** tp1.getClass = " + ((Class)tpl).getName());
+        
         //System.err.println("List Item Type = " + BeanAdapter.getGenericListItemType(tp));
         //System.err.println("List Item Type = " + BeanAdapter.getListItemType(tp).getName());
         System.err.println("cl = " + cl.getName());
-         */
+        System.err.println("1 !!!!!!!!!!!!!!!!!!!!" + cl.isAssignableFrom(Shape.class));
+        Type clazz = ReflectHelper.getGetterGenericReturnType(VBox.class, "children");
+        ParameterizedType ptype = (ParameterizedType) clazz;
+        Type tp2 = BeanAdapter.getGenericListItemType(ptype);
+        System.err.println("2 !!!!!!!!!!!!!!!!!!!! clazz =" + tp2);
         VBox root = new VBox();
 //        Pane p;
 //        nodeList.add(root);
@@ -157,13 +170,13 @@ public class TestTreeItemBuilder03 extends Application {
             //l.remove(btn1Graphic);
             Method method;
             Node nd = btn1Graphic.getParent();
-            Class cl = nd.getClass();
+            Class cl1 = nd.getClass();
             try {
-                while ( ! Parent.class.equals(cl)) {
-                    cl = cl.getSuperclass();    
+                while ( ! Parent.class.equals(cl1)) {
+                    cl1 = cl1.getSuperclass();    
                 }
                 
-                method = cl.getDeclaredMethod("getChildren");
+                method = cl1.getDeclaredMethod("getChildren");
                 method.setAccessible(true);
                 ObservableList list = (ObservableList) method.invoke(nd);
                 System.err.println("List size() = " + list.size());

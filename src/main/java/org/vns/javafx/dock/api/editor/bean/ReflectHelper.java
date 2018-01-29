@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.CodeSource;
@@ -28,6 +29,8 @@ import java.security.PrivilegedExceptionAction;
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,7 +39,30 @@ import java.util.List;
 public class ReflectHelper {
 
     public static final String PROXY_PACKAGE = "com.sun.proxy";
-
+    
+    public static Class<?> getGetterReturnType(Class<?> forClass, String key) {
+       Class<?> retval = null;
+        try {
+            
+            Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+            retval = method.getReturnType();
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(ReflectHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retval;
+    }
+    public static Type getGetterGenericReturnType(Class<?> forClass, String key) {
+       Type retval = null;
+        try {
+            
+            Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+            retval = method.getGenericReturnType();
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(ReflectHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retval;
+    }
+    
     //private static final String INVOKER = "org.vns.javafx.dock.api.editor.MethodUtil$ActualInvoker";
     //private static final Method actualInvoker = getActualInvoker();
     public static List<Class<?>> getInterfaces(Class<?> clazz) {

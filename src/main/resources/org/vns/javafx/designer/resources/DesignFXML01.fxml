@@ -10,7 +10,7 @@
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text"  defaultProperty="graphic">
-        <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"/>
+        <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"  replaceable="true"/>
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.Pane">
         <NodeList name="children" />

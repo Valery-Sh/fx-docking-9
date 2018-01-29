@@ -609,7 +609,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     public static Class<?> getListItemType(Type listType) {
         Type itemType = getGenericListItemType(listType);
-
+        
         if (itemType instanceof ParameterizedType) {
             itemType = ((ParameterizedType) itemType).getRawType();
         }
