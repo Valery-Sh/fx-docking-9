@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.editor;
-
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
-import javafx.scene.layout.HBox;
+package org.vns.javafx.designer;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class StringTreeItemBuilder extends DefaultTreeItemBuilder {
+public class NodeElement {
+    private String styleClass;
+    private String title; 
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
     
-  @Override
-  protected HBox createDefaultContent(Object obj) {
-        Label label = new Label("" + obj);
-        String styleClass = "tree-item-node-" + obj.getClass().getSimpleName().toLowerCase();
-        label.getStyleClass().add(styleClass);
-        return new HBox(label);
-    }    
 }

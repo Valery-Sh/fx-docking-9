@@ -27,7 +27,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
+import org.vns.javafx.designer.bean.ReflectHelper;
 
 /**
  *

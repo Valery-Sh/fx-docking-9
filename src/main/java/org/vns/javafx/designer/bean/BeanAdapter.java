@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.editor.bean;
+package org.vns.javafx.designer.bean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,9 +15,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javafx.beans.value.ObservableValue;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
-import static org.vns.javafx.dock.api.editor.bean.ReflectHelper.checkPackageAccess;
-import static org.vns.javafx.dock.api.editor.bean.ReflectHelper.getField;
+import org.vns.javafx.designer.bean.ReflectHelper.MethodUtil;
+import static org.vns.javafx.designer.bean.ReflectHelper.checkPackageAccess;
+import static org.vns.javafx.designer.bean.ReflectHelper.getField;
 //import static org.vns.javafx.dock.api.editor.bean.ReflecttionUtil.checkPackageAccess;
 //import sun.reflect.misc.MethodUtil;
 

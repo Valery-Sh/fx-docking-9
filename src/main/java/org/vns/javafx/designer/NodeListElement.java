@@ -19,24 +19,6 @@ package org.vns.javafx.designer;
  *
  * @author Valery Shyshkin
  */
-public class ListElement {
-    private String styleClass;
-    private String title; 
-
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+public class NodeListElement extends NodeElement{
     
 }

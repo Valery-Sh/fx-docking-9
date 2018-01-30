@@ -2,35 +2,19 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.vns.javafx.designer.NodeDragManager;
+import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.EditorUtil;
-import org.vns.javafx.dock.api.editor.ItemValue;
-import org.vns.javafx.dock.api.editor.NodeDragManager;
-import org.vns.javafx.dock.api.editor.SceneGraphView;
-import org.vns.javafx.dock.api.editor.DragAndDropManager;
 
 public class TestNodeDragManager  extends Application {
 

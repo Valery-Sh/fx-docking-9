@@ -29,6 +29,10 @@
         <NodeContent name="content" title="insert content" styleClass="node-insert-content"/>
     </NodeDescriptor>
     -->
+    <NodeDescriptor type="javafx.scene.control.Tab" titleProperty="text" defaultProperty="content" >
+        <NodeContent name="content" title="insert content" styleClass="node-insert-content"/>
+    </NodeDescriptor>
+    
     <NodeDescriptor type="javafx.scene.control.TitledPane">
         <NodeContent name="graphic" title="insert graphic"  styleClass="labeled-insert-graphic" />
         <NodeContent name="content"  />

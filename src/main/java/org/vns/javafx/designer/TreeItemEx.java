@@ -11,8 +11,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
+import org.vns.javafx.designer.bean.BeanAdapter;
+import org.vns.javafx.designer.bean.ReflectHelper;
 
 /**
  *
@@ -30,7 +30,7 @@ public class TreeItemEx extends TreeItem<Object> {
     private ItemType itemType = ItemType.CONTENT;
 
     public static enum ItemType {
-        CONTENT, LIST, ELEMENT
+        CONTENT, LIST, ELEMENT, DEFAULTLIST
     }
 
     public TreeItemEx() {

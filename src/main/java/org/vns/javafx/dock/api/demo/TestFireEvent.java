@@ -8,8 +8,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.designer.NodeDragEvent;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.NodeDragEvent;
 
 /**
  *

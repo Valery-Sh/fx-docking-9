@@ -16,25 +16,21 @@
 package org.vns.javafx.designer;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Arc;
 import static org.vns.javafx.designer.SceneGraphView.ANCHOR_OFFSET;
 import static org.vns.javafx.designer.SceneGraphView.FIRST;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.CONTENT;
+import static org.vns.javafx.designer.TreeItemEx.ItemType.DEFAULTLIST;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.LIST;
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
+import org.vns.javafx.designer.bean.BeanAdapter;
+import org.vns.javafx.designer.bean.ReflectHelper;
 
 /**
  *
@@ -55,11 +51,8 @@ public class TreeItemBuilder {
         return build(obj, null);
     }
 
-    protected TreeItemEx build(Object obj, ListElement p) {
+    protected TreeItemEx build(Object obj, NodeElement p) {
         TreeItemEx retval;
-        if (obj instanceof BorderPane) {
-            System.err.println("BORDER PANE");
-        }
         if (p != null && (p instanceof NodeContent)) {
             retval = createContentItem(obj, (NodeContent) p);
         } else if (p != null && (p instanceof NodeList)) {
@@ -70,11 +63,8 @@ public class TreeItemBuilder {
         if (p != null && (p instanceof Property)) {
             retval.setPropertyName(((Property) p).getName());
         }
-        //System.err.println("p=" + p);
         if (p != null && (p instanceof NodeList)) {
-            //retval.setValue(obj);
             ObservableList ol = (ObservableList) obj;
-            System.err.println("ol.size()=" + ol.size());
             for (int i = 0; i < ol.size(); i++) {
                 retval.getChildren().add(build(ol.get(i)));
             }
@@ -84,22 +74,18 @@ public class TreeItemBuilder {
             return retval;
         }
 
-        NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
 
         BeanAdapter adapter = new BeanAdapter(obj);
 
-        nc.getProperties().forEach(cp -> {
-            int cpIdx = nc.getProperties().indexOf(cp);
+        nd.getProperties().forEach(cp -> {
+            int cpIdx = nd.getProperties().indexOf(cp);
             Object cpObj = adapter.get(cp.getName());
-            boolean isplaceholder = false;
+            boolean isNodeContent = false;
             boolean hideIfNull = false;
-            if (cp instanceof NodeContent) {
-                isplaceholder = true;
-                hideIfNull = ((NodeContent) cp).isHideWhenNull();
-            }
 
             if ((cp instanceof NodeList)) {
-                if (nc.getProperties().size() == 1 && !((NodeList) cp).isAlwaysVisible()) {
+                if (nd.getProperties().size() == 1 && !((NodeList) cp).isAlwaysVisible()) {
                     //
                     // Omit TreeItem for ListItem
                     //
@@ -107,6 +93,7 @@ public class TreeItemBuilder {
                     for (int i = 0; i < ol.size(); i++) {
                         retval.getChildren().add(build(ol.get(i)));
                     }
+                    retval.setItemType(ItemType.DEFAULTLIST);
                 } else {
                     TreeItemEx listItem = build(cpObj, (NodeList) cp);
                     retval.getChildren().add(listItem);
@@ -114,15 +101,7 @@ public class TreeItemBuilder {
 
                 }
 
-            } /*            else if (!isplaceholder && cpObj != null) {
-                //
-                // This is a NodeContent ItemType
-                //
-                TreeItemEx item = build(cpObj, (NodeContent) cp);
-                item.setPropertyName(cp.getName());
-                retval.getChildren().add(item);
-            } 
-             */ else if (isplaceholder && (cpObj != null || !hideIfNull)) {
+            } else if ((cp instanceof NodeContent) && (cpObj != null || !((NodeContent) cp).isHideWhenNull())) {
                 TreeItemEx item = build(cpObj, (NodeContent) cp);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
@@ -154,29 +133,6 @@ public class TreeItemBuilder {
         return box;
     }
 
-    /*    public final TreeItemEx createContentItem(Object obj) {
-        HBox box = new HBox();
-        AnchorPane anchorPane = new AnchorPane(box);
-        AnchorPane.setBottomAnchor(box, ANCHOR_OFFSET);
-        AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
-        //anchorPane.setStyle("-fx-background-color: yellow");
-
-        TreeItemEx retval = new TreeItemEx();
-
-        retval.setValue(obj);
-
-        box.getChildren().add(createListElementItemContent(obj));
-
-        retval.setCellGraphic(anchorPane);
-        retval.setItemType(TreeItemEx.ItemType.CONTENT);
-        try {
-            retval.registerChangeHandlers();
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-            Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return retval;
-    }
-     */
     public final TreeItemEx createListElementItem(Object obj) {
         HBox box = new HBox();
         AnchorPane anchorPane = new AnchorPane(box);
@@ -327,13 +283,13 @@ public class TreeItemBuilder {
             return false;
         }
         TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
-        System.err.println("dragItem = " + dragItem);
+        /*        System.err.println("dragItem = " + dragItem);
         System.err.println("target = " + target);
         System.err.println("place = " + place);
         System.err.println("place.getParent = " + place.getParentSkipHeader());
         System.err.println("dragItem.previousSibling() = " + dragItem.previousSibling());
         System.err.println("-----------------------------------------");
-
+         */
         //
         // First check if the target item corresponds to LIST ItemType
         //
@@ -343,22 +299,19 @@ public class TreeItemBuilder {
         if (!isList) {
             nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
 
-            if (!isList && target.getValue() != null && nd.getProperties().size() == 1) {
+            if (target.getValue() != null && nd.getProperties().size() == 1) {
                 Property p = nd.getProperties().get(0);
                 if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
                     isList = true;
                 }
             }
         }
-        if (isList) {
+        //if (isList) {
+        if (target.getItemType() == LIST || target.getItemType() == DEFAULTLIST) {
             if (dragItem.previousSibling() == place) {
                 return false;
             }
             if (dragItem == place) {
-
-                if ((place.getValue() instanceof Arc) && (target.getValue() instanceof VBox)) {
-                    System.err.println("ARC getIndex = " + getInsertIndex(treeView, target, place));
-                }
 
                 if (treeView.getTreeItemLevel(place) - treeView.getTreeItemLevel(target) > 1 && dragItem != null) {
 
@@ -393,7 +346,7 @@ public class TreeItemBuilder {
             if (target != place) {
                 return false;
             }
-            Property prop = nd.getByDefaultProperty();
+            Property prop = nd.getDefaultContentProperty();
             if (prop == null) {
                 return false;
             }
@@ -415,89 +368,108 @@ public class TreeItemBuilder {
     }
 
     protected boolean isAcceptable(TreeItemEx target, Object toAccept) {
-        if (target.getValue() instanceof BorderPane) {
-            System.err.println("BBBB");
-        }
+
         if (toAccept == null) {
             return false;
         }
         boolean retval = true;
         NodeDescriptor nd;
         if (target.getItemType() == CONTENT) {
+
             TreeItemEx parent = (TreeItemEx) target.getParent();
-            nd = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
             Property cp = parent.getProperty(target.getPropertyName());//nc.getProperties().get(target.getInsertIndex());
             BeanAdapter adapter = new BeanAdapter(parent.getValue());
             retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
-//            } 
-        } else if (target.getItemType() == LIST || NodeDescriptor.isList(target.getValue())) {
-            TreeItemEx listItem = null;
+
+            //} else if (target.getItemType() == LIST || NodeDescriptor.isList(target.getValue())) {
+        } else if (target.getItemType() == LIST || target.getItemType() == DEFAULTLIST) {
+            TreeItemEx listItem = getListTreeItemFor(target);
+
             String propName = null;
-            if (target.getItemType() == LIST) {
-                listItem = (TreeItemEx) target.getParent();
-                propName = target.getPropertyName();
-            } else if (NodeDescriptor.isList(target.getValue())) {
-                listItem = target;
-                propName = NodeDescriptor.gatListPropertyName(target.getValue());
+            if (listItem != null) {
+                propName = getListPropertyNameFor(target);
             }
             if (listItem != null) {
-                BeanAdapter ba = new BeanAdapter(listItem.getValue());
-                Type tp = ba.getGenericType(propName);
-                Class clazz = (Class) BeanAdapter.getGenericListItemType(tp);
-
-                //Type clazz = ReflectHelper.getGetterGenericReturnType(listItem.getClass(), propName);
+                Class clazz = ReflectHelper.getListGenericType(listItem.getValue().getClass(), propName);
                 if (clazz != null) {
                     retval = clazz.isAssignableFrom(toAccept.getClass());
                 }
             }
         } else {
             //
-            // The ItemType of the target TreeItem equals to ListElement
+            // The ItemType of the target TreeItem equals to NodeElement
             //
             nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-            Property prop = nd.getByDefaultProperty();
-            if ( prop != null ) {
+            Property prop = nd.getDefaultContentProperty();
+            if (prop != null) {
                 BeanAdapter ba = new BeanAdapter((target.getValue()));
                 retval = ba.getType(prop.getName()).isAssignableFrom(toAccept.getClass());
             }
         }
         return retval;
     }
-    ////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////
 
+    protected TreeItemEx getListTreeItemFor(TreeItemEx item) {
+        TreeItemEx retval = null;
+        if (item.getItemType() == LIST) {
+            retval = (TreeItemEx) item.getParent();
+        } else if (item.getItemType() == DEFAULTLIST) {
+            retval = item;
+        }
+        return retval;
+    }
+
+    protected String getListPropertyNameFor(TreeItemEx item) {
+        String retval = null;
+        if (item.getItemType() == LIST) {
+            retval = item.getPropertyName();
+        } else if (item.getItemType() == DEFAULTLIST) {
+//            retval = NodeDescriptor.gatListPropertyName(item.getValue());
+            //retval = NodeDescriptor.gatListPropertyName(item.getValue());
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getValue());
+            
+            Property p = nd.getDefaultListProperty();
+            if ( p != null ) {
+                retval = p.getName();
+            }
+        }
+        return retval;
+    }
+
+    ////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     public void updateOnMove(TreeItemEx child) {
         TreeItemEx parent = (TreeItemEx) child.getParent();
         if (parent == null) {
-            // root item
+            //
+            // child is a root TreeItem
+            //
             return;
         }
-        if (parent.getItemType() == ItemType.LIST) {
+        if (parent.getItemType() == LIST) {
             ((ObservableList) parent.getValue()).remove(child.getValue());
-        } else { //if (parent.getItemType() == ItemType.CONTENT || parent.getItemType() == ItemType.PLACEHOLDER ) {
-            System.err.println("updateOnMove: ");
+        } else if (parent.getItemType() == DEFAULTLIST) {
             NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
-            if (nd.getProperties().size() == 1 && (nd.getProperties().get(0) instanceof NodeList)) {
-                BeanAdapter ba = new BeanAdapter(parent.getValue());
-                ((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
-            } else {
-                BeanAdapter ba = new BeanAdapter(parent.getValue());
-                ba.put(child.getPropertyName(), null);
-            }
+            BeanAdapter ba = new BeanAdapter(parent.getValue());
+            //((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
+            ((ObservableList) ba.get(nd.getDefaultListProperty().getName())).remove(child.getValue());            
+
+        } else {
+            BeanAdapter ba = new BeanAdapter(parent.getValue());
+            ba.put(child.getPropertyName(), null);
         }
     }
 
     public void accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
         //TreeItem retval = null;
-        System.err.println("ACCEPTL target = " + target);
+/*        System.err.println("ACCEPTL target = " + target);
         System.err.println("ACCEPTL place = " + place);
         System.err.println("ACCEPTL gestureSource = " + gestureSource);
+         */
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
         Object value = dg.getGestureSourceObject();
 
-        System.err.println("ACCEPTL gestureSource.value = " + value);
-        System.err.println("==========================================");
         //
         // A position where a new TreeItem should be inserted before uptateOnMove 
         // method call. We must consider for the list that the insertion 
@@ -505,7 +477,9 @@ public class TreeItemBuilder {
         // corresponds to the dragged value
         //
         int insertIndex = getInsertIndex(treeView, target, place);
-        if (target != null && (target.getItemType() == LIST || NodeDescriptor.isList(target.getValue()))) {
+
+        //if (target != null && (target.getItemType() == LIST || NodeDescriptor.isList(target.getValue()))) {
+        if (target != null && (target.getItemType() == LIST || target.getItemType() == DEFAULTLIST)) {
             TreeItemEx it = EditorUtil.findTreeItemByObject(treeView, value);
             if (it != null) {
                 int idx = target.getChildren().indexOf(it);
@@ -517,21 +491,17 @@ public class TreeItemBuilder {
         if (target != null && place != null && value != null) {
 
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-                //TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, value);                
                 TreeItemEx treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
                 if (treeItem instanceof TreeItemEx) {
-                    System.err.println("ACCEPTL before updateOnMove 1");
                     updateOnMove(treeItem);
                 }
             } else if (dg.getGestureSource() != null) {
                 TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, value);
                 if (sourceTreeItem != null) {
-                    System.err.println("ACCEPTL before updateOnMove 2");
                     updateOnMove(sourceTreeItem);
                 }
             }
         }
-        //update(treeView, target, place, placeIndex, value);
         update(treeView, target, insertIndex, value);
 
     }
@@ -549,150 +519,43 @@ public class TreeItemBuilder {
             case LIST:
                 ((ObservableList) target.getValue()).add(insertIndex, sourceObject);
                 break;
-            default:
-                if (!addToList(treeView, target, insertIndex, sourceObject)) {
-                    NodeDescriptor nd;
-                    if (target.getValue() == null) {
-                        BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
-                        ba.put(target.getPropertyName(), sourceObject);
-                    } else {
-                        nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-                        BeanAdapter ba = new BeanAdapter(target.getValue());
-                        ba.put(nd.getByDefaultProperty().getName(), sourceObject);
-                    }
-                }
-                break;
-
-        }
-    }
-
-    protected boolean addToList(TreeViewEx treeView, TreeItemEx target, int placeIndex, Object sourceObject) {
-        boolean retval = false;
-
-        if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-            Property p = nd.getProperties().get(0);
-            if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
-                BeanAdapter ba = new BeanAdapter(target.getValue());
-                ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
-                //int idx = getInsertIndex(treeView, target, place);
-
-                System.err.println("addToList placeIndex = " + placeIndex);
-                ol.add(placeIndex, sourceObject);
-                retval = true;
-            }
-        }
-
-        return retval;
-    }
-
-    /*    protected void update_OLD(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, int placeIndex, Object sourceObject) {
-
-        switch (target.getItemType()) {
-            case LIST:
-                int idx = getInsertIndex(treeView, target, place);
-                ((ObservableList) target.getValue()).add(idx, sourceObject);
+            case DEFAULTLIST:
+                updateList(treeView, target, insertIndex, sourceObject);
                 break;
             default:
-                //int idx1 = getInsertIndex(treeView, target, place);
-                System.err.println("update: placeIndex = " + placeIndex);
-                System.err.println("  --- update target level: = " + treeView.getTreeItemLevel(target));
-                System.err.println("  --- update place  level: = " + treeView.getTreeItemLevel(place));
-
-                if (!addToList_OLD(treeView, target, place, placeIndex, sourceObject)) {
-                    NodeDescriptor nd;
-                    if (target.getValue() == null) {
-                        //nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getParent().getValue());
-                        BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
-                        ba.put(target.getPropertyName(), sourceObject);
-                    } else {
-                        nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-                        BeanAdapter ba = new BeanAdapter(target.getValue());
-                        ba.put(nd.getByDefaultProperty().getName(), sourceObject);
-                    }
+//                if (!updateList(treeView, target, insertIndex, sourceObject)) {
+                NodeDescriptor nd;
+                if (target.getValue() == null) {
+                    BeanAdapter ba = new BeanAdapter(target.getParent().getValue());
+                    ba.put(target.getPropertyName(), sourceObject);
+                } else {
+                    nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+                    BeanAdapter ba = new BeanAdapter(target.getValue());
+                    ba.put(nd.getDefaultContentProperty().getName(), sourceObject);
                 }
+                //              }
                 break;
 
         }
     }
-     */
- /*    protected boolean addToList_OLD(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, int placeIndex, Object sourceObject) {
-        boolean retval = false;
 
-        if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
-            Property p = nd.getProperties().get(0);
-            if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
-                BeanAdapter ba = new BeanAdapter(target.getValue());
-                ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
-                //int idx = getInsertIndex(treeView, target, place);
+    protected void updateList(TreeViewEx treeView, TreeItemEx target, int placeIndex, Object sourceObject) {
+        //boolean retval = false;
 
-                System.err.println("addToList placeIndex = " + placeIndex);
-                ol.add(placeIndex, sourceObject);
-                retval = true;
-            }
-        }
-
-        return retval;
-    }
-     */
-    /**
-     * Tries to to find an object of type {@code TreeItem} in the specified 
-     * {@link TreeViewEx } which corresponds to an object specified by the
-     * {@code value} parameter.
-     *
-     * @param treeView the node to search in
-     * @param target the target TreeItem where the new TreeItem should be place
-     * as a children
-     * @param place the object of type TreeItem which represents a drag target
-     * TreeCell
-     * @param value the object to search
-     *
-     * @return an index in the collection of children in the target TreeItem
-     * used to insert a new TreeItem for the object specified by the value
-     * parameter.
-     *
-     *
-     */
-    /*    protected int getInsertIndex(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Object value) {
-        if (target.getValue() == value) {
-            return -1;
-        }
-        TreeItemEx sourceItem = EditorUtil.findTreeItemByObject(treeView, value);
-        if (sourceItem == null) {
-            return -1;
-        }
-        int idx;// = -1;
-        //NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+        //if (target.getValue() != null && target.getItemType() != ItemType.LIST) {
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
+        //Property p = nd.getProperties().get(0);
+        //if (nd.getProperties().size() == 1 && (p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
         BeanAdapter ba = new BeanAdapter(target.getValue());
-        Class propType = ba.getType(target.getPropertyName());
-        List ls = (List) ba.get(target.getPropertyName());
-        int valueIdx = ls.indexOf(value);
+        ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());
+        ol.add(placeIndex, sourceObject);
+        //retval = true;
+        //}
+        //}
 
-        if (target == place) {
-
-            if (valueIdx == 0) {
-                idx = -1;
-            } else {
-                idx = 0;
-            }
-        } else {
-            int targetLevel = treeView.getTreeItemLevel(target);
-            int placeLevel = treeView.getTreeItemLevel(place);
-            TreeItemEx parent = place;
-            if (targetLevel - placeLevel != 1) {
-                //
-                // Occurs when place is the las TreeItemof it's parent
-                //
-                while (treeView.getTreeItemLevel(parent) - targetLevel > 1) {
-                    parent = (TreeItemEx) parent.getParent();
-                }
-            }
-            idx = target.getChildren().indexOf(parent) + 1;
-        }
-        return idx;
+        //return retval;
     }
-     */
+
     /**
      * Tries to calculate an index in the children collection of the item
      * specified by the parameter {@code target } where a new item can be

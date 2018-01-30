@@ -144,11 +144,14 @@ public class NodeDescriptor {
         return retval;
     }
 
-    public Property getByDefaultProperty() {
-        return calculateDefaultProperty();
+    public Property getDefaultContentProperty() {
+        return calculateDefaultContentProperty();
+    }
+    public Property getDefaultListProperty() {
+        return calculateDefaultListProperty();
     }
 
-    private Property calculateDefaultProperty() {
+    private Property calculateDefaultContentProperty() {
         Property retval = null;
         if (getProperties().size() == 1) {
             if (getProperties().get(0) instanceof NodeContent) {
@@ -167,9 +170,27 @@ public class NodeDescriptor {
 
         return retval;
     }
+    private Property calculateDefaultListProperty() {
+        Property retval = null;
+        if (getProperties().size() == 1) {
+            if (getProperties().get(0) instanceof NodeList) {
+                retval = getProperties().get(0);
+            }
+        }
+        Property p = null;
+        if (retval == null && getDefaultProperty() != null) {
+            p = getProperty(getDefaultProperty());
+        } else if (getDefaultProperty() == null) {
+            p = getProperty(getAnnotationDefaultProperty());
+        }
+        if (p != null && (p instanceof NodeList)) {
+            retval = p;
+        }
 
-    public static boolean isList(Object value) {
-        //boolean isList = target.getItemType() == LIST;
+        return retval;
+    }
+
+/*    public static boolean isList(Object value) {
         boolean retval = false;
         NodeDescriptor nd;
         if (value != null) {
@@ -184,13 +205,14 @@ public class NodeDescriptor {
         return retval;
 
     }
-    public static String gatListPropertyName(Object value) {
+*/
+/*    public static String gatListPropertyName(Object value) {
         //boolean isList = target.getItemType() == LIST;
         String retval = null;
         NodeDescriptor nd;
         if (value != null) {
             nd = NodeDescriptorRegistry.getInstance().getDescriptor(value);
-            if (value != null && nd.getProperties().size() == 1) {
+            if (nd.getProperties().size() == 1) {
                 Property p = nd.getProperties().get(0);
                 if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
                     retval = p.getName();
@@ -200,5 +222,5 @@ public class NodeDescriptor {
         return retval;
 
     }
-    
+*/    
 }

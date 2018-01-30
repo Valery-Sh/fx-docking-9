@@ -13,8 +13,8 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.TabPane;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
+import org.vns.javafx.designer.bean.ReflectHelper;
+import org.vns.javafx.designer.bean.ReflectHelper.MethodUtil;
 
 /**
  *

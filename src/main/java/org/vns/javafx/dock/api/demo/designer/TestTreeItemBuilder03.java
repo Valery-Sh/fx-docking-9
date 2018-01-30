@@ -47,10 +47,9 @@ import org.vns.javafx.designer.SceneGraphView;
 import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.editor.bean.BeanAdapter;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper;
-import org.vns.javafx.dock.api.editor.bean.ReflectHelper.MethodUtil;
-import sun.reflect.misc.ReflectUtil;
+import org.vns.javafx.designer.bean.BeanAdapter;
+import org.vns.javafx.designer.bean.ReflectHelper;
+import org.vns.javafx.designer.bean.ReflectHelper.MethodUtil;
 
 public class TestTreeItemBuilder03 extends Application {
 
@@ -92,6 +91,7 @@ public class TestTreeItemBuilder03 extends Application {
         System.err.println(" ******** List Item Type name= " + tpl.getTypeName());
         System.err.println(" ******** tp1 instanceof Class = " + (tpl instanceof Class));
         System.err.println(" ******** tp1.getClass = " + ((Class)tpl).getName());
+     
         
         //System.err.println("List Item Type = " + BeanAdapter.getGenericListItemType(tp));
         //System.err.println("List Item Type = " + BeanAdapter.getListItemType(tp).getName());
@@ -125,6 +125,11 @@ public class TestTreeItemBuilder03 extends Application {
         root.getChildren().add(tabPane1);
         Tab tab1 = new Tab("Tab01");
         tabPane1.getTabs().add(tab1);
+        Tab tab2 = new Tab("Tab02");
+        tabPane1.getTabs().add(tab2);
+        Tab tab3 = new Tab("Tab03");
+        tabPane1.getTabs().add(tab3);
+        
         Arc arc1 = new Arc();
         root.getChildren().add(arc1);
         Label lb2 = new Label("lb2");

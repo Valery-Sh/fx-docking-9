@@ -20,7 +20,7 @@ package org.vns.javafx.designer;
  *
  * @author Valery
  */
-public class Property extends ListElement{
+public class Property extends NodeElement{
     private String name;
     
     private NodeDescriptor descriptor;
@@ -35,7 +35,7 @@ public class Property extends ListElement{
     }
 
     protected boolean isDefault() {
-        return getName().equals(getDescriptor().getByDefaultProperty().getName());
+        return getName().equals(getDescriptor().getDefaultContentProperty().getName());
     }
 
     protected NodeDescriptor getDescriptor() {

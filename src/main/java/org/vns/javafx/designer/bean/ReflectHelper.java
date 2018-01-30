@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.editor.bean;
+package org.vns.javafx.designer.bean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -39,11 +39,11 @@ import java.util.logging.Logger;
 public class ReflectHelper {
 
     public static final String PROXY_PACKAGE = "com.sun.proxy";
-    
+
     public static Class<?> getGetterReturnType(Class<?> forClass, String key) {
-       Class<?> retval = null;
+        Class<?> retval = null;
         try {
-            
+
             Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
             retval = method.getReturnType();
         } catch (NoSuchMethodException ex) {
@@ -51,18 +51,27 @@ public class ReflectHelper {
         }
         return retval;
     }
+
     public static Type getGetterGenericReturnType(Class<?> forClass, String key) {
-       Type retval = null;
+        Type retval = null;
         try {
-            
+
             Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+            if (method == null) {
+                method = MethodUtil.getMethod(forClass, "is" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+            }
             retval = method.getGenericReturnType();
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(ReflectHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;
     }
-    
+
+    public static Class<?> getListGenericType(Class<?> forClass, String key) {
+        Type tp = ReflectHelper.getGetterGenericReturnType(forClass, key);
+        return (Class) BeanAdapter.getGenericListItemType(tp);
+    }
+
     //private static final String INVOKER = "org.vns.javafx.dock.api.editor.MethodUtil$ActualInvoker";
     //private static final Method actualInvoker = getActualInvoker();
     public static List<Class<?>> getInterfaces(Class<?> clazz) {
@@ -95,6 +104,7 @@ public class ReflectHelper {
         checkPackageAccess(clazz);
         return clazz.getFields();
     }
+
     public static Field getDeclaredField(Class<?> clazz, String name)
             throws NoSuchFieldException {
         checkPackageAccess(clazz);
@@ -112,6 +122,7 @@ public class ReflectHelper {
      * If it is a {@link Proxy#isProxyClass(java.lang.Class)} that implements a
      * non-public interface (i.e. may be in a non-restricted package), also
      * check the package access on the proxy interfaces.
+     *
      * @param clazz ???
      */
     public static void checkPackageAccess(Class<?> clazz) {
@@ -125,6 +136,7 @@ public class ReflectHelper {
      * Checks package access on the given classname. This method is typically
      * called when the Class instance is not available and the caller attempts
      * to load a class on behalf the true caller (application).
+     *
      * @param name ???
      */
     public static void checkPackageAccess(String name) {
@@ -153,7 +165,7 @@ public class ReflectHelper {
         }
 
         String pkg = getPackageName(clazz, false);
-        
+
         if (pkg != null && !pkg.isEmpty()) {
             s.checkPackageAccess(pkg);
         }
@@ -192,6 +204,7 @@ public class ReflectHelper {
      * Test if the given class is a proxy class that implements non-public
      * interface. Such proxy class may be in a non-restricted package that
      * bypasses checkPackageAccess.
+     *
      * @param cls ??
      * @return ??
      */
@@ -215,7 +228,7 @@ public class ReflectHelper {
 
     public static class MethodUtil extends SecureClassLoader {
 
-        private static final String INVOKER = "org.vns.javafx.dock.api.editor.bean.ReflectHelper$MethodUtil$ActualInvoker";
+        private static final String INVOKER = "org.vns.javafx.designer.bean.ReflectHelper$MethodUtil$ActualInvoker";
         private static final Method actualInvoker = getActualInvoker();
 
         protected MethodUtil() {
@@ -230,7 +243,6 @@ public class ReflectHelper {
         }
 
         public static Method[] getMethods(Class<?> cls) {
-            //ReflectUtil.checkPackageAccess(cls);
             ReflectHelper.checkPackageAccess(cls);
             return cls.getMethods();
         }

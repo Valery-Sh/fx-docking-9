@@ -1,6 +1,5 @@
 package org.vns.javafx.designer;
 
-import org.vns.javafx.dock.api.editor.*;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Bounds;
