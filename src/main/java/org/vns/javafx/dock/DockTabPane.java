@@ -349,7 +349,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
     public static class TabPaneContext extends TargetContext {
 
-        private PositionIndicator positionIndicator;
+        //private PositionIndicator positionIndicator;
         private TabPaneHelper helper;
 
         public TabPaneContext(Node tabPane) {

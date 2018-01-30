@@ -14,7 +14,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
 
@@ -231,7 +230,7 @@ public class DragPopup extends IndicatorPopup {
      * Shows this pop up window
      */
     @Override
-    public void showPopup() {
+    public void showIndicator() {
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         dragTarget = null;
@@ -453,11 +452,11 @@ public class DragPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns a shape of type {@code  Rectangle} to be displayed to showPopup a
-     * proposed dock place
+     * Returns a shape of type {@code  Rectangle} to be displayed to showIndicator a
+ proposed dock place
      *
-     * @return a shape of type {@code  Rectangle} to be displayed to showPopup a
-     * proposed dock place
+     * @return a shape of type {@code  Rectangle} to be displayed to showIndicator a
+ proposed dock place
      */
     @Override
     public Rectangle getDockPlace() {

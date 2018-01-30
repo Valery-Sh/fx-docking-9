@@ -65,6 +65,4 @@ public class DragTreeViewGesture extends DragNodeGesture{
     public TreeItemEx getGestureSourceTreeItem() {
         return sourceTreeItem;
     }
-    
-    
 }

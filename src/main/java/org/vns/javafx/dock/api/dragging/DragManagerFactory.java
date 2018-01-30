@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
-import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.Dockable;
 
 /**

@@ -25,6 +25,7 @@ public abstract class TargetContext {
     private String title;
     private PositionIndicator positionIndicator;
     
+    //private Node indicatorDelegate
     
     private AbstractDockStateLoader dockLoader;
 

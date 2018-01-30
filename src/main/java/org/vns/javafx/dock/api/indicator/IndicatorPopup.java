@@ -14,7 +14,6 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.TargetContext;
 
 /**
@@ -71,12 +70,14 @@ import org.vns.javafx.dock.api.TargetContext;
  *
  * @author Valery Shyshkin
  */
-public class IndicatorPopup extends Popup {
+public class IndicatorPopup extends Popup implements IndicatorDelegate{
 
     /**
      * The owner of this object
      */
     private final TargetContext targetContext;
+
+    private Node draggedNode;
 
     public Node getDraggedNode() {
         return draggedNode;
@@ -86,20 +87,15 @@ public class IndicatorPopup extends Popup {
         this.draggedNode = draggedNode;
     }
     
-    private ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
+    private final ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
     
-    private Node draggedNode;
 
     /**
-     * Creates a new instance for the specified pane handler.
+     * Creates a new instance for the specified target context.
      *
      * @param target the owner of the object to be created
      */
-    /*    public IndicatorPopup(DockTarget target) {
-        this.targetContext = target.getTargetContext();
-        init();
-    }
-     */
+
     public IndicatorPopup(TargetContext target) {
         this.targetContext = target;
         init();
@@ -258,8 +254,8 @@ public class IndicatorPopup extends Popup {
     /**
      * Shows this pop up window
      */
-    //public void showPopup(Node dockNode) {
-    public void showPopup() {
+    //public void showIndicator(Node dockNode) {
+    public void showIndicator() {
         if (getPositionIndicator() == null) {
             return;
         }
@@ -316,11 +312,11 @@ public class IndicatorPopup extends Popup {
     }
 
     /**
-     * Returns a shape of type {@code  Rectangle} to be displayed to showPopup a
-     * proposed dock place
+     * Returns a shape of type {@code  Rectangle} to be displayed to showIndicator a
+ proposed dock place
      *
-     * @return a shape of type {@code  Rectangle} to be displayed to showPopup a
-     * proposed dock place
+     * @return a shape of type {@code  Rectangle} to be displayed to showIndicator a
+ proposed dock place
      */
     public Node getDockPlace() {
         return targetContext.getPositionIndicator().getDockPlace();

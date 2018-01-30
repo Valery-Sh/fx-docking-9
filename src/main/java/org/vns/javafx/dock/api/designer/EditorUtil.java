@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -40,17 +39,12 @@ public class EditorUtil {
     }
 
     public static TreeCell getCell(TreeItemEx item) {
-        return (TreeCell) ((AnchorPane) item.getCellGraphic()).getParent();
+        //return (TreeCell) ((AnchorPane) item.getCellGraphic()).getParent();
+        return (TreeCell) item.getCellGraphic().getParent();
     }
 
-    /*    public static Bounds screenTreeViewBounds(TreeView treeView) {
-        return treeView.localToScreen(treeView.getBoundsInLocal());
-    }
-     */
     public static Bounds screenTreeItemBounds(TreeItemEx treeItem) {
         Node node = treeItem.getCellGraphic().getParent();
-        //Bounds b1 = node.localToScreen(node.getBoundsInLocal());
-        //System.err.println("=============== b1=" + b1);
         return node.localToScreen(node.getBoundsInLocal());
     }
 
@@ -74,20 +68,9 @@ public class EditorUtil {
             double w = tvb.getWidth() - treeView.getInsets().getRight() - treeView.getInsets().getLeft() - vertSrollBarWidth;
             retval = new BoundingBox(retval.getMinX(), retval.getMinY(), w, retval.getHeight());
         }
-        //Bounds b1 = node.localToScreen(node.getBoundsInLocal());
-        //System.err.println("=============== b1=" + b1);
         return retval;
     }
 
-/*    public static Bounds screenTopVisibleBounds(TreeViewEx treeView, TreeItem<ItemValue> treeItem) {
-        Node node = treeItem.getValue().getCellGraphic().getParent();
-        Bounds retval = node.localToScreen(node.getBoundsInLocal());
-        if (treeView.getVScrollBar().isVisible()) {
-            Bounds noInserts = EditorUtil.screenInsetsFreeBounds(treeView);
-        }
-        return retval;
-    }
-*/
     public static Bounds getIntersection(Bounds b1, Bounds b2) {
         
         if ( ! b1.intersects(b2)) {
@@ -165,15 +148,6 @@ public class EditorUtil {
         );
     }
 
-    /*    public Bounds getParentInsetsFreeBounds(Region node) {
-        Bounds b = node.getBoundsInParent();
-        return new BoundingBox(b.getMinX(), b.getMinY(), b.getWidth() 
-                    - node.getInsets().getLeft() - node.getInsets().getRight(), 
-                    b.getHeight()
-                    - node.getInsets().getTop() - node.getInsets().getBottom() 
-        );
-    }
-     */
     public static TreeItemEx findTreeItemByObject(TreeView treeView, Object sourceGesture) {
         return (TreeItemEx) findChildTreeItem((TreeItemEx) treeView.getRoot(), sourceGesture);
     }
@@ -228,17 +202,6 @@ public class EditorUtil {
         return retval;
     }
 
-    /*    public Stage findStage(double x, double y, Stage excl) {
-        return DockRegistry.getInstance().getTarget(x, y, excl, (n) -> {
-            return (n instanceof TreeViewEx);
-        });
-    }
-    public static TreeViewEx findTreeView(Stage stage, double x, double y ) {
-        return  (TreeViewEx) TopNodeHelper.getTopNode(stage, x, y, (n) -> {
-            return (n instanceof TreeViewEx);
-        });
-    }
-     */
     public static TreeViewEx getTargetTreeView(double x, double y) {
         TreeViewEx retval = null;
         List<Stage> allStages = StageHelper.getStages();
