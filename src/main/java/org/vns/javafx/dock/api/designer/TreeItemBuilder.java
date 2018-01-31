@@ -210,11 +210,7 @@ public class TreeItemBuilder {
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
         try {
             retval.registerChangeHandlers();
-        } catch (NoSuchMethodException ex) {
-            Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
             Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
 

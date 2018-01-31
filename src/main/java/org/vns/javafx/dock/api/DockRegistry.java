@@ -372,6 +372,28 @@ public class DockRegistry {
         return retval;
     }
 
+    public void registerDefault(Node node) {
+        node.getProperties().put(Dockable.DOCKABLE_KEY, makeDockable(node));
+    }
+
+    public void unregisterDefault(Node node) {
+        node.getProperties().remove(Dockable.DOCKABLE_KEY);
+    }
+
+    public Dockable makeDockable(Node node) {
+        if (node instanceof Dockable) {
+            return (Dockable) node;
+        }
+        if (dockables.get(node) != null) {
+            return dockables.get(node);
+        }
+        Dockable d = new DefaultDockable(node);
+        if (d.node().getParent() != null) {
+            d.getDockableContext().getTargetContext().setTargetNode(d.node().getParent());
+        }
+        return d;
+    }
+
     public void register(Dockable dockable) {
         if (dockable.node() instanceof Dockable) {
             return;
@@ -399,13 +421,14 @@ public class DockRegistry {
         }
 
     }
+
     public DockTarget registerAsDockTarget(Node node) {
         if (isDockTarget(node)) {
             return dockTarget(node);
         }
         TargetContextFactory f = new TargetContextFactory();
         TargetContext c = f.getContext(node);
-        if ( c == null ) {
+        if (c == null) {
             return null;
         }
         DockTarget dt = new DefaultDockTarget(node, c);
@@ -437,10 +460,10 @@ public class DockRegistry {
     }
 
     public static Dockable dockable(Node node) {
-        if ( node == null ) {
+        if (node == null) {
             return null;
         }
-        
+
         if (node instanceof Dockable) {
             return (Dockable) node;
         }
@@ -477,7 +500,7 @@ public class DockRegistry {
     }
 
     public static DockTarget dockTarget(Node node) {
-        if ( node == null ) {
+        if (node == null) {
             return null;
         }
         if (node instanceof DockTarget) {
@@ -489,7 +512,7 @@ public class DockRegistry {
             if (d != null && (d instanceof DockTarget) && ((DockTarget) d).target() == node) {
                 retval = (DockTarget) d;
             }
-        }        
+        }
         return retval;
 
     }
@@ -524,6 +547,7 @@ public class DockRegistry {
         }
 
     }
+
     public static class DefaultDockTarget implements DockTarget {
 
         private final Node node;
@@ -546,5 +570,5 @@ public class DockRegistry {
         }
 
     }
-    
+
 }

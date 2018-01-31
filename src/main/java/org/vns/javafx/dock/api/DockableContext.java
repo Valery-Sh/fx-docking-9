@@ -65,12 +65,14 @@ public class DockableContext {
 
     private final StringProperty title = new SimpleStringProperty("");
     private final Dockable dockable;
+    private Object dragObject;
+    
     private final BooleanProperty floating = new SimpleBooleanProperty(false);
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockTarget = true;
 
-    //private DragManager dragManager;
+    
     private DragDetector dragDetector;
     //private Node dragNode;
     private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
@@ -524,6 +526,20 @@ public class DockableContext {
 //            dragManager.titlebarChanged(ov, oldValue, newValue);
         }
          */
+    }
+    /**
+     * Returns the object which is an actual object to be docked
+     * @return the object which is an actual object to be docked
+     */
+    public Object getDragObject() {
+        return dragObject;
+    }
+    /**
+     * Sets the object which is an actual object to be docked
+     * @param dragObject the actual object to be docked
+     */
+    public void setDragObject(Object dragObject) {
+        this.dragObject = dragObject;
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {

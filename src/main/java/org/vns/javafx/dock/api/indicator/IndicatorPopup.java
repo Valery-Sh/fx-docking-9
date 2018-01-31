@@ -112,9 +112,13 @@ public class IndicatorPopup extends Popup implements IndicatorDelegate{
 
     @Override
     public void show(Window ownerWindow) {
+        System.err.println("1 show(Window ownerWindow) ");
+
         if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
+        System.err.println("2 show(Window ownerWindow) ");
+        
         super.show(ownerWindow);
         if (getChildWindows().contains(ownerWindow)) {
             return;
@@ -127,9 +131,12 @@ public class IndicatorPopup extends Popup implements IndicatorDelegate{
 
     @Override
     public void show(Window ownerWindow, double anchorX, double anchorY) {
+        System.err.println("1 show(Window ownerWindow, double anchorX, double anchorY) ");
+        
         if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
+        System.err.println("2 show(Window ownerWindow, double anchorX, double anchorY) ");
 
         super.show(ownerWindow, anchorX, anchorY);
 
@@ -154,8 +161,12 @@ public class IndicatorPopup extends Popup implements IndicatorDelegate{
 
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
+        System.err.println(" 1 show(Node ownerNode, double anchorX, double anchorY) ");
+        
         super.show(ownerNode, anchorX, anchorY);
-        System.err.println("SHOW 3 " + this.getProperties().get("POPUP"));
+        System.err.println(" 2 show(Node ownerNode, double anchorX, double anchorY) ");
+        
+        //System.err.println("SHOW 3 " + this.getProperties().get("POPUP"));
     }
 
     @Override
@@ -163,6 +174,7 @@ public class IndicatorPopup extends Popup implements IndicatorDelegate{
         if (getOwnerWindow() instanceof IndicatorPopup) {
             IndicatorPopup p = (IndicatorPopup) getOwnerWindow();
         }
+        System.err.println("!!!!!!!!!!! HIDE");
         super.hide();
 
     }
@@ -256,9 +268,12 @@ public class IndicatorPopup extends Popup implements IndicatorDelegate{
      */
     //public void showIndicator(Node dockNode) {
     public void showIndicator() {
+        System.err.println("1 showPositionIndicator ");
         if (getPositionIndicator() == null) {
             return;
         }
+        System.err.println("2 showPositionIndicator ");
+        
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         getPositionIndicator().showIndicator(pos.getX(), pos.getY());

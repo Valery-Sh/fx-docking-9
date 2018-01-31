@@ -24,7 +24,6 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -213,8 +212,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         //
         
         IndicatorDelegate newPopup =  DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorDelegate.class);
+        if ( newPopup == null ) {
+            System.err.println("((((((((((((((((((((((((( NEW POPUP == NULL");
+            DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorDelegate.class);
+        }
         newPopup.setDraggedNode(getDockable().node());
-
+        
         if (popup != newPopup && popup != null) {
             popup.hide();
         }
@@ -241,7 +244,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events.
      */
     protected void mouseReleased(MouseEvent ev) {
+        System.err.println("mouse release popup " + popup);
+        if ( popup != null ) {
+            System.err.println("   --- mouse release isShowing " + popup.isShowing());
+        }
         if (popup != null && popup.isShowing()) {
+            System.err.println("11111 release isShowing");
             popup.handle(ev.getScreenX(), ev.getScreenY());
         }
 
@@ -264,11 +272,15 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
         if (popup != null && popup.isShowing()) {
             popup.getTargetContext().dock(pt, dockable);
+            System.err.println("22222222 doc");
+
         } else if (popup != null && popup.getPositionIndicator() == null) {
             //
            // We use default indicatorPopup without position indicator
             //
             popup.getTargetContext().dock(pt, dockable);
+            System.err.println("33333 dock");
+            
         }
 
         if (popup != null && popup.isShowing()) {

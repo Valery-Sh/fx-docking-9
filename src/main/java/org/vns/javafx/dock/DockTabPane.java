@@ -26,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
@@ -437,9 +438,10 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
-            Stage stage = null;
+            Window stage = null;
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                stage = (Stage) node.getScene().getWindow();
+                //stage = (Stage) node.getScene().getWindow();
+                stage = node.getScene().getWindow();
             }
 
             Dockable dockable = DockRegistry.dockable(node);
@@ -481,7 +483,11 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
                 tabPane.getTabs().get(tabPane.getTabs().indexOf(newTab)).setContent(node);
             }
             if (stage != null) {
-                stage.close();
+                if ( stage instanceof Stage ) {
+                    ((Stage)stage).close();
+                } else {
+                    stage.hide();
+                }
             }
 
             hideContentTitleBar(dockable);

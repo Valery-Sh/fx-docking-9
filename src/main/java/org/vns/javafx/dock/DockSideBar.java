@@ -497,21 +497,9 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 nodeHandler.setTargetContext(this);
             }
             container.getFloatView().setSupportedCursors(getSupportedCursors());
-//            PopupControl popup = (PopupControl) container.getFloatView().createPopupControl(dockable);
-            //stage.setAlwaysOnTop(true);
-            /*popup.setOnShowing(e -> {
-                if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null) {
-                    if (popup.getOwnerWindow()== null) {
-                        //popup.setOwnerWindow(getTargetNode().getScene().getWindow());
-                    }
-                }
-            });
-             */
             if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null && getTargetNode().getScene().getWindow().isShowing()) {
                 container.adjustScreenPos();
             }
-
-            //container.setDocked(true);
             if (priorWindow != null && (priorWindow instanceof Stage)) {
                 ((Stage) priorWindow).close();
             } else if (priorWindow != null) {

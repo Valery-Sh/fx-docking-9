@@ -145,11 +145,12 @@ public class TestNodeDragManager  extends Application {
         //
 //        NodeDragManager.getInstance().enableDragAndDrop(tab21, dragBtn1, () -> {
 //        NodeDragManager.getInstance().enableDragAndDrop(tab21, dragBtn1);
-        NodeDragManager.getInstance().enableDragAndDrop(tab21, dragBtn1, () -> {        
+/*        NodeDragManager.getInstance().enableDragAndDrop(tab21, dragBtn1, () -> {        
             tab21.getTabPane().getTabs().remove(tab21);
             return true;
         });
-        
+*/
+        NodeDragManager.getInstance().enableDragAndDrop(tab21, dragBtn1);
         NodeDragManager.getInstance().setEventNotifier(dragBtn1, e -> {
             System.err.println("NOTIFY: " + e.getEventType());
         });

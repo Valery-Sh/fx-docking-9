@@ -154,7 +154,7 @@ public class NodeDescriptorRegistry {
         try {
             //loader.impl_setLoadListener(new DesignLoadListener());
             //System.err.println("L = " + loader.impl_getLoadListener());
-            root = loader.load(getClass().getResourceAsStream("/org/vns/javafx/designer/resources/DesignFXML01.fxml"));
+            root = loader.load(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/DesignFXML01.fxml"));
             //root = loader.load(getClass().getClassLoader().getResourceAsStream("org/vns/javafx/designer/resources/DesignFXML01.fxml"));
             root.getDescriptors().forEach(d -> {
                 String className = d.getType();

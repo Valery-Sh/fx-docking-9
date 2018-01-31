@@ -22,6 +22,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
+import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  *
@@ -29,7 +30,7 @@ import javafx.collections.transformation.FilteredList;
  */
 public class DefaultContextLookup implements ContextLookup {
 
-    private final ObservableMap<Class, List<Object>> lookup = FXCollections.observableHashMap();
+    public final ObservableMap<Class, List<Object>> lookup = FXCollections.observableHashMap();
 
     @Override
     public <T> T lookup(Class<T> clazz) {
@@ -49,8 +50,11 @@ public class DefaultContextLookup implements ContextLookup {
         return retval;
     }
 
-    //@Override
+    @Override
     public <T> void add(T obj) {
+        if ( obj instanceof DragPopup ) {
+            System.err.println(")))))))))))))))))))");
+        }
         if (lookup.containsKey(obj.getClass())) {
             if (!lookup.get(obj.getClass()).contains(obj)) {
                 lookup.get(obj.getClass()).add(obj);
@@ -68,6 +72,8 @@ public class DefaultContextLookup implements ContextLookup {
             ifs.addAll(fl);
             if (!classes.contains(sc)) {
                 classes.add(sc);
+                classes.addAll(sc.getInterfaces());
+
             }
             sc = sc.getSuperclass();
         }

@@ -16,11 +16,8 @@
 package org.vns.javafx.dock.api.dragging;
 
 import com.sun.javafx.stage.EmbeddedWindow;
-import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
 import org.vns.javafx.dock.api.dragging.view.FloatStageView;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
@@ -39,19 +36,19 @@ public class FloatViewFactory {
     }
     
     public FloatView getFloatView(DragManager dragManager) {
-        FloatView v = null;
+        FloatView retval = null;
         Node node = dragManager.getDockable().node();
         Window w = null;
         if ( node.getScene() != null && node.getScene().getWindow() != null) {
             w = node.getScene().getWindow();
         }
         if ( w == null || !(w instanceof EmbeddedWindow)) {
-            v = new FloatStageView(dragManager.getDockable());
+            retval = new FloatStageView(dragManager.getDockable());
         } else if ( w instanceof EmbeddedWindow ) {
-            v = new FloatPopupControlView(dragManager.getDockable());
+            retval = new FloatPopupControlView(dragManager.getDockable());
         }
     
-        return v;
+        return retval;
     }
     private static class SingletonInstance {
         private static final FloatViewFactory INSTANCE = new FloatViewFactory();

@@ -43,7 +43,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @return a tree item which is an actual target of a drag gesture.
      */
     protected TreeItemEx getTargetTreeItem(DragEvent ev) {
-        return (TreeItemEx) getEditor().getTargetTreeItem(ev, getTreeCellItem());
+        return (TreeItemEx) getSceneGraphView().getTargetTreeItem(ev, getTreeCellItem());
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
             return false;
         }
 
-        return new TreeItemBuilder().isAdmissiblePosition(getEditor().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
+        return new TreeItemBuilder().isAdmissiblePosition(getSceneGraphView().getTreeView(), target, getTreeCellItem(), getGestureSourceObject(ev));
 
     }
 
@@ -180,7 +180,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      */
     protected boolean isRectangleIndicator(DragEvent ev, TreeItemEx place) {
         boolean retval = false;
-        Bounds[] bounds = getEditor().getDragIndicator().levelBoundsOf(place);
+        Bounds[] bounds = getSceneGraphView().getDragIndicator().levelBoundsOf(place);
         int n = -1;
         for (int i = 0; i < bounds.length; i++) {
             if (bounds[i].contains(ev.getScreenX(), ev.getScreenY())) {
@@ -192,7 +192,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         if (n < 0) {
             retval = true;
         } else if (!place.isExpanded()) {
-            int level = getEditor().getTreeView().getTreeItemLevel(place);
+            int level = getSceneGraphView().getTreeView().getTreeItemLevel(place);
             if (n == level || n == level + 1 || n == level + 2) {
                 retval = true;
             }
@@ -207,13 +207,13 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * @param ev the processed event
      */
     protected void drawIndicator(DragEvent ev) {
-        getEditor().getDragIndicator().hideDrawShapes();
+        getSceneGraphView().getDragIndicator().hideDrawShapes();
         TreeItemEx fromItem = getTargetTreeItem(ev);
         TreeItemEx toItem = getTreeCellItem();
         if (fromItem == toItem && isRectangleIndicator(ev, (TreeItemEx) toItem)) {
-            getEditor().getDragIndicator().drawRectangle(toItem);
+            getSceneGraphView().getDragIndicator().drawRectangle(toItem);
         } else {
-            getEditor().getDragIndicator().drawLines(fromItem, toItem);
+            getSceneGraphView().getDragIndicator().drawLines(fromItem, toItem);
         }
 
     }
@@ -223,7 +223,7 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      *
      * @return an object of type {@link SceneGraphView }.
      */
-    public SceneGraphView getEditor() {
+    public SceneGraphView getSceneGraphView() {
         return editor;
     }
 

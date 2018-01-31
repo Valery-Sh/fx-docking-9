@@ -30,7 +30,7 @@ public class TreeItemEx extends TreeItem<Object> {
     private ItemType itemType = ItemType.CONTENT;
 
     public static enum ItemType {
-        CONTENT, LIST, ELEMENT, DEFAULTLIST
+        CONTENT, LIST, DEFAULTLIST, ELEMENT, 
     }
 
     public TreeItemEx() {

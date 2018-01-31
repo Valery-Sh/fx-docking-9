@@ -63,11 +63,7 @@ public abstract class TargetContext {
             
     protected abstract boolean doDock(Point2D mousePos, Node node);
 
-    //protected abstract PositionIndicator createPositionIndicator();
-    
-    //public abstract List<Dockable> getDockables();
-    
-    
+       
     public abstract Object getRestorePosition(Dockable dockable);
     
     public abstract void restore(Dockable dockable,Object restoreposition);

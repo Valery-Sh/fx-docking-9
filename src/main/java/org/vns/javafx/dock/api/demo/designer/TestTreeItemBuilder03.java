@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 Your Organisation.
  *
@@ -43,13 +44,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import org.vns.javafx.designer.SceneGraphView;
-import org.vns.javafx.designer.TreeItemBuilder;
-import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.designer.bean.BeanAdapter;
-import org.vns.javafx.designer.bean.ReflectHelper;
-import org.vns.javafx.designer.bean.ReflectHelper.MethodUtil;
+import org.vns.javafx.dock.api.designer.SceneGraphView;
+import org.vns.javafx.dock.api.designer.TreeItemBuilder;
+import org.vns.javafx.dock.api.designer.TreeItemEx;
+import org.vns.javafx.dock.api.designer.bean.BeanAdapter;
+import org.vns.javafx.dock.api.designer.bean.ReflectHelper;
+import org.vns.javafx.dock.api.designer.bean.ReflectHelper.MethodUtil;
+import org.vns.javafx.dock.api.dragging.DragType;
 
 public class TestTreeItemBuilder03 extends Application {
 
@@ -117,6 +119,13 @@ public class TestTreeItemBuilder03 extends Application {
         Label lb1 = new Label("lb1");
         HBox hbox1 = new HBox(lb1);
         borderPane1.setRight(hbox1);
+        Label lb1Vbox1 = new Label("lb1Vbox1");
+        Label lb2Vbox1 = new Label("lb2Vbox1");
+        Label lb3Vbox1 = new Label("lb2Vbox3");
+        VBox vbox1 = new VBox(lb1Vbox1, lb2Vbox1, lb3Vbox1);
+        
+        borderPane1.setRight(hbox1);
+        borderPane1.setLeft(vbox1);
 
         root.getChildren().add(borderPane1);
         TitledPane titledPane1 = new TitledPane();
@@ -149,6 +158,7 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeItem rootItem = builder.build(root);
         //TreeView treeView = new TreeView(rootItem);
         SceneGraphView sceneGraphView = new SceneGraphView(root);
+        sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
         Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();
         tvStage.setHeight(300);
@@ -240,36 +250,4 @@ public class TestTreeItemBuilder03 extends Application {
         launch(args);
     }
 
-    /*   protected void customizeCell(TreeView treeView) {
-        TreeViewEx t = treeView;
-        t.setCellFactory((TreeView<ItemValue> tv) -> {
-            TreeCell<ItemValue> cell = new TreeCell<ItemValue>() {
-                @Override
-                public void updateItem(ItemValue value, boolean empty) {
-                    super.updateItem(value, empty);
-
-                    if (empty || value == null) {
-                        setText(null);
-                        setGraphic(null);
-                        if (this.getUserData() != null) {
-                            Object[] o = (Object[]) this.getUserData();
-                            if (o[0] != null) {
-                                this.removeEventHandler(DragEvent.DRAG_OVER, (SceneGraphView.TreeItemCellDragEventHandler) o[0]);
-                            }
-                        }
-                        this.setOnDragDetected(null);
-                        this.setOnDragDropped(null);
-                        this.setOnDragDone(null);
-                    } else {
-                        this.setGraphic(value.getCellGraphic());
-                        if (value.getTreeItemObject() instanceof Node) {
-                            setId(((Node) value.getTreeItemObject()).getId());
-                        }
-                    }
-                }
-            };
-            return cell;
-        });
-    }
-     */
 }

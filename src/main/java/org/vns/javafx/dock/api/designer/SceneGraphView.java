@@ -4,7 +4,10 @@ import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
@@ -24,8 +27,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import static org.vns.javafx.dock.api.designer.TreeItemBuilder.CELL_UUID;
+import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *
@@ -33,6 +39,9 @@ import static org.vns.javafx.dock.api.designer.TreeItemBuilder.CELL_UUID;
  */
 @DefaultProperty(value = "rootNode")
 public class SceneGraphView extends Control {
+
+    //private DragType dragType = DragType.SIMPLE;
+    private DragType dragType = DragType.SIMPLE;
 
     public static final int LAST = 0;
     public static final int FIRST = 2;
@@ -52,6 +61,8 @@ public class SceneGraphView extends Control {
     private DragIndicator dragIndicator;
     private Region statusBar;
 
+    private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
+            
     private ScrollAnimation scrollAnimation;
 
     public SceneGraphView() {
@@ -75,6 +86,18 @@ public class SceneGraphView extends Control {
         scrollAnimation = new ScrollAnimation((TreeViewEx) treeView);
         treeView.addEventHandler(DragEvent.ANY, new TreeViewDragEventHandler(this));
 
+    }
+
+    public ObservableList<TreeCell> getVisibleCells() {
+        return visibleCells;
+    }
+
+    public DragType getDragType() {
+        return dragType;
+    }
+
+    public void setDragType(DragType dragType) {
+        this.dragType = dragType;
     }
 
     public Node getRootNode() {
@@ -147,8 +170,7 @@ public class SceneGraphView extends Control {
         //TreeItemBuilder builder = new TreeItemBuilder();
         TreeItemEx item = new TreeItemBuilder().build(node);
         //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(node);
-        
-        
+
         //!!!23.01item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
         //        this::childrenModification);
         return item;
@@ -229,9 +251,12 @@ public class SceneGraphView extends Control {
                         this.setOnDragDetected(null);
                         this.setOnDragDropped(null);
                         this.setOnDragDone(null);
+                        DockRegistry.getInstance().unregisterDefault(this);
+                        getVisibleCells().remove(this);
+                        
                     } else {
                         this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
-                        if ( value != null && (value instanceof Node)) {
+                        if (value != null && (value instanceof Node)) {
                             setId(((Node) value).getId());
                         }
                         TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphView.this, this);
@@ -242,28 +267,53 @@ public class SceneGraphView extends Control {
                         registerDragDetected(this);
                         registerDragDropped(this);
                         registerDragDone(this);
+                        
+                        if ( ! getVisibleCells().contains(this)) {
+                            getVisibleCells().add(this);
+                        }
                     }
                 }
             };
             return cell;
         });
     }
-
+    public TreeViewEx getTreeView(double x, double y) {
+        TreeViewEx retval = null;
+        if ( DockUtil.contains(getTreeView(), x, y) ) {
+            return getTreeView();
+        }
+        return retval;
+    }    
+    public TreeItemEx getTreeItem(double x, double y) {
+        TreeItemEx retval = null;
+        for ( TreeCell cell : getVisibleCells()) {
+            if ( DockUtil.contains(cell, x, y)) {
+                retval = (TreeItemEx) cell.getTreeItem();
+                break;
+            }
+        }
+        return retval;
+    }
+    public TreeItemEx getTreeItem(Point2D p) {
+        return getTreeItem(p.getX(),p.getY());
+    }
+    
     protected void registerDragDetected(TreeCell cell) {
-        cell.setOnDragDetected(ev -> {
-            Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-            DragGesture dg = new DragTreeViewGesture(treeView, (TreeItemEx) cell.getTreeItem());
-            treeView.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
-            ClipboardContent content = new ClipboardContent();
-            content.putUrl(CELL_UUID);
-            dragboard.setContent(content);
-            treeView.getSelectionModel().clearSelection();
-            ev.consume();
-            /*            Platform.runLater(() -> {
-                dragIndicator.getItemParentOffset(cell.getTreeItem());
+        if (getDragType().equals(DragType.DRAG_AND_DROP)) {
+            cell.setOnDragDetected(ev -> {
+                Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+                DragGesture dg = new DragTreeViewGesture(treeView, (TreeItemEx) cell.getTreeItem());
+                treeView.getProperties().put(EditorUtil.GESTURE_SOURCE_KEY, dg);
+                ClipboardContent content = new ClipboardContent();
+                content.putUrl(CELL_UUID);
+                dragboard.setContent(content);
+                treeView.getSelectionModel().clearSelection();
+                ev.consume();
             });
-             */
-        });
+        } else {
+            DockRegistry.getInstance().registerDefault(cell);
+            DockRegistry.dockable(cell).getDockableContext().setDragNode(cell);
+        }
     }
 
     protected void registerDragDone(TreeCell cell) {
@@ -334,27 +384,20 @@ public class SceneGraphView extends Control {
 
         @Override
         public void handle(DragEvent ev) {
-//            System.err.println("BEFORE NOTIFY DRAG EVENT");
-            ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);
+
+            ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragEvent(ev);
 
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-                ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(false);
-                TreeView tv = getEditor().getTreeView();
-                getEditor().getDragIndicator().hideDrawShapes();
-//                System.err.println("HANDLE DRAG OVER");
+                //System.err.println("TreeViewEx by Point = " + getSceneGraphView().getTreeView(ev.getScreenX(), ev.getScreenY()));                
+                ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragAccepted(false);
+                TreeView tv = getSceneGraphView().getTreeView();
+                getSceneGraphView().getDragIndicator().hideDrawShapes();
                 if (!isAdmissiblePosition(ev)) {
-//                    System.err.println("=== HANDLE NOT isAdmissiblePosition");
-//                    ev.acceptTransferModes(TransferMode.NONE);
-                    //ev.setDropCompleted(true)
-//                    System.err.println("HANDLE NOT ADMIS");
                     ev.consume();
                 } else {
-//                    System.err.println("HANDLE 3");
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-//                    System.err.println("handle acceptingMode = " + ev.getAcceptedTransferMode());                    
-                    
-                    ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);
-                    ((TreeViewEx) getEditor().getTreeView()).notifyDragAccepted(true);
+                    ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragEvent(ev);
+                    ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragAccepted(true);
                     drawIndicator(ev);
                     ev.consume();
                 }
@@ -371,19 +414,19 @@ public class SceneGraphView extends Control {
 
         @Override
         public TreeItemEx getTreeCellItem() {
-            int sz = getEditor().getTreeView().getExpandedItemCount();
-            return (TreeItemEx) getEditor().getTreeView().getTreeItem(sz - 1);
+            int sz = getSceneGraphView().getTreeView().getExpandedItemCount();
+            return (TreeItemEx) getSceneGraphView().getTreeView().getTreeItem(sz - 1);
         }
 
         @Override
         protected TreeItemEx getTargetTreeItem(DragEvent ev) { //, TreeItem place) {
-            return (TreeItemEx) getEditor().getTreeView().getRoot();
+            return (TreeItemEx) getSceneGraphView().getTreeView().getRoot();
         }
 
         @Override
         public void handle(DragEvent ev) {
-            getEditor().getDragIndicator().hideDrawShapes();
-            VirtualScrollBar sb = ((TreeViewEx) getEditor().getTreeView()).getVScrollBar();
+            getSceneGraphView().getDragIndicator().hideDrawShapes();
+            VirtualScrollBar sb = ((TreeViewEx) getSceneGraphView().getTreeView()).getVScrollBar();
             if (sb != null) {
                 Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
                 if (sbBounds != null && sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
@@ -399,15 +442,15 @@ public class SceneGraphView extends Control {
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
 //                System.err.println("TreeViewDragEventHandler DRAG DROPPED");                
-                getEditor().getDragIndicator().hideDrawShapes();
-                TreeItemEx targetItem = (TreeItemEx) getEditor().getTreeView().getRoot();
+                getSceneGraphView().getDragIndicator().hideDrawShapes();
+                TreeItemEx targetItem = (TreeItemEx) getSceneGraphView().getTreeView().getRoot();
                 //ItemValue targetValue = targetItem.getValue();
                 //
                 // Transfer the data to the place
                 //
                 if (isAdmissiblePosition(ev)) {
                     TreeItem place = getTreeCellItem();
-                    new TreeItemBuilder().accept(getEditor().getTreeView(), (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
+                    new TreeItemBuilder().accept(getSceneGraphView().getTreeView(), (TreeItemEx) targetItem, (TreeItemEx) place, (Node) ev.getGestureSource());
 
                     ev.setDropCompleted(true);
 
@@ -417,7 +460,7 @@ public class SceneGraphView extends Control {
 
             } else if (ev.getEventType() == DragEvent.DRAG_DONE) {
 //                System.err.println("TreeViewDragEventHandler DRAG DONE");                
-                getEditor().getDragIndicator().hideDrawShapes();
+                getSceneGraphView().getDragIndicator().hideDrawShapes();
             }
             ev.consume();
         }
