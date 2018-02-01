@@ -14,11 +14,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.dragging.DragManagerFactory;
+import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
@@ -109,6 +111,8 @@ public class DockableContext {
         scenePaneContext = new ScenePaneContext(dockable);
         targetContext.set(scenePaneContext);
         targetContext.addListener(this::targetContextChanged);
+        getLookup().add(new FloatViewFactory());
+        getLookup().putUnique(DragManagerFactory.class, new DragManagerFactory());
     }
 
     public ContextLookup getLookup() {
@@ -120,6 +124,7 @@ public class DockableContext {
     }
 
     protected void initLookup(ContextLookup lookup) {
+        
     }
 
     protected void addShowingListeners() {
@@ -597,24 +602,27 @@ public class DockableContext {
                 ev.consume();
                 return;
             }
-
-            //targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
+            
+            DragManagerFactory dmf = null;
+            if ( dockable.node() instanceof TreeCell ) {
+                System.err.println("TREECELL");
+            }
+            TargetContext tc = dockable.getDockableContext().getTargetContext();
+            
+            dmf = tc.getLookup().lookup(DragManagerFactory.class);
+            if ( dmf == null ) {
+                dmf = dockable.getDockableContext().getLookup().lookup(DragManagerFactory.class);
+            }
+            DragManager dm = dmf.getDragManager(dockable);
             if (!dockable.getDockableContext().isFloating()) {
-                DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
-                //dm.setStartMousePos(startMousePos);
+                
+                //DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 dm.mouseDragDetected(ev, startMousePos);
-//                targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
-//                targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
                 dockable.getDockableContext().setFloating(true);
 
             } else {
-//                System.err.println("FLOATING !!!");
-                DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
+                //DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 dm.mouseDragDetected(ev, startMousePos);
-                //dm.setStartMousePos(startMousePos);
-
-//                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_DRAGGED, dm::mouseDragged );
-//                ((Node)ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, dm::mouseReleased);
             }
 
         }

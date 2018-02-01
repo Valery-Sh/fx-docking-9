@@ -22,14 +22,14 @@ import org.vns.javafx.dock.api.TargetContext;
  *
  * @author Valery Shyshkin
  */
-public interface IndicatorDelegate {
+public interface IndicatorManager {
 
     TargetContext getTargetContext();
 
 
     Node getDraggedNode();
-
     void setDraggedNode(Node draggedNode);
+    
     /**
      * The method is called when the the mouse moved during drag operation.
      *
@@ -39,7 +39,14 @@ public interface IndicatorDelegate {
     void handle(double screenX, double screenY);
     void hide();
     boolean isShowing();
-    boolean hideWhenOut(double x, double y);
-    void showIndicator();
+    default boolean hideWhenOut(double x, double y) {
+        return true;
+    }
+    default void showIndicator() {
+        
+    }
+    default void showIndicator(double mouseScreenX, double mouseScreenY) {
+        
+    }
     PositionIndicator getPositionIndicator();
 }

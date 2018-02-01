@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging;
+package org.vns.javafx.dock.api.dragging.view;
 
 import com.sun.javafx.stage.EmbeddedWindow;
 import javafx.scene.Node;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
-import org.vns.javafx.dock.api.dragging.view.FloatStageView;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.dragging.DragManager;
 
 /**
  *
@@ -28,13 +26,13 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  */
 public class FloatViewFactory {
 
-    private FloatViewFactory() {
+    public FloatViewFactory() {
 
     }
-    public static FloatViewFactory getInstance() {
+/*    public static FloatViewFactory getInstance() {
         return SingletonInstance.INSTANCE;
     }
-    
+*/    
     public FloatView getFloatView(DragManager dragManager) {
         FloatView retval = null;
         Node node = dragManager.getDockable().node();

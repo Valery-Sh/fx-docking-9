@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2018 Your Organisation.
  *
@@ -15,6 +14,7 @@
  * limitations under the License.
  */
 package org.vns.javafx.dock.api.demo.designer;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,6 +44,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
 import org.vns.javafx.dock.api.designer.TreeItemBuilder;
@@ -51,7 +52,6 @@ import org.vns.javafx.dock.api.designer.TreeItemEx;
 import org.vns.javafx.dock.api.designer.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.bean.ReflectHelper;
 import org.vns.javafx.dock.api.designer.bean.ReflectHelper.MethodUtil;
-import org.vns.javafx.dock.api.dragging.DragType;
 
 public class TestTreeItemBuilder03 extends Application {
 
@@ -112,6 +112,7 @@ public class TestTreeItemBuilder03 extends Application {
 
         root.setId("ROOT");
         Button btn1 = new Button("btn1");
+        DockRegistry.getInstance().registerDefault(btn1);
         btn1.setGraphic(btn1Graphic);
 
         root.getChildren().add(btn1);
@@ -158,7 +159,7 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeItem rootItem = builder.build(root);
         //TreeView treeView = new TreeView(rootItem);
         SceneGraphView sceneGraphView = new SceneGraphView(root);
-        sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
+        //sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
         Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();
         tvStage.setHeight(300);

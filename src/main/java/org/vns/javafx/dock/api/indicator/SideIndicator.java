@@ -264,8 +264,8 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         protected Window getIndicatorPopup() {
-            DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorDelegate.class);
-            //DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorDelegate.class);
+            DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
+            //DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
             //return ((DragPopup) getTargetContext().getIndicatorPopup()).getNodeIndicatorPopup();
             //return super.getIndicatorPopup().getNodeIndicatorPopup();                    
             return ip.getNodeIndicatorPopup();                                
@@ -286,13 +286,13 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
-                ((Popup) getIndicatorPopup()).show( (Popup)getTargetContext().getLookup().lookup(IndicatorDelegate.class), newPos.getX(), newPos.getY());                
+                ((Popup) getIndicatorPopup()).show( (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());                
 //                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
                     //((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
-                    ((Popup) getIndicatorPopup()).show((Popup)getTargetContext().getLookup().lookup(IndicatorDelegate.class), newPos.getX(), newPos.getY());
+                    ((Popup) getIndicatorPopup()).show((Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
                 } else {
                     getIndicatorPopup().hide();
                 }
@@ -395,20 +395,20 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (getTargetContext() != null) {
 
-                Node node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorDelegate.class)).getPaneIndicator().getTopButtons();
+                Node node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorDelegate.class)).getPaneIndicator().getRightButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorDelegate.class)).getPaneIndicator().getBottomButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorDelegate.class)).getPaneIndicator().getLeftButtons();
+                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
@@ -437,7 +437,7 @@ public abstract class SideIndicator extends PositionIndicator {
         @Override
         protected Popup getIndicatorPopup() {
             //return getTargetContext().getIndicatorPopup();
-            return (IndicatorPopup)getTargetContext().getLookup().lookup(IndicatorDelegate.class);
+            return (IndicatorPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
         }
 
         @Override

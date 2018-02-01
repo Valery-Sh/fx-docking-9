@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging.view;
+package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.dragging.view.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,6 +29,9 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -47,7 +51,7 @@ import org.vns.javafx.dock.api.DockableContext;
  *
  * @author Valery
  */
-public class FloatStageView implements FloatWindowView{
+public class TreeItemFloatStageView implements FloatWindowView{
     
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
@@ -74,31 +78,13 @@ public class FloatStageView implements FloatWindowView{
 
     
         
-    public FloatStageView(Dockable dockable) {
+    public TreeItemFloatStageView(Dockable dockable) {
         this.dockableController = dockable.getDockableContext();
         mouseResizeHanler = new MouseResizeHandler(this);
     }
     @Override
     public void initialize() { }
     
-/*    @Override
-    public double getMinWidth() {
-        return minWidth;
-    }
-
-    @Override
-    public double getMinHeight() {
-        return minHeight;
-    }
-
-    public void setMinWidth(double minWidth) {
-        this.minWidth = minWidth;
-    }
-
-    public void setMinHeight(double minHeight) {
-        this.minHeight = minHeight;
-    }
-*/
     protected BooleanProperty floatingProperty() {
         return floating;
     }
@@ -129,11 +115,6 @@ public class FloatStageView implements FloatWindowView{
     public WindowResizer getResizer() {
         return resizer;
     }
-
-/*    public void setResizer(FloatWindowResizer resizer) {
-        this.resizer = resizer;
-    }
-*/
     public void setStageStyle(StageStyle stageStyle) {
         this.stageStyle = stageStyle;
     }
@@ -142,8 +123,7 @@ public class FloatStageView implements FloatWindowView{
     public Cursor[] getSupportedCursors() {
         return supportedCursors;
     }
-
-
+    
     @Override
     public void setSupportedCursors(Cursor[] supportedCursors) {
         this.supportedCursors = supportedCursors;
@@ -207,6 +187,14 @@ public class FloatStageView implements FloatWindowView{
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
+        Object o = ((TreeCell)node).getTreeItem().getValue();
+        ImageView imageView = null;
+        if ( o != null && (o instanceof Node)) {
+            System.err.println("YteeItemFloatView o != null ** instanceof Node ");            
+            WritableImage wi = ((Node)o).snapshot(null, null);
+            System.err.println("   --- write image wi = " + wi);
+            imageView = new ImageView(wi);
+        }
 
         if (dockable.getDockableContext().isDocked() && dockable.getDockableContext().getTargetContext().getTargetNode() != null) {
             Window w = dockable.getDockableContext().getTargetContext().getTargetNode().getScene().getWindow();
@@ -214,16 +202,18 @@ public class FloatStageView implements FloatWindowView{
                 rootPane = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
-
-                dockable.getDockableContext().getTargetContext().undock(dockable.node());
+                TreeItemBuilder.updateOnMove((TreeCell) dockable.node());
+                //!!! 31.01dockable.getDockableContext().getTargetContext().undock(dockable.node());
                 return dockable.node().getScene().getWindow();
             }
         }
         if (dockable.getDockableContext().isDocked()) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
+            //!!! 31.01dockable.getDockableContext().getTargetContext().undock(dockable.node());
+            TreeItemBuilder.updateOnMove((TreeCell) dockable.node());            
         }
 
         Stage newStage = new Stage();
+        newStage.setAlwaysOnTop(true);
         DockRegistry.register(newStage);
         markFloating(newStage);
 
@@ -243,11 +233,12 @@ public class FloatStageView implements FloatWindowView{
 
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
-        Rectangle r = new Rectangle(75, 30);
+        Rectangle r = new Rectangle(48, 48);
         r.setFill(Color.YELLOW);
         borderPane.setCenter(r);
+        System.err.println("YteeItemFloatView RECTANGLE ");            
         
-
+         //borderPane.setCenter(imageView);
         //DockPane dockPane = new DockPane();
         //StackPane dockPane = new StackPane();
         //borderPane.setStyle("-fx-background-color: aqua");
@@ -269,9 +260,12 @@ public class FloatStageView implements FloatWindowView{
         //dockPane.getChildren().add(node);
         //borderPane.getStyleClass().clear();
         borderPane.getStyleClass().add("dock-node-border");
-        
+/*        Button b = new Button("Button1");
+        node.setClip(b);
         borderPane.setCenter(node);
-
+*/        
+        //!!! 31.01borderPane.setCenter(node);
+        //borderPane.setStyle("-fx-background-color: aqua");
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
         floatingProperty.set(true);
@@ -307,9 +301,11 @@ public class FloatStageView implements FloatWindowView{
         newStage.sizeToScene();
         newStage.setAlwaysOnTop(true);
         if ( show ) {
+            System.err.println("NEW STAGE SHOW");
             newStage.show();
         }
-        dockable.node().parentProperty().addListener(pcl);
+        //System.err.println("NODE.PARENT isNull = " + dockable.node().parentProperty().get());
+        //dockable.node().parentProperty().addListener(pcl);
         return newStage;
     }
     

@@ -29,7 +29,9 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.TargetContext;
 import static org.vns.javafx.dock.api.designer.TreeItemBuilder.CELL_UUID;
 import org.vns.javafx.dock.api.dragging.DragType;
 
@@ -38,9 +40,10 @@ import org.vns.javafx.dock.api.dragging.DragType;
  * @author Valery
  */
 @DefaultProperty(value = "rootNode")
-public class SceneGraphView extends Control {
+public class SceneGraphView extends Control implements DockTarget {
 
-    //private DragType dragType = DragType.SIMPLE;
+    private SceneGraphViewTargetContext targetContext;
+
     private DragType dragType = DragType.SIMPLE;
 
     public static final int LAST = 0;
@@ -62,7 +65,7 @@ public class SceneGraphView extends Control {
     private Region statusBar;
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
-            
+
     private ScrollAnimation scrollAnimation;
 
     public SceneGraphView() {
@@ -253,7 +256,7 @@ public class SceneGraphView extends Control {
                         this.setOnDragDone(null);
                         DockRegistry.getInstance().unregisterDefault(this);
                         getVisibleCells().remove(this);
-                        
+
                     } else {
                         this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
                         if (value != null && (value instanceof Node)) {
@@ -265,10 +268,12 @@ public class SceneGraphView extends Control {
                         this.setUserData(new Object[]{h, null});
 
                         registerDragDetected(this);
+                        //registerMouseDragged(this);
+
                         registerDragDropped(this);
                         registerDragDone(this);
-                        
-                        if ( ! getVisibleCells().contains(this)) {
+
+                        if (!getVisibleCells().contains(this)) {
                             getVisibleCells().add(this);
                         }
                     }
@@ -277,27 +282,30 @@ public class SceneGraphView extends Control {
             return cell;
         });
     }
+
     public TreeViewEx getTreeView(double x, double y) {
         TreeViewEx retval = null;
-        if ( DockUtil.contains(getTreeView(), x, y) ) {
+        if (DockUtil.contains(getTreeView(), x, y)) {
             return getTreeView();
         }
         return retval;
-    }    
+    }
+
     public TreeItemEx getTreeItem(double x, double y) {
         TreeItemEx retval = null;
-        for ( TreeCell cell : getVisibleCells()) {
-            if ( DockUtil.contains(cell, x, y)) {
+        for (TreeCell cell : getVisibleCells()) {
+            if (DockUtil.contains(cell, x, y)) {
                 retval = (TreeItemEx) cell.getTreeItem();
                 break;
             }
         }
         return retval;
     }
+
     public TreeItemEx getTreeItem(Point2D p) {
-        return getTreeItem(p.getX(),p.getY());
+        return getTreeItem(p.getX(), p.getY());
     }
-    
+
     protected void registerDragDetected(TreeCell cell) {
         if (getDragType().equals(DragType.DRAG_AND_DROP)) {
             cell.setOnDragDetected(ev -> {
@@ -311,11 +319,22 @@ public class SceneGraphView extends Control {
                 ev.consume();
             });
         } else {
-            DockRegistry.getInstance().registerDefault(cell);
-            DockRegistry.dockable(cell).getDockableContext().setDragNode(cell);
+            if (cell.getTreeItem().getValue() != null && (cell.getTreeItem().getValue() instanceof Node)) {
+                Node node = (Node) cell.getTreeItem().getValue();
+                DockRegistry.getInstance().registerDefault(cell);
+                Dockable dockable = DockRegistry.dockable(cell);
+                dockable.getDockableContext().setTargetContext(getTargetContext());
+                //DockRegistry.dockable(cell).getDockableContext().setDragNode(cell);
+            }
         }
     }
 
+    /*    protected void registerMouseDragged(TreeCell cell) {
+        if (getDragType().equals(DragType.DRAG_AND_DROP)) {
+        } else {
+        }
+    }
+     */
     protected void registerDragDone(TreeCell cell) {
         cell.setOnDragDone(ev -> {
             dragIndicator.hideDrawShapes();
@@ -374,6 +393,19 @@ public class SceneGraphView extends Control {
     @Override
     protected double computeMaxWidth(double w) {
         return contentPane.computeMaxWidth(w);
+    }
+
+    @Override
+    public Node target() {
+        return this;
+    }
+
+    @Override
+    public TargetContext getTargetContext() {
+        if (targetContext == null) {
+            targetContext = new SceneGraphViewTargetContext(this);
+        }
+        return targetContext;
     }
 
     public static class TreeItemCellDragEventHandler extends DragEventHandler {

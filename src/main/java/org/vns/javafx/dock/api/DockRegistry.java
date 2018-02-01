@@ -27,7 +27,6 @@ import javafx.stage.Window;
 public class DockRegistry {
 
     private final ObservableList<Window> windows = FXCollections.observableArrayList();
-    //private final ObservableList<Window> windows = FXCollections.observableArrayList();
 
     private final Map<Window, Window> owners = new HashMap<>();
     private final ObservableMap<Node, Dockable> dockables = FXCollections.observableHashMap();
@@ -373,7 +372,12 @@ public class DockRegistry {
     }
 
     public void registerDefault(Node node) {
-        node.getProperties().put(Dockable.DOCKABLE_KEY, makeDockable(node));
+        if ( instanceOfDockable(node) ) {
+            return;
+        }
+        Dockable d = makeDockable(node);
+        d.getDockableContext().setDragNode(node);
+        node.getProperties().put(Dockable.DOCKABLE_KEY, d);
     }
 
     public void unregisterDefault(Node node) {
@@ -516,6 +520,7 @@ public class DockRegistry {
         return retval;
 
     }
+
 
     private static class SingletonInstance {
 

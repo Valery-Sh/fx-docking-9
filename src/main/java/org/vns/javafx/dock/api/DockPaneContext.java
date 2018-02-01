@@ -24,9 +24,9 @@ import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.event.DockEvent;
-import org.vns.javafx.dock.api.indicator.IndicatorDelegate;
 import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
+import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 public class DockPaneContext extends TargetContext {
 
@@ -49,7 +49,7 @@ public class DockPaneContext extends TargetContext {
     protected void initLookup(ContextLookup lookup) {
         lookup.putUnique(PositionIndicator.class, new PaneSideIndicator(this));
         //lookup.putUnique(IndicatorPopup.class, new DragPopup(this));
-        lookup.putUnique(IndicatorDelegate.class,new DragPopup(this));
+        lookup.putUnique(IndicatorManager.class,new DragPopup(this));
         lookup.add(new DockTreeItemBuilderFactory());        
     }
 
@@ -101,7 +101,7 @@ public class DockPaneContext extends TargetContext {
 
         //21.08IndicatorPopup popup = getIndicatorPopup();
         //IndicatorPopup popup = getLookup().lookup(IndicatorPopup.class); //21.08
-        IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorDelegate.class); //21.08
+        IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
         ///
         Node node = dockable.node();
         if (!(popup instanceof DragPopup)) {

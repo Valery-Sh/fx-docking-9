@@ -207,6 +207,30 @@ public class TestDockPaneControl extends Application {
 
         stage.setScene(scene);
         stage.show();
+        
+        Stage stage1 = new Stage();
+        stage1.setTitle("Node Node Dockables");
+        VBox root1 = new VBox();
+        Scene scene1 = new Scene(root1);
+        stage1.setScene(scene1);
+        Button ndBtn1 = new Button("ndBtn1");
+        DockRegistry.getInstance().registerDefault(ndBtn1);
+        
+        TabNode tab1 = new TabNode("Tab1");
+        DockRegistry.getInstance().register(tab1);
+        tab1.getDockableContext().setDragNode(tab1.node());
+        root1.getChildren().add(tab1.node());
+        TabNode tab2 = new TabNode("Tab2");
+        DockRegistry.getInstance().register(tab2);
+        tab2.getDockableContext().setDragNode(tab2.node());        
+        root1.getChildren().add(tab2.node());   
+        
+        Button dockableBtn1 = new Button("dockableBtn1");
+        DockRegistry.getInstance().getDefaultDockable(dockableBtn1);
+        tab1.getDockableContext().setDragObject(dockableBtn1);
+        tab2.getDockableContext().setDragObject(new Tab("Tab1_1"));
+        stage1.show();
+        //DockRegistry.getInstance().
         //Node p = vs1.getParent();
         //String id = p.getId();
         //String s = p.getClass().getName();
@@ -238,6 +262,37 @@ public class TestDockPaneControl extends Application {
         @Override
         public ObservableList<Node> getChildren() {
             return super.getChildren();
+        }
+    }
+    
+    public static class TabNode extends Tab implements Dockable {
+        private Label node = new Label();
+        private DockableContext context;
+
+        public TabNode() {
+        }
+
+        public TabNode(String text) {
+            super(text);
+        }
+
+        public TabNode(String text, Node content) {
+            super(text, content);
+        }
+        
+        @Override
+        public Node node() {
+            node.setText(getText());
+            return node;
+        }
+
+        @Override
+        public DockableContext getDockableContext() {
+            if ( context == null ) {
+                context = new DockableContext(this);
+                node.setText(getText());
+            }
+            return context;
         }
     }
 }

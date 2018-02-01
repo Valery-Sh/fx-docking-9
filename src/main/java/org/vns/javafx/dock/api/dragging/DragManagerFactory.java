@@ -22,6 +22,9 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 public class DragManagerFactory {
+
+    public DragManagerFactory() {
+    }
     
     public DragManager getDragManager(Dockable dockable) {
         
@@ -43,9 +46,10 @@ public class DragManagerFactory {
         }
         return retval;
     }
-    public static DragManagerFactory getInstance() {
+/*    public static DragManagerFactory getInstance() {
         return SingletonInstance.INSTANCE;
     }
+*/
     private static class SingletonInstance {
         private static DragManagerFactory INSTANCE = new DragManagerFactory();
     }

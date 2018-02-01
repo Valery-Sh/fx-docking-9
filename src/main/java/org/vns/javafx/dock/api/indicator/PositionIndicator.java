@@ -68,7 +68,7 @@ public abstract class PositionIndicator {
 
     public IndicatorPopup getIndicatorPpopup() {
         if ( indicatorPopup == null ) {
-            indicatorPopup = (IndicatorPopup)targetContext.getLookup().lookup(IndicatorDelegate.class);
+            indicatorPopup = (IndicatorPopup)targetContext.getLookup().lookup(IndicatorManager.class);
         }
         return indicatorPopup;
     }

@@ -70,7 +70,7 @@ import org.vns.javafx.dock.api.TargetContext;
  *
  * @author Valery Shyshkin
  */
-public class IndicatorPopup extends Popup implements IndicatorDelegate{
+public class IndicatorPopup extends Popup implements IndicatorManager{
 
     /**
      * The owner of this object

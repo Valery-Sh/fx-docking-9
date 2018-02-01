@@ -17,8 +17,14 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.dragging.DragManagerFactory;
+import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
+import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 /**
  *
@@ -35,23 +41,55 @@ public class SceneGraphViewTargetContext extends TargetContext {
     }
 
     @Override
-    protected boolean doDock(Point2D mousePos, Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void initLookup(ContextLookup lookup) {
+        lookup.putUnique(IndicatorManager.class, new DragIndicatorManager(this, ((SceneGraphView)getTargetNode()).getDragIndicator()));
+        System.err.println("SceneGraphView initLookup");
+        lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
+        lookup.putUnique(FloatViewFactory.class, new TreeItemFloatViewFactory());
+        
     }
-
     @Override
-    public Object getRestorePosition(Dockable dockable) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void restore(Dockable dockable, Object restoreposition) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void remove(Node dockNode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isDocked(Node node ) {
+        System.err.println("@@@@ isDocked(node) = " + node);
+        boolean retval = false;
+        if ( node instanceof TreeCell ) {
+            System.err.println("@@@@ instanceof Treecell 1");            
+            TreeItemEx item = (TreeItemEx) ((TreeCell) node).getTreeItem();
+            System.err.println("@@@@ item " + item);
+            if ( item != null ) {
+                System.err.println("@@@@ findByTreeItemObject(item) " + EditorUtil.findByTreeItemObject(item));
+            }
+            if ( item != null && EditorUtil.findByTreeItemObject(item) != null  ) {
+                retval = true;
+            }
+        }
+        System.err.println("@@@@ retval = " + retval);            
+        System.err.println("------------------------------------");
+        return retval;
     }
     
+    @Override
+    protected boolean doDock(Point2D mousePos, Node node  ) {
+        System.err.println("DO DOCK node = " + node);
+        return false;
+    }
+
+    @Override
+    public Object getRestorePosition(Dockable dockable
+    ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void restore(Dockable dockable, Object restoreposition
+    ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void remove(Node dockNode
+    ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

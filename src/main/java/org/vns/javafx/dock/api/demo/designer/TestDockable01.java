@@ -33,7 +33,7 @@ import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.indicator.IndicatorDelegate;
+import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 /**
  *
@@ -108,7 +108,7 @@ public class TestDockable01  extends Application {
                     System.err.println("   --- " + o.getClass().getName());
                 });
             });
-            Object obj = dockBorderPane1.getTargetContext().getLookup().lookup(IndicatorDelegate.class);
+            Object obj = dockBorderPane1.getTargetContext().getLookup().lookup(IndicatorManager.class);
             System.err.println("*** obj = " + obj);
         });
         stage.show();

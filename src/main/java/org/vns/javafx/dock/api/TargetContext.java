@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.demo.TestDockPaneControl.TabNode;
 
 /**
  *
@@ -20,13 +21,12 @@ import org.vns.javafx.dock.DockUtil;
 public abstract class TargetContext {
 
     private ContextLookup lookup;
-    
+
     private Node targetNode;
     private String title;
     private PositionIndicator positionIndicator;
-    
+
     //private Node indicatorDelegate
-    
     private AbstractDockStateLoader dockLoader;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
@@ -34,11 +34,8 @@ public abstract class TargetContext {
     private boolean usedAsDockTarget = true;
 
     //private IndicatorPopup indicatorPopup;
-    
-   // private double resizeMinWidth = -1;
-    
-   // private double resizeMinHeight = -1;
-
+    // private double resizeMinWidth = -1;
+    // private double resizeMinHeight = -1;
     protected TargetContext(Node targetNode) {
         this.targetNode = targetNode;
         init();
@@ -47,27 +44,29 @@ public abstract class TargetContext {
     protected TargetContext(Dockable dockable) {
         init();
     }
-    
+
     public ContextLookup getLookup() {
-        if ( lookup == null ) {
+        if (lookup == null) {
             lookup = new DefaultContextLookup();
             initLookup(lookup);
         }
         return lookup;
     }
+
     private void init() {
         inititialize();
         getLookup().add(new IndicatorPopup(this));
     }
-    protected void initLookup(ContextLookup lookup) { }
-            
+
+    protected void initLookup(ContextLookup lookup) {
+    }
+
     protected abstract boolean doDock(Point2D mousePos, Node node);
 
-       
     public abstract Object getRestorePosition(Dockable dockable);
-    
-    public abstract void restore(Dockable dockable,Object restoreposition);
-    
+
+    public abstract void restore(Dockable dockable, Object restoreposition);
+
     protected void commitDock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
             DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
@@ -77,8 +76,7 @@ public abstract class TargetContext {
             dockableContext.setFloating(false);
         }
     }
-    
-    
+
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
      * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
@@ -97,7 +95,7 @@ public abstract class TargetContext {
         return title;
     }
 
-/*    public double getResizeMinWidth() {
+    /*    public double getResizeMinWidth() {
         return resizeMinWidth;
     }
 
@@ -112,7 +110,7 @@ public abstract class TargetContext {
     protected void setResizeMinHeight(double resizeMinHeight) {
         this.resizeMinHeight = resizeMinHeight;
     }
-*/
+     */
     //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
@@ -126,7 +124,7 @@ public abstract class TargetContext {
     }
 
 
-/*    protected IndicatorPopup createIndicatorPopup() {
+    /*    protected IndicatorPopup createIndicatorPopup() {
         return new IndicatorPopup(DockRegistry.dockTarget(getTargetNode()));
     }
 
@@ -136,7 +134,7 @@ public abstract class TargetContext {
         }
         return indicatorPopup;
     }
-*/
+     */
     protected void inititialize() {
         DockRegistry.start();
         initListeners();
@@ -171,7 +169,6 @@ public abstract class TargetContext {
         });
 
     }
-    
 
     public AbstractDockStateLoader getDockLoader() {
         return dockLoader;
@@ -181,27 +178,39 @@ public abstract class TargetContext {
         this.dockLoader = loader;
     }
 
-    
     public boolean isAcceptable(Node node) {
         //if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
         
-        return  (dockLoader != null && dockLoader.isRegistered(node)) || dockLoader == null;
+        Dockable d = DockRegistry.dockable(node);
+        if ( d instanceof TabNode) {
+            System.err.println("TabNode");
+        }
+        Node nd = node;
+        System.err.println("*** isAcceptable: node = " + node);
+        System.err.println("*** isAcceptable: d = " + d);
+        System.err.println("*** isAcceptable: d.context = " + d.getDockableContext());        
+        Object o = d.getDockableContext().getDragObject();
+        if (o != null && (o instanceof Dockable)) {
+            nd = ((Dockable)o).node();
+        }
+        System.err.println("*** isAcceptable: dockLoader = " + dockLoader);        
+        return (dockLoader != null && dockLoader.isRegistered(nd)) || dockLoader == null;
     }
-    
+
     public void dock(Point2D mousePos, Dockable dockable) {
         if (isDocked(dockable.node())) {
             return;
         }
         Node node = dockable.node();
-        Window stage = null; 
-        if (node.getScene() != null && node.getScene().getWindow() != null ) { //&& (node.getScene().getWindow() instanceof Stage)) {
+        Window stage = null;
+        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
             stage = node.getScene().getWindow();
         }
 
         if (doDock(mousePos, dockable.node()) && stage != null) {
             dockable.getDockableContext().setFloating(false);
-            if ( (stage instanceof Stage)) {
-                ((Stage)stage).close();
+            if ((stage instanceof Stage)) {
+                ((Stage) stage).close();
             } else {
                 stage.hide();
             }
@@ -211,7 +220,6 @@ public abstract class TargetContext {
 
 //    protected void dock(Dockable dockable, Object pos)  {
 //    }
-
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -227,10 +235,11 @@ public abstract class TargetContext {
         }
         return positionIndicator;
     }
-/*    public PositionIndicator getNodeIndicator() {
+
+    /*    public PositionIndicator getNodeIndicator() {
         return null;
     }
-*/
+     */
     public Node getTargetNode() {
         return this.targetNode;
     }
@@ -256,6 +265,5 @@ public abstract class TargetContext {
     }
      */
     public abstract void remove(Node dockNode);
-    
-    
+
 }//class

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import static org.vns.javafx.dock.api.designer.SceneGraphView.ANCHOR_OFFSET;
@@ -435,6 +436,28 @@ public class TreeItemBuilder {
     ////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////
     public void updateOnMove(TreeItemEx child) {
+        TreeItemEx parent = (TreeItemEx) child.getParent();
+        if (parent == null) {
+            //
+            // child is a root TreeItem
+            //
+            return;
+        }
+        if (parent.getItemType() == LIST) {
+            ((ObservableList) parent.getValue()).remove(child.getValue());
+        } else if (parent.getItemType() == DEFAULTLIST) {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
+            BeanAdapter ba = new BeanAdapter(parent.getValue());
+            //((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
+            ((ObservableList) ba.get(nd.getDefaultListProperty().getName())).remove(child.getValue());            
+
+        } else {
+            BeanAdapter ba = new BeanAdapter(parent.getValue());
+            ba.put(child.getPropertyName(), null);
+        }
+    }
+    public static void updateOnMove(TreeCell cell) {
+        TreeItemEx child = (TreeItemEx) cell.getTreeItem();
         TreeItemEx parent = (TreeItemEx) child.getParent();
         if (parent == null) {
             //

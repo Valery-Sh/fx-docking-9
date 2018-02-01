@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Your Organisation.
+ * Copyright 2017 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,24 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.dragging.*;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.dragging.SimpleDragManager;
 
 /**
  *
  * @author Valery
  */
-public class SimpleDragDropManager extends SimpleDragManager {
-    
-    public SimpleDragDropManager(Dockable dockNode) {
-        super(dockNode);
+public class TreeItemDragManagerFactory extends DragManagerFactory{
+
+    public TreeItemDragManagerFactory() {
     }
     
+    public DragManager getDragManager(Dockable dockable) {
+        
+        DragManager retval = dockable.getDockableContext().getLookup().lookup(DragManager.class);
+        if ( retval == null ) {
+            retval = new TreeItemDragManager(dockable);
+        }
+        return retval;
+    }
 }

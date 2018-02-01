@@ -55,6 +55,7 @@ public class DragIndicator {
     }
 
     public void initIndicatorPane() {
+        
         indicatorPane.setMouseTransparent(true);
         indicatorPane.getChildren().addAll(horLine, vertLine, itemRect);
         sceneGraphView.getTreeViewPane().getChildren().add(indicatorPane);
@@ -288,7 +289,9 @@ public class DragIndicator {
 
         return retval;
     }
-
+    public boolean isShowing() {
+        return itemRect.isVisible() || vertLine.isVisible() ||  horLine.isVisible();
+    }
     protected void hideDrawShapes() {
         itemRect.setVisible(false);
         vertLine.setVisible(false);
@@ -318,6 +321,7 @@ public class DragIndicator {
     }
 
     protected void drawLines(TreeItemEx from, TreeItemEx to) {
+        
         Bounds lb = EditorUtil.screenHorVisibleBounds(treeView,to);
         Bounds rootBounds = screenNonValueLevelBounds((TreeItemEx) treeView.getRoot(), to);
 

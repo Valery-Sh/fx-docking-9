@@ -215,7 +215,6 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
         } else {
             getSceneGraphView().getDragIndicator().drawLines(fromItem, toItem);
         }
-
     }
 
     /**
