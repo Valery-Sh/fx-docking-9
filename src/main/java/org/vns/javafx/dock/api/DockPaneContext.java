@@ -30,8 +30,7 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 public class DockPaneContext extends TargetContext {
 
-    //private DoubleProperty dividerPosProperty = new SimpleDoubleProperty(-1);
-    //+private DockDelegate dockDelegate;
+
     private DockExecutor dockExecutor;
     private final DockSplitPane root;
     private DockTreeItemBuilder dockTreeItemBuilder;
@@ -53,29 +52,6 @@ public class DockPaneContext extends TargetContext {
     public DockSplitPane getRoot() {
         return root;
     }
-
-    /*    @Override
-    public SideIndicator.NodeSideIndicator getNodeIndicator() {
-        if (nodeIndicator == null) {
-            nodeIndicator = createNodeIndicator();
-        }
-        return nodeIndicator;
-    }
-     */
- /*    @Override
-    protected IndicatorPopup createIndicatorPopup() {
-        return new DragPopup(this);
-    }
-     */
- /*    protected SideIndicator.NodeSideIndicator createNodeIndicator() {
-        return new SideIndicator.NodeSideIndicator(this);
-    }
-     */
- /*    @Override
-    protected PositionIndicator createPositionIndicator() {
-        return new PaneSideIndicator(this);
-    }
-     */
     protected DockExecutor getDockExecutor() {
         if (dockExecutor == null) {
             dockExecutor = new DockExecutor(this, root);
@@ -87,7 +63,6 @@ public class DockPaneContext extends TargetContext {
     protected boolean isDocked(Node node) {
         boolean retval = false;
         if (DockRegistry.instanceOfDockable(node)) {
-            //24.06retval = DockUtil.getParentSplitPane((DockSplitPane) getTargetNode(), node) != null;
             retval = DockUtil.getParentSplitPane(root, node) != null;
         }
         return retval;
@@ -110,10 +85,9 @@ public class DockPaneContext extends TargetContext {
             }
             dragged = (Dockable) ((DragContainer)dockable).getValue();
         }
-        //21.08IndicatorPopup popup = getIndicatorPopup();
-        //IndicatorPopup popup = getLookup().lookup(IndicatorPopup.class); //21.08
+
         IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
-        ///
+
         Node node = dragged.node();
         if (!(popup instanceof DragPopup)) {
             return;
@@ -122,10 +96,12 @@ public class DockPaneContext extends TargetContext {
         Dockable d = DockRegistry.dockable(node);
         if (d.getDockableContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
             if (dp.getTargetPaneSidePos() != null) {
-                dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
+                //dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
+                dock(dragged, dp.getTargetPaneSidePos());
             } else if (dp.getTargetNodeSidePos() != null) {
                 Dockable t = dp.getDragTarget() == null ? null : DockRegistry.dockable(dp.getDragTarget());
-                dock(DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
+                //dock(DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
+                dock(dragged, dp.getTargetNodeSidePos(), t);
             }
         }
 
@@ -150,12 +126,10 @@ public class DockPaneContext extends TargetContext {
         }
         if (doDock(dockable.node(), pos)) {
             dockable.getDockableContext().setFloating(false);
-            getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode()));
+            //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode()));
         }
     }
-/////
-
-/////    
+    
     private boolean doDock(Node node, Side dockPos) {
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
             ((Stage) node.getScene().getWindow()).close();
@@ -165,6 +139,7 @@ public class DockPaneContext extends TargetContext {
         return true;
     }
 
+    @Override
     protected void commitDock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
             DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
@@ -175,32 +150,8 @@ public class DockPaneContext extends TargetContext {
         }
     }
 
-    /*13.07    private boolean doDock(Node node, Side dockPos, Dockable targetDockable) {
-        if (isDocked(node)) {
-            return false;
-        }
-        if (targetDockable == null) {
-            dock(DockRegistry.dockable(node), dockPos);
-        } else {
-            if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
-                ((Stage) node.getScene().getWindow()).close();
-            }
-            if (DockRegistry.instanceOfDockable(node)) {
-                DockRegistry.dockable(node).getDockableContext().setFloating(false);
-            }
-            getDockExecutor().dock(node, dockPos, targetDockable);
-        }
-        if (DockRegistry.instanceOfDockable(node)) {
-            DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
-            if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
-                dockableContext.setTargetContext(this);
-            }
-        }
-        return true;
-    }
-     */
+
     public void dock(Dockable dockable, Side side, Dockable target) {
-        //13.07 getDockExecutor().dock(dockable, side, target);
         if (isDocked(dockable.node())) {
             return;
         }
@@ -209,7 +160,6 @@ public class DockPaneContext extends TargetContext {
         }
         dockable.getDockableContext().setFloating(false);
 
-        //doDock(dockable.node(), side, target);
         Node node = dockable.node();
         
         DockEvent event = null;
@@ -222,48 +172,38 @@ public class DockPaneContext extends TargetContext {
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-//            if (DockRegistry.instanceOfDockable(node)) {
             dockable.getDockableContext().setFloating(false);
-//            }
             getDockExecutor().dock(node, side, target);
             event = new DockEvent(DockEvent.NODE_DOCKED, dockable.node(), getTargetNode(),side, target);
             
         }
-//        if (DockRegistry.instanceOfDockable(node)) {
-        DockableContext nodeController = dockable.getDockableContext();
-        if (nodeController.getTargetContext() == null || nodeController.getTargetContext() != this) {
-            nodeController.setTargetContext(this);
+        DockableContext dockableContext = dockable.getDockableContext();
+        if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
+            dockableContext.setTargetContext(this);
         }
         
-        getTargetNode().fireEvent(event);
-//        }
+        //getTargetNode().fireEvent(event);
 
     }
 
-    /*    public void dock(int idx,Dockable dockable,DockSplitPane splitpane) {
-        if ( dockable.getDockableContext().getTargetContext() != null ) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
-        }
-        getDockExecutor().dock(idx, dockable, splitpane);
-    }
-     */
+    
     @Override
     public void remove(Node dockNode) {
-        //DockSplitPane dsp = getParentSplitPane((DockSplitPane) getTargetNode(), dockNode);
+
         DockSplitPane dsp = getParentSplitPane(root, dockNode);
         if (dsp != null) {
             TargetContext ph = DockRegistry.dockable(dockNode).getDockableContext().getTargetContext();
             dsp.getItems().remove(dockNode);
             DockRegistry.dockable(dockNode).getDockableContext().setTargetContext(ph);
             clearEmptySplitPanes(root, dsp);
-            getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_UNDOCKED, dockNode, getTargetNode()));
+            //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_UNDOCKED, dockNode, getTargetNode()));
         }
     }
 
     /**
      * For test purpose
      *
-     * @return the list of dockables
+     * @return the list of {@code dockables}
      */
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
@@ -274,7 +214,6 @@ public class DockPaneContext extends TargetContext {
                 getDockables((DockSplitPane) node, list);
             }
         });
-        //getDockables(((DockPane) getTargetNode()).getRoot(), list);
         return list;
     }
 
@@ -317,137 +256,7 @@ public class DockPaneContext extends TargetContext {
         }
     }
 
-    /*    public static class DockDelegate {
 
-        private DockSplitPane root;
-        private final DockPaneContext paneController;
-
-        public DockDelegate(DockSplitPane root, DockPaneContext paneController) {
-            this.root = root;
-            this.paneController = paneController;
-        }
-
-        public DockSplitPane getRoot() {
-            return root;
-        }
-
-        public void dock(Dockable dockable, Side dockPos) {
-            dock(dockable.node(), dockPos);
-        }
-
-        private void dock(Node node, Side dockPos) {
-
-            DockSplitPane rootSplitPane = root;
-
-            if (rootSplitPane == null) {
-                rootSplitPane = new DockSplitPane();
-                root = rootSplitPane;
-                rootSplitPane.getItems().add(node);
-                return;
-            }
-            Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
-                    ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-            Orientation oldOrientation = root.getOrientation();
-
-            if (newOrientation != oldOrientation) {
-                DockSplitPane dp = null;
-                if (newOrientation == Orientation.HORIZONTAL) {
-                    dp = new HPane();
-                } else {
-                    dp = new VPane();
-                }
-                dp.getItems().addAll(root.getItems());
-
-                root.getItems().clear();
-                int idx = 0;
-                if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                    idx = dp.getItems().size();
-                }
-                dp.getItems().add(idx, node);
-                root.getItems().add(dp);
-            } else {
-                int idx = 0;
-                if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                    idx = root.getItems().size();
-                }
-                root.getItems().add(idx, node);
-            }
-        }
-
-        public void dock(Node node, Side dockPos, Dockable target) {
-            if (target == null) {
-                dock(node, dockPos);
-                return;  //added 26.01
-            }
-
-            Node targetNode = target.node();
-
-            DockSplitPane parentSplitPane = getTargetSplitPane(targetNode);
-            //DockSplitPane targetSplitPane = parentSplitPane;
-
-            if (parentSplitPane == null) {
-                return;
-            }
-
-            Dockable d = DockRegistry.dockable(node);
-
-            Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
-                    ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-            Orientation oldOrientation = parentSplitPane.getOrientation();
-
-            if (newOrientation != oldOrientation) {
-                DockSplitPane dp = null;
-                if (newOrientation == Orientation.HORIZONTAL) {
-                    dp = new HPane();
-                } else {
-                    dp = new VPane();
-                }
-
-                int idx = parentSplitPane.getItems().indexOf((Node) targetNode);
-
-                parentSplitPane.getItems().remove((Node) targetNode);
-                if (dockPos == Side.TOP || dockPos == Side.LEFT) {
-                    dp.getItems().add(node);
-                    dp.getItems().add((Node) targetNode);
-                } else {
-                    dp.getItems().add((Node) targetNode);
-                    dp.getItems().add(node);
-                }
-                parentSplitPane.getItems().add(idx, dp);
-                //07.05targetSplitPane = p;
-            } else {
-                int idx = parentSplitPane.getItems().indexOf(targetNode);
-                if (dockPos == Side.RIGHT || dockPos == Side.BOTTOM) {
-                    ++idx;
-                }
-                parentSplitPane.getItems().add(idx, node);
-            }
-        }
-
-        protected DockSplitPane getTargetSplitPane(Node target) {
-            DockSplitPane retval = null;
-            DockSplitPane split = root;
-            Stack<DockSplitPane> stack = new Stack<>();
-            stack.push(split);
-
-            while (!stack.empty()) {
-                split = stack.pop();
-                if (split.getItems().contains(target)) {
-                    retval = split;
-                    break;
-                }
-                for (Node n : split.getItems()) {
-                    if (n instanceof DockSplitPane) {
-                        stack.push((DockSplitPane) n);
-                    }
-                }
-            }
-            return retval;
-
-        }
-
-    }//class DockDelegate
-     */
     public static class DockExecutor {
 
         private final DockPaneContext paneController;
@@ -506,40 +315,6 @@ public class DockPaneContext extends TargetContext {
             }
         }
 
-        /*        protected static void clearRoot(DockSplitPane root) {
-
-            List<SplitPane> list = new ArrayList<>();
-            for (Node node : root.getItems()) {
-                if (node instanceof SplitPane) {
-                    if (((SplitPane) node).getItems().isEmpty()) {
-                        list.add((SplitPane) node);
-                    } else {
-                        clearRoot(root, (SplitPane) node);
-                    }
-                }
-            }
-            list.forEach(sp -> {
-                root.getItems().remove(sp);
-            });            
-        }
-        private static void clearRoot(DockSplitPane root, SplitPane splitPane) {
-
-            List<SplitPane> list = new ArrayList<>();
-            for (Node node : splitPane.getItems()) {
-                if (node instanceof SplitPane) {
-                    if (((SplitPane) node).getItems().isEmpty()) {
-                        list.add((SplitPane) node);
-                    } else {
-                        clearRoot(root, (SplitPane) node);
-                    }
-                }
-            }
-            list.forEach(sp -> {
-                root.getItems().remove(sp);
-            });
-
-        }
-         */
         protected void clear() {
 
             List<SplitPane> list = new ArrayList<>();

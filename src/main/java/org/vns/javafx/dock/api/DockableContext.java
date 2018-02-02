@@ -350,36 +350,10 @@ public class DockableContext {
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
     public boolean isFloating() {
-        //if ( true ) return true;
         return this.floating.get();
     }
 
-    /*    public void markFloating(boolean floating) {
-        if (!isFloating() && floating) {
-            //07.05 FloatWindowBuilder t = getStageBuilder();
-            FloatWindowBuilder t = new FloatWindowBuilder(this);
-            if (options.length > 0 && options[0]) {
-                this.floating.set(floating);
-                return;
-            }
-            t.makeFloating();
-            this.floating.set(floating);
-        } else if (!floating) {
-            this.floating.set(floating);
-        }
-    }
-     */
- /*    public void setFloating(boolean floating, Stage floatStage) {
-        if (!isFloating() && floating) {
-            //07.05 FloatWindowBuilder t = getStageBuilder();
-            FloatWindowBuilder t = new FloatWindowBuilder(this);
-            t.makeFloating(floatStage);
-            this.floating.set(floating);
-        } else if (!floating) {
-            this.floating.set(floating);
-        }
-    }
-     */
+    
     /**
      * Transfers the object into the <i>floating</i> state. If the current value
      * of the property is {@code false} and the specified value is {@code true}

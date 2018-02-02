@@ -44,7 +44,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         targetContext = new DockPaneContext(this, root);
     }
 
-    protected DockSplitPane getRoot() {
+    public DockSplitPane getRoot() {
         return root;
     }
     public ObservableList<Node> getItems() {

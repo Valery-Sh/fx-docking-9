@@ -141,64 +141,8 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         });
     }
 
-    /*    public DoubleProperty dividerPosProperty() {
-        return dividerPosProperty;
-    }
-
-    public double getDividerPos() {
-        return dividerPosProperty.get();
-    }
-
-    public void setDividerPos(double dividerPos) {
-        this.dividerPosProperty.set(dividerPos);
-    }
-     */
     @Override
     public ObservableList<Node> getChildren() {
         return super.getChildren();
     }
-
-    /*    public void setDividerPosition(Node node, Side dockPos) {
-        setDividerPosition(node, this, dockPos);
-    }
-
-    public static void setDividerPosition(Node node, DockSplitPane split, Side dockPos) {
-        if (split.getItems().size() <= 1) {
-            return;
-        }
-
-        int idx = split.getItems().indexOf(node);
-        Dockable d = DockRegistry.dockable(node);
-
-        double sizeSum = 0;
-        for (int i = 0; i < split.getItems().size(); i++) {
-            if (i == idx) {
-                continue;
-            }
-            if (split.getOrientation() == Orientation.HORIZONTAL) {
-                sizeSum += split.getItems().get(i).prefWidth(0);
-            } else {
-                sizeSum += split.getItems().get(i).prefHeight(0);
-            }
-        }
-        if (dockPos == Side.TOP || dockPos == Side.LEFT) {
-            if (split.getOrientation() == Orientation.HORIZONTAL) {
-                split.setDividerPosition(idx,
-                        node.prefWidth(0) / (sizeSum + node.prefWidth(0)));
-            } else {
-                split.setDividerPosition(idx,
-                        node.prefHeight(0) / (sizeSum + node.prefHeight(0)));
-
-            }
-        } else {
-            if (split.getOrientation() == Orientation.HORIZONTAL) {
-                split.setDividerPosition(idx,
-                        1 - node.prefWidth(0) / (sizeSum + node.prefWidth(0)));
-            } else {
-                split.setDividerPosition(idx,
-                        1 - node.prefHeight(0) / (sizeSum + node.prefHeight(0)));
-            }
-        }
-    }
-     */
 }

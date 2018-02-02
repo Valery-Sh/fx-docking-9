@@ -28,7 +28,7 @@ import org.vns.javafx.dock.api.save.DockStateLoader;
  *
  * @author Valery
  */
-public class TestDockPaneControl extends Application {
+public class TestDockPaneControl1 extends Application {
 
     Stage stage;
     Scene scene;
@@ -43,44 +43,44 @@ public class TestDockPaneControl extends Application {
         //StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
+        //DockStateLoader loader = new DockStateLoader(TestDockPaneControl1.class);
         
         //loader.setSaveOnClose(true);
         DockPane dockPane2 = new DockPane();
-        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
+        //DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         //loader.register("dockPane2", dockPane2);
         
         dockPane2.setId("dockPane2");
         DockNode dnc1_1 = new DockNode();
         DockNode dnc2_1 = new DockNode();
-        dnc1_1.setId("dnc1_1");    
-        dnc1_1.setTitle("dnc1_1");
-        dnc2_1.setId("dnc2_1");
-        dnc2_1.setTitle("dnc2_1");
+        DockNode dnc3_1 = new DockNode();
         
+        dnc1_1.setId("dnc1_1");        
+        dnc2_1.setId("dnc2_1");
+        dnc3_1.setId("dnc3_1");
         Button b1_1 = new Button("b1_1");
         Button b1_2 = new Button("b1_2");
+        Button b1_3 = new Button("b1_3");
         dnc1_1.setContent(b1_1);
         dnc2_1.setContent(b1_2);
+        dnc3_1.setContent(b1_3);
         
         VPane vp1_1 = new VPane();
-        vp1_1.getItems().addAll(dnc1_1,dnc2_1);
-        
         vp1_1.setId("vp1_1");
+        
         dockPane2.getItems().add(vp1_1);
+        vp1_1.getItems().addAll(dnc1_1,dnc2_1, dnc3_1);
+        stackPane.getChildren().add(dockPane2);
         
-        
-        dockPane1.setId("dockPane1");
+        //DockPane dockPane1 = new DockPane();
+
+
         DockNode dnc1 = new DockNode();
-        dnc1.setTitle("dnc1");
         DockNode dnc2 = new DockNode();
-        dnc2.setTitle("dnc2");
         DockNode dnc3 = new DockNode();
         dnc3.setTitle("DockNodeControl dnc3");
 
         DockNode dnc4 = new DockNode("DockNodeControl dnc4");
-        //loader.register("dnc4", dnc4);
-        //loader.register("dnc2", dnc2);
 
         dnc1.setId("dnc1");
         dnc2.setId("dnc2");
@@ -88,22 +88,12 @@ public class TestDockPaneControl extends Application {
         dnc4.setId("dnc4");
 
         VPane vs1 = new VPane();
-        
-        //VBox vs1 = new VBox();
         vs1.setId("vs1");
-        //dockPane2.getItems().add(vs1);
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
-        ////////// --------------------------
-        vs1.getItems().addAll(hs1, dnc3);
-        ////////// --------------------------
-        dockPane2.getItems().add(vs1);
-        
-        stackPane.getChildren().add(dockPane2);
-        
-        
-        DockTabPane dockTabPane1 = new DockTabPane();
-        //loader.register("dockTabPane1", dockTabPane1);
+       // vs1.getItems().addAll(dockPane2,hs1, dnc3);
+
+/*        DockTabPane dockTabPane1 = new DockTabPane();
         Button tabButton1 = new Button("Tab Button1");
         DockNode tabDnc1 = new DockNode(" tan Dnc1");
         tabDnc1.setId("tabDnc1");
@@ -127,7 +117,6 @@ public class TestDockPaneControl extends Application {
 
         DockableContext dc = DockRegistry.dockable(dnc3).getDockableContext();
         TargetContext dtc = dc.getTargetContext();
-
         Button b1 = new Button("save");
         Button b2 = new Button("add dnc4");
         Button b3 = new Button("remove dnc4");
@@ -142,46 +131,19 @@ public class TestDockPaneControl extends Application {
         Label childLabel = new Label("dnc3 label");
         ((StackPane) dnc3.getContent()).getChildren().add(childLabel);
 
-        b1.setOnAction(a -> {
-            //System.err.println("----------  hs1.sz=" + hs1.getItems().size());
-            loader.save();
-            //loader.save(dockPane1);
-            //loader.reload();
-            //System.err.println(loader.toString(dockPane1));
-        });
         b2.setOnAction(a -> {
-            //System.err.println("before (b2)hs1.sz=" + hs1.getItems().size());
-            //hs1.getItems().add(dnc4);
-            //System.err.println("after (b2)hs1.sz=" + hs1.getItems().size());
+            System.err.println("before (b2)hs1.sz=" + hs1.getItems().size());
+            hs1.getItems().add(dnc4);
+            System.err.println("after (b2)hs1.sz=" + hs1.getItems().size());
 
         });
         b3.setOnAction(a -> {
-            //System.err.println("before (b3)hs1.sz=" + hs1.getItems().size());
-            //hs1.getItems().remove(dnc4);
-            //System.err.println("after (b3)hs1.sz=" + hs1.getItems().size());
-        });
-        b4.setOnAction(a -> {
-            System.err.println("dockPane2.getRoot().getItems() " + dockPane2.getItems().size());
-            dockPane2.getItems().forEach(it -> {
-                System.err.println("   --- item = " + it);
-            });
+            System.err.println("before (b3)hs1.sz=" + hs1.getItems().size());
+            hs1.getItems().remove(dnc4);
+            System.err.println("after (b3)hs1.sz=" + hs1.getItems().size());
         });
 
-        b5.setOnAction(a -> {
-            loader.reset();
-        });
-        b6.setOnAction(a -> {
-            System.err.println("================================");
-            Node n = dockPane1.getItems().get(0);
-            System.err.println(n);
-            //System.err.println(loader.toString(dockPane1));
-            System.err.println("================================");
-            System.err.println("dockPane2 dnc3 " + ((SplitPane)dockPane2.getItems().get(0)).getItems().size());
-            System.err.println("================================");
-        });
-
-        //root.getChildren().add(dockPane1);
-
+*/
         scene = new Scene(root, 550, 550);
 
         scene.getRoot().setStyle("-fx-background-color: rgb(223,223,223)");
@@ -189,34 +151,6 @@ public class TestDockPaneControl extends Application {
         stage.setScene(scene);
         stage.show();
         
-        Stage stage1 = new Stage();
-        stage1.setTitle("Node Node Dockables");
-        VBox root1 = new VBox();
-        Scene scene1 = new Scene(root1);
-        stage1.setScene(scene1);
-        Button ndBtn1 = new Button("ndBtn1");
-        DockRegistry.getInstance().registerDefault(ndBtn1);
-        
-        TabNode tab1 = new TabNode("Tab1");
-        DockRegistry.getInstance().register(tab1);
-        tab1.getDockableContext().setDragNode(tab1.node());
-        root1.getChildren().add(tab1.node());
-
-        
-        TabNode tab2 = new TabNode("Tab2");
-        DockRegistry.getInstance().register(tab2);
-        tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().getDragContainer().setValue(new Label("Tab2 Label"));
-        root1.getChildren().add(tab2.node());   
-        
-        
-        Button dockableBtn1 = new Button("dockableBtn1");
-        DockRegistry.getInstance().registerDefault(dockableBtn1);
-
-        tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
-
-        stage1.show();
-
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
 

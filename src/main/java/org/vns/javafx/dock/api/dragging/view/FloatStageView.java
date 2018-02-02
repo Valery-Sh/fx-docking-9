@@ -32,6 +32,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,19 +42,20 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.DragContainer;
 
 /**
  *
  * @author Valery
  */
-public class FloatStageView implements FloatWindowView{
-    
+public class FloatStageView implements FloatWindowView {
+
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
     private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
     private ObjectProperty value = new SimpleObjectProperty();
-    
+
     private Pane rootPane;
 
     private final DockableContext dockableController;
@@ -62,26 +65,25 @@ public class FloatStageView implements FloatWindowView{
     private MouseResizeHandler mouseResizeHanler;
 
     private BooleanProperty floating = createFloatingProperty();
-            
+
     private double minWidth = -1;
     private double minHeight = -1;
-    
 
     private Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
 
-    
-        
     public FloatStageView(Dockable dockable) {
         this.dockableController = dockable.getDockableContext();
         mouseResizeHanler = new MouseResizeHandler(this);
     }
+
     @Override
-    public void initialize() { }
-    
-/*    @Override
+    public void initialize() {
+    }
+
+    /*    @Override
     public double getMinWidth() {
         return minWidth;
     }
@@ -98,7 +100,7 @@ public class FloatStageView implements FloatWindowView{
     public void setMinHeight(double minHeight) {
         this.minHeight = minHeight;
     }
-*/
+     */
     protected BooleanProperty floatingProperty() {
         return floating;
     }
@@ -106,7 +108,6 @@ public class FloatStageView implements FloatWindowView{
     public MouseResizeHandler getMouseResizeHanler() {
         return mouseResizeHanler;
     }
-    
 
     public StageStyle getStageStyle() {
         return stageStyle;
@@ -130,19 +131,18 @@ public class FloatStageView implements FloatWindowView{
         return resizer;
     }
 
-/*    public void setResizer(FloatWindowResizer resizer) {
+    /*    public void setResizer(FloatWindowResizer resizer) {
         this.resizer = resizer;
     }
-*/
+     */
     public void setStageStyle(StageStyle stageStyle) {
         this.stageStyle = stageStyle;
     }
-    
+
     @Override
     public Cursor[] getSupportedCursors() {
         return supportedCursors;
     }
-
 
     @Override
     public void setSupportedCursors(Cursor[] supportedCursors) {
@@ -152,16 +152,17 @@ public class FloatStageView implements FloatWindowView{
     public ObjectProperty<Window> stageProperty() {
         return this.floatingWindow;
     }
-    
+
     @Override
     public ObjectProperty<Window> floatingWindowProperty() {
         return floatingWindow;
     }
-    
+
     @Override
     public Window getFloatingWindow() {
         return floatingWindow.get();
     }
+
     protected void markFloating(Window toMark) {
         floatingWindow.set(toMark);
     }
@@ -185,16 +186,22 @@ public class FloatStageView implements FloatWindowView{
         make(getDockable());
     }
 
-
-
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
 
-
     @Override
     public Window make(Dockable dockable, boolean show) {
-        
+
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        Object v = dc.getValue();
+
+        if (v != null && !(dc.isValueDockable())) {
+            return make(dockable, v, show); 
+        } else if (dc.isValueDockable()) {
+            return make(dockable, DockRegistry.dockable(v), show); 
+        }
+
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
@@ -243,14 +250,6 @@ public class FloatStageView implements FloatWindowView{
 
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
-        //Rectangle r = new Rectangle(75, 30);
-        //r.setFill(Color.YELLOW);
-        //borderPane.setCenter(r);
-        
-
-        //DockPane dockPane = new DockPane();
-        //StackPane dockPane = new StackPane();
-        //borderPane.setStyle("-fx-background-color: aqua");
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -261,21 +260,215 @@ public class FloatStageView implements FloatWindowView{
             }
         };
 
-        //
-        // Prohibit to use as a dock target
-        //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dockable.node());
-        //dockPane.getChildren().add(node);
-        //borderPane.getStyleClass().clear();
         borderPane.getStyleClass().add("dock-node-border");
-        
+
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
         floatingProperty.set(true);
+
+        newStage.setScene(scene);
+
+        node.applyCss();
+        borderPane.applyCss();
+        Insets insetsDelta = borderPane.getInsets();
+        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+
+        newStage.setX(stagePosition.getX() - insetsDelta.getLeft());
+        newStage.setY(stagePosition.getY() - insetsDelta.getTop());
+
+        newStage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        newStage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+
+        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+
+        borderPane.setPrefWidth(prefWidth);
+        borderPane.setPrefHeight(prefHeight);
+
+        if (stageStyle == StageStyle.TRANSPARENT) {
+            scene.setFill(null);
+        }
+        addResizer();
+        newStage.sizeToScene();
+        newStage.setAlwaysOnTop(true);
+        if (show) {
+            newStage.show();
+        }
+        dockable.node().parentProperty().addListener(pcl);
+        return newStage;
+    }
+
+    /**
+     * Makes a window when the dragContainer is not null and is not dockable
+     *
+     * @param dockable ??
+     * @param transp ??
+     * @param show ??
+     * @return ??
+     */
+    protected Window make(Dockable dockable, Object dragged, boolean show) {
+        System.err.println("MAKE make(Dockable dockable, Object dragged)");
+        setSupportedCursors(DEFAULT_CURSORS);
+        Node node = dockable.node();
+        Point2D screenPoint = node.localToScreen(0, 0);
+        if (screenPoint == null) {
+            screenPoint = new Point2D(400, 400);
+        }
+
+        Stage newStage = new Stage();
+        DockRegistry.register(newStage);
+        markFloating(newStage);
+
+        newStage.setTitle("FLOATING STAGE");
+
+        newStage.initStyle(stageStyle);
+
+        Point2D stagePosition = screenPoint;
+
+        BorderPane borderPane = new BorderPane();
+        this.rootPane = borderPane;
+        Rectangle r = new Rectangle(48, 48);
+        r.setFill(Color.YELLOW);
+        borderPane.setCenter(r);
+
+        borderPane.getStyleClass().add("dock-node-border");
+
+        //borderPane.setCenter(node);
+
+        Scene scene = new Scene(borderPane);
+        scene.setCursor(Cursor.HAND);
+        floatingProperty.set(true);
+
+        newStage.setScene(scene);
+
+        borderPane.applyCss();
         
+        Insets insetsDelta = borderPane.getInsets();
+        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+
+        newStage.setX(stagePosition.getX() - insetsDelta.getLeft());
+        newStage.setY(stagePosition.getY() - insetsDelta.getTop());
+
+        newStage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        newStage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+
+        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+
+        borderPane.setPrefWidth(prefWidth);
+        borderPane.setPrefHeight(prefHeight);
+
+        if (stageStyle == StageStyle.TRANSPARENT) {
+            scene.setFill(null);
+        }
+        addResizer();
+        newStage.sizeToScene();
+        newStage.setAlwaysOnTop(true);
+        if (show) {
+            newStage.show();
+        }
+        return newStage;
+        
+    }
+
+    /**
+     * Makes a window when the dragContainer is not null and is dragged
+     *
+     * @param dragged ??
+     * @param transp ??
+     * @param show ??
+     * @return ??
+     */
+    protected Window make(Dockable dockable, Dockable dragged, boolean show) {
+        System.err.println("MAKE make(Dockable dockable, Dockable dragged)");
+        setSupportedCursors(DEFAULT_CURSORS);
+
+        Node node = dragged.node();
+        Point2D screenPoint = node.localToScreen(0, 0);
+        if (screenPoint == null) {
+            screenPoint = new Point2D(400, 400);
+        }
+        Node titleBar = dragged.getDockableContext().getTitleBar();
+        if (titleBar != null) {
+            titleBar.setVisible(true);
+            titleBar.setManaged(true);
+        }
+
+        if (dragged.getDockableContext().isDocked() && dragged.getDockableContext().getTargetContext().getTargetNode() != null) {
+            System.err.println("make 1");
+            Window w = dragged.getDockableContext().getTargetContext().getTargetNode().getScene().getWindow();
+            if (dragged.node().getScene().getWindow() != w) {
+                rootPane = (Pane) dragged.node().getScene().getRoot();
+                markFloating(dragged.node().getScene().getWindow());
+                setSupportedCursors(DEFAULT_CURSORS);
+
+                dragged.getDockableContext().getTargetContext().undock(dragged.node());
+                System.err.println("make 2");                
+                return dragged.node().getScene().getWindow();
+            }
+        }
+        if (dragged.getDockableContext().isDocked()) {
+            dragged.getDockableContext().getTargetContext().undock(dragged.node());
+        }
+
+        Stage newStage = new Stage();
+        DockRegistry.register(newStage);
+        markFloating(newStage);
+
+        newStage.setTitle("FLOATING STAGE");
+        Node lastDockPane = dragged.getDockableContext().getTargetContext().getTargetNode();
+        if (lastDockPane != null && lastDockPane.getScene() != null
+                && lastDockPane.getScene().getWindow() != null) {
+            newStage.initOwner(lastDockPane.getScene().getWindow());
+        }
+
+        newStage.initStyle(stageStyle);
+
+        // offset the new floatingWindow to cover exactly the area the dock was local to the scene
+        // this is useful for when the user presses the + sign and we have no information
+        // on where the mouse was clicked
+        Point2D stagePosition = screenPoint;
+
+        BorderPane borderPane = new BorderPane();
+        this.rootPane = borderPane;
+        //Rectangle r = new Rectangle(75, 30);
+        //r.setFill(Color.YELLOW);
+        //borderPane.setCenter(r);
+
+        //DockPane dockPane = new DockPane();
+        //StackPane dockPane = new StackPane();
+        //borderPane.setStyle("-fx-background-color: aqua");
+        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (newStage != null) {
+                    newStage.close();
+                }
+                dragged.node().parentProperty().removeListener(this);
+            }
+        };
+
+        //
+        // Prohibit to use as a dock target
+        //
+        //dockPane.setUsedAsDockTarget(false);
+        //dockPane.getItems().add(dragged.node());
+        //dockPane.getChildren().add(node);
+        //borderPane.getStyleClass().clear();
+        borderPane.getStyleClass().add("dock-node-border");
+
+        borderPane.setCenter(node);
+
+        Scene scene = new Scene(borderPane);
+        scene.setCursor(Cursor.HAND);
+        floatingProperty.set(true);
+
         newStage.setScene(scene);
 
         node.applyCss();
@@ -290,13 +483,12 @@ public class FloatStageView implements FloatWindowView{
 
         newStage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         newStage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-        
+
         //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
-        
-        double prefWidth  = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;        
-        
+        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
 
@@ -306,17 +498,18 @@ public class FloatStageView implements FloatWindowView{
         addResizer();
         newStage.sizeToScene();
         newStage.setAlwaysOnTop(true);
-        if ( show ) {
+        if (show) {
             newStage.show();
         }
-        dockable.node().parentProperty().addListener(pcl);
+        dragged.node().parentProperty().addListener(pcl);
         return newStage;
     }
-    
+
     @Override
     public Window make(Dockable dockable) {
         return make(dockable, true);
     }
+
     public Stage toFloatingStage(Popup popup) {
         if (popup.getContent() == null || popup.getContent().isEmpty()) {
             return null; // ?? TO DO
@@ -337,7 +530,7 @@ public class FloatStageView implements FloatWindowView{
     }
 
 
-/*    public void addResizer(Window window, Dockable getDockable) {
+    /*    public void addResizer(Window window, Dockable getDockable) {
         if ( getDockable.getDockableContext().isResizable()) {
             removeListeners(getDockable);
             addListeners(window);
@@ -346,26 +539,26 @@ public class FloatStageView implements FloatWindowView{
         //resizer = new FloatWindowResizer();
         resizer = new FloatWindowResizer(this);
     }
-*/
-    
+     */
     @Override
     public void addResizer() {
-        if ( dockableController.isResizable()) {
+        if (dockableController.isResizable()) {
             removeListeners(dockableController.dockable());
             addListeners(getFloatingWindow());
-            
+
         }
         setResizer(new StageResizer(this));
-        
+
     }
-    
+
     protected void setResizer(WindowResizer resizer) {
         this.resizer = resizer;
     }
-    
+
     public ObjectProperty valueProperty() {
         return value;
     }
+
     public Object getValue() {
         return value.get();
     }
@@ -373,9 +566,8 @@ public class FloatStageView implements FloatWindowView{
     public void setValue(Object obj) {
         this.value.set(obj);
     }
-    
-    
-/*    protected void addListeners(Window window) {
+
+    /*    protected void addListeners(Window window) {
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
@@ -394,7 +586,7 @@ public class FloatStageView implements FloatWindowView{
         dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
 
     }    
-*/    
+     */
     protected void addListeners(Window window) {
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
@@ -402,7 +594,7 @@ public class FloatStageView implements FloatWindowView{
     }
 
     public void removeListeners(Dockable dockable) {
-        if ( dockable.node().getScene() == null ||dockable.node().getScene().getWindow() == null ) {
+        if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
             //return;
         }
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
@@ -432,7 +624,7 @@ public class FloatStageView implements FloatWindowView{
         resizer.resize(ev);
     }
      */
-/*    protected void dock(Pane dockPane, Dockable getDockable) {
+ /*    protected void dock(Pane dockPane, Dockable getDockable) {
         Node node = getDockable.node();
         DockSplitPane rootSplitPane = null;
         rootSplitPane = new DockSplitPane();
@@ -447,7 +639,7 @@ public class FloatStageView implements FloatWindowView{
         //
         // >>> node.getDockableState().setDocked(true);
     }
-*/
+     */
     private BooleanProperty floatingProperty = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {
