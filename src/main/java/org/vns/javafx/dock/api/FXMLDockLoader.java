@@ -85,10 +85,6 @@ public class FXMLDockLoader extends DockStateLoader {
                         continue;
                     }
                     
-/*                    System.err.println("   ---  value = " + field.get(controller));
-                    System.err.println("   ---  name = " + field.getName());
-                    System.err.println("   ---  class = " + field.getType());
-*/
                     if (field.get(controller) instanceof Node) {
                         register(field.getName(), (Node) field.get(controller));
                     }

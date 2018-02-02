@@ -344,6 +344,19 @@ public class FloatStageView2 implements FloatWindowView{
     protected void setResizer(WindowResizer resizer) {
         this.resizer = resizer;
     }
+    private ObjectProperty value = new SimpleObjectProperty();
+    
+    public ObjectProperty valueProperty() {
+        return value;
+    }
+    public Object getValue() {
+        return value.get();
+    }
+
+    public void setValue(Object obj) {
+        this.value.set(obj);
+    }
+    
 /*    protected void addListeners(Window window) {
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);

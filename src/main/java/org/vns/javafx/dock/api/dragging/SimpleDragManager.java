@@ -25,9 +25,13 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DragContainer;
+import org.vns.javafx.dock.api.ObjectReceiver;
+import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
@@ -39,12 +43,12 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
  * initiation docking operations.
  *
  * The objects of typo {@code Dockable} can have a title bar. It is an object of
- * type {@code Region}, which is assigned by calling the method 
- DockableContext.setTitleBar(javafx.scene.layout.Region)  or by
- applying the method DockableContext.createDefaultTitleBar(java.lang.String). 
- The title bar object automatically becomes a listener of mouse events by
- executing the code below:
- <pre>
+ * type {@code Region}, which is assigned by calling the method
+ * DockableContext.setTitleBar(javafx.scene.layout.Region) or by applying the
+ * method DockableContext.createDefaultTitleBar(java.lang.String). The title bar
+ * object automatically becomes a listener of mouse events by executing the code
+ * below:
+ * <pre>
  *   titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED,  this);
  *   titleBar.addEventHandler(MouseEvent.DRAG_DETECTED,  this);
  *   titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED,  this);
@@ -52,10 +56,11 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
  * </pre> Thus, if the object of type {@code Dockable} has a title bar and it is
  * visible on screen, then it can be used to perform mouse dragging.
  * <p>
- * The object of type {@code Dockable} has a method DockableContext#setDragNode(javafx.scene.Node)
- . The {@code Node } which has been set by the method may be used to drag the
- * {@literal dockable} in the same manner as the title bar is used. Thus, both
- * objects, such as a title bar and a drag node can be used to perform dragging.
+ * The object of type {@code Dockable} has a method
+ * DockableContext#setDragNode(javafx.scene.Node) . The {@code Node } which has
+ * been set by the method may be used to drag the {@literal dockable} in the
+ * same manner as the title bar is used. Thus, both objects, such as a title bar
+ * and a drag node can be used to perform dragging.
  *
  * </p>
  *
@@ -68,7 +73,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * The object to be dragged
      */
     private final Dockable dockable;
-    
+
     private Node dragSource;
     /**
      * Pop up window which provides indicators to choose a place of the target
@@ -77,7 +82,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     private IndicatorManager indicatorManager;
 
     //private IndicatorManager indicatorDelegate;
-
     /**
      * The target dock target
      */
@@ -90,6 +94,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * The mouse screen coordinates assigned by the mousePressed method.
      */
     private Point2D startMousePos;
+
     /**
      * Create a new instance for the given dock node.
      *
@@ -114,27 +119,23 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
-        
+
         this.startMousePos = startMousePos;
         this.dragSource = (Node) ev.getSource();
-        
+
         if (!dockable.getDockableContext().isFloating()) {
-            System.err.println("DRAG DETECTED NOT FLOATING");
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-            //FloatView view = FloatViewFactory.getInstance().getFloatView(this);
+
             FloatViewFactory f = null;
-            if ( getDockable().getDockableContext().getTargetContext() != null ) {
+            if (getDockable().getDockableContext().getTargetContext() != null) {
                 f = getDockable().getDockableContext().getTargetContext().getLookup().lookup(FloatViewFactory.class);
             }
-            if ( f == null ) {
+            if (f == null) {
                 f = getDockable().getDockableContext().getLookup().lookup(FloatViewFactory.class);
             }
             FloatView view = f.getFloatView(this);
-            
             floatingWindow = (Window) view.make(dockable);
-            System.err.println("**************** dragDetected  floatingWindow");
-            //dockable.getDockableContext().setFloating(true);
-            
+
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
             dockable.getDockableContext().setFloating(true);
@@ -142,7 +143,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         } else {
             //
             // If floating window contains snapshot and not the dockable then
-            // the folowing twp operator must be skipped
+            // the folowing two operator must be skipped
             //
             ((Node) ev.getSource()).addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             ((Node) ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, this);
@@ -165,7 +166,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events
      */
     protected void mouseDragged(MouseEvent ev) {
-        if ( indicatorManager != null && !(indicatorManager instanceof Window)) {
+        if (indicatorManager != null && !(indicatorManager instanceof Window)) {
             indicatorManager.hide();
         }
         if (!ev.isPrimaryButtonDown()) {
@@ -195,13 +196,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             floatingWindow.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
             floatingWindow.setY(ev.getScreenY() - topDelta - startMousePos.getY());
         }
-        /*System.err.println("=================================");
-        System.err.println("   --- startPosition x=" + startMousePos.getX() + "; y=" + startMousePos.getY());
-        System.err.println("   --- mousePos      x=" + ev.getScreenX() + "; y=" + ev.getScreenY());
-        System.err.println("   --- windowPos     x=" + floatingWindow.getX() + "; y=" + floatingWindow.getY());
-        System.err.println("   --- leftDelta = " + leftDelta + "; topDelta=" + topDelta);
-        System.err.println("=================================");
-         */
 
         if (indicatorManager != null && indicatorManager.isShowing()) {
             indicatorManager.hideWhenOut(ev.getScreenX(), ev.getScreenY());
@@ -228,29 +222,48 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(dockable.node())) {
+        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
             return;
         }
+
+/*        if (getDockable() instanceof DragContainer) {
+            if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(((DragContainer) getDockable()).getValue())) {
+                return;
+            }
+        } else if (getDockable().node() != getDockable().getDockableContext().getDragContainer()) {
+            if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable().getDockableContext().getDragContainer())) {
+                return;
+            }
+        } else if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable().node())) {
+            return;
+        }
+*/
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
+/*        if (dockable instanceof DragContainer) {
+            if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(((DragContainer) dockable).getValue())) {
+                return;
+            }
+        
+        }
+*/        
         //
         // Start use of IndicatorPopup
         //
-        IndicatorManager newPopup =  DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorManager.class);
-        if ( newPopup == null ) {
+        IndicatorManager newPopup = DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorManager.class);
+        if (newPopup == null) {
             DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorManager.class);
         }
         if (newPopup == null) {
             return;
         }
-        
+
         newPopup.setDraggedNode(getDockable().node());
-        
+
         if (indicatorManager != newPopup && indicatorManager != null) {
             indicatorManager.hide();
         }
-        System.err.println("SimplaDragManager 2 " );        
         indicatorManager = newPopup;
 
         if (!indicatorManager.isShowing()) {
@@ -272,12 +285,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events.
      */
     protected void mouseReleased(MouseEvent ev) {
-        System.err.println("mouse release popup " + indicatorManager);
-        if ( indicatorManager != null ) {
-            System.err.println("   --- mouse release isShowing " + indicatorManager.isShowing());
-        }
         if (indicatorManager != null && indicatorManager.isShowing()) {
-            System.err.println("11111 release isShowing");
             indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
         }
 
@@ -294,24 +302,36 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             dragSource.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
             dragSource.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
             dragSource.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
-
         }
-        
+        if (indicatorManager == null ) {
+            return;
+        }
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
+        TargetContext tc = indicatorManager.getTargetContext();
         if (indicatorManager != null && indicatorManager.isShowing()) {
-            //dockable.getDockableContext().setFloating(false);
-            indicatorManager.getTargetContext().dock(pt, dockable);
-            System.err.println("22222222 doc");
-
+            tc.dock(pt, dockable);
+            if ( TargetContext.isDocked(tc, dockable) && floatingWindow != null && floatingWindow.isShowing() ) {
+                if ( floatingWindow instanceof Stage ) {
+                    
+                    ((Stage)floatingWindow).close();
+                } else {
+                    floatingWindow.hide();
+                }
+            }
         } else if (indicatorManager != null && indicatorManager.getPositionIndicator() == null) {
             //
             // We use default indicatorPopup without position indicator
             //
-            indicatorManager.getTargetContext().dock(pt, dockable);
-            System.err.println("33333 dock");
+            tc.dock(pt, dockable);
+            if ( TargetContext.isDocked(tc, dockable) && floatingWindow != null && floatingWindow.isShowing() ) {
+                if ( floatingWindow instanceof Stage ) {
+                    ((Stage)floatingWindow).close();
+                } else {
+                    floatingWindow.hide();
+                }
+            }
             
         }
-
         if (indicatorManager != null && indicatorManager.isShowing()) {
             indicatorManager.hide();
         }
@@ -321,28 +341,17 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     public Dockable getDockable() {
         return dockable;
     }
-  
-/* !!!31.01    protected Node getFloatingWindowRoot() {
-        if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
-            return null;
-        }
-        Node r = dockable.node().getScene().getRoot();
+
+    protected Node getFloatingWindowRoot() {
+        Node r = floatingWindow.getScene().getRoot();
         return r;
     }
-*/
-    protected Node getFloatingWindowRoot() {
-        //System.err.println("**** floatingWindow = " + floatingWindow);
-        //System.err.println("**** floatingWindow.getScene = " + floatingWindow.getScene());
-        
-        Node r = floatingWindow.getScene().getRoot();
-        System.err.println("getFloatingWindowRoot root = " + r);
-        return r;
-    }    
+
     @Override
     public void handle(MouseEvent ev) {
-        if ( ev.getEventType().equals(MouseEvent.MOUSE_DRAGGED) ) {
+        if (ev.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
             mouseDragged(ev);
-        } else if ( ev.getEventType().equals(MouseEvent.MOUSE_RELEASED) ) {
+        } else if (ev.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             mouseReleased(ev);
         }
     }
@@ -386,5 +395,5 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     public void setDragSource(Node dragSource) {
         this.dragSource = dragSource;
     }
-    
+
 }

@@ -57,15 +57,17 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
     private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
+    private ObjectProperty value = new SimpleObjectProperty();
+    
     private Pane rootPane;
 
     private final DockableContext dockableController;
 
     private WindowResizer resizer;
 
-    private MouseResizeHandler mouseResizeHanler;
+    private final MouseResizeHandler mouseResizeHanler;
 
-    private BooleanProperty floating = createFloatingProperty();
+    private final BooleanProperty floating = createFloatingProperty();
             
     private double minWidth = -1;
     private double minHeight = -1;
@@ -75,8 +77,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
-
-    
         
     public TreeItemFloatStageView(Dockable dockable) {
         this.dockableController = dockable.getDockableContext();
@@ -382,6 +382,17 @@ public class TreeItemFloatStageView implements FloatWindowView{
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
         window.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
+    }
+    
+    public ObjectProperty valueProperty() {
+        return value;
+    }
+    public Object getValue() {
+        return value.get();
+    }
+
+    public void setValue(Object obj) {
+        this.value.set(obj);
     }
 
     public void removeListeners(Dockable dockable) {

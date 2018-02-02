@@ -194,7 +194,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(dockable.node())) {
+        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(dockable)) {
             return;
         }
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {

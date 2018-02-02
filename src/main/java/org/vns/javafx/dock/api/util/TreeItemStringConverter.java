@@ -112,7 +112,6 @@ public class TreeItemStringConverter extends StringConverter<TreeItem<Properties
         NamedNodeMap attrs = element.getAttributes();
         for (int i = 0; i < attrs.getLength(); i++) {
             if (attrs.item(i) instanceof Attr) {
-//                System.err.println(i + ") " + attrs.item(i).getClass().getSimpleName());
                 Attr attr = (Attr) attrs.item(i);
                 item.getValue().setProperty(attr.getName(), attr.getValue());
             }

@@ -48,7 +48,6 @@ public class NodeResizerBorder {
 
     private void init() {
         URL imageURL = Dockable.class.getResource("resources/border_image.jpg");
-        System.err.println("IMAGE URL=" + imageURL);
         String imageURLString = imageURL.toExternalForm();
 
         List<Double> dashArray = new ArrayList<>();

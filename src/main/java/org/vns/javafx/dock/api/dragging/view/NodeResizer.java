@@ -362,15 +362,11 @@ public class NodeResizer implements EventHandler<MouseEvent> {
             }
             windowResizer.start(ev, getWindow(), getWindow().getScene().getCursor(), getSupportedCursors());
         } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-//                System.err.println("3 FloatWindowView MouseHandler. isCursorSupported = " + cursorSupported);                
 
             if (!cursorSupported) {
                 return;
             }
             if (!windowResizer.isStarted()) {
-//                System.err.println("4 FloatWindowView MouseHandler. windowResizer = " + popup.getResizer());                
-//                System.err.println("4 FloatWindowView befor show MouseHandler. cursor = " + popup.getFloatingWindow().getScene().getCursor());                                
-
                 windowResizer.start(ev, getWindow(), getWindow().getScene().getCursor(), getSupportedCursors());
             } else {
                 Platform.runLater(() -> {
@@ -380,7 +376,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
             if (!isApplyTranslateXY()) {
-                //System.err.println("isApplyTranskateXY = " + isApplyTranslateXY());
                 double tX = getNode().getTranslateX();
                 double tY = getNode().getTranslateY();
 
@@ -397,17 +392,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
                 getNode().setLayoutY(getNode().getLayoutY() + tY);
 
                 getNode().getParent().layout();
-                //System.err.println("oldLX = " + oldLX);
-                //System.err.println("newLX = " + getNode().getLayoutX());
-/*                if (saveCursor == Cursor.W_RESIZE || saveCursor == Cursor.N_RESIZE) {
-                    if (Math.abs(getNode().getLayoutX() - oldLX) <= 2 && Math.abs(getNode().getLayoutY() - oldLY) <= 2) {
-                        //getNode().setPrefWidth(nodeResizer.getSavedPrefWidth());
-                        //getNode().setPrefWidth(getNode().getWidth());
-                        //getNode().setPrefHeight(nodeResizer.getSavedPrefHeight());
-                        //getNode().getParent().layout();
-                    }
-                }
-*/
                 getNode().setPrefWidth(getNode().getWidth());
                 windowBounds(getWindow(), getNode());
                 commitResize();

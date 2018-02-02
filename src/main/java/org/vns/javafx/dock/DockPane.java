@@ -17,6 +17,7 @@ import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.event.DockEvent;
 import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
@@ -98,7 +99,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
     }
 */
     public void dock(Dockable dockable, Side side) {
-        if (!getTargetContext().isAcceptable(dockable.node())) {
+        if (!getTargetContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
         if (dockable.getDockableContext().getTargetContext() != null) {
@@ -115,7 +116,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
     }
     
     public void dock(Dockable dockable, Side side, Dockable target) {
-        if (!getTargetContext().isAcceptable(dockable.node())) {
+        if (!getTargetContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
         if (dockable.getDockableContext().getTargetContext() != null) {

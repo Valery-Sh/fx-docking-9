@@ -353,18 +353,11 @@ public class NodeResizeExecutor implements WindowResizer{
         double x, y, w, h;
 
         Insets ins = r.getInsets();
-        //test(ev, r);
-        //System.err.println("INSETS " + ins);
+
         if (ins == Insets.EMPTY) {
-            System.err.println("EMPTY INSETS " + ins);
             return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);
         }
-        //if (ev.getSource() instanceof Stage) {
         return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
-        //} else {
-
-        //}
-        //return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
     }
 
     public Cursor getCursor() {

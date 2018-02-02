@@ -17,8 +17,6 @@ package org.vns.javafx.dock.api.save;
 
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
-import org.vns.javafx.dock.DockTabPane.TabPaneContext;
-import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.save.builder.DockPaneTreeItemBuilder;
 import org.vns.javafx.dock.api.save.builder.DockTabPaneTreeItemBuilder;

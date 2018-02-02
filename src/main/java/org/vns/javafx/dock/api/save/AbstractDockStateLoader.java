@@ -122,21 +122,16 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         saved.clear();
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
-            //if (node != null && !saved.contains(node) && DockRegistry.instanceOfDockTarget(node)) {
+
             if (node != null && DockRegistry.instanceOfDockTarget(node)) {
                 save(DockRegistry.dockTarget(node));
-                //TreeItemStringConverter tc = new TreeItemStringConverter();
+
                 DockPreferences cp = new DockPreferences(getPreferencesRoot());
                 PrefProperties prefProps = cp.next(SAVE).getProperties(DOCKTARGETS);
 
-                System.err.println("======  SAVE ===============");
-                System.err.println(prefProps.getProperty(k));
-                System.err.println("=================================================");
 
             }
         });
-        System.err.println("Save all.  Time interval = " + (System.currentTimeMillis() - start));
-
     }
 
     /**
@@ -146,7 +141,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
      */
     protected void save(DockTarget dockTarget) {
-        //save(dockTarget, true);
+
         long start = System.currentTimeMillis();
 
         String fieldName = getFieldName(dockTarget.target());
@@ -156,16 +151,16 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         }
 
         TreeItem<Properties> it = builder(dockTarget.target()).build(fieldName);
-        System.err.println(fieldName + " TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+//        System.err.println(fieldName + " TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
         test(it);
-        System.err.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+//        System.err.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
         completeBuild(it, true);
         test(it);
         TreeItemStringConverter tc = new TreeItemStringConverter();
         String convertedTarget = tc.toString(it);
         DockPreferences cp = new DockPreferences(getPreferencesRoot()).next(SAVE);
         cp.getProperties(DOCKTARGETS).setProperty(fieldName, convertedTarget);
-        System.err.println("Single Save time interval = " + (System.currentTimeMillis() - start));
+//        System.err.println("Single Save time interval = " + (System.currentTimeMillis() - start));
 
     }
 
@@ -173,18 +168,11 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         TreeView<Properties> tv = new TreeView();
         tv.setRoot(it);
         for (int i = 0; i < tv.getExpandedItemCount(); i++) {
-            System.err.println(tv.getTreeItem(i).getValue().getProperty(TAG_NAME_ATTR));
+//            System.err.println(tv.getTreeItem(i).getValue().getProperty(TAG_NAME_ATTR));
         }
 
     }
 
-    /**
-     * Saves the current state of the specified object.
-     *
-     * @param dockTarget the object of type 
-     * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
-     */
-    //protected abstract void save(DockTarget dockTarget);
     /**
      * Restores the previously saved state of the specified node.
      *
@@ -499,19 +487,6 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             public void handle(WindowEvent event) {
 
                 Platform.runLater(() -> {
-
-                    /*if (!stateChangedList.isEmpty()) {
-                        List<Node> list = new ArrayList<>();
-                        list.addAll(stateChangedList);
-                        list.forEach(node -> {
-                            //System.err.println("SAVE FROM LISTENER node = " + node);
-                            //save(DockRegistry.dockTarget(node));
-                            //stateChangedList.remove(node);
-                        });
-                        System.err.println("2) *** SAVE ***");
-                        //save();
-                    }
-                     */
                     if (isSaveOnClose()) {
                         save();
                     }
@@ -580,7 +555,6 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             retval = f.getItemBuilder(dockTarget);
         }
         return retval;
-        //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
     }
 
     /**
@@ -661,15 +635,6 @@ public abstract class AbstractDockStateLoader implements StateLoader {
                 level = l;
             }
 
-            //
-            // For now we don't use parent dock target anywhere in code
-            //
-/*            if (i > 0 && (obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
-                TreeItem<Properties> p = findParentDockTarget(tv, tv.getTreeItem(i));
-                String parentFieldName = p.getValue().getProperty(FIELD_NAME_ATTR);
-                tv.getTreeItem(i).getValue().setProperty(PARENT_DOCKTARGET_ATTR, parentFieldName);
-            }
-             */
         }//for
 
     }
@@ -689,43 +654,4 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         return retval;
     }
 
-    /*    protected String getFieldName(Object obj, String rootFieldName, int idx) {
-        String fieldName = getFieldName(obj);
-        if (fieldName != null) {
-            return fieldName;
-        }
-        if ((obj instanceof Node) && getExplicitlyRegistered().containsValue((Node) obj)) {
-            for (String key : getExplicitlyRegistered().keySet()) {
-                if (obj == getExplicitlyRegistered().get(key)) {
-                    fieldName = key;
-                    break;
-                }
-            }
-        }
-        if (fieldName == null) {
-            for (String key : registered.keySet()) {
-                if (obj == registered.get(key)) {
-                    fieldName = key;
-                    break;
-                }
-            }
-        }
-        if (fieldName == null && !isLoaded()) {
-            fieldName = rootFieldName + "_" + idx + "_" + obj.getClass().getSimpleName();
-        } else if (fieldName == null) {
-            //
-            // default state has already been created ( isLoaded() == true)
-            //
-            return getFieldName(obj);
-        }
-        if (fieldName == null) {
-            //
-            // default state has already been created ( isLoaded() == true)
-            //
-            return getFieldName(obj);
-        }
-
-        return fieldName;
-    }
-     */
 }//AbstractDockLoader

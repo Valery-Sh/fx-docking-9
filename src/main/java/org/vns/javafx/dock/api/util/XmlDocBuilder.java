@@ -38,10 +38,6 @@ public class XmlDocBuilder {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             domFactory.setValidating(false);
-            //domFactory.setIgnoringComments(false);
-            //domFactory.setIgnoringElementContentWhitespace(true);
-            //domFactory.setCoalescing(true);
-            //domFactory.setExpandEntityReferences(true);            
             DocumentBuilder builder = domFactory.newDocumentBuilder();
             builder.setEntityResolver(new ParserEntityResolver());
             //doc = builder.parse(rootName);
@@ -52,7 +48,6 @@ public class XmlDocBuilder {
             return doc;
 
         } catch (DOMException | ParserConfigurationException ex) {
-            //out("Utils: getContextPropertiesByBuildDir EXCEPTION " + ex.getMessage());
             Logger.getLogger(XmlDocBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
         return doc;
@@ -74,15 +69,6 @@ public class XmlDocBuilder {
         }
         return doc;
 
-        // ------ NetBeans
-        // try {
-        //FileObject pomFo = FileUtil.toFileObject(xmlPath.toFile());
-        //Files.newInputStream(xmlPath);
-        //InputSource source = new InputSource(Files.newInputStream(xmlPath));
-        //doc = XMLUtil.parse(source, false, false, null, new XmlDocBuilder.ParseEntityResolver());
-        //} catch (IOException | DOMException | SAXException ex) {
-        //LOG.log(Level.INFO, ex.getMessage());
-        //}
     }
 
     public static Document parse(InputStream is) {
@@ -100,15 +86,6 @@ public class XmlDocBuilder {
         }
         return doc;
 
-        /*Document d = null;
-        try {
-            InputSource source = new InputSource(is);
-            d = XMLUtil.parse(source, false, false, null, new ParseEntityResolver());
-        } catch (IOException | DOMException | SAXException ex) {
-            LOG.log(Level.INFO, ex.getMessage());
-        }
-        return d;
-         */
     }
 
     public static synchronized void save(Document document, Path target) {

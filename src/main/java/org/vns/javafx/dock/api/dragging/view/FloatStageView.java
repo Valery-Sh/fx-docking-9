@@ -32,8 +32,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -53,6 +51,8 @@ public class FloatStageView implements FloatWindowView{
 
     private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
+    private ObjectProperty value = new SimpleObjectProperty();
+    
     private Pane rootPane;
 
     private final DockableContext dockableController;
@@ -196,7 +196,7 @@ public class FloatStageView implements FloatWindowView{
     public Window make(Dockable dockable, boolean show) {
         
         setSupportedCursors(DEFAULT_CURSORS);
-//        System.err.println("1 FloatingStageView CONVERT THE SAME");                        
+
         Node node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         if (screenPoint == null) {
@@ -243,9 +243,9 @@ public class FloatStageView implements FloatWindowView{
 
         BorderPane borderPane = new BorderPane();
         this.rootPane = borderPane;
-        Rectangle r = new Rectangle(75, 30);
-        r.setFill(Color.YELLOW);
-        borderPane.setCenter(r);
+        //Rectangle r = new Rectangle(75, 30);
+        //r.setFill(Color.YELLOW);
+        //borderPane.setCenter(r);
         
 
         //DockPane dockPane = new DockPane();
@@ -362,6 +362,19 @@ public class FloatStageView implements FloatWindowView{
     protected void setResizer(WindowResizer resizer) {
         this.resizer = resizer;
     }
+    
+    public ObjectProperty valueProperty() {
+        return value;
+    }
+    public Object getValue() {
+        return value.get();
+    }
+
+    public void setValue(Object obj) {
+        this.value.set(obj);
+    }
+    
+    
 /*    protected void addListeners(Window window) {
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);

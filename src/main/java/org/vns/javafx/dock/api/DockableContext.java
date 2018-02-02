@@ -61,20 +61,22 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  */
 public class DockableContext {
 
+    private DragManager dragManager;
+
     private ContextLookup lookup;
 
     private final TitleBarProperty<Region> titleBar;
 
     private final StringProperty title = new SimpleStringProperty("");
     private final Dockable dockable;
-    private Object dragObject;
-    
+
+    private DragContainer dragContainer;
+
     private final BooleanProperty floating = new SimpleBooleanProperty(false);
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockTarget = true;
 
-    
     private DragDetector dragDetector;
     //private Node dragNode;
     private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
@@ -99,6 +101,8 @@ public class DockableContext {
         this.dockable = dockable;
         titleBar = new TitleBarProperty(dockable.node());
         lookup = new DefaultContextLookup();
+        dragContainer = new DragContainer();
+//        dragContainer = dockable.node();
         init();
     }
 
@@ -124,7 +128,7 @@ public class DockableContext {
     }
 
     protected void initLookup(ContextLookup lookup) {
-        
+
     }
 
     protected void addShowingListeners() {
@@ -185,43 +189,8 @@ public class DockableContext {
      */
     public void setDragNode(Node dragSource) {
         this.dragNode.set(dragSource);
-        /*        if (dragManager != null) {
-            dragManager.setDragNode(dragSource);
-        }
-         */
     }
 
-    /*    public DragManager getDragManager() {
-        return dragManager;
-    }
-     */
-    /**
-     * @return an object used as a manager when drag operation is detected.
-     */
-    /*    protected DragManager initDragManager() {
-        Window w = null;//
-        if (dockable().node().getScene() != null && dockable().node().getScene().getWindow() != null) {
-            w = dockable().node().getScene().getWindow();
-        }
-        if (w == null) {
-            return null;
-        }
-        if (dragManager != null) {
-            //17.08dragManager.removeEventHandlers(getTitleBar());
-            //17.08dragManager.removeEventHandlers(getDragNode());
-        }
-
-        if ((w instanceof Stage) || (w instanceof PopupWindow)) {
-            dragManager = new FxDragManager(dockable);
-        } else {
-            dragManager = new JFXDragManager(dockable);
-        }
-        System.err.println("INIT DRAG MANAGER");
-        dragManager.addEventHandlers(getTitleBar());
-        dragManager.addEventHandlers(getDragNode());
-        return dragManager;
-    }
-     */
     /**
      * If {@code true} the node specified by the method {@code node()} may be
      * considered as a dock target. This means that an indicator pane which
@@ -381,6 +350,7 @@ public class DockableContext {
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
     public boolean isFloating() {
+        //if ( true ) return true;
         return this.floating.get();
     }
 
@@ -419,45 +389,11 @@ public class DockableContext {
      * @param floating the new value to be set
      */
     public void setFloating(boolean floating) {
-        this.floating.set(floating);
-        /*        if (!isFloating() && floating) {
-            FloatView t = FloatViewFactory.getInstance().getFloatView(dockable);
-            t.make(dockable);
-            this.floating.set(floating);
-        } else if (!floating) {
-            this.floating.set(floating);
+        if (this.floating.get() && !floating) {
         }
-         */
+        this.floating.set(floating);
     }
 
-    /*    public void setFloatingAsPopupControl(boolean floating) {
-        if (!isFloating() && floating) {
-            //FloatWindowBuilder t = new FloatWindowBuilder(dockable());
-            FloatView t= new FloatPopupControlView(dockable);
-            t.make(dockable);
-            this.floating.set(floating);
-            //t.makeFloatingPopupControl();
-        } else if (!floating) {
-            this.floating.set(floating);
-        }
-    }
-     */
-    /**
-     * Returns a new instance of the utility class that help to create a new
-     * stage which serves as a floating window for the node. This window may be
-     * dragged by the mouse.
-     *
-     * @return the new instance of type {@link FloatStageBuilder}
-     */
-    //public FloatWindowBuilder getStageBuilder() {
-    //07.05 return getTargetContext().getStageBuilder(dockable);
-    //    return new FloatWindowBuilder(this);
-    //}
-    /**
-     * Getter method of the {@code resizable} property
-     *
-     * @return an instance of the {@code resizable} property
-     */
     public BooleanProperty resizableProperty() {
         return resizable;
     }
@@ -497,7 +433,19 @@ public class DockableContext {
         if (getTargetContext() == null) {
             return false;
         }
-        return getTargetContext().isDocked(dockable().node());
+        if (dockable instanceof DragContainer) {
+            return false;
+        }
+        
+        Dockable d = dockable;
+        if ( getDragContainer().getValue() != null  ) {
+            if ( ! getDragContainer().isValueDockable() ) {
+                return false;
+            }
+            d = DockRegistry.dockable(getDragContainer().getValue());
+        }
+
+        return getTargetContext().isDocked(d.node());
 
     }
 
@@ -520,31 +468,24 @@ public class DockableContext {
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
-
-        /*        if (dragManager != null) {
-            if (oldValue != null) {
-                dragManager.removeEventHandlers(oldValue);
-            }
-            if (newValue != null) {
-                dragManager.addEventHandlers(newValue);
-            }
-//            dragManager.titlebarChanged(ov, oldValue, newValue);
-        }
-         */
     }
+
     /**
      * Returns the object which is an actual object to be docked
+     *
      * @return the object which is an actual object to be docked
      */
-    public Object getDragObject() {
-        return dragObject;
+    public DragContainer getDragContainer() {
+        return dragContainer;
     }
+
     /**
      * Sets the object which is an actual object to be docked
-     * @param dragObject the actual object to be docked
+     *
+     * @param dragContainer the actual object to be docked
      */
-    public void setDragObject(Object dragObject) {
-        this.dragObject = dragObject;
+    protected void setDragContainer(DragContainer dragContainer) {
+        this.dragContainer = dragContainer;
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {
@@ -552,7 +493,6 @@ public class DockableContext {
         private final DockableContext dockableContext;
 
         public Point2D startMousePos;
-        //private Parent targetDockPane; 
 
         public DragDetector(DockableContext dockableContext) {
             this.dockableContext = dockableContext;
@@ -602,26 +542,28 @@ public class DockableContext {
                 ev.consume();
                 return;
             }
-            
+
             DragManagerFactory dmf = null;
-            if ( dockable.node() instanceof TreeCell ) {
-                System.err.println("TREECELL");
-            }
+
             TargetContext tc = dockable.getDockableContext().getTargetContext();
-            
             dmf = tc.getLookup().lookup(DragManagerFactory.class);
-            if ( dmf == null ) {
+            if (dmf == null) {
                 dmf = dockable.getDockableContext().getLookup().lookup(DragManagerFactory.class);
             }
-            DragManager dm = dmf.getDragManager(dockable);
+            DragManager dm;
+            if (dragManager != null) {
+                dm = dragManager;
+            } else {
+                dm = dmf.getDragManager(dockable);
+                dragManager = dm;
+            }
+
             if (!dockable.getDockableContext().isFloating()) {
-                
-                //DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
+
                 dm.mouseDragDetected(ev, startMousePos);
                 dockable.getDockableContext().setFloating(true);
 
             } else {
-                //DragManager dm = DragManagerFactory.getInstance().getDragManager(dockable);
                 dm.mouseDragDetected(ev, startMousePos);
             }
 

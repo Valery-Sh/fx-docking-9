@@ -79,10 +79,6 @@ public class ParentChainPopup {
         popup.setOnShown(this::adjustWidths);
 
         popup.show(topNode, x, y);
-        //sp.applyCss();
-        //vb.setPrefWidth(100);
-        //popup.setWidth(100);
-        System.err.println("popup.w=" + popup.getWidth());
         if (!chain.isEmpty()) {
             vb.getChildren().get(chain.size() - 1).requestFocus();
         }
@@ -112,7 +108,7 @@ public class ParentChainPopup {
 
             int xOffset = i * 5;
             int yOffset = i * 4;
-            System.err.println("xOffset=" + xOffset);
+
             if (i != 0) {
                 b.setTranslateX(xOffset);
                 b.setTranslateY(yOffset);
@@ -140,8 +136,6 @@ public class ParentChainPopup {
         }
         Button b = (Button) vb.getChildren().get(0);
         Insets ins = b.getInsets();
-        System.err.println("ins.left=" + ins.getLeft());
-        System.err.println("ins.right=" + ins.getRight());
         if (idxW >= 0) {
             for (int i = 0; i < vb.getChildren().size(); i++) {
                 if (i != idxW) {
@@ -149,20 +143,8 @@ public class ParentChainPopup {
                 }
             }
         }
-        System.err.println("btn width=" + ((Region) vb.getChildren().get(0)).getWidth());
         if (idxW >= 0) {
-
-            System.err.println("maxWidth=" + maxWidth + "; sum=" + (vb.getChildren().size() - 1) * 5);
-            System.err.println("vb w =" + vb.getWidth());
-            //vb.setPrefWidth(maxWidth + (vb.getChildren().size()-1) * 5 );
-            //popup.setWidth(maxWidth + 120);
             vb.setPrefSize(100, 100);
-            Platform.runLater(() -> {
-                System.err.println("btn  w =" + ((Button) vb.getChildren().get(0)).getWidth());
-                System.err.println("vb   w =" + vb.getWidth());
-            });
-
-            //popup.setWidth(100);
         }
 
     }
@@ -222,7 +204,6 @@ public class ParentChainPopup {
             item.setUserData(chain.get(i));
             item.setOnAction(a -> {menu.setUserData(item.getUserData());});
             items.add(item);
-            //item.getStyleClass().add(getButtonStyle(i));
         }
         return items.toArray(new MenuItem[0]);
     }

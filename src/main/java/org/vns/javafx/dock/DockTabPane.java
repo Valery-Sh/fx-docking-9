@@ -149,7 +149,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
     }
 
     public void dock(int idx, Dockable dockable) {
-        if (!getTargetContext().isAcceptable(dockable.node())) {
+        if (!getTargetContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
 

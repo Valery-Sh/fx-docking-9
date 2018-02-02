@@ -75,82 +75,6 @@ public interface FloatWindowView extends FloatView<Window> {
         return bp;
     }
     
-/*    public static class MouseResizeHandler1 implements EventHandler<MouseEvent> {
-
-        private boolean cursorSupported = false;
-        private FloatWindowView windowView;
-
-        public MouseResizeHandler1(FloatWindowView windowView) {
-            this.windowView = windowView;
-        }
-        
-        @Override
-        public void handle(MouseEvent ev) {
-            if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-                Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-                //System.err.println("1 FloatWindowView MouseHandler cursor = " + c);
-                if (!isCursorSupported(c)) {
-                    windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
-                } else {
-                    windowView.getFloatingWindow().getScene().setCursor(c);
-                }
-                if (!c.equals(Cursor.DEFAULT)) {
-                    ev.consume();
-                }
-
-            } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-//                System.err.println("2 FloatWindowView MouseHandler. mousepressed cursor = " + c);                
-                cursorSupported = isCursorSupported(c);
-//                System.err.println("2 FloatWindowView MouseHandler. isCursorSupported = " + cursorSupported);                
-                if (!cursorSupported) {
-                    windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
-                    return;
-                }
-                windowView.getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
-            } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-//                System.err.println("3 FloatWindowView MouseHandler. isCursorSupported = " + cursorSupported);                
-                
-                
-                if (!cursorSupported) {
-                    return;
-                }
-                if ( ! windowView.getResizer().isStarted()) {
-//                System.err.println("4 FloatWindowView MouseHandler. resizer = " + windowView.getResizer());                
-//                System.err.println("4 FloatWindowView befor start MouseHandler. cursor = " + windowView.getFloatingWindow().getScene().getCursor());                                
-        
-                   windowView. getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
-                } else {
-                    Platform.runLater(() -> {
-                        windowView.getResizer().resize(ev);
-                    });
-                    
-                }
-            }
-        }
-
-        public boolean isCursorSupported(Cursor cursor) {
-//            System.err.println("isCursorSupported cursor = " + cursor);            
-            if (cursor == null || cursor == Cursor.DEFAULT) {
-                return false;
-            }
-            boolean retval = false;
-//            System.err.println("isCursorSupported windowView = " + windowView);            
-            
-//            System.err.println("isCursorSupported windowView.getSupportedCursors().len = " + windowView.getSupportedCursors().length);
-            for (Cursor c : windowView.getSupportedCursors()) {
-                if (c == cursor) {
-                    retval = true;
-                    break;
-                }
-            }
-//            System.err.println("isCursorSupported retval = " + retval);            
-            
-            return retval;
-        }
-
-    }//class MouseResizeHandler
-*/
     public static class MouseResizeHandler implements EventHandler<MouseEvent> {
 
         private boolean cursorSupported = false;
@@ -164,7 +88,6 @@ public interface FloatWindowView extends FloatView<Window> {
         public void handle(MouseEvent ev) {
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-                //System.err.println("!!!!  FloatWindowView MouseHandler cursor = " + c);
                 if (!isCursorSupported(c)) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                 } else {
@@ -176,18 +99,13 @@ public interface FloatWindowView extends FloatView<Window> {
 
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
-//                System.err.println("2 FloatWindowView MouseHandler. mousepressed cursor = " + c);                
                 cursorSupported = isCursorSupported(c);
-//                System.err.println("2 FloatWindowView MouseHandler. isCursorSupported = " + cursorSupported);                
                 if (!cursorSupported) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                     return;
                 }
                 windowView.getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
             } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-//                System.err.println("3 FloatWindowView MouseHandler. isCursorSupported = " + cursorSupported);                
-                
-                
                 if (!cursorSupported) {
                     return;
                 }
@@ -203,21 +121,17 @@ public interface FloatWindowView extends FloatView<Window> {
         }
 
         public boolean isCursorSupported(Cursor cursor) {
-//            System.err.println("isCursorSupported cursor = " + cursor);            
             if (cursor == null || cursor == Cursor.DEFAULT) {
                 return false;
             }
             boolean retval = false;
-//            System.err.println("isCursorSupported windowView = " + windowView);            
             
-//            System.err.println("isCursorSupported windowView.getSupportedCursors().len = " + windowView.getSupportedCursors().length);
             for (Cursor c : windowView.getSupportedCursors()) {
                 if (c == cursor) {
                     retval = true;
                     break;
                 }
             }
-//            System.err.println("isCursorSupported retval = " + retval);            
             
             return retval;
         }

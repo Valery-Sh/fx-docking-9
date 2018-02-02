@@ -42,6 +42,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 
 /**
@@ -337,7 +338,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putUnique(PositionIndicator.class,new TabPanePositonIndicator(this));
+            lookup.putUnique(PositionIndicator.class, new TabPanePositonIndicator(this));
         }
 
         @Override
@@ -361,7 +362,15 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
         @Override
         public void dock(Point2D mousePos, Dockable dockable) {
-            getDockExecutor().dock(mousePos, dockable);
+            Dockable dragged = dockable;
+            DragContainer dc = dockable.getDockableContext().getDragContainer();
+            Object v = dc.getValue();
+            if (v != null && !(dc.isValueDockable())) {
+                return;
+            } else if (dc.isValueDockable()) {
+                dragged = DockRegistry.dockable(v);
+            }
+            getDockExecutor().dock(mousePos, dragged);
         }
 
         @Override
@@ -369,14 +378,14 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             return getDockExecutor().doDock(mousePos, node);
         }
 
-/*        @Override
+        /*        @Override
         public PositionIndicator getPositionIndicator() {
             if (positionIndicator == null) {
                 createPositionIndicator();
             }
             return positionIndicator;
         }
-*/        
+         */
         private DockExecutor dockExecutor;
 
         protected DockExecutor getDockExecutor() {
@@ -385,7 +394,6 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             }
             return dockExecutor;
         }
-
 
         @Override
         public void remove(Node dockNode) {
@@ -927,21 +935,21 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
     public static class TabPanePositonIndicator extends PositionIndicator {
 
         private Rectangle tabDockPlace;
-        
+
         private IndicatorPopup indicatorPopup;
-        
+
         public TabPanePositonIndicator(TargetContext context) {
             super(context);
             //this.targetContext = targetContext;
         }
-        
+
         @Override
         public void showIndicator(double screenX, double screenY) {
             getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
         }
 
         private IndicatorPopup getIndicatorPopup() {
-            if ( indicatorPopup == null) {
+            if (indicatorPopup == null) {
                 indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
             }
             return indicatorPopup;
@@ -977,13 +985,13 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
         @Override
         public void showDockPlace(double x, double y) {
-            int idx = ((DockTabPane2)getTargetContext().getTargetNode()).getItemIndex(x, y);
+            int idx = ((DockTabPane2) getTargetContext().getTargetNode()).getItemIndex(x, y);
             if (idx < 0) {
                 return;
             }
 
-            DockTabPane2 pane = (DockTabPane2)getTargetContext().getTargetNode();
-            
+            DockTabPane2 pane = (DockTabPane2) getTargetContext().getTargetNode();
+
             double tabsHeight = pane.tabArea.getPane().getHeight();
 
             Rectangle dockPlace = (Rectangle) getDockPlace();

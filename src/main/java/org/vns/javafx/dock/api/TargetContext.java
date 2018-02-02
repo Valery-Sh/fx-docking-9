@@ -12,7 +12,6 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.demo.TestDockPaneControl.TabNode;
 
 /**
  *
@@ -178,30 +177,34 @@ public abstract class TargetContext {
         this.dockLoader = loader;
     }
 
-    public boolean isAcceptable(Node node) {
-        //if ( dockLoader != null && dockLoader.getEntryName(this.getTargetNode()) != null ) {
-        
-        Dockable d = DockRegistry.dockable(node);
-        if ( d instanceof TabNode) {
-            System.err.println("TabNode");
+    public boolean isAcceptable(Dockable dockable) {
+        if ( dockable instanceof DragContainer) {
+            return false;
         }
-        Node nd = node;
-        System.err.println("*** isAcceptable: node = " + node);
-        System.err.println("*** isAcceptable: d = " + d);
-        System.err.println("*** isAcceptable: d.context = " + d.getDockableContext());        
-        Object o = d.getDockableContext().getDragObject();
-        if (o != null && (o instanceof Dockable)) {
-            nd = ((Dockable)o).node();
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        Object v = dc.getValue();
+        Dockable dragged = dockable;
+        if ( v != null && ! (dc.isValueDockable()) ) {
+            return false;
+        } else if (dc.isValueDockable()) {
+            dragged = DockRegistry.dockable(v);
         }
-        System.err.println("*** isAcceptable: dockLoader = " + dockLoader);        
-        return (dockLoader != null && dockLoader.isRegistered(nd)) || dockLoader == null;
+        return (dockLoader != null && dockLoader.isRegistered(dragged.node())) || dockLoader == null;
     }
-
+    
+    
     public void dock(Point2D mousePos, Dockable dockable) {
-        if (isDocked(dockable.node())) {
+        Dockable d = dockable;
+        if ( dockable instanceof DragContainer ) {
+            if ( ! ((DragContainer)dockable).isValueDockable() ) {
+                return;
+            }
+            d = (Dockable) ((DragContainer)dockable).getValue();
+        }
+        if (isDocked(d.node())) {
             return;
         }
-        Node node = dockable.node();
+        Node node = d.node();
         Window stage = null;
         if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
             stage = node.getScene().getWindow();
@@ -251,7 +254,25 @@ public abstract class TargetContext {
     protected boolean isDocked(Node node) {
         return false;
     }
-
+    /**
+     *  isDocked(Node) returns true even if the node is docked to 
+     *  ScenePaneContext
+     * 
+     * @param to ??
+     * @param dockable ??
+     * @return 
+     */
+    public static boolean isDocked(TargetContext to, Dockable dockable) {
+        Dockable d = dockable;
+        DragContainer dc = d.getDockableContext().getDragContainer();
+        if ( dc.getValue() != null  ) {
+            if ( ! dc.isValueDockable() ) {
+                return false;
+            }
+            d = DockRegistry.dockable(dc.getValue());
+        }        
+        return to.isDocked(d.node());
+    }
     public void undock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
             DockableContext dc = DockRegistry.dockable(node).getDockableContext();

@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-//import org.netbeans.modules.jeeserver.base.deployment.utils.BaseUtil;
-//import org.openide.util.Exceptions;
 
 /**
  * The class is a specialized wrapper around the class
@@ -412,8 +410,6 @@ public class DockPreferences {
                 if (!rootToDelete.nodeExists("") || !rootToDelete.nodeExists(newpath)) {
                     return false;
                 }
-                //removeNode(rootToDelete.node(newpath), getPreferences());
-                //rootExtended().flush();
                 DockPreferences.this.remove(rootToDelete.node(newpath));
                 userRoot().flush();
             } catch (BackingStoreException ex) {
@@ -491,11 +487,6 @@ public class DockPreferences {
             }
             prefs.removeNode();
             prefs.flush();
-            //boolean b = parent.nodeExists(nm);
-            /* 28.09if (parent.absolutePath().equals(getPreferences().absolutePath())) {
-                return;
-            }
-            */
             if (parent.childrenNames().length > 0) {
                 return;
             }
@@ -517,7 +508,6 @@ public class DockPreferences {
         Preferences parent = toRemove.parent();
         try {
             toRemove.removeNode();
-            //String rootAbs = getPreferences().absolutePath();
             if (parent.absolutePath().equals(upperNode.absolutePath())) {
                 return parent;
             }

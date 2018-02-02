@@ -459,18 +459,28 @@ public class DockRegistry {
         return getInstance().isNodeDockable(node);
     }
 
-    public static boolean isDockable(Node node) {
-        return getInstance().isNodeDockable(node);
+    public static boolean isDockable(Object obj) {
+        if ( obj instanceof Dockable) {
+            return true;
+        }
+        if ( !(obj instanceof Node ) ) {
+            return false;
+        }
+        return getInstance().isNodeDockable((Node)obj);
     }
 
-    public static Dockable dockable(Node node) {
-        if (node == null) {
+    public static Dockable dockable(Object obj) {
+        if (obj == null) {
             return null;
         }
 
-        if (node instanceof Dockable) {
-            return (Dockable) node;
+        if (obj instanceof Dockable) {
+            return (Dockable) obj;
         }
+        if ( !(obj instanceof Node) ) {
+            return null;
+        }
+        Node node = (Node) obj;
         Dockable retval = getInstance().dockables.get(node);
         if (retval == null) {
             Object d = node.getProperties().get(Dockable.DOCKABLE_KEY);

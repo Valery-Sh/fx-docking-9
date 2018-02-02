@@ -224,7 +224,6 @@ public interface DockTreeItemBuilder {
             retval = f.getItemBuilder(dockTarget);
         }
         return retval;
-        //return new DockTabPaneTreeItemBuilder((DockTabPane) getTargetNode());
     }
 
 }

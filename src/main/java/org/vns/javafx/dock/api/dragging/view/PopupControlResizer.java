@@ -37,10 +37,6 @@ public class PopupControlResizer extends StageResizer {
         PopupControl pc = (PopupControl) getWindow();
         Region root = (Region) pc.getScene().getRoot();
 
-//       System.err.println("   ++++ --- +++ !!! getWindow().width =" + getWindow().getWidth());
-//       System.err.println("   ++++ --- +++ !!! root.width =" + getWindowView().getRootPane().getWidth());
-//       System.err.println("   ++++ --- +++ !!! root.frefWidth =" + getWindowView().getRootPane().getPrefWidth());
-//       System.err.println("   ++++++++++ !!! getCursor() =" + getCursor());
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
 
         double curX = getMouseX();
@@ -61,12 +57,6 @@ public class PopupControlResizer extends StageResizer {
             wDelta = getMouseX() - x;
             xDelta = -wDelta;
             curX = x;
-            /*            System.err.println("CALC DELTA:");            
-            System.err.println("RESIZE xDelta =" + xDelta );
-            System.err.println("RESIZE wDelta =" + wDelta );
-            System.err.println("RESIZE curX   =" + curX );
-            System.err.println("===========================================");            
-             */
         } else if (getCursor() == Cursor.SE_RESIZE) {
             hDelta = y - getMouseY();
             curY = y;
@@ -93,22 +83,13 @@ public class PopupControlResizer extends StageResizer {
             curX = x;
             curY = y;
         }
-        //pc.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
         double w = -1;
         double h = -1;
 
-//        if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() > resizeMinWidth) {
         if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() > ((PopupControl) getWindow()).getMinWidth()) {
 
-//            System.err.println("RESIZE getWindow().getWidth() =" + getWindow().getWidth() );
-//            System.err.println("   --- RESIZE wDelta =" + wDelta );
-//            System.err.println("   --- RESIZE rootPrefWidth   =" + root.getPrefWidth() );
-//            System.err.println("     --- RESIZE new rootPrefWidth   =" + ( wDelta + root.getPrefWidth() ) );
             root.setPrefWidth(wDelta + root.getPrefWidth());
-            //((PopupControl)getWindow()).setPrefWidth(wDelta + ((PopupControl)getWindow()).getWidth());
-
             pc.setAnchorX(xDelta + pc.getAnchorX());
-            //pc.setX(xDelta + pc.getX());
             setMouseX(curX);
         }
 
@@ -121,9 +102,6 @@ public class PopupControlResizer extends StageResizer {
 
     @Override
     public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
-//        System.err.println("START POPUP RESIZER ");
         super.start(ev, stage, cursor, supportedCursors);
-        System.err.println("   ---  START POPUP RESIZER SUPPORTRD CURSORS = " + supportedCursors.length);
-        System.err.println("   ---  START POPUP RESIZER CURSOR = " + cursor);
     }
 }
