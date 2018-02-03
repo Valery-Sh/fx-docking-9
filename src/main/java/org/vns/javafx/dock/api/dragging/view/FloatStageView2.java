@@ -311,7 +311,7 @@ public class FloatStageView2 implements FloatWindowView{
         if (!DockRegistry.instanceOfDockable(node)) {
             return null;
         }
-        Dockable dockable = DockRegistry.dockable(node);
+        Dockable dockable = Dockable.of(node);
         make(dockable);
         getFloatingWindow().setX(popup.getX());
         getFloatingWindow().setY(popup.getY());

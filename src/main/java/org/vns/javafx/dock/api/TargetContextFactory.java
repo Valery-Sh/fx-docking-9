@@ -168,7 +168,7 @@ public class TargetContextFactory {
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
                 if (DockRegistry.instanceOfDockable(node)) {
-                    list.add(DockRegistry.dockable(node));
+                    list.add(Dockable.of(node));
                 }
             });
             return list;

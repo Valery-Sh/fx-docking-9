@@ -54,7 +54,7 @@ public class DragContainer extends Control implements Dockable{
 
     public void setValue(Object obj) {
         if ( obj != null && DockRegistry.isDockable(obj) ) {
-            DockRegistry.dockable(obj).getDockableContext().setFloating(true);
+            Dockable.of(obj).getDockableContext().setFloating(true);
         }
         this.value.set(obj);
     }

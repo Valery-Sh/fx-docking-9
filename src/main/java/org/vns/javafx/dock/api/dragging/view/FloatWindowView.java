@@ -88,6 +88,7 @@ public interface FloatWindowView extends FloatView<Window> {
         public void handle(MouseEvent ev) {
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
+                System.err.println("MouseResizer: cursor = " + c);
                 if (!isCursorSupported(c)) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                 } else {

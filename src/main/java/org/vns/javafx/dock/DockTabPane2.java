@@ -202,7 +202,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
     protected void focusChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         getTabs().forEach(tab -> {
-            Dockable d = DockRegistry.dockable(tab.getContent());
+            Dockable d = Dockable.of(tab.getContent());
             if (newValue && isFocused(tab.getTitleBar())) {
                 //tabArea.select(d.node());
                 tab.setSelected(true);
@@ -297,7 +297,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         private Separator separator;
 
         public TitleBar(Tab tab) {
-            super(DockRegistry.dockable(tab.getContent()));
+            super(Dockable.of(tab.getContent()));
             this.tabPane = tab.getTabPane();
             this.tab = tab;
             init();
@@ -368,7 +368,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             if (v != null && !(dc.isValueDockable())) {
                 return;
             } else if (dc.isValueDockable()) {
-                dragged = DockRegistry.dockable(v);
+                dragged = Dockable.of(v);
             }
             getDockExecutor().dock(mousePos, dragged);
         }
@@ -483,7 +483,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
          */
         protected void setSelected(boolean sel) {
             tabPane.getTabs().forEach(tab -> {
-                Dockable d = DockRegistry.dockable(tab.getContent());
+                Dockable d = Dockable.of(tab.getContent());
                 TitleBar tb = tab.getTitleBar();
                 if (d != content && sel) {
                     tb.setSelectedPseudoClass(false);
@@ -501,7 +501,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         protected void saveContentTitleBar() {
-            Region tb = DockRegistry.dockable(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
             titleBarVisible = tb.isVisible();
             titleBarMinHeight = tb.getMinHeight();
             titleBarPrefHeight = tb.getPrefHeight();
@@ -509,14 +509,14 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         protected void hideContentTitleBar() {
-            Region tb = DockRegistry.dockable(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
             tb.setVisible(false);
             tb.setMinHeight(0);
             tb.setPrefHeight(0);
         }
 
         protected void showContentTitleBar() {
-            Region tb = DockRegistry.dockable(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
             tb.setVisible(titleBarVisible);
             tb.setMinHeight(titleBarMinHeight);
             tb.setPrefHeight(titleBarPrefHeight);
@@ -879,7 +879,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             if (((DockTabPane2) paneContext.getTargetNode()).getItemIndex(mousePos.getX(), mousePos.getY()) < 0) {
                 return;
             }
-            Dockable d = DockRegistry.dockable(node);
+            Dockable d = Dockable.of(node);
             if (d.getDockableContext().isFloating()) {
                 if (doDock(mousePos, node)) {
                     dockable.getDockableContext().setFloating(false);
@@ -922,7 +922,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
             Tab tab = ((DockTabPane2) paneContext.getTargetNode()).addTab(mousePos, node);
 
-            DockableContext nodeContext = DockRegistry.dockable(node).getDockableContext();
+            DockableContext nodeContext = Dockable.of(node).getDockableContext();
             nodeContext.setDragNode(tab.getTitleBar());
             if (nodeContext.getTargetContext() == null || nodeContext.getTargetContext() != paneContext) {
                 nodeContext.setTargetContext(paneContext);

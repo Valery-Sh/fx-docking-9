@@ -127,8 +127,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
 
             FloatViewFactory f = null;
-            if (getDockable().getDockableContext().getTargetContext() != null) {
-                f = getDockable().getDockableContext().getTargetContext().getLookup().lookup(FloatViewFactory.class);
+            if (getTargetContext(getDockable()) != null) {
+                f = getTargetContext(getDockable()).getLookup().lookup(FloatViewFactory.class);
             }
             if (f == null) {
                 f = getDockable().getDockableContext().getLookup().lookup(FloatViewFactory.class);
@@ -156,6 +156,9 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             ((Node) ev.getSource()).addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         }
 
+    }
+    protected TargetContext getTargetContext(Dockable d) {
+        return d.getDockableContext().getTargetContext();
     }
 
     /**
@@ -297,11 +300,18 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
             TargetContext tc = indicatorManager.getTargetContext();
             if (indicatorManager.isShowing() || indicatorManager.getPositionIndicator() == null) {
-                System.err.println(" ----  dock() 1");                
+                System.err.println(" ----  dock() 1");
                 tc.dock(pt, dockable);
-                if (TargetContext.isDocked(tc, dockable) && floatingWindow != null && floatingWindow.isShowing()) {
+                boolean isDocked = TargetContext.isDocked(tc, dockable);
+                if (isDocked && floatingWindow != null && floatingWindow.isShowing()) {
                     hideFloatingWindow();
+                }
+                if (isDocked) {
+                    System.err.println("2 MouseReleased hideFloatingWindow dockable=" + dockable.node());                    
                     dockable.getDockableContext().setFloating(false);
+                    if (getContainerValue() != null && floatingWindow != null && getContainerDockable() != null) {
+                        getContainerDockable().getDockableContext().setFloating(false);
+                    }
                 }
             }
             if (indicatorManager != null && indicatorManager.isShowing()) {
@@ -309,8 +319,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             }
         }
         if (getContainerValue() != null && floatingWindow != null) {
-            hideFloatingWindow();
-            dockable.getDockableContext().setFloating(false);
+            //hideFloatingWindow();
+            //dockable.getDockableContext().setFloating(false);
         }
     }
 
@@ -328,7 +338,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         Object v = dc.getValue();
 
         if (v != null && (dc.isValueDockable())) {
-            retval = DockRegistry.dockable(v);
+            retval = Dockable.of(v);
         }
         return retval;
     }
@@ -350,8 +360,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     protected Node getFloatingWindowRoot() {
-        Node r = floatingWindow.getScene().getRoot();
-        return r;
+        return floatingWindow.getScene().getRoot();
     }
 
     @Override

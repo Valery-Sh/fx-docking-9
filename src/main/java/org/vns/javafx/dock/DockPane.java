@@ -108,7 +108,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         targetContext.dock(dockable, side);
     }
     public void dockNode(Node dockableNode, Side side) {
-        dock( DockRegistry.dockable(dockableNode), side);
+        dock( Dockable.of(dockableNode), side);
     }
 
     public void dockNode(Node dockableNode, Side side, Dockable target) {

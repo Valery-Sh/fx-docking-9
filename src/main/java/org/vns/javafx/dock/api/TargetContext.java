@@ -68,7 +68,7 @@ public abstract class TargetContext {
 
     protected void commitDock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
-            DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
+            DockableContext dockableContext = Dockable.of(node).getDockableContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
@@ -154,16 +154,16 @@ public abstract class TargetContext {
                 return DockRegistry.instanceOfDockable(p);
             });
             if (newNode != null) {
-                DockRegistry.dockable(newNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
+                Dockable.of(newNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
                 return DockRegistry.instanceOfDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
-                DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().isActiveChoosedPseudoClass()) {
-                DockRegistry.dockable(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
+                Dockable.of(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !Dockable.of(oldNode).getDockableContext().titleBarProperty().isActiveChoosedPseudoClass()) {
+                Dockable.of(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -187,7 +187,7 @@ public abstract class TargetContext {
         if ( v != null && ! (dc.isValueDockable()) ) {
             return false;
         } else if (dc.isValueDockable()) {
-            dragged = DockRegistry.dockable(v);
+            dragged = Dockable.of(v);
         }
         return (dockLoader != null && dockLoader.isRegistered(dragged.node())) || dockLoader == null;
     }
@@ -195,13 +195,15 @@ public abstract class TargetContext {
     
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = dockable;
-        if ( dockable instanceof DragContainer ) {
-            if ( ! ((DragContainer)dockable).isValueDockable() ) {
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        if ( dc.getValue() != null  ) {
+            if ( ! dc.isValueDockable() ) {
                 return;
             }
-            d = (Dockable) ((DragContainer)dockable).getValue();
+            d = Dockable.of(dc.getValue());
         }
         if (isDocked(d.node())) {
+            System.err.println("TargetContext isDocked == false foe node = " + d.node());
             return;
         }
         Node node = d.node();
@@ -210,14 +212,14 @@ public abstract class TargetContext {
             stage = node.getScene().getWindow();
         }
 
-        if (doDock(mousePos, dockable.node()) && stage != null) {
-            dockable.getDockableContext().setFloating(false);
+        if (doDock(mousePos, d.node()) && stage != null) {
+            d.getDockableContext().setFloating(false);
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {
                 stage.hide();
             }
-            dockable.getDockableContext().setTargetContext(this);
+            d.getDockableContext().setTargetContext(this);
         }
     }
 
@@ -269,13 +271,13 @@ public abstract class TargetContext {
             if ( ! dc.isValueDockable() ) {
                 return false;
             }
-            d = DockRegistry.dockable(dc.getValue());
+            d = Dockable.of(dc.getValue());
         }        
         return to.isDocked(d.node());
     }
     public void undock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
-            DockableContext dc = DockRegistry.dockable(node).getDockableContext();
+            DockableContext dc = Dockable.of(node).getDockableContext();
             dc.getTargetContext().remove(node);
             dc.setTargetContext(null);
         }

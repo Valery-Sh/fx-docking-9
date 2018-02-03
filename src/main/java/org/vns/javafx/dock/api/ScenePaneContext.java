@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -58,9 +59,9 @@ public class ScenePaneContext extends TargetContext {
     protected boolean isDocked(Node node) {
         boolean retval = false;
         if (DockRegistry.instanceOfDockable(node)) {
-            if (node.getParent() != null && (node.getParent() instanceof Pane)) {
-                retval = true;
-            }
+            //if (node.getParent() != null && (node.getParent() instanceof Pane)) {
+                retval = DockUtil.getOwnerWindow(node) != null;
+            //}
         }
         return retval;
     }

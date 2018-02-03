@@ -1,6 +1,6 @@
 package org.vns.javafx.dock.api.demo;
 
-import java.util.List;
+import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -19,6 +20,7 @@ import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;
@@ -36,7 +38,8 @@ public class TestDockPaneControl extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("PRIMARY");
-
+        System.err.println("UUID = " + UUID.randomUUID());
+                
         StackPane stackPane = new StackPane();
         HBox root = new HBox();
         root.getChildren().add(stackPane);
@@ -156,6 +159,7 @@ public class TestDockPaneControl extends Application {
 
         });
         b3.setOnAction(a -> {
+            System.err.println("Tabs size = " + dockTabPane1.getTabs().size());
             //System.err.println("before (b3)hs1.sz=" + hs1.getItems().size());
             //hs1.getItems().remove(dnc4);
             //System.err.println("after (b3)hs1.sz=" + hs1.getItems().size());
@@ -197,7 +201,7 @@ public class TestDockPaneControl extends Application {
         Button ndBtn1 = new Button("ndBtn1");
         DockRegistry.getInstance().registerDefault(ndBtn1);
         
-        TabNode tab1 = new TabNode("Tab1");
+        TabNode tab1 = new TabNode("Tab1 of TabNode");
         DockRegistry.getInstance().register(tab1);
         tab1.getDockableContext().setDragNode(tab1.node());
         root1.getChildren().add(tab1.node());
@@ -211,12 +215,38 @@ public class TestDockPaneControl extends Application {
         
         
         Button dockableBtn1 = new Button("dockableBtn1");
+        
+        //dockableBtn1.setPadding(new Insets(0,0,0,0));
+                
         DockRegistry.getInstance().registerDefault(dockableBtn1);
-
+        System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
-
+        
+                
         stage1.show();
+        Stage stage2 = new Stage();
+        BorderPane rootBorderPane = new BorderPane();
+        Scene scene2 = new Scene(rootBorderPane);
+        stage2.setScene(scene2);
+        Button btnBP = new Button("BorderPaneButton");
+        rootBorderPane.setCenter(btnBP);
+        stage2.sizeToScene();
+        stage2.setAlwaysOnTop(true);        
+ 
+        stage2.setMinWidth(rootBorderPane.minWidth(DockUtil.heightOf(btnBP)));
+        stage2.setMinHeight(rootBorderPane.minHeight(DockUtil.widthOf(btnBP)));
 
+        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
+        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
+        double prefWidth = rootBorderPane.prefWidth(DockUtil.heightOf(btnBP));
+        double prefHeight = rootBorderPane.prefHeight(DockUtil.widthOf(btnBP));
+
+        rootBorderPane.setPrefWidth(prefWidth);
+        rootBorderPane.setPrefHeight(prefHeight);
+        rootBorderPane.setStyle("-fx-background-color: red");
+        stage2.show();
+        
+        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
 

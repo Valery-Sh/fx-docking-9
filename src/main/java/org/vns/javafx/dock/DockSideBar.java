@@ -438,7 +438,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
-            Dockable dockable = DockRegistry.dockable(node);
+            Dockable dockable = Dockable.of(node);
 
             Window priorWindow = null;
             if (node.getScene() != null && node.getScene().getWindow() != null) {
@@ -579,7 +579,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 itemMap.get(r).getFloatView().setSupportedCursors(FloatView.DEFAULT_CURSORS);
                 itemMap.remove(r);
                 ((DockSideBar) getTargetNode()).getDelegate().getItems().remove(r);
-                ((DockSideBar) getTargetNode()).getItems().remove(DockRegistry.dockable(dockNode));
+                ((DockSideBar) getTargetNode()).getItems().remove(Dockable.of(dockNode));
 
             }
         }

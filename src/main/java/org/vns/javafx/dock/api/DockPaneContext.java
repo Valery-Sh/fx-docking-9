@@ -77,7 +77,7 @@ public class DockPaneContext extends TargetContext {
         if ( v != null && ! (dc.isValueDockable()) ) {
             return;
         } else if (dc.isValueDockable()) {
-            dragged = DockRegistry.dockable(v);
+            dragged = Dockable.of(v);
         }
         if ( dockable instanceof DragContainer ) {
             if ( ! ((DragContainer)dockable).isValueDockable() ) {
@@ -93,14 +93,14 @@ public class DockPaneContext extends TargetContext {
             return;
         }
         DragPopup dp = (DragPopup) popup;
-        Dockable d = DockRegistry.dockable(node);
+        Dockable d = Dockable.of(node);
         if (d.getDockableContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
             if (dp.getTargetPaneSidePos() != null) {
-                //dock(DockRegistry.dockable(node), dp.getTargetPaneSidePos());
+                //dock(Dockable.of(node), dp.getTargetPaneSidePos());
                 dock(dragged, dp.getTargetPaneSidePos());
             } else if (dp.getTargetNodeSidePos() != null) {
-                Dockable t = dp.getDragTarget() == null ? null : DockRegistry.dockable(dp.getDragTarget());
-                //dock(DockRegistry.dockable(node), dp.getTargetNodeSidePos(), t);
+                Dockable t = dp.getDragTarget() == null ? null : Dockable.of(dp.getDragTarget());
+                //dock(Dockable.of(node), dp.getTargetNodeSidePos(), t);
                 dock(dragged, dp.getTargetNodeSidePos(), t);
             }
         }
@@ -142,7 +142,7 @@ public class DockPaneContext extends TargetContext {
     @Override
     protected void commitDock(Node node) {
         if (DockRegistry.instanceOfDockable(node)) {
-            DockableContext dockableContext = DockRegistry.dockable(node).getDockableContext();
+            DockableContext dockableContext = Dockable.of(node).getDockableContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
@@ -192,9 +192,9 @@ public class DockPaneContext extends TargetContext {
 
         DockSplitPane dsp = getParentSplitPane(root, dockNode);
         if (dsp != null) {
-            TargetContext ph = DockRegistry.dockable(dockNode).getDockableContext().getTargetContext();
+            TargetContext ph = Dockable.of(dockNode).getDockableContext().getTargetContext();
             dsp.getItems().remove(dockNode);
-            DockRegistry.dockable(dockNode).getDockableContext().setTargetContext(ph);
+            Dockable.of(dockNode).getDockableContext().setTargetContext(ph);
             clearEmptySplitPanes(root, dsp);
             //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_UNDOCKED, dockNode, getTargetNode()));
         }
@@ -209,7 +209,7 @@ public class DockPaneContext extends TargetContext {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         ((DockPane) getTargetNode()).getItems().forEach(node -> {
             if (DockRegistry.instanceOfDockable(node)) {
-                list.add(DockRegistry.dockable(node));
+                list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
                 getDockables((DockSplitPane) node, list);
             }
@@ -220,7 +220,7 @@ public class DockPaneContext extends TargetContext {
     private void getDockables(DockSplitPane pane, List<Dockable> list) {
         pane.getItems().forEach(node -> {
             if (DockRegistry.instanceOfDockable(node)) {
-                list.add(DockRegistry.dockable(node));
+                list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
                 getDockables((DockSplitPane) node, list);
             }
@@ -275,7 +275,7 @@ public class DockPaneContext extends TargetContext {
 
             if (root.getItems().isEmpty()) {
                 root.getItems().add(node);
-            }
+            } else 
             if (newOrientation != oldOrientation) {
                 DockSplitPane dp = null;
                 DockSplitPane dpOrig = null;
@@ -364,7 +364,7 @@ public class DockPaneContext extends TargetContext {
                 return;
             }
 
-            Dockable d = DockRegistry.dockable(node);
+            Dockable d = Dockable.of(node);
 
             Orientation newOrientation = (dockPos == Side.LEFT || dockPos == Side.RIGHT)
                     ? Orientation.HORIZONTAL : Orientation.VERTICAL;

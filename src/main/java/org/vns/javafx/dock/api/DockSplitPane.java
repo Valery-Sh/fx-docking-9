@@ -40,7 +40,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         if (dpt != null && getItems().size() > 0) {
             getItems().forEach(it -> {
                 if (DockRegistry.instanceOfDockable(it)) {
-                    DockRegistry.dockable(it).getDockableContext().setTargetContext(dpt.getTargetContext());
+                    Dockable.of(it).getDockableContext().setTargetContext(dpt.getTargetContext());
                 }
             });
         }
@@ -78,7 +78,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                 }
                 for (Node node : list) {
                     if (dpt != null && DockRegistry.instanceOfDockable(node)) {
-                        DockRegistry.dockable(node).getDockableContext().setTargetContext(dpt.getTargetContext());
+                        Dockable.of(node).getDockableContext().setTargetContext(dpt.getTargetContext());
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneAdded((SplitPane) node, dpt);
                     } else if (node instanceof DockSplitPane) {
@@ -94,7 +94,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
             if (DockRegistry.instanceOfDockable(node)) {
-                Dockable d = DockRegistry.dockable(node);
+                Dockable d = Dockable.of(node);
                 d.getDockableContext().setTargetContext(ph);
                 /*                if (i < split.getDividers().size() && d.getDockableContext().getDividerPos() >= 0) {
                     split.getDividers().get(i).setPosition(d.getDockableContext().getDividerPos());
@@ -125,7 +125,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
 
         sp.getItems().forEach((node) -> {
             if (DockRegistry.instanceOfDockable(node)) {
-                DockRegistry.dockable(node).getDockableContext().setTargetContext(dpt.getTargetContext());
+                Dockable.of(node).getDockableContext().setTargetContext(dpt.getTargetContext());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }

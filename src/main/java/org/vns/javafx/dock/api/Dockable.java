@@ -49,4 +49,11 @@ public interface Dockable {
                 .addUserAgentStylesheet(u.toExternalForm());
     }
     
+    static Dockable of(Object obj) {
+        return DockRegistry.dockable(obj);
+    }
+    static boolean isDockable(Object obj) {
+        return DockRegistry.isDockable(obj);
+    }
+    
 }

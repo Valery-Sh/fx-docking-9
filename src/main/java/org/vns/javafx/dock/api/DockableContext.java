@@ -14,12 +14,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.dragging.DragManagerFactory;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
@@ -219,7 +219,16 @@ public class DockableContext {
     protected void targetContextChanged(ObservableValue<? extends TargetContext> observable, TargetContext oldValue, TargetContext newValue) {
         if (newValue == null) {
             targetContext.set(scenePaneContext);
+        } else {
+            //
+            // The drag manager may be changed 
+            //
+            DragManagerFactory dmf = newValue.getLookup().lookup(DragManagerFactory.class);
+            if (dmf != null) {
+                dragManager = dmf.getDragManager(dockable);
+            }
         }
+
     }
 
     /**
@@ -353,7 +362,6 @@ public class DockableContext {
         return this.floating.get();
     }
 
-    
     /**
      * Transfers the object into the <i>floating</i> state. If the current value
      * of the property is {@code false} and the specified value is {@code true}
@@ -363,8 +371,6 @@ public class DockableContext {
      * @param floating the new value to be set
      */
     public void setFloating(boolean floating) {
-        if (this.floating.get() && !floating) {
-        }
         this.floating.set(floating);
     }
 
@@ -410,13 +416,13 @@ public class DockableContext {
         if (dockable instanceof DragContainer) {
             return false;
         }
-        
+
         Dockable d = dockable;
-        if ( getDragContainer().getValue() != null  ) {
-            if ( ! getDragContainer().isValueDockable() ) {
+        if (getDragContainer().getValue() != null) {
+            if (!getDragContainer().isValueDockable()) {
                 return false;
             }
-            d = DockRegistry.dockable(getDragContainer().getValue());
+            d = Dockable.of(getDragContainer().getValue());
         }
 
         return getTargetContext().isDocked(d.node());
@@ -445,6 +451,42 @@ public class DockableContext {
     }
 
     /**
+     * Returns the object which manages a dragging execution. Can't be changed
+     * during dragging.
+     *
+     * @return the object which manages a dragging execution
+     */
+    public DragManager getDragManager() {
+        if (dragManager == null) {
+            createDragManager();
+        }
+        return dragManager;
+    }
+
+    /**
+     * Creates the object which manages a dragging execution. Can't be changed
+     * during dragging.
+     *
+     */
+    public void createDragManager() {
+
+        DragManagerFactory dmf = null;
+
+        TargetContext tc = dockable.getDockableContext().getTargetContext();
+
+        if (tc != null) {
+            dmf = tc.getLookup().lookup(DragManagerFactory.class
+            );
+
+            if (dmf == null) {
+                dmf = dockable.getDockableContext().getLookup().lookup(DragManagerFactory.class
+                );
+            }
+        }
+        dragManager = dmf.getDragManager(dockable);
+    }
+
+    /**
      * Returns the object which is an actual object to be docked
      *
      * @return the object which is an actual object to be docked
@@ -460,6 +502,7 @@ public class DockableContext {
      */
     protected void setDragContainer(DragContainer dragContainer) {
         this.dragContainer = dragContainer;
+
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {
@@ -486,6 +529,8 @@ public class DockableContext {
                 }
             });
             dockableContext.dragNodeProperty().addListener((ov, oldValue, newValue) -> {
+                //System.err.println("DockableContext: dragNodePropert.addListener oldValue = " + oldValue);
+                //System.err.println("DockableContext: dragNodePropert.addListener newValue =" + newValue);                
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
@@ -517,28 +562,23 @@ public class DockableContext {
                 return;
             }
 
-            DragManagerFactory dmf = null;
-
-            TargetContext tc = dockable.getDockableContext().getTargetContext();
-            dmf = tc.getLookup().lookup(DragManagerFactory.class);
-            if (dmf == null) {
-                dmf = dockable.getDockableContext().getLookup().lookup(DragManagerFactory.class);
-            }
-            DragManager dm;
-            if (dragManager != null) {
-                dm = dragManager;
-            } else {
-                dm = dmf.getDragManager(dockable);
-                dragManager = dm;
-            }
+            DragManager dm = getDragManager();
 
             if (!dockable.getDockableContext().isFloating()) {
-
+                System.err.println("DockableContext dragDetected is Floating = false");
                 dm.mouseDragDetected(ev, startMousePos);
                 dockable.getDockableContext().setFloating(true);
-
             } else {
-                dm.mouseDragDetected(ev, startMousePos);
+                System.err.println("DockableContext dragDetected is Floating = true");
+                Dockable d = FloatView.getDraggedDockable(dockable);
+                if (d != null) {
+                    System.err.println("DockableContext dragDetected d != null is d is Floating = " + d.getDockableContext().isFloating());
+                    d.getDockableContext().getDragManager().mouseDragDetected(ev, startMousePos);
+                } else {
+                    System.err.println("DockableContext dragDetected d == null ");
+
+                    dm.mouseDragDetected(ev, startMousePos);
+                }
             }
 
         }

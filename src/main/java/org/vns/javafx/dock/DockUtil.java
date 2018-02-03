@@ -19,12 +19,20 @@ import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
 public class DockUtil {
+    public static Window getOwnerWindow(Node node) {
+        Window retval = null;
+        if ( node != null && node.getScene() != null && node.getScene().getWindow() != null ) {
+            retval = node.getScene().getWindow();
+        }
+        return retval;
+    }
     public static double widthOf(Node node) {
         double w = 0;
         if ((node instanceof Region)) {
@@ -155,8 +163,8 @@ public class DockUtil {
             boolean b = false;
             if (DockRegistry.instanceOfDockable(node)) {
                 b = true;
-                TargetContext pd = DockRegistry.dockable(node).getDockableContext().getTargetContext();
-                DockableContext st = DockRegistry.dockable(node).getDockableContext();
+                TargetContext pd = Dockable.of(node).getDockableContext().getTargetContext();
+                DockableContext st = Dockable.of(node).getDockableContext();
                 if (pd == null) {
                     b = false;
                 } else {

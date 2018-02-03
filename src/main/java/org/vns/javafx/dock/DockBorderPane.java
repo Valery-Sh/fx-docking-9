@@ -98,6 +98,11 @@ public class DockBorderPane extends BorderPane implements DockTarget {
         }
         
         @Override
+        public boolean isDocked(Node node) {
+            return ((BorderPane) getTargetNode()).getChildren().contains(node);
+        }
+        
+        @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
             BorderPane target = (BorderPane) getTargetNode();
@@ -141,7 +146,7 @@ public class DockBorderPane extends BorderPane implements DockTarget {
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
                 if (DockRegistry.instanceOfDockable(node)) {
-                    list.add(DockRegistry.dockable(node));
+                    list.add(Dockable.of(node));
                 }
             });
             return list;

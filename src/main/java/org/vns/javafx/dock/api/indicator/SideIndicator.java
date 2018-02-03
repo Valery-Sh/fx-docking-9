@@ -15,6 +15,7 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.TargetContext;
 
@@ -275,7 +276,7 @@ public abstract class SideIndicator extends PositionIndicator {
         public void showIndicator(double screenX, double screenY, Node dockNode) {
             super.showIndicator(screenX, screenY, dockNode);
             if (dockNode != null) {
-                nodeContext = DockRegistry.dockable(dockNode).getDockableContext();
+                nodeContext = Dockable.of(dockNode).getDockableContext();
             } else {
                 nodeContext = null; // 06.05.2017
             }

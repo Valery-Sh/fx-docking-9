@@ -2,7 +2,7 @@ package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.DockRegistry;
+import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -11,6 +11,8 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 public interface FloatView<T> {
+
+    public static final String FLOATVIEW_UUID = "UUID-11e0c7b3-2873-465a-bfce-d4edce1bed7d";
 
     public static Cursor[] DEFAULT_CURSORS = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
@@ -25,13 +27,32 @@ public interface FloatView<T> {
 
     void setSupportedCursors(Cursor[] cursors);
 
-    static boolean isValueDockable(Object value) {
-        if (value == null) {
-            return false;
+    static Dockable getDockable(Window window) {
+        Dockable retval = null;
+        if (window != null && window.getScene() != null) {
+            Node root = window.getScene().getRoot();
+            System.err.println("FloatView: root = " + root);
+            if (root != null ) {
+                retval = (Dockable) root.getProperties().get(FLOATVIEW_UUID);
+            }
         }
-        boolean retval = (value instanceof Dockable) || ((value instanceof Node) && DockRegistry.isDockable((Node)value));
-
         return retval;
     }
-
-}
+    static Window getWindow(Dockable dockable) {
+        Window retval = null;
+        if ( dockable != null && dockable.node().getScene() != null ) {
+            retval = dockable.node().getScene().getWindow();
+        }
+        System.err.println("FloatView: getWindow = " + retval);
+        
+        return retval;
+    }
+    static Dockable getDraggedDockable(Dockable carried) {
+        Dockable retval = null;
+        Window w = getWindow(carried);
+        if ( w != null ) {
+            retval = getDockable(w);
+        }
+        return retval;
+    }
+}//interface
