@@ -26,6 +26,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -300,10 +301,6 @@ public class FloatStageView implements FloatWindowView {
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
         Point2D screenPoint = dockable.node().localToScreen(p);
-        System.err.println("MAKE screenPoint = " + screenPoint);
-        if (screenPoint == null) {
-            //screenPoint = new Point2D(400, 400);
-        }
 
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
@@ -338,7 +335,7 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setStyle("-fx-background-color: transparent");
         
-        Insets insetsDelta = borderPane.getInsets();
+/*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
@@ -350,7 +347,7 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-
+*/
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
@@ -432,7 +429,8 @@ public class FloatStageView implements FloatWindowView {
 
         rootPane = borderPane;
 
-        borderPane.getProperties().put(FLOATVIEW_UUID, dockable);
+        //borderPane.getProperties().put(FLOATVIEW_UUID, dockable);
+        
         //Rectangle r = new Rectangle(75, 30);
         //r.setFill(Color.YELLOW);
         //borderPane.setCenter(r);

@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -64,7 +65,13 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Window getFloatingWindow() {
+        if ( getValue() == null ) {
+            return null;
+        }
         if ( getGraphic().getScene() == null || getGraphic().getScene().getWindow() == null) {
+            return null;
+        }
+        if ( ! FloatView.isFloating(getGraphic())) {
             return null;
         }
         return getGraphic().getScene().getWindow();
@@ -72,7 +79,11 @@ public class DragContainer { //extends Control implements Dockable{
 
 
     public Node getGraphic() {
-        if ( graphic == null ) {
+        if ( graphic == null && getValue() != null &&  Dockable.of(getValue()) != null) {
+            graphic = Dockable.of(getValue()).node(); 
+        } if ( graphic == null && getValue() != null && (getValue() instanceof Node )) {
+            graphic = (Node) getValue(); 
+        } else if ( graphic == null ) {
             graphic = new Rectangle(75, 25);
             graphic.setOpacity(0.3);
             ((Shape)graphic).setFill(Color.YELLOW);

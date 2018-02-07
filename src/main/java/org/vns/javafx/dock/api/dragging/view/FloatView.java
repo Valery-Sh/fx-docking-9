@@ -14,7 +14,7 @@ public interface FloatView<T> {
     public static final String FLOATWINDOW = "UUID-11e0c7b3-2873-465a-bfce-d4edce1bed7d";
     public static final String FLOATVIEW = "UUID-d767ecfc-a868-4d95-8847-c331b1989bb1";
     public static final String FLOATVIEW_UUID = "UUID-11e0c7b3-2873-465a-bfce-d4edce1bed7d";
-    public static final String DOCKABLE_PROP_KEY = "c826e34e-6ae5-4480-b392-a1866a19f3bd";
+    //public static final String DOCKABLE_PROP_KEY = "c826e34e-6ae5-4480-b392-a1866a19f3bd";
     
     public static Cursor[] DEFAULT_CURSORS = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
@@ -28,8 +28,20 @@ public interface FloatView<T> {
     Object getValue();
 
     void setSupportedCursors(Cursor[] cursors);
+    
+    static boolean isFloating(Node node) {
 
-    static Dockable getDockable(Window window) {
+        boolean retval = false;
+        if (node.getScene() == null) {
+            return false;
+        }
+        if (node.getScene().getRoot().getStyleClass().contains(FloatView.FLOATWINDOW)) {
+            retval = true;
+        }
+        return retval;
+    }
+
+/*    static Dockable getDockable(Window window) {
         Dockable retval = null;
         if (window != null && window.getScene() != null) {
             Node root = window.getScene().getRoot();
@@ -40,21 +52,22 @@ public interface FloatView<T> {
         }
         return retval;
     }
-    static Window getWindow(Dockable dockable) {
+*/
+/*    static Window getWindow(Dockable dockable) {
         Window retval = null;
         if ( dockable != null && dockable.node().getScene() != null ) {
             retval = dockable.node().getScene().getWindow();
         }
-        System.err.println("FloatView: getWindow = " + retval);
-        
         return retval;
     }
-    static Dockable getDraggedDockable(Dockable carried) {
+*/    
+  /*  static Dockable getDraggedDockable(Dockable carrier) {
         Dockable retval = null;
-        Window w = getWindow(carried);
+        Window w = getWindow(carrier);
         if ( w != null ) {
             retval = getDockable(w);
         }
         return retval;
     }
+*/
 }//interface

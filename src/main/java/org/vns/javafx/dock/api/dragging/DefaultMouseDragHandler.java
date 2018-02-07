@@ -47,9 +47,9 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!dockable.getDockableContext().isFloating()) {
             dm.mouseDragDetected(ev, getStartMousePos());
         } else {
-            Dockable d = FloatView.getDraggedDockable(dockable);
-            if (d != null) {
-                d.getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
+            Object value = dockable.getDockableContext().getDragContainer().getValue();
+            if (value != null && Dockable.of(value) != null ) {
+                Dockable.of(value).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {
                 dm.mouseDragDetected(ev, getStartMousePos());
             }

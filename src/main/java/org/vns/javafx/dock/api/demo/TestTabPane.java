@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 Your Organisation.
  *
@@ -22,6 +23,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -155,9 +158,8 @@ public class TestTabPane extends Application {
         
         VBox root1 = new VBox();
         
-        Scene scene1 = new Scene(root1);
         Stage stage1 = new Stage();
-        stage1.setScene(scene1);
+
         stage1.setAlwaysOnTop(true);
         btn1.setOnAction(a -> {
             if ( stage1.isShowing() ) {
@@ -170,6 +172,18 @@ public class TestTabPane extends Application {
             }
         });
         
+        Label lb03 = new Label("Valery");
+       
+        root1.getChildren().add(lb03);
+        Scene scene1 = new Scene(root1);        
+        WritableImage wi = lb03.snapshot(null,null);
+        ImageView iv = new ImageView(wi);
+        
+        
+        root1.getChildren().add(iv);   
+        
+        
+        stage1.setScene(scene1);
         
         stage1.show();
         

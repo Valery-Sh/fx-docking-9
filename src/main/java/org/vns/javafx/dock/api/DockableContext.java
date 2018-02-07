@@ -369,7 +369,7 @@ public class DockableContext {
      */
     public boolean isFloating() {
         Node node = dockable().node();
-        boolean retval = isFloating(node);
+        boolean retval = FloatView.isFloating(node);
 
         if (!retval && getDragContainer().getValue() != null) {
             if (getDragContainer().isValueDockable()) {
@@ -377,26 +377,11 @@ public class DockableContext {
             } else {
                 node = getDragContainer().getGraphic();
             }
-            retval = isFloating(node);
-        }
-        //System.err.println("isFloating  = " + floating.get());
-        //System.err.println("isFloating node = " + node);
-        return retval;
-
-        //return this.floating.get();
-    }
-
-    private boolean isFloating(Node node) {
-
-        boolean retval = false;
-        if (node.getScene() == null) {
-            return false;
-        }
-        if (node.getScene().getRoot().getStyleClass().contains(FloatView.FLOATWINDOW)) {
-            retval = true;
+            retval = FloatView.isFloating(node);
         }
         return retval;
     }
+
 
     /**
      * Transfers the object into the <i>floating</i> state. If the current value

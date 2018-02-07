@@ -47,14 +47,14 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
         }
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
-            System.err.println("!!!! Tab id = " + tab.getId());
+//            System.err.println("!!!! Tab id = " + tab.getId());
             getContext().getDragContainer().setValue(tab);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
             WritableImage wi = null;
-            
-            if ( tabNode != null ) {
-                wi = tabNode.snapshot(null,null);
-                if ( wi != null ) {
+
+            if (tabNode != null) {
+                wi = tabNode.snapshot(null, null);
+                if (wi != null) {
                     Node node = new ImageView(wi);
                     node.setOpacity(0.75);
                     getContext().getDragContainer().setGraphic(node);
@@ -63,6 +63,7 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
         }
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
     }
+
     private String getUUIDStyle(Tab tab) {
         String retval = null;
         for (String s : tab.getStyleClass()) {
@@ -156,14 +157,22 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
             dm.mouseDragDetected(ev, getStartMousePos());
             //dockable.getDockableContext().setFloating(true);
         } else {
-            Dockable d = FloatView.getDraggedDockable(dockable);
+            Object value = dockable.getDockableContext().getDragContainer().getValue();
+            if (value != null && Dockable.of(value) != null) {
+                Dockable.of(value).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
+            } else {
+                dm.mouseDragDetected(ev, getStartMousePos());
+            }
+            /*            Dockable d = FloatView.getDraggedDockable(dockable);
             if (d != null) {
                 d.getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {
                 dm.mouseDragDetected(ev, getStartMousePos());
             }
         }
+             */
+
+        }
 
     }
-
 }
