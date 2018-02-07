@@ -130,7 +130,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
 
             docablePositionSave = dockable.getDockableContext().getTargetContext().getRestorePosition(dockable);
             dockable.getDockableContext().getTargetContext().undock(dockable.node());
-            dockable.getDockableContext().setFloating(true);
+            //dockable.getDockableContext().setFloating(true);
         }
 
         ev.consume();

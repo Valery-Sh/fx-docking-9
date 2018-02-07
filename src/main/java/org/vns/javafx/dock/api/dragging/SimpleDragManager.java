@@ -33,6 +33,10 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.ALL;
+import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIER;
+import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIERED;
+import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.NONE;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
@@ -80,7 +84,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      */
     private IndicatorManager indicatorManager;
 
-    //private IndicatorManager indicatorDelegate;
+    private HideOption hideOption = NONE;
     /**
      * The target dock target
      */
@@ -107,25 +111,34 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         return floatingWindow;
     }
 
-    protected void setFloatingWindow(Window floatingWindow) {
+/*    protected void setFloatingWindow(Window floatingWindow) {
         this.floatingWindow = floatingWindow;
     }
-
+*/
     @Override
     public DragType getDragType() {
         return DragType.SIMPLE;
     }
 
+    public HideOption getHideOption() {
+        return hideOption;
+    }
+
+    public void setHideOption(HideOption hideOption) {
+        this.hideOption = hideOption;
+    }
+
     @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
-
         this.startMousePos = startMousePos;
         this.dragSource = (Node) ev.getSource();
 
         if (!dockable.getDockableContext().isFloating()) {
             System.err.println("drag detected not floating");
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
-
+//            System.err.println("=== SCENE " + dockable.node().getScene());
+//            if (dockable.node().getScene().getWindow() != null ) 
+//                System.err.println("=== SCENE.WINDOW " + dockable.node().getScene().getWindow());
             FloatViewFactory f = null;
             if (getTargetContext(getDockable()) != null) {
                 f = getTargetContext(getDockable()).getLookup().lookup(FloatViewFactory.class);
@@ -135,14 +148,14 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             }
             FloatView view = f.getFloatView(this);
             floatingWindow = (Window) view.make(dockable);
-
+//            System.err.println("----------- FLOATING WINDOW = " + floatingWindow);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
 
-            dockable.getDockableContext().setFloating(true);
+            //dockable.getDockableContext().setFloating(true);
             Dockable cd = getContainerDockable();
             if (cd != null) {
-                cd.getDockableContext().setFloating(true);
+                //cd.getDockableContext().setFloating(true);
             }
 
         } else {
@@ -176,7 +189,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events
      */
     protected void mouseDragged(MouseEvent ev) {
-        //System.err.println("mouseDragged dockable.getDockableContext().isFloating() = " + dockable.getDockableContext().isFloating());
+        //System.err.println("DRAGGED");
         if (indicatorManager != null && !(indicatorManager instanceof Window)) {
             indicatorManager.hide();
         }
@@ -199,13 +212,20 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             leftDelta = insets.getLeft();
             topDelta = insets.getTop();
         }
+//        System.err.println("!!! floatingWindow = " + floatingWindow);
+//        System.err.println("!!! startMousePos = " + startMousePos);
         if (floatingWindow instanceof PopupControl) {
             ((PopupControl) floatingWindow).setAnchorX(ev.getScreenX() - leftDelta - startMousePos.getX());
             ((PopupControl) floatingWindow).setAnchorY(ev.getScreenY() - topDelta - startMousePos.getY());
+            //((PopupControl) floatingWindow).setAnchorX(ev.getScreenX() - leftDelta);
+            //((PopupControl) floatingWindow).setAnchorY(ev.getScreenY() - topDelta);
 
         } else {
             floatingWindow.setX(ev.getScreenX() - leftDelta - startMousePos.getX());
             floatingWindow.setY(ev.getScreenY() - topDelta - startMousePos.getY());
+            //floatingWindow.setX(ev.getScreenX() - leftDelta);
+            //floatingWindow.setY(ev.getScreenY() - topDelta);
+            
         }
 
         if (indicatorManager != null && indicatorManager.isShowing()) {
@@ -215,7 +235,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if ((indicatorManager == null || !indicatorManager.isShowing())) {
             resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), floatingWindow);
         }
-
+//System.err.println("******** SimpleDragManager 1 resultStage=" + resultStage);            
         if (resultStage == null) {
             return;
         }
@@ -223,14 +243,15 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (root == null || !(root instanceof Pane) && !(DockRegistry.instanceOfDockTarget(root))) {
             return;
         }
-
+//System.err.println("******** SimpleDragManager 2");            
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.instanceOfDockTarget(n);
         });
-
+//        System.err.println("******** SimpleDragManager 3 + topPane=" + topPane);
         if (topPane != null) {
             root = topPane;
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
+//System.err.println("******** SimpleDragManager 4");            
             return;
         }
         if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
@@ -308,9 +329,9 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
                 }
                 if (isDocked) {
                     System.err.println("2 MouseReleased hideFloatingWindow dockable=" + dockable.node());                    
-                    dockable.getDockableContext().setFloating(false);
+                    //dockable.getDockableContext().setFloating(false);
                     if (getContainerValue() != null && floatingWindow != null && getContainerDockable() != null) {
-                        getContainerDockable().getDockableContext().setFloating(false);
+                        //getContainerDockable().getDockableContext().setFloating(false);
                     }
                 }
             }
@@ -318,10 +339,15 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
                 indicatorManager.hide();
             }
         }
-        if (getContainerValue() != null && floatingWindow != null) {
-            //hideFloatingWindow();
-            //dockable.getDockableContext().setFloating(false);
+        if ( (getHideOption() == ALL || getHideOption() == CARRIERED ) && getContainerValue() != null && floatingWindow != null) {
+           hideFloatingWindow();
+           //dockable.getDockableContext().setFloating(false);
         }
+        if ( (getHideOption() == ALL || getHideOption() == CARRIER ) && getContainerValue() == null && floatingWindow != null) {
+           hideFloatingWindow();
+           //dockable.getDockableContext().setFloating(false);
+        }
+        
     }
 
     protected void hideFloatingWindow() {
@@ -360,6 +386,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     protected Node getFloatingWindowRoot() {
+        //System.err.println("++++ FLOATING WINDOW = " + floatingWindow);
         return floatingWindow.getScene().getRoot();
     }
 

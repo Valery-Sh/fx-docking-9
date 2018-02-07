@@ -18,33 +18,31 @@ package org.vns.javafx.dock.api;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.stage.Window;
 
 /**
  *
  * @author Valery
  */
 @DefaultProperty("value")
-public class DragContainer extends Control implements Dockable{
+public class DragContainer { //extends Control implements Dockable{
     
-    private DockableContext context;
+    //private DockableContext context;
     
-    private ObjectProperty value = new SimpleObjectProperty();
+    private final ObjectProperty value = new SimpleObjectProperty();
     
-    @Override
-    public Node node() {
-        return this;
-    }
+    private Node node;
+    
+    //private Point2D mousePosition;
+    
 
-    @Override
-    public DockableContext getDockableContext() {
-        if ( context == null ) {
-            context = new DockableContext(this);
-        }
-        return context;
-    }
-    
     public ObjectProperty valueProperty() {
         return value;
     }
@@ -54,7 +52,7 @@ public class DragContainer extends Control implements Dockable{
 
     public void setValue(Object obj) {
         if ( obj != null && DockRegistry.isDockable(obj) ) {
-            Dockable.of(obj).getDockableContext().setFloating(true);
+            //Dockable.of(obj).getDockableContext().setFloating(true);
         }
         this.value.set(obj);
     }
@@ -67,4 +65,30 @@ public class DragContainer extends Control implements Dockable{
         
         return retval;
     }
+
+    public Window getFloatingWindow() {
+        if ( getNode().getScene() == null || getNode().getScene().getWindow() == null) {
+            return null;
+        }
+        return getNode().getScene().getWindow();
+    }
+
+
+    public Node getNode() {
+        if ( node == null ) {
+            node = new Rectangle(75, 25);
+            node.setOpacity(0.3);
+            ((Shape)node).setFill(Color.YELLOW);
+            ((Shape)node).setStroke(Color.BLACK);
+            ((Shape)node).setStrokeWidth(1);
+            ((Shape)node).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
+            ((Shape)node).setStrokeDashOffset(1.0);            
+        }
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+    
 }

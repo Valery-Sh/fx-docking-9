@@ -215,8 +215,10 @@ public class DockRegistry {
         List<Window> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
             Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
+                //System.err.println("+++++ DockRegistry instanceOfDockTarget = " + n + "; instance=" + DockRegistry.instanceOfDockTarget(n) );
                 return instanceOfDockTarget(n);
             });
+            //System.err.println("++++ DockRegistry topNode = " + topNode);            
             if (topNode != null) {
                 targetStages.add(s);
             }
@@ -397,6 +399,20 @@ public class DockRegistry {
         }
         return d;
     }
+    public DockTarget makeDockTarget(Node node, TargetContext targetContext) {
+        if (node instanceof DockTarget) {
+            return  (DockTarget) node;
+        }
+        if (dockTargets.get(node) != null) {
+            return dockTargets.get(node);
+        }
+        DockTarget d = new DefaultDockTarget(node,targetContext);
+/*        if (d.node().getParent() != null) {
+            d.getDockableContext().getTargetContext().setTargetNode(d.node().getParent());
+        }
+*/
+        return d;
+    }
 
     public void register(Dockable dockable) {
         if (dockable.node() instanceof Dockable) {
@@ -438,6 +454,13 @@ public class DockRegistry {
         DockTarget dt = new DefaultDockTarget(node, c);
         register(dt);
         return dt;
+    }
+    public void registerAsDockTarget(Node node, TargetContext context) {
+        if (isDockTarget(node)) {
+            return;
+        }
+        DockTarget dt = makeDockTarget(node, context);
+        node.getProperties().put(DockTarget.DOCKTAEGER_KEY, dt);
     }
 
     public Dockable getDefaultDockable(Node node) {
@@ -505,11 +528,17 @@ public class DockRegistry {
             retval = true;
         } else if (!retval) {
             Object d = node.getProperties().get(DockTarget.DOCKTAEGER_KEY);
-
+//            System.err.println("========================================");
+//            System.err.println("DockRegistry isNodeDockTarget d = " + d);
+//            System.err.println("DockRegistry isNodeDockTarget node = " + node);
+//            if ( d != null )
+//            System.err.println("DockRegistry isNodeDockTarget ((DockTarget) d).target() = " +((DockTarget) d).target());
+//            System.err.println("------------------------------------------");
             if (d != null && (d instanceof DockTarget) && ((DockTarget) d).target() == node) {
                 retval = true;
             }
         }
+//System.err.println("DockRegistry isNodeDockTarget retval = " + retval);        
         return retval;
     }
 

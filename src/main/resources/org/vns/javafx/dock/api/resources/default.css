@@ -3,6 +3,27 @@
  * DockPane                                                                    *
  *                                                                             *
  ******************************************************************************/
+.tab-content-area {
+    -fx-background-color: green;
+}
+/*.tab-header-area {
+    -fx-background-color: blue;
+}
+.tab-header-background {
+    -fx-background-color: blue;
+}
+*/
+.headers-region  {
+    -fx-background-color: blue;
+}
+.tab-header-background {
+   -fx-background-color: yellow;
+   -fx-fill: yellow;
+}
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: yellow;
+}
+
 /*.split-pane *.split-pane-divider {
     -fx-padding: 0 1 0 1;
 }
@@ -354,9 +375,11 @@
 }
 */
 .dock-node-border {
-  -fx-padding: 4;
+  -fx-padding: 2;
   -fx-background-color: lightgrey; 
-  -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
+  /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
+  -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
+  
 }
 
 .my-test-css {
@@ -399,6 +422,7 @@
     -fx-background-color: -fx-background;
     -fx-padding: 2;
     -fx-spacing: 3;
+    
     -fx-border-width: 1;
     -fx-border-color: -fx-outer-border;
 }

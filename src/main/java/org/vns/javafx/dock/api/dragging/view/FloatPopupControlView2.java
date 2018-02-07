@@ -42,7 +42,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
 
     @Override
     public Window make(Dockable dockable, boolean show) {
-
+        System.err.println("FLOATPOPUPCONTROLVIEW2");
         Node node = dockable.node();
 
         Point2D screenPoint = node.localToScreen(0, 0);
@@ -58,11 +58,14 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         final PopupControl floatPopup = new PopupControl();
         floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
 
-        markFloating(floatPopup);
-
-        //Point2D stagePosition = screenPoint;
+        setFloatingWindow(floatPopup);
 
         BorderPane borderPane = new BorderPane();
+        ///
+        // Mark as a popup created with FloatView instance/
+        //
+        borderPane.getStyleClass().add(FLOATVIEW);
+
         setRootPane(borderPane);
 
         //DockPane dockPane = new DockPane();
@@ -76,18 +79,12 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
             }
         };
 
-        //
-        // Prohibit to use as a dock target
-        //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dockable.node());
-        //borderPane.setStyle("-fx-background-color: yellow");
-        //borderPane.getStyleClass().clear();
+
         borderPane.getStyleClass().add("dock-node-border");
         borderPane.getStyleClass().add("float-popup-root");
         borderPane.setCenter(node);
 
-        floatingProperty().set(true);
+        //floatingProperty().set(true);
 
         floatPopup.getScene().setRoot(borderPane);
 

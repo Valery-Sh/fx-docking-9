@@ -45,7 +45,7 @@ public class FloatPopupControlView extends FloatStageView {
         setSupportedCursors(DEFAULT_CURSORS);
         Node node = dockable.node();
         Window owner = null;
-        if ( (node.getScene() == null || node.getScene().getWindow() == null) ) {
+        if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
         } else {
             owner = node.getScene().getWindow();
@@ -78,20 +78,21 @@ public class FloatPopupControlView extends FloatStageView {
 
         final PopupControl floatPopup = new PopupControl();
         floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
-        
-        System.err.println("IT IS FloatPopupControlView");        
+
+        System.err.println("IT IS FloatPopupControlView");
         markFloating(floatPopup);
 
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
+        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.setId(FLOATWINDOW);
         //borderPane.setMouseTransparent(true);
         setRootPane(borderPane);
         //
         // We must prevent the window to end up positioning off the screen
         //
-        
-        
+
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -113,8 +114,8 @@ public class FloatPopupControlView extends FloatStageView {
         //borderPane.setOpacity(0);
         borderPane.setCenter(node);
 
-        floatingProperty().set(true);
-        
+        //floatingProperty().set(true);
+
         floatPopup.getScene().setRoot(borderPane);
 
         node.applyCss();
@@ -152,7 +153,7 @@ public class FloatPopupControlView extends FloatStageView {
         if (show) {
             floatPopup.show(owner);
         }
-        
+
         dockable.node().parentProperty().addListener(pcl);
 
         //addResizer(floatPopup, dockable);
@@ -165,8 +166,8 @@ public class FloatPopupControlView extends FloatStageView {
     @Override
     public void addResizer() {
         //if (getDockable().getDockableContext().isResizable()) {
-            removeListeners(getDockable().getDockableContext().dockable());
-            addListeners(getFloatingWindow());
+        removeListeners(getDockable().getDockableContext().dockable());
+        addListeners(getFloatingWindow());
 
         //}
         setResizer(new PopupControlResizer(this));

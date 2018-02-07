@@ -65,13 +65,13 @@ public class TreeItemDragManager extends SimpleDragManager {
             }
             FloatView view = f.getFloatView(this);
 
-            setFloatingWindow((Window) view.make(getDockable()));
+            //!!!06.02setFloatingWindow((Window) view.make(getDockable()));
             System.err.println("**************** dragDetected  floatingWindow");
             //dockable.getDockableContext().setFloating(true);
 
             getTargetDockPane().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             getTargetDockPane().addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            getDockable().getDockableContext().setFloating(true);
+            //getDockable().getDockableContext().setFloating(true);
 
         } else {
             //
@@ -278,7 +278,7 @@ public class TreeItemDragManager extends SimpleDragManager {
             if (dragObject instanceof Dockable) {
                 getIndicatorManager().getTargetContext().dock(mousePos, (Dockable) dragObject);
             } else if (getIndicatorManager().getTargetContext() instanceof ObjectReceiver) {
-                ((ObjectReceiver) getIndicatorManager().getTargetContext()).dockObject(mousePos, dragObject);
+                ((ObjectReceiver) getIndicatorManager().getTargetContext()).dockObject(mousePos, (Dockable) dragObject);
             }
         } else {
             getIndicatorManager().getTargetContext().dock(mousePos, getDockable());

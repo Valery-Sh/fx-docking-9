@@ -630,7 +630,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         public void dock(Dockable dockable) {
             if (doDock(null, dockable.node())) {
-                dockable.getDockableContext().setFloating(false);
+               // dockable.getDockableContext().setFloating(false);
             }
         }
 

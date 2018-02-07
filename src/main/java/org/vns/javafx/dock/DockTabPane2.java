@@ -882,7 +882,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             Dockable d = Dockable.of(node);
             if (d.getDockableContext().isFloating()) {
                 if (doDock(mousePos, node)) {
-                    dockable.getDockableContext().setFloating(false);
+                    //dockable.getDockableContext().setFloating(false);
                 }
             }
         }
@@ -900,7 +900,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                 nodeContext.setTargetContext(paneContext);
             }
             if (nodeContext.isFloating()) {
-                nodeContext.setFloating(false);
+                //nodeContext.setFloating(false);
             }
 
         }

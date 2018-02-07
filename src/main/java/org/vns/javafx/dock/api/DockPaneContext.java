@@ -125,7 +125,7 @@ public class DockPaneContext extends TargetContext {
             return;
         }
         if (doDock(dockable.node(), pos)) {
-            dockable.getDockableContext().setFloating(false);
+            //dockable.getDockableContext().setFloating(false);
             //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode()));
         }
     }
@@ -146,7 +146,7 @@ public class DockPaneContext extends TargetContext {
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
-            dockableContext.setFloating(false);
+            //dockableContext.setFloating(false);
         }
     }
 
@@ -158,7 +158,7 @@ public class DockPaneContext extends TargetContext {
         if (!(dockable instanceof Node) && !DockRegistry.getDockables().containsKey(dockable.node())) {
             DockRegistry.getDockables().put(dockable.node(), dockable);
         }
-        dockable.getDockableContext().setFloating(false);
+        //dockable.getDockableContext().setFloating(false);
 
         Node node = dockable.node();
         
@@ -172,7 +172,7 @@ public class DockPaneContext extends TargetContext {
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-            dockable.getDockableContext().setFloating(false);
+            //dockable.getDockableContext().setFloating(false);
             getDockExecutor().dock(node, side, target);
             event = new DockEvent(DockEvent.NODE_DOCKED, dockable.node(), getTargetNode(),side, target);
             

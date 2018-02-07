@@ -48,7 +48,4 @@ public class FloatViewFactory {
     
         return retval;
     }
-    private static class SingletonInstance {
-        private static final FloatViewFactory INSTANCE = new FloatViewFactory();
-    }
 }

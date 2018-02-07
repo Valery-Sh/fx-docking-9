@@ -22,5 +22,6 @@ import javafx.geometry.Point2D;
  * @author Valery Shyshkin
  */
 public interface ObjectReceiver {
-    void dockObject(Point2D mousePos, Object value);
+    void dockObject(Point2D mousePos, Dockable carrier);
+    void undockObject(Dockable carrier);
 }

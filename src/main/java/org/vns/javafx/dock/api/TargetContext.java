@@ -72,7 +72,7 @@ public abstract class TargetContext {
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
-            dockableContext.setFloating(false);
+            //dockableContext.setFloating(false);
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class TargetContext {
         }
 
         if (doDock(mousePos, d.node()) && stage != null) {
-            d.getDockableContext().setFloating(false);
+            //d.getDockableContext().setFloating(false);
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {

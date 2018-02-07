@@ -41,4 +41,8 @@ public interface DockTarget {
      * @return an object of type {@link TargetContext}
      */    
     TargetContext getTargetContext();
+    
+    static DockTarget of(Node obj) {
+        return DockRegistry.dockTarget(obj);
+    }
 }

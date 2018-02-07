@@ -219,7 +219,7 @@ public class DockUtil {
     }
 
     public static boolean contains(Window w, double x, double y) {
-        return ((x >= w.getX() && x <= w.getX() + w.getWidth()
+        return ((x >= w.getX() && x <= w.getX() + w.getWidth() 
                 && y >= w.getY() && y <= w.getY() + w.getHeight()));
     }
 

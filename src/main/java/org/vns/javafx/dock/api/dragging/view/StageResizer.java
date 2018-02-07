@@ -50,13 +50,13 @@ public class StageResizer implements WindowResizer {
         Collections.addAll(cursorTypes,
                 Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
                 Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE);
-        System.err.println("RESIZER 1");
+        //System.err.println("RESIZER 1");
     }
 
     public StageResizer(FloatWindowView windowView) {
         this();
         this.windowView = windowView;
-        System.err.println("RESIZER 1");
+        //System.err.println("RESIZER 1");
         
     }
 
@@ -117,13 +117,13 @@ public class StageResizer implements WindowResizer {
         }
         Region root = (Region) window.getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        System.err.println("RESIZER: wDelta=" + wDelta);
-        System.err.println("RESIZER: window.getWidth =" + window.getWidth());
-        System.err.println("RESIZER: window.getMinWidth =" + ((Stage) window).getMinWidth());
+        //System.err.println("RESIZER: wDelta=" + wDelta);
+        //System.err.println("RESIZER: window.getWidth =" + window.getWidth());
+        //System.err.println("RESIZER: window.getMinWidth =" + ((Stage) window).getMinWidth());
         
         if (wDelta + window.getWidth() > ((Stage) window).getMinWidth()) {
             window.setX(xDelta + window.getX());
-            System.err.println("RESIZER: root PrefWidth = " + (wDelta + root.getPrefWidth()));            
+            //System.err.println("RESIZER: root PrefWidth = " + (wDelta + root.getPrefWidth()));            
             root.setPrefWidth(wDelta + root.getPrefWidth());
             
             mouseX.set(curX);
@@ -156,7 +156,7 @@ public class StageResizer implements WindowResizer {
 
     @Override
     public void resize(MouseEvent ev) {
-        System.err.println("RESIZER resize()");
+        //System.err.println("RESIZER resize()");
 
         resize(ev.getScreenX(), ev.getScreenY());
     }
@@ -172,7 +172,7 @@ public class StageResizer implements WindowResizer {
 
     @Override
     public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
-        System.err.println("RESIZER: start");
+        //System.err.println("RESIZER: start");
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
@@ -183,11 +183,11 @@ public class StageResizer implements WindowResizer {
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {
-       System.err.println("StageResizer: CURSORBY 3");
-        System.err.println(" --- nodeX = " + nodeX); 
-        System.err.println(" --- width = " + width); 
-        System.err.println(" --- left = " + left); 
-        System.err.println(" --- right = " + right); 
+       //System.err.println("StageResizer: CURSORBY 3");
+        //System.err.println(" --- nodeX = " + nodeX); 
+        //System.err.println(" --- width = " + width); 
+        //System.err.println(" --- left = " + left); 
+        //System.err.println(" --- right = " + right); 
         
         boolean e, w, n, s;
         Cursor cursor = Cursor.DEFAULT;
@@ -195,8 +195,8 @@ public class StageResizer implements WindowResizer {
         e = nodeX > width - right;
         n = nodeY < top;
         s = nodeY > height - bottom;
-        System.err.println("    --- w: nodeX < left = " + w);        
-        System.err.println("    --- e: nodeX > width - right = " + e);        
+        //System.err.println("    --- w: nodeX < left = " + w);        
+        //System.err.println("    --- e: nodeX > width - right = " + e);        
         if (w) {
             if (n) {
                 cursor = Cursor.NW_RESIZE;
@@ -234,7 +234,7 @@ public class StageResizer implements WindowResizer {
         double x = ev.getX();
         double y = ev.getY();
         if (w instanceof Stage) {
-            System.err.println("StageResizer: CURSORBY 2");
+            //System.err.println("StageResizer: CURSORBY 2");
             return cursorBy(x, ev.getY(), width, height, left, right, top, bottom);
         } else {
             x -= left;
@@ -254,9 +254,9 @@ public class StageResizer implements WindowResizer {
             return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);
         }
         if (ev.getSource() instanceof Stage) {
-            System.err.println("StageResizer: CURSORBY 1 width=" + r.getWidth());
-            System.err.println("StageResizer: CURSORBY 1 button width=" + ((Region)((BorderPane)r).getCenter()).getWidth());
-            System.err.println("StageResizer: CURSORBY 1 button insets=" + ((Region)((BorderPane)r).getCenter()).getInsets());
+//            System.err.println("StageResizer: CURSORBY 1 width=" + r.getWidth());
+//            System.err.println("StageResizer: CURSORBY 1 button width=" + ((Region)((BorderPane)r).getCenter()).getWidth());
+//            System.err.println("StageResizer: CURSORBY 1 button insets=" + ((Region)((BorderPane)r).getCenter()).getInsets());
             return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
         } else {
 

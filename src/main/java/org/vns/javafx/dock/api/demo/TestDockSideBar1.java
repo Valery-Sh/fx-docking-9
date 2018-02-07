@@ -140,7 +140,7 @@ public class TestDockSideBar1 extends Application {
         //vb2.getChildren().add(new Button("dn02 button"));
         //dn02.setPrefHeight(100);
         dn02.getDockableContext().setTitle("DockNode: dn02");
-
+        dn02.setId("dn02");
         //sideBar01.dock(dn02);
         //scene.getRoot().setStyle("-fx-background-color: yellow");
         //sideBar01.getDelegate().setStyle("-fx-padding: 0;");
@@ -163,14 +163,15 @@ public class TestDockSideBar1 extends Application {
         stage.setScene(scene);
 
         stage.setOnShown(e -> {
-
+            //sideBar01.setHideOnExit(true);
 //        sideBar01.setPrefSize(sideBar01.getDelegate().getWidth(), sideBar01.getDelegate().getHeight());
             //sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
             //System.err.println("sideBar01.getWidth()=" + sideBar01.getWidth());
 //            System.err.println("sideBar01.toolBar.getWidth()=" + sideBar01.getDelegate().getWidth());
         });
         stage.show();
-
+        
+        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

@@ -24,7 +24,11 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 public interface DragManager { //extends EventHandler<MouseEvent> {
-
+    
+    public static enum HideOption {
+       NONE, ALL, CARRIER, CARRIERED
+    }
+            
     DragType getDragType();
     
     Dockable getDockable();

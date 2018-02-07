@@ -220,6 +220,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
     }
 
     public void setHideOnExit(boolean value) {
+        //addMouseExitListener();
         hideOnExitProperty.set(value);
     }
 
@@ -405,10 +406,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         protected void dock(Dockable dockable) {
 
-            System.err.println("SideBar dock dockable=" + dockable);
-            System.err.println("SideBar dock dockable.isFloation=" + dockable.getDockableContext().isFloating());
-            System.err.println("SideBar dock dockable.dockTarget=" + dockable.getDockableContext().getTargetContext());
-
             if (doDock(null, dockable.node())) {
                 dockable.getDockableContext().setFloating(false);
             }
@@ -469,13 +466,18 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 a.consume();
                 PopupControl popup = container.getPopup();
                 if (popup == null) {
-
-                    //popup = (PopupControl) container.getFloatView().createPopupControl(dockable, itemButton.getScene().getWindow());
                     popup = (PopupControl) container.getFloatView().make(dockable, false);
-                    //container.getFloatView().addResizer(popup, dockable);
+                    container.addMouseExitListener();
+                    //popup.getScene().getRoot().getStyleClass().remove(FloatView.FLOATWINDOW);
+                    //System.err.println("======= popup.root = " + popup.getScene().getRoot());
+                    //System.err.println("======= popup.ifFloating = " + dockable.getDockableContext().isFloating());
+                    //System.err.println("======= popup.root.id = " + popup.getScene().getRoot().getId());                    
                     container.setPopup(popup);
                     show(itemButton);
                 } else if (!popup.isShowing()) {
+                    //System.err.println("1 ======= popup.root = " + popup.getScene().getRoot());
+                    //System.err.println("1 ======= popup.root.id = " + popup.getScene().getRoot().getId());                    
+                    
                     show(itemButton);
                 } else {
                     popup.hide();
@@ -505,8 +507,8 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             } else if (priorWindow != null) {
                 priorWindow.hide();
             }
+            //System.err.println("DockSideBar setDocked ");
             container.setDocked(true);
-
             return true;
         }
 
@@ -566,7 +568,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         @Override
         public void remove(Node dockNode) {
-            System.err.println("^^^^ remove(Node dockNode)");
+            //System.err.println("^^^^ remove(Node dockNode)");
             Group r = null;
             for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
                 if (en.getValue().getDockable().node() == dockNode) {
@@ -737,22 +739,29 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         public void setDocked(boolean docked) {
             DockSideBar sb = getSideBar();
             if (sb.isHideOnExit()) {
-                addMouseExitListener();
+//                addMouseExitListener();
             }
-            hideOnExitProperty.bind(sb.hideOnExitProperty());
-            floatingProperty.bind(dockable.getDockableContext().floatingProperty());
-            floatingProperty.addListener((v, oldValue, newValue) -> {
+            //hideOnExitProperty.bind(sb.hideOnExitProperty());
+            //floatingProperty.bind(dockable.getDockableContext().floatingProperty());
+/*            floatingProperty.addListener((v, oldValue, newValue) -> {
+                System.err.println("DockSideBar ADD LISTENER newValue = " + newValue);                
                 if (newValue) {
                     removeMouseExitListener();
                 }
             });
             hideOnExitProperty.addListener((v, oldValue, newValue) -> {
+                
                 if (newValue) {
+                System.err.println("DockSideBar hideOnExitProperty.addListener newValue = " + newValue);                
+                    
                     addMouseExitListener();
                 } else {
+                System.err.println("DockSideBar hideOnExitProperty.removeListener newValue = " + newValue);                
+                    
                     removeMouseExitListener();
                 }
             });
+*/            
         }
 
         public DockSideBar getSideBar() {
@@ -761,13 +770,18 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         public void addMouseExitListener() {
             mouseExitEventListener = this::mouseExited;
-            dockable.node().getScene().getWindow().addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
+//            System.err.println("addMouseExitListener dockable = " + dockable.node());            
+//            System.err.println("addMouseExitListener dockable.id = " + dockable.node().getId());            
+//            System.err.println("addMouseExitListener scene = " + dockable.node().getScene());
+            //dockable.node().getScene().getWindow().addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
+            dockable.node().getScene().addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
         }
 
         public void removeMouseExitListener() {
             if (mouseExitEventListener == null) {
                 return;
             }
+//            System.err.println("removeMouseExitListener");
             dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
             dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouseExitEventListener);
         }
@@ -777,13 +791,16 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         }
 
         protected void mouseExited(MouseEvent ev) {
+            //System.err.println("ev.getSource=" + ev.getSource());
             if ((ev.getSource() instanceof Window) && DockUtil.contains((Window) ev.getSource(), ev.getScreenX(), ev.getScreenY())) {
+                ev.consume();
                 return;
             }
+            
             if (!ev.isPrimaryButtonDown() && !dockable.getDockableContext().isFloating()) {
                 dockable.node().getScene().getWindow().hide();
             }
-            ev.consume();
+            //ev.consume();
         }
 
         public void adjustScreenPos() {
@@ -826,9 +843,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             //PopupControl popup = (PopupControl) dockable.node().getScene().getWindow();
 
             DockSideBar sb = (DockSideBar) dockable.getDockableContext().getTargetContext().getTargetNode();
-            System.err.println("!!!!!!!!!!!  changeSize SIDE=" + sb.getSide());
             if (!popup.isShowing()) {
-                System.err.println("!!!!!!!!!!! popup isShowing=" + popup.isShowing());
                 return;
             }
             Pane root = (Pane) popup.getScene().getRoot();
