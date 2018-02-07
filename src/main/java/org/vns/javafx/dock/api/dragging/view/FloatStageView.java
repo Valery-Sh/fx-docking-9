@@ -17,11 +17,9 @@ package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -31,8 +29,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -40,6 +36,7 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ObjectReceiver;
 import org.vns.javafx.dock.api.TargetContext;
@@ -62,9 +59,9 @@ public class FloatStageView implements FloatWindowView {
 
     private WindowResizer resizer;
 
-    private MouseResizeHandler mouseResizeHanler;
+    private final MouseResizeHandler mouseResizeHanler;
 
-    private BooleanProperty floating = createFloatingProperty();
+    private final BooleanProperty floating = createFloatingProperty();
 
     private double minWidth = -1;
     private double minHeight = -1;
@@ -82,29 +79,6 @@ public class FloatStageView implements FloatWindowView {
     @Override
     public void initialize() {
     }
-
-    /*    @Override
-    public double getMinWidth() {
-        return minWidth;
-    }
-
-    @Override
-    public double getMinHeight() {
-        return minHeight;
-    }
-
-    public void setMinWidth(double minWidth) {
-        this.minWidth = minWidth;
-    }
-
-    public void setMinHeight(double minHeight) {
-        this.minHeight = minHeight;
-    }
-     */
-/*    protected BooleanProperty floatingProperty() {
-        return floating;
-    }
-*/
     public MouseResizeHandler getMouseResizeHanler() {
         return mouseResizeHanler;
     }
@@ -321,17 +295,16 @@ public class FloatStageView implements FloatWindowView {
     protected Window make(Dockable dockable, Object dragged, boolean show) {
         System.err.println("MAKE make(Dockable dockable, Object dragged)");
         setSupportedCursors(DEFAULT_CURSORS);
-////
+
         DockableContext context = dockable.getDockableContext();
-        Point2D p = context.getMouseDragHandler().getStartMousePos();
-        //Point2D screenPoint = context.getDragNode().localToScreen(p);
+        Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
+
         Point2D screenPoint = dockable.node().localToScreen(p);
         System.err.println("MAKE screenPoint = " + screenPoint);
         if (screenPoint == null) {
             //screenPoint = new Point2D(400, 400);
         }
 
-//        if (draggedContext.isDocked() && getTargetContext(dragged).getTargetNode() != null) {
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver)tc).undockObject(dockable);
@@ -340,16 +313,12 @@ public class FloatStageView implements FloatWindowView {
             }
         }
 
-////
         Stage stage = new Stage();
         DockRegistry.register(stage);
 
-        //context.getDragContainer().setFloatingWindow(stage);
         stage.setTitle("FLOATING STAGE");
 
         stage.initStyle(stageStyle);
-
-        //Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOATWINDOW);
@@ -357,29 +326,22 @@ public class FloatStageView implements FloatWindowView {
         
         rootPane = borderPane;
         
-        Node node = context.getDragContainer().getNode();
+        Node node = context.getDragContainer().getGraphic();
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
         
         scene.setCursor(Cursor.HAND);
-        //floatingProperty.set(true);
 
         stage.setScene(scene);
         markFloating(stage);
 
-        //borderPane.applyCss();
-        //borderPane.setOpacity(0.3);
         borderPane.setStyle("-fx-background-color: transparent");
         
         Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-        //stage.setX(stagePosition.getX() - insetsDelta.getLeft());
-        //stage.setY(stagePosition.getY() - insetsDelta.getTop());
-        //stage.setX(screenPoint.getX());
-        //stage.setY(screenPoint.getY());
         stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 

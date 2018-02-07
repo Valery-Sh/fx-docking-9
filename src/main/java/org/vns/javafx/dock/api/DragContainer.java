@@ -18,10 +18,7 @@ package org.vns.javafx.dock.api;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -38,7 +35,7 @@ public class DragContainer { //extends Control implements Dockable{
     
     private final ObjectProperty value = new SimpleObjectProperty();
     
-    private Node node;
+    private Node graphic;
     
     //private Point2D mousePosition;
     
@@ -67,28 +64,28 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Window getFloatingWindow() {
-        if ( getNode().getScene() == null || getNode().getScene().getWindow() == null) {
+        if ( getGraphic().getScene() == null || getGraphic().getScene().getWindow() == null) {
             return null;
         }
-        return getNode().getScene().getWindow();
+        return getGraphic().getScene().getWindow();
     }
 
 
-    public Node getNode() {
-        if ( node == null ) {
-            node = new Rectangle(75, 25);
-            node.setOpacity(0.3);
-            ((Shape)node).setFill(Color.YELLOW);
-            ((Shape)node).setStroke(Color.BLACK);
-            ((Shape)node).setStrokeWidth(1);
-            ((Shape)node).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
-            ((Shape)node).setStrokeDashOffset(1.0);            
+    public Node getGraphic() {
+        if ( graphic == null ) {
+            graphic = new Rectangle(75, 25);
+            graphic.setOpacity(0.3);
+            ((Shape)graphic).setFill(Color.YELLOW);
+            ((Shape)graphic).setStroke(Color.BLACK);
+            ((Shape)graphic).setStrokeWidth(1);
+            ((Shape)graphic).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
+            ((Shape)graphic).setStrokeDashOffset(1.0);            
         }
-        return node;
+        return graphic;
     }
 
-    public void setNode(Node node) {
-        this.node = node;
+    public void setGraphic(Node graphic) {
+        this.graphic = graphic;
     }
     
 }

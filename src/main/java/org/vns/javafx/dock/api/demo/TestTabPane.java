@@ -30,7 +30,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.DockableContext.MouseDragHandler;
+import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.TabPaneContext;
 import org.vns.javafx.dock.api.TabPaneMouseDragHandler;
 

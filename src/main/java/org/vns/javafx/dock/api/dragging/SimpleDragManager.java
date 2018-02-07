@@ -153,10 +153,10 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
 
             //dockable.getDockableContext().setFloating(true);
-            Dockable cd = getContainerDockable();
-            if (cd != null) {
+            //Dockable cd = getContainerDockable();
+            //if (cd != null) {
                 //cd.getDockableContext().setFloating(true);
-            }
+            //}
 
         } else {
             System.err.println("drag detected if floating");

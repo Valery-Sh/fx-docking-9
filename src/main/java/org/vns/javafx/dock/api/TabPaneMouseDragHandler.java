@@ -24,7 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockableContext.MouseDragHandler;
+import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 
@@ -57,7 +57,7 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
                 if ( wi != null ) {
                     Node node = new ImageView(wi);
                     node.setOpacity(0.75);
-                    getContext().getDragContainer().setNode(node);
+                    getContext().getDragContainer().setGraphic(node);
                 }
             }
         }

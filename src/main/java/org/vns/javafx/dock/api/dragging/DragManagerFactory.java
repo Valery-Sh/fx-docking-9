@@ -27,30 +27,10 @@ public class DragManagerFactory {
     }
     
     public DragManager getDragManager(Dockable dockable) {
-        
-/*        TargetContext dtc = dockable.getDockableContext().getTargetContext();
-        if ( dtc != null  ) {
-            if ( dtc.getDragType() == DragType.SIMPLE ) {
-                retval = new SimpleDragManager(dockable);
-            } else 
-                
-            if ( dtc.getDragType() == DragType.DRAG_AND_DROP ) {
-                retval = new DragAndDropManager(dockable);
-            }
-
-        }
-*/
         DragManager retval = dockable.getDockableContext().getLookup().lookup(DragManager.class);
         if ( retval == null ) {
             retval = new SimpleDragManager(dockable);
         }
         return retval;
-    }
-/*    public static DragManagerFactory getInstance() {
-        return SingletonInstance.INSTANCE;
-    }
-*/
-    private static class SingletonInstance {
-        private static DragManagerFactory INSTANCE = new DragManagerFactory();
     }
 }
