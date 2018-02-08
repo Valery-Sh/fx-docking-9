@@ -273,7 +273,7 @@ public class TreeItemDragManager extends SimpleDragManager {
             ((ObjectReceiver) getIndicatorManager().getTargetContext()).dockObject(mousePos, getDockable().getDockableContext().getDragObject());
         }
          */
-        Object dragObject = getDockable().getDockableContext().getDragValue();
+        Object dragObject = getDockable().getDockableContext().getDragContainer();
         if (getDockable().node() != dragObject) {
             if (dragObject instanceof Dockable) {
                 getIndicatorManager().getTargetContext().dock(mousePos, (Dockable) dragObject);

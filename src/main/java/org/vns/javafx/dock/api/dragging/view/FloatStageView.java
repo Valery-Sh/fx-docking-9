@@ -174,7 +174,7 @@ public class FloatStageView implements FloatWindowView {
     @Override
     public Window make(Dockable dockable, boolean show) {
         System.err.println("FLOATSTAGEVIEW");
-        DragContainer dc = dockable.getDockableContext().getDragValue();
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
         Object v = null;
         if (dc != null) {
             v = dc.getValue();
@@ -310,8 +310,8 @@ public class FloatStageView implements FloatWindowView {
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
-            if (context.getDragValue().getFloatingWindow() != null && context.getDragValue().getFloatingWindow().isShowing()) {
-                return context.getDragValue().getFloatingWindow();
+            if (context.getDragContainer().getFloatingWindow() != null && context.getDragContainer().getFloatingWindow().isShowing()) {
+                return context.getDragContainer().getFloatingWindow();
             }
         }
 
@@ -328,7 +328,7 @@ public class FloatStageView implements FloatWindowView {
 
         rootPane = borderPane;
 
-        Node node = context.getDragValue().getGraphic();
+        Node node = context.getDragContainer().getGraphic();
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);

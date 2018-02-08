@@ -224,15 +224,15 @@ public class TestDockPaneControl2 extends Application {
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
         tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().getDragValue().setValue(new Label("Tab2 Label"));
+        tab2.getDockableContext().getDragContainer().setValue(new Label("Tab2 Label"));
         root1.getChildren().add(tab2.node());   
         
         
         Button dockableBtn1 = new Button("dockableBtn1");
         DockRegistry.getInstance().makeDockable(dockableBtn1);
         //DockRegistry.dockable(dockableBtn1).getDockableContext().setFloating(true);
-        tab1.getDockableContext().getDragValue().setValue(dockableBtn1);
-        //tab2.getDockableContext().setDragValue(new Tab("Tab1_1"));
+        tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
+        //tab2.getDockableContext().setDragContainer(new Tab("Tab1_1"));
         stage1.show();
         //DockRegistry.getInstance().
         //Node p = vs1.getParent();

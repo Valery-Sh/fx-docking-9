@@ -353,22 +353,31 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
            //dockable.getDockableContext().setFloating(false);
         }
         
-        DragContainer dc = getDockable().getDockableContext().getDragValue();
+        DragContainer dc = getDockable().getDockableContext().getDragContainer();
         
 /*        if ( dc != null  && dc.getCarrier() != Dockable.of(dc.getGraphic())) {
             dc.setCarrier(Dockable.of(dc.getGraphic()));
         }
 */
-            System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
+        System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
+        System.err.println("+++++++++++ dc = " + dc);            
 
         if ( dc != null && getDockable().getDockableContext().isFloating() ) {
             
             System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
-            if ( ! FloatView.isFloating(getDockable().node())) {
+            //if ( dc.getOwner() != null && dc.getOwner() != getDockable() &&   ! FloatView.isFloating(getDockable().node())) {
+            if ( ! FloatView.isFloating(getDockable().node())) {            
                 System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
-                getDockable().getDockableContext().setDragValue(null);
+                getDockable().getDockableContext().setDragContainer(null);
             }
+            if ( dc.getOwner() != null && dc.getOwner() != getDockable()) {
+                System.err.println("2.1 +++++++++++ getDockable().node() = " + getDockable().node());            
+                //dc.getOwner().getDockableContext().setDragContainer(null);
+            }
+            
             System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
+            System.err.println("4 +++++++++++ gcontext.getDragValue() = " + getDockable().getDockableContext().getDragValue());            
+            System.err.println("5 +++++++++++ gcontext.getDragValue().isDockable() = " + DockRegistry.isDockable(getDockable().getDockableContext().getDragValue()));            
         }
     }
 
@@ -382,7 +391,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     protected Dockable getContainerDockable() {
         Dockable retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragValue();
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
         Object v = dc.getValue();
 
         if (v != null && (dc.isValueDockable())) {
@@ -393,7 +402,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     protected Object getContainerValue() {
         Object retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragValue();
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
         Object v = dc == null ? null : dc.getValue();
 
         if (v != null) {

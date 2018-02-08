@@ -36,20 +36,19 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
 public class DragContainer { //extends Control implements Dockable{
 
     private boolean valueDockable;
-    
-//    private Dockable carrier;
-    
+
+    private Dockable owner;
+
     private final ObjectProperty value = new SimpleObjectProperty();
 
     private Node graphic;
     private Node setGraphic;
-    
-    public DragContainer(Object value) {
-         setValue(value);
+
+    public DragContainer(Dockable owner, Object value) {
+        this.owner = owner;
+        setValue(value);
     }
 
-
-    
     public ObjectProperty valueProperty() {
         return value;
     }
@@ -78,7 +77,7 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Node getGraphic() {
-        if ( setGraphic != null ) {
+        if (setGraphic != null) {
             return setGraphic;
         }
         if (graphic == null && getValue() != null && Dockable.of(getValue()) != null) {
@@ -87,9 +86,9 @@ public class DragContainer { //extends Control implements Dockable{
         }
         if (graphic == null && getValue() != null && (getValue() instanceof Node)) {
             Pane p = new Pane();
-            p.getChildren().add((Node)getValue());
+            p.getChildren().add((Node) getValue());
             Scene sc = new Scene(p);
-            ImageView im = new ImageView(((Node) getValue()).snapshot(null,null));
+            ImageView im = new ImageView(((Node) getValue()).snapshot(null, null));
             graphic = im;
         } else if (graphic == null) {
             graphic = new Rectangle(75, 25);
@@ -104,15 +103,21 @@ public class DragContainer { //extends Control implements Dockable{
         if (d == null) {
             d = DockRegistry.makeDockable(graphic);
         }
-        DragContainer dc = d.getDockableContext().getDragValue();
+        DragContainer dc = d.getDockableContext().getDragContainer();
+        System.err.println("!!!!!!!!! dc = " + dc);
         if (dc == null) {
-            dc = new DragContainer(getValue());
-            d.getDockableContext().getDragValue();
+            dc = new DragContainer(d,getValue());
+            dc.setGraphic(graphic);
+            d.getDockableContext().setDragContainer(dc);
+            System.err.println("DragContaiter DC.getValue() = " + dc.getValue());
+            
+            //System.err.println("DragContaiter DC.getGraphic() = " + dc.getGraphic());
+            //d.getDockableContext().getDragContainer();
         }
-        
+
         //dc.setCarrier(d);
-        dc.setGraphic(graphic);
-        
+        //dc.setGraphic(graphic);
+
         return graphic;
     }
 
@@ -120,12 +125,12 @@ public class DragContainer { //extends Control implements Dockable{
         this.setGraphic = graphic;
     }
 
-/*    public Dockable getCarrier() {
-        return carrier;
+    public Dockable getOwner() {
+        return owner;
     }
 
-    public void setCarrier(Dockable carrier) {
-        this.carrier = carrier;
+    public void setOwner(Dockable owner) {
+        this.owner = owner;
     }
-*/
+
 }

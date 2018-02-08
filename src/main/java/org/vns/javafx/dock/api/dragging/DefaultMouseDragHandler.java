@@ -49,7 +49,7 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!dockable.getDockableContext().isFloating()) {
             dm.mouseDragDetected(ev, getStartMousePos());
         } else {
-            DragContainer dc = dockable.getDockableContext().getDragValue();
+            DragContainer dc = dockable.getDockableContext().getDragContainer();
             if ( (dc != null) ) {
                 Dockable.of(dc.getGraphic()).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {
@@ -76,7 +76,7 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!dockable.getDockableContext().isFloating()) {
             dm.mouseDragDetected(ev, getStartMousePos());
         } else {
-            Object value = dockable.getDockableContext().getDragValue().getValue();
+            Object value = dockable.getDockableContext().getDragContainer().getValue();
             if (value != null && Dockable.of(value) != null ) {
                 Dockable.of(value).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {

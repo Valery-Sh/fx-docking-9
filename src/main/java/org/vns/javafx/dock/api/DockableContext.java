@@ -335,10 +335,10 @@ public class DockableContext {
         return titleBar.get();
     }
 
-/*    public MouseDragHandler getMouseDragHandler() {
+    /*    public MouseDragHandler getMouseDragHandler() {
         return dragDetector.getDragHandler();
     }
-*/
+     */
     /**
      * Assigns the specified value of property {@code titleBar}.
      *
@@ -363,23 +363,21 @@ public class DockableContext {
      *
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
-
     public boolean isFloating() {
         Node node = dockable().node();
         boolean retval = FloatView.isFloating(node);
-        
-        if (!retval && getDragValue() != null && getDragValue().getValue() != null) {
-            DragContainer dc = getDragValue(); 
+
+        if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
+            DragContainer dc = getDragContainer();
 //            if (dc.getCarrier() == dockable && FloatView.isFloating(dc.getGraphic()) ) {
-            
-            if ( FloatView.isFloating(dc.getGraphic()) ) {
+
+            if (FloatView.isFloating(dc.getGraphic())) {
 
                 retval = true;
             }
         }
         return retval;
     }
-
 
     /**
      * Transfers the object into the <i>floating</i> state. If the current value
@@ -437,11 +435,11 @@ public class DockableContext {
         }
 
         Dockable d = dockable;
-        if (getDragValue() != null && getDragValue().getValue() != null) {
-            if (!getDragValue().isValueDockable()) {
+        if (getDragContainer() != null && getDragContainer().getValue() != null) {
+            if (!getDragContainer().isValueDockable()) {
                 return false;
             }
-            d = Dockable.of(getDragValue().getValue());
+            d = Dockable.of(getDragContainer().getValue());
         }
 
         return getTargetContext().isDocked(d.node());
@@ -508,7 +506,7 @@ public class DockableContext {
      *
      * @return the object which is an actual object to be docked
      */
-    public DragContainer getDragValue() {
+    public DragContainer getDragContainer() {
         return dragContainer;
     }
 
@@ -517,9 +515,20 @@ public class DockableContext {
      *
      * @param dragContainer the actual object to be docked
      */
-    public void setDragValue(DragContainer dragContainer) {
+    public void setDragContainer(DragContainer dragContainer) {
         this.dragContainer = dragContainer;
 
+    }
+
+    public Object getDragValue() {
+        Object retval = null;
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        if (dc != null) {
+            retval = dc.getValue();
+        } else {
+            retval = dockable;
+        }
+        return retval;
     }
 
     public class DragDetector implements EventHandler<MouseEvent> {
@@ -566,11 +575,11 @@ public class DockableContext {
             dragHandler.handle(event);
         }
 
-/*        protected MouseDragHandler getDragHandler() {
+        /*        protected MouseDragHandler getDragHandler() {
             return dragHandler;
         }
-*/
-        /*        public void setDragHandler(MouseDragHandler dragHandler) {
+         */
+ /*        public void setDragHandler(MouseDragHandler dragHandler) {
             this.dragHandler = dragHandler;
         }
          */
