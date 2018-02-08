@@ -61,26 +61,26 @@ public class TestDockable01  extends Application {
         root.getChildren().add(dockBorderPane1);
 
         Button btn1 = new Button("btn1");
-        DockRegistry.getInstance().registerDefault(btn1);
+        DockRegistry.getInstance().makeDockable(btn1);
         DockRegistry.dockable(btn1).getDockableContext().setDragNode(btn1);
         dockBorderPane1.setRight(btn1);
         Button btn2 = new Button("btn2");
-        DockRegistry.getInstance().registerDefault(btn2);
+        DockRegistry.getInstance().makeDockable(btn2);
         DockRegistry.dockable(btn2).getDockableContext().setDragNode(btn2);
         dockBorderPane1.setTop(btn2);
         
         Button btn3 = new Button("btn3");
-        DockRegistry.getInstance().registerDefault(btn3);
+        DockRegistry.getInstance().makeDockable(btn3);
         DockRegistry.dockable(btn3).getDockableContext().setDragNode(btn3);
         dockBorderPane1.setBottom(btn3);
 
         Button btn4 = new Button("btn4");
-        DockRegistry.getInstance().registerDefault(btn4);
+        DockRegistry.getInstance().makeDockable(btn4);
         DockRegistry.dockable(btn4).getDockableContext().setDragNode(btn4);
         dockBorderPane1.setLeft(btn4);
 
         Button btn5 = new Button("btn5");
-        DockRegistry.getInstance().registerDefault(btn5);
+        DockRegistry.getInstance().makeDockable(btn5);
         DockRegistry.dockable(btn5).getDockableContext().setDragNode(btn5);
         dockBorderPane1.setLeft(btn5);
         

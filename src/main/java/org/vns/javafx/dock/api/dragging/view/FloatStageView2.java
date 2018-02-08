@@ -308,7 +308,8 @@ public class FloatStageView2 implements FloatWindowView{
         }
 
         Region node = (Region) popup.getContent().get(0);
-        if (!DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (!DockRegistry.isDockable(node)) {
             return null;
         }
         Dockable dockable = Dockable.of(node);

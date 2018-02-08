@@ -67,7 +67,8 @@ public abstract class TargetContext {
     public abstract void restore(Dockable dockable, Object restoreposition);
 
     protected void commitDock(Node node) {
-        if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getDockableContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
@@ -151,13 +152,15 @@ public abstract class TargetContext {
 
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
-                return DockRegistry.instanceOfDockable(p);
+                //!!!08
+                return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
                 Dockable.of(newNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
+            //!!!08
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
-                return DockRegistry.instanceOfDockable(p);
+                return DockRegistry.isDockable(p);
             });
 
             if (oldNode != null && oldNode != newNode) {
@@ -290,7 +293,8 @@ public abstract class TargetContext {
     }
 
     public void undock(Node node) {
-        if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getDockableContext();
             dc.getTargetContext().remove(node);
             dc.setTargetContext(null);

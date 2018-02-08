@@ -167,7 +167,8 @@ public class TargetContextFactory {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                if (DockRegistry.instanceOfDockable(node)) {
+                //!!!08
+                if (DockRegistry.isDockable(node)) {
                     list.add(Dockable.of(node));
                 }
             });
@@ -361,7 +362,8 @@ public class TargetContextFactory {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                if (DockRegistry.instanceOfDockable(node)) {
+                //!!!08
+                if (DockRegistry.isDockable(node)) {
                     list.add(DockRegistry.dockable(node));
                 }
             });
@@ -552,7 +554,8 @@ public class TargetContextFactory {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                if (DockRegistry.instanceOfDockable(node)) {
+                //!!!08
+                if (DockRegistry.isDockable(node)) {
                     list.add(DockRegistry.dockable(node));
                 }
             });

@@ -113,7 +113,7 @@ public class TestTreeItemBuilder03 extends Application {
 
         root.setId("ROOT");
         Button btn1 = new Button("btn1");
-        DockRegistry.getInstance().registerDefault(btn1);
+        DockRegistry.makeDockable(btn1);
         btn1.setGraphic(btn1Graphic);
 
         root.getChildren().add(btn1);

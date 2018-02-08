@@ -159,8 +159,8 @@ public class ParentChainPopup {
         if (DockRegistry.instanceOfDockTarget(node)) {
             txt = DockRegistry.dockTarget(node).getTargetContext().getTitle();
             return txt;
-
-        } else if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        } else if (DockRegistry.isDockable(node)) {
             txt = getButtonText(DockRegistry.dockable(node));
         } else {
             txt = node.getId();

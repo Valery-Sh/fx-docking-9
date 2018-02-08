@@ -905,15 +905,9 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
         }
 
-        /*07.05        protected void dock(Dockable dockable, Object pos) {
-            if (pos instanceof Side) {
-                int idx = ((DockTabPane2) paneContext.getTargetNode()).getTabs().size();
-                dock(idx, dockable);
-            }
-        }
-         */
         protected boolean doDock(Point2D mousePos, Node node) {
-            if (!DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (!DockRegistry.isDockable(node)) {
                 return false;
             }
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {

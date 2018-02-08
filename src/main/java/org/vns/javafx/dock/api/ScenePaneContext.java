@@ -58,7 +58,8 @@ public class ScenePaneContext extends TargetContext {
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node)) {
             //if (node.getParent() != null && (node.getParent() instanceof Pane)) {
                 retval = DockUtil.getOwnerWindow(node) != null;
             //}

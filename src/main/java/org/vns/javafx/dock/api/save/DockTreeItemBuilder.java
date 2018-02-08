@@ -204,9 +204,10 @@ public interface DockTreeItemBuilder {
         if (node != null && node.getId() != null) {
             props.put("id", node.getId());
         }
-
-        if (node != null && (DockRegistry.instanceOfDockable(node) || DockRegistry.instanceOfDockTarget(node))) {
-            if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (node != null && (DockRegistry.isDockable(node) || DockRegistry.instanceOfDockTarget(node))) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 props.put(ISDOCKABLE_ATTR, "yes");
             }
             if (DockRegistry.instanceOfDockTarget(node)) {

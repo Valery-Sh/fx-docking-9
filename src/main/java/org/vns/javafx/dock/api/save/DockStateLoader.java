@@ -89,7 +89,8 @@ public class DockStateLoader extends AbstractDockStateLoader {
         //
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
-            if (DockRegistry.instanceOfDockable(node) && !DockRegistry.instanceOfDockTarget(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node) && !DockRegistry.instanceOfDockTarget(node)) {
                 TreeItem item = DockTreeItemBuilder.build(key, node);
                 getDefaultDockables().put(key, item);
             }

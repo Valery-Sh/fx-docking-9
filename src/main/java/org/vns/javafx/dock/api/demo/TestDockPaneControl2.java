@@ -214,7 +214,7 @@ public class TestDockPaneControl2 extends Application {
         Scene scene1 = new Scene(root1);
         stage1.setScene(scene1);
         Button ndBtn1 = new Button("ndBtn1");
-        DockRegistry.getInstance().registerDefault(ndBtn1);
+        DockRegistry.makeDockable(ndBtn1);
         
         TabNode tab1 = new TabNode("Tab1");
         DockRegistry.getInstance().register(tab1);
@@ -229,7 +229,7 @@ public class TestDockPaneControl2 extends Application {
         
         
         Button dockableBtn1 = new Button("dockableBtn1");
-        DockRegistry.getInstance().registerDefault(dockableBtn1);
+        DockRegistry.getInstance().makeDockable(dockableBtn1);
         //DockRegistry.dockable(dockableBtn1).getDockableContext().setFloating(true);
         tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
         //tab2.getDockableContext().setDragContainer(new Tab("Tab1_1"));

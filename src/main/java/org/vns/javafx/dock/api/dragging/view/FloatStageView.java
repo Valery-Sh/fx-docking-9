@@ -305,7 +305,7 @@ public class FloatStageView implements FloatWindowView {
         DockableContext context = dockable.getDockableContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
-        Point2D screenPoint = dockable.node().localToScreen(p);
+        //Point2D screenPoint = dockable.node().localToScreen(p);
 
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {

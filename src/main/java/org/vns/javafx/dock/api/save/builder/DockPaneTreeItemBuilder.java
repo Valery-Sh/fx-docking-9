@@ -226,7 +226,8 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
             }
             for (TreeItem<Properties> item : targetRoot.getChildren()) {
                 Node node = (Node) item.getValue().get(OBJECT_ATTR);
-                if (node == null || (node instanceof DockSplitPane) && !DockRegistry.instanceOfDockable(node)) {
+                //!!!08
+                if (node == null || (node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
                     node = buildSplitPane(item);
                     System.err.println("++++++ node=" + node);
                     pane.getItems().add(node);
@@ -236,8 +237,8 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                     System.err.println("1) ++++++ node=" + node);
 
                     pane.getItems().add(node);
-
-                } else if (DockRegistry.instanceOfDockable(node)) {
+                    //!!!08
+                } else if (DockRegistry.isDockable(node)) {
                     if (DockRegistry.dockable(node).getDockableContext().getTargetContext() != null) {
                         TargetContext c = DockRegistry.dockable(node).getDockableContext().getTargetContext();
                         if (c != getDockTarget().getTargetContext()) {
@@ -266,7 +267,8 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                     node = buildSplitPane(item);
                     item.getValue().put(OBJECT_ATTR, node);
                     pane.getItems().add(node);
-                } else if ((node instanceof DockSplitPane) && !DockRegistry.instanceOfDockable(node)) {
+                    //!!!08
+                } else if ((node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
                     node = buildSplitPane(item);
                     pane.getItems().add(node);
                 } else if (DockRegistry.instanceOfDockTarget(node)) {

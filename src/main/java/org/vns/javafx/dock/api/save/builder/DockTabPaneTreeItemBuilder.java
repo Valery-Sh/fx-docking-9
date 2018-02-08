@@ -63,7 +63,8 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
                 if (DockRegistry.instanceOfDockTarget(tab.getContent())) {
                     tab.setContent(restore(item));
                     pane.getTabs().add(i, tab);
-                } else if (DockRegistry.instanceOfDockable(tab.getContent())) {
+                    //!!!08
+                } else if (DockRegistry.isDockable(tab.getContent())) {
                     if (DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext() != null) {
                         TargetContext c = DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext();
                         if (c != getDockTarget().getTargetContext()) {
@@ -98,7 +99,8 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
             if (DockRegistry.instanceOfDockTarget(node)) {
                 node = restore(item);
                 tab.setContent(node);
-            } else if (DockRegistry.instanceOfDockable(node)) {
+                //!!!08
+            } else if (DockRegistry.isDockable(node)) {
                 tab.setContent(node);
             }
             return tab;
@@ -157,7 +159,8 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
                     Node node = pane.getTabs().get(i).getContent();
                     TreeItem contentItem = getDockTreeItemBuilder(node).build();
                     ti.getChildren().add(contentItem);
-                } else if (DockRegistry.instanceOfDockable(pane.getTabs().get(i).getContent())) {
+                    //!!!08
+                } else if (DockRegistry.isDockable(pane.getTabs().get(i).getContent())) {
                     TreeItem contentItem = DockTreeItemBuilder.build(pane.getTabs().get(i).getContent());
                     ti.getChildren().add(contentItem);
                 }

@@ -201,13 +201,12 @@ public class TestDockPaneControl extends Application {
         Scene scene1 = new Scene(root1);
         stage1.setScene(scene1);
         Button ndBtn1 = new Button("ndBtn1");
-        DockRegistry.getInstance().registerDefault(ndBtn1);
+        DockRegistry.makeDockable(ndBtn1);
         
         TabNode tab1 = new TabNode("Tab1 of TabNode");
         DockRegistry.getInstance().register(tab1);
         tab1.getDockableContext().setDragNode(tab1.node());
         root1.getChildren().add(tab1.node());
-
         
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
@@ -227,11 +226,11 @@ public class TestDockPaneControl extends Application {
         
         //dockableBtn1.setPadding(new Insets(0,0,0,0));
                 
-        DockRegistry.getInstance().registerDefault(dockableBtn1);
+        DockRegistry.makeDockable(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
         tab1.getDockableContext().setDragContainer( new DragContainer(dockableBtn1));
-        tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
+        //tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
         //Node graphic = tab1.getDockableContext().getDragContainer().getGraphic();
         
                 

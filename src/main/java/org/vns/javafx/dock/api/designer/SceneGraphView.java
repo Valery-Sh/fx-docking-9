@@ -254,7 +254,7 @@ public class SceneGraphView extends Control implements DockTarget {
                         this.setOnDragDetected(null);
                         this.setOnDragDropped(null);
                         this.setOnDragDone(null);
-                        DockRegistry.getInstance().unregisterDefault(this);
+                        DockRegistry.getInstance().unregisterDockable(this);
                         getVisibleCells().remove(this);
 
                     } else {
@@ -321,7 +321,7 @@ public class SceneGraphView extends Control implements DockTarget {
         } else {
             if (cell.getTreeItem().getValue() != null && (cell.getTreeItem().getValue() instanceof Node)) {
                 Node node = (Node) cell.getTreeItem().getValue();
-                DockRegistry.getInstance().registerDefault(cell);
+                DockRegistry.makeDockable(cell);
                 Dockable dockable = DockRegistry.dockable(cell);
                 dockable.getDockableContext().setTargetContext(getTargetContext());
                 //DockRegistry.dockable(cell).getDockableContext().setDragNode(cell);

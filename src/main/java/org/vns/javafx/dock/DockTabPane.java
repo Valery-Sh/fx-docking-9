@@ -419,7 +419,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         public ObservableList<Dockable> getDockables() {
             List<Dockable> list = FXCollections.observableArrayList();
             getTargetNode().getTabs().forEach(tab -> {
-                if (tab.getContent() != null && DockRegistry.instanceOfDockable(tab.getContent())) {
+                //!!!08
+                if (tab.getContent() != null && DockRegistry.isDockable(tab.getContent())) {
                     list.add(Dockable.of(tab.getContent()));
                 }
             });
@@ -496,8 +497,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             tabPane.getSelectionModel().select(newTab);
             //03.02((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
-
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 DockableContext dockableContext = Dockable.of(node).getDockableContext();
                 //node.getProperties().put(SAVE_DRAGNODE_PROP, dockableContext.getDragNode());
                 Node saveDragNode = dockableContext.getDragNode();
@@ -572,8 +573,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             tabPane.getSelectionModel().select(newTab);
             //03.02((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
-
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 DockableContext nodeHandler = Dockable.of(node).getDockableContext();
                 nodeHandler.setDragNode(newTab.getGraphic());
                 if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
@@ -618,8 +619,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             tabPane.getSelectionModel().select(tab);
             //02.02((Region) node).prefHeightProperty().bind(tabPane.heightProperty());
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
-
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 DockableContext nodeHandler = Dockable.of(node).getDockableContext();
                 nodeHandler.setDragNode(tab.getGraphic());
                 if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {

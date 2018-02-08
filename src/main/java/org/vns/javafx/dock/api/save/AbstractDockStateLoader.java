@@ -416,12 +416,13 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         //
         // May be the dockable node is allready in registered map with another fieldName name
         //
-        if (DockRegistry.instanceOfDockable(node) && getExplicitlyRegistered().containsValue(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node) && getExplicitlyRegistered().containsValue(node)) {
             //getExplicitlyRegistered().remove(getEntryName(node));
             throw new IllegalArgumentException("Dublicate node. entryName: " + fieldName);
         }
-
-        if (!DockRegistry.instanceOfDockTarget(node) && !DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (!DockRegistry.instanceOfDockTarget(node) && !DockRegistry.isDockable(node)) {
             throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + node.getClass().getName());
         }
 
@@ -466,8 +467,8 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
         try {
             retval = clazz.newInstance();
-
-            if (!DockRegistry.instanceOfDockTarget(retval) && !DockRegistry.instanceOfDockable(retval)) {
+            //!!!08
+            if (!DockRegistry.instanceOfDockTarget(retval) && !DockRegistry.isDockable(retval)) {
                 throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + clazz.getName());
             }
 

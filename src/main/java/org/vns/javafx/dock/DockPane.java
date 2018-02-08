@@ -130,7 +130,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         SplitPane sp = dsp;
         TargetContext ph = targetContext;
         for (Node node : dsp.getItems()) {
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.getDockableContext().setTargetContext(ph);
             } else if (node instanceof DockSplitPane) {
@@ -142,7 +143,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
     protected void update(DockSplitPane split, TargetContext ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
                 d.getDockableContext().setTargetContext(ph);
                 /*                if (i < split.getDividers().size() && d.getDockableContext().getDividerPos() >= 0) {
@@ -164,7 +166,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
     protected void splitPaneAdded(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 DockRegistry.dockable(node).getDockableContext().setTargetContext(dpt.getTargetContext());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
@@ -174,7 +177,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
 
     protected void splitPaneRemoved(SplitPane sp, DockTarget dpt) {
         for (Node node : sp.getItems()) {
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
             } else if (node instanceof SplitPane) {
                 splitPaneRemoved(((SplitPane) node), dpt);
             }

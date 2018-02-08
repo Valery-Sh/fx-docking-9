@@ -39,12 +39,13 @@ public class DragContainer { //extends Control implements Dockable{
 
     private boolean valueDockable;
     
-    private Dockable carrier;
+//    private Dockable carrier;
     
     private final ObjectProperty value = new SimpleObjectProperty();
 
     private Node graphic;
-
+    private Node setGraphic;
+    
     public DragContainer(Object value) {
          setValue(value);
     }
@@ -60,25 +61,24 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public void setValue(Object obj) {
-        if (obj == null || ! DockRegistry.isDockable(obj)) {
+/*        if (obj == null || ! DockRegistry.isDockable(obj)) {
             valueDockable = false;
         } else if (obj != null && ! DockRegistry.isDockable(obj)) {
             valueDockable = false;
         } else {
             valueDockable = true;
         }
-        System.err.println("VALUE DOCKABLE = " + valueDockable);        
+*/        
+        //System.err.println("VALUE DOCKABLE = " + valueDockable);        
         this.value.set(obj);
     }
 
     public boolean isValueDockable() {
-        return valueDockable;
+        return value != null && Dockable.of(value.get()) != null;
     }
 
     public Window getFloatingWindow() {
-        if (getValue() == null) {
-            return null;
-        }
+
         if (getGraphic().getScene() == null || getGraphic().getScene().getWindow() == null) {
             return null;
         }
@@ -89,6 +89,9 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Node getGraphic() {
+        if ( setGraphic != null ) {
+            return setGraphic;
+        }
         if (graphic == null && getValue() != null && Dockable.of(getValue()) != null) {
             graphic = Dockable.of(getValue()).node();
             return graphic;
@@ -99,7 +102,6 @@ public class DragContainer { //extends Control implements Dockable{
             Scene sc = new Scene(p);
             ImageView im = new ImageView(((Node) getValue()).snapshot(null,null));
             graphic = im;
-            //graphic = (Node) getValue();
         } else if (graphic == null) {
             graphic = new Rectangle(75, 25);
             graphic.setOpacity(0.3);
@@ -111,7 +113,7 @@ public class DragContainer { //extends Control implements Dockable{
         }
         Dockable d = Dockable.of(graphic);
         if (d == null) {
-            d = DockRegistry.getInstance().registerDefault(graphic);
+            d = DockRegistry.makeDockable(graphic);
         }
         DragContainer dc = d.getDockableContext().getDragContainer();
         if (dc == null) {
@@ -119,22 +121,22 @@ public class DragContainer { //extends Control implements Dockable{
             d.getDockableContext().setDragContainer(dc);
         }
         
-        dc.setCarrier(d);
+        //dc.setCarrier(d);
         dc.setGraphic(graphic);
         
         return graphic;
     }
 
     public void setGraphic(Node graphic) {
-        this.graphic = graphic;
+        this.setGraphic = graphic;
     }
 
-    public Dockable getCarrier() {
+/*    public Dockable getCarrier() {
         return carrier;
     }
 
     public void setCarrier(Dockable carrier) {
         this.carrier = carrier;
     }
-
+*/
 }

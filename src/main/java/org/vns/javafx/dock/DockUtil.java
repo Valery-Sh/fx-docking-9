@@ -161,7 +161,8 @@ public class DockUtil {
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 b = true;
                 TargetContext pd = Dockable.of(node).getDockableContext().getTargetContext();
                 DockableContext st = Dockable.of(node).getDockableContext();

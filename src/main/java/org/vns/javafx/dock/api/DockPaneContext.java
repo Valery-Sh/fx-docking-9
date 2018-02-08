@@ -62,7 +62,8 @@ public class DockPaneContext extends TargetContext {
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node)) {
             retval = DockUtil.getParentSplitPane(root, node) != null;
         }
         return retval;
@@ -140,7 +141,8 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     protected void commitDock(Node node) {
-        if (DockRegistry.instanceOfDockable(node)) {
+        //!!!08
+        if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getDockableContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
@@ -211,7 +213,8 @@ public class DockPaneContext extends TargetContext {
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         ((DockPane) getTargetNode()).getItems().forEach(node -> {
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
                 getDockables((DockSplitPane) node, list);
@@ -222,7 +225,8 @@ public class DockPaneContext extends TargetContext {
 
     private void getDockables(DockSplitPane pane, List<Dockable> list) {
         pane.getItems().forEach(node -> {
-            if (DockRegistry.instanceOfDockable(node)) {
+            //!!!08
+            if (DockRegistry.isDockable(node)) {
                 list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
                 getDockables((DockSplitPane) node, list);
