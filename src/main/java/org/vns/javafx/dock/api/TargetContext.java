@@ -182,7 +182,7 @@ public abstract class TargetContext {
     
     protected Dockable getValue(Dockable dockable) {
         Dockable retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc != null && dc.isValueDockable() ) {
              retval = Dockable.of(dc.getValue());
         } else if (dc == null ) {
@@ -198,7 +198,7 @@ public abstract class TargetContext {
             return false;
         }
         
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc != null && dc.isValueDockable() ) {
              dragged = Dockable.of(dc.getValue());
         } else if (dc != null && dc.getValue() != null ) {
@@ -210,7 +210,7 @@ public abstract class TargetContext {
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = getValue(dockable);
         
-/*        DragContainer dc = dockable.getDockableContext().getDragContainer();
+/*        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc != null && dc.getValue() != null) {
             if (!dc.isValueDockable()) {
                 return;
@@ -283,7 +283,7 @@ public abstract class TargetContext {
      */
     public static boolean isDocked(TargetContext to, Dockable dockable) {
         Dockable d = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
              d = Dockable.of(dc.getValue());
         } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {        

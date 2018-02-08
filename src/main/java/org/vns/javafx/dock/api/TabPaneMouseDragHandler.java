@@ -48,7 +48,7 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
 //            System.err.println("!!!! Tab id = " + tab.getId());
-            getContext().getDragContainer().setValue(tab);
+            getContext().getDragValue().setValue(tab);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
             WritableImage wi = null;
 
@@ -57,7 +57,7 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
                 if (wi != null) {
                     Node node = new ImageView(wi);
                     node.setOpacity(0.75);
-                    getContext().getDragContainer().setGraphic(node);
+                    getContext().getDragValue().setGraphic(node);
                 }
             }
         }
@@ -157,7 +157,7 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
             dm.mouseDragDetected(ev, getStartMousePos());
             //dockable.getDockableContext().setFloating(true);
         } else {
-            Object value = dockable.getDockableContext().getDragContainer().getValue();
+            Object value = dockable.getDockableContext().getDragValue().getValue();
             if (value != null && Dockable.of(value) != null) {
                 Dockable.of(value).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {

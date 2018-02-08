@@ -15,12 +15,10 @@
  */
 package org.vns.javafx.dock.api;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -61,15 +59,6 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public void setValue(Object obj) {
-/*        if (obj == null || ! DockRegistry.isDockable(obj)) {
-            valueDockable = false;
-        } else if (obj != null && ! DockRegistry.isDockable(obj)) {
-            valueDockable = false;
-        } else {
-            valueDockable = true;
-        }
-*/        
-        //System.err.println("VALUE DOCKABLE = " + valueDockable);        
         this.value.set(obj);
     }
 
@@ -115,10 +104,10 @@ public class DragContainer { //extends Control implements Dockable{
         if (d == null) {
             d = DockRegistry.makeDockable(graphic);
         }
-        DragContainer dc = d.getDockableContext().getDragContainer();
+        DragContainer dc = d.getDockableContext().getDragValue();
         if (dc == null) {
             dc = new DragContainer(getValue());
-            d.getDockableContext().setDragContainer(dc);
+            d.getDockableContext().getDragValue();
         }
         
         //dc.setCarrier(d);

@@ -211,15 +211,15 @@ public class TestDockPaneControl extends Application {
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
         tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().setDragContainer(new DragContainer(new Label("Tab2 Label")));
-        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
+        tab2.getDockableContext().setDragValue(new DragContainer(new Label("Tab2 Label")));
+        //tab2.getDockableContext().getDragValue().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab2.node());   
         
         TabNode tab3 = new TabNode("Tab3");
         DockRegistry.getInstance().register(tab3);
         tab3.getDockableContext().setDragNode(tab3.node());
-        tab3.getDockableContext().setDragContainer(new DragContainer("Shyshkin"));
-        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
+        tab3.getDockableContext().setDragValue(new DragContainer("Shyshkin"));
+        //tab2.getDockableContext().getDragValue().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab3.node());       
         
         Button dockableBtn1 = new Button("dockableBtn1");
@@ -229,9 +229,9 @@ public class TestDockPaneControl extends Application {
         DockRegistry.makeDockable(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
-        tab1.getDockableContext().setDragContainer( new DragContainer(dockableBtn1));
-        //tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
-        //Node graphic = tab1.getDockableContext().getDragContainer().getGraphic();
+        tab1.getDockableContext().setDragValue(new DragContainer(dockableBtn1));
+        //tab1.getDockableContext().getDragValue().setCarrier(Dockable.of(tab1));
+        //Node graphic = tab1.getDockableContext().getDragValue().getGraphic();
         
                 
         stage1.show();

@@ -76,7 +76,7 @@ public class DockPaneContext extends TargetContext {
             return;
         }
 /*        Dockable dragged = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
              dragged = Dockable.of(dc.getValue());
         } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {

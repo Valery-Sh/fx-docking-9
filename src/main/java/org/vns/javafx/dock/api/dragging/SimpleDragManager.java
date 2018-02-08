@@ -353,7 +353,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
            //dockable.getDockableContext().setFloating(false);
         }
         
-        DragContainer dc = getDockable().getDockableContext().getDragContainer();
+        DragContainer dc = getDockable().getDockableContext().getDragValue();
         
 /*        if ( dc != null  && dc.getCarrier() != Dockable.of(dc.getGraphic())) {
             dc.setCarrier(Dockable.of(dc.getGraphic()));
@@ -366,7 +366,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
             if ( ! FloatView.isFloating(getDockable().node())) {
                 System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
-                getDockable().getDockableContext().setDragContainer(null);
+                getDockable().getDockableContext().setDragValue(null);
             }
             System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
         }
@@ -382,7 +382,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     protected Dockable getContainerDockable() {
         Dockable retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         Object v = dc.getValue();
 
         if (v != null && (dc.isValueDockable())) {
@@ -393,7 +393,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     protected Object getContainerValue() {
         Object retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         Object v = dc == null ? null : dc.getValue();
 
         if (v != null) {

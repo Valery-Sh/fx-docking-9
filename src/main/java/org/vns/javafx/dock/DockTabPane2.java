@@ -363,7 +363,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         @Override
         public void dock(Point2D mousePos, Dockable dockable) {
             Dockable dragged = dockable;
-            DragContainer dc = dockable.getDockableContext().getDragContainer();
+            DragContainer dc = dockable.getDockableContext().getDragValue();
             Object v = dc.getValue();
             if (v != null && !(dc.isValueDockable())) {
                 return;

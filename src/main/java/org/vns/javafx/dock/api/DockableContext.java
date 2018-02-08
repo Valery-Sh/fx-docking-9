@@ -363,28 +363,16 @@ public class DockableContext {
      *
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
-    public boolean isFloating1() {
-        Node node = dockable().node();
-        boolean retval = FloatView.isFloating(node);
 
-        if (!retval && getDragContainer().getValue() != null) {
-            if (getDragContainer().isValueDockable()) {
-                node = Dockable.of(getDragContainer().getValue()).node();
-            } else {
-                node = getDragContainer().getGraphic();
-            }
-            retval = FloatView.isFloating(node);
-        }
-        return retval;
-    }
     public boolean isFloating() {
         Node node = dockable().node();
         boolean retval = FloatView.isFloating(node);
         
-        if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
-            DragContainer dc = getDragContainer(); 
+        if (!retval && getDragValue() != null && getDragValue().getValue() != null) {
+            DragContainer dc = getDragValue(); 
 //            if (dc.getCarrier() == dockable && FloatView.isFloating(dc.getGraphic()) ) {
-            if (FloatView.isFloating(dc.getGraphic()) ) {
+            
+            if ( FloatView.isFloating(dc.getGraphic()) ) {
 
                 retval = true;
             }
@@ -449,11 +437,11 @@ public class DockableContext {
         }
 
         Dockable d = dockable;
-        if (getDragContainer() != null && getDragContainer().getValue() != null) {
-            if (!getDragContainer().isValueDockable()) {
+        if (getDragValue() != null && getDragValue().getValue() != null) {
+            if (!getDragValue().isValueDockable()) {
                 return false;
             }
-            d = Dockable.of(getDragContainer().getValue());
+            d = Dockable.of(getDragValue().getValue());
         }
 
         return getTargetContext().isDocked(d.node());
@@ -520,7 +508,7 @@ public class DockableContext {
      *
      * @return the object which is an actual object to be docked
      */
-    public DragContainer getDragContainer() {
+    public DragContainer getDragValue() {
         return dragContainer;
     }
 
@@ -529,7 +517,7 @@ public class DockableContext {
      *
      * @param dragContainer the actual object to be docked
      */
-    public void setDragContainer(DragContainer dragContainer) {
+    public void setDragValue(DragContainer dragContainer) {
         this.dragContainer = dragContainer;
 
     }

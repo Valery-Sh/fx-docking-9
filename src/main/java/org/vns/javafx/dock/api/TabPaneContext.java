@@ -57,7 +57,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             return false;
         }
         boolean retval = false;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         Object v = dc.getValue();
 
         if (v != null && (dc.isValueDockable())) {
@@ -73,7 +73,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getDockableContext().getDragValue();
         if (dc.getValue() != null) {
             if (!dc.isValueDockable() && (dc.getValue() instanceof Tab)) {
                 dock(mousePos, (Tab) dc.getValue(), dockable);
@@ -103,7 +103,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     }
 
     public void dock(Point2D mousePos, Tab tab, Dockable dockable) {
-        Window window = dockable.getDockableContext().getDragContainer().getFloatingWindow();
+        Window window = dockable.getDockableContext().getDragValue().getFloatingWindow();
         System.err.println("winndow = " + window);
         if (doDock(mousePos, tab) && window != null) {
             if ((window instanceof Stage)) {
@@ -158,7 +158,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
     @Override
     public void dockObject(Point2D mousePos, Dockable carrier) {
-        DragContainer dc = carrier.getDockableContext().getDragContainer();
+        DragContainer dc = carrier.getDockableContext().getDragValue();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
             ((TabPane) getTargetNode()).getTabs().add((Tab) dc.getValue());
         }
@@ -166,7 +166,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
     @Override
     public void undockObject(Dockable carrier) {
-        DragContainer dc = carrier.getDockableContext().getDragContainer();
+        DragContainer dc = carrier.getDockableContext().getDragValue();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
             ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
         }
