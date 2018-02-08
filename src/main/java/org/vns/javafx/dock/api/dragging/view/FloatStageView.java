@@ -80,6 +80,7 @@ public class FloatStageView implements FloatWindowView {
     @Override
     public void initialize() {
     }
+
     public MouseResizeHandler getMouseResizeHanler() {
         return mouseResizeHanler;
     }
@@ -124,10 +125,10 @@ public class FloatStageView implements FloatWindowView {
         this.supportedCursors = supportedCursors;
     }
 
-/*    public ObjectProperty<Window> stageProperty() {
+    /*    public ObjectProperty<Window> stageProperty() {
         return this.floatingWindow;
     }
-*/
+     */
     @Override
     public ObjectProperty<Window> floatingWindowProperty() {
         return floatingWindow;
@@ -137,18 +138,20 @@ public class FloatStageView implements FloatWindowView {
     public Window getFloatingWindow() {
         return floatingWindow.get();
     }
+
     protected void setFloatingWindow(Window window) {
         floatingWindow.set(window);
     }
+
     protected void markFloating(Window toMark) {
         toMark.getScene().getRoot().getStyleClass().add(FLOATWINDOW);
         floatingWindow.set(toMark);
     }
 
-/*    protected Node node() {
+    /*    protected Node node() {
         return dockableContext.dockable().node();
     }
-*/
+     */
     @Override
     public Dockable getDockable() {
         return dockableContext.dockable();
@@ -163,7 +166,7 @@ public class FloatStageView implements FloatWindowView {
         }
         make(getDockable());
     }
-*/
+     */
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
@@ -172,12 +175,14 @@ public class FloatStageView implements FloatWindowView {
     public Window make(Dockable dockable, boolean show) {
         System.err.println("FLOATSTAGEVIEW");
         DragContainer dc = dockable.getDockableContext().getDragContainer();
-        Object v = dc.getValue();
-
-        if (v != null && !(dc.isValueDockable())) {
-            return make(dockable, v, show);
-        } else if (dc.isValueDockable()) {
-            return make(dockable, Dockable.of(v), show);
+        Object v = null;
+        if (dc != null) {
+            v = dc.getValue();
+            if (v != null && !(dc.isValueDockable())) {
+                return make(dockable, v, show);
+            } else if (dc.isValueDockable()) {
+                return make(dockable, Dockable.of(v), show);
+            }
         }
 
         setSupportedCursors(DEFAULT_CURSORS);
@@ -228,7 +233,7 @@ public class FloatStageView implements FloatWindowView {
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOATWINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
-        
+
         rootPane = borderPane;
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
@@ -304,7 +309,7 @@ public class FloatStageView implements FloatWindowView {
 
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
-            ((ObjectReceiver)tc).undockObject(dockable);
+            ((ObjectReceiver) tc).undockObject(dockable);
             if (context.getDragContainer().getFloatingWindow() != null && context.getDragContainer().getFloatingWindow().isShowing()) {
                 return context.getDragContainer().getFloatingWindow();
             }
@@ -320,22 +325,22 @@ public class FloatStageView implements FloatWindowView {
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOATWINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
-        
+
         rootPane = borderPane;
-        
+
         Node node = context.getDragContainer().getGraphic();
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
-        
+
         scene.setCursor(Cursor.HAND);
 
         stage.setScene(scene);
         markFloating(stage);
 
         borderPane.setStyle("-fx-background-color: transparent");
-        
-/*        Insets insetsDelta = borderPane.getInsets();
+
+        /*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
@@ -347,7 +352,7 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-*/
+         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
@@ -430,11 +435,9 @@ public class FloatStageView implements FloatWindowView {
         rootPane = borderPane;
 
         //borderPane.getProperties().put(FLOATVIEW_UUID, dockable);
-        
         //Rectangle r = new Rectangle(75, 30);
         //r.setFill(Color.YELLOW);
         //borderPane.setCenter(r);
-
         //DockPane dockPane = new DockPane();
         //StackPane dockPane = new StackPane();
         //borderPane.setStyle("-fx-background-color: aqua");
@@ -460,7 +463,7 @@ public class FloatStageView implements FloatWindowView {
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
-        
+
         scene.setCursor(Cursor.HAND);
         //floatingProperty.set(true);
 

@@ -15,9 +15,11 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
@@ -32,6 +34,33 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
 
     @Override
     public void mouseDragDetected(MouseEvent ev) {
+        if (!ev.isPrimaryButtonDown()) {
+            ev.consume();
+            return;
+        }
+        Dockable dockable = getContext().dockable();
+        if (!getContext().isDraggable()) {
+            ev.consume();
+            return;
+        }
+
+        DragManager dm = getContext().getDragManager();
+
+        if (!dockable.getDockableContext().isFloating()) {
+            dm.mouseDragDetected(ev, getStartMousePos());
+        } else {
+            DragContainer dc = dockable.getDockableContext().getDragContainer();
+Node n = dockable.node();
+            if (dc != null && Dockable.of(dc.getGraphic()) != null ) {
+                Dockable.of(dc.getGraphic()).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
+            } else {
+                dm.mouseDragDetected(ev, getStartMousePos());
+            }
+        }
+
+    }
+    
+    public void mouseDragDetected1(MouseEvent ev) {
         if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;

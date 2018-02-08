@@ -369,7 +369,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         @Override
         protected void initLookup(ContextLookup lookup) {
             super.initLookup(lookup);
-            lookup.putUnique(PositionIndicator.class,new SideBarPositonIndicator(this));
+            lookup.putUnique(PositionIndicator.class, new SideBarPositonIndicator(this));
         }
 
         @Override
@@ -405,9 +405,12 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
         }
 
         protected void dock(Dockable dockable) {
-
-            if (doDock(null, dockable.node())) {
-                dockable.getDockableContext().setFloating(false);
+            Dockable dragged = getValue(dockable);
+            if (dragged == null) {
+                return;
+            }
+            if (doDock(null, dragged.node())) {
+                dragged.getDockableContext().setFloating(false);
             }
         }
 
@@ -431,7 +434,6 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             }
             return retval;
         }
-
 
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
@@ -477,7 +479,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 } else if (!popup.isShowing()) {
                     //System.err.println("1 ======= popup.root = " + popup.getScene().getRoot());
                     //System.err.println("1 ======= popup.root.id = " + popup.getScene().getRoot().getId());                    
-                    
+
                     show(itemButton);
                 } else {
                     popup.hide();
@@ -604,7 +606,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             container.changeSize();
         }
 
-/*        @Override
+        /*        @Override
         public PositionIndicator createPositionIndicator() {
             PositionIndicator positionIndicator = new PositionIndicator(this) {
                 private Rectangle tabDockPlace;
@@ -699,7 +701,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             };
             return positionIndicator;
         }
-*/
+         */
         @Override
         public Object getRestorePosition(Dockable dockable) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -761,7 +763,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                     removeMouseExitListener();
                 }
             });
-*/            
+             */
         }
 
         public DockSideBar getSideBar() {
@@ -796,7 +798,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 ev.consume();
                 return;
             }
-            
+
             if (!ev.isPrimaryButtonDown() && !dockable.getDockableContext().isFloating()) {
                 dockable.node().getScene().getWindow().hide();
             }
@@ -936,13 +938,14 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
 
         private Rectangle tabDockPlace;
         private IndicatorPopup indicatorPopup;
-        
+
         public SideBarPositonIndicator(TargetContext context) {
             super(context);
             //this.targetContext = targetContext;
         }
+
         private IndicatorPopup getIndicatorPopup() {
-            if ( indicatorPopup == null) {
+            if (indicatorPopup == null) {
                 indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
             }
             return indicatorPopup;
@@ -980,10 +983,11 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
             getTabDockPlace().setVisible(false);
 
         }
+
         protected int indexOf(double x, double y) {
             int idx = -1;
             ToolBar tb = ((DockSideBar) getTargetContext().getTargetNode()).getDelegate();
-            Node sb = ((SidePaneContext)getTargetContext()).findNode(tb.getItems(), x, y);
+            Node sb = ((SidePaneContext) getTargetContext()).findNode(tb.getItems(), x, y);
             if (sb != null && (sb instanceof Group)) {
                 idx = tb.getItems().indexOf(sb);
             } else if (sb == null && DockUtil.contains(tb, x, y)) {

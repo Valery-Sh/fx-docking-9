@@ -148,7 +148,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             }
             FloatView view = f.getFloatView(this);
             floatingWindow = (Window) view.make(dockable);
-//            System.err.println("----------- FLOATING WINDOW = " + floatingWindow);
+            System.err.println("----------- FLOATING WINDOW = " + floatingWindow);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
 
@@ -160,7 +160,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
         } else {
             System.err.println("drag detected if floating");
-
+            if ( floatingWindow == null ) {
+                //
+                // floatingWindow is null if the dragMaager changed
+                //
+                floatingWindow = dockable.node().getScene().getWindow();
+            }
             //
             // If floating window contains snapshot and not the dockable then
             // the folowing two operator must be skipped
@@ -348,6 +353,23 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
            //dockable.getDockableContext().setFloating(false);
         }
         
+        DragContainer dc = getDockable().getDockableContext().getDragContainer();
+        
+/*        if ( dc != null  && dc.getCarrier() != Dockable.of(dc.getGraphic())) {
+            dc.setCarrier(Dockable.of(dc.getGraphic()));
+        }
+*/
+            System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
+
+        if ( dc != null && getDockable().getDockableContext().isFloating() ) {
+            
+            System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
+            if ( ! FloatView.isFloating(getDockable().node())) {
+                System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
+                getDockable().getDockableContext().setDragContainer(null);
+            }
+            System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
+        }
     }
 
     protected void hideFloatingWindow() {
@@ -372,7 +394,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     protected Object getContainerValue() {
         Object retval = null;
         DragContainer dc = dockable.getDockableContext().getDragContainer();
-        Object v = dc.getValue();
+        Object v = dc == null ? null : dc.getValue();
 
         if (v != null) {
             retval = v;

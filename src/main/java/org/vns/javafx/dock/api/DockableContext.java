@@ -11,9 +11,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -104,8 +102,6 @@ public class DockableContext {
         this.dockable = dockable;
         titleBar = new TitleBarProperty(dockable.node());
         lookup = new DefaultContextLookup();
-        dragContainer = new DragContainer();
-//        dragContainer = dockable.node();
         init();
     }
 
@@ -367,7 +363,7 @@ public class DockableContext {
      *
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
-    public boolean isFloating() {
+    public boolean isFloating1() {
         Node node = dockable().node();
         boolean retval = FloatView.isFloating(node);
 
@@ -378,6 +374,20 @@ public class DockableContext {
                 node = getDragContainer().getGraphic();
             }
             retval = FloatView.isFloating(node);
+        }
+        return retval;
+    }
+    public boolean isFloating() {
+        Node node = dockable().node();
+        boolean retval = FloatView.isFloating(node);
+        
+        if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
+            DragContainer dc = getDragContainer(); 
+//            if (dc.getCarrier() == dockable && FloatView.isFloating(dc.getGraphic()) ) {
+            if (FloatView.isFloating(dc.getGraphic()) ) {
+
+                retval = true;
+            }
         }
         return retval;
     }
@@ -439,7 +449,7 @@ public class DockableContext {
         }
 
         Dockable d = dockable;
-        if (getDragContainer().getValue() != null) {
+        if (getDragContainer() != null && getDragContainer().getValue() != null) {
             if (!getDragContainer().isValueDockable()) {
                 return false;
             }
@@ -480,6 +490,7 @@ public class DockableContext {
     public DragManager getDragManager() {
         if (dragManager == null) {
             createDragManager();
+            System.err.println("CREATE DRAG MANGER dockable = " + dockable().node());
         }
         return dragManager;
     }
@@ -518,7 +529,7 @@ public class DockableContext {
      *
      * @param dragContainer the actual object to be docked
      */
-    protected void setDragContainer(DragContainer dragContainer) {
+    public void setDragContainer(DragContainer dragContainer) {
         this.dragContainer = dragContainer;
 
     }

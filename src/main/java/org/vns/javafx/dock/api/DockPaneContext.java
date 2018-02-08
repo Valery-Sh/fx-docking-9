@@ -70,22 +70,19 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        Dockable dragged = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
-        Object v = dc.getValue();
-
-        if ( v != null && ! (dc.isValueDockable()) ) {
+        Dockable dragged = getValue(dockable);
+        if ( dragged == null ) {
             return;
-        } else if (dc.isValueDockable()) {
-            dragged = Dockable.of(v);
         }
-        if ( dockable instanceof DragContainer ) {
-            if ( ! ((DragContainer)dockable).isValueDockable() ) {
-                return;
-            }
-            dragged = (Dockable) ((DragContainer)dockable).getValue();
+/*        Dockable dragged = dockable;
+        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
+             dragged = Dockable.of(dc.getValue());
+        } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {
+            return;
         }
-
+*/  
+        
         IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
 
         Node node = dragged.node();
@@ -121,13 +118,15 @@ public class DockPaneContext extends TargetContext {
 
     //@Override
     public void dock(Dockable dockable, Side pos) {
-        if (isDocked(dockable.node())) {
+        Dockable dragged = getValue(dockable);
+        if ( dragged == null ) {
             return;
         }
-        if (doDock(dockable.node(), pos)) {
-            //dockable.getDockableContext().setFloating(false);
-            //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode()));
+        if (isDocked(dragged.node())) {
+            return;
         }
+        doDock(dragged.node(), pos);
+        
     }
     
     private boolean doDock(Node node, Side dockPos) {
@@ -152,21 +151,25 @@ public class DockPaneContext extends TargetContext {
 
 
     public void dock(Dockable dockable, Side side, Dockable target) {
-        if (isDocked(dockable.node())) {
+        Dockable dragged = getValue(dockable);
+        if ( dragged == null ) {
             return;
         }
-        if (!(dockable instanceof Node) && !DockRegistry.getDockables().containsKey(dockable.node())) {
-            DockRegistry.getDockables().put(dockable.node(), dockable);
+        if (isDocked(dragged.node())) {
+            return;
+        }
+        if (!(dragged instanceof Node) && !DockRegistry.getDockables().containsKey(dragged.node())) {
+            DockRegistry.getDockables().put(dragged.node(), dragged);
         }
         //dockable.getDockableContext().setFloating(false);
 
-        Node node = dockable.node();
+        Node node = dragged.node();
         
-        DockEvent event = null;
+        DockEvent event;
                 
         if (target == null) {
-            dock(dockable, side);
-            event = new DockEvent(DockEvent.NODE_DOCKED,dockable.node(), getTargetNode(), side, null);
+            dock(dragged, side);
+            event = new DockEvent(DockEvent.NODE_DOCKED,dragged.node(), getTargetNode(), side, null);
         } else {
 
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
@@ -174,10 +177,10 @@ public class DockPaneContext extends TargetContext {
             }
             //dockable.getDockableContext().setFloating(false);
             getDockExecutor().dock(node, side, target);
-            event = new DockEvent(DockEvent.NODE_DOCKED, dockable.node(), getTargetNode(),side, target);
+            event = new DockEvent(DockEvent.NODE_DOCKED, dragged.node(), getTargetNode(),side, target);
             
         }
-        DockableContext dockableContext = dockable.getDockableContext();
+        DockableContext dockableContext = dragged.getDockableContext();
         if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
             dockableContext.setTargetContext(this);
         }

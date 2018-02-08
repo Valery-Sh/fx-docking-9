@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.demo;
 
-
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -25,6 +24,7 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.save.DockStateLoader;
 
 
@@ -212,9 +212,16 @@ public class TestDockPaneControl extends Application {
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
         tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().getDragContainer().setValue(new Label("Tab2 Label"));
+        tab2.getDockableContext().setDragContainer(new DragContainer(new Label("Tab2 Label")));
+        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab2.node());   
         
+        TabNode tab3 = new TabNode("Tab3");
+        DockRegistry.getInstance().register(tab3);
+        tab3.getDockableContext().setDragNode(tab3.node());
+        tab3.getDockableContext().setDragContainer(new DragContainer("Shyshkin"));
+        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
+        root1.getChildren().add(tab3.node());       
         
         Button dockableBtn1 = new Button("dockableBtn1");
         
@@ -222,7 +229,10 @@ public class TestDockPaneControl extends Application {
                 
         DockRegistry.getInstance().registerDefault(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
-        tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
+        
+        tab1.getDockableContext().setDragContainer( new DragContainer(dockableBtn1));
+        tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
+        //Node graphic = tab1.getDockableContext().getDragContainer().getGraphic();
         
                 
         stage1.show();

@@ -373,13 +373,14 @@ public class DockRegistry {
         return retval;
     }
 
-    public void registerDefault(Node node) {
+    public Dockable registerDefault(Node node) {
         if ( instanceOfDockable(node) ) {
-            return;
+            return dockable(node);
         }
         Dockable d = makeDockable(node);
         d.getDockableContext().setDragNode(node);
         node.getProperties().put(Dockable.DOCKABLE_KEY, d);
+        return d;
     }
 
     public void unregisterDefault(Node node) {

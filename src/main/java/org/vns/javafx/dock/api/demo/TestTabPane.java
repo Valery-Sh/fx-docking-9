@@ -174,11 +174,10 @@ public class TestTabPane extends Application {
         
         Label lb03 = new Label("Valery");
        
-        root1.getChildren().add(lb03);
-        Scene scene1 = new Scene(root1);        
+        //root1.getChildren().add(lb03);
+        Scene scene1 = new Scene(lb03);        
         WritableImage wi = lb03.snapshot(null,null);
         ImageView iv = new ImageView(wi);
-        
         
         root1.getChildren().add(iv);   
         
