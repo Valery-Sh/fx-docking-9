@@ -323,8 +323,8 @@ public class SceneGraphView extends Control implements DockTarget {
                 Node node = (Node) cell.getTreeItem().getValue();
                 DockRegistry.makeDockable(cell);
                 Dockable dockable = DockRegistry.dockable(cell);
-                dockable.getDockableContext().setTargetContext(getTargetContext());
-                //DockRegistry.dockable(cell).getDockableContext().setDragNode(cell);
+                dockable.getContext().setTargetContext(getTargetContext());
+                //DockRegistry.dockable(cell).getContext().setDragNode(cell);
             }
         }
     }

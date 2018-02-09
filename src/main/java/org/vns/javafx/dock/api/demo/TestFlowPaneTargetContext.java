@@ -76,7 +76,7 @@ public class TestFlowPaneTargetContext  extends Application {
             custom1.setContent(b2);
             if ( custom.getTitleBar() == null ) {
                 custom1.setContent(b2);                
-                //custom.getDockableContext().createDefaultTitleBar("Now Not Null");
+                //custom.getContext().createDefaultTitleBar("Now Not Null");
             } else {
                 //custom.setTitleBar(null);
                 //custom.setRemoveTitleBar(true);
@@ -96,7 +96,7 @@ public class TestFlowPaneTargetContext  extends Application {
         
         p1.setId("pane p1");
         DockUtil.print(primaryRoot);
-        //dockPane.dock(p1, Side.TOP).getDockableContext().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).getContext().setTitle("Pane p1");
         Scene primaryScene = new Scene(primaryRoot);
         
         primaryStage.setTitle("JavaFX and Maven");

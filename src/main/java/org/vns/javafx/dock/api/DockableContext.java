@@ -27,7 +27,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
  * provides a means to change the state. Any object that implements the
- * {@link Dockable} interface provides {@link Dockable#getDockableContext() }
+ * {@link Dockable} interface provides {@link Dockable#getContext() }
  * method that returns an object of this type.
  * <p>
  * To describe the state of an object using multiple properties and methods. An
@@ -365,15 +365,24 @@ public class DockableContext {
      */
     public boolean isFloating() {
         Node node = dockable().node();
+        boolean retval = false;
+        if (getDragContainer() != null && getDragContainer().getValue() != null) {
+            DragContainer dc = getDragContainer();
+            if (FloatView.isFloating(dc.getGraphic())) {
+                retval = true;
+            }
+        } else {
+            retval = FloatView.isFloating(node);
+        }
+        return retval;
+    }
+
+    public boolean isFloating_old() {
+        Node node = dockable().node();
         boolean retval = FloatView.isFloating(node);
-        System.err.println("isFloating retval = " + retval);
-        System.err.println("isFloating node = " + node);
         if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
             DragContainer dc = getDragContainer();
-//            if (dc.getCarrier() == dockable && FloatView.isFloating(dc.getGraphic()) ) {
-
             if (FloatView.isFloating(dc.getGraphic())) {
-
                 retval = true;
             }
         }
@@ -475,9 +484,12 @@ public class DockableContext {
      * @return the object which manages a dragging execution
      */
     public DragManager getDragManager() {
-        if (dragManager == null) {
+        return getDragManager(false);
+    }
+    public DragManager getDragManager(boolean create) {
+        if ( create || dragManager == null) {
             createDragManager();
-            System.err.println("CREATE DRAG MANGER dockable = " + dockable().node());
+            return dragManager;
         }
         return dragManager;
     }
@@ -490,12 +502,12 @@ public class DockableContext {
 
         DragManagerFactory dmf = null;
 
-        TargetContext tc = dockable.getDockableContext().getTargetContext();
+        TargetContext tc = dockable.getContext().getTargetContext();
 
         if (tc != null) {
             dmf = tc.getLookup().lookup(DragManagerFactory.class);
             if (dmf == null) {
-                dmf = dockable.getDockableContext().getLookup().lookup(DragManagerFactory.class
+                dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class
                 );
             }
         }
@@ -523,7 +535,7 @@ public class DockableContext {
 
     public Object getDragValue() {
         Object retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null) {
             retval = dc.getValue();
         } else {

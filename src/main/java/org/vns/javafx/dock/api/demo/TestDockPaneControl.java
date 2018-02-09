@@ -130,7 +130,7 @@ public class TestDockPaneControl extends Application {
         dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
 
-        DockableContext dc = DockRegistry.dockable(dnc3).getDockableContext();
+        DockableContext dc = DockRegistry.dockable(dnc3).getContext();
         TargetContext dtc = dc.getTargetContext();
 
         Button b1 = new Button("save");
@@ -205,35 +205,33 @@ public class TestDockPaneControl extends Application {
         
         TabNode tab1 = new TabNode("Tab1 of TabNode");
         DockRegistry.getInstance().register(tab1);
-        tab1.getDockableContext().setDragNode(tab1.node());
+        tab1.getContext().setDragNode(tab1.node());
         root1.getChildren().add(tab1.node());
-        
+  
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
-        tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().setDragContainer(new DragContainer(tab2,new Label("Tab2 Label")));
-        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
+        tab2.getContext().setDragNode(tab2.node());
+        tab2.getContext().setDragContainer(new DragContainer(tab2,new Label("Tab2 Label")));
+        //tab2.getContext().getDragContainer().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab2.node());   
         
         TabNode tab3 = new TabNode("Tab3");
         DockRegistry.getInstance().register(tab3);
-        tab3.getDockableContext().setDragNode(tab3.node());
-        tab3.getDockableContext().setDragContainer(new DragContainer(tab3,"Shyshkin"));
-        //tab2.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab2));        
+        tab3.getContext().setDragNode(tab3.node());
+        tab3.getContext().setDragContainer(new DragContainer(tab3,"Shyshkin"));
+        //tab2.getContext().getDragContainer().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab3.node());       
         
         Button dockableBtn1 = new Button("dockableBtn1");
  
         
-        //dockableBtn1.setPadding(new Insets(0,0,0,0));
-                
         //DockRegistry.makeDockable(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
-        tab1.getDockableContext().setDragContainer(new DragContainer(tab1,dockableBtn1));
-        tab1.getDockableContext().getDragContainer().setGraphic(dockableBtn1);
-        //tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
-        //Node graphic = tab1.getDockableContext().getDragContainer().getGraphic();
+        tab1.getContext().setDragContainer(new DragContainer(tab1,dockableBtn1));
+        tab1.getContext().getDragContainer().setGraphic(dockableBtn1);
+        //tab1.getContext().getDragContainer().setCarrier(Dockable.of(tab1));
+        //Node graphic = tab1.getContext().getDragContainer().getGraphic();
         stage.setHeight(350);
         stage.setWidth(350);
         stage1.setAlwaysOnTop(true);
@@ -311,7 +309,7 @@ public class TestDockPaneControl extends Application {
         }
 
         @Override
-        public DockableContext getDockableContext() {
+        public DockableContext getContext() {
             if ( context == null ) {
                 context = new DockableContext(this);
                 node.setText(getText());

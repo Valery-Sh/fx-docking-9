@@ -68,7 +68,7 @@ public class TestTabPane extends Application {
         TabPane tabPane = new TabPane(tab1, tab2, tab3);
         DockRegistry.getInstance().registerAsDockTarget(tabPane, new TabPaneContext(tabPane) );
         DockRegistry.getInstance().getDefaultDockable(tabPane);
-        DockableContext dc = Dockable.of(tabPane).getDockableContext();
+        DockableContext dc = Dockable.of(tabPane).getContext();
         dc.setTargetContext(DockTarget.of(tabPane).getTargetContext());
         
         System.err.println("++++ dc.getTargetContext = " + dc.getTargetContext());

@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.dragging;
 
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -34,6 +35,11 @@ public interface DragManager { //extends EventHandler<MouseEvent> {
     Dockable getDockable();
     
     void mouseDragDetected(MouseEvent ev, Point2D startMousePos);
+    
+//    Window getWindow();
+    
+//    void createWindow(Dockable dockable);
+    
     /**
      * The method is called when the user presses a primary mouse button. Saves
      * the screen position of the mouse screen cursor.

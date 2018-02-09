@@ -125,7 +125,7 @@ public class TestDockPaneControl2 extends Application {
         dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
 
-        DockableContext dc = DockRegistry.dockable(dnc3).getDockableContext();
+        DockableContext dc = DockRegistry.dockable(dnc3).getContext();
         TargetContext dtc = dc.getTargetContext();
         //loader.resetPreferences();
 /////// LOAD /////////////        
@@ -198,7 +198,7 @@ public class TestDockPaneControl2 extends Application {
         });
 
         //cc.setRoot(vs1);
-        //System.err.println("dn1 isDocked()=" + dn1.getDockableContext().isDocked());
+        //System.err.println("dn1 isDocked()=" + dn1.getContext().isDocked());
         root.getChildren().add(dockPane1);
 
         scene = new Scene(root, 550, 550);
@@ -218,21 +218,21 @@ public class TestDockPaneControl2 extends Application {
         
         TabNode tab1 = new TabNode("Tab1");
         DockRegistry.getInstance().register(tab1);
-        tab1.getDockableContext().setDragNode(tab1.node());
+        tab1.getContext().setDragNode(tab1.node());
         root1.getChildren().add(tab1.node());
         
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
-        tab2.getDockableContext().setDragNode(tab2.node());
-        tab2.getDockableContext().getDragContainer().setValue(new Label("Tab2 Label"));
+        tab2.getContext().setDragNode(tab2.node());
+        tab2.getContext().getDragContainer().setValue(new Label("Tab2 Label"));
         root1.getChildren().add(tab2.node());   
         
         
         Button dockableBtn1 = new Button("dockableBtn1");
         DockRegistry.getInstance().makeDockable(dockableBtn1);
-        //DockRegistry.dockable(dockableBtn1).getDockableContext().setFloating(true);
-        tab1.getDockableContext().getDragContainer().setValue(dockableBtn1);
-        //tab2.getDockableContext().setDragContainer(new Tab("Tab1_1"));
+        //DockRegistry.dockable(dockableBtn1).getContext().setFloating(true);
+        tab1.getContext().getDragContainer().setValue(dockableBtn1);
+        //tab2.getContext().setDragContainer(new Tab("Tab1_1"));
         stage1.show();
         //DockRegistry.getInstance().
         //Node p = vs1.getParent();
@@ -291,7 +291,7 @@ public class TestDockPaneControl2 extends Application {
         }
 
         @Override
-        public DockableContext getDockableContext() {
+        public DockableContext getContext() {
             if ( context == null ) {
                 context = new DockableContext(this);
                 node.setText(getText());

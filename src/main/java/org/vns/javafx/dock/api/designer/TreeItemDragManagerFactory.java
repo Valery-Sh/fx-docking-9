@@ -29,7 +29,7 @@ public class TreeItemDragManagerFactory extends DragManagerFactory{
     
     public DragManager getDragManager(Dockable dockable) {
         
-        DragManager retval = dockable.getDockableContext().getLookup().lookup(DragManager.class);
+        DragManager retval = dockable.getContext().getLookup().lookup(DragManager.class);
         if ( retval == null ) {
             retval = new TreeItemDragManager(dockable);
         }

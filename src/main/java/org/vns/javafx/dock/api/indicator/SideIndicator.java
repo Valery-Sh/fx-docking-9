@@ -276,7 +276,7 @@ public abstract class SideIndicator extends PositionIndicator {
         public void showIndicator(double screenX, double screenY, Node dockNode) {
             super.showIndicator(screenX, screenY, dockNode);
             if (dockNode != null) {
-                nodeContext = Dockable.of(dockNode).getDockableContext();
+                nodeContext = Dockable.of(dockNode).getContext();
             } else {
                 nodeContext = null; // 06.05.2017
             }

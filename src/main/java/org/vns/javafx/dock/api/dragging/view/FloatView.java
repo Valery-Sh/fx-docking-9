@@ -2,7 +2,6 @@ package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -32,44 +31,13 @@ public interface FloatView<T> {
     static boolean isFloating(Node node) {
 
         boolean retval = false;
-        System.err.println("   --- scene = " + node.getScene());
         if (node.getScene() == null) {
             return false;
         }
         if (node.getScene().getRoot().getStyleClass().contains(FloatView.FLOATWINDOW)) {
-            System.err.println("   --- contains FLOATWINDOW  ");
             retval = true;
         }
         return retval;
     }
 
-/*    static Dockable getDockable(Window window) {
-        Dockable retval = null;
-        if (window != null && window.getScene() != null) {
-            Node root = window.getScene().getRoot();
-            System.err.println("FloatView: root = " + root);
-            if (root != null ) {
-                retval = (Dockable) root.getProperties().get(FLOATVIEW_UUID);
-            }
-        }
-        return retval;
-    }
-*/
-/*    static Window getWindow(Dockable dockable) {
-        Window retval = null;
-        if ( dockable != null && dockable.node().getScene() != null ) {
-            retval = dockable.node().getScene().getWindow();
-        }
-        return retval;
-    }
-*/    
-  /*  static Dockable getDraggedDockable(Dockable carrier) {
-        Dockable retval = null;
-        Window w = getWindow(carrier);
-        if ( w != null ) {
-            retval = getDockable(w);
-        }
-        return retval;
-    }
-*/
 }//interface

@@ -115,7 +115,7 @@ public class TestWindowPopupSizes extends Application {
             
         });
         // 1. setStyle("-fx-padding: 10")
-        //dockPane.dock(p1, Side.TOP).getDockableContext().setTitle("Pane p1");
+        //dockPane.dock(p1, Side.TOP).getContext().setTitle("Pane p1");
         
         stage.setScene(scene);
         //stage.getScene().setFill(Color.BEIGE);    

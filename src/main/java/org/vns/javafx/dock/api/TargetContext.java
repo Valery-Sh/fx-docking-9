@@ -69,7 +69,7 @@ public abstract class TargetContext {
     protected void commitDock(Node node) {
         //!!!08
         if (DockRegistry.isDockable(node)) {
-            DockableContext dockableContext = Dockable.of(node).getDockableContext();
+            DockableContext dockableContext = Dockable.of(node).getContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
@@ -156,7 +156,7 @@ public abstract class TargetContext {
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
-                Dockable.of(newNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
+                Dockable.of(newNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
             //!!!08
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
@@ -164,9 +164,9 @@ public abstract class TargetContext {
             });
 
             if (oldNode != null && oldNode != newNode) {
-                Dockable.of(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !Dockable.of(oldNode).getDockableContext().titleBarProperty().isActiveChoosedPseudoClass()) {
-                Dockable.of(oldNode).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
+                Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(false);
+            } else if (oldNode != null && !Dockable.of(oldNode).getContext().titleBarProperty().isActiveChoosedPseudoClass()) {
+                Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
 
@@ -182,7 +182,7 @@ public abstract class TargetContext {
     
     protected Dockable getValue(Dockable dockable) {
         Dockable retval = null;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.isValueDockable() ) {
              retval = Dockable.of(dc.getValue());
         } else if (dc == null ) {
@@ -198,7 +198,7 @@ public abstract class TargetContext {
             return false;
         }
         
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.isValueDockable() ) {
              dragged = Dockable.of(dc.getValue());
         } else if (dc != null && dc.getValue() != null ) {
@@ -206,7 +206,7 @@ public abstract class TargetContext {
         }
 */        
         Dockable dragged = dockable;
-        Object v  = dockable.getDockableContext().getDragValue();
+        Object v  = dockable.getContext().getDragValue();
         if ( Dockable.of(v) != null ) {
             dragged = Dockable.of(v);
         } else {
@@ -219,7 +219,7 @@ public abstract class TargetContext {
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = getValue(dockable);
         
-/*        DragContainer dc = dockable.getDockableContext().getDragContainer();
+/*        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.getValue() != null) {
             if (!dc.isValueDockable()) {
                 return;
@@ -238,13 +238,13 @@ public abstract class TargetContext {
         }
 
         if (doDock(mousePos, d.node()) && stage != null) {
-            //d.getDockableContext().setFloating(false);
+            //d.getContext().setFloating(false);
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {
                 stage.hide();
             }
-            d.getDockableContext().setTargetContext(this);
+            d.getContext().setTargetContext(this);
         }
     }
 
@@ -292,7 +292,7 @@ public abstract class TargetContext {
      */
     public static boolean isDocked(TargetContext to, Dockable dockable) {
         Dockable d = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
              d = Dockable.of(dc.getValue());
         } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {        
@@ -304,14 +304,14 @@ public abstract class TargetContext {
     public void undock(Node node) {
         //!!!08
         if (DockRegistry.isDockable(node)) {
-            DockableContext dc = Dockable.of(node).getDockableContext();
+            DockableContext dc = Dockable.of(node).getContext();
             dc.getTargetContext().remove(node);
             dc.setTargetContext(null);
         }
     }
 
     /*07.05    public FloatStageBuilder getStageBuilder(Dockable dockable) {
-        return new FloatStageBuilder(dockable.getDockableContext());
+        return new FloatStageBuilder(dockable.getContext());
     }
      */
     public abstract void remove(Node dockNode);

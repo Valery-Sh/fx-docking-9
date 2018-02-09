@@ -67,7 +67,7 @@ public class TestSplitPane  extends Application {
         dn01.setId("DockNode: dn01");
         dn01.setPrefHeight(100);
         sp01.getItems().add(dn01);
-        dn01.getDockableContext().setTitle("DockNode: dn01");
+        dn01.getContext().setTitle("DockNode: dn01");
         Button b02 = new Button("Change Orientation");
         
         b02.setOnAction(a -> {
@@ -76,7 +76,7 @@ public class TestSplitPane  extends Application {
         DockNode dn02 = new DockNode();
         dn02.setId("DockNode: dn02");
         dn02.setPrefHeight(100);
-        dn02.getDockableContext().setTitle("DockNode: dn02");   
+        dn02.getContext().setTitle("DockNode: dn02");   
         
         stage.setScene(scene);
         stage.show();

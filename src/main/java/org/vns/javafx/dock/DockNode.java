@@ -123,7 +123,7 @@ public class DockNode extends Control implements Dockable {
     }
 
     @Override
-    public DockableContext getDockableContext() {
+    public DockableContext getContext() {
         return dockableContext;
     }
 

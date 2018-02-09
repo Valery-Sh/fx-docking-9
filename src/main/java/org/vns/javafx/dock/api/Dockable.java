@@ -32,7 +32,7 @@ public interface Dockable {
      * 
      * @return an object of type {@link DockableContext}
      */
-    DockableContext getDockableContext();
+    DockableContext getContext();
     
     /**
      * Initialize default {@code css} styles for all components of the docking api.

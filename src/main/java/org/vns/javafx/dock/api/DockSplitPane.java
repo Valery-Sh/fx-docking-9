@@ -41,7 +41,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             getItems().forEach(it -> {
                 //!!!08
                 if (DockRegistry.isDockable(it)) {
-                    Dockable.of(it).getDockableContext().setTargetContext(dpt.getTargetContext());
+                    Dockable.of(it).getContext().setTargetContext(dpt.getTargetContext());
                 }
             });
         }
@@ -81,7 +81,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
                 for (Node node : list) {
                     //!!!08
                     if (dpt != null && DockRegistry.isDockable(node)) {
-                        Dockable.of(node).getDockableContext().setTargetContext(dpt.getTargetContext());
+                        Dockable.of(node).getContext().setTargetContext(dpt.getTargetContext());
                     } else if (dpt != null && node instanceof DockSplitPane) {
                         splitPaneAdded((SplitPane) node, dpt);
                     } else if (node instanceof DockSplitPane) {
@@ -99,9 +99,9 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 Dockable d = Dockable.of(node);
-                d.getDockableContext().setTargetContext(ph);
-                /*                if (i < split.getDividers().size() && d.getDockableContext().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.getDockableContext().getDividerPos());
+                d.getContext().setTargetContext(ph);
+                /*                if (i < split.getDividers().size() && d.getContext().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.getContext().getDividerPos());
                 }
                  */
             } else if (node instanceof DockSplitPane) {
@@ -130,7 +130,7 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         sp.getItems().forEach((node) -> {
             //!!!08
             if (DockRegistry.isDockable(node)) {
-                Dockable.of(node).getDockableContext().setTargetContext(dpt.getTargetContext());
+                Dockable.of(node).getContext().setTargetContext(dpt.getTargetContext());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }

@@ -47,7 +47,7 @@ public class DockNodeBox  extends VBox implements Dockable{
     }
 
     @Override
-    public DockableContext getDockableContext() {
+    public DockableContext getContext() {
         return dockableContext;
     }
     

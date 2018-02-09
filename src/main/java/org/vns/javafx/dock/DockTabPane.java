@@ -78,7 +78,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         getStyleClass().add("dock-tab-pane");
         getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 
-        getDockableContext().setTitleBar(new DockTitleBar(this));
+        getContext().setTitleBar(new DockTitleBar(this));
 
         setRotateGraphic(true);
 
@@ -119,7 +119,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
     }
      */
     public StringProperty titleProperty() {
-        return getDockableContext().titleProperty();
+        return getContext().titleProperty();
     }
 
     public DockableContext getNodeContext() {
@@ -132,7 +132,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
     }
 
     @Override
-    public DockableContext getDockableContext() {
+    public DockableContext getContext() {
         return this.dockableContext;
     }
 
@@ -155,8 +155,8 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
 
-        if (dockable.getDockableContext().getTargetContext() != null) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getTargetContext() != null) {
+            dockable.getContext().getTargetContext().undock(dockable.node());
         }
         paneContext.doDock(idx, dockable.node());
     }
@@ -499,7 +499,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
             //!!!08
             if (DockRegistry.isDockable(node)) {
-                DockableContext dockableContext = Dockable.of(node).getDockableContext();
+                DockableContext dockableContext = Dockable.of(node).getContext();
                 //node.getProperties().put(SAVE_DRAGNODE_PROP, dockableContext.getDragNode());
                 Node saveDragNode = dockableContext.getDragNode();
                 
@@ -575,7 +575,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
             //!!!08
             if (DockRegistry.isDockable(node)) {
-                DockableContext nodeHandler = Dockable.of(node).getDockableContext();
+                DockableContext nodeHandler = Dockable.of(node).getContext();
                 nodeHandler.setDragNode(newTab.getGraphic());
                 if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
                     nodeHandler.setTargetContext(this);
@@ -621,7 +621,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             //03.02((Region) node).prefWidthProperty().bind(tabPane.widthProperty());
             //!!!08
             if (DockRegistry.isDockable(node)) {
-                DockableContext nodeHandler = Dockable.of(node).getDockableContext();
+                DockableContext nodeHandler = Dockable.of(node).getContext();
                 nodeHandler.setDragNode(tab.getGraphic());
                 if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
                     nodeHandler.setTargetContext(this);
@@ -631,7 +631,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
 
         public void dock(Dockable dockable) {
             if (doDock(null, dockable.node())) {
-               // dockable.getDockableContext().setFloating(false);
+               // dockable.getContext().setFloating(false);
             }
         }
 
@@ -650,11 +650,11 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
          */
         protected String getButtonText(Dockable d) {
-            String txt = d.getDockableContext().getTitle();
-            if (d.getDockableContext().getProperties().getProperty("user-title") != null) {
-                txt = d.getDockableContext().getProperties().getProperty("user-title");
-            } else if (d.getDockableContext().getProperties().getProperty("short-title") != null) {
-                txt = d.getDockableContext().getProperties().getProperty("short-title");
+            String txt = d.getContext().getTitle();
+            if (d.getContext().getProperties().getProperty("user-title") != null) {
+                txt = d.getContext().getProperties().getProperty("user-title");
+            } else if (d.getContext().getProperties().getProperty("short-title") != null) {
+                txt = d.getContext().getProperties().getProperty("short-title");
             } else if (d.node().getId() != null && d.node().getId().isEmpty()) {
                 txt = d.node().getId();
             }
@@ -665,7 +665,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
 
         public void saveContentTitleBar(Dockable dockable) {
-            Region tb = dockable.getDockableContext().getTitleBar();
+            Region tb = dockable.getContext().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -673,11 +673,11 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             tb.getProperties().put("titleBarMinHeight", tb.getMinHeight());
             tb.getProperties().put("titleBarPrefHeight", tb.getPrefHeight());
             dockable.node().getProperties().put("titleBar", tb);
-            dockable.getDockableContext().setTitleBar(null);
+            dockable.getContext().setTitleBar(null);
         }
 
         protected void hideContentTitleBar(Dockable dockable) {
-            Region tb = dockable.getDockableContext().getTitleBar();
+            Region tb = dockable.getContext().getTitleBar();
             if (tb == null) {
                 return;
             }
@@ -689,7 +689,7 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             if (tb == null) {
                 return;
             }
-            dockable.getDockableContext().setTitleBar(tb);
+            dockable.getContext().setTitleBar(tb);
         }
 
         @Override

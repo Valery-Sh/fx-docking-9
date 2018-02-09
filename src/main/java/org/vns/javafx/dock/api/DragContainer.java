@@ -111,10 +111,10 @@ public class DragContainer { //extends Control implements Dockable{
 
     private void makeContainer() {
         Dockable d = Dockable.of(getGraphic());
-        DragContainer dc = d.getDockableContext().getDragContainer();
+        DragContainer dc = d.getContext().getDragContainer();
         if (dc == null) {
             dc = new DragContainer(d, getValue(), false);
-            d.getDockableContext().setDragContainer(dc);
+            d.getContext().setDragContainer(dc);
             dc.setGraphic(getGraphic());
             
         }
@@ -132,7 +132,7 @@ public class DragContainer { //extends Control implements Dockable{
         if ( Dockable.of(getGraphic()) == null ) {
             makeDockable();
             makeContainer();
-        } else if ( Dockable.of(getGraphic()).getDockableContext().getDragContainer() == null  ) {
+        } else if ( Dockable.of(getGraphic()).getContext().getDragContainer() == null  ) {
             makeContainer();
         }
     }

@@ -84,7 +84,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
      */
     public DragAndDropManager(Dockable dockable) {
         this.dockable = dockable;
-        this.targetContext = dockable.getDockableContext().getTargetContext();
+        this.targetContext = dockable.getContext().getTargetContext();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
     @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
         System.err.println("DRAG MANGER " + this);
-        System.err.println("dragDetected targetController " + dockable.getDockableContext().getTargetContext());
+        System.err.println("dragDetected targetController " + dockable.getContext().getTargetContext());
         dragSource = (Node) ev.getSource();
         this.startMousePos = startMousePos;
 
@@ -111,8 +111,8 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         content.putUrl("fxdocking://DragAndDropManager");
         dragboard.setContent(content);
 
-        if (!dockable.getDockableContext().isFloating()) {
-            System.err.println("dockableController().isFloating() = " + dockable.getDockableContext().isFloating());
+        if (!dockable.getContext().isFloating()) {
+            System.err.println("dockableController().isFloating() = " + dockable.getContext().isFloating());
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
             if ( PC == null ) {
                 PC = new PopupControl();
@@ -128,9 +128,9 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
             targetDockPane.addEventFilter(DragEvent.DRAG_DONE, this);
             targetDockPane.addEventFilter(DragEvent.DRAG_EXITED, this);
 
-            docablePositionSave = dockable.getDockableContext().getTargetContext().getRestorePosition(dockable);
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
-            //dockable.getDockableContext().setFloating(true);
+            docablePositionSave = dockable.getContext().getTargetContext().getRestorePosition(dockable);
+            dockable.getContext().getTargetContext().undock(dockable.node());
+            //dockable.getContext().setFloating(true);
         }
 
         ev.consume();
@@ -163,7 +163,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         PC.setX(X+5);
         PC.setY(Y + 15);
 
-        if (!dockable.getDockableContext().isFloating()) {
+        if (!dockable.getContext().isFloating()) {
             if (popup != null && popup.isShowing()) {
                 popup.hide();
             }
@@ -257,9 +257,9 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
     }
 
     protected void dragDone(DragEvent ev) {
-        System.err.println("dragDone targetController " + dockable.getDockableContext().getTargetContext());
-        System.err.println("dragDone isFloating =  " + dockable.getDockableContext().isFloating());
-        if (dockable.getDockableContext().isFloating() && docablePositionSave != null && targetContext != null) {
+        System.err.println("dragDone targetController " + dockable.getContext().getTargetContext());
+        System.err.println("dragDone isFloating =  " + dockable.getContext().isFloating());
+        if (dockable.getContext().isFloating() && docablePositionSave != null && targetContext != null) {
             targetContext.restore(dockable, docablePositionSave);
         }
         if (popup != null && popup.isShowing()) {
@@ -350,5 +350,6 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         return retval;
 
     }
+
 
 }

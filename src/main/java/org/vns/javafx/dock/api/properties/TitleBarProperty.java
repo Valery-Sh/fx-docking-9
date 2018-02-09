@@ -106,7 +106,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                Dockable.of(f).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
+                Dockable.of(f).getContext().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         }
         if (newValue != null ) {
@@ -115,7 +115,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
             });
             
             if ( f != null ) {
-                //Dockable.of(f).getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(true);
+                //Dockable.of(f).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         }
     }

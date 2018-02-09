@@ -53,11 +53,8 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
     @Override
     public boolean isAcceptable(Dockable dockable) {
-        if (dockable instanceof DragContainer) {
-            return false;
-        }
         boolean retval = false;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         //Object v = dc.getValue();
 
         if (dc != null && (dc.isValueDockable())) {
@@ -65,7 +62,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         } else if ((dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
             retval = true;
         }
-        System.err.println("*************************** IS ACEPTABLE retval = " + retval);
+//        System.err.println("*************************** IS ACEPTABLE retval = " + retval);
 
         return retval;
     }
@@ -73,7 +70,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = dockable;
-        DragContainer dc = dockable.getDockableContext().getDragContainer();
+        DragContainer dc = dockable.getContext().getDragContainer();
         if (dc.getValue() != null) {
             if (!dc.isValueDockable() && (dc.getValue() instanceof Tab)) {
                 dock(mousePos, (Tab) dc.getValue(), dockable);
@@ -82,7 +79,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             d = Dockable.of(dc.getValue());
         }
         if (isDocked(d.node())) {
-            System.err.println("TargetContext isDocked == TRUE for node = " + d.node());
+//            System.err.println("TargetContext isDocked == TRUE for node = " + d.node());
             return;
         }
         Node node = d.node();
@@ -92,27 +89,27 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         }
 
         if (doDock(mousePos, d.node()) && stage != null) {
-            //d.getDockableContext().setFloating(false);
+            //d.getContext().setFloating(false);
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {
                 stage.hide();
             }
-            d.getDockableContext().setTargetContext(this);
+            d.getContext().setTargetContext(this);
         }
     }
 
     public void dock(Point2D mousePos, Tab tab, Dockable dockable) {
-        Window window = dockable.getDockableContext().getDragContainer().getFloatingWindow();
-        System.err.println("winndow = " + window);
+        Window window = dockable.getContext().getDragContainer().getFloatingWindow();
+//        System.err.println("winndow = " + window);
         if (doDock(mousePos, tab) && window != null) {
             if ((window instanceof Stage)) {
                 ((Stage) window).close();
             } else {
                 window.hide();
             }
-            //dockable.getDockableContext().setFloating(false);
-            //d.getDockableContext().setTargetContext(this);
+            //dockable.getContext().setFloating(false);
+            //d.getContext().setTargetContext(this);
         }
     }
 
@@ -158,7 +155,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
     @Override
     public void dockObject(Point2D mousePos, Dockable carrier) {
-        DragContainer dc = carrier.getDockableContext().getDragContainer();
+        DragContainer dc = carrier.getContext().getDragContainer();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
             ((TabPane) getTargetNode()).getTabs().add((Tab) dc.getValue());
         }
@@ -166,7 +163,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
     @Override
     public void undockObject(Dockable carrier) {
-        DragContainer dc = carrier.getDockableContext().getDragContainer();
+        DragContainer dc = carrier.getContext().getDragContainer();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
             ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
         }
@@ -335,6 +332,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
                         tab.getStyleClass().add("tab-uuid-" + UUID.randomUUID());
                     }
                 }
+
             }//while
         }
     }

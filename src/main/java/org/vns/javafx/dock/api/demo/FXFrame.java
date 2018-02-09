@@ -120,7 +120,7 @@ public class FXFrame {
         });
         formNode.setContent(content);
         mainBorderPane.setCenter(formNode);
-        //System.err.println("1 FORM NODE TARGET CONTROLLER " + formNode.getDockableContext().getTargetContext());
+        //System.err.println("1 FORM NODE TARGET CONTROLLER " + formNode.getContext().getTargetContext());
         DockNode sceneGraph = new DockNode("Node hierarchy");
         Button sgBtn1 = new Button("Scene Grah Btn");
         DockSideBar mainLeftSideBar = new DockSideBar();

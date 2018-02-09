@@ -93,7 +93,7 @@ public class DockTitleBar extends HBox {
 
         label = new Label(title);
         if ( dockNode != null ) {
-            label.textProperty().bind(dockNode.getDockableContext().titleProperty());
+            label.textProperty().bind(dockNode.getContext().titleProperty());
         }
 
         stateButton = new Button();
@@ -114,7 +114,7 @@ public class DockTitleBar extends HBox {
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
             closeButton.requestFocus();
-            //03.09 dockNode.getDockableContext().dockable().node().toFront();
+            //03.09 dockNode.getContext().dockable().node().toFront();
         });
         closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
         stateButton.setTooltip(new Tooltip("Undock pane"));
@@ -133,7 +133,7 @@ public class DockTitleBar extends HBox {
         }
     }
     protected void closeButtonClicked(MouseEvent ev) {
-        DockableContext sp = dockNode.getDockableContext();
+        DockableContext sp = dockNode.getContext();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
         } else {

@@ -157,7 +157,7 @@ public class TestDockPane1NEW extends Application {
         });
 
         //cc.setRoot(vs1);
-        //System.err.println("dn1 isDocked()=" + dn1.getDockableContext().isDocked());
+        //System.err.println("dn1 isDocked()=" + dn1.getContext().isDocked());
         root.getChildren().add(dockPane1);
 
         scene = new Scene(root, 250, 250);

@@ -144,7 +144,7 @@ public class TestFxDockTabPane  extends Application {
         //tbRect.getStyleClass().add("drag-button");
         //tbIv.getStyleClass().add("drag-image-view");
         
-        //tabPane01.getDockableContext().setDragNode(tbIv);
+        //tabPane01.getContext().setDragNode(tbIv);
         //tabPane01.getChildren().add(tbIv);
         //tbIv.toFront();
         //tbIv.setTranslateX(-5);

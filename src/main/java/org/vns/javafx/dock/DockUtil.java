@@ -164,8 +164,8 @@ public class DockUtil {
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 b = true;
-                TargetContext pd = Dockable.of(node).getDockableContext().getTargetContext();
-                DockableContext st = Dockable.of(node).getDockableContext();
+                TargetContext pd = Dockable.of(node).getContext().getTargetContext();
+                DockableContext st = Dockable.of(node).getContext();
                 if (pd == null) {
                     b = false;
                 } else {

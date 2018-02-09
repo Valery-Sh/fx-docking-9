@@ -33,11 +33,11 @@ public class DemoDockableButton extends Application {
         Button dockButton = new Button("To be docked 1");
         
         Dockable dockableButton = DockRegistry.getInstance().getDefaultDockable(dockButton);
-        dockableButton.getDockableContext().setDragNode(dockButton);
+        dockableButton.getContext().setDragNode(dockButton);
         
         Button dockButton1 = new Button("To be docked 2");        
         Dockable dockableButton1 = DockRegistry.getInstance().getDefaultDockable(dockButton1);
-        dockableButton1.getDockableContext().setDragNode(dockButton1);
+        dockableButton1.getContext().setDragNode(dockButton1);
         //
         // Dynamically created Dockable Button
         //
@@ -50,12 +50,12 @@ public class DemoDockableButton extends Application {
             }
 
             @Override
-            public DockableContext getDockableContext() {
+            public DockableContext getContext() {
                 return c;
             }
             
         };
-        dockableButton2.getDockableContext().setDragNode(dockButton2);
+        dockableButton2.getContext().setDragNode(dockButton2);
         DockRegistry.getInstance().register(dockableButton2);
         //
         //
@@ -63,8 +63,8 @@ public class DemoDockableButton extends Application {
         root.getChildren().addAll(dockButton, dockButton1, dockButton2);
         
 /*        if ( dockButton2.getParent() != null ) {
-            //09.02d.getDockableContext().getTargetContext().changeDockedState(d, true);
-            dockableButton2.getDockableContext().getTargetContext().setTargetNode((Region)dockableButton2.node().getParent());
+            //09.02d.getContext().getTargetContext().changeDockedState(d, true);
+            dockableButton2.getContext().getTargetContext().setTargetNode((Region)dockableButton2.node().getParent());
         }        
 */
         Stage stage1 = new Stage();

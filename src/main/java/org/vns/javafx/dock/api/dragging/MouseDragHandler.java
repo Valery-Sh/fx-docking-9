@@ -18,9 +18,7 @@ package org.vns.javafx.dock.api.dragging;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -28,41 +26,47 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  */
 public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
 
-        private final DockableContext context;
-        private Point2D startMousePos;
+    private final DockableContext context;
+    private Point2D startMousePos;
 
-        protected MouseDragHandler(DockableContext context) {
-            this.context = context;
+    protected MouseDragHandler(DockableContext context) {
+        this.context = context;
+    }
+
+    public void mousePressed(MouseEvent ev) {
+        //System.err.println("MouseDragHandler MOUSE PRESSED 1");
+        if (!ev.isPrimaryButtonDown()) {
+            return;
         }
-
-        public void mousePressed(MouseEvent ev) {
-            if (!ev.isPrimaryButtonDown()) {
-                return;
-            }
-            startMousePos = new Point2D(ev.getX(), ev.getY());
-        }
-
-        public abstract void mouseDragDetected(MouseEvent ev);
-
-        @Override
-        public void handle(MouseEvent ev) {
-            if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                mousePressed(ev);
-            } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-                mouseDragDetected(ev);
-            }
-        }
-
-        public Point2D getStartMousePos() {
-            return startMousePos;
-        }
-
-        public void setStartMousePos(Point2D startMousePos) {
-            this.startMousePos = startMousePos;
-        }
-
-        public DockableContext getContext() {
-            return context;
-        }
+        startMousePos = new Point2D(ev.getX(), ev.getY());
+        System.err.println("   --- MouseDragHandler MOUSE PRESSED stargMousePos = " + startMousePos);
 
     }
+
+    public abstract void mouseDragDetected(MouseEvent ev);
+
+    @Override
+    public void handle(MouseEvent ev) {
+        if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+            mousePressed(ev);
+        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+            mouseDragDetected(ev);
+        }
+    }
+
+    public Point2D getStartMousePos() {
+        return startMousePos;
+    }
+
+    public void setStartMousePos(Point2D startMousePos) {
+        this.startMousePos = startMousePos;
+    }
+
+    public DockableContext getContext() {
+        return context;
+    }
+    
+    public DragManager getDragManager(MouseEvent ev) {
+        return getContext().getDragManager();
+    }
+}

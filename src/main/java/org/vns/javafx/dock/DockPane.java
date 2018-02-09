@@ -102,8 +102,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         if (!getTargetContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
-        if (dockable.getDockableContext().getTargetContext() != null) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getTargetContext() != null) {
+            dockable.getContext().getTargetContext().undock(dockable.node());
         }
         targetContext.dock(dockable, side);
     }
@@ -119,8 +119,8 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         if (!getTargetContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
-        if (dockable.getDockableContext().getTargetContext() != null) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getTargetContext() != null) {
+            dockable.getContext().getTargetContext().undock(dockable.node());
         }
 
         targetContext.dock(dockable, side, target);
@@ -133,7 +133,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.getDockableContext().setTargetContext(ph);
+                d.getContext().setTargetContext(ph);
             } else if (node instanceof DockSplitPane) {
                 update((DockSplitPane) node);
             }
@@ -146,9 +146,9 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 Dockable d = DockRegistry.dockable(node);
-                d.getDockableContext().setTargetContext(ph);
-                /*                if (i < split.getDividers().size() && d.getDockableContext().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.getDockableContext().getDividerPos());
+                d.getContext().setTargetContext(ph);
+                /*                if (i < split.getDividers().size() && d.getContext().getDividerPos() >= 0) {
+                    split.getDividers().get(i).setPosition(d.getContext().getDividerPos());
                 }
                  */
             } else if (node instanceof DockSplitPane) {
@@ -168,7 +168,7 @@ public class DockPane extends Control implements DockTarget, EventHandler<Action
         for (Node node : sp.getItems()) {
             //!!!08
             if (DockRegistry.isDockable(node)) {
-                DockRegistry.dockable(node).getDockableContext().setTargetContext(dpt.getTargetContext());
+                DockRegistry.dockable(node).getContext().setTargetContext(dpt.getTargetContext());
             } else if (node instanceof SplitPane) {
                 splitPaneAdded(((SplitPane) node), dpt);
             }

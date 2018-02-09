@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
@@ -32,7 +33,7 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  *
  * @author Valery Shyshkin
  */
-public class TabPaneMouseDragHandler extends MouseDragHandler {
+public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
 
     public TabPaneMouseDragHandler(DockableContext context) {
         super(context);
@@ -41,15 +42,16 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
     @Override
     public void mousePressed(MouseEvent ev) {
         setStartMousePos(null);
-        System.err.println("MOUSE PRESSED 1");
+        System.err.println("TabPaneMouseDragHandler MOUSE PRESSED 1");
         if (!ev.isPrimaryButtonDown() || getHeaderArea(ev) == null) {
             return;
         }
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
 //            System.err.println("!!!! Tab id = " + tab.getId());
-            getContext().getDragContainer().setValue(tab);
+
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
+            getContext().setDragContainer(new DragContainer(getContext().dockable(), tab));
             WritableImage wi = null;
 
             if (tabNode != null) {
@@ -59,8 +61,10 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
                     node.setOpacity(0.75);
                     getContext().getDragContainer().setGraphic(node);
                 }
+
             }
         }
+        System.err.println("TabPaneMouseDragHandler: mousePressed startMousePos = " + new Point2D(ev.getX(), ev.getY()));
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
     }
 
@@ -76,25 +80,25 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
     }
 
     protected Node getHeaderArea(MouseEvent ev) {
-        System.err.println("getHeaderArea");
+        //System.err.println("getHeaderArea");
         Node retval = getContext().getDragNode().lookup(".tab-header-area");
-        System.err.println("getHeaderArea node=" + retval);
+        //System.err.println("getHeaderArea node=" + retval);
         if (retval == null || !DockUtil.contains(retval, ev.getScreenX(), ev.getScreenY())) {
             retval = null;
         }
-        System.err.println("getHeaderArea retvale=" + retval);
+        //System.err.println("getHeaderArea retvale=" + retval);
         return retval;
     }
 
     protected Node getHeadersRegion(MouseEvent ev) {
 
         Node retval = getContext().getDragNode().lookup(".headers-region");
-        System.err.println("getHeaderArea node=" + retval);
+        //System.err.println("getHeaderArea node=" + retval);
 
         if (retval == null || !DockUtil.contains(retval, ev.getScreenX(), ev.getScreenY())) {
             retval = null;
         }
-        System.err.println("getHeaderArea retval=" + retval);
+        //System.err.println("getHeaderArea retval=" + retval);
 
         return retval;
     }
@@ -119,9 +123,9 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
             }
             TabPane pane = (TabPane) getContext().getDragNode();
             for (Tab tab : pane.getTabs()) {
-                System.err.println("tab.id = " + tab.getId());
+                //System.err.println("tab.id = " + tab.getId());
                 for (String s : tab.getStyleClass()) {
-                    System.err.println("   --- style = " + s);
+                    //System.err.println("   --- style = " + s);
                 }
             }
 
@@ -139,40 +143,49 @@ public class TabPaneMouseDragHandler extends MouseDragHandler {
         return retval;
     }
 
-    @Override
+/*    @Override
     public void mouseDragDetected(MouseEvent ev) {
-        if (!ev.isPrimaryButtonDown() || getStartMousePos() == null) {
+        System.err.println("TabPaneMouseDragHandler: mouseDragDetected startMousePos = " + getStartMousePos());
+
+        if (!ev.isPrimaryButtonDown()) {
             ev.consume();
             return;
         }
         Dockable dockable = getContext().dockable();
-        if (!dockable.getDockableContext().isDraggable()) {
+        if (!getContext().isDraggable()) {
             ev.consume();
             return;
         }
-
-        DragManager dm = getContext().getDragManager();
-
-        if (!dockable.getDockableContext().isFloating()) {
+        //
+        // NEW
+        //
+        DragManager dm = getDragManager(ev);
+        // END NEW
+        if (!dockable.getContext().isFloating()) {
+            System.err.println("TabPaneMouseDragHandler: not isFloating");
             dm.mouseDragDetected(ev, getStartMousePos());
-            //dockable.getDockableContext().setFloating(true);
         } else {
-            Object value = dockable.getDockableContext().getDragContainer().getValue();
-            if (value != null && Dockable.of(value) != null) {
-                Dockable.of(value).getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
+            System.err.println("TabPaneMouseDragHandler: isFloating");
+            DragContainer dc = dockable.getContext().getDragContainer();
+            if ((dc != null)) {
+                System.err.println("TabPaneMouseDragHandler: isFloating dc != null");
+                Dockable.of(dc.getGraphic()).getContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {
+                System.err.println("TabPaneMouseDragHandler: isFloating dc == null");
                 dm.mouseDragDetected(ev, getStartMousePos());
             }
-            /*            Dockable d = FloatView.getDraggedDockable(dockable);
-            if (d != null) {
-                d.getDockableContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
-            } else {
-                dm.mouseDragDetected(ev, getStartMousePos());
-            }
-        }
-             */
 
         }
 
+    }
+*/
+    public DragManager getDragManager(MouseEvent ev) {
+        DragManager dm;
+        if (getHeaderArea(ev) != null && getHeadersRegion(ev) == null) {
+            dm = getContext().getDragManager(true);
+        } else {
+            dm = getContext().getDragManager();
+        }
+        return dm;
     }
 }

@@ -66,7 +66,7 @@ public class DockToolBar extends ToolBar implements Dockable{
     }
 
     @Override
-    public DockableContext getDockableContext() {
+    public DockableContext getContext() {
         return dockableContext;
     }
 }

@@ -79,7 +79,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
     };
         
     public TreeItemFloatStageView(Dockable dockable) {
-        this.dockableController = dockable.getDockableContext();
+        this.dockableController = dockable.getContext();
         mouseResizeHanler = new MouseResizeHandler(this);
     }
     @Override
@@ -182,7 +182,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
         }
-        Node titleBar = dockable.getDockableContext().getTitleBar();
+        Node titleBar = dockable.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
@@ -196,19 +196,19 @@ public class TreeItemFloatStageView implements FloatWindowView{
             imageView = new ImageView(wi);
         }
 
-        if (dockable.getDockableContext().isDocked() && dockable.getDockableContext().getTargetContext().getTargetNode() != null) {
-            Window w = dockable.getDockableContext().getTargetContext().getTargetNode().getScene().getWindow();
+        if (dockable.getContext().isDocked() && dockable.getContext().getTargetContext().getTargetNode() != null) {
+            Window w = dockable.getContext().getTargetContext().getTargetNode().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 rootPane = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
                 TreeItemBuilder.updateOnMove((TreeCell) dockable.node());
-                //!!! 31.01dockable.getDockableContext().getTargetContext().undock(dockable.node());
+                //!!! 31.01dockable.getContext().getTargetContext().undock(dockable.node());
                 return dockable.node().getScene().getWindow();
             }
         }
-        if (dockable.getDockableContext().isDocked()) {
-            //!!! 31.01dockable.getDockableContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().isDocked()) {
+            //!!! 31.01dockable.getContext().getTargetContext().undock(dockable.node());
             TreeItemBuilder.updateOnMove((TreeCell) dockable.node());            
         }
 
@@ -218,7 +218,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         markFloating(newStage);
 
         newStage.setTitle("FLOATING STAGE");
-        Node lastDockPane = dockable.getDockableContext().getTargetContext().getTargetNode();
+        Node lastDockPane = dockable.getContext().getTargetContext().getTargetNode();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());
@@ -335,7 +335,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
 
 /*    public void addResizer(Window window, Dockable getDockable) {
-        if ( getDockable.getDockableContext().isResizable()) {
+        if ( getDockable.getContext().isResizable()) {
             removeListeners(getDockable);
             addListeners(window);
             

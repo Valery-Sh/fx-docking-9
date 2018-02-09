@@ -49,7 +49,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
         }
-        Node titleBar = dockable.getDockableContext().getTitleBar();
+        Node titleBar = dockable.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);

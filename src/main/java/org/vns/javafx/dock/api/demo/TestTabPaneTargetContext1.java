@@ -39,8 +39,8 @@ public class TestTabPaneTargetContext1 extends Application {
         dockButton.setMaxWidth(dockButton.getPrefWidth());
         
         Dockable dockableButton = DockRegistry.getInstance().getDefaultDockable(dockButton);
-        dockableButton.getDockableContext().setDragNode(dockButton);
-        dockableButton.getDockableContext().setTitle("Dockable Button");
+        dockableButton.getContext().setDragNode(dockButton);
+        dockableButton.getContext().setTitle("Dockable Button");
 
         Button b1 = new Button("b01 - DOCK");
         /*        b1.setOnAction(a -> {
@@ -156,7 +156,7 @@ public class TestTabPaneTargetContext1 extends Application {
 
         //tbRect.getStyleClass().add("drag-button");
         //tbIv.getStyleClass().add("drag-image-view");
-        //tabPane01.getDockableContext().setDragNode(tbIv);
+        //tabPane01.getContext().setDragNode(tbIv);
         //tabPane01.getChildren().add(tbIv);
         //tbIv.toFront();
         //tbIv.setTranslateX(-5);

@@ -169,11 +169,11 @@ public class ParentChainPopup {
     }
 
     protected String getButtonText(Dockable d) {
-        String txt = d.getDockableContext().getTitle();
-        if (d.getDockableContext().getProperties().getProperty("user-title") != null) {
-            txt = d.getDockableContext().getProperties().getProperty("user-title");
-        } else if (d.getDockableContext().getProperties().getProperty("short-title") != null) {
-            txt = d.getDockableContext().getProperties().getProperty("short-title");
+        String txt = d.getContext().getTitle();
+        if (d.getContext().getProperties().getProperty("user-title") != null) {
+            txt = d.getContext().getProperties().getProperty("user-title");
+        } else if (d.getContext().getProperties().getProperty("short-title") != null) {
+            txt = d.getContext().getProperties().getProperty("short-title");
         }
         if (txt == null || txt.trim().isEmpty()) {
             txt = "Dockable";

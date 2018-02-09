@@ -115,7 +115,7 @@ public class TestDockPaneControl1 extends Application {
         dockTabPane1.getTabs().add(tab);
         root.getChildren().add(0,dockTabPane1);
 
-        DockableContext dc = DockRegistry.dockable(dnc3).getDockableContext();
+        DockableContext dc = DockRegistry.dockable(dnc3).getContext();
         TargetContext dtc = dc.getTargetContext();
         Button b1 = new Button("save");
         Button b2 = new Button("add dnc4");
@@ -201,7 +201,7 @@ public class TestDockPaneControl1 extends Application {
         }
 
         @Override
-        public DockableContext getDockableContext() {
+        public DockableContext getContext() {
             if ( context == null ) {
                 context = new DockableContext(this);
                 node.setText(getText());

@@ -65,8 +65,8 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
                     pane.getTabs().add(i, tab);
                     //!!!08
                 } else if (DockRegistry.isDockable(tab.getContent())) {
-                    if (DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext() != null) {
-                        TargetContext c = DockRegistry.dockable(tab.getContent()).getDockableContext().getTargetContext();
+                    if (DockRegistry.dockable(tab.getContent()).getContext().getTargetContext() != null) {
+                        TargetContext c = DockRegistry.dockable(tab.getContent()).getContext().getTargetContext();
                         if (c != getDockTarget().getTargetContext()) {
                             c.undock(tab.getContent());
                         }

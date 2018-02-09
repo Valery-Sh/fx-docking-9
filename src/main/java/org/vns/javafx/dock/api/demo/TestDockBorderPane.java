@@ -47,7 +47,7 @@ public class TestDockBorderPane extends Application {
         Button dockButton = new Button("To be docked");
         Dockable dockableButton
                 = DockRegistry.getInstance().getDefaultDockable(dockButton);
-        dockableButton.getDockableContext().setDragNode(dockButton);
+        dockableButton.getContext().setDragNode(dockButton);
 
         rootPane.getChildren().addAll(dockButton);
         //

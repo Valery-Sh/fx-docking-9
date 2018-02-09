@@ -239,8 +239,8 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                     pane.getItems().add(node);
                     //!!!08
                 } else if (DockRegistry.isDockable(node)) {
-                    if (DockRegistry.dockable(node).getDockableContext().getTargetContext() != null) {
-                        TargetContext c = DockRegistry.dockable(node).getDockableContext().getTargetContext();
+                    if (DockRegistry.dockable(node).getContext().getTargetContext() != null) {
+                        TargetContext c = DockRegistry.dockable(node).getContext().getTargetContext();
                         if (c != getDockTarget().getTargetContext()) {
                             c.undock(node);
                         }

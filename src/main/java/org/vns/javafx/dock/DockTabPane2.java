@@ -86,7 +86,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         stackPane.setMaxHeight(Double.MAX_VALUE);
         dockableContext.titleBarProperty().activeChoosedPseudoClassProperty().addListener(this::focusChanged);
 
-        getDockableContext().setTitleBar(new DockTitleBar(this));
+        getContext().setTitleBar(new DockTitleBar(this));
         dockableContext.setDragNode(tabArea.getDragButton());
         items.addListener(this);
     }
@@ -193,7 +193,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
     }
 
     public StringProperty titleProperty() {
-        return getDockableContext().titleProperty();
+        return getContext().titleProperty();
     }
 
     public DockableContext getNodeContext() {
@@ -207,7 +207,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                 //tabArea.select(d.node());
                 tab.setSelected(true);
             } else if (!newValue) {
-                d.getDockableContext().titleBarProperty().setActiveChoosedPseudoClass(false);
+                d.getContext().titleBarProperty().setActiveChoosedPseudoClass(false);
             }
         });
 
@@ -232,7 +232,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
     }
 
     @Override
-    public DockableContext getDockableContext() {
+    public DockableContext getContext() {
         return this.dockableContext;
     }
 
@@ -363,7 +363,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         @Override
         public void dock(Point2D mousePos, Dockable dockable) {
             Dockable dragged = dockable;
-            DragContainer dc = dockable.getDockableContext().getDragContainer();
+            DragContainer dc = dockable.getContext().getDragContainer();
             Object v = dc.getValue();
             if (v != null && !(dc.isValueDockable())) {
                 return;
@@ -501,7 +501,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         protected void saveContentTitleBar() {
-            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getContext().getTitleBar();
             titleBarVisible = tb.isVisible();
             titleBarMinHeight = tb.getMinHeight();
             titleBarPrefHeight = tb.getPrefHeight();
@@ -509,14 +509,14 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
         }
 
         protected void hideContentTitleBar() {
-            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getContext().getTitleBar();
             tb.setVisible(false);
             tb.setMinHeight(0);
             tb.setPrefHeight(0);
         }
 
         protected void showContentTitleBar() {
-            Region tb = Dockable.of(content).getDockableContext().getTitleBar();
+            Region tb = Dockable.of(content).getContext().getTitleBar();
             tb.setVisible(titleBarVisible);
             tb.setMinHeight(titleBarMinHeight);
             tb.setPrefHeight(titleBarPrefHeight);
@@ -880,9 +880,9 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
                 return;
             }
             Dockable d = Dockable.of(node);
-            if (d.getDockableContext().isFloating()) {
+            if (d.getContext().isFloating()) {
                 if (doDock(mousePos, node)) {
-                    //dockable.getDockableContext().setFloating(false);
+                    //dockable.getContext().setFloating(false);
                 }
             }
         }
@@ -894,7 +894,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
             Tab tab = ((DockTabPane2) paneContext.getTargetNode()).addTab(idx, d.node());
 
-            DockableContext nodeContext = d.getDockableContext();
+            DockableContext nodeContext = d.getContext();
             nodeContext.setDragNode(tab.getTitleBar());
             if (nodeContext.getTargetContext() == null || nodeContext.getTargetContext() != paneContext) {
                 nodeContext.setTargetContext(paneContext);
@@ -916,7 +916,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
 
             Tab tab = ((DockTabPane2) paneContext.getTargetNode()).addTab(mousePos, node);
 
-            DockableContext nodeContext = Dockable.of(node).getDockableContext();
+            DockableContext nodeContext = Dockable.of(node).getContext();
             nodeContext.setDragNode(tab.getTitleBar());
             if (nodeContext.getTargetContext() == null || nodeContext.getTargetContext() != paneContext) {
                 nodeContext.setTargetContext(paneContext);

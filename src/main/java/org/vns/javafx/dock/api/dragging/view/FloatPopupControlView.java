@@ -55,25 +55,25 @@ public class FloatPopupControlView extends FloatStageView {
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
         }
-        Node titleBar = dockable.getDockableContext().getTitleBar();
+        Node titleBar = dockable.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
             titleBar.setManaged(true);
         }
 
-        if (dockable.getDockableContext().isDocked() && dockable.getDockableContext().getTargetContext().getTargetNode() != null) {
-            Window w = dockable.getDockableContext().getTargetContext().getTargetNode().getScene().getWindow();
+        if (dockable.getContext().isDocked() && dockable.getContext().getTargetContext().getTargetNode() != null) {
+            Window w = dockable.getContext().getTargetContext().getTargetNode().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 setSupportedCursors(DEFAULT_CURSORS);
                 setRootPane((Pane) dockable.node().getScene().getRoot());
                 markFloating(dockable.node().getScene().getWindow());
-                dockable.getDockableContext().getTargetContext().undock(dockable.node());
+                dockable.getContext().getTargetContext().undock(dockable.node());
                 return getFloatingWindow();
             }
         }
 
-        if (dockable.getDockableContext().isDocked()) {
-            dockable.getDockableContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().isDocked()) {
+            dockable.getContext().getTargetContext().undock(dockable.node());
         }
 
         final PopupControl floatPopup = new PopupControl();
@@ -165,8 +165,8 @@ public class FloatPopupControlView extends FloatStageView {
 
     @Override
     public void addResizer() {
-        //if (getDockable().getDockableContext().isResizable()) {
-        removeListeners(getDockable().getDockableContext().dockable());
+        //if (getDockable().getContext().isResizable()) {
+        removeListeners(getDockable().getContext().dockable());
         addListeners(getFloatingWindow());
 
         //}
