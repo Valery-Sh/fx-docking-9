@@ -25,9 +25,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
-import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -42,14 +40,13 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
     @Override
     public void mousePressed(MouseEvent ev) {
         setStartMousePos(null);
-        System.err.println("TabPaneMouseDragHandler MOUSE PRESSED 1");
+        Point2D pos = new Point2D(ev.getX(), ev.getY());
+        
         if (!ev.isPrimaryButtonDown() || getHeaderArea(ev) == null) {
             return;
         }
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
-//            System.err.println("!!!! Tab id = " + tab.getId());
-
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
             getContext().setDragContainer(new DragContainer(getContext().dockable(), tab));
             WritableImage wi = null;
@@ -63,9 +60,10 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
                 }
 
             }
+            pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
+            
         }
-        System.err.println("TabPaneMouseDragHandler: mousePressed startMousePos = " + new Point2D(ev.getX(), ev.getY()));
-        setStartMousePos(new Point2D(ev.getX(), ev.getY()));
+        setStartMousePos(pos);
     }
 
     private String getUUIDStyle(Tab tab) {

@@ -329,7 +329,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events.
      */
     protected void mouseReleased(MouseEvent ev) {
-        System.err.println("MOUSE RELEASED ");
         if (indicatorManager != null && indicatorManager.isShowing()) {
             indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
         }
@@ -370,7 +369,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
                     hideFloatingWindow();
                 }
             }
-            //indicatorManager = null;
             if (indicatorManager != null && indicatorManager.isShowing()) {
                 indicatorManager.hide();
             }
@@ -384,28 +382,9 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
         DragContainer dc = getDockable().getContext().getDragContainer();
 
-//        System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
-//        System.err.println("+++++++++++ dc = " + dc);            
         if (dc != null && getDockable().node() != dc.getGraphic()) {
-
-//            System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
             getDockable().getContext().setDragContainer(null);
-//            System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
-//            System.err.println("4 +++++++++++ gcontext.getDragValue() = " + getDockable().getContext().getDragValue());            
-//            System.err.println("5 +++++++++++ gcontext.getDragValue().isDockable() = " + DockRegistry.isDockable(getDockable().getContext().getDragValue()));            
         }
-        /*        if ( dc != null && getDockable().getContext().isFloating() ) {
-            
-//            System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
-            if ( ! FloatView.isFloating(getDockable().node())) {            
-//                System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
-                getDockable().getContext().setDragContainer(null);
-            }
-//            System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
-//            System.err.println("4 +++++++++++ gcontext.getDragValue() = " + getDockable().getContext().getDragValue());            
-//            System.err.println("5 +++++++++++ gcontext.getDragValue().isDockable() = " + DockRegistry.isDockable(getDockable().getContext().getDragValue()));            
-        }
-         */
     }
 
     protected void hideFloatingWindow() {
