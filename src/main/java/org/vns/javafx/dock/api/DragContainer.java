@@ -30,23 +30,29 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 @DefaultProperty("value")
 public class DragContainer { //extends Control implements Dockable{
-
-    private boolean valueDockable;
 
     private Dockable owner;
 
     private final ObjectProperty value = new SimpleObjectProperty();
 
     private Node graphic;
-    private Node setGraphic;
 
     public DragContainer(Dockable owner, Object value) {
+        this(owner, value, true);
+    }
+
+    protected DragContainer(Dockable owner, Object value, boolean needContainer) {
         this.owner = owner;
-        setValue(value);
+        this.value.set(value);
+        createDefaultGraphic();
+        makeDockable();
+        if ( needContainer ) {
+            makeContainer();
+        }
     }
 
     public ObjectProperty valueProperty() {
@@ -66,7 +72,6 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Window getFloatingWindow() {
-
         if (getGraphic().getScene() == null || getGraphic().getScene().getWindow() == null) {
             return null;
         }
@@ -76,21 +81,16 @@ public class DragContainer { //extends Control implements Dockable{
         return getGraphic().getScene().getWindow();
     }
 
-    public Node getGraphic() {
-        if (setGraphic != null) {
-            return setGraphic;
-        }
-        if (graphic == null && getValue() != null && Dockable.of(getValue()) != null) {
+    private void createDefaultGraphic() {
+        if (Dockable.of(getValue()) != null) {
             graphic = Dockable.of(getValue()).node();
-            return graphic;
-        }
-        if (graphic == null && getValue() != null && (getValue() instanceof Node)) {
+        } else if ((getValue() instanceof Node)) {
             Pane p = new Pane();
             p.getChildren().add((Node) getValue());
             Scene sc = new Scene(p);
             ImageView im = new ImageView(((Node) getValue()).snapshot(null, null));
             graphic = im;
-        } else if (graphic == null) {
+        } else {
             graphic = new Rectangle(75, 25);
             graphic.setOpacity(0.3);
             ((Shape) graphic).setFill(Color.YELLOW);
@@ -99,30 +99,42 @@ public class DragContainer { //extends Control implements Dockable{
             ((Shape) graphic).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
             ((Shape) graphic).setStrokeDashOffset(1.0);
         }
+    }
+
+    private void makeDockable() {
         Dockable d = Dockable.of(graphic);
-        if (d == null) {
-            d = DockRegistry.makeDockable(graphic);
+        if (d != null) {
+            return;
         }
+        d = DockRegistry.makeDockable(graphic);
+    }
+
+    private void makeContainer() {
+        Dockable d = Dockable.of(getGraphic());
         DragContainer dc = d.getDockableContext().getDragContainer();
-        System.err.println("!!!!!!!!! dc = " + dc);
         if (dc == null) {
-            dc = new DragContainer(d,getValue());
-            dc.setGraphic(graphic);
+            dc = new DragContainer(d, getValue(), false);
             d.getDockableContext().setDragContainer(dc);
-            System.err.println("DragContaiter DC.getValue() = " + dc.getValue());
+            dc.setGraphic(getGraphic());
             
-            //System.err.println("DragContaiter DC.getGraphic() = " + dc.getGraphic());
-            //d.getDockableContext().getDragContainer();
         }
-
-        //dc.setCarrier(d);
-        //dc.setGraphic(graphic);
-
+    }
+    
+    public Node getGraphic() {
         return graphic;
     }
 
     public void setGraphic(Node graphic) {
-        this.setGraphic = graphic;
+        this.graphic = graphic;
+        if ( getGraphic() == null ) {
+            return;
+        }
+        if ( Dockable.of(getGraphic()) == null ) {
+            makeDockable();
+            makeContainer();
+        } else if ( Dockable.of(getGraphic()).getDockableContext().getDragContainer() == null  ) {
+            makeContainer();
+        }
     }
 
     public Dockable getOwner() {

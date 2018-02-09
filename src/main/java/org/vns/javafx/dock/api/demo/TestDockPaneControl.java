@@ -223,19 +223,22 @@ public class TestDockPaneControl extends Application {
         root1.getChildren().add(tab3.node());       
         
         Button dockableBtn1 = new Button("dockableBtn1");
+ 
         
         //dockableBtn1.setPadding(new Insets(0,0,0,0));
                 
-        DockRegistry.makeDockable(dockableBtn1);
+        //DockRegistry.makeDockable(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
         tab1.getDockableContext().setDragContainer(new DragContainer(tab1,dockableBtn1));
+        tab1.getDockableContext().getDragContainer().setGraphic(dockableBtn1);
         //tab1.getDockableContext().getDragContainer().setCarrier(Dockable.of(tab1));
         //Node graphic = tab1.getDockableContext().getDragContainer().getGraphic();
-        
-                
+        stage.setHeight(350);
+        stage.setWidth(350);
+        stage1.setAlwaysOnTop(true);
         stage1.show();
-        Stage stage2 = new Stage();
+/*        Stage stage2 = new Stage();
         BorderPane rootBorderPane = new BorderPane();
         Scene scene2 = new Scene(rootBorderPane);
         stage2.setScene(scene2);
@@ -246,17 +249,17 @@ public class TestDockPaneControl extends Application {
  
         stage2.setMinWidth(rootBorderPane.minWidth(DockUtil.heightOf(btnBP)));
         stage2.setMinHeight(rootBorderPane.minHeight(DockUtil.widthOf(btnBP)));
-
+*/
         //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
-        double prefWidth = rootBorderPane.prefWidth(DockUtil.heightOf(btnBP));
+/*        double prefWidth = rootBorderPane.prefWidth(DockUtil.heightOf(btnBP));
         double prefHeight = rootBorderPane.prefHeight(DockUtil.widthOf(btnBP));
 
         rootBorderPane.setPrefWidth(prefWidth);
         rootBorderPane.setPrefHeight(prefHeight);
         rootBorderPane.setStyle("-fx-background-color: red");
         stage2.show();
-        
+  */      
         
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);

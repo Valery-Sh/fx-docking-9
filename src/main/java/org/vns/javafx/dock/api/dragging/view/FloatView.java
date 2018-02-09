@@ -32,10 +32,12 @@ public interface FloatView<T> {
     static boolean isFloating(Node node) {
 
         boolean retval = false;
+        System.err.println("   --- scene = " + node.getScene());
         if (node.getScene() == null) {
             return false;
         }
         if (node.getScene().getRoot().getStyleClass().contains(FloatView.FLOATWINDOW)) {
+            System.err.println("   --- contains FLOATWINDOW  ");
             retval = true;
         }
         return retval;

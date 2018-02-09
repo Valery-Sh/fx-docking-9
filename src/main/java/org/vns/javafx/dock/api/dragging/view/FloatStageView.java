@@ -550,6 +550,8 @@ public class FloatStageView implements FloatWindowView {
         if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
             //return;
         }
+        System.err.println("removeListeners dockable.node() = " + dockable.node());
+        System.err.println("removeListeners.scene =  " + dockable.node().getScene());
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);

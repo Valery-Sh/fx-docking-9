@@ -326,18 +326,10 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
             TargetContext tc = indicatorManager.getTargetContext();
             if (indicatorManager.isShowing() || indicatorManager.getPositionIndicator() == null) {
-                System.err.println(" ----  dock() 1");
                 tc.dock(pt, dockable);
                 boolean isDocked = TargetContext.isDocked(tc, dockable);
                 if (isDocked && floatingWindow != null && floatingWindow.isShowing()) {
                     hideFloatingWindow();
-                }
-                if (isDocked) {
-                    System.err.println("2 MouseReleased hideFloatingWindow dockable=" + dockable.node());                    
-                    //dockable.getDockableContext().setFloating(false);
-                    if (getContainerValue() != null && floatingWindow != null && getContainerDockable() != null) {
-                        //getContainerDockable().getDockableContext().setFloating(false);
-                    }
                 }
             }
             if (indicatorManager != null && indicatorManager.isShowing()) {
@@ -346,38 +338,26 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         }
         if ( (getHideOption() == ALL || getHideOption() == CARRIERED ) && getContainerValue() != null && floatingWindow != null) {
            hideFloatingWindow();
-           //dockable.getDockableContext().setFloating(false);
         }
         if ( (getHideOption() == ALL || getHideOption() == CARRIER ) && getContainerValue() == null && floatingWindow != null) {
            hideFloatingWindow();
-           //dockable.getDockableContext().setFloating(false);
         }
         
         DragContainer dc = getDockable().getDockableContext().getDragContainer();
         
-/*        if ( dc != null  && dc.getCarrier() != Dockable.of(dc.getGraphic())) {
-            dc.setCarrier(Dockable.of(dc.getGraphic()));
-        }
-*/
-        System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
-        System.err.println("+++++++++++ dc = " + dc);            
+//        System.err.println("+++++++++++ getDockable().node() = " + getDockable().node());            
+//        System.err.println("+++++++++++ dc = " + dc);            
 
         if ( dc != null && getDockable().getDockableContext().isFloating() ) {
             
-            System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
-            //if ( dc.getOwner() != null && dc.getOwner() != getDockable() &&   ! FloatView.isFloating(getDockable().node())) {
+//            System.err.println("1 +++++++++++ getDockable().node() = " + getDockable().node());            
             if ( ! FloatView.isFloating(getDockable().node())) {            
-                System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
+//                System.err.println("2 +++++++++++ getDockable().node() = " + getDockable().node());            
                 getDockable().getDockableContext().setDragContainer(null);
             }
-            if ( dc.getOwner() != null && dc.getOwner() != getDockable()) {
-                System.err.println("2.1 +++++++++++ getDockable().node() = " + getDockable().node());            
-                //dc.getOwner().getDockableContext().setDragContainer(null);
-            }
-            
-            System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
-            System.err.println("4 +++++++++++ gcontext.getDragValue() = " + getDockable().getDockableContext().getDragValue());            
-            System.err.println("5 +++++++++++ gcontext.getDragValue().isDockable() = " + DockRegistry.isDockable(getDockable().getDockableContext().getDragValue()));            
+//            System.err.println("3 +++++++++++ dc.isValueDockable = " + dc.isValueDockable());            
+//            System.err.println("4 +++++++++++ gcontext.getDragValue() = " + getDockable().getDockableContext().getDragValue());            
+//            System.err.println("5 +++++++++++ gcontext.getDragValue().isDockable() = " + DockRegistry.isDockable(getDockable().getDockableContext().getDragValue()));            
         }
     }
 

@@ -366,7 +366,8 @@ public class DockableContext {
     public boolean isFloating() {
         Node node = dockable().node();
         boolean retval = FloatView.isFloating(node);
-
+        System.err.println("isFloating retval = " + retval);
+        System.err.println("isFloating node = " + node);
         if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
             DragContainer dc = getDragContainer();
 //            if (dc.getCarrier() == dockable && FloatView.isFloating(dc.getGraphic()) ) {

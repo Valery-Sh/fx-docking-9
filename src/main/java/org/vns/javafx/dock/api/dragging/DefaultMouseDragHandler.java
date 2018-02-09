@@ -15,12 +15,10 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
