@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging;
-
-import org.vns.javafx.dock.api.Dockable;
+package org.vns.javafx.dock.incubator.designer;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class JFXDragManager extends SimpleDragManager {
+public class NodeElement {
+    private String styleClass;
+    private String title; 
 
-    /**
-     * Create a new instance for the given dockable.
-     *
-     * @param dockable the object to be dragged
-     */
-    public JFXDragManager(Dockable dockable) {
-        super(dockable);
+    public String getStyleClass() {
+        return styleClass;
     }
 
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
 }

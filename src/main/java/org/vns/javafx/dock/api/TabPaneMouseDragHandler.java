@@ -78,26 +78,19 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
     }
 
     protected Node getHeaderArea(MouseEvent ev) {
-        //System.err.println("getHeaderArea");
         Node retval = getContext().getDragNode().lookup(".tab-header-area");
-        //System.err.println("getHeaderArea node=" + retval);
         if (retval == null || !DockUtil.contains(retval, ev.getScreenX(), ev.getScreenY())) {
             retval = null;
         }
-        //System.err.println("getHeaderArea retvale=" + retval);
         return retval;
     }
 
     protected Node getHeadersRegion(MouseEvent ev) {
 
         Node retval = getContext().getDragNode().lookup(".headers-region");
-        //System.err.println("getHeaderArea node=" + retval);
-
         if (retval == null || !DockUtil.contains(retval, ev.getScreenX(), ev.getScreenY())) {
             retval = null;
         }
-        //System.err.println("getHeaderArea retval=" + retval);
-
         return retval;
     }
 
@@ -139,51 +132,5 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
             }
         }
         return retval;
-    }
-
-/*    @Override
-    public void mouseDragDetected(MouseEvent ev) {
-        System.err.println("TabPaneMouseDragHandler: mouseDragDetected startMousePos = " + getStartMousePos());
-
-        if (!ev.isPrimaryButtonDown()) {
-            ev.consume();
-            return;
-        }
-        Dockable dockable = getContext().dockable();
-        if (!getContext().isDraggable()) {
-            ev.consume();
-            return;
-        }
-        //
-        // NEW
-        //
-        DragManager dm = getDragManager(ev);
-        // END NEW
-        if (!dockable.getContext().isFloating()) {
-            System.err.println("TabPaneMouseDragHandler: not isFloating");
-            dm.mouseDragDetected(ev, getStartMousePos());
-        } else {
-            System.err.println("TabPaneMouseDragHandler: isFloating");
-            DragContainer dc = dockable.getContext().getDragContainer();
-            if ((dc != null)) {
-                System.err.println("TabPaneMouseDragHandler: isFloating dc != null");
-                Dockable.of(dc.getGraphic()).getContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
-            } else {
-                System.err.println("TabPaneMouseDragHandler: isFloating dc == null");
-                dm.mouseDragDetected(ev, getStartMousePos());
-            }
-
-        }
-
-    }
-*/
-    public DragManager getDragManager(MouseEvent ev) {
-        DragManager dm;
-        if (getHeaderArea(ev) != null && getHeadersRegion(ev) == null) {
-            dm = getContext().getDragManager(true);
-        } else {
-            dm = getContext().getDragManager();
-        }
-        return dm;
     }
 }

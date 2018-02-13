@@ -1,3 +1,22 @@
+
+/*.titled-pane > .title > .arrow-button .arrow 
+{
+-fx-background-color: transparent, transparent;
+-fx-shape: null;
+}
+
+.titled-pane > .title > .arrow-button
+{
+-fx-background-color: transparent, transparent;
+-fx-background-insets: 1 -2 -1 0, 0;
+-fx-border-width: 1 1 1 1;
+-fx-padding: 2 -2 2 4;
+-fx-border-color: red;
+
+-fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
+}
+*/
+
 /*******************************************************************************
  *                                                                             *
  * DockPane                                                                    *
@@ -17,8 +36,8 @@
     -fx-background-color: blue;
 }
 .tab-header-background {
-   -fx-background-color: yellow;
-   -fx-fill: yellow;
+    -fx-background-color: yellow;
+    -fx-fill: yellow;
 }
 .tab-pane .tab-header-area .tab-header-background {
     -fx-background-color: yellow;
@@ -94,19 +113,19 @@
     BorderPane placeholders
 */
 .borderpane-insert-top {
- -fx-graphic: url(insert-top-16x16.png);    
+    -fx-graphic: url(insert-top-16x16.png);    
 }
 .borderpane-insert-right {
- -fx-graphic: url(insert-right-16x16.png);    
+    -fx-graphic: url(insert-right-16x16.png);    
 }
 .borderpane-insert-bottom {
- -fx-graphic: url(insert-bottom-16x16.png);    
+    -fx-graphic: url(insert-bottom-16x16.png);    
 }
 .borderpane-insert-left {
- -fx-graphic: url(insert-left-16x16.png);    
+    -fx-graphic: url(insert-left-16x16.png);    
 }
 .borderpane-insert-center {
- -fx-graphic: url(insert-center-16x16.png);    
+    -fx-graphic: url(insert-center-16x16.png);    
 }
 
 .tree-item-node-unknownnode {
@@ -172,38 +191,39 @@
 .tree-item-node-combobox {
     -fx-graphic: url(combo-box-16x16.png);
 }
-
-.tree-cell {
-    -fx-indent: 20;
-    -fx-cell-size: 40;
-    /*-fx-background-color: yellow;*/
-} 
-.cell {
-    -fx-cell-size: 40;
-} 
-.tree-cell > .tree-disclosure-node {
-    -fx-padding: 4 6 4 8;
+.tree-item-font-bold {
+    -fx-font-weight: bold;    
 }
 
-
-/*.tree-cell .tree-disclosure-node {
-    -fx-translate-y: 4 ;
-}
-*/
-.tree-cell .tree-disclosure-node  .arrow {
+.designer .tree-cell .tree-disclosure-node  .arrow {
     -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
     -fx-shape: null;
     -fx-background-color: null;
     -fx-background-image: url(plus-blue-16x16.png);
 }
 
-.tree-cell:expanded .tree-disclosure-node .arrow {
+.designer .tree-cell:expanded .tree-disclosure-node .arrow {
     -fx-shape: null;
     -fx-background-color: null;
     /*-fx-background-image: url(docknode-16x16.png);*/
     -fx-background-image: url(minus-blue-16x16.png);
     -fx-rotate: 0;
 }
+.palette .tree-cell .tree-disclosure-node  .arrow {
+    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(plus-blue-16x16.png);
+}
+
+.palette .tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-shape: null;
+    -fx-background-color: null;
+    /*-fx-background-image: url(docknode-16x16.png);*/
+    -fx-background-image: url(minus-blue-16x16.png);
+    -fx-rotate: 0;
+}
+
 /*.tree-cell .tree-disclosure-node .arrow {
 -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
 -fx-shape: "M0 -0.5 h2 v2 h1 v-2 h2 v-1 h-2 v-2 h-1 v2 h-2 v1z";
@@ -375,38 +395,38 @@
 }
 */
 .dock-node-border {
-  -fx-padding: 2;
-  -fx-background-color: lightgrey; 
-  /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
-  -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
-  
+    -fx-padding: 2;
+    -fx-background-color: lightgrey; 
+    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
+    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
+
 }
 
 .my-test-css {
-  -fx-padding: 50 20 50 50;
-  -fx-background-color: transparent; 
-  -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
-/*  -fx-border-width: 0 0 0 1;
-  -fx-border-color: blue;
-*/
+    -fx-padding: 50 20 50 50;
+    -fx-background-color: transparent; 
+    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+    /*  -fx-border-width: 0 0 0 1;
+      -fx-border-color: blue;
+    */
 
 }
 .my-test-popup-css {
-  -fx-padding: 50;
-  -fx-background-color: green; 
-   -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+    -fx-padding: 50;
+    -fx-background-color: green; 
+    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
 
 }
 
 .my-test-pane-css {
-  -fx-padding: 50;
-  -fx-background-color: transparent; 
-  -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
+    -fx-padding: 50;
+    -fx-background-color: transparent; 
+    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
 
 }
 
 .my-test-pane-mainroot-css {
-  -fx-background-color: transparent; 
+    -fx-background-color: transparent; 
 }
 .dock-node-border:maximized {
     -fx-padding: 0;
@@ -422,7 +442,7 @@
     -fx-background-color: -fx-background;
     -fx-padding: 2;
     -fx-spacing: 3;
-    
+
     -fx-border-width: 1;
     -fx-border-color: -fx-outer-border;
 }

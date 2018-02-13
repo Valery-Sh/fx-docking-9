@@ -1,46 +1,31 @@
-/*
- * Copyright 2017 Your Organisation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableRow;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.incubator.designer.SceneGraphView;
+import javafx.util.Callback;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class TestPaleteTreeView extends Application {
+public class TestTreeView01 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -50,9 +35,22 @@ public class TestPaleteTreeView extends Application {
     public void start(Stage stage) throws Exception {
         //VBox rootPane = new VBox();
         StackPane rootPane = new StackPane();
-        TreeView<PaletteModel> tvt = new TreeView<>();
-        
-        customizeCell(tvt);
+        TreeTableView<PaletteModel> tvt = new TreeTableView<>();
+        tvt.setRowFactory(treeTable -> {
+            TreeTableRow<PaletteModel> row = new TreeTableRowEx();
+            row.treeItemProperty().addListener((ov, oldTreeItem, newTreeItem) -> {
+                System.err.println("oldTreeItem = " + oldTreeItem);
+                if (newTreeItem != null) {
+
+                    //System.err.println("   --- left  newTreeItem = " + newTreeItem.getValue().getLeft().get().getText());
+                    //System.err.println("   --- ryght newTreeItem = " + newTreeItem.getValue().getRight());
+                }
+                //System.err.println("newTreeItem = " + newTreeItem);
+
+            });
+            return row;
+        });
+
         Label lb1 = new Label("Label1");
         Label lb2 = new Label("Label2");
 
@@ -68,7 +66,13 @@ public class TestPaleteTreeView extends Application {
         Label lb7 = new Label("Label7");
 
         PaletteModels models = new PaletteModels(new PaletteModel(lb1, lb2), new PaletteModel(lb3, lb4,"Controls"), new PaletteModel(lb5, lb6), new PaletteModel(lb7, null));
-        //TreeItem<PaletteModel> rootItem = new TreeItem<>();
+        TreeItem<PaletteModel> rootItem = new TreeItem<>(models.getItems().get(0));
+
+        //TreeTableColumn<Label[],String> ttc1 = new TreeTableColumn<>("Column1");
+        TreeTableColumn<PaletteModel, Label> col1 = new TreeTableColumn<>("Column1          ");
+        TreeTableColumn<PaletteModel, Label> col2 = new TreeTableColumn<>("Column2          ");
+        tvt.getColumns().addAll(col1, col2);
+        //col1.setVisible(false);
 
         TreeItem<PaletteModel> root = new TreeItem<>();
         root.setValue(models.getItems().get(0));
@@ -83,7 +87,59 @@ public class TestPaleteTreeView extends Application {
         item3.setValue(models.getItems().get(3));
         root.getChildren().addAll(item1, item2, item3);
         tvt.setRoot(root);
-        
+        col1.setCellValueFactory(
+                new Callback<CellDataFeatures<PaletteModel, Label>, ObservableValue<Label>>() {
+            public ObservableValue<Label> call(CellDataFeatures<PaletteModel, Label> p) {
+                //p.getValue() returns the TreeItem<Person> instance for a particular TreeTableView row,
+                // p.getValue().getValue() returns the Person instance inside the TreeItem<Person>
+                //return new ReadOnlyObjectWrapper(p.getValue().getValue().getFirstName());
+                //return p.getValue().getValue();
+                PaletteModel m = p.getValue().getValue();
+                int idx = models.getItems().indexOf(m);
+                //System.err.println("col1: idx = " + idx);
+                //System.err.println("col1  left = " + m.getLeft());
+                return m.getLeft();
+                //return models.getItems().get(idx).getLeft();
+                //return new SimpleObjectProperty<Label>(p.getValue().getValue());
+            }
+        });
+        col2.setCellValueFactory(
+                new Callback<CellDataFeatures<PaletteModel, Label>, ObservableValue<Label>>() {
+            public ObservableValue<Label> call(CellDataFeatures<PaletteModel, Label> p) {
+                //p.getValue() returns the TreeItem<Person> instance for a particular TreeTableView row,
+                // p.getValue().getValue() returns the Person instance inside the TreeItem<Person>
+                //return new ReadOnlyObjectWrapper(p.getValue().getValue().getFirstName());
+                //return p.getValue().getValue();
+                PaletteModel m = p.getValue().getValue();
+                int idx = models.getItems().indexOf(m);
+                //System.err.println("col2: idx = " + idx);
+                //System.err.println("col2  right = " + m.getRight());
+
+                return m.getRight();
+                //return models.getItems().get(idx).getRight();
+                //return new SimpleObjectProperty<Label>(p.getValue().getValue());
+            }
+        });
+
+/*        col2.setCellFactory(col -> {
+            TreeTableCell<PaletteModel, Label> cell = new TreeTableCell<PaletteModel, Label>() {
+                @Override
+                public void updateItem(Label label, boolean empty) {
+                    super.updateItem(label, empty);
+// Cleanup the cell before populating it
+                    if (!empty) {
+// Format the birth date in mm/dd/yyyy format
+
+                        //this.setScaleX(0.01);
+                    }
+                }
+            };
+            return cell;
+        });
+*/
+        //rootPane.getChildren().add(new Button("Button1"));
+        //rootPane.setPrefSize(20, 20);
+        //rootPane.setStyle("-fx-background-color: yellow");
         root.setExpanded(
                 true);
 
@@ -103,34 +159,6 @@ public class TestPaleteTreeView extends Application {
         Dockable.initDefaultStylesheet(
                 null);
 
-    }
-    protected void customizeCell(TreeView<PaletteModel> treeView) {
-        //TreeView<ItemValue> t = treeView;
-        treeView.setCellFactory((TreeView<PaletteModel> tv) -> {
-            TreeCell<PaletteModel> cell = new TreeCell<PaletteModel>() {
-                @Override
-                public void updateItem(PaletteModel value, boolean empty) {
-                    super.updateItem(value, empty);
-
-                    if (empty || value == null) {
-                        setText(null);
-                        setGraphic(null);
-                        if (this.getUserData() != null) {
-                            Object[] o = (Object[]) this.getUserData();
-                            if (o[0] != null) {
-                                this.removeEventHandler(DragEvent.DRAG_OVER, (SceneGraphView.TreeItemCellDragEventHandler) o[0]);
-                            }
-                        }
-                        this.setOnDragDetected(null);
-                        this.setOnDragDropped(null);
-                        this.setOnDragDone(null);
-                    } else {
-                        this.setGraphic(value.getPane());
-                    }
-                }
-            };
-            return cell;
-        });
     }
 
     /**
@@ -152,34 +180,21 @@ public class TestPaleteTreeView extends Application {
 
         private ObjectProperty<Label> left = new SimpleObjectProperty<>();
         private ObjectProperty<Label> right = new SimpleObjectProperty<>();
-        private Pane pane = new Pane();
-        
+
         public PaletteModel() {
         }
 
         public PaletteModel(Label left, Label right) {
             this.left.set(left);
             this.right.set(right);
-            if ( left != null ) {
-                pane.getChildren().add(left);
-            }
-            if ( right != null ) {
-                pane.getChildren().add(right);
-            }
-            pane.setStyle("-fx-background-color: yellow");
         }
         public PaletteModel(Label left, Label right, String categoryName) {
-            this(left, right);
             this.left.set(left);
             this.right.set(right);
             this.categoryName = categoryName;
             if ( categoryName != null ) {
                 setCategory(true);
             }
-        }
-
-        public Pane getPane() {
-            return pane;
         }
 
         public boolean isCategory() {

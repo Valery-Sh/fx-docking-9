@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.demo;
 
+
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -9,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -20,7 +20,6 @@ import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
-import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;

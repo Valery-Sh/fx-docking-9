@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging;
+package org.vns.javafx.dock.incubator.designer;
 
-import org.vns.javafx.dock.api.Dockable;
+import javafx.beans.DefaultProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 
-/**
- *
- * @author Valery
- */
-public class JFXDragManager extends SimpleDragManager {
+@DefaultProperty("descriptors")
+public class GraphDescriptor extends Control {
+    private final ObservableList<NodeDescriptor> descriptors = FXCollections.observableArrayList();
 
-    /**
-     * Create a new instance for the given dockable.
-     *
-     * @param dockable the object to be dragged
-     */
-    public JFXDragManager(Dockable dockable) {
-        super(dockable);
+    public ObservableList<NodeDescriptor> getDescriptors() {
+        return descriptors;
     }
-
-
+    
 }

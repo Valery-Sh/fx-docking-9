@@ -484,14 +484,15 @@ public class DockableContext {
      * @return the object which manages a dragging execution
      */
     public DragManager getDragManager() {
-        return getDragManager(false);
+        return getDragManager(true);
     }
-    public DragManager getDragManager(boolean create) {
-        if ( create || dragManager == null) {
+    protected DragManager getDragManager(boolean create) {
+        DragManager retval = dragManager;
+        if ( create || retval == null) {
             createDragManager();
-            return dragManager;
+            retval = dragManager;
         }
-        return dragManager;
+        return retval;
     }
 
     /**
@@ -507,9 +508,10 @@ public class DockableContext {
         if (tc != null) {
             dmf = tc.getLookup().lookup(DragManagerFactory.class);
             if (dmf == null) {
-                dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class
-                );
+                dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
             }
+        } else {
+             dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
         }
         dragManager = dmf.getDragManager(dockable);
     }

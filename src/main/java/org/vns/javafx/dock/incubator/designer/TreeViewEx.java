@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.designer;
+package org.vns.javafx.dock.incubator.designer;
 
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.event.EventHandler;
@@ -35,16 +35,14 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public TreeViewEx(SceneGraphView editor, TreeItem<T> root) {
         super(root);
         this.sceneGraphView = editor;
-        
-                                 
         init();
     }
 
     private void init() {
         addEventFilter(NodeDragEvent.NODE_DRAG, this);
         getStyleClass().add(LOOKUP_SELECTOR);
-        this.getStyleClass().add("designer");
     }
+    public static int cc = 0;
 
     public NodeDragEvent getNodeDragEvent(MouseEvent ev) {
         nodeDragEvent.setMouseEvent(ev);
