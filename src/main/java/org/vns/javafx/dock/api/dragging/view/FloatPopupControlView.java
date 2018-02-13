@@ -145,7 +145,7 @@ public class FloatPopupControlView implements FloatWindowView {
     }
 
     protected void markFloating(Window toMark) {
-        toMark.getScene().getRoot().getStyleClass().add(FLOATWINDOW);
+        toMark.getScene().getRoot().getStyleClass().add(FLOAT_WINDOW);
         floatingWindow.set(toMark);
     }
 
@@ -225,7 +225,7 @@ public class FloatPopupControlView implements FloatWindowView {
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;
@@ -330,11 +330,11 @@ public class FloatPopupControlView implements FloatWindowView {
         //stage.setTitle("FLOATING STAGE");
         //stage.initStyle(stageStyle);
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;
-        node = context.getDragContainer().getGraphic();
+        node = context.getDragContainer().getPlaceholder();
         borderPane.setCenter(node);
 
         popup.getScene().setRoot(borderPane);
@@ -416,7 +416,7 @@ public class FloatPopupControlView implements FloatWindowView {
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;

@@ -39,7 +39,7 @@ public class DragContainer { //extends Control implements Dockable{
 
     private final ObjectProperty value = new SimpleObjectProperty();
 
-    private Node graphic;
+    private Node placeholder;
 
     public DragContainer(Dockable owner, Object value) {
         this(owner, value, true);
@@ -72,67 +72,66 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public Window getFloatingWindow() {
-        if (getGraphic().getScene() == null || getGraphic().getScene().getWindow() == null) {
+        if (getPlaceholder().getScene() == null || getPlaceholder().getScene().getWindow() == null) {
             return null;
         }
-        if (!FloatView.isFloating(getGraphic())) {
+        if (!FloatView.isFloating(getPlaceholder())) {
             return null;
         }
-        return getGraphic().getScene().getWindow();
+        return getPlaceholder().getScene().getWindow();
     }
 
     private void createDefaultGraphic() {
         if (Dockable.of(getValue()) != null) {
-            graphic = Dockable.of(getValue()).node();
+            placeholder = Dockable.of(getValue()).node();
         } else if ((getValue() instanceof Node)) {
             Pane p = new Pane();
             p.getChildren().add((Node) getValue());
             Scene sc = new Scene(p);
             ImageView im = new ImageView(((Node) getValue()).snapshot(null, null));
-            graphic = im;
+            placeholder = im;
         } else {
-            graphic = new Rectangle(75, 25);
-            graphic.setOpacity(0.3);
-            ((Shape) graphic).setFill(Color.YELLOW);
-            ((Shape) graphic).setStroke(Color.BLACK);
-            ((Shape) graphic).setStrokeWidth(1);
-            ((Shape) graphic).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
-            ((Shape) graphic).setStrokeDashOffset(1.0);
+            placeholder = new Rectangle(75, 25);
+            placeholder.setOpacity(0.3);
+            ((Shape) placeholder).setFill(Color.YELLOW);
+            ((Shape) placeholder).setStroke(Color.BLACK);
+            ((Shape) placeholder).setStrokeWidth(1);
+            ((Shape) placeholder).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
+            ((Shape) placeholder).setStrokeDashOffset(1.0);
         }
     }
 
     private void makeDockable() {
-        Dockable d = Dockable.of(graphic);
+        Dockable d = Dockable.of(placeholder);
         if (d != null) {
             return;
         }
-        d = DockRegistry.makeDockable(graphic);
+        d = DockRegistry.makeDockable(placeholder);
     }
 
     private void makeContainer() {
-        Dockable d = Dockable.of(getGraphic());
+        Dockable d = Dockable.of(getPlaceholder());
         DragContainer dc = d.getContext().getDragContainer();
         if (dc == null) {
             dc = new DragContainer(d, getValue(), false);
             d.getContext().setDragContainer(dc);
-            dc.setGraphic(getGraphic());
-            
+            dc.setPlaceholder(getPlaceholder());
         }
     }
     
-    public Node getGraphic() {
-        return graphic;
+    public Node getPlaceholder() {
+        return placeholder;
     }
 
-    public void setGraphic(Node graphic) {
-        this.graphic = graphic;
-        if ( getGraphic() == null ) {
+    public void setPlaceholder(Node placeholder) {
+        this.placeholder = placeholder;
+        if ( getPlaceholder() == null ) {
             return;
         }
-        if ( Dockable.of(getGraphic()) == null ) {
+        if ( Dockable.of(getPlaceholder()) == null ) {
             makeDockable();
             makeContainer();
-        } else if ( Dockable.of(getGraphic()).getContext().getDragContainer() == null  ) {
+        } else if ( Dockable.of(getPlaceholder()).getContext().getDragContainer() == null  ) {
             makeContainer();
         }
     }

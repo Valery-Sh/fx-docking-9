@@ -144,7 +144,7 @@ public class FloatStageView implements FloatWindowView {
     }
 
     protected void markFloating(Window toMark) {
-        toMark.getScene().getRoot().getStyleClass().add(FLOATWINDOW);
+        toMark.getScene().getRoot().getStyleClass().add(FLOAT_WINDOW);
         floatingWindow.set(toMark);
     }
 
@@ -230,7 +230,7 @@ public class FloatStageView implements FloatWindowView {
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;
@@ -320,12 +320,12 @@ public class FloatStageView implements FloatWindowView {
         stage.initStyle(stageStyle);
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;
 
-        Node node = context.getDragContainer().getGraphic();
+        Node node = context.getDragContainer().getPlaceholder();
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
@@ -421,7 +421,7 @@ public class FloatStageView implements FloatWindowView {
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;

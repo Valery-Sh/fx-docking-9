@@ -470,7 +470,7 @@ public class DockSideBar extends Control implements Dockable, DockTarget, ListCh
                 if (popup == null) {
                     popup = (PopupControl) container.getFloatView().make(dockable, false);
                     container.addMouseExitListener();
-                    //popup.getScene().getRoot().getStyleClass().remove(FloatView.FLOATWINDOW);
+                    //popup.getScene().getRoot().getStyleClass().remove(FloatView.FLOAT_WINDOW);
                     //System.err.println("======= popup.root = " + popup.getScene().getRoot());
                     //System.err.println("======= popup.ifFloating = " + dockable.getContext().isFloating());
                     //System.err.println("======= popup.root.id = " + popup.getScene().getRoot().getId());                    

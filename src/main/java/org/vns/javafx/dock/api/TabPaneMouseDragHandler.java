@@ -56,7 +56,7 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
                 if (wi != null) {
                     Node node = new ImageView(wi);
                     node.setOpacity(0.75);
-                    getContext().getDragContainer().setGraphic(node);
+                    getContext().getDragContainer().setPlaceholder(node);
                 }
 
             }

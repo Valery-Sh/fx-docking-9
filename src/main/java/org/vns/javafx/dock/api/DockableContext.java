@@ -366,9 +366,9 @@ public class DockableContext {
     public boolean isFloating() {
         Node node = dockable().node();
         boolean retval = false;
-        if (getDragContainer() != null && getDragContainer().getValue() != null) {
+        if (getDragContainer() != null) {
             DragContainer dc = getDragContainer();
-            if (FloatView.isFloating(dc.getGraphic())) {
+            if (FloatView.isFloating(dc.getPlaceholder())) {
                 retval = true;
             }
         } else {
@@ -382,7 +382,7 @@ public class DockableContext {
         boolean retval = FloatView.isFloating(node);
         if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
             DragContainer dc = getDragContainer();
-            if (FloatView.isFloating(dc.getGraphic())) {
+            if (FloatView.isFloating(dc.getPlaceholder())) {
                 retval = true;
             }
         }

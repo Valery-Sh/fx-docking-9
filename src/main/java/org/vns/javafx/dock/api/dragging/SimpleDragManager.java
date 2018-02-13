@@ -382,7 +382,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
         DragContainer dc = getDockable().getContext().getDragContainer();
 
-        if (dc != null && getDockable().node() != dc.getGraphic()) {
+        if (dc != null && getDockable().node() != dc.getPlaceholder()) {
             getDockable().getContext().setDragContainer(null);
         }
     }

@@ -228,7 +228,7 @@ public class TestDockPaneControl extends Application {
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
         tab1.getContext().setDragContainer(new DragContainer(tab1,dockableBtn1));
-        tab1.getContext().getDragContainer().setGraphic(dockableBtn1);
+        tab1.getContext().getDragContainer().setPlaceholder(dockableBtn1);
         //tab1.getContext().getDragContainer().setCarrier(Dockable.of(tab1));
         //Node graphic = tab1.getContext().getDragContainer().getGraphic();
         stage.setHeight(350);

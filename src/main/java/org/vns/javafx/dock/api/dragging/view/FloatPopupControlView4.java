@@ -85,8 +85,8 @@ public class FloatPopupControlView4 extends FloatStageView {
         Point2D stagePosition = screenPoint;
 
         BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOATWINDOW);
-        borderPane.setId(FLOATWINDOW);
+        borderPane.getStyleClass().add(FLOAT_WINDOW);
+        borderPane.setId(FLOAT_WINDOW);
         //borderPane.setMouseTransparent(true);
         setRootPane(borderPane);
         //
