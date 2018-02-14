@@ -17,18 +17,12 @@ package org.vns.javafx.dock.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.vns.javafx.dock.api.PalettePane.PaletteCategory;
-import org.vns.javafx.dock.api.PalettePane.PaletteItem;
 import org.vns.javafx.dock.api.PalettePane.PaletteModel;
 
 /**
@@ -37,10 +31,12 @@ import org.vns.javafx.dock.api.PalettePane.PaletteModel;
  */
 public class PalettePaneSkin extends SkinBase<PalettePane> {
     
+    public static final String TITLED_PANE_VBOX = "titled-pane-vbox";
+
     protected static double DEFAULT_GRAPHIC_WIDTH = 16;
     
     private ScrollPane layout;
-    private VBox titledPaneLayout;
+    private VBox vboxLayout;
 
     public PalettePaneSkin(final PalettePane control) {
         super(control);
@@ -49,8 +45,9 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
     }
 
     private void init() {
-        titledPaneLayout = buildPalette(getSkinnable().getModel());
-        layout = new ScrollPane(titledPaneLayout) {
+        vboxLayout = buildPalette(getSkinnable().getModel());
+        
+        layout = new ScrollPane(vboxLayout) {
                 @Override
                 protected void layoutChildren() {
                     layout.setVbarPolicy(getSkinnable().getScrollPaneVbarPolicy());
@@ -59,17 +56,18 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
                 }
             };
         layout.setFitToWidth(true);
-
+        vboxLayout.getStyleClass().add(TITLED_PANE_VBOX);                
+        
         getChildren().add(layout);
 
         getSkinnable().scrollPaneVbarPolicy().addListener( (ovalue, oldValue, newValue) -> {
             layout.setVbarPolicy(newValue);
         });
-        getSkinnable().dragNodeProperty().addListener( (ovalue, oldValue, newValue) -> {
+        getSkinnable().dragNodeProperty().addListener((ovalue, oldValue, newValue) -> {
             if ( oldValue == null && newValue != null ) {
-                titledPaneLayout.getChildren().add(0,newValue);
+                vboxLayout.getChildren().add(0,newValue);
             } else if (oldValue != null ) {
-                titledPaneLayout.getChildren().set(0,newValue);
+                vboxLayout.getChildren().set(0,newValue);
             }
         });
         
@@ -88,7 +86,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
             }
         };
 */
-        titledBox.setStyle("-fx-background-color: green");
+        //titledBox.setStyle("-fx-background-color: green");
 
         for (int i = 0; i < model.getCategories().size(); i++) {
             TitledPane titledPane = new TitledPane();
@@ -120,9 +118,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
         double graphicWidth = DEFAULT_GRAPHIC_WIDTH;
         if (label.getGraphic() != null) {
             graphicWidth = label.getGraphic().getLayoutBounds().getWidth();
-            System.err.println("0 - graphicWidth = " + graphicWidth);
         }
-        System.err.println("1 - graphicWidth = " + graphicWidth);
         double width = tx.getLayoutBounds().getWidth()
                 + label.getInsets().getLeft()
                 + label.getInsets().getLeft()
@@ -147,56 +143,4 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
         }
 
     }
-
-/*    private void sizeLabel(Label label, double min, double pref, double max) {
-        label.setMinWidth(min);
-        label.setPrefWidth(pref);
-        label.setMaxWidth(max);
-    }
-
-    protected void modifyItemsSize() {
-        //Platform.runLater(() -> {
-        //treeView.layout();
-
-        //double rootLabelWidth = rootLabel.getLayoutBounds().getWidth();
-        PaletteModel model = getSkinnable().getModel();
-        double maxTextWidth = 0;
-        for (PaletteCategory pc : model.getCategories()) {
-            for (PaletteItem pi : pc.getItems()) {
-                System.err.println("PADDING pi.getLabel() = " + pi.getLabel().getPadding());
-                System.err.println("PADDING pi.getLabel().pref = " + pi.getLabel().getPrefWidth());
-                Text tx = new Text(pi.getLabel().getText());
-                tx.setFont(pi.getLabel().getFont());
-                System.err.println("  --- pi.getLabel() tx = " + tx.getBoundsInLocal().getWidth());
-                System.err.println("  --- pi.getLabel() gap = " + pi.getLabel().getOpaqueInsets());
-
-                //13if (tx.getLayoutBounds().getWidth() > maxTextWidth) {
-                if (pi.getLabel().getWidth() > maxTextWidth) {
-                    //13maxTextWidth = tx.getLayoutBounds().getWidth();
-                    maxTextWidth = pi.getLabel().getWidth();
-                    System.err.println("maxTextWidth = " + maxTextWidth);
-                    System.err.println("   --- label = " + pi.getLabel());
-                    System.err.println("   --- label.text = " + pi.getLabel().getText());
-                }
-            }
-        }
-        for (PaletteCategory pc : model.getCategories()) {
-            for (PaletteItem pi : pc.getItems()) {
-                //double ins = rootLabel.getInsets().getLeft() + rootLabel.getInsets().getRight();
-                System.err.println("pi.getLabel().width=" + pi.getLabel().getWidth());
-                //System.err.println("   --- rootLabel.width = " + rootLabel.getWidth());
-                //13pi.getLabel().setMinWidth(rootLabelWidth + maxTextWidth);
-                //13pi.getLabel().setMaxWidth(rootLabelWidth + maxTextWidth);
-                pi.getLabel().setMinWidth(maxTextWidth);
-                pi.getLabel().setMaxWidth(maxTextWidth);
-
-                //System.err.println("rootLabelWidth=" + rootLabelWidth);
-                //System.err.println("   --- pi.getLabel().minWidth=" + pi.getLabel().getMinWidth());
-                //System.err.println("   ---  pi.getLabel() ins = " + ins);
-            }
-        }
-        //titledBox.getChildren().remove(rootLabel);
-        //});
-    }
-*/
 }

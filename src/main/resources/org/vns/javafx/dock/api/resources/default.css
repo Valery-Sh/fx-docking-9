@@ -17,6 +17,11 @@
 }
 */
 
+.palette-pane .titled-pane .tile-pane {
+    -fx-border-width: 3;
+    -fx-border-color: lightgray;
+}
+
 /*******************************************************************************
  *                                                                             *
  * DockPane                                                                    *

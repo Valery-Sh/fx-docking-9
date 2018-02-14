@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
@@ -31,6 +32,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Tab;
@@ -51,7 +53,7 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
  * @author Valery Shyshkin
  */
 public class PalettePane extends Control {
-
+    public static final String PALETTE_PANE = "palette-pane";
     private PaletteModel model;
 
     private final ObjectProperty<ScrollPane.ScrollBarPolicy> scrollVBarPolicy = new SimpleObjectProperty<>(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -64,6 +66,7 @@ public class PalettePane extends Control {
     public PalettePane(boolean createDefault) {
         initModel(createDefault);
         DockRegistry.makeDockable(this);
+        getStyleClass().add(PALETTE_PANE);
     }
 
     private void initModel(boolean createDefault) {
@@ -73,6 +76,10 @@ public class PalettePane extends Control {
             model = new PaletteModel();
         }
 
+    }
+    
+    public void setDragValueCustomizer(DragValueCustomizer customizer) {
+        getModel().setDragValueCustomizer(customizer);
     }
 
     @Override
@@ -161,17 +168,20 @@ public class PalettePane extends Control {
     }
 
     public static class PaletteItem {
-
+        
         private final ObjectProperty<Label> label = new SimpleObjectProperty<>();
         private final Class<?> valueClass;
+        private PaletteModel model;
 
+        
         public Class<?> getValueClass() {
             return valueClass;
         }
-
-        public PaletteItem(Label lb, Class<?> clazz) {
+        
+        public PaletteItem(PaletteModel model, Label lb, Class<?> clazz) {
             label.set(lb);
             valueClass = clazz;
+            this.model = model;
             init();
         }
 
@@ -185,7 +195,10 @@ public class PalettePane extends Control {
                         .getLookup()
                         .putUnique(MouseDragHandler.class, handler);
             }
+        }
 
+        public PaletteModel getModel() {
+            return model;
         }
 
         public Label getLabel() {
@@ -203,20 +216,28 @@ public class PalettePane extends Control {
     }
 
     public static class PaletteCategory extends PaletteItem {
-
+        
         private final StringProperty id = new SimpleStringProperty();
         private final ObservableList<PaletteItem> items = FXCollections.observableArrayList();
         private final ObjectProperty<TilePane> graphic = new SimpleObjectProperty<>();
 
-        public PaletteCategory(String id, Label lb) {
+/*        public PaletteCategory(String id, Label lb) {
             super(lb, null);
+            this.id.set(id);
+            init();
+        }
+*/
+        public PaletteCategory(PaletteModel model, String id, Label lb) {
+            super(model,lb, null);
             this.id.set(id);
             init();
         }
 
         private void init() {
             TilePane tp = new TilePane();
-            tp.setStyle("-fx-border-color: red");
+            tp.getStyleClass().add("tile-pane");
+      
+            //tp.setStyle("-fx-border-color: red");
             tp.setHgap(10);
             tp.setVgap(5);
             tp.setPrefColumns(1);
@@ -268,9 +289,12 @@ public class PalettePane extends Control {
         }
 
         public PaletteItem addItem(Label label, Class<?> clazz) {
-            PaletteItem item = new PaletteItem(label, clazz);
+            return addItem(items.size(), label,clazz);
+        }
+        public PaletteItem addItem(int idx, Label label, Class<?> clazz) {
+            PaletteItem item = new PaletteItem(getModel(),label, clazz);
             items.add(item);
-            getGraphic().getChildren().add(item.getLabel());
+            getGraphic().getChildren().add(idx,item.getLabel());
 
             return item;
         }
@@ -280,16 +304,28 @@ public class PalettePane extends Control {
     public static class PaletteModel {
 
         private final ObservableList<PaletteCategory> categories = FXCollections.observableArrayList();
-
+        private DragValueCustomizer dragValueCustomizer;
+        
         public PaletteModel() {
+            dragValueCustomizer = new DefaultDragValueCustomizer();
         }
 
         public ObservableList<PaletteCategory> getCategories() {
             return categories;
         }
 
+        public DragValueCustomizer getDragValueCustomizer() {
+            return dragValueCustomizer;
+        }
+        
+        public void setDragValueCustomizer(DragValueCustomizer customizer) {
+            this.dragValueCustomizer = customizer;
+        }
         public PaletteCategory addCategory(String id, Label label) {
-            PaletteCategory c = new PaletteCategory(id, label);
+            return addCategory(this, id, label);
+        }
+        protected PaletteCategory addCategory(PaletteModel model, String id, Label label) {
+            PaletteCategory c = new PaletteCategory(model, id, label);
             categories.add(c);
             return c;
         }
@@ -327,6 +363,14 @@ public class PalettePane extends Control {
 
             try {
                 Object value = item.getValueClass().newInstance();
+                System.err.println("PaletteItemMouseDragHandler VALUE: " + value);
+                item.getModel().getDragValueCustomizer().customize(value);
+                String tx = "";
+                if ( value instanceof Labeled) {
+                    tx  = ((Labeled)value).getText();
+                    System.err.println("PaletteItemMouseDragHandler VALUE.text: " + tx);
+                }
+                
                 Label label = item.getLabel();
 
 //                getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(item.getLabel()), value));
@@ -343,6 +387,7 @@ public class PalettePane extends Control {
                 }
 
             } catch (InstantiationException | IllegalAccessException ex) {
+                System.err.println("PaletteItemMouseDragHandler EXCEPTION ");
                 Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -355,4 +400,21 @@ public class PalettePane extends Control {
             return dm;
         }
     }//PalettePaneMouseDragHandler
+    
+    @FunctionalInterface
+    public static interface DragValueCustomizer {
+        void customize(Object value);
+    }
+    
+    public static class DefaultDragValueCustomizer implements DragValueCustomizer{
+        public void customize(Object value) {
+            if ( value instanceof Tab ) {
+                ((Tab)value).setText("tab");
+            } else if ( value instanceof Labeled) {
+                String tx = value.getClass().getSimpleName();
+                tx = tx.substring(0,1).toLowerCase() + tx.substring(1);
+                ((Labeled)value).setText(tx);
+            }
+        }
+    }
 }//PalettePane

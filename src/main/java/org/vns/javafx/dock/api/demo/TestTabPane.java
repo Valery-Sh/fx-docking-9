@@ -151,7 +151,13 @@ public class TestTabPane extends Application {
 
         });
         PalettePane palettePane = new PalettePane(true);
-        
+/*        palettePane.setDragValueCustomizer(o -> {
+            if (o instanceof Tab) {
+                ((Tab) o).setText("tab01");
+                System.err.println("TAB = " + ((Tab)o).getText());
+            }
+        });        
+*/        
         Scene pscene = new Scene(palettePane);
         Stage pstage = new Stage();
         pstage.setScene(pscene);
