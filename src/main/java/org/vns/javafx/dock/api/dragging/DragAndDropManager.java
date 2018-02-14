@@ -351,5 +351,10 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
 
     }
 
+    @Override
+    public void setHideOption(HideOption hideOption) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

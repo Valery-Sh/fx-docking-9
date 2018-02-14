@@ -35,24 +35,27 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
 @DefaultProperty("value")
 public class DragContainer { //extends Control implements Dockable{
 
-    private Dockable owner;
+    //private Dockable owner;
 
     private final ObjectProperty value = new SimpleObjectProperty();
 
     private Node placeholder;
 
-    public DragContainer(Dockable owner, Object value) {
+/*    public DragContainer(Dockable owner, Object value) {
+        
         this(owner, value, true);
     }
-
-    protected DragContainer(Dockable owner, Object value, boolean needContainer) {
-        this.owner = owner;
+*/
+    public DragContainer(Node placeholder, Object value) {
         this.value.set(value);
-        createDefaultGraphic();
-        makeDockable();
-        if ( needContainer ) {
-            makeContainer();
-        }
+        this.placeholder = placeholder;
+        
+        makePlaceholderDockable();
+        makePlaceholderContainer();
+    }
+    
+    protected DragContainer(Object value) {
+        this.value.set(value);
     }
 
     public ObjectProperty valueProperty() {
@@ -71,7 +74,11 @@ public class DragContainer { //extends Control implements Dockable{
         return value != null && Dockable.of(value.get()) != null;
     }
 
-    public Window getFloatingWindow() {
+    public Window getFloatingWindow(Dockable dockable) {
+        
+        if ( getPlaceholder() == null ) {
+            return dockable.node().getScene().getWindow();
+        }
         if (getPlaceholder().getScene() == null || getPlaceholder().getScene().getWindow() == null) {
             return null;
         }
@@ -80,15 +87,21 @@ public class DragContainer { //extends Control implements Dockable{
         }
         return getPlaceholder().getScene().getWindow();
     }
-
-    private void createDefaultGraphic() {
-        if (Dockable.of(getValue()) != null) {
-            placeholder = Dockable.of(getValue()).node();
-        } else if ((getValue() instanceof Node)) {
+    
+    /**
+     * Creates default placeholder.
+     * @param value the value used as a source to create placeholder
+     * @return new placeholder node
+     */
+    public static Node placeholderOf(Object value) {
+        Node placeholder;
+        if (Dockable.of(value) != null) {
+            placeholder = Dockable.of(value).node();
+        } else if ((value instanceof Node)) {
             Pane p = new Pane();
-            p.getChildren().add((Node) getValue());
+            p.getChildren().add((Node)value);
             Scene sc = new Scene(p);
-            ImageView im = new ImageView(((Node) getValue()).snapshot(null, null));
+            ImageView im = new ImageView(((Node)value).snapshot(null, null));
             placeholder = im;
         } else {
             placeholder = new Rectangle(75, 25);
@@ -99,49 +112,48 @@ public class DragContainer { //extends Control implements Dockable{
             ((Shape) placeholder).getStrokeDashArray().addAll(2.0, 2.0, 2.0, 2.0);
             ((Shape) placeholder).setStrokeDashOffset(1.0);
         }
+        return placeholder;
     }
 
-    private void makeDockable() {
-        Dockable d = Dockable.of(placeholder);
-        if (d != null) {
+    private void makePlaceholderDockable() {
+        if (Dockable.of(placeholder) != null) {
             return;
         }
-        d = DockRegistry.makeDockable(placeholder);
+        DockRegistry.makeDockable(placeholder);
     }
 
-    private void makeContainer() {
+    private void makePlaceholderContainer() {
         Dockable d = Dockable.of(getPlaceholder());
         DragContainer dc = d.getContext().getDragContainer();
         if (dc == null) {
-            dc = new DragContainer(d, getValue(), false);
+            dc = new DragContainer(getValue());
             d.getContext().setDragContainer(dc);
-            dc.setPlaceholder(getPlaceholder());
         }
     }
-    
+
     public Node getPlaceholder() {
         return placeholder;
     }
 
     public void setPlaceholder(Node placeholder) {
         this.placeholder = placeholder;
-        if ( getPlaceholder() == null ) {
+        if (getPlaceholder() == null) {
             return;
         }
-        if ( Dockable.of(getPlaceholder()) == null ) {
-            makeDockable();
-            makeContainer();
-        } else if ( Dockable.of(getPlaceholder()).getContext().getDragContainer() == null  ) {
-            makeContainer();
+        if (Dockable.of(getPlaceholder()) == null) {
+            makePlaceholderDockable();
+            makePlaceholderContainer();
+        } else if (Dockable.of(getPlaceholder()).getContext().getDragContainer() == null) {
+            makePlaceholderContainer();
         }
     }
 
-    public Dockable getOwner() {
+/*    public Dockable getOwner() {
         return owner;
     }
 
     public void setOwner(Dockable owner) {
         this.owner = owner;
     }
-
+*/
 }

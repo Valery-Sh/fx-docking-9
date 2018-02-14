@@ -378,6 +378,7 @@ public class DockRegistry {
         if ( isDockable(node) ) {
             return dockable(node);
         }
+        System.err.println("DockRegistry node = " + node);
         Dockable d = new DefaultDockable(node);
         if (d.node().getParent() != null) {
             d.getContext().getTargetContext().setTargetNode(d.node().getParent());
@@ -510,6 +511,7 @@ public class DockRegistry {
             return null;
         }
         Node node = (Node) obj;
+        
         Dockable retval = getInstance().dockables.get(node);
         if (retval == null) {
             Object d = node.getProperties().get(Dockable.DOCKABLE_KEY);

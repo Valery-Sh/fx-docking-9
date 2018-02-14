@@ -36,6 +36,8 @@ public interface DragManager { //extends EventHandler<MouseEvent> {
     
     void mouseDragDetected(MouseEvent ev, Point2D startMousePos);
     
+    void setHideOption(HideOption hideOption);
+    
 //    Window getWindow();
     
 //    void createWindow(Dockable dockable);

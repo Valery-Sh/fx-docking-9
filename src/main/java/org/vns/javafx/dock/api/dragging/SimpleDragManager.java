@@ -382,7 +382,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
         DragContainer dc = getDockable().getContext().getDragContainer();
 
-        if (dc != null && getDockable().node() != dc.getPlaceholder()) {
+//        if (dc != null && getDockable().node() != dc.getPlaceholder()) {
+        if (dc != null && dc.getPlaceholder() != null) {
             getDockable().getContext().setDragContainer(null);
         }
     }
@@ -407,13 +408,10 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     protected Object getContainerValue() {
-        Object retval = null;
+        //Object retval = null;
         DragContainer dc = dockable.getContext().getDragContainer();
-        Object v = dc == null ? null : dc.getValue();
+        Object retval = dc == null ? null : dc.getValue();
 
-        if (v != null) {
-            retval = v;
-        }
         return retval;
     }
 

@@ -80,7 +80,7 @@ public class DockableContext {
 
     private DragDetector dragDetector;
     //private Node dragNode;
-    private ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
     private TargetContext scenePaneContext;
 
@@ -364,27 +364,12 @@ public class DockableContext {
      * @return true if the object is in <i>floating</i> state. false otherwise.
      */
     public boolean isFloating() {
-        Node node = dockable().node();
         boolean retval = false;
-        if (getDragContainer() != null) {
-            DragContainer dc = getDragContainer();
-            if (FloatView.isFloating(dc.getPlaceholder())) {
-                retval = true;
-            }
+        DragContainer dc = getDragContainer();
+        if (dc != null && dc.getPlaceholder() != null && FloatView.isFloating(dc.getPlaceholder())) {
+            retval = true;
         } else {
-            retval = FloatView.isFloating(node);
-        }
-        return retval;
-    }
-
-    public boolean isFloating_old() {
-        Node node = dockable().node();
-        boolean retval = FloatView.isFloating(node);
-        if (!retval && getDragContainer() != null && getDragContainer().getValue() != null) {
-            DragContainer dc = getDragContainer();
-            if (FloatView.isFloating(dc.getPlaceholder())) {
-                retval = true;
-            }
+            retval = FloatView.isFloating(dockable().node());
         }
         return retval;
     }
@@ -486,9 +471,10 @@ public class DockableContext {
     public DragManager getDragManager() {
         return getDragManager(true);
     }
+
     protected DragManager getDragManager(boolean create) {
         DragManager retval = dragManager;
-        if ( create || retval == null) {
+        if (create || retval == null) {
             createDragManager();
             retval = dragManager;
         }
@@ -511,7 +497,7 @@ public class DockableContext {
                 dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
             }
         } else {
-             dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
+            dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
         }
         dragManager = dmf.getDragManager(dockable);
     }
@@ -543,9 +529,14 @@ public class DockableContext {
         } else {
             retval = dockable;
         }
+        Dockable dd = Dockable.of(retval);
         return retval;
     }
 
+    /*    public void setDragValue(Object value) {
+        this.dragValue = value;
+    }
+     */
     public class DragDetector implements EventHandler<MouseEvent> {
 
         private final DockableContext dockableContext;
@@ -590,14 +581,6 @@ public class DockableContext {
             dragHandler.handle(event);
         }
 
-        /*        protected MouseDragHandler getDragHandler() {
-            return dragHandler;
-        }
-         */
- /*        public void setDragHandler(MouseDragHandler dragHandler) {
-            this.dragHandler = dragHandler;
-        }
-         */
     }//DragDetector
 
 }//DockableContext

@@ -15,14 +15,16 @@
  */
 package org.vns.javafx.dock.api;
 
+import javafx.scene.Node;
+
 /**
  *
  * @author Valery
  */
 public class DragValue extends DragContainer {
     
-    public DragValue(Dockable owner, Object value) {
-        super(owner, value);
+    public DragValue(Object value) {
+        super(null, value);
     }
     
 }

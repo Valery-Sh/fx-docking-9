@@ -27,11 +27,11 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.TabPaneContext;
 import org.vns.javafx.dock.api.TabPaneMouseDragHandler;
@@ -150,10 +150,24 @@ public class TestTabPane extends Application {
             });
 
         });
-        Scene scene = new Scene(root);
+        PalettePane palettePane = new PalettePane(true);
+        
+        Scene pscene = new Scene(palettePane);
+        Stage pstage = new Stage();
+        pstage.setScene(pscene);
+        
+        Scene scene = new Scene(root);    
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
         stage.show();
+        stage.setX(10);
+        stage.setY(100);
+        pstage.show();
+        pstage.setX(400);
+        pstage.setY(100);
+        pstage.setHeight(300);
+        pstage.setAlwaysOnTop(true);
+        pstage.show();
         
         VBox root1 = new VBox();
         
@@ -183,7 +197,7 @@ public class TestTabPane extends Application {
         
         stage1.setScene(scene1);
         
-        stage1.show();
+        //stage1.show();
         
 /*        tabPane.lookup(".tab-header-background").setOnMousePressed(ev -> {
             System.err.println("tab-header-background Mouse Pressed");

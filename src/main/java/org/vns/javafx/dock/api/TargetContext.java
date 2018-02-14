@@ -207,6 +207,8 @@ public abstract class TargetContext {
 */        
         Dockable dragged = dockable;
         Object v  = dockable.getContext().getDragValue();
+        System.err.println("isAcceptable value = " + v);
+        System.err.println("   ---  Dockable.od(value) = " + Dockable.of(v));
         if ( Dockable.of(v) != null ) {
             dragged = Dockable.of(v);
         } else {

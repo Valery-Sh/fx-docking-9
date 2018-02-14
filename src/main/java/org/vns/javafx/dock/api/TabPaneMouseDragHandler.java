@@ -25,7 +25,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
-import org.vns.javafx.dock.api.dragging.DragManager;
 
 /**
  *
@@ -48,7 +47,8 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
-            getContext().setDragContainer(new DragContainer(getContext().dockable(), tab));
+            //getContext().setDragContainer(new DragContainer(getContext().dockable(), tab));
+            getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(tab), tab));
             WritableImage wi = null;
 
             if (tabNode != null) {

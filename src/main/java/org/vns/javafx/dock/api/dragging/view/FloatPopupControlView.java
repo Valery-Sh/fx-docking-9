@@ -25,13 +25,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.PopupWindow;
-import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
@@ -320,8 +318,8 @@ public class FloatPopupControlView implements FloatWindowView {
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
-            if (context.getDragContainer().getFloatingWindow() != null && context.getDragContainer().getFloatingWindow().isShowing()) {
-                return context.getDragContainer().getFloatingWindow();
+            if (context.getDragContainer().getFloatingWindow(dockable) != null && context.getDragContainer().getFloatingWindow(dockable).isShowing()) {
+                return context.getDragContainer().getFloatingWindow(dockable);
             }
         }
 

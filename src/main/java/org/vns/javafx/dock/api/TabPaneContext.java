@@ -62,7 +62,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         } else if ((dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
             retval = true;
         }
-//        System.err.println("*************************** IS ACEPTABLE retval = " + retval);
+        System.err.println("*************************** IS ACEPTABLE retval = " + retval);
 
         return retval;
     }
@@ -100,7 +100,14 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     }
 
     public void dock(Point2D mousePos, Tab tab, Dockable dockable) {
-        Window window = dockable.getContext().getDragContainer().getFloatingWindow();
+        Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
+        Window window = null;
+        if ( placeholder != null ) {
+            window = placeholder.getScene().getWindow();
+        } else {
+            window = dockable.node().getScene().getWindow();
+        }
+        
 //        System.err.println("winndow = " + window);
         if (doDock(mousePos, tab) && window != null) {
             if ((window instanceof Stage)) {

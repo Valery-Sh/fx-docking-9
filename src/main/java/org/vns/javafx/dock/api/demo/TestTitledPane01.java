@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -49,19 +50,24 @@ public class TestTitledPane01 extends Application {
     public void start(Stage stage) {
         stage.setTitle("Palette Stage");
         VBox vbox = new VBox();
-        StackPane root = new StackPane(vbox);
-        //StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: aqua");
+        
 
         //stage.setWidth(350);
         stage.setAlwaysOnTop(true);
 
         PaletteModel model = createDefaultPaleteModel();
         VBox titledBox = model.buildTree();
+        ScrollPane sp = new ScrollPane(titledBox); 
+        sp.setFitToWidth(true);
+        //StackPane root = new StackPane(vbox);
+        StackPane root = new StackPane(sp);
+        root.setStyle("-fx-background-color: aqua");
+        
         //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         //VBox titledBox = (VBox) scrollPane.getContent();
 
-        vbox.getChildren().add(titledBox);
+        //vbox.getChildren().add(titledBox);
+        
         //root.getChildren().add(titledBox);
         Button btn1 = new Button("btn1");
         vbox.getChildren().add(0, btn1);
@@ -79,17 +85,17 @@ public class TestTitledPane01 extends Application {
              */
         });
         stage.setOnShown(w -> {
-            Label rootLabel = new Label("");
-            rootLabel.getStyleClass().add("tree-item-node-vbox");
+//            Label rootLabel = new Label("");
+            //rootLabel.getStyleClass().add("tree-item-node-vbox");
 
-            rootLabel.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-            titledBox.getChildren().add(rootLabel);
-            rootLabel.layout();
+            //rootLabel.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+            //titledBox.getChildren().add(rootLabel);
+            //rootLabel.layout();
 
             Platform.runLater(() -> {
                 //treeView.layout();
 
-                double rootLabelWidth = rootLabel.getLayoutBounds().getWidth();
+                //double rootLabelWidth = rootLabel.getLayoutBounds().getWidth();
                 double maxTextWidth = 0;
                 for (PaletteCategory pc : model.getCategories()) {
                     for (PaletteItem pi : pc.getItems()) {
@@ -112,9 +118,9 @@ public class TestTitledPane01 extends Application {
                 }
                 for (PaletteCategory pc : model.getCategories()) {
                     for (PaletteItem pi : pc.getItems()) {
-                        double ins = rootLabel.getInsets().getLeft() + rootLabel.getInsets().getRight();
+                        //double ins = rootLabel.getInsets().getLeft() + rootLabel.getInsets().getRight();
                         System.err.println("pi.getLabel().width=" + pi.getLabel().getWidth());
-                        System.err.println("   --- rootLabel.width = " + rootLabel.getWidth());
+                        //System.err.println("   --- rootLabel.width = " + rootLabel.getWidth());
                         //13pi.getLabel().setMinWidth(rootLabelWidth + maxTextWidth);
                         //13pi.getLabel().setMaxWidth(rootLabelWidth + maxTextWidth);
                         pi.getLabel().setMinWidth(maxTextWidth);
@@ -122,11 +128,11 @@ public class TestTitledPane01 extends Application {
                         
                         //System.err.println("rootLabelWidth=" + rootLabelWidth);
 
-                        System.err.println("   --- pi.getLabel().minWidth=" + pi.getLabel().getMinWidth());
-                        System.err.println("   ---  pi.getLabel() ins = " + ins);
+                        //System.err.println("   --- pi.getLabel().minWidth=" + pi.getLabel().getMinWidth());
+                        //System.err.println("   ---  pi.getLabel() ins = " + ins);
                     }
                 }
-                titledBox.getChildren().remove(rootLabel);
+                //titledBox.getChildren().remove(rootLabel);
             });
         });
         Scene scene = new Scene(root);
@@ -188,13 +194,9 @@ public class TestTitledPane01 extends Application {
     }
 
     public static class PaletteItem {
-
-        //private TreeTableView<PaletteItem> titledBox;
         private ObjectProperty<Label> label = new SimpleObjectProperty<>();
 
-        //public PaletteItem(TreeTableView<PaletteItem> titledBox, Label lb) {
         public PaletteItem(Label lb) {
-            //this.titledBox = titledBox;
             label.set(lb);
         }
 
@@ -211,23 +213,6 @@ public class TestTitledPane01 extends Application {
         }
     }
 
-    /*    public static class PaletteItemValue {
-
-        private ObjectProperty<Node> graphic = new SimpleObjectProperty<>();
-
-        //private Node graphic;
-        //public PaletteItem(TreeTableView<PaletteItem> titledBox, Label lb) {
-        public PaletteItemValue(Node node) {
-            //this.titledBox = titledBox;
-            this.graphic.set(node);
-        }
-
-        public Node getGraphic() {
-            return graphic.get();
-        }
-
-    }
-     */
     public static class PaletteCategory extends PaletteItem {
 
         private final StringProperty id = new SimpleStringProperty();

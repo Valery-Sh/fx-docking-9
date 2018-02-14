@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
+import org.vns.javafx.dock.api.DragValue;
 
 /**
  *
@@ -48,7 +49,7 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
             dm.mouseDragDetected(ev, getStartMousePos());
         } else {
             DragContainer dc = dockable.getContext().getDragContainer();
-            if ( (dc != null) ) {
+            if ( (dc != null) && dc.getPlaceholder() != null) {
                 Dockable.of(dc.getPlaceholder()).getContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
             } else {
                 dm.mouseDragDetected(ev, getStartMousePos());

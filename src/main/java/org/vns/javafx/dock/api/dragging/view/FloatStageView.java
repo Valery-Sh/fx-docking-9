@@ -307,8 +307,8 @@ public class FloatStageView implements FloatWindowView {
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
-            if (context.getDragContainer().getFloatingWindow() != null && context.getDragContainer().getFloatingWindow().isShowing()) {
-                return context.getDragContainer().getFloatingWindow();
+            if (context.getDragContainer().getFloatingWindow(dockable) != null && context.getDragContainer().getFloatingWindow(dockable).isShowing()) {
+                return context.getDragContainer().getFloatingWindow(dockable);
             }
         }
 

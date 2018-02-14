@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.demo;
 
-
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -210,14 +209,15 @@ public class TestDockPaneControl extends Application {
         TabNode tab2 = new TabNode("Tab2");
         DockRegistry.getInstance().register(tab2);
         tab2.getContext().setDragNode(tab2.node());
-        tab2.getContext().setDragContainer(new DragContainer(tab2,new Label("Tab2 Label")));
+        Node node = new Label("Tab2 Label");
+        tab2.getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(node),node));
         //tab2.getContext().getDragContainer().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab2.node());   
         
         TabNode tab3 = new TabNode("Tab3");
         DockRegistry.getInstance().register(tab3);
         tab3.getContext().setDragNode(tab3.node());
-        tab3.getContext().setDragContainer(new DragContainer(tab3,"Shyshkin"));
+        tab3.getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf("Shyshkin"),"Shyshkin"));
         //tab2.getContext().getDragContainer().setCarrier(Dockable.of(tab2));        
         root1.getChildren().add(tab3.node());       
         
@@ -227,8 +227,8 @@ public class TestDockPaneControl extends Application {
         //DockRegistry.makeDockable(dockableBtn1);
         System.err.println("dockableBtn1.isResizable() = " + dockableBtn1.isResizable()) ;
         
-        tab1.getContext().setDragContainer(new DragContainer(tab1,dockableBtn1));
-        tab1.getContext().getDragContainer().setPlaceholder(dockableBtn1);
+        tab1.getContext().setDragContainer(new DragContainer(dockableBtn1,dockableBtn1));
+        //tab1.getContext().getDragContainer().setPlaceholder(dockableBtn1);
         //tab1.getContext().getDragContainer().setCarrier(Dockable.of(tab1));
         //Node graphic = tab1.getContext().getDragContainer().getGraphic();
         stage.setHeight(350);
