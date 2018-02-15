@@ -165,9 +165,6 @@ public class TestDockPaneSplit extends Application {
         root.getChildren().add(cc);
         
         scene = new Scene(root, 250, 250);
-        stage.setOnShown(a -> { 
-            cc.handle(new ActionEvent());
-        });
         scene.getRoot().setStyle("-fx-background-color: rgb(223,223,223)");
 
         stage.setScene(scene);

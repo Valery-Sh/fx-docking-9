@@ -16,10 +16,11 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -36,6 +37,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -53,11 +55,14 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
  * @author Valery Shyshkin
  */
 public class PalettePane extends Control {
+
     public static final String PALETTE_PANE = "palette-pane";
     private PaletteModel model;
 
     private final ObjectProperty<ScrollPane.ScrollBarPolicy> scrollVBarPolicy = new SimpleObjectProperty<>(ScrollPane.ScrollBarPolicy.AS_NEEDED);
     private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
+
+    private BooleanProperty animated = new SimpleBooleanProperty();
 
     public PalettePane() {
         this(false);
@@ -75,11 +80,22 @@ public class PalettePane extends Control {
         } else {
             model = new PaletteModel();
         }
-
     }
-    
+
     public void setDragValueCustomizer(DragValueCustomizer customizer) {
         getModel().setDragValueCustomizer(customizer);
+    }
+
+    public BooleanProperty animatedProperty() {
+        return animated;
+    }
+
+    public void setAnimated(boolean animated) {
+        this.animated.set(animated);
+    }
+
+    public boolean isAnimated() {
+        return this.animated.get();
     }
 
     @Override
@@ -131,7 +147,7 @@ public class PalettePane extends Control {
         lb.getStyleClass().add("tree-item-node-tab");
         lb.applyCss();
         pc.addItem(lb, Tab.class);
-        
+
         lb = new Label("VBox");
         lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-vbox");
@@ -168,16 +184,15 @@ public class PalettePane extends Control {
     }
 
     public static class PaletteItem {
-        
+
         private final ObjectProperty<Label> label = new SimpleObjectProperty<>();
         private final Class<?> valueClass;
         private PaletteModel model;
 
-        
         public Class<?> getValueClass() {
             return valueClass;
         }
-        
+
         public PaletteItem(PaletteModel model, Label lb, Class<?> clazz) {
             label.set(lb);
             valueClass = clazz;
@@ -216,19 +231,19 @@ public class PalettePane extends Control {
     }
 
     public static class PaletteCategory extends PaletteItem {
-        
+
         private final StringProperty id = new SimpleStringProperty();
         private final ObservableList<PaletteItem> items = FXCollections.observableArrayList();
         private final ObjectProperty<TilePane> graphic = new SimpleObjectProperty<>();
 
-/*        public PaletteCategory(String id, Label lb) {
+        /*        public PaletteCategory(String id, Label lb) {
             super(lb, null);
             this.id.set(id);
             init();
         }
-*/
+         */
         public PaletteCategory(PaletteModel model, String id, Label lb) {
-            super(model,lb, null);
+            super(model, lb, null);
             this.id.set(id);
             init();
         }
@@ -236,7 +251,7 @@ public class PalettePane extends Control {
         private void init() {
             TilePane tp = new TilePane();
             tp.getStyleClass().add("tile-pane");
-      
+
             //tp.setStyle("-fx-border-color: red");
             tp.setHgap(10);
             tp.setVgap(5);
@@ -289,12 +304,16 @@ public class PalettePane extends Control {
         }
 
         public PaletteItem addItem(Label label, Class<?> clazz) {
-            return addItem(items.size(), label,clazz);
+            return addItem(items.size(), label, clazz);
         }
+
         public PaletteItem addItem(int idx, Label label, Class<?> clazz) {
-            PaletteItem item = new PaletteItem(getModel(),label, clazz);
+            if ( getModel().containsItem(clazz)) {   
+               throw new IllegalArgumentException("A PaletteCategory alredy contains a PaletteItem with the specified valueClassClass(valueClass=" + clazz.getName() + ")");
+            }
+            PaletteItem item = new PaletteItem(getModel(), label, clazz);
             items.add(item);
-            getGraphic().getChildren().add(idx,item.getLabel());
+            getGraphic().getChildren().add(idx, item.getLabel());
 
             return item;
         }
@@ -305,7 +324,7 @@ public class PalettePane extends Control {
 
         private final ObservableList<PaletteCategory> categories = FXCollections.observableArrayList();
         private DragValueCustomizer dragValueCustomizer;
-        
+
         public PaletteModel() {
             dragValueCustomizer = new DefaultDragValueCustomizer();
         }
@@ -317,14 +336,44 @@ public class PalettePane extends Control {
         public DragValueCustomizer getDragValueCustomizer() {
             return dragValueCustomizer;
         }
-        
+
         public void setDragValueCustomizer(DragValueCustomizer customizer) {
             this.dragValueCustomizer = customizer;
         }
+
+        public boolean containsCategory(String id) {
+            boolean retval = false;
+            for (PaletteCategory pc : categories) {
+                if (pc.getId().equals(id)) {
+                    retval = true;
+                    break;
+                }
+            }
+            return retval;
+        }
+        public boolean containsItem(Class<?> valueClass) {
+            boolean retval = false;
+            for (PaletteCategory pc : categories) {
+                for ( PaletteItem it : pc.getItems()) {
+                    if (it.getValueClass().equals(valueClass)) {
+                        retval = true;
+                        break;
+                    }
+                }
+            }
+            return retval;
+        }
+
+        
         public PaletteCategory addCategory(String id, Label label) {
             return addCategory(this, id, label);
         }
+
         protected PaletteCategory addCategory(PaletteModel model, String id, Label label) {
+            if (containsCategory(id)) {
+                throw new IllegalArgumentException("A PaletteCategory with the same id already exists (id=" + id + ")");
+            }
+
             PaletteCategory c = new PaletteCategory(model, id, label);
             categories.add(c);
             return c;
@@ -366,11 +415,11 @@ public class PalettePane extends Control {
                 System.err.println("PaletteItemMouseDragHandler VALUE: " + value);
                 item.getModel().getDragValueCustomizer().customize(value);
                 String tx = "";
-                if ( value instanceof Labeled) {
-                    tx  = ((Labeled)value).getText();
+                if (value instanceof Labeled) {
+                    tx = ((Labeled) value).getText();
                     System.err.println("PaletteItemMouseDragHandler VALUE.text: " + tx);
                 }
-                
+
                 Label label = item.getLabel();
 
 //                getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(item.getLabel()), value));
@@ -400,20 +449,22 @@ public class PalettePane extends Control {
             return dm;
         }
     }//PalettePaneMouseDragHandler
-    
+
     @FunctionalInterface
     public static interface DragValueCustomizer {
+
         void customize(Object value);
     }
-    
-    public static class DefaultDragValueCustomizer implements DragValueCustomizer{
+
+    public static class DefaultDragValueCustomizer implements DragValueCustomizer {
+
         public void customize(Object value) {
-            if ( value instanceof Tab ) {
-                ((Tab)value).setText("tab");
-            } else if ( value instanceof Labeled) {
+            if (value instanceof Tab) {
+                ((Tab) value).setText("tab");
+            } else if (value instanceof Labeled) {
                 String tx = value.getClass().getSimpleName();
-                tx = tx.substring(0,1).toLowerCase() + tx.substring(1);
-                ((Labeled)value).setText(tx);
+                tx = tx.substring(0, 1).toLowerCase() + tx.substring(1);
+                ((Labeled) value).setText(tx);
             }
         }
     }

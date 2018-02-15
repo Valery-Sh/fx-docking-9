@@ -19,7 +19,7 @@ import javafx.scene.Node;
 public interface DockTarget {
     
     public static final String LOOKUP_SELECTOR = "docktarget-e651abfa-c321-4249-b78a-120db404b641";
-    public static final String DOCKTAEGER_KEY = "docktarget-marker-e651abfa-c321-4249-b78a-120db404b641";
+    public static final String DOCKTARGETS_KEY = "docktarget-marker-e651abfa-c321-4249-b78a-120db404b641";
     
     /**
      * Returns a node of type {@code Region} that implements this interface or

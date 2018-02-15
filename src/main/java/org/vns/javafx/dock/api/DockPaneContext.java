@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
+
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
 import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
@@ -62,7 +63,6 @@ public class DockPaneContext extends TargetContext {
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        //!!!08
         if (DockRegistry.isDockable(node)) {
             retval = DockUtil.getParentSplitPane(root, node) != null;
         }
@@ -141,13 +141,11 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     protected void commitDock(Node node) {
-        //!!!08
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
-            //dockableContext.setFloating(false);
         }
     }
 

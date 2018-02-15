@@ -70,6 +70,14 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
                 vboxLayout.getChildren().set(0,newValue);
             }
         });
+        getSkinnable().animatedProperty().addListener((ovalue, oldValue, newValue) -> {
+           vboxLayout.getChildren().forEach(node -> {
+               if ( node instanceof TitledPane) {
+                   ((TitledPane)node).setAnimated(newValue);
+               }
+           });
+        });
+
         
     }
     public void setScrollPaneVbarPolicy(ScrollPane.ScrollBarPolicy value) {
@@ -90,6 +98,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
 
         for (int i = 0; i < model.getCategories().size(); i++) {
             TitledPane titledPane = new TitledPane();
+            titledPane.setAnimated(getSkinnable().isAnimated());
             titledPane.setExpanded(false);
             titledPane.setMinWidth(30);
 

@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SkinBase;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
@@ -40,7 +41,7 @@ public class TestPalettePane01 extends Application {
         stage.setTitle("Palette Stage");
 
         PalettePane palettePane = new PalettePane(true);
-
+        palettePane.setAnimated(false);
         /*        palettePane.setDragValueCustomizer(o -> {
             if (o instanceof Tab) {
                 ((Tab) o).setText("tab01");
@@ -63,6 +64,8 @@ public class TestPalettePane01 extends Application {
                 palettePane.setScrollPaneVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             }
             btn1.setText("" + palettePane.getScrollPaneVbarPolicy());
+            palettePane.setAnimated(true);
+            System.err.println("SKIN NODE: " + ((SkinBase)palettePane.getSkin()).getChildren().get(0));
         });
         btn2.setOnAction(a -> {
 /*            if (palettePane.dragNodeProperty().get() == null) {

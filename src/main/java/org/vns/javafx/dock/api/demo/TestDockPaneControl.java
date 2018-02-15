@@ -98,7 +98,9 @@ public class TestDockPaneControl extends Application {
         HPane hs1 = new HPane(dnc1, dnc2);
         hs1.setId("hs1");
         ////////// --------------------------
-        vs1.getItems().addAll(hs1, dnc3);
+        vs1.getItems().addAll(hs1);
+        vs1.getItems().addAll(dnc3);
+        System.err.println("TARGET CONTEXT: " + Dockable.of(dnc3).getContext().getTargetContext());
         ////////// --------------------------
         dockPane2.getItems().add(vs1);
         

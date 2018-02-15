@@ -407,14 +407,17 @@ public class DockRegistry {
     }
 */    
     
-    public DockTarget makeDockTarget(Node node, TargetContext targetContext) {
+    public static DockTarget makeDockTarget(Node node, TargetContext targetContext) {
+        
         if (node instanceof DockTarget) {
             return  (DockTarget) node;
         }
-        if (dockTargets.get(node) != null) {
-            return dockTargets.get(node);
+        if (getInstance().dockTargets.get(node) != null) {
+            return getInstance().dockTargets.get(node);
         }
         DockTarget d = new DefaultDockTarget(node,targetContext);
+        node.getProperties().put(DockTarget.DOCKTARGETS_KEY, d);
+
 /*        if (d.node().getParent() != null) {
             d.getContext().getTargetContext().setTargetNode(d.node().getParent());
         }
@@ -467,7 +470,7 @@ public class DockRegistry {
             return;
         }
         DockTarget dt = makeDockTarget(node, context);
-        node.getProperties().put(DockTarget.DOCKTAEGER_KEY, dt);
+        node.getProperties().put(DockTarget.DOCKTARGETS_KEY, dt);
     }
 
     public Dockable getDefaultDockable(Node node) {
@@ -535,7 +538,7 @@ public class DockRegistry {
         if (!retval && dockTargets.get(node) != null) {
             retval = true;
         } else if (!retval) {
-            Object d = node.getProperties().get(DockTarget.DOCKTAEGER_KEY);
+            Object d = node.getProperties().get(DockTarget.DOCKTARGETS_KEY);
 //            System.err.println("========================================");
 //            System.err.println("DockRegistry isNodeDockTarget d = " + d);
 //            System.err.println("DockRegistry isNodeDockTarget node = " + node);
@@ -559,7 +562,7 @@ public class DockRegistry {
         }
         DockTarget retval = getInstance().dockTargets.get(node);
         if (retval == null) {
-            Object d = node.getProperties().get(DockTarget.DOCKTAEGER_KEY);
+            Object d = node.getProperties().get(DockTarget.DOCKTARGETS_KEY);
             if (d != null && (d instanceof DockTarget) && ((DockTarget) d).target() == node) {
                 retval = (DockTarget) d;
             }
