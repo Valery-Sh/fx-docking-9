@@ -11,47 +11,47 @@ import org.vns.javafx.dock.DockUtil;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class DockSplitPane extends SplitPane implements ListChangeListener {
+public class DockSplitPane extends SplitPane {// implements ListChangeListener {
 
-    private EventHandler<ActionEvent> root;
-    private ListChangeListener itemsChangeListener;
+    //private EventHandler<ActionEvent> root;
+    //private ListChangeListener itemsChangeListener;
 
     public DockSplitPane() {
-        init();
+        //init();
     }
 
     public DockSplitPane(Node... items) {
         super(items);
-        init();
+        //init();
     }
 
-    public EventHandler<ActionEvent> getRoot() {
+/*    public EventHandler<ActionEvent> getRoot() {
         return root;
     }
 
     public void setRoot(EventHandler<ActionEvent> root) {
         this.root = root;
     }
-
-    private void init() {
+*/
+/*    private void init() {
         DockTarget dpt = DockUtil.getParentDockPane(this);
         if (dpt != null && getItems().size() > 0) {
             getItems().forEach(it -> {
                 //!!!08
                 if (DockRegistry.isDockable(it)) {
-                    Dockable.of(it).getContext().setTargetContext(dpt.getTargetContext());
+                    //Dockable.of(it).getContext().setTargetContext(dpt.getTargetContext());
                 }
             });
         }
         if (dpt != null) {
-            update();
+            //update();
         }
-        getItems().addListener(this);
+        //getItems().addListener(this);
     }
-
-    @Override
+*/
+/*    @Override
     public void onChanged(ListChangeListener.Change change) {
         itemsChanged(change);
     }
@@ -92,25 +92,17 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
         }//while
         update();
     }
-
-    protected void update(DockSplitPane split, TargetContext ph) {
+*/
+/*    protected void update(DockSplitPane split, TargetContext ph) {
         for (int i = 0; i < split.getItems().size(); i++) {
             Node node = split.getItems().get(i);
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 Dockable d = Dockable.of(node);
                 d.getContext().setTargetContext(ph);
-                /*                if (i < split.getDividers().size() && d.getContext().getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(d.getContext().getDividerPos());
-                }
-                 */
             } else if (node instanceof DockSplitPane) {
                 ((DockSplitPane) node).setRoot(getRoot());
                 DockSplitPane sp = (DockSplitPane) node;
-                /*                if (i < split.getDividers().size() && sp.getDividerPos() >= 0) {
-                    split.getDividers().get(i).setPosition(sp.getDividerPos());
-                }
-                 */
                 update(sp, ph);
             }
         }
@@ -146,9 +138,5 @@ public class DockSplitPane extends SplitPane implements ListChangeListener {
             }
         });
     }
-
-    @Override
-    public ObservableList<Node> getChildren() {
-        return super.getChildren();
-    }
+*/
 }

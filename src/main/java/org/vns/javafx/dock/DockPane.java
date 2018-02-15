@@ -2,14 +2,11 @@ package org.vns.javafx.dock;
 
 import javafx.beans.DefaultProperty;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockPaneSkin;
@@ -26,7 +23,7 @@ import org.vns.javafx.dock.api.DockTarget;
 @DefaultProperty(value = "items")
 public class DockPane extends Control {
 
-    private DockSplitPane root;
+    private HPane root;
     
     public DockPane() {
         super();
@@ -34,22 +31,18 @@ public class DockPane extends Control {
     }
 
     private void init() {
-        root = new DockSplitPane();
-        root.setId("rootSplitPane");
+        root = new HPane();
+        System.err.println("root Ori = " + root.getOrientation());
         TargetContext c = new DockPaneContext(this, root);
         DockRegistry.makeDockTarget(this, c);
     }
 
-    protected DockSplitPane getRoot() {
-        return (DockSplitPane)((StackPane)((SkinBase)getSkin()).getChildren().get(0)).getChildren().get(0);
-    }
     
     public ObservableList<Node> getItems() {
         return root.getItems();
     }
     @Override
     public String getUserAgentStylesheet() {
-        
         return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 

@@ -20,6 +20,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
@@ -52,7 +53,7 @@ public class TestDockPaneControl extends Application {
         DockPane dockPane2 = new DockPane();
         DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         //loader.register("dockPane2", dockPane2);
-        
+        //dockPane2.getItems().add(new DockSplitPane());
         dockPane2.setId("dockPane2");
         DockNode dnc1_1 = new DockNode();
         DockNode dnc2_1 = new DockNode();

@@ -19,6 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.HPane;
+import org.vns.javafx.dock.VPane;
 
 /**
  *
@@ -47,6 +49,10 @@ public class DockPaneSkin extends SkinBase<DockPane> {
     }
     protected void update(DockSplitPane splitPane) {
         for ( Node node : splitPane.getItems()) {
+           if ( ! ( (node instanceof HPane)  || (node instanceof VPane) || Dockable.of(node) != null)  ) {
+               throw new IllegalArgumentException("Unsupported item type (type=" + node.getClass().getName() ); 
+           }
+            System.err.println("NODE: " + node);
            if ( node instanceof DockSplitPane ) {
                update((DockSplitPane) node);
            } else if ( Dockable.of(node) != null ) {
