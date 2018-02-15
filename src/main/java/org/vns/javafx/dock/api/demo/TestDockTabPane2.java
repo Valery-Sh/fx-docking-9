@@ -52,7 +52,7 @@ public class TestDockTabPane2 extends Application {
         dn01.setId("dn01");
         Button btn = new Button("BOTTON FROM STG");
         dn01.setContent(btn);
-        dpCenter.dock(dn01, Side.TOP);
+        dpCenter.dockNode(dn01, Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
         dn01Btn.setOnAction((event) -> {
@@ -65,7 +65,7 @@ public class TestDockTabPane2 extends Application {
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dock(dn02, Side.TOP);
+        dpRight.dockNode(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());
@@ -104,7 +104,7 @@ public class TestDockTabPane2 extends Application {
         
         //stg01dn01.getChildren().add(btn01);
         
-        rootAsDockPane.dock(stg01dn01, Side.TOP);
+        rootAsDockPane.dockNode(stg01dn01, Side.TOP);
         
         DockNode stg01dn02 = new DockNode();
         stg01dn02.setTitle("stg01dn02" );
@@ -170,16 +170,16 @@ public class TestDockTabPane2 extends Application {
         
         
         //dockTabPane.getTargetContext().dock(stg01dn03, Side.TOP);        
-        dockTabPane.getItems().add(stg01dn03);
+        dockTabPane.getItems().add(Dockable.of(stg01dn03));
         DockNode stg01dn04 = new DockNode();
         stg01dn04.setTitle("stg01dn04" );
         stg01dn04.setId("stg01dn04");
-        dockTabPane.getItems().add(0,stg01dn04);
+        dockTabPane.getItems().add(0,Dockable.of(stg01dn04));
 
         DockNode stg01dn05 = new DockNode();
         stg01dn05.setTitle("stg01dn05" );
         stg01dn05.setId("stg01dn05");
-        dockTabPane.getItems().set(0,stg01dn05);
+        dockTabPane.getItems().set(0,Dockable.of(stg01dn05));
         //Platform.runLater(()->{
         
             

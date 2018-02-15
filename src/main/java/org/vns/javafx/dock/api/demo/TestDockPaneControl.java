@@ -49,6 +49,7 @@ public class TestDockPaneControl extends Application {
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
         DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
         
+    
         //loader.setSaveOnClose(true);
         DockPane dockPane2 = new DockPane();
         DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
@@ -122,9 +123,9 @@ public class TestDockPaneControl extends Application {
         DockNode tabDnc3 = new DockNode(" tab Dnc3");
         tabDnc3.setId("tabDnc2");
 
-        dockTabPane1.dock(tabDnc1);
-        dockTabPane1.dock(tabDnc2);
-        dockTabPane1.dock(tabDnc3);
+        dockTabPane1.dockNode(tabDnc1);
+        dockTabPane1.dockNode(tabDnc2);
+        dockTabPane1.dockNode(tabDnc3);
         Tab tab = new Tab("Not dock Tab", tabButton1);
 
         System.err.println("TAB: " + System.identityHashCode(tab));
@@ -134,7 +135,7 @@ public class TestDockPaneControl extends Application {
         DockableContext dc = DockRegistry.dockable(dnc3).getContext();
         TargetContext dtc = dc.getTargetContext();
 
-        Button b1 = new Button("save");
+        Button b1 = new Button("remove dnc1.titleBar" );
         Button b2 = new Button("add dnc4");
         Button b3 = new Button("remove dnc4");
         Button b4 = new Button("change dnc1 DividerPos");
@@ -146,25 +147,31 @@ public class TestDockPaneControl extends Application {
         Label contentLabel = new Label("CONTENT LABEL");
         dnc2.setContent(contentLabel);
         Label childLabel = new Label("dnc3 label");
+        dnc3.setContent(new StackPane());
         ((StackPane) dnc3.getContent()).getChildren().add(childLabel);
 
         b1.setOnAction(a -> {
             //System.err.println("----------  hs1.sz=" + hs1.getItems().size());
-            loader.save();
+            //loader.save();
+            if ( dnc1.getTitleBar() == null ) {
+                dnc1.setTitleBar(Dockable.of(dnc1).getContext().createDefaultTitleBar("dnc1 () new titleBar"));
+            } else {
+                dnc1.setTitleBar(null);
+            }
             //loader.save(dockPane1);
             //loader.reload();
             //System.err.println(loader.toString(dockPane1));
         });
         b2.setOnAction(a -> {
             //System.err.println("before (b2)hs1.sz=" + hs1.getItems().size());
-            //hs1.getItems().add(dnc4);
+            hs1.getItems().add(dnc4);
             //System.err.println("after (b2)hs1.sz=" + hs1.getItems().size());
 
         });
         b3.setOnAction(a -> {
-            System.err.println("Tabs size = " + dockTabPane1.getTabs().size());
+            //System.err.println("Tabs size = " + dockTabPane1.getTabs().size());
             //System.err.println("before (b3)hs1.sz=" + hs1.getItems().size());
-            //hs1.getItems().remove(dnc4);
+            hs1.getItems().remove(dnc4);
             //System.err.println("after (b3)hs1.sz=" + hs1.getItems().size());
         });
         b4.setOnAction(a -> {

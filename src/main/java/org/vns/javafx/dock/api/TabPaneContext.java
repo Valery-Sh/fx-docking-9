@@ -18,14 +18,23 @@ package org.vns.javafx.dock.api;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
+import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
  *
@@ -52,6 +61,12 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     }
 
     @Override
+    protected void initLookup(ContextLookup lookup) {
+        super.initLookup(lookup);
+        lookup.putUnique(PositionIndicator.class, new TabPanePositonIndicator(this));
+    }
+
+    @Override
     public boolean isAcceptable(Dockable dockable) {
         boolean retval = false;
         DragContainer dc = dockable.getContext().getDragContainer();
@@ -62,7 +77,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         } else if ((dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
             retval = true;
         }
-        System.err.println("*************************** IS ACEPTABLE retval = " + retval);
+        //System.err.println("*************************** IS ACEPTABLE retval = " + retval);
 
         return retval;
     }
@@ -102,12 +117,12 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     public void dock(Point2D mousePos, Tab tab, Dockable dockable) {
         Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
         Window window = null;
-        if ( placeholder != null ) {
+        if (placeholder != null) {
             window = placeholder.getScene().getWindow();
         } else {
             window = dockable.node().getScene().getWindow();
         }
-        
+
 //        System.err.println("winndow = " + window);
         if (doDock(mousePos, tab) && window != null) {
             if ((window instanceof Stage)) {
@@ -124,15 +139,15 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         boolean retval = false;
         int idx = -1;
         TabPane pane = (TabPane) getTargetNode();
-        if ( getHeaderArea(mousePos.getX(), mousePos.getY()) != null ) {
+        if (getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
             idx = pane.getTabs().size();
             Tab t = getTab(mousePos.getX(), mousePos.getY());
-            if ( t != null ) {
+            if (t != null) {
                 idx = pane.getTabs().indexOf(t);
             }
         }
-        if ( idx >= 0 ) {
-            pane.getTabs().add(idx,tab);
+        if (idx >= 0) {
+            pane.getTabs().add(idx, tab);
             retval = true;
         }
         return retval;
@@ -225,7 +240,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         return retval;
     }
 
-/*    private boolean areSame(Tab tab, Node tabNode) {
+    /*    private boolean areSame(Tab tab, Node tabNode) {
         String tabStyle = null;
         for (String s : tab.getStyleClass()) {
             if (s.startsWith("tab-uuid-")) {
@@ -246,11 +261,11 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         return retval;
 
     }
-*/    
+     */
     protected Node getHeaderArea(double screenX, double screenY) {
         //System.err.println("getHeaderArea");
         Node retval = getTargetNode().lookup(".tab-header-area");
-        if (retval == null || ! DockUtil.contains(retval, screenX, screenY) ) {
+        if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
         //System.err.println("getHeaderArea retvale=" + retval);
@@ -262,7 +277,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         Node retval = getTargetNode().lookup(".headers-region");
         //System.err.println("getHeaderArea node=" + retval);
 
-        if (retval == null || !DockUtil.contains(retval, screenX, screenY )) {
+        if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
         //System.err.println("getHeaderArea retval=" + retval);
@@ -289,13 +304,13 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
                 }
             }
             TabPane pane = (TabPane) getTargetNode();
-/*            for (Tab tab : pane.getTabs()) {
+            /*            for (Tab tab : pane.getTabs()) {
                 System.err.println("tab.id = " + tab.getId());
                 for (String s : tab.getStyleClass()) {
                     System.err.println("   --- style = " + s);
                 }
             }
-*/
+             */
             if (style != null) {
                 for (Tab tab : pane.getTabs()) {
                     for (String s : tab.getStyleClass()) {
@@ -343,4 +358,105 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             }//while
         }
     }
+
+    public static class TabPanePositonIndicator extends PositionIndicator {
+
+        private Rectangle tabDockPlace;
+        private TabPaneHelper helper;
+
+        public TabPanePositonIndicator(TargetContext context) {
+            super(context);
+            helper = new TabPaneHelper((TabPaneContext) context);
+        }
+
+        @Override
+        public void showIndicator(double screenX, double screenY) {
+            //getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+
+            getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
+        }
+
+        @Override
+        protected Pane createIndicatorPane() {
+            Pane p = new Pane();
+            p.getStyleClass().add("drag-pane-indicator");
+            return p;
+        }
+
+        //@Override
+        protected String getStylePrefix() {
+            return "dock-indicator";
+        }
+
+        protected Rectangle getTabDockPlace() {
+            if (tabDockPlace == null) {
+                tabDockPlace = new Rectangle();
+                tabDockPlace.getStyleClass().add("dock-place");
+                getIndicatorPane().getChildren().add(tabDockPlace);
+//                 getIndicatorPane().setStyle("-fx-background-color: aqua");
+            }
+            return tabDockPlace;
+        }
+
+        @Override
+        public void hideDockPlace() {
+            getDockPlace().setVisible(false);
+            getTabDockPlace().setVisible(false);
+
+        }
+
+        @Override
+        public void showDockPlace(double x, double y) {
+            System.err.println("ShowDockPlace: x=" + x + "; y=" + y);
+            TabPaneContext ctx = ((TabPaneContext) getTargetContext());
+            TabPane pane = (TabPane) getTargetContext().getTargetNode();
+            Bounds tabBounds = null;
+            Tab tab = helper.getTab(x, y);
+            if (tab != null) {
+                System.err.println("ShowDockPlace: tab=" + tab);
+                Node node = helper.getTabNode(tab);
+                tabBounds = node.localToScreen(node.getLayoutBounds());
+            }
+            System.err.println("ShowDockPlace: tabBounds=" + tabBounds);                
+            
+            //Bounds tabBounds = null; //ctx.getHelper().screenBounds(x, y);
+            if (tabBounds == null) {
+                ((Rectangle) getDockPlace()).setVisible(false);
+                ((Rectangle) getTabDockPlace()).setVisible(false);
+                System.err.println("ShowDockPlace: RETURN");                
+                return;
+            }
+
+            double tabsHeight = 0;//ctx.getHelper().getTabAreaHeight();
+
+            Rectangle tabPlace = (Rectangle) getTabDockPlace();
+
+            if (!pane.getTabs().isEmpty()) {
+                tabPlace.setWidth(tabBounds.getWidth());
+                Bounds b = tabPlace.getParent().screenToLocal(tabBounds);
+                tabPlace.setHeight(tabBounds.getHeight());
+                //
+                // idx may be equal to size => the mouse is after last tab
+                //
+                tabPlace.setX(b.getMinX());
+                tabPlace.setY(b.getMinY());
+                tabPlace.setVisible(true);
+                System.err.println("TabPlace = " + tabPlace);
+                tabPlace.toFront();
+            } else {
+                tabPlace.setVisible(false);
+            }
+
+            tabPlace.strokeDashOffsetProperty().set(0);
+            if (tabPlace.isVisible()) {
+                Timeline placeTimeline = new Timeline();
+                placeTimeline.setCycleCount(Timeline.INDEFINITE);
+                KeyValue kv = new KeyValue(tabPlace.strokeDashOffsetProperty(), 12);
+                KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+                placeTimeline.getKeyFrames().add(kf);
+                placeTimeline.play();
+            }
+        }
+    }
+
 }

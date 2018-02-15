@@ -3,7 +3,6 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Bounds;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,7 +18,6 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
 
 /**
@@ -62,7 +60,7 @@ public class TestTabPaneTargetContext1 extends Application {
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
         dpCenter.dock(dn01, Side.TOP);
-        dpCenter.dock(dockableButton, Side.TOP);
+        dpCenter.dock(dockableButton.node(), Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
         dn01Btn.setOnAction((event) -> {
@@ -75,7 +73,7 @@ public class TestTabPaneTargetContext1 extends Application {
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dock(dn02, Side.TOP);
+        dpRight.dockNode(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());
@@ -164,7 +162,7 @@ public class TestTabPaneTargetContext1 extends Application {
         //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
         //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
         
-        stg01dp01.dock(DockRegistry.getInstance().getDefaultDockable(tabPane01), Side.TOP);
+        stg01dp01.dock(tabPane01, Side.TOP);
         
 
         //tabPane01.setSide(Side.RIGHT);

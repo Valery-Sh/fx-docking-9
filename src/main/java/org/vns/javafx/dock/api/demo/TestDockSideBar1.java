@@ -51,7 +51,6 @@ public class TestDockSideBar1 extends Application {
 
         Button b01 = new Button("Change Rotate Angle");
 
-        //((Region)root.getRight()).setMaxWidth(0);
         Scene scene = new Scene(root);
         //scene.getRoot().setStyle("-fx-background-color: yellow");
         root.getChildren().add(p);
@@ -61,7 +60,7 @@ public class TestDockSideBar1 extends Application {
 
         DockNode dn01 = new DockNode();
         dn01.setPrefHeight(100);
-        dn01.getContext().setTitle("DockNode: dn01");
+        dn01.setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
             if (null != sideBar01.getRotation()) {
                 switch (sideBar01.getRotation()) {
@@ -143,9 +142,9 @@ public class TestDockSideBar1 extends Application {
         dn02.setId("dn02");
         //sideBar01.dock(dn02);
         //scene.getRoot().setStyle("-fx-background-color: yellow");
-        //sideBar01.getDelegate().setStyle("-fx-padding: 0;");
+        //sideBar01.getToolBar().setStyle("-fx-padding: 0;");
         //sideBar01.setStyle("-fx-padding: 0; -fx-border-width: 0; -fx-border-insets: 0,0,0,0; -fx-border-color: transparent");
-        //sideBar01.getDelegate().setStyle("-fx-padding: 0; -fx-border-width: 0;  -fx-border-insets: 0,0,0,0;-fx-border-color: transparent");
+        //sideBar01.getToolBar().setStyle("-fx-padding: 0; -fx-border-width: 0;  -fx-border-insets: 0,0,0,0;-fx-border-color: transparent");
         DockNode dn03 = new DockNode();
 
         //dn03.setPrefHeight(100);
@@ -156,18 +155,18 @@ public class TestDockSideBar1 extends Application {
 //        sideBar01.getItems().add(dn03);
         //sideBar01.dock(dn02);
         //sideBar01.dock(dn03);     
-        sideBar01.getItems().addAll(dn02, dn03, dn04);
-//        sideBar01.setMaxSize(sideBar01.getDelegate().getMaxWidth(), sideBar01.getDelegate().getMaxHeight());
-//        sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
+        sideBar01.addItems(dn02, dn03, dn04);
+//        sideBar01.setMaxSize(sideBar01.getToolBar().getMaxWidth(), sideBar01.getToolBar().getMaxHeight());
+//        sideBar01.setMinSize(sideBar01.getToolBar().getMinWidth(), sideBar01.getToolBar().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
 
         stage.setOnShown(e -> {
             //sideBar01.setHideOnExit(true);
-//        sideBar01.setPrefSize(sideBar01.getDelegate().getWidth(), sideBar01.getDelegate().getHeight());
-            //sideBar01.setMinSize(sideBar01.getDelegate().getMinWidth(), sideBar01.getDelegate().getMinHeight());        
+//        sideBar01.setPrefSize(sideBar01.getToolBar().getWidth(), sideBar01.getToolBar().getHeight());
+            //sideBar01.setMinSize(sideBar01.getToolBar().getMinWidth(), sideBar01.getToolBar().getMinHeight());        
             //System.err.println("sideBar01.getWidth()=" + sideBar01.getWidth());
-//            System.err.println("sideBar01.toolBar.getWidth()=" + sideBar01.getDelegate().getWidth());
+//            System.err.println("sideBar01.toolBar.getWidth()=" + sideBar01.getToolBar().getWidth());
         });
         stage.show();
         

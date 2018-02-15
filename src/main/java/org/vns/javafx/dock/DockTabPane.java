@@ -160,6 +160,21 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
         }
         paneContext.doDock(idx, dockable.node());
     }
+    public void dockNode(Node node) {
+        paneContext.doDock(0, node);
+    }
+
+    public void dock(int idx, Node node) {
+        Dockable dockable = Dockable.of(node);
+        if (!getTargetContext().isAcceptable(dockable)) {
+            throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
+        }
+
+        if (dockable.getContext().getTargetContext() != null) {
+            dockable.getContext().getTargetContext().undock(dockable.node());
+        }
+        paneContext.doDock(idx, dockable.node());
+    }
 
     public static class TabPaneHelper {
 

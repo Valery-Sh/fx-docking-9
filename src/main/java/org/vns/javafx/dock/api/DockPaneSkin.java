@@ -50,6 +50,7 @@ public class DockPaneSkin extends SkinBase<DockPane> {
     protected void update(DockSplitPane splitPane) {
         for ( Node node : splitPane.getItems()) {
            if ( ! ( (node instanceof HPane)  || (node instanceof VPane) || Dockable.of(node) != null)  ) {
+               System.err.println("NODE id = " + node.getId());
                throw new IllegalArgumentException("Unsupported item type (type=" + node.getClass().getName() ); 
            }
             System.err.println("NODE: " + node);

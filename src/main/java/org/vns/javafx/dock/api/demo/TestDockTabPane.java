@@ -34,6 +34,7 @@ public class TestDockTabPane extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Button dockButton = new Button("To be docked 1");
+        dockButton.setId("dockButton");
         dockButton.setMaxHeight(dockButton.getPrefHeight());
         dockButton.setMaxWidth(dockButton.getPrefWidth());
         
@@ -42,6 +43,7 @@ public class TestDockTabPane extends Application {
         dockableButton.getContext().setTitle("Dockable Button");
 
         Button b1 = new Button("b01 - DOCK");
+        b1.setId("b1");
         /*        b1.setOnAction(a -> {
             //new DragPopup(dpCenter);
 //            System.err.println("STAGE COUNT=" + StageHelper.getWindows().size());
@@ -60,27 +62,29 @@ public class TestDockTabPane extends Application {
 
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
-        dpCenter.dock(dn01, Side.TOP);
-        dpCenter.dock(dockableButton, Side.TOP);
+        dpCenter.dockNode(dn01, Side.TOP);
+        dpCenter.dock(dockableButton.node(), Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
+        dn01Btn.setId("dn01Btn");
         dn01Btn.setOnAction((event) -> {
             DockUtil.print(dn01Btn.getScene().getRoot());
         });
-        dpCenter.getItems().add(dn01Btn);
+        //dpCenter.getItems().add(dn01Btn);
 
         DockPane dpRight = new DockPane();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dock(dn02, Side.TOP);
+        dpRight.dockNode(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
+        dn02Btn.setId("dn02Btn");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());
         });
 
-        dpRight.getItems().add(dn02Btn);
+        //dpRight.getItems().add(dn02Btn);
 
         SplitPane sp = new SplitPane(dpCenter, dpRight);
         rootPane.getChildren().add(sp);
@@ -111,6 +115,7 @@ public class TestDockTabPane extends Application {
         pane01.setStyle("-fx-background-color: aqua");
 
         //stg01dn01.getChildren().add(btn01);
+        //stg01dp01.dockNode(stg01dn01, Side.TOP);
         stg01dp01.dock(stg01dn01, Side.TOP);
 
         DockNode stg01dn02 = new DockNode();

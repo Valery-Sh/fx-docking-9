@@ -136,7 +136,7 @@ public class FXFrame {
         });
         sceneGraph.setContent(sgBtn1);
 
-        mainLeftSideBar.getItems().add(sceneGraph);
+        mainLeftSideBar.getItems().add(Dockable.of(sceneGraph));
         mainBorderPane.setRight(mainLeftSideBar);
         mainLeftSideBar.setOrientation(Orientation.VERTICAL);
         mainLeftSideBar.setRotation(DockSideBar.Rotation.DOWN_UP);

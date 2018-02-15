@@ -61,7 +61,7 @@ public class TestDockToolBar extends Application {
         dn01.setId("Dn01");
         dn01.setFocusTraversable(true);
         dn01.setContent(new Label("DOCK NODE IMPL"));
-        dockPane.dock(dn01, Side.TOP);
+        dockPane.dockNode(dn01, Side.TOP);
 
         DockToolBar dtt = new DockToolBar();
         dn01.setId("Dtt");

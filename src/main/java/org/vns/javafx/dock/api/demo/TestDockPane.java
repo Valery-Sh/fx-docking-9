@@ -46,7 +46,7 @@ public class TestDockPane extends Application {
         dn01.getStyleClass().add("delegate");
         dn01.setContent(new Label("DOCK NODE IMPL"));
         //dockPane.getItems().add(dn01);
-        dockPane.dock(dn01, Side.TOP);
+        dockPane.dockNode(dn01, Side.TOP);
         
         Scene scene = new Scene(dockPane);
         

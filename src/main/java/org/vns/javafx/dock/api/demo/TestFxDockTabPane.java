@@ -50,7 +50,7 @@ public class TestFxDockTabPane  extends Application {
         
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
-        dpCenter.dock(dn01, Side.TOP);
+        dpCenter.dockNode(dn01, Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
         dn01Btn.setOnAction((event) -> {
@@ -63,7 +63,7 @@ public class TestFxDockTabPane  extends Application {
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dock(dn02, Side.TOP);
+        dpRight.dockNode(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());
@@ -101,7 +101,7 @@ public class TestFxDockTabPane  extends Application {
         
         //stg01dn01.getChildren().add(btn01);
         
-        stg01dp01.dock(stg01dn01, Side.TOP);
+        stg01dp01.dockNode(stg01dn01, Side.TOP);
         
         DockNode stg01dn02 = new DockNode();
         stg01dn02.setTitle("stg01dn02" );

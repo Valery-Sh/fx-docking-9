@@ -192,23 +192,10 @@ public abstract class TargetContext {
     }
     public boolean isAcceptable(Dockable dockable) {
 
-/*        Dockable dragged = getValue(dockable);
-        
-        if (  dragged == null  ) {
-            return false;
-        }
-        
-        DragContainer dc = dockable.getContext().getDragContainer();
-        if (dc != null && dc.isValueDockable() ) {
-             dragged = Dockable.of(dc.getValue());
-        } else if (dc != null && dc.getValue() != null ) {
-            return false;
-        }
-*/        
         Dockable dragged = dockable;
         Object v  = dockable.getContext().getDragValue();
-        System.err.println("isAcceptable value = " + v);
-        System.err.println("   ---  Dockable.od(value) = " + Dockable.of(v));
+//        System.err.println("isAcceptable value = " + v);
+//        System.err.println("   ---  Dockable.od(value) = " + Dockable.of(v));
         if ( Dockable.of(v) != null ) {
             dragged = Dockable.of(v);
         } else {
@@ -220,15 +207,6 @@ public abstract class TargetContext {
 
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = getValue(dockable);
-        
-/*        DragContainer dc = dockable.getContext().getDragContainer();
-        if (dc != null && dc.getValue() != null) {
-            if (!dc.isValueDockable()) {
-                return;
-            }
-            d = Dockable.of(dc.getValue());
-        }
-*/        
         if (d == null || isDocked(d.node())) {
 //            System.err.println("TargetContext isDocked == false foe node = " + d.node());
             return;
