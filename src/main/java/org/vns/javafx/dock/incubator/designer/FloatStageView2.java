@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging.view;
+package org.vns.javafx.dock.incubator.designer;
 
+import org.vns.javafx.dock.api.dragging.view.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -167,7 +168,7 @@ public class FloatStageView2 implements FloatWindowView{
     public Window make(Dockable dockable, boolean show) {
         
         setSupportedCursors(DEFAULT_CURSORS);
-//        System.err.println("1 FloatingStageView CONVERT THE SAME");                        
+
         Node node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         if (screenPoint == null) {

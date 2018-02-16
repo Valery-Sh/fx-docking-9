@@ -148,7 +148,7 @@ public class FloatPopupControlView implements FloatWindowView {
     @Override
     public Window make(Dockable dockable, boolean show) {
         DragContainer dc = dockable.getContext().getDragContainer();
-        Object v = null;
+        Object v;
         if (dc != null) {
             v = dc.getValue();
             if (v != null && !(dc.isValueDockable())) {

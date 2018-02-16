@@ -79,7 +79,6 @@ public class FloatPopupControlView4 extends FloatStageView {
         final PopupControl floatPopup = new PopupControl();
         floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
 
-        System.err.println("IT IS FloatPopupControlView");
         markFloating(floatPopup);
 
         Point2D stagePosition = screenPoint;
