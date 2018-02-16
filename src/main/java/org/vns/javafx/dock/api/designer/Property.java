@@ -24,7 +24,6 @@ public class Property extends NodeElement{
     private String name;
     
     private NodeDescriptor descriptor;
-    //private boolean defaultTarget;
 
     public String getName() {
         return name;

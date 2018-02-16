@@ -37,7 +37,6 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -155,7 +154,6 @@ public class PalettePane extends Control {
         pc.addItem(lb, VBox.class);
 
         lb = new Label("HBox");
-        //lb = new label("Rectangle");
 
         lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, HBox.class);
@@ -236,12 +234,6 @@ public class PalettePane extends Control {
         private final ObservableList<PaletteItem> items = FXCollections.observableArrayList();
         private final ObjectProperty<TilePane> graphic = new SimpleObjectProperty<>();
 
-        /*        public PaletteCategory(String id, Label lb) {
-            super(lb, null);
-            this.id.set(id);
-            init();
-        }
-         */
         public PaletteCategory(PaletteModel model, String id, Label lb) {
             super(model, lb, null);
             this.id.set(id);
@@ -252,7 +244,6 @@ public class PalettePane extends Control {
             TilePane tp = new TilePane();
             tp.getStyleClass().add("tile-pane");
 
-            //tp.setStyle("-fx-border-color: red");
             tp.setHgap(10);
             tp.setVgap(5);
             tp.setPrefColumns(1);
@@ -268,17 +259,9 @@ public class PalettePane extends Control {
             while (change.next()) {
                 if (change.wasRemoved()) {
                     List<? extends PaletteItem> list = change.getRemoved();
-                    for (PaletteItem d : list) {
-                        //targetContext.undock(d.label());
-                    }
-
                 }
                 if (change.wasAdded()) {
                     List<? extends PaletteItem> list = change.getAddedSubList();
-                    for (PaletteItem d : list) {
-                        //dock(d);
-                        //targetContext.dock(d);
-                    }
                 }
             }//while
         }
@@ -317,7 +300,6 @@ public class PalettePane extends Control {
 
             return item;
         }
-
     }
 
     public static class PaletteModel {
@@ -412,18 +394,15 @@ public class PalettePane extends Control {
 
             try {
                 Object value = item.getValueClass().newInstance();
-                System.err.println("PaletteItemMouseDragHandler VALUE: " + value);
                 item.getModel().getDragValueCustomizer().customize(value);
                 String tx = "";
                 if (value instanceof Labeled) {
                     tx = ((Labeled) value).getText();
-                    System.err.println("PaletteItemMouseDragHandler VALUE.text: " + tx);
                 }
 
                 Label label = item.getLabel();
 
-//                getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(item.getLabel()), value));
-                WritableImage image = null;
+                WritableImage image;
 
                 if (label != null) {
                     image = label.snapshot(null, null);
@@ -431,7 +410,6 @@ public class PalettePane extends Control {
                         Node imageNode = new ImageView(image);
                         imageNode.setOpacity(0.75);
                         getContext().setDragContainer(new DragContainer(imageNode, value));
-                        //getContext().getDragContainer().setPlaceholder(imageNode);
                     }
                 }
 
@@ -443,6 +421,7 @@ public class PalettePane extends Control {
             setStartMousePos(pos);
         }
 
+        @Override
         public DragManager getDragManager(MouseEvent ev) {
             DragManager dm = super.getDragManager(ev);
             dm.setHideOption(DragManager.HideOption.CARRIERED);
@@ -458,6 +437,7 @@ public class PalettePane extends Control {
 
     public static class DefaultDragValueCustomizer implements DragValueCustomizer {
 
+        @Override
         public void customize(Object value) {
             if (value instanceof Tab) {
                 ((Tab) value).setText("tab");

@@ -25,7 +25,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ObjectReceiver;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.dragging.SimpleDragManager;
@@ -45,17 +44,11 @@ public class TreeItemDragManager extends SimpleDragManager {
 
     @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
-        System.err.println("Start TreeItemDragManager DRAG DETECTED NOT FLOATING");
-        if (true) {
-//            return;
-        }
         setStartMousePos(startMousePos);
         setDragSource((Node) ev.getSource());
 
         if (!getDockable().getContext().isFloating()) {
-            System.err.println("TreeItem DRAG DETECTED NOT FLOATING");
             setTargetDockPane(((Node) ev.getSource()).getScene().getRoot());
-            //FloatView view = FloatViewFactory.getInstance().getFloatView(this);
             FloatViewFactory f = null;
             if (getDockable().getContext().getTargetContext() != null) {
                 f = getDockable().getContext().getTargetContext().getLookup().lookup(FloatViewFactory.class);
@@ -65,14 +58,8 @@ public class TreeItemDragManager extends SimpleDragManager {
             }
             FloatView view = f.getFloatView(this);
 
-            //!!!06.02setFloatingWindow((Window) view.make(getDockable()));
-            System.err.println("**************** dragDetected  floatingWindow");
-            //dockable.getContext().setFloating(true);
-
             getTargetDockPane().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             getTargetDockPane().addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-            //getDockable().getContext().setFloating(true);
-
         } else {
             //
             // If floating window contains snapshot and not the dockable then
@@ -132,14 +119,6 @@ public class TreeItemDragManager extends SimpleDragManager {
             getFloatingWindow().setX(ev.getScreenX() - leftDelta - getStartMousePos().getX());
             getFloatingWindow().setY(ev.getScreenY() - topDelta - getStartMousePos().getY());
         }
-        System.err.println("======== " + getFloatingWindow().isShowing() + " =========================");
-        System.err.println("   --- startPosition x=" + getStartMousePos().getX() + "; y=" + getStartMousePos().getY());
-        System.err.println("   --- mousePos      x=" + ev.getScreenX() + "; y=" + ev.getScreenY());
-        System.err.println("   --- windowPos     x=" + getFloatingWindow().getX() + "; y=" + getFloatingWindow().getY());
-        System.err.println("   --- leftDelta = " + leftDelta + "; topDelta=" + topDelta);
-        System.err.println("=================================");
-
-        //System.err.println("IndicatorManager = " + indicatorManager);
         if (getIndicatorManager() != null && getIndicatorManager().isShowing()) {
             getIndicatorManager().hideWhenOut(ev.getScreenX(), ev.getScreenY());
         }
@@ -165,19 +144,9 @@ public class TreeItemDragManager extends SimpleDragManager {
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
-        /*        System.err.println("ROOT = " + root);
-        System.err.println("DockRegistry.dockTarget(root) = " + DockRegistry.dockTarget(root));
-        System.err.println(" DockRegistry.dockTarget(root).getTargetContext() = " + DockRegistry.dockTarget(root).getTargetContext());
-        
-        System.err.println("dockable = " + dockable);
-         */
-        //System.err.println("dockable.node() = " + dockable.node());
-
         if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
             return;
         }
-
-        //System.err.println("IS ACCEPTABLE");        
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
@@ -206,8 +175,6 @@ public class TreeItemDragManager extends SimpleDragManager {
         if (getIndicatorManager() == null) {
             return;
         }
-        //System.err.println("SimplaDragManager 4  ! before handle" );
-
         getIndicatorManager().handle(ev.getScreenX(), ev.getScreenY());
     }
 
@@ -221,12 +188,7 @@ public class TreeItemDragManager extends SimpleDragManager {
      */
     @Override
     protected void mouseReleased(MouseEvent ev) {
-        System.err.println("mouse release popup " + getIndicatorManager());
-        if (getIndicatorManager() != null) {
-            System.err.println("   --- mouse release isShowing " + getIndicatorManager().isShowing());
-        }
         if (getIndicatorManager() != null && getIndicatorManager().isShowing()) {
-            System.err.println("11111 release isShowing");
             getIndicatorManager().handle(ev.getScreenX(), ev.getScreenY());
         }
 
@@ -248,31 +210,20 @@ public class TreeItemDragManager extends SimpleDragManager {
 
         Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
         if (getIndicatorManager() != null && getIndicatorManager().isShowing()) {
-            //dockable.getContext().setFloating(false);
             getIndicatorManager().getTargetContext().dock(pt, getDockable());
-            System.err.println("22222222 doc");
-            //dockObject(pt, getDockable());
         } else if (getIndicatorManager() != null && getIndicatorManager().getPositionIndicator() == null) {
             //
             // We use default indicatorPopup without position indicator
             //
             getIndicatorManager().getTargetContext().dock(pt, getDockable());            
-            //dockObject(pt, getDockable());
-            System.err.println("33333 dock");
-
         }
 
         if (getIndicatorManager() != null && getIndicatorManager().isShowing()) {
             getIndicatorManager().hide();
-            //? May be set indicatorManager to null
         }
     }
 
     protected void dockObject(Point2D mousePos, Dockable d) {
-        /* if (getIndicatorManager().getTargetContext() instanceof ObjectReceiver) {
-            ((ObjectReceiver) getIndicatorManager().getTargetContext()).dockObject(mousePos, getDockable().getContext().getDragObject());
-        }
-         */
         Object dragObject = getDockable().getContext().getDragContainer();
         if (getDockable().node() != dragObject) {
             if (dragObject instanceof Dockable) {

@@ -34,15 +34,11 @@ public class ScenePaneContext extends TargetContext {
         }
         dockable.node().parentProperty().addListener(parentListener);
     }
-        @Override
-        protected void initLookup(ContextLookup lookup) {
-        }
 
-/*    @Override
-    protected PositionIndicator createPositionIndicator() {
-        return new SideIndicator.PaneSideIndicator(this);
+    @Override
+    protected void initLookup(ContextLookup lookup) {
     }
-*/
+
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
         if (newValue != null && !(newValue instanceof Pane)) {
             return;
@@ -58,36 +54,24 @@ public class ScenePaneContext extends TargetContext {
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        //!!!08
         if (DockRegistry.isDockable(node)) {
-            //if (node.getParent() != null && (node.getParent() instanceof Pane)) {
-                retval = DockUtil.getOwnerWindow(node) != null;
-            //}
+            retval = DockUtil.getOwnerWindow(node) != null;
         }
         return retval;
     }
+
     /**
      * For test purpose
      *
      * @return the list of dockables
-     */    
+     */
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
-        
-/*        if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
-            ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
-        }
-*/
         return null;
     }
 
     @Override
     public void remove(Node dockNode) {
-/*22.06.2017        if (dockNode.getParent() != null && dockNode.getParent().getParent() != null
-                && (dockNode.getParent().getParent() instanceof SplitPane)) {
-            ((SplitPane) dockNode.getParent().getParent()).getItems().remove(dockNode);
-        } else 
-*/
         if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
             ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
         }
@@ -98,11 +82,6 @@ public class ScenePaneContext extends TargetContext {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-/*    @Override
-    public DockTreeItemBuilder getDockTreeTemBuilder() {
-        return null;
-    }
-*/
     @Override
     public Object getRestorePosition(Dockable dockable) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

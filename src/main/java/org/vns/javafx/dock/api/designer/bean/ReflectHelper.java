@@ -55,7 +55,6 @@ public class ReflectHelper {
     public static Type getGetterGenericReturnType(Class<?> forClass, String key) {
         Type retval = null;
         try {
-
             Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
             if (method == null) {
                 method = MethodUtil.getMethod(forClass, "is" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
@@ -72,8 +71,6 @@ public class ReflectHelper {
         return (Class) BeanAdapter.getGenericListItemType(tp);
     }
 
-    //private static final String INVOKER = "org.vns.javafx.dock.api.editor.MethodUtil$ActualInvoker";
-    //private static final Method actualInvoker = getActualInvoker();
     public static List<Class<?>> getInterfaces(Class<?> clazz) {
         if (clazz == null) {
             return null;
@@ -192,7 +189,6 @@ public class ReflectHelper {
      * NOTE: should only be called if a SecurityManager is installed
      */
     private static void privateCheckProxyPackageAccess(SecurityManager s, Class<?> clazz) {
-        // check proxy interfaces if the given class is a proxy class
         if (Proxy.isProxyClass(clazz)) {
             for (Class<?> intf : clazz.getInterfaces()) {
                 privateCheckPackageAccess(s, intf);
@@ -237,7 +233,6 @@ public class ReflectHelper {
 
         public static Method getMethod(Class<?> cls, String name, Class<?>[] args)
                 throws NoSuchMethodException {
-            //My ReflectUtil.checkPackageAccess(cls);
             ReflectHelper.checkPackageAccess(cls);
             return cls.getMethod(name, args);
         }
@@ -264,10 +259,7 @@ public class ReflectHelper {
                 } else {
                     throw new Error("Unexpected invocation error", ex.getCause());
                 }
-            }/* catch (IllegalAccessException iae) {
-            // this can't happen
-            throw new Error("Unexpected invocation error", iae);
-        }*/
+            }
         }
 
         private static Method getActualInvoker() {
@@ -317,7 +309,6 @@ public class ReflectHelper {
                 return m.invoke(obj, params);
             }
         }
-
     }
 
 }

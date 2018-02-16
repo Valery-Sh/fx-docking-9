@@ -18,8 +18,6 @@ import javafx.beans.value.ObservableValue;
 import org.vns.javafx.dock.api.designer.bean.ReflectHelper.MethodUtil;
 import static org.vns.javafx.dock.api.designer.bean.ReflectHelper.checkPackageAccess;
 import static org.vns.javafx.dock.api.designer.bean.ReflectHelper.getField;
-//import static org.vns.javafx.dock.api.editor.bean.ReflecttionUtil.checkPackageAccess;
-//import sun.reflect.misc.MethodUtil;
 
 /**
  * Exposes Java Bean properties of an object via the {@link Map} interface. A
@@ -92,8 +90,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return classMethodCache;
             }
             Map<String, List<Method>> classMethods = new HashMap<>();
-
-            //ReflectUtil.checkPackageAccess(type);
             checkPackageAccess(type);
             if (Modifier.isPublic(type.getModifiers())) {
                 // only interested in public methods in public classes in
@@ -212,11 +208,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         Method setterMethod = getSetterMethod(key);
-
-        if (setterMethod == null) {
-            //My 25.05throw new PropertyNotFoundException("Property \"" + key + "\" does not exist"
-            //    + " or is read-only.");
-        }
 
         try {
             MethodUtil.invoke(setterMethod, bean, new Object[]{coerce(value, getType(key))});

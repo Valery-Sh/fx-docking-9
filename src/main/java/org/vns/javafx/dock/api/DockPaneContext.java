@@ -75,14 +75,6 @@ public class DockPaneContext extends TargetContext {
         if ( dragged == null ) {
             return;
         }
-/*        Dockable dragged = dockable;
-        DragContainer dc = dockable.getContext().getDragContainer();
-        if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
-             dragged = Dockable.of(dc.getValue());
-        } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {
-            return;
-        }
-*/  
         
         IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
 
@@ -94,11 +86,9 @@ public class DockPaneContext extends TargetContext {
         Dockable d = Dockable.of(node);
         if (d.getContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
             if (dp.getTargetPaneSidePos() != null) {
-                //dock(Dockable.of(node), dp.getTargetPaneSidePos());
                 dock(dragged, dp.getTargetPaneSidePos());
             } else if (dp.getTargetNodeSidePos() != null) {
                 Dockable t = dp.getDragTarget() == null ? null : Dockable.of(dp.getDragTarget());
-                //dock(Dockable.of(node), dp.getTargetNodeSidePos(), t);
                 dock(dragged, dp.getTargetNodeSidePos(), t);
             }
         }
@@ -161,7 +151,6 @@ public class DockPaneContext extends TargetContext {
         if (!(dragged instanceof Node) && !DockRegistry.getDockables().containsKey(dragged.node())) {
             DockRegistry.getDockables().put(dragged.node(), dragged);
         }
-        //dockable.getContext().setFloating(false);
 
         Node node = dragged.node();
         
@@ -175,7 +164,6 @@ public class DockPaneContext extends TargetContext {
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
-            //dockable.getContext().setFloating(false);
             getDockExecutor().dock(node, side, target);
             event = new DockEvent(DockEvent.NODE_DOCKED, dragged.node(), getTargetNode(),side, target);
             
@@ -184,9 +172,6 @@ public class DockPaneContext extends TargetContext {
         if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
             dockableContext.setTargetContext(this);
         }
-        
-        //getTargetNode().fireEvent(event);
-
     }
 
     
@@ -199,7 +184,6 @@ public class DockPaneContext extends TargetContext {
             dsp.getItems().remove(dockNode);
             Dockable.of(dockNode).getContext().setTargetContext(ph);
             clearEmptySplitPanes(root, dsp);
-            //getTargetNode().fireEvent(new DockEvent(DockEvent.NODE_UNDOCKED, dockNode, getTargetNode()));
         }
     }
 
@@ -211,7 +195,6 @@ public class DockPaneContext extends TargetContext {
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         ((DockPane) getTargetNode()).getItems().forEach(node -> {
-            //!!!08
             if (DockRegistry.isDockable(node)) {
                 list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
@@ -282,8 +265,8 @@ public class DockPaneContext extends TargetContext {
                 root.getItems().add(node);
             } else 
             if (newOrientation != oldOrientation) {
-                DockSplitPane dp = null;
-                DockSplitPane dpOrig = null;
+                DockSplitPane dp;
+                DockSplitPane dpOrig;
                 if (newOrientation == Orientation.HORIZONTAL) {
                     dp = new HPane();
                     dpOrig = new VPane();
@@ -376,7 +359,7 @@ public class DockPaneContext extends TargetContext {
             Orientation oldOrientation = parentSplitPane.getOrientation();
 
             if (newOrientation != oldOrientation) {
-                DockSplitPane dp = null;
+                DockSplitPane dp;
                 if (newOrientation == Orientation.HORIZONTAL) {
                     dp = new HPane();
                 } else {

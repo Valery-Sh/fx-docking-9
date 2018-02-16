@@ -20,12 +20,11 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.DockUtil;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 public class TabPaneHelper {
 
@@ -101,13 +100,6 @@ public class TabPaneHelper {
                 }
             }
             TabPane pane = (TabPane) getContext().getTargetNode();
-            for (Tab tab : pane.getTabs()) {
-                //System.err.println("tab.id = " + tab.getId());
-                for (String s : tab.getStyleClass()) {
-                    //System.err.println("   --- style = " + s);
-                }
-            }
-
             if (style != null) {
                 for (Tab tab : pane.getTabs()) {
                     for (String s : tab.getStyleClass()) {
@@ -132,7 +124,6 @@ public class TabPaneHelper {
         if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
-        //System.err.println("getHeaderArea retvale=" + retval);
         return retval;
     }
 

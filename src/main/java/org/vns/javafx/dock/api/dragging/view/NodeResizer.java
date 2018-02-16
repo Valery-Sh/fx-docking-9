@@ -18,7 +18,6 @@ package org.vns.javafx.dock.api.dragging.view;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -30,7 +29,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -63,7 +61,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         POPUP
     }
 
-    private Cursor[] supportedCursors = new Cursor[]{
+    private final Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
@@ -113,7 +111,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         stage.initStyle(StageStyle.TRANSPARENT);
 
         StackPane root = new StackPane();
-        //root.setStyle("-fx-background-color: transparent; -fx-border-width: 5; -fx-border-color: red;");
         root.setStyle("-fx-background-color: transparent;" );
         Border b = new NodeResizerBorder().getBorder();
         root.setBorder(b);
@@ -150,7 +147,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         setWindow(popup);
 
         StackPane root = new StackPane();
-        //root.setStyle("-fx-background-color: transparent; -fx-border-width: 5; -fx-border-color: red;");
         root.setStyle("-fx-background-color: transparent;");        
         Border b = new NodeResizerBorder().getBorder();
         root.setBorder(b);
@@ -230,7 +226,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         return getWindow();
     }
 
-
     public void hide() {
         if (getWindow() != null) {
             ((Window) getWindow()).hide();
@@ -288,19 +283,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         }
         return b;
     }
-
-/*    protected static void adjustWidth(Window window, Region node) {
-        Bounds b = node.localToScreen(node.getBoundsInLocal());
-        double borderWidth;
-        double borderHeight;
-
-        Region root = (Region) window.getScene().getRoot();
-        if (root.getInsets() != null) {
-            borderWidth = root.getInsets().getLeft() + root.getInsets().getRight();
-            borderHeight = root.getInsets().getTop() + root.getInsets().getBottom();
-        }
-    }
-*/
     public ObjectProperty<Window> window() {
         return window;
     }
@@ -347,14 +329,12 @@ public class NodeResizer implements EventHandler<MouseEvent> {
             }
 
         } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            //Cursor c = StageKindlResizerImpl.cursorBy(ev, getResizableNode());
             saveCursor = NodeResizeExecutor.cursorBy(ev, (Region) getWindow().getScene().getRoot());
             if (!applyTranskateXY) {
                 translateX = getNode().getTranslateX();
                 translateY = getNode().getTranslateY();
             }
 
-            //node.setManaged(false);
             cursorSupported = isCursorSupported(saveCursor);
             if (!cursorSupported) {
                 getWindow().getScene().setCursor(Cursor.DEFAULT);
@@ -372,7 +352,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
                 Platform.runLater(() -> {
                     windowResizer.resize(ev);
                 });
-
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
             if (!isApplyTranslateXY()) {
@@ -410,9 +389,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
     protected void commitResize() {
         if (hideOnMouseRelease) {
             getWindow().hide();
-        } else if (getWindow() instanceof PopupControl) {
-            //adjustWidth(getWindow(), getNode());
         }
     }
-    
 }

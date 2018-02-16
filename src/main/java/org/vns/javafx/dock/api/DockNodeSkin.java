@@ -38,7 +38,6 @@ public class DockNodeSkin extends SkinBase<DockNode> {
         super(control);
         titleBar = getSkinnable().getTitleBar();
         titleBarPane = new StackPane() {
-            //getStyleClass().setAll("content");
             {
                 if (titleBar != null) {
                     getChildren().setAll(titleBar);
@@ -47,7 +46,6 @@ public class DockNodeSkin extends SkinBase<DockNode> {
         };
         content = getSkinnable().getContent();
         contentPane = new StackPane() {
-            //getStyleClass().setAll("content");
             {
                 if (content != null) {
                     getChildren().setAll(content);

@@ -155,27 +155,9 @@ public class SceneGraphView extends Control implements DockTarget {
         return treeView;
     }
 
-    /*!!!23.01public void childrenModification(TreeItem.TreeModificationEvent<ItemValue> ev) {
-        if (ev.wasAdded()) {
-            for (TreeItem<ItemValue> item : ev.getAddedChildren()) {
-                //item.getValue().getBuilder().registerChangeHandler(item);
-                //System.err.println("Event:  added item obj = " + item.getValue().getTreeItemObject());
-            }
-        }
-        if (ev.wasRemoved()) {
-            for (TreeItem<ItemValue> item : ev.getRemovedChildren()) {
-                //!!!23.01 TreeViewEx.updateOnMove((TreeItemEx) item);
-            }
-        }
-    }
-     */
-    protected TreeItemEx createSceneGraph(Node node) {
-        //TreeItemBuilder builder = new TreeItemBuilder();
-        TreeItemEx item = new TreeItemBuilder().build(node);
-        //NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(node);
 
-        //!!!23.01item.addEventHandler(TreeItem.<ItemValue>childrenModificationEvent(),
-        //        this::childrenModification);
+    protected TreeItemEx createSceneGraph(Node node) {
+        TreeItemEx item = new TreeItemBuilder().build(node);
         return item;
     }
 
@@ -226,12 +208,9 @@ public class SceneGraphView extends Control implements DockTarget {
 
         sb.addEventHandler(DragEvent.DRAG_ENTERED, ev -> {
             dragIndicator.hideDrawShapes();
-
             ev.consume();
             scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
-
         });
-
     }
 
     protected void customizeCell() {
@@ -324,17 +303,10 @@ public class SceneGraphView extends Control implements DockTarget {
                 DockRegistry.makeDockable(cell);
                 Dockable dockable = DockRegistry.dockable(cell);
                 dockable.getContext().setTargetContext(getTargetContext());
-                //DockRegistry.dockable(cell).getContext().setDragNode(cell);
             }
         }
     }
 
-    /*    protected void registerMouseDragged(TreeCell cell) {
-        if (getDragType().equals(DragType.DRAG_AND_DROP)) {
-        } else {
-        }
-    }
-     */
     protected void registerDragDone(TreeCell cell) {
         cell.setOnDragDone(ev -> {
             dragIndicator.hideDrawShapes();
@@ -420,7 +392,6 @@ public class SceneGraphView extends Control implements DockTarget {
             ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragEvent(ev);
 
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-                //System.err.println("TreeViewEx by Point = " + getSceneGraphView().getTreeView(ev.getScreenX(), ev.getScreenY()));                
                 ((TreeViewEx) getSceneGraphView().getTreeView()).notifyDragAccepted(false);
                 TreeView tv = getSceneGraphView().getTreeView();
                 getSceneGraphView().getDragIndicator().hideDrawShapes();
@@ -466,17 +437,14 @@ public class SceneGraphView extends Control implements DockTarget {
                 }
             }
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
-//                System.err.println("TreeViewDragEventHandler DRAG OVER");
                 if (isAdmissiblePosition(ev)) {
                     ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                     drawIndicator(ev);
                 }
                 ev.consume();
             } else if (ev.getEventType() == DragEvent.DRAG_DROPPED) {
-//                System.err.println("TreeViewDragEventHandler DRAG DROPPED");                
                 getSceneGraphView().getDragIndicator().hideDrawShapes();
                 TreeItemEx targetItem = (TreeItemEx) getSceneGraphView().getTreeView().getRoot();
-                //ItemValue targetValue = targetItem.getValue();
                 //
                 // Transfer the data to the place
                 //
@@ -491,7 +459,6 @@ public class SceneGraphView extends Control implements DockTarget {
                 }
 
             } else if (ev.getEventType() == DragEvent.DRAG_DONE) {
-//                System.err.println("TreeViewDragEventHandler DRAG DONE");                
                 getSceneGraphView().getDragIndicator().hideDrawShapes();
             }
             ev.consume();
@@ -511,11 +478,6 @@ public class SceneGraphView extends Control implements DockTarget {
                 getChildren().clear();
             }
             getChildren().add(control.contentPane);
-            /*            if (control.getTitleBar() != null && ! control.getDelegate().getChildren().contains(control.getTitleBar())) {
-                control.getDelegate().getChildren().add(control.getTitleBar());
-            }
-             */
-            //control.contentPane.getChildren().add(control.getContent());
         }
 
     }

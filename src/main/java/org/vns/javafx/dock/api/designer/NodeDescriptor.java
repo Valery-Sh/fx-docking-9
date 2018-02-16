@@ -186,37 +186,5 @@ public class NodeDescriptor {
         return retval;
     }
 
-/*    public static boolean isList(Object value) {
-        boolean retval = false;
-        NodeDescriptor nd;
-        if (value != null) {
-            nd = NodeDescriptorRegistry.getInstance().getDescriptor(value);
-            if (value != null && nd.getProperties().size() == 1) {
-                Property p = nd.getProperties().get(0);
-                if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
-                    retval = true;
-                }
-            }
-        }
-        return retval;
 
-    }
-*/
-/*    public static String gatListPropertyName(Object value) {
-        //boolean isList = target.getItemType() == LIST;
-        String retval = null;
-        NodeDescriptor nd;
-        if (value != null) {
-            nd = NodeDescriptorRegistry.getInstance().getDescriptor(value);
-            if (nd.getProperties().size() == 1) {
-                Property p = nd.getProperties().get(0);
-                if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
-                    retval = p.getName();
-                }
-            }
-        }
-        return retval;
-
-    }
-*/    
 }

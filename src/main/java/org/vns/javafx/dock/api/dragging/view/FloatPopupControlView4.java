@@ -44,7 +44,7 @@ public class FloatPopupControlView4 extends FloatStageView {
     public Window make(Dockable dockable, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
         Node node = dockable.node();
-        Window owner = null;
+        Window owner;
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
         } else {
@@ -87,7 +87,7 @@ public class FloatPopupControlView4 extends FloatStageView {
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.setId(FLOAT_WINDOW);
-        //borderPane.setMouseTransparent(true);
+
         setRootPane(borderPane);
         //
         // We must prevent the window to end up positioning off the screen
@@ -103,18 +103,10 @@ public class FloatPopupControlView4 extends FloatStageView {
             }
         };
 
-        //
-        // Prohibit to use as a dock target
-        //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dockable.node());
+
         borderPane.getStyleClass().add("dock-node-border");
         borderPane.getStyleClass().add("float-popup-root");
-        //borderPane.setStyle("-fx-background-color: aqua");
-        //borderPane.setOpacity(0);
         borderPane.setCenter(node);
-
-        //floatingProperty().set(true);
 
         floatPopup.getScene().setRoot(borderPane);
 
@@ -138,11 +130,8 @@ public class FloatPopupControlView4 extends FloatStageView {
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
 
-//        System.err.println("++++++ CreatePopup node = " + node.getWidth());
-//        System.err.println("++++++ CreatePopup node = " + node.getHeight());
-//        System.err.println("*** insetsWidth = " + insetsWidth);
         borderPane.setStyle("-fx-background-color: blue");
-        //node.setStyle("-fx-background-color: green");
+
         floatPopup.getStyleClass().clear();
         floatPopup.setOnShown(e -> {
             DockRegistry.register(floatPopup);
@@ -156,22 +145,14 @@ public class FloatPopupControlView4 extends FloatStageView {
 
         dockable.node().parentProperty().addListener(pcl);
 
-        //addResizer(floatPopup, dockable);
         addResizer();
-        //setResizer(new PopupControlResizer(this));
-//        System.err.println("FLOAT POPUP CONTROL VIEW");        
         return floatPopup;
     }//make FloatingPopupControl
 
     @Override
     public void addResizer() {
-        //if (getDockable().getContext().isResizable()) {
         removeListeners(getDockable().getContext().dockable());
         addListeners(getFloatingWindow());
-
-        //}
         setResizer(new PopupControlResizer(this));
-
     }
-
 }

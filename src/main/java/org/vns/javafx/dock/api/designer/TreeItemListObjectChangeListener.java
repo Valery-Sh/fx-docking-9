@@ -68,11 +68,9 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 List itemList = new ArrayList();
                 if (!list.isEmpty()) {
                 }
-                for (Object elem : list) {
-                    TreeItemEx it = new TreeItemBuilder().build(elem);
-                    //it.setPropertyName(propertyName);
+                list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
                     itemList.add(it);
-                }
+                });
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
             }
         }//while

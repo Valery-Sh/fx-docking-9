@@ -25,7 +25,8 @@ public class TreeItemEx extends TreeItem<Object> {
     private Node cellGraphic;
 
     private int dragDropQualifier;
-    private Map<String, Object> changeListeners = FXCollections.observableHashMap();
+    
+    private final Map<String, Object> changeListeners = FXCollections.observableHashMap();
 
     private ItemType itemType = ItemType.CONTENT;
 
@@ -34,7 +35,6 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public TreeItemEx() {
-
     }
 
     public TreeItemEx(Object value) {
@@ -103,7 +103,6 @@ public class TreeItemEx extends TreeItem<Object> {
                 break;
             }
         }
-
         return prop;
     }
 
@@ -133,7 +132,6 @@ public class TreeItemEx extends TreeItem<Object> {
             } else {
                 insertPos = i + 1;
             }
-
         }
 
         return insertPos;
@@ -154,8 +152,7 @@ public class TreeItemEx extends TreeItem<Object> {
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
 
-        Object changeListener; // = changeListeners.get(propertyName);
-        //unregisterChangeHandler();
+        Object changeListener;
         if (this.getItemType() == ItemType.LIST) {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
             ObservableList ol = (ObservableList) getValue();
@@ -165,14 +162,11 @@ public class TreeItemEx extends TreeItem<Object> {
         }
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
-            //Object changeListener; // = changeListeners.get(propertyName);
-            //unregisterChangeHandler();
             Property p = nd.getProperties().get(i);
             Object v = new BeanAdapter(getValue()).get(p.getName());
             if (v != null && (v instanceof List)) {
                 TreeItemEx item = this;
                 if ((p instanceof NodeList) && ((NodeList) p).isAlwaysVisible()) {
-                    //item = (TreeItemEx) getChildren().get(0);
                     continue;
                 }
                 changeListener = new TreeItemListObjectChangeListener(item, p.getName());
@@ -202,7 +196,6 @@ public class TreeItemEx extends TreeItem<Object> {
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
             Object changeListener; // = changeListeners.get(propertyName);
-            //unregisterChangeHandler();
             Property p = nd.getProperties().get(i);
             if (List.class.isAssignableFrom(getValue().getClass())) {
 
@@ -215,6 +208,5 @@ public class TreeItemEx extends TreeItem<Object> {
                 changeListeners.remove(p.getName());
             }
         }
-
     }
 }

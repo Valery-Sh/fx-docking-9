@@ -229,7 +229,6 @@ public class DockableContext {
                 dragManager = dmf.getDragManager(dockable);
             }
         }
-
     }
 
     /**
@@ -436,9 +435,7 @@ public class DockableContext {
             }
             d = Dockable.of(getDragContainer().getValue());
         }
-
         return getTargetContext().isDocked(d.node());
-
     }
 
     /**
@@ -522,7 +519,7 @@ public class DockableContext {
     }
 
     public Object getDragValue() {
-        Object retval = null;
+        Object retval;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null) {
             retval = dc.getValue();
@@ -533,10 +530,6 @@ public class DockableContext {
         return retval;
     }
 
-    /*    public void setDragValue(Object value) {
-        this.dragValue = value;
-    }
-     */
     public class DragDetector implements EventHandler<MouseEvent> {
 
         private final DockableContext dockableContext;
@@ -569,9 +562,7 @@ public class DockableContext {
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
                 }
             });
-
         }
-
         @Override
         public void handle(MouseEvent event) {
             dragHandler = getLookup().lookup(MouseDragHandler.class);

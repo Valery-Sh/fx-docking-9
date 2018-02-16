@@ -113,12 +113,6 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
                 }
             }
             TabPane pane = (TabPane) getContext().getDragNode();
-            for (Tab tab : pane.getTabs()) {
-                //System.err.println("tab.id = " + tab.getId());
-                for (String s : tab.getStyleClass()) {
-                    //System.err.println("   --- style = " + s);
-                }
-            }
 
             if (style != null) {
                 for (Tab tab : pane.getTabs()) {

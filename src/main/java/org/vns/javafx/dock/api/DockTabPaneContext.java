@@ -39,7 +39,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import org.vns.javafx.dock.DockTabPane1;
+import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
@@ -216,10 +216,7 @@ public class DockTabPaneContext extends TargetContext {
 
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
-            //node.getProperties().put(SAVE_DRAGNODE_PROP, dockableContext.getDragNode());
             Node saveDragNode = dockableContext.getDragNode();
-
-            System.err.println("SAVE DRAGNODE getDragNode()=" + dockableContext.getDragNode() + "; node=" + dockableContext.dockable().node());
             dockableContext.setDragNode(newTab.getGraphic());
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
@@ -447,7 +444,6 @@ public class DockTabPaneContext extends TargetContext {
 
         @Override
         public void showDockPlace(double x, double y) {
-            System.err.println("ShowDockPlace: x=" + x + "; y=" + y);
             DockTabPaneContext ctx = ((DockTabPaneContext) getTargetContext());
             TabPane pane = (TabPane) getTargetContext().getTargetNode();
 
@@ -532,194 +528,4 @@ public class DockTabPaneContext extends TargetContext {
         }
 
     }
-
-    /*    public static class TabPaneHelper {
-
-        private TabPane pane;
-
-        public TabPaneHelper(TabPane pane) {
-            this.pane = pane;
-        }
-
-        protected int contentIndexOf(double x, double y) {
-            int retval = -1;
-            if (pane.getTabs().isEmpty()) {
-                return retval;
-            }
-            for (int i = 0; i < pane.getTabs().size(); i++) {
-                if (pane.getTabs().get(i).getContent() == null) {
-                    continue;
-                }
-                if (pane.getTabs().get(i).getContent().localToScreen(pane.getTabs().get(i).getContent().getBoundsInLocal()).contains(x, y)) {
-                    retval = i;
-                    break;
-                }
-            }
-            return retval;
-        }
-
-        protected List<Node> getTabGraphics() {
-            List<Node> list = new ArrayList<>();
-            for (int i = 0; i < pane.getTabs().size(); i++) {
-                Node node = pane.getTabs().get(i).getGraphic();
-                if (node == null || node.localToScreen(node.getBoundsInLocal()) == null) {
-                    //list.add(null);
-                    String ID = "abc-123-cba-321";
-
-                    Label lb = new Label();
-                    lb.setId(ID);
-                    pane.getTabs().get(i).setGraphic(lb);
-                    list.add(pane.getTabs().get(i).getGraphic());
-
-                } else {
-                    list.add(node);
-                }
-            }
-            return list;
-
-        }
-
-        protected int indexOf(double x, double y) {
-
-            if (!(pane.localToScreen(pane.getBoundsInLocal()).contains(x, y)
-                    && contentIndexOf(x, y) < 0)) {
-                return -1;
-            }
-            //
-            // Now we know that a mouse cursor points anywhere inside tab area
-            //
-            List<Bounds> list = screenBounds();
-
-            int idx = -1;
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).contains(x, y)) {
-                    idx = i;
-                    break;
-                }
-            }
-
-            if (idx < 0) {
-                idx = pane.getTabs().size();
-            }
-            return idx;
-
-        }
-
-        protected double getTabAreaHeight() {
-
-            double retval = 0;
-            List<Node> list = getTabGraphics();
-            if (list.isEmpty()) {
-                return retval;
-            }
-            retval = pane.getHeight() - getContentHeight();
-            return retval;
-
-        }
-
-        protected double getContentHeight() {
-            double retval = 0;
-            if (pane.getTabs().size() > 0) {
-                for (int i = 0; i < pane.getTabs().size(); i++) {
-                    Node g = pane.getTabs().get(i).getGraphic();
-                    if (g == null || g.localToScreen(g.getBoundsInLocal()) == null) {
-                        //System.err.println("GGGGGGGGGGGGGGGGGGGGGGGGG NUL");                    
-                        continue;
-                    }
-                    Node node = pane.getTabs().get(i).getContent();
-                    if ((node instanceof Region) && ((Region) node).getHeight() > retval) {
-                        retval = ((Region) node).getHeight();
-                    }
-                }
-            }
-            return retval;
-        }
-
-        protected List<Bounds> screenBounds() {
-            List<Node> grList = getTabGraphics();
-            List<Bounds> list = new ArrayList<>();
-            double H = getTabAreaHeight();
-            double Y = 0;
-
-            if (grList.isEmpty()) {
-                return list;
-            }
-            String ID = "abc-123-cba-321";
-
-            Y = grList.get(0).localToScreen(grList.get(0).getBoundsInLocal()).getMinY() - 5;
-            H = pane.localToScreen(0, H).getY() - Y;
-
-            for (int i = 0; i < grList.size(); i++) {
-                Bounds b = grList.get(i).localToScreen(grList.get(i).getBoundsInLocal());
-                b = new BoundingBox(b.getMinX(), Y, b.getWidth(), H);
-//            System.err.println("bbbbbbbbbb i = " + i + ") b=" + b);
-                list.add(b);
-            }
-
-            for (int i = 0; i < list.size(); i++) {
-                Bounds b = list.get(i);
-                boolean cond = ID.equals(pane.getTabs().get(i).getGraphic().getId());
-                if (cond && i == 0 && i + 1 < list.size()) {
-
-                    b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() - b.getMinX(), H);
-                    list.set(i, b);
-                } else if (cond && i > 0 && i + 1 < list.size()) {
-                    b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() - b.getMinX(), H);
-                    list.set(i, b);
-                } else if (cond && i > 0 && i + 1 == list.size()) {
-                    //
-                    // last tab and is not Dockable
-                    //
-                    b = new BoundingBox(b.getMinX(), Y, 75, H);
-                    list.set(i, b);
-                } else if (cond && i == 0) {
-                    b = new BoundingBox(b.getMinX(), Y, list.get(i + 1).getMinX() - b.getMinX(), H);
-                    list.set(i, b);
-                }
-            }
-            return list;
-        }
-
-        protected Bounds screenBounds(double x, double y) {
-
-            List<Node> grList = getTabGraphics();
-            //List<Bounds> list = new ArrayList<>();
-            double H = getTabAreaHeight();
-            double Y = 0;
-
-            Bounds tabPaneBounds = pane.localToScreen(pane.getBoundsInLocal());
-            if (!(pane.localToScreen(pane.getBoundsInLocal()).contains(x, y)
-                    && contentIndexOf(x, y) < 0)) {
-                return null;
-            }
-
-            List<Bounds> list = screenBounds();
-
-            if (list == null || list.isEmpty()) {
-                return new BoundingBox(tabPaneBounds.getMinX(), tabPaneBounds.getMinY(), 75, H);
-            }
-            String ID = "abc-123-cba-321";
-
-            Y = grList.get(0).localToScreen(grList.get(0).getBoundsInLocal()).getMinY() - 5;
-            H = pane.localToScreen(0, H).getY() - Y;
-
-            Bounds retval = null;
-            for (int i = 0; i < list.size(); i++) {
-//            System.err.println("bbbbbbbbbb i = " + i + ") b=" + list.get(i) + "; x=" + x + "; y=" + y);
-
-                if (list.get(i).contains(x, y)) {
-                    retval = list.get(i);
-                    //System.err.println("SXEEEN BOUNDS bbbbbbbbbbbbbbbbbb i=" + i);
-                    break;
-                }
-            }
-            if (retval == null) {
-                retval = new BoundingBox(tabPaneBounds.getMinX() + tabPaneBounds.getWidth() - 75, Y, 75, H);
-            }
-            return retval;
-
-        }
-
-    }
-     */
 }

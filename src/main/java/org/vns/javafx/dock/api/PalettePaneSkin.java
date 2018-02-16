@@ -84,17 +84,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
         layout.setVbarPolicy(value);
     }
     protected VBox buildPalette(PaletteModel model) {
-        VBox titledBox = new VBox();/* {
-            @Override
-            protected void layoutChildren() {
-                // has to be called first or layout is not correct sometimes
-                //modifyItemsSize();
-                resizeLabels();
-                super.layoutChildren();
-            }
-        };
-*/
-        //titledBox.setStyle("-fx-background-color: green");
+        VBox titledBox = new VBox();
 
         for (int i = 0; i < model.getCategories().size(); i++) {
             TitledPane titledPane = new TitledPane();
@@ -146,8 +136,6 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
         }
 
         for (Label label : labels) {
-            //label.setMinWidth(widest);
-            //label.setMaxWidth(widest);
             label.setPrefWidth(widest);
         }
 

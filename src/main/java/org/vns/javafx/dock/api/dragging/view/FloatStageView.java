@@ -49,9 +49,9 @@ public class FloatStageView implements FloatWindowView {
 
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
-    private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
+    private final ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
-    private ObjectProperty value = new SimpleObjectProperty();
+    private final ObjectProperty value = new SimpleObjectProperty();
 
     private Pane rootPane;
 
@@ -62,9 +62,6 @@ public class FloatStageView implements FloatWindowView {
     private final MouseResizeHandler mouseResizeHanler;
 
     private final BooleanProperty floating = createFloatingProperty();
-
-    private double minWidth = -1;
-    private double minHeight = -1;
 
     private Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
@@ -106,10 +103,6 @@ public class FloatStageView implements FloatWindowView {
         return resizer;
     }
 
-    /*    public void setResizer(FloatWindowResizer resizer) {
-        this.resizer = resizer;
-    }
-     */
     public void setStageStyle(StageStyle stageStyle) {
         this.stageStyle = stageStyle;
     }
@@ -123,11 +116,6 @@ public class FloatStageView implements FloatWindowView {
     public void setSupportedCursors(Cursor[] supportedCursors) {
         this.supportedCursors = supportedCursors;
     }
-
-    /*    public ObjectProperty<Window> stageProperty() {
-        return this.floatingWindow;
-    }
-     */
     @Override
     public ObjectProperty<Window> floatingWindowProperty() {
         return floatingWindow;
@@ -147,25 +135,11 @@ public class FloatStageView implements FloatWindowView {
         floatingWindow.set(toMark);
     }
 
-    /*    protected Node node() {
-        return dockableContext.dockable().node();
-    }
-     */
     @Override
     public Dockable getDockable() {
         return dockableContext.dockable();
     }
 
-    //==========================
-    //
-    //==========================
-/*    public void makeFloating() {
-        if (node() == null) {
-            return;
-        }
-        make(getDockable());
-    }
-     */
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
@@ -245,12 +219,10 @@ public class FloatStageView implements FloatWindowView {
         };
 
         borderPane.getStyleClass().add("dock-node-border");
-        //borderPane.setStyle("-fx-background-color: red");
         borderPane.setCenter(node);
 
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
-        //floatingProperty.set(true);
 
         stage.setScene(scene);
         markFloating(stage);
@@ -267,8 +239,6 @@ public class FloatStageView implements FloatWindowView {
         stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 
-        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
@@ -297,7 +267,6 @@ public class FloatStageView implements FloatWindowView {
      * @return ??
      */
     protected Window make(Dockable dockable, Object dragged, boolean show) {
-        //System.err.println("MAKE make(Dockable dockable, Object dragged)");
         setSupportedCursors(DEFAULT_CURSORS);
 
         DockableContext context = dockable.getContext();
@@ -336,19 +305,6 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setStyle("-fx-background-color: transparent");
 
-        /*        Insets insetsDelta = borderPane.getInsets();
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-        stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-
-        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
-
-        borderPane.setPrefWidth(prefWidth);
-        borderPane.setPrefHeight(prefHeight);
-         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
@@ -371,7 +327,6 @@ public class FloatStageView implements FloatWindowView {
      * @return ??
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
-        //System.err.println("MAKE make(Dockable dockable, Dockable dragged)");
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dragged.node();
@@ -425,13 +380,6 @@ public class FloatStageView implements FloatWindowView {
 
         rootPane = borderPane;
 
-        //borderPane.getProperties().put(FLOATVIEW_UUID, dockable);
-        //Rectangle r = new Rectangle(75, 30);
-        //r.setFill(Color.YELLOW);
-        //borderPane.setCenter(r);
-        //DockPane dockPane = new DockPane();
-        //StackPane dockPane = new StackPane();
-        //borderPane.setStyle("-fx-background-color: aqua");
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -442,13 +390,6 @@ public class FloatStageView implements FloatWindowView {
             }
         };
 
-        //
-        // Prohibit to use as a dock target
-        //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dragged.node());
-        //dockPane.getChildren().add(node);
-        //borderPane.getStyleClass().clear();
         borderPane.getStyleClass().add("dock-node-border");
 
         borderPane.setCenter(node);
@@ -456,14 +397,11 @@ public class FloatStageView implements FloatWindowView {
         Scene scene = new Scene(borderPane);
 
         scene.setCursor(Cursor.HAND);
-        //floatingProperty.set(true);
-
         stage.setScene(scene);
         markFloating(stage);
 
         node.applyCss();
         borderPane.applyCss();
-        //dockPane.applyCss();
         Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -474,8 +412,6 @@ public class FloatStageView implements FloatWindowView {
         stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 
-        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
@@ -523,6 +459,7 @@ public class FloatStageView implements FloatWindowView {
         return value;
     }
 
+    @Override
     public Object getValue() {
         return value.get();
     }

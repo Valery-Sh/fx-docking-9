@@ -34,13 +34,13 @@ import static org.vns.javafx.dock.api.dragging.view.NodeResizer.windowBounds;
  *
  * @author Valery
  */
-public class NodeResizeExecutor implements WindowResizer{
+public class NodeResizeExecutor implements WindowResizer {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private Cursor cursor;
-    //private Window window;
+
     private NodeResizer nodeResizer;
 
     private Region node;
@@ -76,7 +76,6 @@ public class NodeResizeExecutor implements WindowResizer{
         cursorTypes.clear();
         Collections.addAll(this.cursorTypes, cursors);
     }
-//static int COUNT = 0;
 
     @Override
     public void resize(double x, double y) {
@@ -135,36 +134,35 @@ public class NodeResizeExecutor implements WindowResizer{
         }
         Region root = (Region) getWindow().getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        
-            if (wDelta + getWindow().getWidth() > getMinWidth()) {
-                if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
-                    double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
-                    if (cursor == Cursor.W_RESIZE) {
-                        node.setTranslateX(nodeNewX + xDelta);
-                        node.setPrefWidth(wDelta + node.getPrefWidth());
-                    } else {
-                        node.setPrefWidth(wDelta + node.getPrefWidth());
-                    }
 
-                    mouseX.set(curX);
+        if (wDelta + getWindow().getWidth() > getMinWidth()) {
+            if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
+                double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
+                if (cursor == Cursor.W_RESIZE) {
+                    node.setTranslateX(nodeNewX + xDelta);
+                    node.setPrefWidth(wDelta + node.getPrefWidth());
+                } else {
+                    node.setPrefWidth(wDelta + node.getPrefWidth());
                 }
+
+                mouseX.set(curX);
             }
+        }
 
-            if (hDelta + getWindow().getHeight() > getMinHeight()) {
-                if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
-                    double nodeNewY = node.getBoundsInParent().getMinY() - node.getLayoutY();
-                    if (cursor == Cursor.N_RESIZE) {
-                        node.setTranslateY(nodeNewY + yDelta);
-                        node.setPrefHeight(hDelta + node.getPrefHeight());
-                    } else {
-                        node.setPrefHeight(hDelta + node.getPrefHeight());
-                    }
-
-                    mouseY.set(curY);
+        if (hDelta + getWindow().getHeight() > getMinHeight()) {
+            if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
+                double nodeNewY = node.getBoundsInParent().getMinY() - node.getLayoutY();
+                if (cursor == Cursor.N_RESIZE) {
+                    node.setTranslateY(nodeNewY + yDelta);
+                    node.setPrefHeight(hDelta + node.getPrefHeight());
+                } else {
+                    node.setPrefHeight(hDelta + node.getPrefHeight());
                 }
+
+                mouseY.set(curY);
             }
-            windowBounds(window, (Region) node);
-         
+        }
+        windowBounds(window, (Region) node);
     }
 
     public void resizeUnmanaged(double x, double y) {
@@ -254,38 +252,17 @@ public class NodeResizeExecutor implements WindowResizer{
         }
         return retval;
     }
-
-/*    protected double getMaxWidth() {
-        double retval = 0.0;
-        if (window instanceof Stage) {
-            retval = ((Stage) window).getMaxWidth();
-        } else if (window instanceof PopupControl) {
-            retval = ((PopupControl) window).getMaxWidth();
-        }
-        return retval;
-    }
-
-    protected double getMaxHeight() {
-        double retval = 0.0;
-        if (window instanceof Stage) {
-            retval = ((Stage) window).getMaxHeight();
-        } else if (window instanceof PopupControl) {
-            retval = ((PopupControl) window).getMaxHeight();
-        }
-        return retval;
-    }
-*/
+    @Override
     public void resize(MouseEvent ev) {
         resize(ev.getScreenX(), ev.getScreenY());
     }
 
+    @Override
     public boolean isStarted() {
         return getWindow() != null;
     }
 
-    //@Override
-    //public void show(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
-    //}
+    @Override
     public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
 
         setCursorTypes(supportedCursors);
@@ -339,14 +316,7 @@ public class NodeResizeExecutor implements WindowResizer{
         Window w = (Window) ev.getSource();
         double x = ev.getX();
         double y = ev.getY();
-//            if (w instanceof Stage) {
         return cursorBy(x, ev.getY(), width, height, left, right, top, bottom);
-        /*            } else {
-                x -= left;
-                y -= top;
-            }
-            return cursorBy(x, y, width, height, left, right, top, bottom);
-         */
     }
 
     public static Cursor cursorBy(MouseEvent ev, Region r) {
@@ -391,5 +361,4 @@ public class NodeResizeExecutor implements WindowResizer{
     public void setMouseY(Double mY) {
         this.mouseY.set(mY);
     }
-
 }

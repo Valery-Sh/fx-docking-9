@@ -25,16 +25,12 @@ public abstract class TargetContext {
     private String title;
     private PositionIndicator positionIndicator;
 
-    //private Node indicatorDelegate
     private AbstractDockStateLoader dockLoader;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
     private boolean usedAsDockTarget = true;
 
-    //private IndicatorPopup indicatorPopup;
-    // private double resizeMinWidth = -1;
-    // private double resizeMinHeight = -1;
     protected TargetContext(Node targetNode) {
         this.targetNode = targetNode;
         init();
@@ -67,13 +63,11 @@ public abstract class TargetContext {
     public abstract void restore(Dockable dockable, Object restoreposition);
 
     protected void commitDock(Node node) {
-        //!!!08
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
             if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
                 dockableContext.setTargetContext(this);
             }
-            //dockableContext.setFloating(false);
         }
     }
 
@@ -95,23 +89,6 @@ public abstract class TargetContext {
         return title;
     }
 
-    /*    public double getResizeMinWidth() {
-        return resizeMinWidth;
-    }
-
-    protected void setResizeMinWidth(double resizeMinWidth) {
-        this.resizeMinWidth = resizeMinWidth;
-    }
-
-    public double getResizeMinHeight() {
-        return resizeMinHeight;
-    }
-
-    protected void setResizeMinHeight(double resizeMinHeight) {
-        this.resizeMinHeight = resizeMinHeight;
-    }
-     */
-    //protected void dividerPosChanged(Node node, double oldValue, double newValue) {}
     /**
      * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
      * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
@@ -123,18 +100,6 @@ public abstract class TargetContext {
         this.title = title;
     }
 
-
-    /*    protected IndicatorPopup createIndicatorPopup() {
-        return new IndicatorPopup(DockRegistry.dockTarget(getTargetNode()));
-    }
-
-    public IndicatorPopup getIndicatorPopup() {
-        if (indicatorPopup == null) {
-            indicatorPopup = createIndicatorPopup();
-        }
-        return indicatorPopup;
-    }
-     */
     protected void inititialize() {
         DockRegistry.start();
         initListeners();
@@ -152,13 +117,11 @@ public abstract class TargetContext {
 
         focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
             Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
-                //!!!08
                 return DockRegistry.isDockable(p);
             });
             if (newNode != null) {
                 Dockable.of(newNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
-            //!!!08
             Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
                 return DockRegistry.isDockable(p);
             });
@@ -194,8 +157,6 @@ public abstract class TargetContext {
 
         Dockable dragged = dockable;
         Object v  = dockable.getContext().getDragValue();
-//        System.err.println("isAcceptable value = " + v);
-//        System.err.println("   ---  Dockable.od(value) = " + Dockable.of(v));
         if ( Dockable.of(v) != null ) {
             dragged = Dockable.of(v);
         } else {
@@ -208,7 +169,6 @@ public abstract class TargetContext {
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = getValue(dockable);
         if (d == null || isDocked(d.node())) {
-//            System.err.println("TargetContext isDocked == false foe node = " + d.node());
             return;
         }
         Node node = d.node();
@@ -228,8 +188,6 @@ public abstract class TargetContext {
         }
     }
 
-//    protected void dock(Dockable dockable, Object pos)  {
-//    }
     public boolean isUsedAsDockTarget() {
         return usedAsDockTarget;
     }
@@ -240,16 +198,11 @@ public abstract class TargetContext {
 
     public PositionIndicator getPositionIndicator() {
         if (positionIndicator == null) {
-            //positionIndicator = createPositionIndicator();
             positionIndicator = getLookup().lookup(PositionIndicator.class);
         }
         return positionIndicator;
     }
 
-    /*    public PositionIndicator getNodeIndicator() {
-        return null;
-    }
-     */
     public Node getTargetNode() {
         return this.targetNode;
     }
@@ -282,7 +235,6 @@ public abstract class TargetContext {
     }
 
     public void undock(Node node) {
-        //!!!08
         if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
             dc.getTargetContext().remove(node);
@@ -290,10 +242,6 @@ public abstract class TargetContext {
         }
     }
 
-    /*07.05    public FloatStageBuilder getStageBuilder(Dockable dockable) {
-        return new FloatStageBuilder(dockable.getContext());
-    }
-     */
     public abstract void remove(Node dockNode);
 
 }//class

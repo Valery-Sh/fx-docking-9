@@ -28,7 +28,6 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.shape.StrokeType;
@@ -57,8 +56,6 @@ public class NodeResizerBorder {
         BorderWidths regionWidths = new BorderWidths(4);
         BorderWidths sliceWidthы = new BorderWidths(4);
         boolean filled = false;
-        //BorderRepeat repeatX = BorderRepeat.STRETCH;
-        //BorderRepeat repeatY = BorderRepeat.STRETCH;
         BorderRepeat repeatX = BorderRepeat.STRETCH;
         BorderRepeat repeatY = BorderRepeat.STRETCH;
         
@@ -72,11 +69,8 @@ public class NodeResizerBorder {
 
         BorderStrokeStyle strokeStyle
                 = new BorderStrokeStyle(StrokeType.CENTERED,
-                        //StrokeLineJoin.MITER,
                         StrokeLineJoin.ROUND,
                         StrokeLineCap.BUTT,
-                        //StrokeLineCap.ROUND,
-                        //StrokeLineCap.SQUARE,
                         10,
                         0,
                         dashArray);
@@ -90,8 +84,6 @@ public class NodeResizerBorder {
         BorderStroke[] strokes = new BorderStroke[]{stroke};
         BorderImage[] images = new BorderImage[]{borderImage};
         border = new Border(images);
-        //border = new Border(stroke);
-
     }
 
     public Border getBorder() {

@@ -58,7 +58,6 @@ public class NodeDescriptorRegistry {
                         p = new NodeList();
                     } else {
                         p = new NodeContent();
-//                        p.setTitle("insert content");
                     }
                     p.setName(name);
                     retval.getProperties().add(p);
@@ -130,16 +129,6 @@ public class NodeDescriptorRegistry {
         descriptors.put(clazz, value);
     }
 
-    /*    public void uregister(Object key) {
-        String clazz = key.getClass().getName();
-        if (key instanceof String) {
-            clazz = (String) key;
-        } else if (key instanceof Class) {
-            clazz = ((Class) key).getName();
-        }
-        descriptors.remove(clazz);
-    }
-     */
     public void uregister(Object key) {
         descriptors.remove(key.getClass());
     }
@@ -152,10 +141,7 @@ public class NodeDescriptorRegistry {
         FXMLLoader loader = new FXMLLoader();
         GraphDescriptor root;
         try {
-            //loader.impl_setLoadListener(new DesignLoadListener());
-            //System.err.println("L = " + loader.impl_getLoadListener());
             root = loader.load(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/DesignFXML01.fxml"));
-            //root = loader.load(getClass().getClassLoader().getResourceAsStream("org/vns/javafx/designer/resources/DesignFXML01.fxml"));
             root.getDescriptors().forEach(d -> {
                 String className = d.getType();
                 Class clazz;//
@@ -168,14 +154,12 @@ public class NodeDescriptorRegistry {
                 }
             });
         } catch (IOException ex) {
-            System.err.println("IOException EXCEPTION: " + ex.getMessage());
             Logger.getLogger(NodeDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     private static class SingletonInstance {
-
         private static final NodeDescriptorRegistry INSTANCE = new NodeDescriptorRegistry();
     }
 

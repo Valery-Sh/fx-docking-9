@@ -39,28 +39,25 @@ public class DockPaneSkin extends SkinBase<DockPane> {
         layout = new StackPane(rootLayout) {
             @Override
             protected void layoutChildren() {
-                //layout.setVbarPolicy(getSkinnable().getScrollPaneVbarPolicy());
-                //resizeLabels();
                 update(rootLayout);
                 super.layoutChildren();
             }
         };
         getChildren().add(layout);
     }
+
     protected void update(DockSplitPane splitPane) {
-        for ( Node node : splitPane.getItems()) {
-           if ( ! ( (node instanceof HPane)  || (node instanceof VPane) || Dockable.of(node) != null)  ) {
-               System.err.println("NODE id = " + node.getId());
-               throw new IllegalArgumentException("Unsupported item type (type=" + node.getClass().getName() ); 
-           }
-            System.err.println("NODE: " + node);
-           if ( node instanceof DockSplitPane ) {
-               update((DockSplitPane) node);
-           } else if ( Dockable.of(node) != null ) {
-                   TargetContext tc = DockTarget.of(getSkinnable()).getTargetContext();
-                   Dockable.of(node).getContext().setTargetContext(tc);
-           }
+        for (Node node : splitPane.getItems()) {
+            if (!((node instanceof HPane) || (node instanceof VPane) || Dockable.of(node) != null)) {
+                throw new IllegalArgumentException("Unsupported item type (type=" + node.getClass().getName());
+            }
+            if (node instanceof DockSplitPane) {
+                update((DockSplitPane) node);
+            } else if (Dockable.of(node) != null) {
+                TargetContext tc = DockTarget.of(getSkinnable()).getTargetContext();
+                Dockable.of(node).getContext().setTargetContext(tc);
+            }
         }
     }
-    
+
 }

@@ -63,9 +63,6 @@ public class FloatPopupControlView implements FloatWindowView {
 
     private final BooleanProperty floating = createFloatingProperty();
 
-    private double minWidth = -1;
-    private double minHeight = -1;
-
     private Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
@@ -106,10 +103,6 @@ public class FloatPopupControlView implements FloatWindowView {
         return resizer;
     }
 
-    /*    public void setResizer(FloatWindowResizer resizer) {
-        this.resizer = resizer;
-    }
-     */
     public void setStageStyle(StageStyle stageStyle) {
         this.stageStyle = stageStyle;
     }
@@ -124,10 +117,6 @@ public class FloatPopupControlView implements FloatWindowView {
         this.supportedCursors = supportedCursors;
     }
 
-    /*    public ObjectProperty<Window> stageProperty() {
-        return this.floatingWindow;
-    }
-     */
     @Override
     public ObjectProperty<Window> floatingWindowProperty() {
         return floatingWindow;
@@ -147,25 +136,11 @@ public class FloatPopupControlView implements FloatWindowView {
         floatingWindow.set(toMark);
     }
 
-    /*    protected Node node() {
-        return dockableContext.dockable().node();
-    }
-     */
     @Override
     public Dockable getDockable() {
         return dockableContext.dockable();
     }
 
-    //==========================
-    //
-    //==========================
-/*    public void makeFloating() {
-        if (node() == null) {
-            return;
-        }
-        make(getDockable());
-    }
-     */
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
@@ -186,7 +161,7 @@ public class FloatPopupControlView implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
-        Window owner = null;
+        Window owner;
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
         } else {
@@ -242,8 +217,6 @@ public class FloatPopupControlView implements FloatWindowView {
         borderPane.getStyleClass().add("float-popup-root");
         borderPane.setCenter(node);
 
-        //Scene scene = new Scene(borderPane);
-        //scene.setCursor(Cursor.HAND);
         popup.getScene().setRoot(borderPane);
         popup.getScene().setCursor(Cursor.HAND);
         markFloating(popup);
@@ -277,12 +250,7 @@ public class FloatPopupControlView implements FloatWindowView {
         if (show) {
             popup.show(owner);
         }
-        if (stageStyle == StageStyle.TRANSPARENT) {
-            //scene.setFill(null);
-        }
-
         addResizer();
-        //popup.sizeToScene();
 
         dockable.node().parentProperty().addListener(pcl);
         return popup;
@@ -297,22 +265,17 @@ public class FloatPopupControlView implements FloatWindowView {
      * @return ??
      */
     protected Window make(Dockable dockable, Object dragged, boolean show) {
-        //System.err.println("MAKE make(Dockable dockable, Object dragged)");
         setSupportedCursors(DEFAULT_CURSORS);
 
         DockableContext context = dockable.getContext();
-        //Node node = context.getDragContainer().getGraphic();
         Node node = context.dockable().node();
         Window owner = null;
-        
-        System.err.println("0 PopupControl: make(Dockable dockable, Object dragged, boolean show)");
-        
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
         } else {
             owner = node.getScene().getWindow();
         }
-        System.err.println("1 PopupControl: make(Dockable dockable, Object dragged, boolean show)");
+
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
         TargetContext tc = context.getTargetContext();
@@ -325,8 +288,6 @@ public class FloatPopupControlView implements FloatWindowView {
 
         PopupControl popup = new PopupControl();
 
-        //stage.setTitle("FLOATING STAGE");
-        //stage.initStyle(stageStyle);
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
@@ -343,8 +304,6 @@ public class FloatPopupControlView implements FloatWindowView {
         borderPane.setStyle("-fx-background-color: transparent");
 
         addResizer();
-//        popup.sizeToScene();
-//        popup.setAlwaysOnTop(true);
         popup.getStyleClass().clear();
         popup.setOnShown(e -> {
             DockRegistry.register(popup);
@@ -368,7 +327,6 @@ public class FloatPopupControlView implements FloatWindowView {
      * @return ??
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
-        //System.err.println("MAKE make(Dockable dockable, Dockable dragged)");
         setSupportedCursors(DEFAULT_CURSORS);
         Node node = dockable.node();
         Window owner = null;
@@ -377,7 +335,6 @@ public class FloatPopupControlView implements FloatWindowView {
         } else {
             owner = node.getScene().getWindow();
         }
-
         Point2D screenPoint = node.localToScreen(0, 0);
         if (screenPoint == null) {
             screenPoint = new Point2D(400, 400);
@@ -419,13 +376,6 @@ public class FloatPopupControlView implements FloatWindowView {
 
         rootPane = borderPane;
 
-        //borderPane.getProperties().put(FLOATVIEW_UUID, dockable);
-        //Rectangle r = new Rectangle(75, 30);
-        //r.setFill(Color.YELLOW);
-        //borderPane.setCenter(r);
-        //DockPane dockPane = new DockPane();
-        //StackPane dockPane = new StackPane();
-        //borderPane.setStyle("-fx-background-color: aqua");
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -440,8 +390,6 @@ public class FloatPopupControlView implements FloatWindowView {
         node = dragged.node();
         borderPane.setCenter(node);
 
-        //Scene scene = new Scene(borderPane);
-        //scene.setCursor(Cursor.HAND);
         popup.getScene().setRoot(borderPane);
         popup.getScene().setCursor(Cursor.HAND);
         markFloating(popup);
@@ -496,11 +444,9 @@ public class FloatPopupControlView implements FloatWindowView {
 
     @Override
     public void addResizer() {
-        //if (getDockable().getContext().isResizable()) {
         removeListeners(getDockable().getContext().dockable());
         addListeners(getFloatingWindow());
 
-        //}
         setResizer(new PopupControlResizer(this));
 
     }
@@ -513,6 +459,7 @@ public class FloatPopupControlView implements FloatWindowView {
         return value;
     }
 
+    @Override
     public Object getValue() {
         return value.get();
     }

@@ -35,17 +35,10 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
 @DefaultProperty("value")
 public class DragContainer { //extends Control implements Dockable{
 
-    //private Dockable owner;
-
     private final ObjectProperty value = new SimpleObjectProperty();
 
     private Node placeholder;
 
-/*    public DragContainer(Dockable owner, Object value) {
-        
-        this(owner, value, true);
-    }
-*/
     public DragContainer(Node placeholder, Object value) {
         this.value.set(value);
         this.placeholder = placeholder;
@@ -147,13 +140,4 @@ public class DragContainer { //extends Control implements Dockable{
             makePlaceholderContainer();
         }
     }
-
-/*    public Dockable getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Dockable owner) {
-        this.owner = owner;
-    }
-*/
 }

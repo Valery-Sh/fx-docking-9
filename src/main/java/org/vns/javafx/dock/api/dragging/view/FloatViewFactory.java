@@ -29,10 +29,6 @@ public class FloatViewFactory {
     public FloatViewFactory() {
 
     }
-/*    public static FloatViewFactory getInstance() {
-        return SingletonInstance.INSTANCE;
-    }
-*/    
     public FloatView getFloatView(DragManager dragManager) {
         FloatView retval = null;
         Node node = dragManager.getDockable().node();

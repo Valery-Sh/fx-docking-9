@@ -16,7 +16,6 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -33,7 +32,7 @@ import org.vns.javafx.dock.DockSideBar;
  */
 public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
-    private final ToolBar toolBar;// = getSkinnable().getToolBar();
+    private final ToolBar toolBar;
     private final StackPane layout;
 
     public DockSideBarSkin(DockSideBar control) {
@@ -99,45 +98,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         getChildren().add(layout);
     }
 
-
-    /*    protected void sceneChanged(Scene oldValue, Scene newValue) {
-        newValue.windowProperty().addListener((v, ov, nv) -> {
-            windowChanged(ov, nv);
-        });
-    }
-
-    protected void windowChanged(Window oldValue, Window newValue) {
-        Window window = (Window) newValue;
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_CLICKED, this::windowClicked);
-        if (window instanceof Stage) {
-            ((Stage) window).setTitle("owner");
-        }
-        getSideItems().values().forEach(d -> {
-            d.adjustScreenPos();
-        });
-    }
-
-    protected void windowClicked(MouseEvent ev) {
-        if (getSkinnable().localToScreen(getSkinnable().getBoundsInLocal()).contains(ev.getScreenX(), ev.getScreenY())) {
-            return;
-        }
-
-        ((SideBarContext)DockTarget.of(getSkinnable()).getTargetContext()).getItemMap().forEach((g, d) -> {
-            if (d.getDockable().node().getScene() != null && d.getDockable().node().getScene().getWindow() != null) {
-                Window w = d.getDockable().node().getScene().getWindow();
-                if (w instanceof Stage) {
-                    //??? 11.08((Stage) w).close();
-                } else {
-                    //??? 11.08 w.hide();
-                }
-            }
-        });
-    }
-    protected ObservableMap<Group, SideBarContext.Container> getSideItems() {
-        return getTargetContext().getItemMap();
-    }
-    
-     */
     protected SideBarContext getTargetContext() {
         return (SideBarContext) DockTarget.of(getSkinnable()).getTargetContext();
     }
@@ -153,7 +113,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             }
             if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
-                System.err.println("LIST size=" + list.size());
                 for (Dockable d : list) {
                     getTargetContext().dock(d);
                 }
@@ -165,9 +124,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         for (Dockable d : getSkinnable().getItems()) {
             if (!getTargetContext().isDocked(d.node())) {
                 getTargetContext().dock(d);
-                System.err.println("DOCKED " + d.node());
             }
         }
     }//while
-
 }

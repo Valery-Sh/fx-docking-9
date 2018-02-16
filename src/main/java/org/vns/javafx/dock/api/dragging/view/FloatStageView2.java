@@ -28,7 +28,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -62,14 +61,10 @@ public class FloatStageView2 implements FloatWindowView{
 
     private WindowResizer resizer;
 
-    private MouseResizeHandler mouseResizeHanler;
+    private final MouseResizeHandler mouseResizeHanler;
 
     private BooleanProperty floating = createFloatingProperty();
             
-    private double minWidth = -1;
-    private double minHeight = -1;
-    
-
     private Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
@@ -164,12 +159,9 @@ public class FloatStageView2 implements FloatWindowView{
         make(getDockable());
     }
 
-
-
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
-
 
     @Override
     public Window make(Dockable dockable, boolean show) {
@@ -198,9 +190,6 @@ public class FloatStageView2 implements FloatWindowView{
                 return dockable.node().getScene().getWindow();
             }
         }
-        if (dockable.getContext().isDocked()) {
-            //!!! 31.01dockable.getContext().getTargetContext().undock(dockable.node());
-        }
 
         Stage newStage = new Stage();
         DockRegistry.register(newStage);
@@ -227,9 +216,6 @@ public class FloatStageView2 implements FloatWindowView{
         borderPane.setCenter(r);
         WritableImage wi = node.snapshot(null, null);
         borderPane.setCenter(new ImageView(wi));
-        //DockPane dockPane = new DockPane();
-        //StackPane dockPane = new StackPane();
-        //borderPane.setStyle("-fx-background-color: aqua");
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -240,20 +226,7 @@ public class FloatStageView2 implements FloatWindowView{
             }
         };
 
-        //
-        // Prohibit to use as a dock target
-        //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dockable.node());
-        //dockPane.getChildren().add(node);
-        //borderPane.getStyleClass().clear();
         borderPane.getStyleClass().add("dock-node-border");
-/*        Button b = new Button("Button1");
-        node.setClip(b);
-        borderPane.setCenter(node);
-*/        
-        //!!! 31.01borderPane.setCenter(node);
-        //borderPane.setStyle("-fx-background-color: aqua");
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
         floatingProperty.set(true);
@@ -262,7 +235,7 @@ public class FloatStageView2 implements FloatWindowView{
 
         node.applyCss();
         borderPane.applyCss();
-        //dockPane.applyCss();
+
         Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -272,9 +245,6 @@ public class FloatStageView2 implements FloatWindowView{
 
         newStage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         newStage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-        
-        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
         
         double prefWidth  = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;        
@@ -319,18 +289,6 @@ public class FloatStageView2 implements FloatWindowView{
         return (Stage) getFloatingWindow();
     }
 
-
-/*    public void addResizer(Window window, Dockable getDockable) {
-        if ( getDockable.getContext().isResizable()) {
-            removeListeners(getDockable);
-            addListeners(window);
-            
-        }
-        //resizer = new FloatWindowResizer();
-        resizer = new FloatWindowResizer(this);
-    }
-*/
-    
     @Override
     public void addResizer() {
         if ( dockableController.isResizable()) {
@@ -339,7 +297,6 @@ public class FloatStageView2 implements FloatWindowView{
             
         }
         setResizer(new StageResizer(this));
-        
     }
     
     protected void setResizer(WindowResizer resizer) {
@@ -358,26 +315,6 @@ public class FloatStageView2 implements FloatWindowView{
         this.value.set(obj);
     }
     
-/*    protected void addListeners(Window window) {
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-    }
-
-    public void removeListeners(Dockable dockable) {
-        if ( dockable.node().getScene() == null ||dockable.node().getScene().getWindow() == null ) {
-            //return;
-        }
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-
-    }    
-*/    
     protected void addListeners(Window window) {
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
@@ -385,9 +322,6 @@ public class FloatStageView2 implements FloatWindowView{
     }
 
     public void removeListeners(Dockable dockable) {
-        if ( dockable.node().getScene() == null ||dockable.node().getScene().getWindow() == null ) {
-            //return;
-        }
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
@@ -395,42 +329,8 @@ public class FloatStageView2 implements FloatWindowView{
 
         dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-
     }
-
-    /*    public void pressedHandle(MouseEvent ev) {
-        resizer.start(ev, getFloatingWindow(), getFloatingWindow().getScene().getCursor(), supportedCursors);
-    }
-
-    public void movedHandle(MouseEvent ev) {
-        Cursor c = FloatWindowResizer.cursorBy(ev, rootPane,supportedCursors);
-        getFloatingWindow().getScene().setCursor(c);
-
-        if (!c.equals(Cursor.DEFAULT)) {
-            ev.consume();
-        }
-    }
-
-    public void draggedHandle(MouseEvent ev) {
-        resizer.resize(ev);
-    }
-     */
-/*    protected void dock(Pane dockPane, Dockable getDockable) {
-        Node node = getDockable.node();
-        DockSplitPane rootSplitPane = null;
-        rootSplitPane = new DockSplitPane();
-        //-rootSplitPane = new HSplit();
-        //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
-        rootSplitPane.getItems().add(node);
-
-        dockPane.getChildren().add(rootSplitPane);
-        //
-        // Actually it's docken/ Return later. May be implement 
-        // docked state extended
-        //
-        // >>> node.getDockableState().setDocked(true);
-    }
-*/
+    
     private BooleanProperty floatingProperty = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {

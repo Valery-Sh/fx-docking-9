@@ -23,7 +23,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
@@ -42,7 +41,6 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
 
     @Override
     public Window make(Dockable dockable, boolean show) {
-        //System.err.println("FLOATPOPUPCONTROLVIEW2");
         Node node = dockable.node();
 
         Point2D screenPoint = node.localToScreen(0, 0);
@@ -84,8 +82,6 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
         borderPane.getStyleClass().add("float-popup-root");
         borderPane.setCenter(node);
 
-        //floatingProperty().set(true);
-
         floatPopup.getScene().setRoot(borderPane);
 
         node.applyCss();
@@ -96,34 +92,18 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-        //floatPopup.setX(stagePosition.getX() - insetsDelta.getLeft());
-        //floatPopup.setY(stagePosition.getY() - insetsDelta.getTop());
         floatPopup.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         floatPopup.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
         //
         // We must prevent the window to end up positioning off the screen
         //
         floatPopup.setAutoFix(false);
-        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
 
         double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-
-        /*        System.err.println("DSB ++++++ CreatePopup popup.getWidth = " + floatPopup.getWidth());        
-        System.err.println("DSB ++++++ CreatePopup popup.getMinWidth = " + floatPopup.getMinWidth());                
-        System.err.println("DSB ++++++ CreatePopup borderPane.prefW = " + borderPane.getPrefWidth());
-        System.err.println("   DSB ++++++ CreatePopup node width= " + node.getWidth());
-        System.err.println("   DSB ++++++ CreatePopup node minWidth = " + node.getMinWidth());
-        System.err.println("   DSB ++++++ CreatePopup node pref Width = " + node.getMinWidth());
-        System.err.println("   DSB *** insetsWidth = " + insetsWidth);
-        System.err.println("   DSB *** resizePrefWidth = " + prefWidth);
-         */
-        //borderPane.setStyle("-fx-background-color: aqua");
-        //node.setStyle("-fx-background-color: green");
         floatPopup.setOnShown(e -> {
             DockRegistry.register(floatPopup);
         });
@@ -131,15 +111,9 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
             DockRegistry.unregister(floatPopup);
         });
         floatPopup.getStyleClass().clear();
-        if (show) {
-            //floatPopup.show(owner);
-        }
         dockable.node().parentProperty().addListener(pcl);
 
-        //addResizer(floatPopup, dockable);
         addResizer();
-        //setResizer(new PopupControlResizer(this));
-//        System.err.println("DSB FLOAT POPUP CONTROL VIEW");        
         return floatPopup;
     }//make FloatingPopupControl
 

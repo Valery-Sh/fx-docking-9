@@ -69,10 +69,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
     private final BooleanProperty floating = createFloatingProperty();
             
-    private double minWidth = -1;
-    private double minHeight = -1;
-    
-
     private Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
@@ -165,18 +161,14 @@ public class TreeItemFloatStageView implements FloatWindowView{
         make(getDockable());
     }
 
-
-
     public final boolean isDecorated() {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
-
 
     @Override
     public Window make(Dockable dockable, boolean show) {
         
         setSupportedCursors(DEFAULT_CURSORS);
-//        System.err.println("1 FloatingStageView CONVERT THE SAME");                        
         Node node = dockable.node();
         Point2D screenPoint = node.localToScreen(0, 0);
         if (screenPoint == null) {
@@ -190,9 +182,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         Object o = ((TreeCell)node).getTreeItem().getValue();
         ImageView imageView = null;
         if ( o != null && (o instanceof Node)) {
-            System.err.println("YteeItemFloatView o != null ** instanceof Node ");            
             WritableImage wi = ((Node)o).snapshot(null, null);
-            System.err.println("   --- write image wi = " + wi);
             imageView = new ImageView(wi);
         }
 
@@ -203,12 +193,10 @@ public class TreeItemFloatStageView implements FloatWindowView{
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
                 TreeItemBuilder.updateOnMove((TreeCell) dockable.node());
-                //!!! 31.01dockable.getContext().getTargetContext().undock(dockable.node());
                 return dockable.node().getScene().getWindow();
             }
         }
         if (dockable.getContext().isDocked()) {
-            //!!! 31.01dockable.getContext().getTargetContext().undock(dockable.node());
             TreeItemBuilder.updateOnMove((TreeCell) dockable.node());            
         }
 
@@ -236,12 +224,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
         Rectangle r = new Rectangle(48, 48);
         r.setFill(Color.YELLOW);
         borderPane.setCenter(r);
-        System.err.println("YteeItemFloatView RECTANGLE ");            
-        
-         //borderPane.setCenter(imageView);
-        //DockPane dockPane = new DockPane();
-        //StackPane dockPane = new StackPane();
-        //borderPane.setStyle("-fx-background-color: aqua");
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -255,17 +237,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         //
         // Prohibit to use as a dock target
         //
-        //dockPane.setUsedAsDockTarget(false);
-        //dockPane.getItems().add(dockable.node());
-        //dockPane.getChildren().add(node);
-        //borderPane.getStyleClass().clear();
         borderPane.getStyleClass().add("dock-node-border");
-/*        Button b = new Button("Button1");
-        node.setClip(b);
-        borderPane.setCenter(node);
-*/        
-        //!!! 31.01borderPane.setCenter(node);
-        //borderPane.setStyle("-fx-background-color: aqua");
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
         floatingProperty.set(true);
@@ -274,7 +246,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
         node.applyCss();
         borderPane.applyCss();
-        //dockPane.applyCss();
         Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -284,10 +255,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
         newStage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
         newStage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-        
-        //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
-        //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
-        
         double prefWidth  = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;        
         
@@ -301,11 +268,8 @@ public class TreeItemFloatStageView implements FloatWindowView{
         newStage.sizeToScene();
         newStage.setAlwaysOnTop(true);
         if ( show ) {
-            System.err.println("NEW STAGE SHOW");
             newStage.show();
         }
-        //System.err.println("NODE.PARENT isNull = " + dockable.node().parentProperty().get());
-        //dockable.node().parentProperty().addListener(pcl);
         return newStage;
     }
     
@@ -322,7 +286,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
         }
 
         Region node = (Region) popup.getContent().get(0);
-        //!!!08
         if (!DockRegistry.isDockable(node)) {
             return null;
         }
@@ -333,52 +296,18 @@ public class TreeItemFloatStageView implements FloatWindowView{
         return (Stage) getFloatingWindow();
     }
 
-
-/*    public void addResizer(Window window, Dockable getDockable) {
-        if ( getDockable.getContext().isResizable()) {
-            removeListeners(getDockable);
-            addListeners(window);
-            
-        }
-        //resizer = new FloatWindowResizer();
-        resizer = new FloatWindowResizer(this);
-    }
-*/
-    
     @Override
     public void addResizer() {
         if ( dockableController.isResizable()) {
             removeListeners(dockableController.dockable());
             addListeners(getFloatingWindow());
-            
         }
         setResizer(new StageResizer(this));
-        
     }
     
     protected void setResizer(WindowResizer resizer) {
         this.resizer = resizer;
     }
-/*    protected void addListeners(Window window) {
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-        window.getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-    }
-
-    public void removeListeners(Dockable dockable) {
-        if ( dockable.node().getScene() == null ||dockable.node().getScene().getWindow() == null ) {
-            //return;
-        }
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
-
-        dockable.node().getScene().getRoot().removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-        dockable.node().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-
-    }    
-*/    
     protected void addListeners(Window window) {
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         window.addEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
@@ -388,6 +317,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
     public ObjectProperty valueProperty() {
         return value;
     }
+    @Override
     public Object getValue() {
         return value.get();
     }
@@ -397,9 +327,6 @@ public class TreeItemFloatStageView implements FloatWindowView{
     }
 
     public void removeListeners(Dockable dockable) {
-        if ( dockable.node().getScene() == null ||dockable.node().getScene().getWindow() == null ) {
-            //return;
-        }
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseResizeHanler);
@@ -407,42 +334,9 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
         dockable.node().getScene().getWindow().removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
         dockable.node().getScene().getWindow().removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseResizeHanler);
-
     }
 
-    /*    public void pressedHandle(MouseEvent ev) {
-        resizer.start(ev, getFloatingWindow(), getFloatingWindow().getScene().getCursor(), supportedCursors);
-    }
 
-    public void movedHandle(MouseEvent ev) {
-        Cursor c = FloatWindowResizer.cursorBy(ev, rootPane,supportedCursors);
-        getFloatingWindow().getScene().setCursor(c);
-
-        if (!c.equals(Cursor.DEFAULT)) {
-            ev.consume();
-        }
-    }
-
-    public void draggedHandle(MouseEvent ev) {
-        resizer.resize(ev);
-    }
-     */
-/*    protected void dock(Pane dockPane, Dockable getDockable) {
-        Node node = getDockable.node();
-        DockSplitPane rootSplitPane = null;
-        rootSplitPane = new DockSplitPane();
-        //-rootSplitPane = new HSplit();
-        //!!!!!! old dockPane.setRootSplitPane(rootSplitPane);
-        rootSplitPane.getItems().add(node);
-
-        dockPane.getChildren().add(rootSplitPane);
-        //
-        // Actually it's docken/ Return later. May be implement 
-        // docked state extended
-        //
-        // >>> node.getDockableState().setDocked(true);
-    }
-*/
     private BooleanProperty floatingProperty = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {

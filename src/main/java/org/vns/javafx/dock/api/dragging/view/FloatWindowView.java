@@ -47,14 +47,9 @@ public interface FloatWindowView extends FloatView<Window> {
     
     public Cursor[] getSupportedCursors();
     
-    
-
-/*    double getMinWidth();
-
-    double getMinHeight();
-*/
     void initialize();
     
+    @Override
     public void setSupportedCursors(Cursor[] supportedCursors);
 
     default BooleanProperty createFloatingProperty() {
@@ -78,7 +73,7 @@ public interface FloatWindowView extends FloatView<Window> {
     public static class MouseResizeHandler implements EventHandler<MouseEvent> {
 
         private boolean cursorSupported = false;
-        private FloatWindowView windowView;
+        private final FloatWindowView windowView;
 
         public MouseResizeHandler(FloatWindowView windowView) {
             this.windowView = windowView;

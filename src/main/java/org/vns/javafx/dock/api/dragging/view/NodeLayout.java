@@ -179,7 +179,6 @@ public class NodeLayout {
         double prefH;
 
         if (null == contentBias) {
-            // contentBias is null
             prefW = node.prefWidth(-1);
             prefH = node.prefHeight(-1);
         } else {
@@ -193,7 +192,6 @@ public class NodeLayout {
                     prefW = node.prefWidth(prefH);
                     break;
                 default:
-                    // contentBias is null
                     prefW = node.prefWidth(-1);
                     prefH = node.prefHeight(-1);
                     break;
@@ -208,7 +206,6 @@ public class NodeLayout {
         double h;
 
         if (null == contentBias) {
-            // contentBias is null
             w = node.minWidth(-1);
             h = node.minHeight(-1);
         } else {
@@ -222,7 +219,6 @@ public class NodeLayout {
                     w = node.minWidth(h);
                     break;
                 default:
-                    // contentBias is null
                     w = node.minWidth(-1);
                     h = node.minHeight(-1);
                     break;
@@ -238,7 +234,6 @@ public class NodeLayout {
         double h;
 
         if (null == contentBias) {
-            // contentBias is null
             w = node.maxWidth(-1);
             h = node.maxHeight(-1);
         } else {
@@ -252,7 +247,6 @@ public class NodeLayout {
                     w = node.maxWidth(h);
                     break;
                 default:
-                    // contentBias is null
                     w = node.maxWidth(-1);
                     h = node.maxHeight(-1);
                     break;

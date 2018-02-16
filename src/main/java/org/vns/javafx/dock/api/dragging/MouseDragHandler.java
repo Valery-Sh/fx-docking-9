@@ -34,13 +34,10 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     }
 
     public void mousePressed(MouseEvent ev) {
-        //System.err.println("MouseDragHandler MOUSE PRESSED 1");
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
         startMousePos = new Point2D(ev.getX(), ev.getY());
-        //System.err.println("   --- MouseDragHandler MOUSE PRESSED stargMousePos = " + startMousePos);
-
     }
 
     public abstract void mouseDragDetected(MouseEvent ev);

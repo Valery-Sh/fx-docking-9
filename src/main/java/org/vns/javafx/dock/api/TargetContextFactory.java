@@ -41,8 +41,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
-import org.vns.javafx.dock.DockBorderPane;
-import org.vns.javafx.dock.DockTabPane.TabPaneContext;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;

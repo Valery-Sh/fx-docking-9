@@ -51,6 +51,4 @@ public class NodeContent extends Property {
     public boolean isDefault() {
         return super.isDefault();
     }
-
-    
 }

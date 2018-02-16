@@ -27,6 +27,7 @@ public class TreeItemDragManagerFactory extends DragManagerFactory{
     public TreeItemDragManagerFactory() {
     }
     
+    @Override
     public DragManager getDragManager(Dockable dockable) {
         
         DragManager retval = dockable.getContext().getLookup().lookup(DragManager.class);

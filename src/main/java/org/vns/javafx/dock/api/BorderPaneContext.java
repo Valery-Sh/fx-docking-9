@@ -110,14 +110,8 @@ public class BorderPaneContext extends TargetContext {
             return retval;
         }
 
-        /*    private boolean satisfies(Point2D mousePos, Node node, Pos pos) {
-        DockUtil.contains(node, mousePos.getX(), mousePos.getY());
-    }
-         */
         @Override
         public void remove(Node dockNode) {
-            //System.err.println("REMOVE ____________________");
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         /**
@@ -129,7 +123,6 @@ public class BorderPaneContext extends TargetContext {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                //!!!08
                 if (DockRegistry.isDockable(node)) {
                     list.add(Dockable.of(node));
                 }

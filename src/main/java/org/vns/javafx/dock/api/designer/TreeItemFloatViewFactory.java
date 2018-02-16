@@ -30,6 +30,7 @@ public class TreeItemFloatViewFactory extends FloatViewFactory {
     public TreeItemFloatViewFactory() {
 
     }
+    @Override
     public FloatView getFloatView(DragManager dragManager) {
         FloatView retval = null;
         Node node = dragManager.getDockable().node();

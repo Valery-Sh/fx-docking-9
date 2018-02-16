@@ -29,7 +29,6 @@ public class DockPane extends Control {
 
     private void init() {
         root = new HPane();
-        System.err.println("root Ori = " + root.getOrientation());
         TargetContext c = new DockPaneContext(this, root);
         DockRegistry.makeDockTarget(this, c);
     }
@@ -49,8 +48,6 @@ public class DockPane extends Control {
         return skin;
     }
 
-
-    //public void dock(Dockable dockable, Side side) {
     public void dock(Node node, Side side) {
         Dockable dockable =  Dockable.of(node);
         DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();
@@ -63,16 +60,13 @@ public class DockPane extends Control {
         targetContext.dock(dockable, side);
     }
     public void dockNode(Node dockableNode, Side side) {
-        //dock( Dockable.of(dockableNode), side);
         dock( dockableNode, side);
     }
 
     public void dockNode(Node dockableNode, Side side, Dockable target) {
-       // dock( DockRegistry.dockable(dockableNode), side, target);
         dock( dockableNode, side, target);
     }
     
-    //public void dock(Dockable dockable, Side side, Dockable target) {
     public void dock(Node dockableNode, Side side, Dockable dockableTarget) {
         Dockable dockable = Dockable.of(dockableNode);
         Dockable target = Dockable.of(dockableTarget);

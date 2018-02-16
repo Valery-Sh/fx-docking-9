@@ -54,10 +54,9 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  */
 public class SideBarContext extends TargetContext {
 
-    
     private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
     private final ToolBar toolBar;
-    
+
     public SideBarContext(Region dockPane, ToolBar toolBar) {
         super(dockPane);
         this.toolBar = toolBar;
@@ -111,10 +110,6 @@ public class SideBarContext extends TargetContext {
             return;
         }
         doDock(null, dragged.node());
-/*        if (doDock(null, dragged.node())) {
-            dragged.getContext().setFloating(false);
-        }
-*/        
     }
 
     protected String getButtonText(Dockable d) {
@@ -152,8 +147,6 @@ public class SideBarContext extends TargetContext {
         itemButton.getStyleClass().add("item-button");
 
         int idx = -1;
-
-        
 
         if (mousePos != null) {
             Node sb = findNode(toolBar.getItems(), mousePos.getX(), mousePos.getY());
@@ -285,7 +278,7 @@ public class SideBarContext extends TargetContext {
         Group group = (Group) btn.getParent();
         Container container = getItemMap().get(group);
         DockSideBar sb = (DockSideBar) getTargetNode();
-        
+
         if (container.getPopup() != null && !container.getPopup().isShowing()) {
             container.getPopup().show(toolBar.getScene().getWindow());
         }
@@ -327,10 +320,6 @@ public class SideBarContext extends TargetContext {
             this.popup = popup;
         }
 
-        /*        public void setDocked(boolean docked) {
-            DockSideBar sb = getSideBar();
-        }
-         */
         public DockSideBar getSideBar() {
             return (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
         }
@@ -353,7 +342,6 @@ public class SideBarContext extends TargetContext {
         }
 
         protected void mouseExited(MouseEvent ev) {
-            //System.err.println("ev.getSource=" + ev.getSource());
             if ((ev.getSource() instanceof Window) && DockUtil.contains((Window) ev.getSource(), ev.getScreenX(), ev.getScreenY())) {
                 ev.consume();
                 return;
@@ -362,7 +350,6 @@ public class SideBarContext extends TargetContext {
             if (!ev.isPrimaryButtonDown() && !dockable.getContext().isFloating()) {
                 dockable.node().getScene().getWindow().hide();
             }
-            //ev.consume();
         }
 
         public void adjustScreenPos() {
@@ -385,7 +372,6 @@ public class SideBarContext extends TargetContext {
             ownerStage.yProperty().removeListener(this);
             ownerStage.widthProperty().removeListener(this);
             ownerStage.heightProperty().removeListener(this);
-            //stageBuilder.removeListeners(dockable);
         }
 
         public void changeSide() {
@@ -395,14 +381,9 @@ public class SideBarContext extends TargetContext {
         }
 
         public void changeSize() {
-            //System.err.println("+++++ CHANGE SIZE 111 ");
-            if (dockable.node().getScene() == null || dockable.node().getScene().getWindow() == null) {
-                //return;
-            }
             if (getPopup() == null) {
                 return;
             }
-            //PopupControl popup = (PopupControl) dockable.node().getScene().getWindow();
 
             DockSideBar sb = (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
             if (!popup.isShowing()) {
@@ -422,15 +403,11 @@ public class SideBarContext extends TargetContext {
                     root.setPrefWidth(sb.getWidth());
                     break;
                 case RIGHT:
-                    //System.err.println("!!!!!!!!!!! RIGHT changeSize popup isShowing=" + popup.isShowing());
-
                     popup.setAnchorY(pos.getY());
                     popup.setAnchorX(pos.getX() - popup.getWidth());
                     root.setPrefHeight(sb.getHeight());
                     break;
                 case LEFT:
-                    System.err.println("!!!!!!!!!!! LEFT changeSize popup isShowing=" + popup.isShowing());
-
                     popup.setAnchorY(pos.getY());
                     popup.setAnchorX(pos.getX() + sb.getWidth());
                     root.setPrefHeight(sb.getHeight());
@@ -456,7 +433,6 @@ public class SideBarContext extends TargetContext {
 
         public SideBarPositonIndicator(TargetContext context) {
             super(context);
-            //this.targetContext = targetContext;
         }
 
         private IndicatorPopup getIndicatorPopup() {
@@ -478,11 +454,6 @@ public class SideBarContext extends TargetContext {
             return p;
         }
 
-        //@Override
-        /*protected String getStylePrefix() {
-                    return "dock-indicator";
-                }
-         */
         protected Rectangle getTabDockPlace() {
             if (tabDockPlace == null) {
                 tabDockPlace = new Rectangle();
@@ -498,9 +469,11 @@ public class SideBarContext extends TargetContext {
             getTabDockPlace().setVisible(false);
 
         }
-        private ToolBar  getToolBar() {
-            return ((SideBarContext)getTargetContext()).getToolBar();
+
+        private ToolBar getToolBar() {
+            return ((SideBarContext) getTargetContext()).getToolBar();
         }
+
         protected int indexOf(double x, double y) {
             int idx = -1;
             Node sb = ((SideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
@@ -531,7 +504,6 @@ public class SideBarContext extends TargetContext {
                 dockPlace.setWidth(tb.getWidth());
                 dockPlace.setHeight(5);
             }
-            //dockPlace.setRotate(90);
             Point2D p = dockPlace.localToParent(0, 0);
 
             dockPlace.setX(p.getX());
@@ -544,10 +516,10 @@ public class SideBarContext extends TargetContext {
             } else if (idx == tb.getItems().size()) {
                 node = tb.getItems().get(idx - 1);
             } else {
-                node = node = tb.getItems().get(idx);
+                node = tb.getItems().get(idx);
                 before = true;
             }
-            double pos = 0;
+            double pos;
             if (node != null) {
                 Bounds bnd = node.getBoundsInParent();
                 if (tb.getOrientation() == Orientation.HORIZONTAL) {
@@ -574,6 +546,5 @@ public class SideBarContext extends TargetContext {
         }
 
     }
-    
-    
+
 }//class

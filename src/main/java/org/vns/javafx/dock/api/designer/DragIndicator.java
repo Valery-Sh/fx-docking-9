@@ -99,7 +99,6 @@ public class DragIndicator {
             return;
         }
         Node dn = d.getChildren().get(0);
-        //disclosureBounds = cell.screenToLocal(dn.localToScreen(dn.getBoundsInLocal()));
     }
 
     private double getOffset(TreeItemEx item1, TreeItemEx item2) {
@@ -161,8 +160,8 @@ public class DragIndicator {
         int level = treeView.getTreeItemLevel(item);
         double gap = getItemParentOffset(sample);
 
-        double w;// = ((treeBnd.getWidth() - sampleBnd.getWidth() - wdelta) / (level + 1));
-        double xOffset;// = 0;
+        double w;
+        double xOffset;
 
         double rootWidth = rootNonValueWidth(sample);
 
@@ -178,7 +177,6 @@ public class DragIndicator {
 
         if (isVisibleOnTop(item)) {
             y = screenValueBounds(item).getMinY();
-            //System.err.println("visible y=" + y);
         }
         Bounds nvBnd = new BoundingBox(sampleBnd.getMinX() + xOffset, y, w, sampleBnd.getHeight());
         return nvBnd;
@@ -207,7 +205,7 @@ public class DragIndicator {
             return null;
         }
         Bounds apBounds = ap.localToScreen(ap.getBoundsInLocal());
-        Bounds cellBounds = null;
+        Bounds cellBounds;
         int dif = treeView.getTreeItemLevel(item) - treeView.getTreeItemLevel(sample);
         double cellOffset = getItemParentOffset(sample);
 
@@ -274,7 +272,6 @@ public class DragIndicator {
         if (next != null) {
             nextRowLevel = treeView.getTreeItemLevel(treeView.getTreeItem(row + 1));
         } else {
-            //retval = (TreeItemEx) parentAtLevel(item, n);
             return parentAtLevel(item, n);
         }
 
@@ -327,7 +324,7 @@ public class DragIndicator {
 
         Insets pins = treeView.getInsets();
         Pane p = sceneGraphView.getTreeViewPane();
-        Bounds bnd = null;
+        Bounds bnd;
 
         bnd = screenNonValueLevelBounds(from, to);
         int level = treeView.getTreeItemLevel(from);
@@ -340,7 +337,7 @@ public class DragIndicator {
         }
 
         if (arrowBnd.getHeight() != 0) {
-            startY = arrowBnd.getMinY();// + arrowBnd.getHeight();
+            startY = arrowBnd.getMinY();
             if (!isVisibleOnTop(from)) {
                 startY += pins.getTop();
             } else {
@@ -398,7 +395,6 @@ public class DragIndicator {
     protected void printBounds(TreeItemEx item) {
         boolean retval = false;
         TreeCell cell = (TreeCell) item.getCellGraphic().getParent();
-
         treeView.intersects(cell.getBoundsInLocal());
     }
 

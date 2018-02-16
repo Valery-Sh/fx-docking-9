@@ -62,14 +62,6 @@ public class NodeDragManager extends AbstractDragAndDropManager {
     public void mouseReleased(MouseEvent ev) {
         TreeViewEx tv = EditorUtil.getTargetTreeView(ev.getScreenX(), ev.getScreenY());
         if (tv != null && !ev.isConsumed()) {
-/*            DragEvent dragEvent = tv.getDragEvent();
-            
-            System.err.println("dragEvent.getTransferMode() = " + dragEvent.getAcceptedTransferMode());
-            if (dragEvent.getTransferMode() != TransferMode.COPY
-                    && dragEvent.getTransferMode() != TransferMode.MOVE) {
-                return;
-            }
-*/
             if ( ! tv.isDragAccepted() ) {
                 return;
             }

@@ -17,7 +17,6 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
@@ -56,7 +55,6 @@ public class DragIndicatorManager implements IndicatorManager {
     public DragIndicator getDragIndicator() {
         return dragIndicator;
     }
-
 
     @Override
     public void handle(double screenX, double screenY) {

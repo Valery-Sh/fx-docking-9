@@ -19,8 +19,6 @@ import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.DragValue;
-
 /**
  *
  * @author Valery Shyshkin
@@ -57,6 +55,4 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         }
 
     }
-    
-
 }

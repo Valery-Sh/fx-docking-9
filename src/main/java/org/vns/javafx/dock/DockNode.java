@@ -14,7 +14,7 @@ import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 @DefaultProperty(value = "content")
 public class DockNode extends Control { //implements Dockable {
@@ -91,5 +91,4 @@ public class DockNode extends Control { //implements Dockable {
     protected Skin<?> createDefaultSkin() {
         return new DockNodeSkin(this);
     }
-
 }
