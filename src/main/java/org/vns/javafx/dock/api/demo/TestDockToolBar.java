@@ -22,7 +22,7 @@ import org.vns.javafx.dock.DockToolBar;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockTabPane2;
+import org.vns.javafx.dock.incubator.designer.DockTabPane2;
 
 /**
  *

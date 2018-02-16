@@ -42,7 +42,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
 
     @Override
     public Window make(Dockable dockable, boolean show) {
-        System.err.println("FLOATPOPUPCONTROLVIEW2");
+        //System.err.println("FLOATPOPUPCONTROLVIEW2");
         Node node = dockable.node();
 
         Point2D screenPoint = node.localToScreen(0, 0);

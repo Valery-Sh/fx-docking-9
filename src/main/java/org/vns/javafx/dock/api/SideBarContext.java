@@ -56,9 +56,11 @@ public class SideBarContext extends TargetContext {
 
     
     private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
-
-    public SideBarContext(Region dockPane) {
+    private final ToolBar toolBar;
+    
+    public SideBarContext(Region dockPane, ToolBar toolBar) {
         super(dockPane);
+        this.toolBar = toolBar;
     }
 
     @Override
@@ -83,6 +85,10 @@ public class SideBarContext extends TargetContext {
         return retval;
     }
 
+    public ToolBar getToolBar() {
+        return toolBar;
+    }
+
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
@@ -104,9 +110,11 @@ public class SideBarContext extends TargetContext {
         if (dragged == null) {
             return;
         }
-        if (doDock(null, dragged.node())) {
+        doDock(null, dragged.node());
+/*        if (doDock(null, dragged.node())) {
             dragged.getContext().setFloating(false);
         }
+*/        
     }
 
     protected String getButtonText(Dockable d) {
@@ -145,14 +153,14 @@ public class SideBarContext extends TargetContext {
 
         int idx = -1;
 
-        ToolBar tb = ((DockSideBar) getTargetNode()).getToolBar();
+        
 
         if (mousePos != null) {
-            Node sb = findNode(tb.getItems(), mousePos.getX(), mousePos.getY());
+            Node sb = findNode(toolBar.getItems(), mousePos.getX(), mousePos.getY());
             if (sb != null && (sb instanceof Group)) {
-                idx = tb.getItems().indexOf(sb);
-            } else if (sb == null && DockUtil.contains(tb, mousePos.getX(), mousePos.getY())) {
-                idx = tb.getItems().size();
+                idx = toolBar.getItems().indexOf(sb);
+            } else if (sb == null && DockUtil.contains(toolBar, mousePos.getX(), mousePos.getY())) {
+                idx = toolBar.getItems().size();
             } else {
                 return false;
             }
@@ -182,9 +190,9 @@ public class SideBarContext extends TargetContext {
         });
 
         if (idx >= 0) {
-            ((DockSideBar) getTargetNode()).getToolBar().getItems().add(idx, item);
+            toolBar.getItems().add(idx, item);
         } else {
-            ((DockSideBar) getTargetNode()).getToolBar().getItems().add(item);
+            toolBar.getItems().add(item);
         }
         DockableContext nodeHandler = dockable.getContext();
         if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
@@ -264,7 +272,7 @@ public class SideBarContext extends TargetContext {
             itemMap.get(r).removeListeners();
             itemMap.get(r).getFloatView().setSupportedCursors(FloatView.DEFAULT_CURSORS);
             itemMap.remove(r);
-            ((DockSideBar) getTargetNode()).getToolBar().getItems().remove(r);
+            toolBar.getItems().remove(r);
             ((DockSideBar) getTargetNode()).getItems().remove(Dockable.of(dockNode));
         }
     }
@@ -277,9 +285,9 @@ public class SideBarContext extends TargetContext {
         Group group = (Group) btn.getParent();
         Container container = getItemMap().get(group);
         DockSideBar sb = (DockSideBar) getTargetNode();
-        ToolBar tb = sb.getToolBar();
+        
         if (container.getPopup() != null && !container.getPopup().isShowing()) {
-            container.getPopup().show(tb.getScene().getWindow());
+            container.getPopup().show(toolBar.getScene().getWindow());
         }
         container.changeSize();
     }
@@ -414,7 +422,7 @@ public class SideBarContext extends TargetContext {
                     root.setPrefWidth(sb.getWidth());
                     break;
                 case RIGHT:
-                    System.err.println("!!!!!!!!!!! RIGHT changeSize popup isShowing=" + popup.isShowing());
+                    //System.err.println("!!!!!!!!!!! RIGHT changeSize popup isShowing=" + popup.isShowing());
 
                     popup.setAnchorY(pos.getY());
                     popup.setAnchorX(pos.getX() - popup.getWidth());
@@ -490,22 +498,23 @@ public class SideBarContext extends TargetContext {
             getTabDockPlace().setVisible(false);
 
         }
-
+        private ToolBar  getToolBar() {
+            return ((SideBarContext)getTargetContext()).getToolBar();
+        }
         protected int indexOf(double x, double y) {
             int idx = -1;
-            ToolBar tb = ((DockSideBar) getTargetContext().getTargetNode()).getToolBar();
-            Node sb = ((SideBarContext) getTargetContext()).findNode(tb.getItems(), x, y);
+            Node sb = ((SideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
             if (sb != null && (sb instanceof Group)) {
-                idx = tb.getItems().indexOf(sb);
-            } else if (sb == null && DockUtil.contains(tb, x, y)) {
-                idx = tb.getItems().size();
+                idx = getToolBar().getItems().indexOf(sb);
+            } else if (sb == null && DockUtil.contains(getToolBar(), x, y)) {
+                idx = getToolBar().getItems().size();
             }
             return idx;
         }
 
         @Override
         public void showDockPlace(double x, double y) {
-            ToolBar tb = ((DockSideBar) getTargetContext().getTargetNode()).getToolBar();
+            ToolBar tb = getToolBar();
 
             int idx = indexOf(x, y);
             if (idx < 0) {

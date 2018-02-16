@@ -22,6 +22,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -138,12 +139,18 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     protected boolean doDock(Point2D mousePos, Tab tab) {
         boolean retval = false;
         int idx = -1;
+        TabPaneHelper helper = new TabPaneHelper(this);
         TabPane pane = (TabPane) getTargetNode();
-        if (getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
+        if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
             idx = pane.getTabs().size();
-            Tab t = getTab(mousePos.getX(), mousePos.getY());
-            if (t != null) {
-                idx = pane.getTabs().indexOf(t);
+            
+            Bounds ctrlButtonsBounds = helper.controlButtonBounds(mousePos.getX(), mousePos.getY());
+            System.err.println("CONTROL BUTTON = " + ctrlButtonsBounds);
+            if (ctrlButtonsBounds == null) {
+                Tab t = helper.getTab(mousePos.getX(), mousePos.getY());
+                if (t != null) {
+                    idx = pane.getTabs().indexOf(t);
+                }
             }
         }
         if (idx >= 0) {
@@ -194,7 +201,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     //
     //
     //
-    public int getTabIndex(Node tabNode) {
+/*    public int getTabIndex(Node tabNode) {
         int retval = -1;
         TabPane pane = (TabPane) getTargetNode();
         String style = getUUIDStyle(tabNode);
@@ -209,16 +216,16 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         }
         return retval;
     }
-
-    public Tab getTabBy(Node tabNode) {
+*/
+/*    public Tab getTabBy(Node tabNode) {
         int idx = getTabIndex(tabNode);
         if (idx < 0) {
             return null;
         }
         return ((TabPane) getTargetNode()).getTabs().get(idx);
     }
-
-    private String getUUIDStyle(Node node) {
+*/
+/*    private String getUUIDStyle(Node node) {
         String retval = null;
         for (String s : node.getStyleClass()) {
             if (s.startsWith("tab-uuid-")) {
@@ -240,31 +247,19 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         return retval;
     }
 
-    /*    private boolean areSame(Tab tab, Node tabNode) {
-        String tabStyle = null;
-        for (String s : tab.getStyleClass()) {
-            if (s.startsWith("tab-uuid-")) {
-                tabStyle = s;
-                break;
-            }
-        }
-        if (tabStyle == null) {
-            return false;
-        }
-        boolean retval = false;
-        for (String s : tabNode.getStyleClass()) {
-            if (s.startsWith("tab-uuid-") && s.equals(tabStyle)) {
-                retval = true;
-                break;
-            }
-        }
-        return retval;
-
-    }
-     */
     protected Node getHeaderArea(double screenX, double screenY) {
-        //System.err.println("getHeaderArea");
+
         Node retval = getTargetNode().lookup(".tab-header-area");
+        if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
+            retval = null;
+        }
+        //System.err.println("getHeaderArea retvale=" + retval);
+        return retval;
+    }
+
+    protected Node getControlButtonsTab(double screenX, double screenY) {
+
+        Node retval = getTargetNode().lookup(".control-buttons-tab ");
         if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
@@ -284,8 +279,8 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
         return retval;
     }
-
-    protected Tab getTab(double screenX, double screenY) {
+*/
+/*    protected Tab getTab(double screenX, double screenY) {
         Tab retval = null;
         Set<Node> set = getTargetNode().lookupAll(".tab");
         Node tabNode = null;
@@ -304,13 +299,6 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
                 }
             }
             TabPane pane = (TabPane) getTargetNode();
-            /*            for (Tab tab : pane.getTabs()) {
-                System.err.println("tab.id = " + tab.getId());
-                for (String s : tab.getStyleClass()) {
-                    System.err.println("   --- style = " + s);
-                }
-            }
-             */
             if (style != null) {
                 for (Tab tab : pane.getTabs()) {
                     for (String s : tab.getStyleClass()) {
@@ -324,7 +312,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         }
         return retval;
     }
-
+*/
     public static class TabsChangeListener implements ListChangeListener<Tab> {
 
         @Override
@@ -391,7 +379,8 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         protected Rectangle getTabDockPlace() {
             if (tabDockPlace == null) {
                 tabDockPlace = new Rectangle();
-                tabDockPlace.getStyleClass().add("dock-place");
+                //tabDockPlace.getStyleClass().addAll("dock-place", "tab-pane-target");
+                tabDockPlace.getStyleClass().addAll("tab-place");
                 getIndicatorPane().getChildren().add(tabDockPlace);
 //                 getIndicatorPane().setStyle("-fx-background-color: aqua");
             }
@@ -402,7 +391,6 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         public void hideDockPlace() {
             getDockPlace().setVisible(false);
             getTabDockPlace().setVisible(false);
-
         }
 
         @Override
@@ -410,7 +398,21 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             System.err.println("ShowDockPlace: x=" + x + "; y=" + y);
             TabPaneContext ctx = ((TabPaneContext) getTargetContext());
             TabPane pane = (TabPane) getTargetContext().getTargetNode();
-            Bounds tabBounds = null;
+            Bounds tabBounds = helper.tabBounds(x, y);;
+            Bounds headerAreaBounds = helper.headerAreaBounds(x, y);
+            Bounds controlBounds = helper.controlButtonBounds(x, y);
+
+            if (controlBounds != null && !pane.getTabs().isEmpty()) {
+                Bounds lastTabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
+                tabBounds = controlBounds;
+                double delta = Math.max(lastTabBounds.getWidth() / 3, 10);
+                tabBounds = new BoundingBox(tabBounds.getMinX() - delta, lastTabBounds.getMinY(), tabBounds.getWidth() + delta, lastTabBounds.getHeight());
+            } else if (tabBounds == null && !pane.getTabs().isEmpty() && headerAreaBounds != null) {
+                tabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
+                tabBounds = new BoundingBox(tabBounds.getMinX() + (tabBounds.getWidth() / 3) * 2, tabBounds.getMinY(), tabBounds.getWidth(), tabBounds.getHeight());
+            }
+
+            /*            Bounds tabBounds = null;
             Tab tab = helper.getTab(x, y);
             if (tab != null) {
                 System.err.println("ShowDockPlace: tab=" + tab);
@@ -420,15 +422,15 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             System.err.println("ShowDockPlace: tabBounds=" + tabBounds);                
             
             //Bounds tabBounds = null; //ctx.getHelper().screenBounds(x, y);
+             */
             if (tabBounds == null) {
                 ((Rectangle) getDockPlace()).setVisible(false);
                 ((Rectangle) getTabDockPlace()).setVisible(false);
-                System.err.println("ShowDockPlace: RETURN");                
+                System.err.println("ShowDockPlace: RETURN");
                 return;
             }
 
-            double tabsHeight = 0;//ctx.getHelper().getTabAreaHeight();
-
+            //double tabsHeight = 0;//ctx.getHelper().getTabAreaHeight();
             Rectangle tabPlace = (Rectangle) getTabDockPlace();
 
             if (!pane.getTabs().isEmpty()) {

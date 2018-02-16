@@ -382,10 +382,10 @@ public class DockableContext {
      *
      * @param floating the new value to be set
      */
-    public void setFloating(boolean floating) {
+/*    public void setFloating(boolean floating) {
         this.floating.set(floating);
     }
-
+*/
     public BooleanProperty resizableProperty() {
         return resizable;
     }

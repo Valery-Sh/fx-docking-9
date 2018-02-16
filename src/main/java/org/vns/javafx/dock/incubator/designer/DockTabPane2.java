@@ -1,4 +1,4 @@
-package org.vns.javafx.dock;
+package org.vns.javafx.dock.incubator.designer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.DockableContext;

@@ -263,13 +263,27 @@
  *  Drag Indicator's Styles
  *
  *********************************************/
-.dock-place {
+.tab-place {
+ 
     /*-fx-fill: -fx-selection-bar;*/
-    -fx-fill: lightgray;
+    -fx-fill: transparent;
     -fx-opacity: 0.5;
 
     -fx-stroke: #0093ff;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 3;
+    -fx-stroke-type: inside;
+    -fx-stroke-dash-array: 8 2;
+    -fx-stroke-line-cap: butt;
+
+}
+
+.dock-place {
+    /*-fx-fill: -fx-selection-bar;*/
+    -fx-fill: transparent;
+    -fx-opacity: 0.3;
+
+    -fx-stroke:-fx-selection-bar;;
+    -fx-stroke-width: 3;
     -fx-stroke-type: inside;
     -fx-stroke-dash-array: 8 2;
     -fx-stroke-line-cap: butt;

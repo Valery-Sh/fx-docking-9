@@ -1,8 +1,9 @@
 package org.vns.javafx.dock.api.demo;
 
+
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Point2D;
+import javafx.geometry.Bounds;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,49 +18,60 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.incubator.designer.DockTabPane2;
+import org.vns.javafx.dock.DockTabPane1;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
  * @author Valery
  */
-public class TestDockTabPane2 extends Application {
+public class TestDockTabPane1 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
     public static Stage stg02;
-    public boolean scrollBarShowing = true;
-    public boolean menuButtonShowing = true;
-    
+
     @Override
     public void start(Stage stage) throws Exception {
+        Button dockButton = new Button("To be docked 1");
+        dockButton.setId("dockButton");
+        dockButton.setMaxHeight(dockButton.getPrefHeight());
+        dockButton.setMaxWidth(dockButton.getPrefWidth());
+        
+        Dockable dockableButton = DockRegistry.getInstance().getDefaultDockable(dockButton);
+        dockableButton.getContext().setDragNode(dockButton);
+        dockableButton.getContext().setTitle("Dockable Button");
+
         Button b1 = new Button("b01 - DOCK");
+        b1.setId("b1");
         /*        b1.setOnAction(a -> {
             //new DragPopup(dpCenter);
-//            System.err.println("STAGE COUNT=" + StageHelper.getStages().size());
+//            System.err.println("STAGE COUNT=" + StageHelper.getWindows().size());
         });
          */
         //BorderPane rootPane = new BorderPane();
         StackPane rootPane = new StackPane();
         rootPane.setId("ROOT PANE");
+
+        stage.setTitle("Primary Tests Several DockPanes");
         
-        stage.setTitle("Tests Several DockPanes");
         DockPane dpCenter = new DockPane();
+        
         dpCenter.setPrefHeight(200);
         dpCenter.setId("dpCenter");
-        
+
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
-        Button btn = new Button("BOTTON FROM STG");
-        dn01.setContent(btn);
         dpCenter.dockNode(dn01, Side.TOP);
+        dpCenter.dock(dockableButton.node(), Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
+        dn01Btn.setId("dn01Btn");
         dn01Btn.setOnAction((event) -> {
             DockUtil.print(dn01Btn.getScene().getRoot());
         });
-        dpCenter.getItems().add(dn01Btn);
-        
+        //dpCenter.getItems().add(dn01Btn);
+
         DockPane dpRight = new DockPane();
         dpRight.setPrefHeight(200);
         dpRight.setId("dpRight");
@@ -67,129 +79,131 @@ public class TestDockTabPane2 extends Application {
         dn02.setId("dn02");
         dpRight.dockNode(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
+        dn02Btn.setId("dn02Btn");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());
         });
-        
-        dpRight.getItems().add(dn02Btn);
-        
-        SplitPane sp = new SplitPane(dpCenter,dpRight);
+
+        //dpRight.getItems().add(dn02Btn);
+
+        SplitPane sp = new SplitPane(dpCenter, dpRight);
         rootPane.getChildren().add(sp);
         //rootPane.setCenter(dpCenter);
         //rootPane.setRight(dpRight);
-        
+
         Scene scene = new Scene(rootPane);
 
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
-        
+
         Stage stage01 = new Stage();
-        //StackPane rootAsDockPane = new StackPane();
-        //rootPane01.setId("ROOT PANE 01");
-        
+        StackPane rootPane01 = new StackPane();
+        rootPane01.setId("ROOT PANE 01");
+
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
-        
-        DockPane rootAsDockPane = new DockPane();
+        DockPane stg01dp01 = new DockPane();
         //stg01dp01.getTargetContext().setUsedAsDockTarget(false);
-        rootAsDockPane.setPrefHeight(200);
-        rootAsDockPane.setPrefWidth(200);
-        rootAsDockPane.setId("stg01dp01");
+        stg01dp01.setPrefHeight(200);
+        stg01dp01.setPrefWidth(200);
+        stg01dp01.setId("stg01dp01");
         DockNode stg01dn01 = new DockNode();
         stg01dn01.setId("stg01dn01");
-        
+
         Button btn01 = new Button("Button of Tab 01");
-        Pane pane01= new Pane(btn01);
+        Pane pane01 = new Pane(btn01);
         stg01dn01.setContent(pane01);
         pane01.setStyle("-fx-background-color: aqua");
-        
+
         //stg01dn01.getChildren().add(btn01);
-        
-        rootAsDockPane.dockNode(stg01dn01, Side.TOP);
-        
+        //stg01dp01.dockNode(stg01dn01, Side.TOP);
+        stg01dp01.dock(stg01dn01, Side.TOP);
+
         DockNode stg01dn02 = new DockNode();
-        stg01dn02.setTitle("stg01dn02" );
+        stg01dn02.setTitle("stg01dn02");
         stg01dn02.setId("stg01dn02");
         Button btn02 = new Button("Button of Tab 02");
-        VBox vb2 = new VBox(btn02);
-        stg01dn02.setContent(vb2);
-                
+        VBox vb = new VBox();
+        stg01dn02.setContent(vb);
+        vb.getChildren().add(btn02);
+
         DockNode stg01dn03 = new DockNode();
-        stg01dn03.setTitle("stg01dn03" );
+        stg01dn03.setTitle("stg01dn03");
         stg01dn03.setId("stg01dn03");
+        Button btn03 = new Button("Button of Tab 03");
+
         Pane stack02 = new Pane(btn02);
-        vb2.getChildren().add(stack02);
+        vb.getChildren().add(stack02);
         stack02.setStyle("-fx-background-color: aqua");
-        Button btn03 = new Button("Button 03 of Tab 03");
-        Button btn04 = new Button("Button 04 of Tab 03");
-        
-        VBox stack03 = new VBox(btn03, btn04);
+
+        StackPane stack03 = new StackPane(btn03);
         stg01dn03.setContent(stack03);
         stack03.setStyle("-fx-background-color: gray");
-        
+
         //stg01dp01.dock(stg01dn02, Side.TOP);
-        
         /*DockTab stg01tab01 = new DockTab(stg01dn02);
         stg01tab01.setTitle("DockTab 01");
-        rootAsDockPane.dock(stg01tab01, Side.RIGHT);
-        */
-        DockTabPane2 dockTabPane = new DockTabPane2();
-        btn03.setOnAction(a->{
-           System.err.println("SHOW " + scrollBarShowing); 
-           dockTabPane.showScrollBar(! scrollBarShowing);
-           scrollBarShowing = ! scrollBarShowing;
-        });
-           //dockTabPane.showScrollBar(false);
-           //scrollBarShowing = false;
+        stg01dp01.dock(stg01tab01, Side.RIGHT);
+         */
+        DockTabPane1 tabPane01 = new DockTabPane1();
+//        tabPane01.setPrefSize(100, 100);
+//        tabPane01.setMinSize(100, 100);
+        tabPane01.setSide(Side.TOP);
+        //DockableDockPane dockPane = new DockableDockPane(tabPane01);
+        //tabPane01.openDragTag();
+        Button tbButton = new Button("VALERA");
+        //Rectangle tbIv = new Rectangle(20, 20);
+        //ImageView tbIv = new ImageView();
+        //tbRect.setFill(new ImageView());
+        //tbIv.setOpacity(50);
+
+        //tbRect.getStyleClass().add("drag-button");
+        //tbIv.getStyleClass().add("drag-image-view");
+        //tabPane01.getContext().setDragNode(tbIv);
+        //tabPane01.getChildren().add(tbIv);
+        //tbIv.toFront();
+        //tbIv.setTranslateX(-5);
+        //tbIv.setTranslateY(-5);
+        //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
+        //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
         
-        btn04.setOnAction(a->{
-           dockTabPane.showMenuButton(! menuButtonShowing);
-           menuButtonShowing = ! menuButtonShowing;
-        });
-           //dockTabPane.showMenuButton(false);
-           //menuButtonShowing = false;
-        rootAsDockPane.dock(dockTabPane, Side.LEFT);
+        stg01dp01.dock(tabPane01, Side.TOP);
         
+
+        //tabPane01.setSide(Side.RIGHT);
+        btn03.setOnAction(a -> {
+            System.err.println("tabPane01.getChildren().size()=" + tabPane01.getChildren().size());
+            tabPane01.getChildren().forEach(n -> {
+                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
+
+                Bounds bnd = n.getBoundsInParent();
+                if (n instanceof Button) {
+                    System.err.println("isRes=" + n.isResizable());
+                    System.err.println("minx=" + bnd.getMinX());
+                    System.err.println("maxx=" + bnd.getMaxX());
+                    System.err.println("miny=" + bnd.getMinY());
+                    System.err.println("maxy=" + bnd.getMaxY());
+                    System.err.println("w=" + bnd.getWidth());
+                    System.err.println("h=" + bnd.getHeight());
+                }
+
+                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
+
+            });
+        });
+
         stage.show();
-        
-        Scene scene01 = new Scene(rootAsDockPane);
+
+        Scene scene01 = new Scene(stg01dp01);
         stage01.setScene(scene01);
-        
-        
-        //DockRedirector dpd = new DockRedirector(rootAsDockPane);
-        //DragPopupDelegate dpd = new DockRedirector(dockTabPane.getTargetContext());        
-        stage01.setOnShown(e -> { 
-            Point2D p = rootAsDockPane.localToScreen(0, 0);
-            double w = rootAsDockPane.getWidth();
-            double h = rootAsDockPane.getHeight();
-            //dpd.getRootPane().setPrefSize(w, h);
-            //dpd.show(p.getX(),p.getY()); 
-            //dpd.show(50,50);
-        });
-        stage01.setX(150);
         stage01.show();
         
-        
-        //dockTabPane.getTargetContext().dock(stg01dn03, Side.TOP);        
-        dockTabPane.getItems().add(Dockable.of(stg01dn03));
-        DockNode stg01dn04 = new DockNode();
-        stg01dn04.setTitle("stg01dn04" );
-        stg01dn04.setId("stg01dn04");
-        dockTabPane.getItems().add(0,Dockable.of(stg01dn04));
+        dockButton.setMaxHeight(dockButton.getHeight());
+        dockButton.setMaxWidth(dockButton.getWidth());
 
-        DockNode stg01dn05 = new DockNode();
-        stg01dn05.setTitle("stg01dn05" );
-        stg01dn05.setId("stg01dn05");
-        dockTabPane.getItems().set(0,Dockable.of(stg01dn05));
-        //Platform.runLater(()->{
-        
-            
-        //});
-        
-        
+//        tabPane01.dock(stg01dn03);
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
-
     }
 
     /**

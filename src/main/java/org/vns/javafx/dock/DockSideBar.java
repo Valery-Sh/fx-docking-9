@@ -1,13 +1,11 @@
 package org.vns.javafx.dock;
 
-import java.util.List;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Orientation;
@@ -36,17 +34,18 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
 
     private DockableContext context = new DockableContext(this);
 
-    private SideBarContext targetContext;
+//    private SideBarContext targetContext;
     
-    private Orientation orientation = Orientation.VERTICAL;
 
-    private final ObjectProperty<Side> sideProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Side> side = new SimpleObjectProperty<>();
 
-    private final ObjectProperty<Rotation> rotationProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Rotation> rotation = new SimpleObjectProperty<>();
+    
+    private final ObjectProperty<Orientation> orientation = new SimpleObjectProperty<>();
+    
+    private final BooleanProperty hideOnExit = new SimpleBooleanProperty(false);
 
-    private final BooleanProperty hideOnExitProperty = new SimpleBooleanProperty(false);
-
-    private final ToolBar toolBar = new ToolBar();
+    //private final ToolBar toolBar = new ToolBar();
 
     private final ObservableList<Dockable> items = FXCollections.observableArrayList();
     
@@ -83,9 +82,6 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
         DockRegistry.makeDockable(this);
         context = Dockable.of(this).getContext();
         
-        targetContext = new SideBarContext(this);
-        DockRegistry.makeDockTarget(this, targetContext);
-        
         setOrientation(Orientation.VERTICAL);
         getStyleClass().clear();
         getStyleClass().add("dock-side-bar");
@@ -94,13 +90,13 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
             sceneChanged(ov, nv);
         });
 */
-/*        sideProperty.addListener((v, ov, nv) -> {
+/*        side.addListener((v, ov, nv) -> {
             targetContext.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
-        rotationProperty.addListener((v, ov, nv) -> {
+        rotation.addListener((v, ov, nv) -> {
             targetContext.getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
@@ -116,13 +112,13 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
         setSide(Side.TOP);
         setRotation(Rotation.DEFAULT);
 
-        items.addListener(this::itemsChanged);
+        //items.addListener(this::itemsChanged);
     }
 
-    public ToolBar getToolBar() {
+/*    public ToolBar getToolBar() {
         return toolBar;
     }
-
+*/
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
@@ -140,32 +136,33 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
 ////////////////////////////////////////////////////
 
     public ObjectProperty<Rotation> rotationProperty() {
-        return rotationProperty;
+        return rotation;
     }
 
     public BooleanProperty hideOnExitProperty() {
-        return hideOnExitProperty;
+        return hideOnExit;
     }
 
     public boolean isHideOnExit() {
-        return hideOnExitProperty.get();
+        return hideOnExit.get();
     }
 
     public void setHideOnExit(boolean value) {
         //addMouseExitListener();
-        hideOnExitProperty.set(value);
+        hideOnExit.set(value);
     }
 
     public Rotation getRotation() {
-        return rotationProperty.get();
+        return rotation.get();
     }
 
     public void setRotation(Rotation rotation) {
-        targetContext.getItemMap().keySet().forEach(g -> {
+/*        targetContext.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(rotation.getAngle());
         });
-        this.rotationProperty.set(rotation);
+*/        
+        this.rotation.set(rotation);
 
     }
 
@@ -196,22 +193,26 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
     }
 */    
     public ObjectProperty<Side> sideProperty() {
-        return sideProperty;
+        return side;
     }
     public Side getSide() {
-        return sideProperty.get();
+        return side.get();
     }
 
     public void setSide(Side side) {
-        sideProperty.set(side);
+        this.side.set(side);
     }
-
+    
+    public ObjectProperty<Orientation> orientationProperty() {
+        return orientation;
+    }
     public Orientation getOrientation() {
-        return toolBar.getOrientation();
+        return orientation.get();
     }
 
     public void setOrientation(Orientation orientation) {
-        toolBar.setOrientation(orientation);
+        this.orientation.set(orientation);
+        
     }
     @Override
     public Region node() {
@@ -235,7 +236,7 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
     }
 
 
-    @Override
+/*    @Override
     protected double computePrefHeight(double h) {
         return toolBar.prefHeight(h);
     }
@@ -264,7 +265,8 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
     protected double computeMaxWidth(double w) {
         return toolBar.maxWidth(w);
     }
-    protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {
+*/
+/*    protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {
         while (change.next()) {
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
@@ -282,5 +284,5 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
             }
         }//while
     }
-
+*/
 }//class

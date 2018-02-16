@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.Set;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -28,9 +29,9 @@ import org.vns.javafx.dock.DockUtil;
  */
 public class TabPaneHelper {
 
-    private final TabPaneContext context;
+    private final TargetContext context;
 
-    public TabPaneHelper(TabPaneContext context) {
+    public TabPaneHelper(TargetContext context) {
         this.context = context;
     }
 
@@ -45,7 +46,7 @@ public class TabPaneHelper {
         return retval;
     }
 
-    public TabPaneContext getContext() {
+    public TargetContext getContext() {
         return context;
     }
 
@@ -55,6 +56,14 @@ public class TabPaneHelper {
             retval = null;
         }
         return retval;
+    }
+
+    public Node getHeaderArea() {
+        return getContext().getTargetNode().lookup(".tab-header-area");
+    }
+
+    public Node getHeadersRegion() {
+        return getContext().getTargetNode().lookup(".headers-region");
     }
 
     public Node getHeadersRegion(double screenX, double screenY) {
@@ -67,6 +76,9 @@ public class TabPaneHelper {
     }
 
     public Node getTabNode(Tab tab) {
+        if (tab == null) {
+            return null;
+        }
         return tab.getTabPane().lookup("." + getUUIDStyle(tab));
     }
 
@@ -109,4 +121,104 @@ public class TabPaneHelper {
         }
         return retval;
     }
+
+    public Node getControlButtonsTab() {
+        return getContext().getTargetNode().lookup(".control-buttons-tab ");
+    }
+
+    public Node getControlButtonsTab(double screenX, double screenY) {
+
+        Node retval = getContext().getTargetNode().lookup(".control-buttons-tab ");
+        if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
+            retval = null;
+        }
+        //System.err.println("getHeaderArea retvale=" + retval);
+        return retval;
+    }
+
+    public Bounds tabBounds(Tab tab) {
+        if (tab == null) {
+            return null;
+        }
+        if (!(getContext().getTargetNode() instanceof TabPane)) {
+            return null;
+        }
+        Node tabNode = getTabNode(tab);
+
+        if (!((TabPane) getContext().getTargetNode()).getTabs().contains(tab) || tabNode == null) {
+            return null;
+        }
+        return tabNode.localToScreen(tabNode.getBoundsInLocal());
+
+    }
+
+    public Bounds tabBounds(double screenX, double screenY) {
+        Tab tab = getTab(screenX, screenY);
+        return tabBounds(tab);
+    }
+
+    public Bounds headerAreaBounds() {
+        Node node = getHeaderArea();
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+    public Bounds headerRegionBounds() {
+        Node node = getHeadersRegion();
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+    public Bounds headersRegionBounds(double screenX, double screenY) {
+        Node node = getHeadersRegion(screenX, screenY);
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+    public Bounds headerAreaBounds(double screenX, double screenY) {
+        Node node = getHeaderArea(screenX, screenY);
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+    public Bounds controlButtonBounds() {
+        Node node = getControlButtonsTab();
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+    public Bounds controlButtonBounds(double screenX, double screenY) {
+        Node node = getControlButtonsTab(screenX, screenY);
+        if (node == null) {
+            return null;
+        }
+        return node.localToScreen(node.getBoundsInLocal());
+    }
+
+/*    public int getTabIndex(Node tabNode) {
+        int retval = -1;
+        TabPane pane = (TabPane) getTargetNode();
+        String style = getUUIDStyle(tabNode);
+        if (style != null) {
+            for (Tab tab : pane.getTabs()) {
+                String tabStyle = getUUIDStyle(tab);
+                if (style.equals(tabStyle)) {
+                    retval = pane.getTabs().indexOf(tab);
+                    break;
+                }
+            }
+        }
+        return retval;
+    }
+*/
 }

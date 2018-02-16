@@ -42,7 +42,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
 import org.vns.javafx.dock.DockBorderPane;
-import org.vns.javafx.dock.DockBorderPane.BorderPaneContext;
 import org.vns.javafx.dock.DockTabPane.TabPaneContext;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
@@ -97,8 +96,7 @@ public class TargetContextFactory {
     }
 
     protected TargetContext getBorderPaneContext(BorderPane pane) {
-        TargetContext retval = new DockBorderPane.BorderPaneContext(pane);
-        //pane.setAlignment(pane, Pos.CENTER);
+        TargetContext retval = new BorderPaneContext(pane);
         return retval;
     }
 

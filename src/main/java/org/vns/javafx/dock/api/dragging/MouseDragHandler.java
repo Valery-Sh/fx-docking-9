@@ -39,7 +39,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
             return;
         }
         startMousePos = new Point2D(ev.getX(), ev.getY());
-        System.err.println("   --- MouseDragHandler MOUSE PRESSED stargMousePos = " + startMousePos);
+        //System.err.println("   --- MouseDragHandler MOUSE PRESSED stargMousePos = " + startMousePos);
 
     }
 
