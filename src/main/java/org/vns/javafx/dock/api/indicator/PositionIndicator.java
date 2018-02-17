@@ -24,6 +24,7 @@ public abstract class PositionIndicator {
     private void init() {
         indicatorPane = createIndicatorPane();
         dockPlace = new Rectangle();
+        dockPlace.setId("dockPlace");
         dockPlace.getStyleClass().add("dock-place");
         addDockPlace();
     }
@@ -43,12 +44,12 @@ public abstract class PositionIndicator {
     }
 
     protected void showIndicator(double screenX, double screenY, Node targetNode) {
-        //showIndicator(screenX, screenY);
+        
     }
     
-    //public abstract void showIndicator(double screenX, double screenY);
+    
     public void showIndicator(double screenX, double screenY) {
-        //21.08getTargetContext().getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        System.err.println("PositionIndicator x = " + screenX + "; y="+screenY);
         getIndicatorPpopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
 

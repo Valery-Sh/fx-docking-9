@@ -105,10 +105,11 @@ public class SideBarContext extends TargetContext {
     }
 
     public void dock(Dockable dockable) {
-        Dockable dragged = getValue(dockable);
-        if (dragged == null) {
+        Object o = getValue(dockable);
+        if ( o == null || Dockable.of(o) == null ) {
             return;
         }
+        Dockable dragged = Dockable.of(o);
         doDock(null, dragged.node());
     }
 
@@ -499,10 +500,10 @@ public class SideBarContext extends TargetContext {
 
             if (tb.getOrientation() == Orientation.HORIZONTAL) {
                 dockPlace.setHeight(tb.getHeight());
-                dockPlace.setWidth(5);
+                dockPlace.setWidth(10);
             } else {
                 dockPlace.setWidth(tb.getWidth());
-                dockPlace.setHeight(5);
+                dockPlace.setHeight(10);
             }
             Point2D p = dockPlace.localToParent(0, 0);
 

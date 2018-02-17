@@ -79,10 +79,12 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
 
     private Node draggedNode;
 
+    @Override
     public Node getDraggedNode() {
         return draggedNode;
     }
 
+    @Override
     public void setDraggedNode(Node draggedNode) {
         this.draggedNode = draggedNode;
     }
@@ -156,6 +158,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
         super.show(ownerNode, anchorX, anchorY);
+        System.err.println("IndicatorPopup: x = " + anchorX + "; y="+anchorY);
     }
 
     @Override
@@ -237,6 +240,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
      *
      * @return Returns an object of type {@code PositionIndicator}
      */
+    @Override
     public PositionIndicator getPositionIndicator() {
         return targetContext.getPositionIndicator();
     }
@@ -254,7 +258,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
     /**
      * Shows this pop up window
      */
-    //public void showIndicator(Node dockNode) {
     @Override
     public void showIndicator() {
         if (getPositionIndicator() == null) {
@@ -296,6 +299,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
      * @param screenX a screen mouse position
      * @param screenY a screen mouse position
      */
+    @Override
     public void handle(double screenX, double screenY) {
         if (getPositionIndicator() == null) {
             return;

@@ -48,7 +48,7 @@ public class TestResizerUtilForPane extends Application {
         //b1.setGraphic(b2);
         Pane p1 = new HBox(b1);
         DockNode custom = new DockNode();
-        rootPane.dockNode(custom, Side.TOP);
+        rootPane.dock(custom, Side.TOP);
 
         DockNode custom1 = new DockNode();
         custom1.setTitle("CUSTOM 1");

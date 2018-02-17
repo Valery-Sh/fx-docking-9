@@ -143,7 +143,7 @@ public abstract class TargetContext {
         this.dockLoader = loader;
     }
     
-    protected Dockable getValue(Dockable dockable) {
+/*    protected Dockable getValue(Dockable dockable) {
         Dockable retval = null;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.isValueDockable() ) {
@@ -153,6 +153,17 @@ public abstract class TargetContext {
         }
         return retval;
     }
+*/    
+    protected Object getValue(Dockable dockable) {
+        Object retval = null;
+        DragContainer dc = dockable.getContext().getDragContainer();
+        if (dc != null ) {
+             retval = dc.getValue();
+        } else if (dc == null ) {
+            retval = dockable;
+        }
+        return retval;
+    }    
     public boolean isAcceptable(Dockable dockable) {
 
         Dockable dragged = dockable;
@@ -167,10 +178,24 @@ public abstract class TargetContext {
     }
 
     public void dock(Point2D mousePos, Dockable dockable) {
-        Dockable d = getValue(dockable);
-        if (d == null || isDocked(d.node())) {
+        Object o = getValue(dockable);
+        if ( o == null || Dockable.of(o) == null ) {
             return;
         }
+        
+        Dockable d = Dockable.of(o);
+        //
+        // Test is we drag dockable or the value of a dragContainer 
+        //
+        if (isDocked(d.node()) && d == dockable) {
+            return;
+        } else if ( isDocked(d.node()) ) {
+            TargetContext tc =  d.getContext().getTargetContext();
+            if ( tc != null && isDocked(tc, d) ) {
+                tc.undock(d.node());
+            }
+        } 
+        
         Node node = d.node();
         Window stage = null;
         if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {

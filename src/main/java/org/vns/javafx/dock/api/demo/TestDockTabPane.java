@@ -62,7 +62,7 @@ public class TestDockTabPane extends Application {
 
         DockNode dn01 = new DockNode();
         dn01.setId("dn01");
-        dpCenter.dockNode(dn01, Side.TOP);
+        dpCenter.dock(dn01, Side.TOP);
         dpCenter.dock(dockableButton.node(), Side.TOP);
         dn01.setTitle("DockNode: dn01");
         Button dn01Btn = new Button("Print");
@@ -77,7 +77,7 @@ public class TestDockTabPane extends Application {
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dockNode(dn02, Side.TOP);
+        dpRight.dock(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
         dn02Btn.setId("dn02Btn");
         dn02Btn.setOnAction((event) -> {

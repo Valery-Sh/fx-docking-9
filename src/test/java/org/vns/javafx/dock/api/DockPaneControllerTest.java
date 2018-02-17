@@ -267,7 +267,7 @@ public class DockPaneControllerTest {
     @Test
     public void testPreferencesBuilder_build_1() {
         System.out.println("PreferencesBuilder_build");
-        DockPaneContext instance = (DockPaneContext) dockPane2.getTargetContext();
+        DockPaneContext instance = (DockPaneContext) DockTarget.of(dockPane2).getTargetContext();
         TreeItem<Pair<ObjectProperty, Properties>> expResult = null;
 /*        TreeItem<Pair<ObjectProperty, Properties>> result = instance.getDockTreeTemBuilder().build(dockPane2);
         assertNotNull(result);
@@ -283,7 +283,7 @@ public class DockPaneControllerTest {
     @Test
     public void testPreferencesBuilder_restoreFrom_1() {
         System.out.println("PreferencesBuilder_restoreFrom");
-        DockPaneContext instance = (DockPaneContext) dockPane2.getTargetContext();
+        DockPaneContext instance = (DockPaneContext) DockTarget.of(dockPane2).getTargetContext();
         TreeItem<Pair<ObjectProperty, Properties>> expResult = null;
 /*        TreeItem<Pair<ObjectProperty, Properties>> result = instance.getDockTreeTemBuilder().xmlBuild(dockPane2);
         assertNotNull(result);

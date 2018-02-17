@@ -71,9 +71,14 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         boolean retval = false;
         DragContainer dc = dockable.getContext().getDragContainer();
 
-        if (dc != null && (dc.isValueDockable())) {
+        /*17.02.2018if (dc != null && (dc.isValueDockable())) {
+        if (dc != null )
             retval = true;
         } else if ((dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
+            retval = true;
+        }
+*/
+        if ( dc != null && (dc.getValue() instanceof Tab) && ! dc.isValueDockable()) {        
             retval = true;
         }
         return retval;
@@ -272,9 +277,16 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
             if (controlBounds != null && !pane.getTabs().isEmpty()) {
                 Bounds lastTabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
+                Bounds firstTabBounds = helper.tabBounds(pane.getTabs().get(0));
+                double delta = 0;
                 tabBounds = controlBounds;
-                double delta = Math.max(lastTabBounds.getWidth() / 3, 10);
+                if ( ! tabBounds.intersects(firstTabBounds)) {
+                    //delta = firstTabBounds.getWidth() / 2;
+                }
+                
+                //double delta = Math.max(lastTabBounds.getWidth() / 3, 10);
                 tabBounds = new BoundingBox(tabBounds.getMinX() - delta, lastTabBounds.getMinY(), tabBounds.getWidth() + delta, lastTabBounds.getHeight());
+                //tabBounds = new BoundingBox(tabBounds.getMinX(), lastTabBounds.getMinY(), tabBounds.getWidth(), lastTabBounds.getHeight());                
             } else if (tabBounds == null && !pane.getTabs().isEmpty() && headerAreaBounds != null) {
                 tabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
                 tabBounds = new BoundingBox(tabBounds.getMinX() + (tabBounds.getWidth() / 3) * 2, tabBounds.getMinY(), tabBounds.getWidth(), tabBounds.getHeight());

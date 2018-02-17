@@ -1,44 +1,20 @@
 package org.vns.javafx.dock;
 
-import java.util.ArrayList;
-import java.util.List;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.util.Duration;
-import org.vns.javafx.dock.api.ContextLookup;
-import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTabPaneContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.indicator.IndicatorPopup;
-import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
 
 /**
  *

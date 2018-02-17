@@ -73,7 +73,7 @@ public class TestTabPaneTargetContext1 extends Application {
         dpRight.setId("dpRight");
         DockNode dn02 = new DockNode();
         dn02.setId("dn02");
-        dpRight.dockNode(dn02, Side.TOP);
+        dpRight.dock(dn02, Side.TOP);
         Button dn02Btn = new Button("Print");
         dn02Btn.setOnAction((event) -> {
             DockUtil.print(dn02Btn.getScene().getRoot());

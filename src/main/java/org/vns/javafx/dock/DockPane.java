@@ -59,14 +59,14 @@ public class DockPane extends Control {
         }
         targetContext.dock(dockable, side);
     }
-    public void dockNode(Node dockableNode, Side side) {
+ /*   public void dockNode(Node dockableNode, Side side) {
         dock( dockableNode, side);
     }
 
     public void dockNode(Node dockableNode, Side side, Dockable target) {
         dock( dockableNode, side, target);
     }
-    
+*/    
     public void dock(Node dockableNode, Side side, Dockable dockableTarget) {
         Dockable dockable = Dockable.of(dockableNode);
         Dockable target = Dockable.of(dockableTarget);

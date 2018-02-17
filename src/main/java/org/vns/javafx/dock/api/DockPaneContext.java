@@ -71,10 +71,11 @@ public class DockPaneContext extends TargetContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        Dockable dragged = getValue(dockable);
-        if ( dragged == null ) {
+        Object o = getValue(dockable);
+        if ( o == null || Dockable.of(o) == null ) {
             return;
         }
+        Dockable dragged = Dockable.of(o);
         
         IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
 
@@ -109,10 +110,11 @@ public class DockPaneContext extends TargetContext {
 
     //@Override
     public void dock(Dockable dockable, Side pos) {
-        Dockable dragged = getValue(dockable);
-        if ( dragged == null ) {
+        Object o = getValue(dockable);
+        if ( o == null || Dockable.of(o) == null ) {
             return;
         }
+        Dockable dragged = Dockable.of(o);
         if (isDocked(dragged.node())) {
             return;
         }
@@ -141,10 +143,11 @@ public class DockPaneContext extends TargetContext {
 
 
     public void dock(Dockable dockable, Side side, Dockable target) {
-        Dockable dragged = getValue(dockable);
-        if ( dragged == null ) {
+        Object o = getValue(dockable);
+        if ( o == null || Dockable.of(o) == null ) {
             return;
         }
+        Dockable dragged = Dockable.of(o);
         if (isDocked(dragged.node())) {
             return;
         }

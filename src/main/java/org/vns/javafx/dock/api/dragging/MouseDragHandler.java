@@ -22,7 +22,7 @@ import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
 public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
 
@@ -32,7 +32,9 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     protected MouseDragHandler(DockableContext context) {
         this.context = context;
     }
-
+    
+    public abstract void mouseDragDetected(MouseEvent ev);
+    
     public void mousePressed(MouseEvent ev) {
         if (!ev.isPrimaryButtonDown()) {
             return;
@@ -40,7 +42,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         startMousePos = new Point2D(ev.getX(), ev.getY());
     }
 
-    public abstract void mouseDragDetected(MouseEvent ev);
+  
 
     @Override
     public void handle(MouseEvent ev) {
