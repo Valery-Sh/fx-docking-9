@@ -117,13 +117,14 @@ public class StageResizer implements WindowResizer {
         if (wDelta + window.getWidth() > ((Stage) window).getMinWidth()) {
             window.setX(xDelta + window.getX());
             root.setPrefWidth(wDelta + root.getPrefWidth());
-            
+            //window.setWidth(wDelta + wDelta + root.getPrefWidth());
             mouseX.set(curX);
         }
 
         if (hDelta + window.getHeight() > ((Stage) window).getMinHeight()) {
             window.setY(yDelta + window.getY());
             root.setPrefHeight(hDelta + root.getPrefHeight());
+            //window.setHeight(hDelta + root.getPrefHeight());
             mouseY.set(curY);
         }
 

@@ -85,9 +85,22 @@ public class DockPaneContext extends TargetContext {
         }
         DragPopup dp = (DragPopup) popup;
         Dockable d = Dockable.of(node);
+        DockPane dockPane = (DockPane) this.getTargetNode();
+        
+        Node titleBar = dockPane.getTitleBar();
+        
         if (d.getContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
             if (dp.getTargetPaneSidePos() != null) {
-                dock(dragged, dp.getTargetPaneSidePos());
+                Side pos = dp.getTargetPaneSidePos();
+                if ( pos == Side.TOP && titleBar != null) {
+                    dock(dragged, Side.BOTTOM, Dockable.of(dockPane.getTitleBar()));
+                } else if ( (pos == Side.LEFT || pos == Side.RIGHT) && titleBar != null) {
+                    undock(titleBar);
+                    dock(dragged, pos);
+                    dockPane.dock(titleBar, Side.TOP);
+                } else {
+                    dock(dragged, dp.getTargetPaneSidePos());
+                }
             } else if (dp.getTargetNodeSidePos() != null) {
                 Dockable t = dp.getDragTarget() == null ? null : Dockable.of(dp.getDragTarget());
                 dock(dragged, dp.getTargetNodeSidePos(), t);

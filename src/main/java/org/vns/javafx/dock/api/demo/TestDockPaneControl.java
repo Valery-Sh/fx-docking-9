@@ -3,6 +3,7 @@ package org.vns.javafx.dock.api.demo;
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -64,6 +66,11 @@ public class TestDockPaneControl extends Application {
         dnc2_1.setTitle("dnc2_1");
         
         Button b1_1 = new Button("b1_1");
+        b1_1.setOnAction(a -> {
+            HBox h = new HBox(new Button("Title Bar"));
+            h.setMaxHeight(Region.USE_PREF_SIZE);
+            dockPane2.setTitleBar(h);
+        });
         Button b1_2 = new Button("b1_2");
         dnc1_1.setContent(b1_1);
         dnc2_1.setContent(b1_2);

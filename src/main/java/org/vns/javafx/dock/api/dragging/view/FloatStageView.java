@@ -20,15 +20,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -116,6 +120,7 @@ public class FloatStageView implements FloatWindowView {
     public void setSupportedCursors(Cursor[] supportedCursors) {
         this.supportedCursors = supportedCursors;
     }
+
     @Override
     public ObjectProperty<Window> floatingWindowProperty() {
         return floatingWindow;
@@ -160,10 +165,19 @@ public class FloatStageView implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
-        Point2D screenPoint = node.localToScreen(0, 0);
-        if (screenPoint == null) {
-            screenPoint = new Point2D(400, 400);
+        double nodeWidth = node.getBoundsInLocal().getWidth();
+        double nodeHeight = node.getBoundsInLocal().getHeight();
+        if ( node instanceof Region ) {
+            nodeWidth = ((Region) node).getWidth();
+            nodeHeight = ((Region) node).getHeight();
         }
+
+        Point2D windowPos = node.localToScreen(0, 0);
+
+        if (windowPos == null) {
+            windowPos = new Point2D(400, 400);
+        }
+
         Node titleBar = dockable.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
@@ -200,8 +214,6 @@ public class FloatStageView implements FloatWindowView {
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
-        Point2D stagePosition = screenPoint;
-
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
@@ -223,13 +235,15 @@ public class FloatStageView implements FloatWindowView {
 
         Scene scene = new Scene(borderPane);
         scene.setCursor(Cursor.HAND);
-
         stage.setScene(scene);
         markFloating(stage);
 
         node.applyCss();
         borderPane.applyCss();
-        Insets insetsDelta = borderPane.getInsets();
+        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
+        FloatView.layout(stage, bounds);
+
+        /*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
@@ -244,13 +258,17 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-
+         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
         addResizer();
-        stage.sizeToScene();
+        //stage.sizeToScene();
         stage.setAlwaysOnTop(true);
+        
+        borderPane.prefHeightProperty().bind(stage.heightProperty());
+        borderPane.prefWidthProperty().bind(stage.widthProperty());
+        
         if (show) {
             stage.show();
         }
@@ -330,9 +348,17 @@ public class FloatStageView implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dragged.node();
-        Point2D screenPoint = node.localToScreen(0, 0);
-        if (screenPoint == null) {
-            screenPoint = new Point2D(400, 400);
+        double nodeWidth = node.getBoundsInLocal().getWidth();
+        double nodeHeight = node.getBoundsInLocal().getHeight();
+        if (node instanceof Region) {
+            nodeWidth = ((Region) node).getWidth();
+            nodeHeight = ((Region) node).getHeight();
+        }
+
+        Point2D windowPos = node.localToScreen(0, 0);
+
+        if (windowPos == null) {
+            windowPos = new Point2D(400, 400);
         }
         Node titleBar = dragged.getContext().getTitleBar();
         if (titleBar != null) {
@@ -372,8 +398,6 @@ public class FloatStageView implements FloatWindowView {
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
-        Point2D stagePosition = screenPoint;
-
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
@@ -402,7 +426,10 @@ public class FloatStageView implements FloatWindowView {
 
         node.applyCss();
         borderPane.applyCss();
-        Insets insetsDelta = borderPane.getInsets();
+        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
+        FloatView.layout(stage, bounds);
+
+        /*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
@@ -417,7 +444,7 @@ public class FloatStageView implements FloatWindowView {
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-
+         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }

@@ -490,12 +490,14 @@ public class DockableContext {
 
         if (tc != null) {
             dmf = tc.getLookup().lookup(DragManagerFactory.class);
+            dmf = null;
             if (dmf == null) {
                 dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
             }
         } else {
             dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
         }
+
         dragManager = dmf.getDragManager(dockable);
     }
 
@@ -546,20 +548,33 @@ public class DockableContext {
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+//                    oldValue.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
+//                    oldValue.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
+                    
+                    
                 }
                 if (newValue != null) {
                     newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+//                    newValue.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
+//                    newValue.addEventFilter(MouseEvent.DRAG_DETECTED, this);
+
                 }
             });
             dockableContext.dragNodeProperty().addListener((ov, oldValue, newValue) -> {
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+             //       oldValue.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
+             //       oldValue.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
+                    
                 }
                 if (newValue != null) {
                     newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+//                    newValue.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
+//                    newValue.addEventFilter(MouseEvent.DRAG_DETECTED, this);
+                    
                 }
             });
         }
@@ -570,6 +585,7 @@ public class DockableContext {
                 dragHandler = new DefaultMouseDragHandler(dockableContext);
             }
             dragHandler.handle(event);
+            event.consume();
         }
 
     }//DragDetector

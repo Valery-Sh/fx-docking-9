@@ -407,8 +407,6 @@ public class DockTabPaneContext extends TargetContext {
 
         @Override
         public void showIndicator(double screenX, double screenY) {
-            System.err.println("TabPanePositionIndicator x = " + screenX + "; y="+screenY);
-
             getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
         }
 
@@ -444,7 +442,6 @@ public class DockTabPaneContext extends TargetContext {
 
         @Override
         public void showDockPlace(double x, double y) {
-            System.err.println("TabPanePositionIndicator.pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()));
             DockTabPaneContext ctx = ((DockTabPaneContext) getTargetContext());
             TabPane pane = (TabPane) getTargetContext().getTargetNode();
 
@@ -467,7 +464,6 @@ public class DockTabPaneContext extends TargetContext {
                 tabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
                 tabBounds = new BoundingBox(tabBounds.getMinX() + (tabBounds.getWidth() / 3) * 2, tabBounds.getMinY(), tabBounds.getWidth(), tabBounds.getHeight());
             }
-            System.err.println("1 TabPanePositionIndicator.pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
             if (tabBounds == null) {
                 ((Rectangle) getDockPlace()).setVisible(false);
                 ((Rectangle) getTabDockPlace()).setVisible(false);
@@ -480,7 +476,6 @@ public class DockTabPaneContext extends TargetContext {
             dockPlace.setWidth(pane.getWidth());
             dockPlace.setHeight(pane.getHeight() / 2);
             Point2D p = dockPlace.localToParent(0, 0);
-            System.err.println("1   --- pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
 
             dockPlace.setX(p.getX());
             dockPlace.setY(p.getY() + tabBounds.getHeight());
@@ -488,7 +483,6 @@ public class DockTabPaneContext extends TargetContext {
             dockPlace.setVisible(true);
             
             dockPlace.toFront();
-            System.err.println("2   --- pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
 
             if (!pane.getTabs().isEmpty()) {
                 tabPlace.setWidth(tabBounds.getWidth());
@@ -498,29 +492,20 @@ public class DockTabPaneContext extends TargetContext {
                 //tabPlace.setY(tabBounds.getMinY());
                 
                 Bounds b = tabPlace.getParent().screenToLocal(tabBounds);
-                System.err.println("      --- tabPlace.getParent() = " + tabPlace.getParent());
-                System.err.println("      --- tabPlace.getParent().bounds = " + tabPlace.getParent().localToScreen(tabPlace.getParent().getBoundsInLocal()));                
-                System.err.println("      --- tabPlace.tabBounds()" + tabBounds);
-                System.err.println("      --- b=" + b);
-                
                 //tabPlace.setHeight(tabBounds.getHeight());
                 //
                 // idx may be equal to size => the mouse is after last tab
                 //
-                System.err.println("3   --- pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
                 
                 tabPlace.setX(b.getMinX());
-                System.err.println("4   --- pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
                 
                 tabPlace.setY(b.getMinY());
                 tabPlace.setVisible(true);
-                System.err.println("5   --- pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
                 
                 tabPlace.toFront();
             } else {
                 tabPlace.setVisible(false);
             }
-            System.err.println("2 TabPanePositionIndicator.pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
             tabPlace.strokeDashOffsetProperty().set(0);
             if (tabPlace.isVisible()) {
                 Timeline placeTimeline = new Timeline();
@@ -530,7 +515,6 @@ public class DockTabPaneContext extends TargetContext {
                 placeTimeline.getKeyFrames().add(kf);
                 placeTimeline.play();
             }
-            System.err.println("3 TabPanePositionIndicator.pane.pos=" + getIndicatorPane().localToScreen(getIndicatorPane().getLayoutBounds()).getMinX());
         }
 
     }

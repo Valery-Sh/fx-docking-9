@@ -13,10 +13,6 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import javafx.scene.layout.Region;
-import org.vns.javafx.dock.api.DockRegistry;
-
-import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockSideBarSkin;
 
@@ -25,11 +21,9 @@ import org.vns.javafx.dock.api.DockSideBarSkin;
  * @author Valery Shyshkin
  */
 @DefaultProperty(value = "items")
-public class DockSideBar extends Control implements Dockable { // ListChangeListener {
+public class DockSideBar extends Control { // ListChangeListener {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
-
-    private DockableContext context = new DockableContext(this);
 
     private final ObjectProperty<Side> side = new SimpleObjectProperty<>();
 
@@ -41,8 +35,9 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
 
 
     private final ObservableList<Dockable> items = FXCollections.observableArrayList();
-    
 
+    private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
+    
     public enum Rotation {
         DEFAULT(0),
         DOWN_UP(-90), // usualy if Side.LEFT
@@ -65,9 +60,6 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
 
     private void init() {
         
-        DockRegistry.makeDockable(this);
-        context = Dockable.of(this).getContext();
-        
         setOrientation(Orientation.VERTICAL);
         getStyleClass().clear();
         getStyleClass().add("dock-side-bar");
@@ -76,7 +68,22 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
         setRotation(Rotation.DEFAULT);
 
     }
-
+    public ObjectProperty<Node> dragNodeProperty() {
+        return dragNode;
+    }
+    public Node getDragNode() {
+        return dragNode.get();
+    }
+    /**
+     * Try to use nodes of type {@code javafx.scene.control.Labeled } or 
+     * {@code javafx.scene.image.ImageView }.
+     * 
+     * @param dragNode the node to become drag node 
+     */
+    public void setDragNode(Node dragNode) {
+        this.dragNode.set(dragNode);
+    }
+    
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
@@ -137,15 +144,6 @@ public class DockSideBar extends Control implements Dockable { // ListChangeList
     public void setOrientation(Orientation orientation) {
         this.orientation.set(orientation);
         
-    }
-    @Override
-    public Region node() {
-        return this;
-    }
-
-    @Override
-    public DockableContext getContext() {
-        return this.context;
     }
 
     @Override

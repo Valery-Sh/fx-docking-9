@@ -139,7 +139,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             }
             FloatView view = f.getFloatView(this);
             floatingWindow = (Window) view.make(dockable);
-            System.err.println("----------- FLOATING WINDOW = " + floatingWindow);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         } else {
@@ -375,11 +374,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     @Override
     public void handle(MouseEvent ev) {
+        ev.consume();
         if (ev.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
             mouseDragged(ev);
         } else if (ev.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             mouseReleased(ev);
         }
+
     }
 
     public Node getDragSource() {

@@ -36,13 +36,13 @@ import org.vns.javafx.dock.DockSideBar.Rotation;
  *
  * @author Valery
  */
-public class DockSideBarSkin extends SkinBase<DockSideBar> {
+public class DockSideBarSkin1 extends SkinBase<DockSideBar> {
 
     private final ToolBar toolBar;
     private final StackPane layout;
     private Group dragNodeGroup;
 
-    public DockSideBarSkin(DockSideBar control) {
+    public DockSideBarSkin1(DockSideBar control) {
         super(control);
 
         Dockable dc = DockRegistry.makeDockable(control);
@@ -75,8 +75,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
                 updateDragButton();
                 if (Dockable.of(control).getContext().isFloating()) {
                     System.err.println("1 STACKPANE layout change");
-                    //control.getScene().getWindow().setWidth(prefWidth(getHeight()));
-                    //control.getScene().getWindow().setHeight(prefHeight(getWidth()));
+                    control.getScene().getWindow().setWidth(prefWidth(getHeight()));
+                    control.getScene().getWindow().setHeight(prefHeight(getWidth()));
                     System.err.println("   ---  w = " + getWidth());
                     System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
                     System.err.println("   ---  h     = " + getWidth());
@@ -136,7 +136,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             toolBar.setOrientation(nv);
         });
         toolBar.orientationProperty().addListener((v, ov, nv) -> {
-/*            if (Dockable.of(getSkinnable()).getContext().isFloating()) {
+            if (Dockable.of(getSkinnable()).getContext().isFloating()) {
                 if (nv == Orientation.HORIZONTAL) {
                     getSkinnable().setMaxHeight(Region.USE_PREF_SIZE);
                     getSkinnable().setMaxWidth(Region.USE_PREF_SIZE);
@@ -155,7 +155,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
                 }
             }
-*/
             getTargetContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();

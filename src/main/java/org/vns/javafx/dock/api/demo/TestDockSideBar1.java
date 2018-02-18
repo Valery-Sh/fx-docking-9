@@ -8,6 +8,7 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
@@ -102,9 +103,36 @@ public class TestDockSideBar1 extends Application {
             }
 
         });
-
+        Button b04 = new Button("set dragNode");
+        Button dragButton1 = new Button();
+        dragButton1.getStyleClass().add("drag-icon");
+        Button dragButton2 = new Button();
+        ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-hand-2-16x16.png");
+        //ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-12x12.png");
+        dragButton2.setGraphic(iv);
+        //dragButton2.setStyle("-fx-padding: 0");
+        
+        
+        b04.setOnAction(a -> {
+            if ( sideBar01.getDragNode() == null || sideBar01.getDragNode() == dragButton2 || sideBar01.getDragNode() == iv) {
+                sideBar01.setDragNode(dragButton1);
+            } else {
+               //sideBar01.setDragNode(dragButton2);
+                sideBar01.setDragNode(iv);
+                //iv.setMouseTransparent(true);
+            }
+            
+        });
+        Button b05 = new Button("Info");
+        b05.setOnAction(a -> {
+            System.err.println(";sideBar01.bounds=" + sideBar01.getLayoutBounds());
+            //sideBar01.getScene().getWindow().setWidth(sideBar01.getScene().getWindow().getWidth() - 20);
+            sideBar01.setPrefWidth(sideBar01.getWidth() - 20);
+            sideBar01.getScene().getWindow().sizeToScene();
+        });
+                
         VBox vb = new VBox();
-        vb.getChildren().addAll(b01, b02, b03);
+        vb.getChildren().addAll(b01, b02, b03, b04,b05);
         root.getChildren().add(vb);
         //borderPane.getChildren().add(b02);
         //StackPane.setAlignment(vb,Pos.CENTER_LEFT);

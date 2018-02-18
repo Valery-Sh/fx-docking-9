@@ -16,8 +16,10 @@
 package org.vns.javafx.dock.api.dragging;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Transform;
 import org.vns.javafx.dock.api.DockableContext;
 
 /**
@@ -39,7 +41,25 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
+        //startMousePos = new Point2D(ev.getX(), ev.getY());
         startMousePos = new Point2D(ev.getX(), ev.getY());
+/*        Bounds b = context.getDragNode().getBoundsInParent();        
+        
+        System.err.println("MouseDragHandler: transf = " + context.getDragNode().getTransforms() );
+        Transform tr = context.getDragNode().getLocalToParentTransform();
+        System.err.println("MouseDragHandler: localTo Parentt ransf class= " + context.getDragNode().getLocalToParentTransform().getClass().getName() );
+        System.err.println("MouseDragHandler: localTo Parentt ransf = " + context.getDragNode().getLocalToParentTransform() );
+        System.err.println("MouseDragHandler: localTo Scene transf = " + context.getDragNode().getLocalToSceneTransform() );
+
+        System.err.println("MouseDragHandler: layouBounds = " + context.getDragNode().getLayoutBounds() );
+        System.err.println("MouseDragHandler: boundsInParent = " + context.getDragNode().getBoundsInParent() );        
+        
+        System.err.println("MouseDragHandler: startMousePos = " + startMousePos);
+        //System.err.println("MouseDragHandler: MOUSE PRESSED dockable=" + context.dockable().node());
+        //System.err.println("MouseDragHandler: MOUSE PRESSED dockable=" + context.getTargetContext().getTargetNode());        
+*/
+        ev.consume();
+        
     }
 
   
@@ -51,6 +71,8 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
             mouseDragDetected(ev);
         }
+        ev.consume();
+
     }
 
     public Point2D getStartMousePos() {

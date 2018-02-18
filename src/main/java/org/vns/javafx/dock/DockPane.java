@@ -1,6 +1,8 @@
 package org.vns.javafx.dock;
 
 import javafx.beans.DefaultProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -12,6 +14,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *
@@ -21,7 +24,8 @@ import org.vns.javafx.dock.api.DockTarget;
 public class DockPane extends Control {
 
     private HPane root;
-    
+    private ObjectProperty<Node> titleBar = new SimpleObjectProperty<>();
+            
     public DockPane() {
         super();
         init();
@@ -29,13 +33,27 @@ public class DockPane extends Control {
 
     private void init() {
         root = new HPane();
-        TargetContext c = new DockPaneContext(this, root);
-        DockRegistry.makeDockTarget(this, c);
+        TargetContext tc = new DockPaneContext(this, root);
+        DockRegistry.makeDockTarget(this, tc);
+        Dockable d = DockRegistry.makeDockable(this);
+        //d.getContext().setTargetContext(tc);
     }
 
     
     public ObservableList<Node> getItems() {
         return root.getItems();
+    }
+
+    public Node getTitleBar() {
+        return titleBar.get();
+    }
+
+    public void setTitleBar(Node titleBar) {
+        this.titleBar.set(titleBar);
+    }
+    
+    public ObjectProperty<Node> titleBarProperty() {
+        return titleBar;
     }
     @Override
     public String getUserAgentStylesheet() {

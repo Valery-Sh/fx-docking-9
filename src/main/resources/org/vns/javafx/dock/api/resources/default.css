@@ -16,7 +16,10 @@
 -fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
 }
 */
-
+.drag-icon {
+    /*-fx-graphic: url(drag-hand-16x16.png);*/
+    -fx-graphic: url(drag-3lines-16x16.png);
+}
 .palette-pane .titled-pane .tile-pane {
     -fx-border-width: 3;
     -fx-border-color: lightgray;
@@ -518,6 +521,7 @@
 }
 .dock-side-bar .button {
     -fx-background-insets: 0;
+    /*-fx-border-olor: red;*/
 }
 .dock-side-bar .button:hover  {
     -fx-text-fill: blue;

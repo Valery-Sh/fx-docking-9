@@ -51,20 +51,8 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         } else {
              dm = getDragManager(ev);
         }
+        ev.consume();
+        
         dm.mouseDragDetected(ev, getStartMousePos());
-        
-/*        DragManager dm = getDragManager(ev);
-        
-        if (!dockable.getContext().isFloating()) {
-            dm.mouseDragDetected(ev, getStartMousePos());
-        } else {
-            DragContainer dc = dockable.getContext().getDragContainer();
-            if ( (dc != null) && dc.getPlaceholder() != null) {
-                Dockable.of(dc.getPlaceholder()).getContext().getDragManager().mouseDragDetected(ev, getStartMousePos());
-            } else {
-                dm.mouseDragDetected(ev, getStartMousePos());
-            }
-        }
-*/
     }
 }

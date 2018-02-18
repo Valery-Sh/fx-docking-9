@@ -33,6 +33,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.PopupControl;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
@@ -160,6 +161,7 @@ public class SideBarContext extends TargetContext {
             }
         }
         Group item = new Group(itemButton);
+        //itemButton.setContentDisplay(ContentDisplay.CENTER);
         Container container = new Container(dockable);
         getItemMap().put(item, container);
         itemButton.setRotate(((DockSideBar) getTargetNode()).getRotation().getAngle());
@@ -354,6 +356,7 @@ public class SideBarContext extends TargetContext {
         }
 
         public void adjustScreenPos() {
+            System.err.println("SideBarContext: adjustScreenPos");
             SideBarContext handler = (SideBarContext) dockable.getContext().getTargetContext();
             Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
 
@@ -385,7 +388,7 @@ public class SideBarContext extends TargetContext {
             if (getPopup() == null) {
                 return;
             }
-
+            System.err.println("CHANGE SIZE");
             DockSideBar sb = (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
             if (!popup.isShowing()) {
                 return;
