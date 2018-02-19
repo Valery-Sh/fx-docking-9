@@ -6,6 +6,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -42,12 +43,19 @@ public interface FloatView<T> {
             return false;
         }
         
-        //18.02if ( !(node.getScene().getRoot() instanceof BorderPane) ) {
-        if ( !(node.getScene().getRoot() instanceof StackPane) ) {
+        if ( ! (node.getScene().getRoot() instanceof Pane) ) {
+        //if ( !(node.getScene().getRoot() instanceof StackPane) ) {
+            System.err.println("NOT FLOATING " + node.getScene().getRoot());
             return false;
         }
-        StackPane bp = (StackPane) node.getScene().getRoot();
-        if ( bp.getChildren().isEmpty() || bp.getChildren().get(0) != node) {
+        Pane bp = (Pane) node.getScene().getRoot();
+        Node paneNode;
+        if ( bp instanceof BorderPane  ) {
+            paneNode = ((BorderPane)bp).getCenter();
+        } else {
+            paneNode = bp.getChildren().get(0);
+        }
+        if ( bp.getChildren().isEmpty() || paneNode != node) {
             return false;
         }
         if (node.getScene().getRoot().getStyleClass().contains(FloatView.FLOAT_WINDOW)) {

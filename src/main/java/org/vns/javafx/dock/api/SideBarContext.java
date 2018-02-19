@@ -209,7 +209,10 @@ public class SideBarContext extends TargetContext {
     public Node findNode(List<Node> list, double x, double y) {
         Node retval = null;
         for (Node node : list) {
-            if (!(node instanceof Group)) {
+            //
+            // Consider tha the first element is a drag node
+            //
+            if (!(node instanceof Group) || list.indexOf(node) == 0 ) {
                 continue;
             }
             Region r = (Region) ((Group) node).getChildren().get(0);
@@ -551,4 +554,5 @@ public class SideBarContext extends TargetContext {
 
     }
 
+    
 }//class

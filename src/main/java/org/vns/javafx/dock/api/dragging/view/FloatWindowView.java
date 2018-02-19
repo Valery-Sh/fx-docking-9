@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
@@ -81,6 +82,10 @@ public interface FloatWindowView extends FloatView<Window> {
         
         @Override
         public void handle(MouseEvent ev) {
+            Region root = (Region) windowView.getFloatingWindow().getScene().getRoot();
+            double minWidth = root.getMinWidth();
+            double minHeight = root.getMinHeight();
+            
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
                 if (!isCursorSupported(c)) {
@@ -112,6 +117,9 @@ public interface FloatWindowView extends FloatView<Window> {
                     });
                     
                 }
+            } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                root.setMinWidth(minWidth);
+                root.setMinHeight(minHeight);
             }
         }
 

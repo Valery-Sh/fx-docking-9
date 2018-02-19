@@ -22,13 +22,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -171,7 +169,8 @@ public class FloatStageView implements FloatWindowView {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
         }
-
+        System.err.println("nodeWidth = " + nodeWidth);
+        System.err.println("nodeHeight = " + nodeHeight);
         Point2D windowPos = node.localToScreen(0, 0);
 
         if (windowPos == null) {
@@ -241,7 +240,7 @@ public class FloatStageView implements FloatWindowView {
         node.applyCss();
         borderPane.applyCss();
         Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        FloatView.layout(stage, bounds);
+        //FloatView.layout(stage, bounds);
 
         /*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
@@ -263,11 +262,11 @@ public class FloatStageView implements FloatWindowView {
             scene.setFill(null);
         }
         addResizer();
-        //stage.sizeToScene();
+        stage.sizeToScene();
         stage.setAlwaysOnTop(true);
         
-        borderPane.prefHeightProperty().bind(stage.heightProperty());
-        borderPane.prefWidthProperty().bind(stage.widthProperty());
+        //borderPane.prefHeightProperty().bind(stage.heightProperty());
+        //borderPane.prefWidthProperty().bind(stage.widthProperty());
         
         if (show) {
             stage.show();

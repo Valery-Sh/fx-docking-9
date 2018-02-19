@@ -31,6 +31,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.PopupWindow;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -206,7 +207,7 @@ public class FloatPopupControlView implements FloatWindowView {
         popup.setAutoFix(false);
 
         //Point2D stagePosition = windowPos;
-        BorderPane borderPane = new BorderPane();
+        StackPane borderPane = new StackPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
         borderPane.setStyle("-fx-border-width: 1; -fx-border-color: red");
@@ -224,7 +225,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
         borderPane.getStyleClass().add("dock-node-border");
         borderPane.getStyleClass().add("float-popup-root");
-        borderPane.setCenter(node);
+        borderPane.getChildren().add(node);
 
         popup.getScene().setRoot(borderPane);
         popup.getScene().setCursor(Cursor.HAND);
@@ -234,7 +235,7 @@ public class FloatPopupControlView implements FloatWindowView {
         borderPane.applyCss();
 
         Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        FloatView.layout(popup, bounds);
+        //FloatView.layout(popup, bounds);
 
         popup.getStyleClass().clear();
         popup.setOnShown(e -> {
@@ -464,7 +465,7 @@ public class FloatPopupControlView implements FloatWindowView {
         removeListeners(getDockable().getContext().dockable());
         addListeners(getFloatingWindow());
 
-        setResizer(new PopupControlResizer(this));
+        setResizer(new PopupControlResizer2(this));
 
     }
 

@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api;
 
+import com.sun.javafx.scene.control.skin.ToolBarSkin;
 import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -23,12 +24,13 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.PopupControl;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
-import static javafx.scene.layout.Region.USE_PREF_SIZE;
-import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockSideBar.Rotation;
 
@@ -39,8 +41,9 @@ import org.vns.javafx.dock.DockSideBar.Rotation;
 public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     private final ToolBar toolBar;
-    private final StackPane layout;
+    //private final StackPane layout;
     private Group dragNodeGroup;
+    private final ControlSkin controlSkin;
 
     public DockSideBarSkin(DockSideBar control) {
         super(control);
@@ -48,7 +51,65 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         Dockable dc = DockRegistry.makeDockable(control);
         //dc.getContext().setResizable(false);
 
-        toolBar = new ToolBar();
+        toolBar = new ToolBar() {
+            @Override
+            protected void layoutChildren() {
+                if (Dockable.of(control).getContext().isFloating()) {
+                    //getSkinnable().getScene().getWindow().sizeToScene();
+                    System.err.println("0 SIZE TO SCENE");
+                    double w = getSkinnable().getWidth();
+                    double h = getSkinnable().getHeight();
+                    System.err.println("000 w=" + w + "; h=" + h + "; prefW=" + getSkinnable().getPrefWidth() + "; minW=" + getSkinnable().getMinWidth() + "; maxW=" + getSkinnable().getMaxWidth());
+                    System.err.println("001 OR CHANGED");
+                    //getSkinnable().getScene().getWindow().setWidth(100);
+                }
+                super.layoutChildren();
+                System.err.println("STACKPANE layout change");
+
+                if (Dockable.of(control).getContext().isFloating()) {
+                    //getSkinnable().getScene().getWindow().sizeToScene();
+                    System.err.println("SIZE TO SCENE");
+                    double w = getSkinnable().getWidth();
+                    
+                    double h = getSkinnable().getHeight();
+                    double minW = getSkinnable().minWidth(-1);
+                    System.err.println("w=" + w + "; h=" + h + "; prefW=" + getSkinnable().getPrefWidth() + "; minW=" + getSkinnable().getMinWidth() + "; maxW=" + getSkinnable().getMaxWidth());
+                    System.err.println("1 OR CHANGED");
+                    Window win = getSkinnable().getScene().getWindow();
+                    if ( win instanceof PopupControl) {
+                        //((PopupControl)win).setMinWidth(minW);
+                    } else {
+                        //((Stage)win).setMinWidth(minW);
+                    }
+                    System.err.println("2 OR CHANGED winn min w = " + minW);
+                    getSkinnable().getScene().getWindow().setHeight(h);
+                    getSkinnable().getScene().getWindow().setWidth(w);
+                    //getSkinnable().set
+                    //getSkinnable().layout();
+                }
+                updateDragButton();
+
+                /*                if (Dockable.of(control).getContext().isFloating()) {
+                    System.err.println("1 STACKPANE layout change");
+                    //control.getScene().getWindow().setWidth(prefWidth(getHeight()));
+                    //control.getScene().getWindow().setHeight(prefHeight(getWidth()));
+                    System.err.println("   ---  w = " + getWidth());
+                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
+                    System.err.println("   ---  h     = " + getWidth());
+                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
+                    System.err.println("-----------------------------------");
+                    System.err.println("   ---  skin w = " + getSkinnable().getWidth());
+                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
+                    System.err.println("   ---  skin h     = " + getSkinnable().getWidth());
+                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
+                    System.err.println("===================================-");
+                }
+                 */
+            }
+
+        };
+        controlSkin = new ControlSkin(toolBar);
+
         dragNodeGroup = new Group();
         toolBar.getItems().add(dragNodeGroup);
         if (getSkinnable().getDragNode() != null) {
@@ -64,37 +125,10 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
         DockRegistry.makeDockTarget(getSkinnable(), targetContext);
 
-        layout = new StackPane(toolBar) {
-            @Override
-            protected void layoutChildren() {
-                super.layoutChildren();
-                System.err.println("STACKPANE layout change");
-//                updateDragButton();
-                //updateLayout(getSkinnable().getScene().getWindow());
-                super.layoutChildren();
-                updateDragButton();
-                if (Dockable.of(control).getContext().isFloating()) {
-                    System.err.println("1 STACKPANE layout change");
-                    //control.getScene().getWindow().setWidth(prefWidth(getHeight()));
-                    //control.getScene().getWindow().setHeight(prefHeight(getWidth()));
-                    System.err.println("   ---  w = " + getWidth());
-                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
-                    System.err.println("   ---  h     = " + getWidth());
-                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
-                    System.err.println("-----------------------------------");
-                    System.err.println("   ---  skin w = " + getSkinnable().getWidth());
-                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
-                    System.err.println("   ---  skin h     = " + getSkinnable().getWidth());
-                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
-                    System.err.println("===================================-");
-                }
-
-            }
-        };
         changeItems();
         getSkinnable().getItems().addListener(this::itemsChanged);
 
-        getSkinnable().setMaxWidth(USE_PREF_SIZE);
+        //getSkinnable().setMaxWidth(USE_PREF_SIZE);
         getSkinnable().setStyle("-fx-background-color: green");
 
         getSkinnable().sideProperty().addListener((v, ov, nv) -> {
@@ -133,36 +167,26 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             });
         });
         getSkinnable().orientationProperty().addListener((v, ov, nv) -> {
+            if (Dockable.of(getSkinnable()).getContext().isFloating()) {
+                /*                double w = getSkinnable().getWidth();
+                double h = getSkinnable().getHeight();
+                System.err.println("1 OR CHANGED");
+                getSkinnable().getScene().getWindow().setWidth(h);
+                System.err.println("2 OR CHANGED");
+                getSkinnable().getScene().getWindow().setHeight(w);
+                 */
+
+            }
             toolBar.setOrientation(nv);
         });
         toolBar.orientationProperty().addListener((v, ov, nv) -> {
-/*            if (Dockable.of(getSkinnable()).getContext().isFloating()) {
-                if (nv == Orientation.HORIZONTAL) {
-                    getSkinnable().setMaxHeight(Region.USE_PREF_SIZE);
-                    getSkinnable().setMaxWidth(Region.USE_PREF_SIZE);
-                } else {
-                    getSkinnable().setMaxHeight(Region.USE_PREF_SIZE);
-                    getSkinnable().setMaxWidth(Region.USE_PREF_SIZE);
-                }
-
-            } else {
-                if (nv == Orientation.HORIZONTAL) {
-                    getSkinnable().setMaxHeight(USE_PREF_SIZE);
-                    getSkinnable().setMaxWidth(Region.USE_COMPUTED_SIZE);
-                } else {
-                    getSkinnable().setMaxHeight(Region.USE_COMPUTED_SIZE);
-                    getSkinnable().setMaxWidth(Region.USE_PREF_SIZE);
-
-                }
-            }
-*/
             getTargetContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
         });
 
-        getChildren().add(layout);
+        getChildren().add(toolBar);
     }
 
     protected SideBarContext getTargetContext() {
@@ -270,4 +294,112 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         dragNodeGroup.getChildren().add(getSkinnable().getDragNode());
     }
 
+    public void temp() {
+        ControlSkin skin = new ControlSkin(toolBar);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computeMinWidth(height, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computeMinHeight(width, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computePrefHeight(width, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computeMaxWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computeMaxWidth(height, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+        return controlSkin.computeMaxHeight(width, topInset, rightInset, bottomInset, leftInset);
+    }
+
+    public class ControlSkin extends ToolBarSkin {
+
+        public ControlSkin(ToolBar toolbar) {
+            super(toolbar);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computeMinWidth(height, topInset, rightInset, bottomInset, leftInset);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computeMinHeight(width, topInset, rightInset, bottomInset, leftInset);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computePrefHeight(width, topInset, rightInset, bottomInset, leftInset);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computeMaxWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computeMaxWidth(height, topInset, rightInset, bottomInset, leftInset);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
+            return super.computeMaxHeight(width, topInset, rightInset, bottomInset, leftInset);
+        }
+
+    }
 }

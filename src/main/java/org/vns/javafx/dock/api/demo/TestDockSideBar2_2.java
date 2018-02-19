@@ -5,12 +5,15 @@ import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,7 +26,7 @@ import org.vns.javafx.dock.DockNode;
  *
  * @author Valery
  */
-public class TestDockSideBar1 extends Application {
+public class TestDockSideBar2_2 extends Application {
 
     public static Stage frontStage;
     public static Stage stg01;
@@ -32,18 +35,22 @@ public class TestDockSideBar1 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        StackPane root = new StackPane();
-
+        HBox root = new HBox();
+        VBox buttonBox = new VBox();
+        VBox toolBarBox = new VBox();
+        toolBarBox.setStyle("-fx-background-color: aqua; -fx-border-width: 1; -fx-border-color:red");
+        buttonBox.setStyle("-fx-background-color: yellow; -fx-border-width: 1; -fx-border-color:green");        
+        root.getChildren().addAll(buttonBox,toolBarBox);
+        //StackPane root = new StackPane();
         stage.setTitle("Test DockSideBar");
         SplitPane p = new SplitPane();
         p.setId("Pane p");
         Button pBtn = new Button("Pane Btn ");
         p.getItems().add(pBtn);
         
-        DockSideBar sideBar01 = new DockSideBar();
+        ToolBar sideBar01 = new ToolBar();
         sideBar01.setOrientation(Orientation.VERTICAL);
-        sideBar01.setRotation(Rotation.UP_DOWN);
-        sideBar01.setSide(Side.RIGHT);
+        sideBar01.setRotate(Rotation.UP_DOWN.getAngle());
 
         //sideBar01.setHideOnExit(true);
         //borderPane.getChildren().add(sideBar01);
@@ -63,46 +70,23 @@ public class TestDockSideBar1 extends Application {
         dn01.setPrefHeight(100);
         dn01.setTitle("DockNode: dn01");
         b01.setOnAction(a -> {
-            if (null != sideBar01.getRotation()) {
-                switch (sideBar01.getRotation()) {
-                    case DEFAULT:
-                        sideBar01.setRotation(Rotation.UP_DOWN);
-                        break;
-                    case UP_DOWN:
-                        sideBar01.setRotation(Rotation.DOWN_UP);
-                        break;
-                    case DOWN_UP:
-                        sideBar01.setRotation(Rotation.DEFAULT);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            if ( sideBar01.getRotate() == Rotation.DEFAULT.getAngle()) {
+                sideBar01.setRotate(Rotation.UP_DOWN.getAngle());
+                return;
+            }          
+            if ( sideBar01.getRotate() == Rotation.UP_DOWN.getAngle()) {
+                sideBar01.setRotate(Rotation.DOWN_UP.getAngle());
+                return;
+            }          
+            if ( sideBar01.getRotate() == Rotation.DOWN_UP.getAngle()) {
+                sideBar01.setRotate(Rotation.DEFAULT.getAngle());
+                return;
+            }          
 
         });
 
         Button b02 = new Button("Change Orientation");
         Button b03 = new Button("Change Side");
-        b03.setOnAction(a -> {
-
-            if (null != sideBar01.getSide()) switch (sideBar01.getSide()) {
-                case RIGHT:
-                    sideBar01.setSide(Side.LEFT);
-                    break;
-                case LEFT:
-                    sideBar01.setSide(Side.TOP);
-                    break;
-                case TOP:
-                    sideBar01.setSide(Side.BOTTOM);
-                    break;
-                case BOTTOM:
-                    sideBar01.setSide(Side.RIGHT);
-                    break;
-                default:
-                    break;
-            }
-
-        });
         Button b04 = new Button("set dragNode");
         Button dragButton1 = new Button();
         dragButton1.getStyleClass().add("drag-icon");
@@ -114,34 +98,24 @@ public class TestDockSideBar1 extends Application {
         
         
         b04.setOnAction(a -> {
-            if ( sideBar01.getDragNode() == null || sideBar01.getDragNode() == dragButton2 || sideBar01.getDragNode() == iv) {
-                sideBar01.setDragNode(dragButton1);
-            } else {
-               //sideBar01.setDragNode(dragButton2);
-                sideBar01.setDragNode(iv);
-                //iv.setMouseTransparent(true);
-            }
             
         });
         Button b05 = new Button("Info");
         b05.setOnAction(a -> {
             System.err.println(";sideBar01.bounds=" + sideBar01.getLayoutBounds());
-            System.err.println("sideBar width=" + sideBar01.getWidth());
-            System.err.println("sideBar height=" + sideBar01.getHeight());
             //sideBar01.getScene().getWindow().setWidth(sideBar01.getScene().getWindow().getWidth() - 20);
-            //sideBar01.setPrefWidth(sideBar01.getWidth() - 20);
-            //sideBar01.getScene().getWindow().sizeToScene();
+            sideBar01.setPrefWidth(sideBar01.getWidth() - 20);
+            sideBar01.getScene().getWindow().sizeToScene();
         });
                 
-        VBox vb = new VBox();
-        vb.getChildren().addAll(b01, b02, b03, b04,b05);
-        root.getChildren().add(vb);
+        buttonBox.getChildren().addAll(b01, b02, b03, b04,b05);
+        
         //borderPane.getChildren().add(b02);
         //StackPane.setAlignment(vb,Pos.CENTER_LEFT);
 
         
-        root.getChildren().add(sideBar01);
-        StackPane.setAlignment(sideBar01, Pos.CENTER_RIGHT);
+        toolBarBox.getChildren().add(sideBar01);
+        //StackPane.setAlignment(sideBar01, Pos.CENTER_RIGHT);
 
         b02.setOnAction(a -> {
             if (sideBar01.getOrientation() == Orientation.VERTICAL) {
@@ -185,8 +159,12 @@ public class TestDockSideBar1 extends Application {
 
 //        sideBar01.getItems().add(dn03);
         //sideBar01.dock(dn02);
-        //sideBar01.dock(dn03);     
-        sideBar01.addItems(dn02, dn03, dn04);
+        //sideBar01.dock(dn03);    
+        Button toolBtn1 = new Button("toolBtn1");
+        Button toolBtn2 = new Button("toolBtn2");
+        Button toolBtn3 = new Button("toolBtn3");
+        
+        sideBar01.getItems().addAll(new Group(toolBtn1), new Group(toolBtn2),new Group(toolBtn3));
 //        sideBar01.setMaxSize(sideBar01.getToolBar().getMaxWidth(), sideBar01.getToolBar().getMaxHeight());
 //        sideBar01.setMinSize(sideBar01.getToolBar().getMinWidth(), sideBar01.getToolBar().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");

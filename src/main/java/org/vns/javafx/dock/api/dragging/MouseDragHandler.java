@@ -41,6 +41,8 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
+        System.err.println("MouseDragHandler: " + context.dockable().node());
+        System.err.println("MouseDragHandler:    --- " + context.getDragNode());
         //startMousePos = new Point2D(ev.getX(), ev.getY());
         startMousePos = new Point2D(ev.getX(), ev.getY());
 /*        Bounds b = context.getDragNode().getBoundsInParent();        
