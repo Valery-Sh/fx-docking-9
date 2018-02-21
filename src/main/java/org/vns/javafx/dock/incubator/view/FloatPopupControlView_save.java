@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging.view;
+package org.vns.javafx.dock.incubator.view;
 
+import org.vns.javafx.dock.incubator.view.PopupControlResizer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,35 +27,37 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import javafx.stage.PopupWindow;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ObjectReceiver;
 import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.dragging.view.FloatWindowView;
+import org.vns.javafx.dock.api.dragging.view.WindowResizer;
 
 /**
  *
  * @author Valery
  */
-public class FloatStageView2 implements FloatWindowView {
+public class FloatPopupControlView_save implements FloatWindowView {
 
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
-    private final ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
+    private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
-    private final ObjectProperty value = new SimpleObjectProperty();
+    private ObjectProperty value = new SimpleObjectProperty();
 
     private Pane rootPane;
 
@@ -71,7 +74,7 @@ public class FloatStageView2 implements FloatWindowView {
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
 
-    public FloatStageView2(Dockable dockable) {
+    public FloatPopupControlView_save(Dockable dockable) {
         this.dockableContext = dockable.getContext();
         mouseResizeHanler = new MouseResizeHandler(this);
     }
@@ -89,7 +92,7 @@ public class FloatStageView2 implements FloatWindowView {
     }
 
     @Override
-    public Pane getRootPane() {
+    public Pane getWindowRoot() {
         return rootPane;
     }
 
@@ -148,6 +151,7 @@ public class FloatStageView2 implements FloatWindowView {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
 
+
     @Override
     public Window make(Dockable dockable, boolean show) {
         DragContainer dc = dockable.getContext().getDragContainer();
@@ -164,19 +168,24 @@ public class FloatStageView2 implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
+        Window owner;
+        if ((node.getScene() == null || node.getScene().getWindow() == null)) {
+            return null;
+        } else {
+            owner = node.getScene().getWindow();
+        }
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
         if ( node instanceof Region ) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
-        }
+        } 
 
         Point2D windowPos = node.localToScreen(0, 0);
 
         if (windowPos == null) {
             windowPos = new Point2D(400, 400);
         }
-
         Node titleBar = dockable.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
@@ -193,86 +202,60 @@ public class FloatStageView2 implements FloatWindowView {
                 return dockable.node().getScene().getWindow();
             }
         }
-
         if (dockable.getContext().isDocked()) {
             getTargetContext(dockable).undock(dockable.node());
         }
 
-        Stage stage = new Stage();
-        DockRegistry.register(stage);
+        final PopupControl popup = new PopupControl();
+        popup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
+        popup.setAutoFix(false);
 
-        stage.setTitle("FLOATING STAGE");
-        Node lastDockPane = getTargetContext(dockable).getTargetNode();
-        if (lastDockPane != null && lastDockPane.getScene() != null
-                && lastDockPane.getScene().getWindow() != null) {
-            stage.initOwner(lastDockPane.getScene().getWindow());
-        }
-
-        stage.initStyle(stageStyle);
-
-        // offset the new floatingWindow to cover exactly the area the dock was local to the scene
-        // this is useful for when the user presses the + sign and we have no information
-        // on where the mouse was clicked
+        //Point2D stagePosition = windowPos;
         StackPane borderPane = new StackPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
-
+        borderPane.setStyle("-fx-border-width: 1; -fx-border-color: red");
         rootPane = borderPane;
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (stage != null) {
-                    stage.close();
+                if (popup != null) {
+                    popup.hide();
                 }
                 dockable.node().parentProperty().removeListener(this);
             }
         };
 
         borderPane.getStyleClass().add("dock-node-border");
+        borderPane.getStyleClass().add("float-popup-root");
         borderPane.getChildren().add(node);
 
-        Scene scene = new Scene(borderPane);
-        scene.setCursor(Cursor.HAND);
-        stage.setScene(scene);
-        markFloating(stage);
+        popup.getScene().setRoot(borderPane);
+        popup.getScene().setCursor(Cursor.HAND);
+        markFloating(popup);
 
         node.applyCss();
         borderPane.applyCss();
+
         Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        //FloatView.layout2(stage, bounds);
+        //FloatView.layout(popup, bounds);
 
-        /*        Insets insetsDelta = borderPane.getInsets();
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+        popup.getStyleClass().clear();
+        popup.setOnShown(e -> {
+            DockRegistry.register(popup);
+        });
+        popup.setOnHidden(e -> {
+            DockRegistry.unregister(popup);
+        });
 
-        stage.setX(stagePosition.getX() - insetsDelta.getLeft());
-        stage.setY(stagePosition.getY() - insetsDelta.getTop());
-
-        stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-
-        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
-
-        borderPane.setPrefWidth(prefWidth);
-        borderPane.setPrefHeight(prefHeight);
-         */
-        if (stageStyle == StageStyle.TRANSPARENT) {
-            scene.setFill(null);
+        if (show) {
+            popup.show(owner);
         }
         addResizer();
-        //stage.sizeToScene();
-        stage.setAlwaysOnTop(true);
-        
-       // borderPane.prefHeightProperty().bind(stage.heightProperty());
-       // borderPane.prefWidthProperty().bind(stage.widthProperty());
-        
-        if (show) {
-            stage.show();
-        }
+
         dockable.node().parentProperty().addListener(pcl);
-        return stage;
+        return popup;
     }
 
     /**
@@ -287,8 +270,23 @@ public class FloatStageView2 implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         DockableContext context = dockable.getContext();
-        Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
+        Node node = context.dockable().node();
+        Window owner = null;
+        if ((node.getScene() == null || node.getScene().getWindow() == null)) {
+            return null;
+        } else {
+            owner = node.getScene().getWindow();
+        }
+        double nodeWidth = ((Region) node).getWidth();
+        double nodeHeight = ((Region) node).getHeight();
 
+        Point2D windowPos = node.localToScreen(0, 0);
+
+        if (windowPos == null) {
+            windowPos = new Point2D(400, 400);
+        }
+
+        //Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
         TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
@@ -297,41 +295,35 @@ public class FloatStageView2 implements FloatWindowView {
             }
         }
 
-        Stage stage = new Stage();
-        DockRegistry.register(stage);
-
-        stage.setTitle("FLOATING STAGE");
-
-        stage.initStyle(stageStyle);
+        PopupControl popup = new PopupControl();
 
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
 
         rootPane = borderPane;
-
-        Node node = context.getDragContainer().getPlaceholder();
+        node = context.getDragContainer().getPlaceholder();
         borderPane.setCenter(node);
 
-        Scene scene = new Scene(borderPane);
+        popup.getScene().setRoot(borderPane);
+        popup.getScene().setCursor(Cursor.HAND);
 
-        scene.setCursor(Cursor.HAND);
-
-        stage.setScene(scene);
-        markFloating(stage);
+        markFloating(popup);
 
         borderPane.setStyle("-fx-background-color: transparent");
 
-        if (stageStyle == StageStyle.TRANSPARENT) {
-            scene.setFill(null);
-        }
         addResizer();
-        stage.sizeToScene();
-        stage.setAlwaysOnTop(true);
+        popup.getStyleClass().clear();
+        popup.setOnShown(e -> {
+            DockRegistry.register(popup);
+        });
+        popup.setOnHidden(e -> {
+            DockRegistry.unregister(popup);
+        });
         if (show) {
-            stage.show();
+            popup.show(owner);
         }
-        return stage;
+        return popup;
 
     }
 
@@ -345,11 +337,17 @@ public class FloatStageView2 implements FloatWindowView {
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
+        Node node = dockable.node();
+        Window owner = null;
+        if ((node.getScene() == null || node.getScene().getWindow() == null)) {
+            return null;
+        } else {
+            owner = node.getScene().getWindow();
+        }
 
-        Node node = dragged.node();
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
-        if (node instanceof Region) {
+        if ( node instanceof Region ) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
         }
@@ -359,6 +357,7 @@ public class FloatStageView2 implements FloatWindowView {
         if (windowPos == null) {
             windowPos = new Point2D(400, 400);
         }
+
         Node titleBar = dragged.getContext().getTitleBar();
         if (titleBar != null) {
             titleBar.setVisible(true);
@@ -382,21 +381,13 @@ public class FloatStageView2 implements FloatWindowView {
             getTargetContext(dragged).undock(dragged.node());
         }
 
-        Stage stage = new Stage();
-        DockRegistry.register(stage);
-
-        stage.setTitle("FLOATING STAGE");
-        Node lastDockPane = getTargetContext(dragged).getTargetNode();
-        if (lastDockPane != null && lastDockPane.getScene() != null
-                && lastDockPane.getScene().getWindow() != null) {
-            stage.initOwner(lastDockPane.getScene().getWindow());
-        }
-
-        stage.initStyle(stageStyle);
+        PopupControl popup = new PopupControl();
+        popup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
 
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
+
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add(FLOAT_WINDOW);
         borderPane.getStyleClass().add(FLOATVIEW);
@@ -406,57 +397,62 @@ public class FloatStageView2 implements FloatWindowView {
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (stage != null) {
-                    stage.close();
+                if (popup != null) {
+                    popup.hide();
                 }
                 dragged.node().parentProperty().removeListener(this);
             }
         };
-
         borderPane.getStyleClass().add("dock-node-border");
-
+        borderPane.getStyleClass().add("float-popup-root");
+        node = dragged.node();
         borderPane.setCenter(node);
 
-        Scene scene = new Scene(borderPane);
-
-        scene.setCursor(Cursor.HAND);
-        stage.setScene(scene);
-        markFloating(stage);
+        popup.getScene().setRoot(borderPane);
+        popup.getScene().setCursor(Cursor.HAND);
+        markFloating(popup);
 
         node.applyCss();
-        borderPane.setStyle("-fx-background-color: aqua");
         borderPane.applyCss();
         
         Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        //FloatView.layout(stage, bounds);
+        FloatView.layout(popup, bounds);
+        
+/*        Insets insetsDelta = borderPane.getInsets();
 
-        /*        Insets insetsDelta = borderPane.getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-        stage.setX(stagePosition.getX() - insetsDelta.getLeft());
-        stage.setY(stagePosition.getY() - insetsDelta.getTop());
+        popup.setX(stagePosition.getX() - insetsDelta.getLeft());
+        popup.setY(stagePosition.getY() - insetsDelta.getTop());
 
-        stage.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        stage.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+        popup.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        popup.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 
         double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
         double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
         borderPane.setPrefWidth(prefWidth);
         borderPane.setPrefHeight(prefHeight);
-         */
-        if (stageStyle == StageStyle.TRANSPARENT) {
-            scene.setFill(null);
-        }
-        addResizer();
-        //stage.sizeToScene();
-        stage.setAlwaysOnTop(true);
+*/
+        popup.getStyleClass().clear();
+        popup.setOnShown(e -> {
+            DockRegistry.register(popup);
+        });
+        popup.setOnHidden(e -> {
+            DockRegistry.unregister(popup);
+        });
         if (show) {
-            stage.show();
+            popup.show(owner);
         }
+        if (stageStyle == StageStyle.TRANSPARENT) {
+            //scene.setFill(null);
+        }
+
+        addResizer();
+
         dragged.node().parentProperty().addListener(pcl);
-        return stage;
+        return popup;
     }
 
     protected TargetContext getTargetContext(Dockable d) {
@@ -470,12 +466,10 @@ public class FloatStageView2 implements FloatWindowView {
 
     @Override
     public void addResizer() {
-        if (dockableContext.isResizable()) {
-            removeListeners(dockableContext.dockable());
-            addListeners(getFloatingWindow());
+        removeListeners(getDockable().getContext().dockable());
+        addListeners(getFloatingWindow());
 
-        }
-        setResizer(new StageResizer2(this));
+        setResizer(new PopupControlResizer(this));
 
     }
 

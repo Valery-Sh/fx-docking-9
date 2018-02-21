@@ -13,12 +13,14 @@ import org.vns.javafx.dock.api.TargetContext;
  */
 public class DockBorderPane extends BorderPane {
 
-
     public DockBorderPane() {
-        TargetContext targetContext = new BorderPaneContext(this);
-        DockRegistry.makeDockTarget(this, targetContext);
-        DockRegistry.makeDockable(this);
+        init();
     }
 
+    private void init() {
+        DockRegistry.makeDockTarget(this, new BorderPaneContext(this));
+        DockRegistry.makeDockable(this).getContext().setDragNode(null);
+        
+    }
 
 }

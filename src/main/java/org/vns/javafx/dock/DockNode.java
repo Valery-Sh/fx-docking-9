@@ -37,8 +37,9 @@ public class DockNode extends Control { //implements Dockable {
 
     private void init(String id, String title) {
         Dockable d = DockRegistry.makeDockable(this);
-        d.getContext().setDragNode(null);
-        this.context = Dockable.of(this).getContext();
+        context = Dockable.of(this).getContext();
+        context.setDragNode(null);
+        
         getStyleClass().add("dock-node");
         context.createDefaultTitleBar(title);
         

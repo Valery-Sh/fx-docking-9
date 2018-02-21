@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging.view;
+package org.vns.javafx.dock.incubator.view;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

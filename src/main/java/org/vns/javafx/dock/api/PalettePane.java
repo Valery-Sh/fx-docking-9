@@ -69,7 +69,7 @@ public class PalettePane extends Control {
 
     public PalettePane(boolean createDefault) {
         initModel(createDefault);
-        DockRegistry.makeDockable(this);
+        DockRegistry.makeDockable(this).getContext().setDragNode(null);
         getStyleClass().add(PALETTE_PANE);
     }
 

@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.incubator.view.FloatPopupControlView4;
 import org.vns.javafx.dock.api.dragging.view.*;
 import com.sun.javafx.stage.EmbeddedWindow;
 import javafx.scene.Node;
@@ -41,7 +42,7 @@ public class TreeItemFloatViewFactory extends FloatViewFactory {
         if ( w == null || !(w instanceof EmbeddedWindow)) {
             retval = new TreeItemFloatStageView(dragManager.getDockable());
         } else if ( w instanceof EmbeddedWindow ) {
-            retval = new FloatPopupControlView4(dragManager.getDockable());
+            retval = new FloatPopupControlView(dragManager.getDockable());
         }
     
         return retval;

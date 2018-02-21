@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.dragging.view;
+package org.vns.javafx.dock.incubator.view;
 
 import javafx.scene.Cursor;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.dragging.view.FloatWindowView;
 
 /**
  *
  * @author Valery
  */
-public class PopupControlResizer2 extends StageResizer2 {
+public class PopupControlResizer extends StageResizer {
 
-    public PopupControlResizer2(FloatWindowView windowView) {
+    public PopupControlResizer(FloatWindowView windowView) {
         super(windowView);
     }
 
@@ -84,31 +85,36 @@ public class PopupControlResizer2 extends StageResizer2 {
         }
         double w = -1;
         double h = -1;
-//        if (wDelta + pc.getWidth() > ((PopupControl) getWindow()).getWidth()) {
 
-        if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() != ((PopupControl) getWindow()).getWidth()) {
-            System.err.println("333333333333333 wDelta = " + wDelta);
-
+        if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() > ((PopupControl) getWindow()).getWidth()) {
+            // if ((xDelta != 0 || wDelta != 0) ) {
             pc.setAnchorX(xDelta + pc.getAnchorX());
+            pc.setMinWidth(wDelta + pc.getWidth());
+            //root.setPrefWidth(wDelta + root.getMinWidth());
             root.setMinWidth(wDelta + root.getWidth());
             setMouseX(curX);
-            pc.sizeToScene();
-        }
-        if ((yDelta != 0 || hDelta != 0) && hDelta + getWindow().getHeight() != ((PopupControl) getWindow()).getHeight()) {
-        
-            pc.setAnchorY(yDelta + pc.getAnchorY());
-            root.setMinHeight(hDelta + root.getHeight());
+            System.err.println("1111111111111111 wDelta = " + wDelta);
+            
+            //}
 
-            setMouseY(curY);
-            pc.sizeToScene();
-            System.err.println("2222222222222222222");
+            //if (hDelta + getWindow().getHeight() > ((PopupControl) getWindow()).getMinHeight()) {
+/*            if (hDelta + getWindow().getHeight() > ((PopupControl) getWindow()).getMinHeight()) {
+                //root.setPrefHeight(hDelta + root.getPrefHeight());
+                pc.setAnchorY(yDelta + pc.getAnchorY());
+                //pc.setHeight(hDelta + pc.getHeight());
+                //pc.setHeight(hDelta + pc.getHeight());
+                root.setMinHeight(pc.getHeight());
 
+                setMouseY(curY);
+                System.err.println("2222222222222222222");
+            }
+*/
         }
 
     }
 
     @Override
-    public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
+   public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
         super.start(ev, stage, cursor, supportedCursors);
     }
 }

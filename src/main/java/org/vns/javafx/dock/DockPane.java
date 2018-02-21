@@ -36,6 +36,7 @@ public class DockPane extends Control {
         TargetContext tc = new DockPaneContext(this, root);
         DockRegistry.makeDockTarget(this, tc);
         Dockable d = DockRegistry.makeDockable(this);
+        d.getContext().setDragNode(null);
         //d.getContext().setTargetContext(tc);
     }
 

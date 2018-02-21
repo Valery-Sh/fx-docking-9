@@ -35,6 +35,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.PopupWindow;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -51,11 +53,11 @@ public class FloatPopupControlView implements FloatWindowView {
 
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
-    private ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
+    private final ObjectProperty<Window> floatingWindow = new SimpleObjectProperty<>();
 
-    private ObjectProperty value = new SimpleObjectProperty();
+    private final ObjectProperty value = new SimpleObjectProperty();
 
-    private Pane rootPane;
+    private Pane windowRoot;
 
     private final DockableContext dockableContext;
 
@@ -88,12 +90,12 @@ public class FloatPopupControlView implements FloatWindowView {
     }
 
     @Override
-    public Pane getRootPane() {
-        return rootPane;
+    public Pane getWindowRoot() {
+        return windowRoot;
     }
 
-    protected void setRootPane(Pane rootPane) {
-        this.rootPane = rootPane;
+    protected void setWindowRoot(Pane windowRoot) {
+        this.windowRoot = windowRoot;
     }
 
     public DockableContext getDockableContext() {
@@ -170,8 +172,10 @@ public class FloatPopupControlView implements FloatWindowView {
         } else {
             owner = node.getScene().getWindow();
         }
+        
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
+        
         if ( node instanceof Region ) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
@@ -191,67 +195,79 @@ public class FloatPopupControlView implements FloatWindowView {
         if (dockable.getContext().isDocked() && getTargetContext(dockable).getTargetNode() != null) {
             Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dockable).getTargetNode());
             if (DockUtil.getOwnerWindow(dockable.node()) != targetNodeWindow) {
-                rootPane = (Pane) dockable.node().getScene().getRoot();
+                windowRoot = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
                 getTargetContext(dockable).undock(dockable.node());
                 return dockable.node().getScene().getWindow();
             }
         }
+        boolean saveSize = false;
         if (dockable.getContext().isDocked()) {
+            if ((dockable.node() instanceof DockNode) && (getTargetContext(dockable).getTargetNode() instanceof DockPane)) {
+                saveSize = true;
+            }
             getTargetContext(dockable).undock(dockable.node());
-        }
+        }        
+//        if (dockable.getContext().isDocked()) {
+//            getTargetContext(dockable).undock(dockable.node());
+//        }
 
-        final PopupControl popup = new PopupControl();
-        popup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
-        popup.setAutoFix(false);
+        final PopupControl window = new PopupControl();
+        window.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
+        window.setAutoFix(false);
 
         //Point2D stagePosition = windowPos;
-        StackPane borderPane = new StackPane();
-        borderPane.getStyleClass().add(FLOAT_WINDOW);
-        borderPane.getStyleClass().add(FLOATVIEW);
-        borderPane.setStyle("-fx-border-width: 1; -fx-border-color: red");
-        rootPane = borderPane;
+        windowRoot = new StackPane();
+        windowRoot.getStyleClass().add(FLOAT_WINDOW);
+        windowRoot.getStyleClass().add(FLOATVIEW);
+        windowRoot.setStyle("-fx-border-width: 1; -fx-border-color: red");
+        
+        
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (popup != null) {
-                    popup.hide();
+                if (window != null) {
+                    window.hide();
                 }
                 dockable.node().parentProperty().removeListener(this);
             }
         };
 
-        borderPane.getStyleClass().add("dock-node-border");
-        borderPane.getStyleClass().add("float-popup-root");
-        borderPane.getChildren().add(node);
+        windowRoot.getStyleClass().add("dock-node-border");
+        windowRoot.getStyleClass().add("float-popup-root");
+        windowRoot.getChildren().add(node);
 
-        popup.getScene().setRoot(borderPane);
-        popup.getScene().setCursor(Cursor.HAND);
-        markFloating(popup);
+        window.getScene().setRoot(windowRoot);
+        window.getScene().setCursor(Cursor.HAND);
+        markFloating(window);
 
         node.applyCss();
-        borderPane.applyCss();
+        windowRoot.applyCss();
+        if (saveSize) {
+            Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
+            FloatView.layout(window, bounds);
+        }
 
-        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        //FloatView.layout(popup, bounds);
+//        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
+//        FloatView.layout(window, bounds);
 
-        popup.getStyleClass().clear();
-        popup.setOnShown(e -> {
-            DockRegistry.register(popup);
+        window.getStyleClass().clear();
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
         });
-        popup.setOnHidden(e -> {
-            DockRegistry.unregister(popup);
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
         });
         //popup.sizeToScene();
         if (show) {
-            popup.show(owner);
+            window.show(owner);
         }
         addResizer();
 
         dockable.node().parentProperty().addListener(pcl);
-        return popup;
+        return window;
     }
 
     /**
@@ -291,35 +307,36 @@ public class FloatPopupControlView implements FloatWindowView {
             }
         }
 
-        PopupControl popup = new PopupControl();
+        PopupControl window = new PopupControl();
 
-        BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOAT_WINDOW);
-        borderPane.getStyleClass().add(FLOATVIEW);
+        windowRoot = new StackPane();
+        windowRoot.getStyleClass().add(FLOAT_WINDOW);
+        windowRoot.getStyleClass().add(FLOATVIEW);
 
-        rootPane = borderPane;
+        //windowRoot = windowRoot;
         node = context.getDragContainer().getPlaceholder();
-        borderPane.setCenter(node);
+        windowRoot.getChildren().add(node);
+        //rootPane.setCenter(node);
 
-        popup.getScene().setRoot(borderPane);
-        popup.getScene().setCursor(Cursor.HAND);
+        window.getScene().setRoot(windowRoot);
+        window.getScene().setCursor(Cursor.HAND);
 
-        markFloating(popup);
+        markFloating(window);
 
-        borderPane.setStyle("-fx-background-color: transparent");
+        windowRoot.setStyle("-fx-background-color: transparent");
 
         addResizer();
-        popup.getStyleClass().clear();
-        popup.setOnShown(e -> {
-            DockRegistry.register(popup);
+        window.getStyleClass().clear();
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
         });
-        popup.setOnHidden(e -> {
-            DockRegistry.unregister(popup);
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
         });
         if (show) {
-            popup.show(owner);
+            window.show(owner);
         }
-        return popup;
+        return window;
 
     }
 
@@ -365,7 +382,7 @@ public class FloatPopupControlView implements FloatWindowView {
         if (draggedContext.isDocked() && getTargetContext(dragged).getTargetNode() != null) {
             Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dragged).getTargetNode());
             if (DockUtil.getOwnerWindow(dragged.node()) != targetNodeWindow) {
-                rootPane = (Pane) dragged.node().getScene().getRoot();
+                windowRoot = (Pane) dragged.node().getScene().getRoot();
                 markFloating(dragged.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
 
@@ -377,69 +394,70 @@ public class FloatPopupControlView implements FloatWindowView {
             getTargetContext(dragged).undock(dragged.node());
         }
 
-        PopupControl popup = new PopupControl();
-        popup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
+        PopupControl window = new PopupControl();
+        window.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
 
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
 
-        BorderPane borderPane = new BorderPane();
-        borderPane.getStyleClass().add(FLOAT_WINDOW);
-        borderPane.getStyleClass().add(FLOATVIEW);
+        windowRoot = new StackPane();
+        windowRoot.getStyleClass().add(FLOAT_WINDOW);
+        windowRoot.getStyleClass().add(FLOATVIEW);
 
-        rootPane = borderPane;
+        //windowRoot = windowRoot;
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (popup != null) {
-                    popup.hide();
+                if (window != null) {
+                    window.hide();
                 }
                 dragged.node().parentProperty().removeListener(this);
             }
         };
-        borderPane.getStyleClass().add("dock-node-border");
-        borderPane.getStyleClass().add("float-popup-root");
+        windowRoot.getStyleClass().add("dock-node-border");
+        windowRoot.getStyleClass().add("float-popup-root");
         node = dragged.node();
-        borderPane.setCenter(node);
+        windowRoot.getChildren().add(node);
+        //rootPane.setCenter(node);
 
-        popup.getScene().setRoot(borderPane);
-        popup.getScene().setCursor(Cursor.HAND);
-        markFloating(popup);
+        window.getScene().setRoot(windowRoot);
+        window.getScene().setCursor(Cursor.HAND);
+        markFloating(window);
 
         node.applyCss();
-        borderPane.applyCss();
+        windowRoot.applyCss();
         
         Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        FloatView.layout(popup, bounds);
+        FloatView.layout(window, bounds);
         
-/*        Insets insetsDelta = borderPane.getInsets();
+/*        Insets insetsDelta = windowRoot.getInsets();
 
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-        popup.setX(stagePosition.getX() - insetsDelta.getLeft());
-        popup.setY(stagePosition.getY() - insetsDelta.getTop());
+        window.setX(stagePosition.getX() - insetsDelta.getLeft());
+        window.setY(stagePosition.getY() - insetsDelta.getTop());
 
-        popup.setMinWidth(borderPane.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        popup.setMinHeight(borderPane.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(node)) + insetsWidth);
+        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(node)) + insetsHeight);
 
-        double prefWidth = borderPane.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = borderPane.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
+        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
 
-        borderPane.setPrefWidth(prefWidth);
-        borderPane.setPrefHeight(prefHeight);
+        windowRoot.setPrefWidth(prefWidth);
+        windowRoot.setPrefHeight(prefHeight);
 */
-        popup.getStyleClass().clear();
-        popup.setOnShown(e -> {
-            DockRegistry.register(popup);
+        window.getStyleClass().clear();
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
         });
-        popup.setOnHidden(e -> {
-            DockRegistry.unregister(popup);
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
         });
         if (show) {
-            popup.show(owner);
+            window.show(owner);
         }
         if (stageStyle == StageStyle.TRANSPARENT) {
             //scene.setFill(null);
@@ -448,7 +466,7 @@ public class FloatPopupControlView implements FloatWindowView {
         addResizer();
 
         dragged.node().parentProperty().addListener(pcl);
-        return popup;
+        return window;
     }
 
     protected TargetContext getTargetContext(Dockable d) {
@@ -465,7 +483,7 @@ public class FloatPopupControlView implements FloatWindowView {
         removeListeners(getDockable().getContext().dockable());
         addListeners(getFloatingWindow());
 
-        setResizer(new PopupControlResizer2(this));
+        setResizer(new PopupControlResizer(this));
 
     }
 

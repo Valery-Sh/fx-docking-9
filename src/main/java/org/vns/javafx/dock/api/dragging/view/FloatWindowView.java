@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
+import org.vns.javafx.dock.incubator.view.StageResizer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -36,7 +37,7 @@ public interface FloatWindowView extends FloatView<Window> {
 
     Dockable getDockable();
 
-    Region getRootPane();
+    Region getWindowRoot();
     
     WindowResizer getResizer();
     
@@ -58,8 +59,8 @@ public interface FloatWindowView extends FloatView<Window> {
             @Override
             protected void invalidated() {
                 getDockable().node().pseudoClassStateChanged(PseudoClass.getPseudoClass("floating"), get());
-                if (getRootPane() != null) {
-                    getRootPane().pseudoClassStateChanged(PseudoClass.getPseudoClass("floating"), get());
+                if (getWindowRoot() != null) {
+                    getWindowRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("floating"), get());
                 }
             }
 
@@ -87,7 +88,7 @@ public interface FloatWindowView extends FloatView<Window> {
             double minHeight = root.getMinHeight();
             
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-                Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
+                Cursor c = StageResizer.cursorBy(ev, windowView.getWindowRoot());
                 if (!isCursorSupported(c)) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                 } else {
@@ -98,7 +99,7 @@ public interface FloatWindowView extends FloatView<Window> {
                 }
 
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                Cursor c = StageResizer.cursorBy(ev, windowView.getRootPane());
+                Cursor c = StageResizer.cursorBy(ev, windowView.getWindowRoot());
                 cursorSupported = isCursorSupported(c);
                 if (!cursorSupported) {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);

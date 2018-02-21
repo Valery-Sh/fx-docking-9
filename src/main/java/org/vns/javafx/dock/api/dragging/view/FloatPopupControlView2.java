@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
+import org.vns.javafx.dock.incubator.view.FloatPopupControlView4;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -33,7 +34,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class FloatPopupControlView2 extends FloatPopupControlView4 {
+public class FloatPopupControlView2 extends FloatStageView {
 
     public FloatPopupControlView2(Dockable dockable) {
         super(dockable);
@@ -64,7 +65,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
         //
         borderPane.getStyleClass().add(FLOATVIEW);
 
-        setRootPane(borderPane);
+        setWindowRoot(borderPane);
 
         //DockPane dockPane = new DockPane();
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
@@ -116,5 +117,11 @@ public class FloatPopupControlView2 extends FloatPopupControlView4 {
         addResizer();
         return floatPopup;
     }//make FloatingPopupControl
+    @Override
+    public void addResizer() {
+        removeListeners(getDockable().getContext().dockable());
+        addListeners(getFloatingWindow());
+        setResizer(new PopupControlResizer(this));
+    }
 
 }

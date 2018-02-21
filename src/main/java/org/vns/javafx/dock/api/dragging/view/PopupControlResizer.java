@@ -84,36 +84,28 @@ public class PopupControlResizer extends StageResizer {
         }
         double w = -1;
         double h = -1;
+//        if (wDelta + pc.getWidth() > ((PopupControl) getWindow()).getWidth()) {
 
-        if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() > ((PopupControl) getWindow()).getWidth()) {
-            // if ((xDelta != 0 || wDelta != 0) ) {
+        if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() != ((PopupControl) getWindow()).getWidth()) {
             pc.setAnchorX(xDelta + pc.getAnchorX());
-            pc.setMinWidth(wDelta + pc.getWidth());
-            //root.setPrefWidth(wDelta + root.getMinWidth());
             root.setMinWidth(wDelta + root.getWidth());
             setMouseX(curX);
-            System.err.println("1111111111111111 wDelta = " + wDelta);
-            
-            //}
+            pc.sizeToScene();
+        }
+        if ((yDelta != 0 || hDelta != 0) && hDelta + getWindow().getHeight() != ((PopupControl) getWindow()).getHeight()) {
+        
+            pc.setAnchorY(yDelta + pc.getAnchorY());
+            root.setMinHeight(hDelta + root.getHeight());
 
-            //if (hDelta + getWindow().getHeight() > ((PopupControl) getWindow()).getMinHeight()) {
-/*            if (hDelta + getWindow().getHeight() > ((PopupControl) getWindow()).getMinHeight()) {
-                //root.setPrefHeight(hDelta + root.getPrefHeight());
-                pc.setAnchorY(yDelta + pc.getAnchorY());
-                //pc.setHeight(hDelta + pc.getHeight());
-                //pc.setHeight(hDelta + pc.getHeight());
-                root.setMinHeight(pc.getHeight());
+            setMouseY(curY);
+            pc.sizeToScene();
 
-                setMouseY(curY);
-                System.err.println("2222222222222222222");
-            }
-*/
         }
 
     }
 
     @Override
-   public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
+    public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
         super.start(ev, stage, cursor, supportedCursors);
     }
 }

@@ -67,7 +67,6 @@ public class DockPaneSkin extends SkinBase<DockPane> {
                 tc.undock(oldValue);
             }
             if (newValue != null) {
-
                 if (Dockable.of(newValue) == null) {
                     Dockable d = DockRegistry.makeDockable(newValue);
                     d.getContext().setDraggable(false);
