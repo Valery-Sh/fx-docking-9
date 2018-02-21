@@ -4,11 +4,9 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.PopupControl;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -44,8 +42,6 @@ public interface FloatView<T> {
         }
         
         if ( ! (node.getScene().getRoot() instanceof Pane) ) {
-        //if ( !(node.getScene().getRoot() instanceof StackPane) ) {
-            System.err.println("NOT FLOATING " + node.getScene().getRoot());
             return false;
         }
         Pane bp = (Pane) node.getScene().getRoot();
@@ -70,8 +66,8 @@ public interface FloatView<T> {
         double nodeWidth = bounds.getWidth();
         double nodeHeight = bounds.getHeight();
 
-        StackPane borderPane = (StackPane) window.getScene().getRoot();
-        Insets insetsDelta = borderPane.getInsets();
+        StackPane pane = (StackPane) window.getScene().getRoot();
+        Insets insetsDelta = pane.getInsets();
 
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -79,25 +75,18 @@ public interface FloatView<T> {
         window.setX(winX - insetsDelta.getLeft());
         window.setY(winY - insetsDelta.getTop());
 
-        if (window instanceof Stage) {
-            //((Stage) window).setMinWidth(borderPane.minWidth(nodeHeight) + insetsWidth);
-            //((Stage) window).setMinHeight(borderPane.minHeight(nodeWidth) + insetsHeight);
+/*        if (window instanceof Stage) {
+            //((Stage) window).setMinWidth(pane.minWidth(nodeHeight) + insetsWidth);
+            //((Stage) window).setMinHeight(pane.minHeight(nodeWidth) + insetsHeight);
         } else {
-            //((PopupControl) window).setMinWidth(borderPane.minWidth(nodeHeight) + insetsWidth);
-            //((PopupControl) window).setMinHeight(borderPane.minHeight(nodeWidth) + insetsHeight);
-
+            //((PopupControl) window).setMinWidth(pane.minWidth(nodeHeight) + insetsWidth);
+            //((PopupControl) window).setMinHeight(pane.minHeight(nodeWidth) + insetsHeight);
         }
-        System.err.println("nodeHeiht = " + (nodeHeight + insetsHeight) );
-        System.err.println("1 prefHeiht = " + borderPane.getPrefHeight() );
-        System.err.println("2 prefHeiht = " + borderPane.prefHeight(nodeWidth + insetsWidth) );
-        double prefHeight = borderPane.prefHeight(nodeWidth + insetsWidth);
-        double prefWidth  = borderPane.prefWidth(nodeHeight + insetsHeight);
-        borderPane.setPrefWidth(nodeWidth + insetsWidth);
-        borderPane.setPrefHeight(nodeHeight + insetsHeight);
-        System.err.println("3 prefHeiht = " + borderPane.getPrefHeight() );
-        //window.setWidth(nodeWidth);
-        //window.setHeight(nodeHeight);
-        return borderPane;
+*/
+        pane.setPrefWidth(nodeWidth + insetsWidth);
+        pane.setPrefHeight(nodeHeight + insetsHeight);
+
+        return pane;
     }
 
 }//interface

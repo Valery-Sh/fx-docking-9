@@ -55,56 +55,20 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             @Override
             protected void layoutChildren() {
                 if (Dockable.of(control).getContext().isFloating()) {
-                    //getSkinnable().getScene().getWindow().sizeToScene();
-                    System.err.println("0 SIZE TO SCENE");
                     double w = getSkinnable().getWidth();
                     double h = getSkinnable().getHeight();
-                    System.err.println("000 w=" + w + "; h=" + h + "; prefW=" + getSkinnable().getPrefWidth() + "; minW=" + getSkinnable().getMinWidth() + "; maxW=" + getSkinnable().getMaxWidth());
-                    System.err.println("001 OR CHANGED");
-                    //getSkinnable().getScene().getWindow().setWidth(100);
                 }
                 super.layoutChildren();
-                System.err.println("STACKPANE layout change");
 
                 if (Dockable.of(control).getContext().isFloating()) {
-                    //getSkinnable().getScene().getWindow().sizeToScene();
-                    System.err.println("SIZE TO SCENE");
                     double w = getSkinnable().getWidth();
-                    
                     double h = getSkinnable().getHeight();
                     double minW = getSkinnable().minWidth(-1);
-                    System.err.println("w=" + w + "; h=" + h + "; prefW=" + getSkinnable().getPrefWidth() + "; minW=" + getSkinnable().getMinWidth() + "; maxW=" + getSkinnable().getMaxWidth());
-                    System.err.println("1 OR CHANGED");
                     Window win = getSkinnable().getScene().getWindow();
-                    if ( win instanceof PopupControl) {
-                        //((PopupControl)win).setMinWidth(minW);
-                    } else {
-                        //((Stage)win).setMinWidth(minW);
-                    }
-                    System.err.println("2 OR CHANGED winn min w = " + minW);
                     getSkinnable().getScene().getWindow().setHeight(h);
                     getSkinnable().getScene().getWindow().setWidth(w);
-                    //getSkinnable().set
-                    //getSkinnable().layout();
                 }
                 updateDragButton();
-
-                /*                if (Dockable.of(control).getContext().isFloating()) {
-                    System.err.println("1 STACKPANE layout change");
-                    //control.getScene().getWindow().setWidth(prefWidth(getHeight()));
-                    //control.getScene().getWindow().setHeight(prefHeight(getWidth()));
-                    System.err.println("   ---  w = " + getWidth());
-                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
-                    System.err.println("   ---  h     = " + getWidth());
-                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
-                    System.err.println("-----------------------------------");
-                    System.err.println("   ---  skin w = " + getSkinnable().getWidth());
-                    System.err.println("   ---  win w =" + control.getScene().getWindow().getWidth());
-                    System.err.println("   ---  skin h     = " + getSkinnable().getWidth());
-                    System.err.println("   ---  win h =" + control.getScene().getWindow().getHeight());
-                    System.err.println("===================================-");
-                }
-                 */
             }
 
         };
@@ -167,16 +131,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             });
         });
         getSkinnable().orientationProperty().addListener((v, ov, nv) -> {
-            if (Dockable.of(getSkinnable()).getContext().isFloating()) {
-                /*                double w = getSkinnable().getWidth();
-                double h = getSkinnable().getHeight();
-                System.err.println("1 OR CHANGED");
-                getSkinnable().getScene().getWindow().setWidth(h);
-                System.err.println("2 OR CHANGED");
-                getSkinnable().getScene().getWindow().setHeight(w);
-                 */
-
-            }
             toolBar.setOrientation(nv);
         });
         toolBar.orientationProperty().addListener((v, ov, nv) -> {
@@ -197,16 +151,16 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         while (change.next()) {
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
-                for (Dockable d : list) {
+                list.forEach((d) -> {
                     getTargetContext().undock(d.node());
-                }
+                });
 
             }
             if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
-                for (Dockable d : list) {
+                list.forEach((d) -> {
                     getTargetContext().dock(d);
-                }
+                });
             }
         }
     }

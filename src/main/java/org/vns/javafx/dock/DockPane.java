@@ -14,7 +14,6 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *

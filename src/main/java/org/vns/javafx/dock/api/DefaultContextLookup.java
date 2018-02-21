@@ -52,9 +52,6 @@ public class DefaultContextLookup implements ContextLookup {
 
     @Override
     public <T> void add(T obj) {
-        if ( obj instanceof DragPopup ) {
-            System.err.println(")))))))))))))))))))");
-        }
         if (lookup.containsKey(obj.getClass())) {
             if (!lookup.get(obj.getClass()).contains(obj)) {
                 lookup.get(obj.getClass()).add(obj);

@@ -79,8 +79,6 @@ public class StageResizer implements WindowResizer {
         } else if (cursor == Cursor.E_RESIZE) {
             wDelta = x - this.mouseX.get();
             curX = x;
-            System.err.println("W_RESIZE wDelta=" + wDelta);
-
         } else if (cursor == Cursor.N_RESIZE) {
             hDelta = this.mouseY.get() - y;
             yDelta = -hDelta;
@@ -119,7 +117,6 @@ public class StageResizer implements WindowResizer {
         }
         Region root = (Region) window.getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        System.err.println("wDelta = " + wDelta);
 
         if (wDelta + window.getWidth() > ((Stage) window).getMinWidth()) {
             window.setX(xDelta + window.getX());
@@ -157,8 +154,6 @@ public class StageResizer implements WindowResizer {
 
     @Override
     public void resize(MouseEvent ev) {
-        //System.err.println("RESIZER resize()");
-
         resize(ev.getScreenX(), ev.getScreenY());
     }
 
@@ -180,8 +175,6 @@ public class StageResizer implements WindowResizer {
         this.cursor = cursor;
         this.window = stage;
         Region r = (Region) window.getScene().getRoot();
-        System.err.println("++++++++++++++++++++ CURSUR window.width=" + stage.getWidth());
-
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {

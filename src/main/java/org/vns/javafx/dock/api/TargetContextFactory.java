@@ -143,15 +143,9 @@ public class TargetContextFactory {
             return retval;
         }
 
-        /*    private boolean satisfies(Point2D mousePos, Node node, Pos pos) {
-        DockUtil.contains(node, mousePos.getX(), mousePos.getY());
-    }
-         */
         @Override
         public void remove(Node dockNode) {
-            System.err.println("REMOVE ____________________");
             ((StackPane)getTargetNode()).getChildren().remove(dockNode);
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         /**
@@ -191,7 +185,6 @@ public class TargetContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            System.err.println("createPositionIndicator");
             Pane targetPane = (Pane) getTargetContext().getTargetNode();
             Label topNode = new Label("Top");
             Label rightNode = new Label("Right");
@@ -339,13 +332,8 @@ public class TargetContextFactory {
             return retval;
         }
 
-        /*    private boolean satisfies(Point2D mousePos, Node node, Pos pos) {
-        DockUtil.contains(node, mousePos.getX(), mousePos.getY());
-    }
-         */
         @Override
         public void remove(Node dockNode) {
-            System.err.println("REMOVE ____________________");
             ((Pane) getTargetNode()).getChildren().remove(dockNode);
         }
 
@@ -386,13 +374,7 @@ public class TargetContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            System.err.println("createPositionIndicator");
-//            Pane targetPane = (Pane) getTargetContext().getTargetNode();
-            //Label label = new Label("        ");
-            //label.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
-
             Pane indicator = new Pane();
-            //indicator.setStyle("-fx-background-color: yellow; -fx-border-width: 2px; -fx-border-color: red");
             indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
             return indicator;
         }
@@ -401,26 +383,19 @@ public class TargetContextFactory {
         public void showDockPlace(double x, double y) {
 
             boolean visible = true;
-            //BorderPane target = (BorderPane) getTargetContext().getTargetNode();
-
             Pane p = (Pane) getIndicatorPane();
-//            Label label = (Label) p.getChildren().get(0);
 
             if (getIndicatorPpopup().getDraggedNode() != null) {
                 x = getIndicatorPpopup().getDraggedNode().getScene().getWindow().getX();
                 y = getIndicatorPpopup().getDraggedNode().getScene().getWindow().getY();
-                System.err.println("node x=" + x + "; y=" + y);
                 Node n = getIndicatorPpopup().getDraggedNode();
                 Bounds b = n.localToScreen(n.getBoundsInLocal());
-                System.err.println("   b x=" + b.getMinX() + "; y=" + b.getMinY());
-
             }
             if (DockUtil.contains(p, x, y)) {
                 adjustPlace(p, x, y);
             } else {
                 visible = false;
             }
-            System.err.println("visible=" + visible);
             getDockPlace().setVisible(visible);
         }
 
@@ -578,13 +553,7 @@ public class TargetContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            System.err.println("createPositionIndicator");
-//            Pane targetPane = (Pane) getTargetContext().getTargetNode();
-            //Label label = new Label("        ");
-            //label.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
-
             Pane indicator = new Pane();
-            //indicator.setStyle("-fx-background-color: yellow; -fx-border-width: 2px; -fx-border-color: red");
             indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
             return indicator;
         }
@@ -625,7 +594,7 @@ public class TargetContextFactory {
             }
 
             Bounds b = pane.getLayoutBounds();
-            System.err.println("innerNode = " + innerNode);
+
             if (innerNode != null) {
                 b = innerNode.getBoundsInParent();
             }

@@ -359,7 +359,6 @@ public class SideBarContext extends TargetContext {
         }
 
         public void adjustScreenPos() {
-            System.err.println("SideBarContext: adjustScreenPos");
             SideBarContext handler = (SideBarContext) dockable.getContext().getTargetContext();
             Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
 
@@ -391,7 +390,6 @@ public class SideBarContext extends TargetContext {
             if (getPopup() == null) {
                 return;
             }
-            System.err.println("CHANGE SIZE");
             DockSideBar sb = (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
             if (!popup.isShowing()) {
                 return;

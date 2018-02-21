@@ -414,7 +414,6 @@ public class PalettePane extends Control {
                 }
 
             } catch (InstantiationException | IllegalAccessException ex) {
-                System.err.println("PaletteItemMouseDragHandler EXCEPTION ");
                 Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
             }
 

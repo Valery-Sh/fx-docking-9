@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -241,10 +240,6 @@ public class DockUtil {
     public static void print(Parent root, int level, String indent, Predicate<Node> predicate) {
         StringBuilder sb = new StringBuilder();
         print(sb, root, level, indent, predicate);
-        System.out.println("=======================================");
-        System.out.println(sb);
-        System.out.println("=======================================");
-
     }
 
     public static void print(StringBuilder sb, Node node, int level, String indent, Predicate<Node> predicate) {

@@ -104,7 +104,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      */
     public SimpleDragManager(Dockable dockNode) {
         this.dockable = dockNode;
-        System.err.println("SIMPLE DRAG MANAGER CONSTR");
     }
 
     protected Window getFloatingWindow() {
@@ -142,7 +141,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         } else {
-            System.err.println("drag detected if floating");
             if (floatingWindow == null) {
                 //
                 // floatingWindow is null if the dragMaager changed
@@ -225,7 +223,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.instanceOfDockTarget(n);
         });
-//        System.err.println("******** SimpleDragManager 3 + topPane=" + topPane);
         if (topPane != null) {
             root = topPane;
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
@@ -368,7 +365,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     protected Node getFloatingWindowRoot() {
-        //System.err.println("++++ FLOATING WINDOW = " + floatingWindow);
         return floatingWindow.getScene().getRoot();
     }
 

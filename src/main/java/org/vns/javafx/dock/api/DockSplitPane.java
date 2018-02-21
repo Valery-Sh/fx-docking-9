@@ -1,13 +1,7 @@
 package org.vns.javafx.dock.api;
 
-import java.util.List;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
