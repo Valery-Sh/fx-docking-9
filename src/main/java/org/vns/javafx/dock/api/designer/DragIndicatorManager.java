@@ -98,7 +98,9 @@ public class DragIndicatorManager implements IndicatorManager {
      * Check whether a rectangular indicator must be drawn around the specified
      * item.
      *
-     * @param ev the processed event
+     * @param x x coordinate of the  mouse cursor
+     * @param y y coordinate of the  mouse cursor
+     * 
      * @param place the item the rectangle indicator may be drawn around.
      * @return true if a rectangular indicator must be drawn. false otherwise
      */

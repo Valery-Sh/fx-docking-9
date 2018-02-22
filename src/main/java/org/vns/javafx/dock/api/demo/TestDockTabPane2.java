@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,18 +23,11 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockTabPane2;
-import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.PalettePane;
-import org.vns.javafx.dock.api.dragging.MouseDragHandler;
-import org.vns.javafx.dock.api.TabPaneContext;
-import org.vns.javafx.dock.api.TabPaneMouseDragHandler;
 
 /**
  *
@@ -70,7 +62,8 @@ public class TestDockTabPane2 extends Application {
         //tabPane.
         root.getChildren().add(tabPane);
         
-        tabPane.setOnMousePressed(ev -> {
+/*        tabPane.setOnMousePressed(ev -> {
+            if ( true) return;
             System.err.println("***** " + tabPane.lookup(".tab-1"));    
             tabPane.lookupAll(".tab").forEach(t -> {
                 System.err.println("PROP " + t.getProperties().get("key1"));
@@ -142,6 +135,7 @@ public class TestDockTabPane2 extends Application {
             });
 
         });
+*/        
         PalettePane palettePane = new PalettePane(true);
 /*        palettePane.setDragValueCustomizer(o -> {
             if (o instanceof Tab) {

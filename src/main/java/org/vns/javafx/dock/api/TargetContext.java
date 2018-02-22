@@ -242,13 +242,13 @@ public abstract class TargetContext {
 
     /**
      * isDocked(Node) returns true even if the node is docked to
-     * ScenePaneContext
+     * the given {@code TargetContext}
      *
-     * @param to ??
-     * @param dockable ??
-     * @return
+     * @param tc the object of type {@code TargetContext}
+     * @param dockable the object to chack
+     * @return true even if the node is docked to the given {@code TargetContext} 
      */
-    public static boolean isDocked(TargetContext to, Dockable dockable) {
+    public static boolean isDocked(TargetContext tc, Dockable dockable) {
         Dockable d = dockable;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
@@ -256,7 +256,7 @@ public abstract class TargetContext {
         } else if (dc != null && dc.getValue() != null && ! dc.isValueDockable() ) {        
             return false;
         }
-        return to.isDocked(d.node());
+        return tc.isDocked(d.node());
     }
 
     public void undock(Node node) {

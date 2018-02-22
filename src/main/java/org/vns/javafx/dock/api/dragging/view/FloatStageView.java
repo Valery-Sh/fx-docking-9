@@ -42,7 +42,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.ObjectReceiver;
 import org.vns.javafx.dock.api.TargetContext;
 
 /**
@@ -282,10 +281,10 @@ public class FloatStageView implements FloatWindowView {
     /**
      * Makes a window when the dragContainer is not null and is not dockable
      *
-     * @param dockable ??
-     * @param transp ??
-     * @param show ??
-     * @return ??
+     * @param dockable the object for which the window is to be created
+     * @param dragged the dragged object
+     * @param show true if the created window must be shown
+     * @return the created window
      */
     protected Window make(Dockable dockable, Object dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
@@ -293,14 +292,14 @@ public class FloatStageView implements FloatWindowView {
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
-        TargetContext tc = context.getTargetContext();
+/*        TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
             if (context.getDragContainer().getFloatingWindow(dockable) != null && context.getDragContainer().getFloatingWindow(dockable).isShowing()) {
                 return context.getDragContainer().getFloatingWindow(dockable);
             }
         }
-
+*/
         Stage window = new Stage();
         DockRegistry.register(window);
 
@@ -340,13 +339,12 @@ public class FloatStageView implements FloatWindowView {
     }
 
     /**
-     * Makes a window when the dragContainer is not null and is dragged
+     * Creates a window when the dragContainer is not null and is dragged
      *
-     * @param dragged ??
-     * @param transp ??
-     * @param show ??
-     * @return ??
-     */
+     * @param dockable the object for which the window is to be created
+     * @param dragged the dragged object
+     * @param show true if the created window must be shown
+     * @return the created window     */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
 

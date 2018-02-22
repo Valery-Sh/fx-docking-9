@@ -42,7 +42,6 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.ObjectReceiver;
 import org.vns.javafx.dock.api.TargetContext;
 
 /**
@@ -273,10 +272,10 @@ public class FloatPopupControlView implements FloatWindowView {
     /**
      * Makes a window when the dragContainer is not null and is not dockable
      *
-     * @param dockable ??
-     * @param transp ??
-     * @param show ??
-     * @return ??
+     * @param dockable the object for which the window is to be created
+     * @param dragged the dragged object
+     * @param show true if the created window must be shown
+     * @return the created window
      */
     protected Window make(Dockable dockable, Object dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
@@ -299,14 +298,14 @@ public class FloatPopupControlView implements FloatWindowView {
         }
 
         //Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
-        TargetContext tc = context.getTargetContext();
+/*        TargetContext tc = context.getTargetContext();
         if (tc instanceof ObjectReceiver) {
             ((ObjectReceiver) tc).undockObject(dockable);
             if (context.getDragContainer().getFloatingWindow(dockable) != null && context.getDragContainer().getFloatingWindow(dockable).isShowing()) {
                 return context.getDragContainer().getFloatingWindow(dockable);
             }
         }
-
+*/
         PopupControl window = new PopupControl();
 
         windowRoot = new StackPane();
@@ -343,14 +342,16 @@ public class FloatPopupControlView implements FloatWindowView {
     /**
      * Makes a window when the dragContainer is not null and is dragged
      *
-     * @param dragged ??
-     * @param transp ??
-     * @param show ??
-     * @return ??
+     * @param dockable the object for which the window is to be created
+     * @param dragged the dragged object
+     * @param show true if the created window must be shown
+     * @return the created window
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
         Node node = dockable.node();
+//        System.err.println("node = " + node);
+//        System.err.println("dragged = " + dragged.node());
         Window owner = null;
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
@@ -429,26 +430,9 @@ public class FloatPopupControlView implements FloatWindowView {
         node.applyCss();
         windowRoot.applyCss();
         
-        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        FloatView.layout(window, bounds);
+//      Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
+//        FloatView.layout(window, bounds);
         
-/*        Insets insetsDelta = windowRoot.getInsets();
-
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-        window.setX(stagePosition.getX() - insetsDelta.getLeft());
-        window.setY(stagePosition.getY() - insetsDelta.getTop());
-
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
-
-        windowRoot.setPrefWidth(prefWidth);
-        windowRoot.setPrefHeight(prefHeight);
-*/
         window.getStyleClass().clear();
         window.setOnShown(e -> {
             DockRegistry.register(window);

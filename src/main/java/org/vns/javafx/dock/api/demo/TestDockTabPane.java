@@ -144,7 +144,11 @@ public class TestDockTabPane extends Application {
         stg01tab01.setTitle("DockTab 01");
         stg01dp01.dock(stg01tab01, Side.RIGHT);
          */
+        
+        //DockTabPane01 tabPane01 = new DockTabPane01();
         DockTabPane tabPane01 = new DockTabPane();
+        
+        //Dockable.of(tabPane01).getContext().setDragNode(null);
 //        tabPane01.setPrefSize(100, 100);
 //        tabPane01.setMinSize(100, 100);
         tabPane01.setSide(Side.TOP);

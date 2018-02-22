@@ -23,6 +23,7 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.properties.TitleBarProperty;
+//import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
  * Allows to monitor the state of objects of {@link Dockable} type and also
@@ -33,12 +34,6 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * To describe the state of an object using multiple properties and methods. An
  * object of type {@code Dockable} is in a <i>docked</i> state, if the method
  * {@link DockableContext#isDocked() } returns the true.
- * </p>
- * <p>
- * In the <i>floating</i> state an object of type {@code Dockable} is
- * transformed when the method {@link DockableContext#setFloating(boolean)
- * }
- * is applied to it with the parameter value equals to {#code true}.
  * </p>
  * <p>
  * The {@literal dockable} node may have a title bar. The title bar may be an
@@ -53,9 +48,7 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * </p>
  * <p>
  * By default if the {@literal dockable} node has a title bar then the title bar
- * may be used to perform dragging. You can assign any node that is a children
- * of the the {@literal  dockable} node as a drag node by applying the method 
- * {@link DockableContext#setDragNode(javafx.scene.Node) }
+ * may be used to perform dragging.
  * </p>
  *
  * @author Valery Shyshkin
@@ -67,7 +60,7 @@ public class DockableContext {
     private ContextLookup lookup;
 
     private final TitleBarProperty<Region> titleBar;
-
+            
     private final StringProperty title = new SimpleStringProperty("");
     private final Dockable dockable;
 
@@ -100,6 +93,7 @@ public class DockableContext {
      */
     public DockableContext(Dockable dockable) {
         this.dockable = dockable;
+        //titleBar = new TitleBarProperty(dockable.node());
         titleBar = new TitleBarProperty(dockable.node());
         lookup = new DefaultContextLookup();
         init();
@@ -246,12 +240,13 @@ public class DockableContext {
     /**
      * Return an object property which represents a title bar as a node.
      *
-     * @return the property of type
-     * {@link org.vns.javafx.dock.api.properties.TitleBarProperty}
+     * @return the property type {@link TitleBarProperty}
+     * 
      */
     public TitleBarProperty<Region> titleBarProperty() {
         return titleBar;
     }
+    
 
     /**
      * Return a string property which represents a title of the
@@ -367,24 +362,16 @@ public class DockableContext {
         DragContainer dc = getDragContainer();
         if (dc != null && dc.getPlaceholder() != null && FloatView.isFloating(dc.getPlaceholder())) {
             retval = true;
-        } else {
+        }  else if (dc == null || dc.getPlaceholder() == null) {
             retval = FloatView.isFloating(dockable().node());
         }
         return retval;
     }
-
     /**
-     * Transfers the object into the <i>floating</i> state. If the current value
-     * of the property is {@code false} and the specified value is {@code true}
-     * then start creating of a new Stage and adds the node to it's root node.
-     * If the node is docked then it will be {@literal  undocked}.
-     *
-     * @param floating the new value to be set
+     * 
+     * @return the {@code BooleanProperty} whick specifies whether 
+     *   the dockable node is resizable
      */
-/*    public void setFloating(boolean floating) {
-        this.floating.set(floating);
-    }
-*/
     public BooleanProperty resizableProperty() {
         return resizable;
     }
@@ -398,10 +385,7 @@ public class DockableContext {
     }
 
     /**
-     * Specifies whether a floating window of the node can be resized. The
-     * floating window appears when applying the method {@link DockableContext#setFloating(boolean)}
-     * }
-     * with the parameter value equals to {@code true}.
+     * Specifies whether a floating window of the node can be resized. 
      *
      * @param resizable if true the the window can be resized. false -
      * otherwise.
@@ -565,6 +549,8 @@ public class DockableContext {
                 if (oldValue != null) {
                     oldValue.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     oldValue.removeEventHandler(MouseEvent.DRAG_DETECTED, this);
+                    oldValue.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
+                    
              //       oldValue.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
              //       oldValue.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
                     
@@ -572,6 +558,7 @@ public class DockableContext {
                 if (newValue != null) {
                     newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+                    newValue.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
 //                    newValue.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
 //                    newValue.addEventFilter(MouseEvent.DRAG_DETECTED, this);
                     
@@ -581,6 +568,10 @@ public class DockableContext {
         @Override
         public void handle(MouseEvent event) {
             dragHandler = getLookup().lookup(MouseDragHandler.class);
+            System.err.println("DragDetector HANDLE = " + dragHandler);
+            System.err.println("   --- ev.type = " + event.getEventType());
+            System.err.println("DragDetector ev.isPrimaryButtonDown()=" + event.isPrimaryButtonDown());
+
             if (dragHandler == null) {
                 dragHandler = new DefaultMouseDragHandler(dockableContext);
             }

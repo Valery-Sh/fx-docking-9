@@ -74,7 +74,7 @@ public class TargetContextFactory {
         } else if (targetNode instanceof FlowPane) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof TabPane) {
-            retval = new TabPaneContext(targetNode);
+            retval = new DockTabPane2Context(targetNode);
         } else if (targetNode instanceof TextFlow) {
             retval = new ListBasedTargetContext(targetNode);
         }  else if (targetNode instanceof AnchorPane) {

@@ -23,7 +23,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -192,15 +191,15 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         double leftDelta = 0;
         double topDelta = 0;
 
-        if (getFloatingWindowRoot() instanceof BorderPane) {
-            Insets insets = ((BorderPane) getFloatingWindowRoot()).getInsets();
+        if (getFloatingWindowRoot() instanceof Pane) {
+            Insets insets = ((Pane) getFloatingWindowRoot()).getInsets();
 
             leftDelta = insets.getLeft();
             topDelta = insets.getTop();
         }
         if (floatingWindow instanceof PopupControl) {
-            ((PopupControl) floatingWindow).setAnchorX(ev.getScreenX() - leftDelta - startMousePos.getX());
-            ((PopupControl) floatingWindow).setAnchorY(ev.getScreenY() - topDelta - startMousePos.getY());
+            ((PopupControl) floatingWindow).setAnchorX(ev.getScreenX() - leftDelta - getStartMousePos().getX());
+            ((PopupControl) floatingWindow).setAnchorY(ev.getScreenY() - topDelta - getStartMousePos().getY());
         } else {
             floatingWindow.setX(ev.getScreenX() - leftDelta - getStartMousePos().getX());
             floatingWindow.setY(ev.getScreenY() - topDelta - getStartMousePos().getY());

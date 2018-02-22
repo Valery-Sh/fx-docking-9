@@ -40,14 +40,14 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class TabPaneContext extends TargetContext implements ObjectReceiver {
+public class DockTabPane2Context extends TargetContext { //implements ObjectReceiver {
 
-    public TabPaneContext(Node targetNode) {
+    public DockTabPane2Context(Node targetNode) {
         super(targetNode);
         init();
     }
 
-    public TabPaneContext(Dockable dockable) {
+    public DockTabPane2Context(Dockable dockable) {
         super(dockable);
         init();
     }
@@ -69,7 +69,6 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
     @Override
     public boolean isAcceptable(Dockable dockable) {
         boolean retval = false;
-        DragContainer dc = dockable.getContext().getDragContainer();
 
         /*17.02.2018if (dc != null && (dc.isValueDockable())) {
         if (dc != null )
@@ -78,6 +77,8 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             retval = true;
         }
 */
+        DragContainer dc = dockable.getContext().getDragContainer();
+        
         if ( dc != null && (dc.getValue() instanceof Tab) && ! dc.isValueDockable()) {        
             retval = true;
         }
@@ -114,7 +115,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         }
     }
 
-    public void dock(Point2D mousePos, Tab tab, Dockable dockable) {
+    protected void dock(Point2D mousePos, Tab tab, Dockable dockable) {
         Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
         Window window = null;
         if (placeholder != null) {
@@ -136,6 +137,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         int idx = -1;
         TabPaneHelper helper = new TabPaneHelper(this);
         TabPane pane = (TabPane) getTargetNode();
+        
         if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
 
             idx = pane.getTabs().size();
@@ -177,7 +179,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+/*    @Override
     public void dockObject(Point2D mousePos, Dockable carrier) {
         DragContainer dc = carrier.getContext().getDragContainer();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
@@ -192,7 +194,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
             ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
         }
     }
-
+*/
     public static class TabsChangeListener implements ListChangeListener<Tab> {
 
         @Override
@@ -233,7 +235,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
         public TabPanePositonIndicator(TargetContext context) {
             super(context);
-            helper = new TabPaneHelper((TabPaneContext) context);
+            helper = new TabPaneHelper((DockTabPane2Context) context);
         }
 
         @Override
@@ -269,7 +271,7 @@ public class TabPaneContext extends TargetContext implements ObjectReceiver {
 
         @Override
         public void showDockPlace(double x, double y) {
-            TabPaneContext ctx = ((TabPaneContext) getTargetContext());
+            DockTabPane2Context ctx = ((DockTabPane2Context) getTargetContext());
             TabPane pane = (TabPane) getTargetContext().getTargetNode();
             Bounds tabBounds = helper.tabBounds(x, y);;
             Bounds headerAreaBounds = helper.headerAreaBounds(x, y);

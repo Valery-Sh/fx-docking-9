@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import org.vns.javafx.dock.incubator.view.FloatPopupControlView4;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;

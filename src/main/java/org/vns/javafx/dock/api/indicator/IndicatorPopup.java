@@ -158,7 +158,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
         super.show(ownerNode, anchorX, anchorY);
-        System.err.println("IndicatorPopup: x = " + anchorX + "; y="+anchorY);
     }
 
     @Override

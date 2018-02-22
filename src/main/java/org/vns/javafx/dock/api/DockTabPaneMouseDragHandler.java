@@ -23,6 +23,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 
@@ -30,9 +31,9 @@ import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
  *
  * @author Valery Shyshkin
  */
-public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
+public class DockTabPaneMouseDragHandler extends DefaultMouseDragHandler {
 
-    public TabPaneMouseDragHandler(DockableContext context) {
+    public DockTabPaneMouseDragHandler(DockableContext context) {
         super(context);
     }
 
@@ -40,30 +41,50 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
     public void mousePressed(MouseEvent ev) {
         setStartMousePos(null);
         Point2D pos = new Point2D(ev.getX(), ev.getY());
-        
+        System.err.println("1 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
         if (!ev.isPrimaryButtonDown() || getHeaderArea(ev) == null) {
             return;
         }
+        System.err.println("2 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
+
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
-            //getContext().setDragContainer(new DragContainer(getContext().dockable(), tab));
-            getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(tab), tab));
-            WritableImage wi = null;
+            if (Dockable.of(tab.getContent()) != null) {
+                getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(tab.getContent()), tab.getContent()));
+            } else {
+                getContext().setDragContainer(new DragContainer(DragContainer.placeholderOf(tab), tab));
+                WritableImage wi = null;
 
-            if (tabNode != null) {
-                wi = tabNode.snapshot(null, null);
-                if (wi != null) {
-                    Node node = new ImageView(wi);
-                    node.setOpacity(0.75);
-                    getContext().getDragContainer().setPlaceholder(node);
+                if (tabNode != null) {
+                    VBox box = new VBox();
+
+                    wi = tabNode.snapshot(null, null);
+                    if (wi != null) {
+                        Node node = new ImageView(wi);
+                        node.setOpacity(0.75);
+                        box.getChildren().add(node);
+                        getContext().getDragContainer().setPlaceholder(node);
+                    }
+
                 }
-
             }
+
             pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
-            
+
         }
         setStartMousePos(pos);
+    }
+
+    @Override
+    protected void prepare() {
+        DragContainer dc = getContext().getDragContainer();
+        if (dc != null && dc.getPlaceholder() != null && dc.getValue() != null && dc.getValue() instanceof Tab) {
+            Tab tab = (Tab) dc.getValue();
+            if (tab.getTabPane() != null) {
+                tab.getTabPane().getTabs().remove(tab);
+            }
+        }
     }
 
     private String getUUIDStyle(Tab tab) {
@@ -127,4 +148,13 @@ public class TabPaneMouseDragHandler extends DefaultMouseDragHandler {
         }
         return retval;
     }
+    /*    public void mouseReleased(MouseEvent ev) {
+        System.err.println("TabpaneMouseHandler: ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
+        if (!ev.isPrimaryButtonDown()) {
+            return;
+        }
+        System.err.println("!!! mouseReleased");
+        ev.consume();
+    }
+     */
 }

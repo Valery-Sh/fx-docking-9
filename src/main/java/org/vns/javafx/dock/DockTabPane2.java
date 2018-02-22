@@ -20,8 +20,8 @@ import javafx.scene.control.TabPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.TabPaneContext;
-import org.vns.javafx.dock.api.TabPaneMouseDragHandler;
+import org.vns.javafx.dock.api.DockTabPane2Context;
+import org.vns.javafx.dock.api.DockTabPane2MouseDragHandler;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 
@@ -40,14 +40,13 @@ public class DockTabPane2 extends TabPane {
         init();
     }
     private void init() {
-        TargetContext tc = new TabPaneContext(this);
-        //DockTarget dt = 
-        DockTarget dt = DockRegistry.makeDockTarget(this, tc);
+        TargetContext tc = new DockTabPane2Context(this);
+
+        DockRegistry.makeDockTarget(this, tc);
         Dockable d = DockRegistry.makeDockable(this);
         d.getContext().setTargetContext(tc);
         d.getContext().setDragNode(this);
-        TabPaneMouseDragHandler dragHandler = new TabPaneMouseDragHandler(d.getContext());
+        DockTabPane2MouseDragHandler dragHandler = new DockTabPane2MouseDragHandler(d.getContext());
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
-        
     }
 }

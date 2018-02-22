@@ -14,13 +14,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
@@ -28,6 +28,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.DockableContext;
@@ -38,7 +39,7 @@ import org.vns.javafx.dock.api.save.DockStateLoader;
  *
  * @author Valery
  */
-public class TestDockPaneControl extends Application {
+public class TestDockPaneControl011 extends Application {
 
     Stage stage;
     Scene scene;
@@ -54,7 +55,7 @@ public class TestDockPaneControl extends Application {
         //StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DockStateLoader loader = new DockStateLoader(TestDockPaneControl.class);
+        DockStateLoader loader = new DockStateLoader(TestDockPaneControl011.class);
 
         //loader.setSaveOnClose(true);
         DockPane dockPane2 = new DockPane();
@@ -288,7 +289,7 @@ public class TestDockPaneControl extends Application {
         rootBorderPane.setStyle("-fx-background-color: red");
         stage2.show();
          */
-
+        getDockTabPane2Stage().show();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
 
@@ -297,7 +298,37 @@ public class TestDockPaneControl extends Application {
     public static void main(String[] args) {
         Application.launch(args);
     }
+    public Stage getDockTabPane2Stage() {
+        VBox root = new VBox();
+        Button btn1 = new Button("btn1");
+        root.getChildren().add(btn1);
 
+        Tab tab1 = new Tab("Tab1");
+        Button tab1Btn1 = new Button("tab1Btn1");
+        tab1.setContent(tab1Btn1);
+        tab1.getProperties().put("key1", "MyKey");
+        tab1.setId("tb1");
+        tab1.getStyleClass().add("tab-1");        
+        
+        Tab tab2 = new Tab("Tab2_1_1");
+        tab2.setId("tb2");
+        Label tab2Lb1 = new Label("tab2Lb1");
+        tab2.setContent(tab2Lb1);
+
+        Tab tab3 = new Tab("Tab3");
+        tab3.setId("tb3");
+        Label tab3Lb1 = new Label("tab3Lb1");
+        tab3.setContent(tab3Lb1);        
+        TabPane tabPane = new DockTabPane2(tab1, tab2, tab3);
+                
+        //tabPane.
+        root.getChildren().add(tabPane);
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        return stage;
+        
+    }
     public Stage getSideBarStage() {
         Stage stage = new Stage();
         StackPane root = new StackPane();

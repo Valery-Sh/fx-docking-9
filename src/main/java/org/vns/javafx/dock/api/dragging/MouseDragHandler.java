@@ -19,6 +19,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.DragContainer;
 
 /**
  *
@@ -28,13 +29,17 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
 
     private final DockableContext context;
     private Point2D startMousePos;
+    //private DragContainer dragContainer;
 
     protected MouseDragHandler(DockableContext context) {
         this.context = context;
     }
-    
+
     public abstract void mouseDragDetected(MouseEvent ev);
     
+    protected void prepare() {
+        
+    }
     public void mousePressed(MouseEvent ev) {
         if (!ev.isPrimaryButtonDown()) {
             return;
@@ -43,14 +48,31 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         ev.consume();
     }
 
-  
+    public void mouseReleased(MouseEvent ev) {
+        System.err.println("1 !!! mouseReleased");
+        System.err.println("2 !!! mouseReleased");
+
+        startMousePos = null;
+        //dragContainer = null;
+        System.err.println("!!! mouseReleased");
+        ev.consume();
+        DragContainer dc = getContext().getDragContainer();
+        if (dc != null && dc.getPlaceholder() != null ) {
+            getContext().setDragContainer(null);
+        }
+    }
 
     @Override
-    public void handle(MouseEvent ev) {
+    public void handle(MouseEvent ev ) {
         if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+            System.err.println("MouseDragHandler mousePressed");
             mousePressed(ev);
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+            System.err.println("MouseDragHandler mouseDragDetected");
             mouseDragDetected(ev);
+        } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+            System.err.println("MouseDragHandler mouseReleased");
+            mouseReleased(ev);
         }
         ev.consume();
 
@@ -67,7 +89,15 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     public DockableContext getContext() {
         return context;
     }
-    
+
+/*    public DragContainer getDragContainer() {
+        return dragContainer;
+    }
+
+    public void setDragContainer(DragContainer dragContainer) {
+        this.dragContainer = dragContainer;
+    }
+*/
     public DragManager getDragManager(MouseEvent ev) {
         return getContext().getDragManager();
     }

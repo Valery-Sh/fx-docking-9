@@ -11,7 +11,6 @@ import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -30,7 +29,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
 
     //private boolean activeChoosedPseudoClass;
     
-    private BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
+    private final BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
             
     public TitleBarProperty(Dockable owner) {
         super();

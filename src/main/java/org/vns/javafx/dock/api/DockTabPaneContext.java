@@ -22,9 +22,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -40,13 +38,12 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
-import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
 
 /**
  *
  * @author Valery
  */
-public class DockTabPaneContext extends TargetContext {
+public class DockTabPaneContext extends TargetContext { //implements ObjectReceiver{
 
     public static final String SAVE_DRAGNODE_PROP = "UUID-100b8c98-1b22-4f18-959e-66c16aa3a588";
 
@@ -107,25 +104,138 @@ public class DockTabPaneContext extends TargetContext {
         });
 
         //getLookup().putUnique(PositionIndicator.class,new TabPanePositonIndicator(this));
-        // getLookup().putUnique(IndicatorPopup.class,new IndicatorPopup(this));
+        //getLookup().putUnique(IndicatorPopup.class,new IndicatorPopup(this));
     }
 
     @Override
     protected void initLookup(ContextLookup lookup) {
         super.initLookup(lookup);
+        System.err.println("INIT LOOKUP !!!!!!!!!!!!!!!!!!!!!");
         lookup.putUnique(PositionIndicator.class, new TabPanePositonIndicator(this));
-        lookup.add(new DockTreeItemBuilderFactory());
+        //lookup.add(new DockTreeItemBuilderFactory());
     }
 
     public TabPaneHelper getHelper() {
         return helper;
     }
+    public boolean isAcceptable(Dockable dockable) {
+        
+        boolean retval = false;
+        
+        DragContainer dc = dockable.getContext().getDragContainer();
+        
+        if ( dc != null && (dc.getValue() instanceof Tab) && ! dc.isValueDockable()) {        
+            return true;
+        }
+        
+        return super.isAcceptable(dockable);
+/*        Dockable dragged = dockable;
+        Object v  = dockable.getContext().getDragValue();
+        if ( Dockable.of(v) != null ) {
+            dragged = Dockable.of(v);
+        } else {
+            return false;
+        }
+        return true;
+        //return retval;
+        //return (dockLoader != null && dockLoader.isRegistered(dragged.node())) || dockLoader == null;
+*/        
+    }
 
+/*    @Override
+    public void dockObject(Point2D mousePos, Dockable carrier) {
+        DragContainer dc = carrier.getContext().getDragContainer();
+        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
+            ((TabPane) getTargetNode()).getTabs().add((Tab) dc.getValue());
+        }
+    }
+
+    @Override
+    public void undockObject(Dockable carrier) {
+        DragContainer dc = carrier.getContext().getDragContainer();
+        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
+            ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
+        }
+    }
+*/
     @Override
     public TabPane getTargetNode() {
         return (TabPane) super.getTargetNode();
     }
+    //////////////////////////////////////////////////////////
+    @Override
+    public void dock(Point2D mousePos, Dockable dockable) {
+        Dockable d = dockable;
+        DragContainer dc = dockable.getContext().getDragContainer();
+        if (dc != null && dc.getValue() != null) {
+            if (!dc.isValueDockable() && (dc.getValue() instanceof Tab)) {
+                dock(mousePos, (Tab) dc.getValue(), dockable);
+                return;
+            }
+            d = Dockable.of(dc.getValue());
+        }
+        super.dock(mousePos, dockable);
+/*        if (isDocked(d.node())) {
+            return;
+        }
+        Node node = d.node();
+        Window stage = null;
+        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+            stage = node.getScene().getWindow();
+        }
 
+        if (doDock(mousePos, d.node()) && stage != null) {
+            if ((stage instanceof Stage)) {
+                ((Stage) stage).close();
+            } else {
+                stage.hide();
+            }
+            d.getContext().setTargetContext(this);
+        }
+*/        
+    }
+
+    protected void dock(Point2D mousePos, Tab tab, Dockable dockable) {
+        Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
+        Window window = null;
+        if (placeholder != null) {
+            window = placeholder.getScene().getWindow();
+        } else {
+            window = dockable.node().getScene().getWindow();
+        }
+        if (doDock(mousePos, tab) && window != null) {
+            if ((window instanceof Stage)) {
+                ((Stage) window).close();
+            } else {
+                window.hide();
+            }
+        }
+    }
+
+    protected boolean doDock(Point2D mousePos, Tab tab) {
+        boolean retval = false;
+        int idx = -1;
+        TabPaneHelper helper = new TabPaneHelper(this);
+        TabPane pane = (TabPane) getTargetNode();
+        if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
+
+            idx = pane.getTabs().size();
+
+            Bounds ctrlButtonsBounds = helper.controlButtonBounds(mousePos.getX(), mousePos.getY());
+            if (ctrlButtonsBounds == null) {
+                Tab t = helper.getTab(mousePos.getX(), mousePos.getY());
+                if (t != null) {
+                    idx = pane.getTabs().indexOf(t);
+                }
+            }
+        }
+        if (idx >= 0) {
+            pane.getTabs().add(idx, tab);
+            retval = true;
+        }
+        return retval;
+    }
+//////////////////////////////////////////////////////////
     /**
      * For test purpose
      *
@@ -190,6 +300,7 @@ public class DockTabPaneContext extends TargetContext {
 
         Tab newTab = new Tab();
         Label tabLabel = new Label(txt);
+        tabLabel.setMouseTransparent(true);
         newTab.setGraphic(tabLabel);
 
         if (idx >= 0) {
@@ -210,15 +321,6 @@ public class DockTabPaneContext extends TargetContext {
         hideContentTitleBar(dockable);
         pane.getSelectionModel().select(newTab);
 
-        if (DockRegistry.isDockable(node)) {
-            DockableContext dockableContext = Dockable.of(node).getContext();
-            Node saveDragNode = dockableContext.getDragNode();
-            dockableContext.setDragNode(newTab.getGraphic());
-            if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
-                dockableContext.setTargetContext(this);
-            }
-            dockableContext.targetContextProperty().addListener(new TabPaneContextListener(saveDragNode, dockableContext));
-        }
         return true;
     }
 
@@ -253,10 +355,10 @@ public class DockTabPaneContext extends TargetContext {
         tabPane.getSelectionModel().select(newTab);
 
         if (DockRegistry.isDockable(node)) {
-            DockableContext nodeHandler = Dockable.of(node).getContext();
-            nodeHandler.setDragNode(newTab.getGraphic());
-            if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
-                nodeHandler.setTargetContext(this);
+            DockableContext context = Dockable.of(node).getContext();
+            context.setDragNode(newTab.getGraphic());
+            if (context.getTargetContext() == null || context.getTargetContext() != this) {
+                context.setTargetContext(this);
             }
         }
         return true;
@@ -403,6 +505,7 @@ public class DockTabPaneContext extends TargetContext {
         public TabPanePositonIndicator(TargetContext context) {
             super(context);
             helper = new TabPaneHelper(context);
+            
         }
 
         @Override

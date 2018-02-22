@@ -49,7 +49,6 @@ public abstract class PositionIndicator {
     
     
     public void showIndicator(double screenX, double screenY) {
-        System.err.println("PositionIndicator x = " + screenX + "; y="+screenY);
         getIndicatorPpopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
 

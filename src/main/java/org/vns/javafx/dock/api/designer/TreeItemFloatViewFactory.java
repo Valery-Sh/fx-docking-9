@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer;
 
-import org.vns.javafx.dock.incubator.view.FloatPopupControlView4;
 import org.vns.javafx.dock.api.dragging.view.*;
 import com.sun.javafx.stage.EmbeddedWindow;
 import javafx.scene.Node;
