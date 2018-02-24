@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -205,8 +207,28 @@ public class DockUtil {
     }
 
     public static boolean contains(Node node, double x, double y) {
+        Bounds b = node.localToScreen(node.getBoundsInLocal());
+        if ( b == null ) {
+            return false;
+        }
         return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
     }    
+    public static Bounds getHalfBounds(Side side,Node node, double x, double y) {
+        Bounds retval;
+        Bounds b  = node.localToScreen(node.getBoundsInLocal());
+        if ( ! b.contains(x,y)) {
+            retval = null;
+        } else if (side == Side.TOP) {
+            retval = new BoundingBox(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight() / 2);
+        } else if (side == Side.BOTTOM) {
+            retval = new BoundingBox(b.getMinX(), b.getMinY() + b.getHeight() / 2, b.getWidth(), b.getHeight() / 2);
+        } else if (side == Side.LEFT) {
+            retval = new BoundingBox(b.getMinX(), b.getMinY(), b.getWidth() / 2, b.getHeight());
+        } else {
+            retval = new BoundingBox(b.getMinX() + b.getWidth() / 2, b.getMinY(), b.getWidth() / 2, b.getHeight());
+        }
+        return retval;
+    }        
     public static Node findNode(Pane pane, double x, double y) {
         Node retval = null;
         for ( Node node : pane.getChildren() ) {

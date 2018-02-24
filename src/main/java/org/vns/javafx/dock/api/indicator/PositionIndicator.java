@@ -43,13 +43,16 @@ public abstract class PositionIndicator {
 
     }
 
+    protected void showIndicator(Node ownerNode,double screenX, double screenY ) {
+        getIndicatorPopup().show(ownerNode, screenX, screenY);
+    }
+    
     protected void showIndicator(double screenX, double screenY, Node targetNode) {
-        
     }
     
     
     public void showIndicator(double screenX, double screenY) {
-        getIndicatorPpopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
 
     public Node getDockPlace() {
@@ -66,7 +69,7 @@ public abstract class PositionIndicator {
 
     protected abstract Pane createIndicatorPane();
 
-    public IndicatorPopup getIndicatorPpopup() {
+    public IndicatorPopup getIndicatorPopup() {
         if ( indicatorPopup == null ) {
             indicatorPopup = (IndicatorPopup)targetContext.getLookup().lookup(IndicatorManager.class);
         }

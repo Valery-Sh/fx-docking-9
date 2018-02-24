@@ -36,8 +36,9 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
 public class DragContainer { //extends Control implements Dockable{
 
     private final ObjectProperty value = new SimpleObjectProperty();
-
     private Node placeholder;
+    
+    private boolean dragAsObject ;
 
     public DragContainer(Node placeholder, Object value) {
         this.value.set(value);
@@ -49,6 +50,14 @@ public class DragContainer { //extends Control implements Dockable{
     
     protected DragContainer(Object value) {
         this.value.set(value);
+    }
+
+    public boolean isDragAsObject() {
+        return dragAsObject;
+    }
+
+    public void setDragAsObject(boolean dragAsObject) {
+        this.dragAsObject = dragAsObject;
     }
 
     public ObjectProperty valueProperty() {

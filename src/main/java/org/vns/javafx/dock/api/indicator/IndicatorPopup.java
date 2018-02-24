@@ -70,7 +70,7 @@ import org.vns.javafx.dock.api.TargetContext;
  *
  * @author Valery Shyshkin
  */
-public class IndicatorPopup extends Popup implements IndicatorManager{
+public class IndicatorPopup extends Popup implements IndicatorManager {
 
     /**
      * The owner of this object
@@ -88,16 +88,14 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
     public void setDraggedNode(Node draggedNode) {
         this.draggedNode = draggedNode;
     }
-    
+
     private final ObservableList<IndicatorPopup> childWindows = FXCollections.observableArrayList();
-    
 
     /**
      * Creates a new instance for the specified target context.
      *
      * @param target the owner of the object to be created
      */
-
     public IndicatorPopup(TargetContext target) {
         this.targetContext = target;
         init();
@@ -111,13 +109,12 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
         return context.getLookup().lookup(IndicatorPopup.class);
     }
 
-
     @Override
     public void show(Window ownerWindow) {
         if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
-        
+
         super.show(ownerWindow);
         if (getChildWindows().contains(ownerWindow)) {
             return;
@@ -133,7 +130,8 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
         if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
-
+        
+        System.err.println("OWNER WINDOW = " + ownerWindow);
         super.show(ownerWindow, anchorX, anchorY);
 
         if (((IndicatorPopup) ownerWindow).getChildWindows().contains(this)) {
@@ -157,7 +155,8 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
 
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
-        super.show(ownerNode, anchorX, anchorY);
+        System.err.println("SHOW ownerNode = " + ownerNode);
+        super.show(ownerNode.getScene().getWindow(), anchorX, anchorY);
     }
 
     @Override
@@ -190,7 +189,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
             if (targetContext.getPositionIndicator().getIndicatorPane() == null) {
                 return;
             }
-            
+
             Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
 
             if (getTargetNode() instanceof Region) {
@@ -209,7 +208,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
                 });
             }
             indicatorPane.setMouseTransparent(true);
-            if ( ! getContent().contains(indicatorPane)) {
+            if (!getContent().contains(indicatorPane)) {
                 getContent().add(indicatorPane);
             }
         });
@@ -222,15 +221,11 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
         getChildWindows().forEach(w -> {
             getAllChildIndicatorPopup(list, w);
         });
-//        list.add(this);
         return list;
     }
 
     private void getAllChildIndicatorPopup(ObservableList<IndicatorPopup> list, IndicatorPopup popup) {
         list.addAll(popup.getChildWindows());
-        popup.getChildWindows().forEach(w -> {
-            //getAllChildIndicatorPopup(list, w); 
-        });
     }
 
     /**
@@ -265,6 +260,17 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         getPositionIndicator().showIndicator(pos.getX(), pos.getY());
+    }
+
+    
+    @Override
+    public void showIndicator(Node targetNode) {
+        if (getPositionIndicator() == null) {
+            return;
+        }
+        setAutoFix(false);
+        Point2D pos = getTargetNode().localToScreen(0, 0);
+        getPositionIndicator().showIndicator(pos.getX(), pos.getY(), targetNode);
     }
 
     /**
@@ -316,11 +322,11 @@ public class IndicatorPopup extends Popup implements IndicatorManager{
     }
 
     /**
-     * Returns a shape of type {@code  Rectangle} to be displayed to showIndicator a
- proposed dock place
+     * Returns a shape of type {@code  Rectangle} to be displayed to
+     * showIndicator a proposed dock place
      *
-     * @return a shape of type {@code  Rectangle} to be displayed to showIndicator a
- proposed dock place
+     * @return a shape of type {@code  Rectangle} to be displayed to
+     * showIndicator a proposed dock place
      */
     public Node getDockPlace() {
         return targetContext.getPositionIndicator().getDockPlace();

@@ -280,6 +280,11 @@
 
 }
 
+.list-based-indicator .dock-place {
+    /*-fx-fill: -fx-selection-bar;*/
+    -fx-fill: -fx-selection-bar;
+    -fx-opacity: 0.3;
+}
 .dock-place {
     /*-fx-fill: -fx-selection-bar;*/
     -fx-fill: transparent;

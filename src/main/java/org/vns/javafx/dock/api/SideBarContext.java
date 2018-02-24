@@ -107,7 +107,7 @@ public class SideBarContext extends TargetContext {
 
     public void dock(Dockable dockable) {
         Object o = getValue(dockable);
-        if ( o == null || Dockable.of(o) == null ) {
+        if (o == null || Dockable.of(o) == null) {
             return;
         }
         Dockable dragged = Dockable.of(o);
@@ -210,12 +210,14 @@ public class SideBarContext extends TargetContext {
         Node retval = null;
         for (Node node : list) {
             //
-            // Consider tha the first element is a drag node
+            // Consider the the first element is a drag node
             //
-            if (!(node instanceof Group) || list.indexOf(node) == 0 ) {
+            if (!(node instanceof Group) || list.indexOf(node) == 0) {
                 continue;
             }
+
             Region r = (Region) ((Group) node).getChildren().get(0);
+
             if (DockUtil.contains(r, x, y)) {
                 retval = node;
                 break;
@@ -440,7 +442,8 @@ public class SideBarContext extends TargetContext {
             super(context);
         }
 
-        private IndicatorPopup getIndicatorPopup() {
+        @Override
+        public IndicatorPopup getIndicatorPopup() {
             if (indicatorPopup == null) {
                 indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
             }
@@ -479,6 +482,25 @@ public class SideBarContext extends TargetContext {
             return ((SideBarContext) getTargetContext()).getToolBar();
         }
 
+        private static Node findLastVisibleNode(List<Node> list) {
+            Node retval = null;
+            for (Node node : list) {
+                //
+                // Consider the first element may be a drag node
+                //
+                if (!(node instanceof Group) || list.indexOf(node) == 0) {
+                    continue;
+                }
+                
+                Region r = (Region) ((Group) node).getChildren().get(0);
+                if (r.localToScreen(r.getBoundsInLocal()) == null) {
+                    continue;
+                }
+                retval = node;
+            }
+            return retval;
+        }
+
         protected int indexOf(double x, double y) {
             int idx = -1;
             Node sb = ((SideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
@@ -498,7 +520,7 @@ public class SideBarContext extends TargetContext {
             if (idx < 0) {
                 return;
             }
-            double tbHeight = tb.getHeight();
+           // double tbHeight = tb.getHeight();
 
             Rectangle dockPlace = (Rectangle) getDockPlace();
 
@@ -519,7 +541,7 @@ public class SideBarContext extends TargetContext {
             if (idx == 0 && tb.getItems().isEmpty()) {
                 dockPlace.setWidth(5);
             } else if (idx == tb.getItems().size()) {
-                node = tb.getItems().get(idx - 1);
+                node = findLastVisibleNode(tb.getItems());
             } else {
                 node = tb.getItems().get(idx);
                 before = true;
@@ -547,10 +569,9 @@ public class SideBarContext extends TargetContext {
                 }
             }
             dockPlace.setVisible(true);
-            dockPlace.toFront();
+            //dockPlace.toFront();
         }
 
     }
 
-    
 }//class

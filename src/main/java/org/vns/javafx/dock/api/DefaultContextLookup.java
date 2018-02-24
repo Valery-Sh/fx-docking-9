@@ -22,7 +22,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
-import org.vns.javafx.dock.api.indicator.DragPopup;
 
 /**
  *

@@ -944,7 +944,7 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
         }
 
-        private IndicatorPopup getIndicatorPopup() {
+        public IndicatorPopup getIndicatorPopup() {
             if (indicatorPopup == null) {
                 indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
             }

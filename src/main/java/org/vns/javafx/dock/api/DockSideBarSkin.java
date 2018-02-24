@@ -61,8 +61,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
                 if (Dockable.of(control).getContext().isFloating()) {
                     double w = getSkinnable().getWidth();
                     double h = getSkinnable().getHeight();
-                    double minW = getSkinnable().minWidth(-1);
-                    Window win = getSkinnable().getScene().getWindow();
                     getSkinnable().getScene().getWindow().setHeight(h);
                     getSkinnable().getScene().getWindow().setWidth(w);
                 }

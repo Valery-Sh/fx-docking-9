@@ -12,9 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
-import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.TargetContext;
@@ -47,10 +45,11 @@ public abstract class SideIndicator extends PositionIndicator {
         getDockPlace().setVisible(true);
     }
 
-    protected Window getIndicatorPopup() {
+    
+/*    public Window getIndicatorPopup() {
         return null;
     }
-
+*/
     @Override
     public void showIndicator(double screenX, double screenY, Node targetNode) {
     }
@@ -264,12 +263,9 @@ public abstract class SideIndicator extends PositionIndicator {
         }
 
         @Override
-        protected Window getIndicatorPopup() {
+        public IndicatorPopup getIndicatorPopup() {
             DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
-            //DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
-            //return ((DragPopup) getTargetContext().getIndicatorPopup()).getNodeIndicatorPopup();
-            //return super.getIndicatorPopup().getNodeIndicatorPopup();                    
-            return ip.getNodeIndicatorPopup();                                
+            return (IndicatorPopup) ip.getNodeIndicatorPopup();                                
         }
 
         @Override
@@ -287,8 +283,10 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
-                ((Popup) getIndicatorPopup()).show( (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());                
+                //Popup popup = (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class);
+                //((Popup) getIndicatorPopup()).show( popup, newPos.getX(), newPos.getY());                
 //                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                ((Popup) getIndicatorPopup()).show( (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());                                
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
@@ -436,7 +434,7 @@ public abstract class SideIndicator extends PositionIndicator {
         }
 
         @Override
-        protected Popup getIndicatorPopup() {
+        public IndicatorPopup getIndicatorPopup() {
             //return getTargetContext().getIndicatorPopup();
             return (IndicatorPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
         }

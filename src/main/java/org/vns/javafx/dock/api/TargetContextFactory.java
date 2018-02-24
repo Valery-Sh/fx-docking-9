@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -27,8 +28,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.PopupControl;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
@@ -41,9 +44,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
+import org.vns.javafx.dock.api.indicator.IndicatorManager;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
@@ -52,7 +60,7 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  */
 public class TargetContextFactory {
 
-    TargetContext getContext(Node targetNode) {
+    protected TargetContext getContext(Node targetNode) {
         if (DockRegistry.isDockTarget(targetNode)) {
             return DockRegistry.dockTarget(targetNode).getTargetContext();
         }
@@ -77,7 +85,7 @@ public class TargetContextFactory {
             retval = new DockTabPane2Context(targetNode);
         } else if (targetNode instanceof TextFlow) {
             retval = new ListBasedTargetContext(targetNode);
-        }  else if (targetNode instanceof AnchorPane) {
+        } else if (targetNode instanceof AnchorPane) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof Pane) {
             retval = getPaneContext((Pane) targetNode);
@@ -106,7 +114,7 @@ public class TargetContextFactory {
         }
 
         private void init() {
-            ((StackPane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this)); 
+            ((StackPane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this));
         }
 
         @Override
@@ -145,7 +153,7 @@ public class TargetContextFactory {
 
         @Override
         public void remove(Node dockNode) {
-            ((StackPane)getTargetNode()).getChildren().remove(dockNode);
+            ((StackPane) getTargetNode()).getChildren().remove(dockNode);
         }
 
         /**
@@ -219,7 +227,7 @@ public class TargetContextFactory {
             leftNode.setAlignment(Pos.CENTER);
             centerNode.setAlignment(Pos.CENTER);
 
-            indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
+            //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
         }
 
@@ -281,7 +289,7 @@ public class TargetContextFactory {
         private void init() {
 
             ((Pane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this));
-/*            p.getChildren().addListener(new ListChangeListener<Node>() {
+            /*            p.getChildren().addListener(new ListChangeListener<Node>() {
                 @Override
                 public void onChanged(ListChangeListener.Change<? extends Node> change) {
                     while (change.next()) {
@@ -306,7 +314,7 @@ public class TargetContextFactory {
                 }
 
             });
-*/            
+             */
         }
 
         @Override
@@ -375,7 +383,6 @@ public class TargetContextFactory {
         @Override
         protected Pane createIndicatorPane() {
             Pane indicator = new Pane();
-            indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
             return indicator;
         }
 
@@ -385,10 +392,10 @@ public class TargetContextFactory {
             boolean visible = true;
             Pane p = (Pane) getIndicatorPane();
 
-            if (getIndicatorPpopup().getDraggedNode() != null) {
-                x = getIndicatorPpopup().getDraggedNode().getScene().getWindow().getX();
-                y = getIndicatorPpopup().getDraggedNode().getScene().getWindow().getY();
-                Node n = getIndicatorPpopup().getDraggedNode();
+            if (getIndicatorPopup().getDraggedNode() != null) {
+                x = getIndicatorPopup().getDraggedNode().getScene().getWindow().getX();
+                y = getIndicatorPopup().getDraggedNode().getScene().getWindow().getY();
+                Node n = getIndicatorPopup().getDraggedNode();
                 Bounds b = n.localToScreen(n.getBoundsInLocal());
             }
             if (DockUtil.contains(p, x, y)) {
@@ -397,6 +404,7 @@ public class TargetContextFactory {
                 visible = false;
             }
             getDockPlace().setVisible(visible);
+            //getDockPlace().toFront();
         }
 
         private void adjustPlace(Node node) {
@@ -410,7 +418,7 @@ public class TargetContextFactory {
         private void adjustPlace(Pane pane, double x, double y) {
             Rectangle r = (Rectangle) getDockPlace();
             Point2D pt = pane.screenToLocal(x, y);
-            Node draggedNode = getIndicatorPpopup().getDraggedNode();
+            Node draggedNode = getIndicatorPopup().getDraggedNode();
             if (draggedNode != null) {
                 r.setWidth(draggedNode.getScene().getWindow().getWidth());
                 r.setHeight(draggedNode.getScene().getWindow().getHeight());
@@ -496,18 +504,31 @@ public class TargetContextFactory {
                 return false;
             }
             int idx = -1;
+            Node innerNode = null;
             for (int i = 0; i < items.size(); i++) {
-                Node n = items.get(i);
-                if (DockUtil.contains(n, mousePos.getX(), mousePos.getY())) {
-                    items.add(i, node);
+                innerNode = items.get(i);
+                if (DockUtil.contains(innerNode, mousePos.getX(), mousePos.getY())) {
+//                    items.add(i, node);
                     idx = i;
                     break;
                 }
             }
             if (idx == -1) {
                 items.add(node);
-            }
+            } else if ((targetNode instanceof VBox)) {
+                Bounds b = DockUtil.getHalfBounds(Side.TOP, innerNode, mousePos.getX(), mousePos.getY());
+                if (b != null && b.contains(mousePos)) {
+                    items.add(idx, node);
+                } else {
+                    b = DockUtil.getHalfBounds(Side.BOTTOM, innerNode, mousePos.getX(), mousePos.getY());
+                    if (b != null && b.contains(mousePos)) {
+                        items.add(idx + 1, node);
+                    }
+                }
+            } else if (targetNode instanceof HBox) {
 
+            } else {
+            }
             return retval;
         }
 
@@ -552,15 +573,24 @@ public class TargetContextFactory {
         }
 
         @Override
+        public IndicatorPopup getIndicatorPopup() {
+            IndicatorPopup ip = super.getIndicatorPopup();
+            ((Region)ip.getTargetNode()).layout();
+            ((Region)ip.getTargetNode()).requestLayout();
+            return ip;
+        }
+
+        @Override
         protected Pane createIndicatorPane() {
             Pane indicator = new Pane();
-            indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
+            indicator.getStyleClass().add("list-based-indicator");
+            indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
         }
 
         @Override
         public void showDockPlace(double x, double y) {
-
+            System.err.println("SHOW DOCK PLACE");
             boolean visible = true;
 
             Pane p = (Pane) getIndicatorPane();
@@ -571,6 +601,17 @@ public class TargetContextFactory {
                 visible = false;
             }
             getDockPlace().setVisible(visible);
+
+/*            Window w = getIndicatorPopup().getDraggedNode().getScene().getWindow();
+            Platform.runLater(() -> {
+                if (w instanceof Stage) {
+                    System.err.println("getIndpane.size()=" + p.getChildren().size());
+                    ((Stage) w).setAlwaysOnTop(true);
+                    ((Stage) w).toFront();
+                }
+
+            });
+*/
         }
 
         protected void adjustPlace(Node node) {
@@ -585,6 +626,7 @@ public class TargetContextFactory {
             Rectangle r = (Rectangle) getDockPlace();
             //Point2D pt = pane.screenToLocal(x, y);
             ListBasedTargetContext ctx = (ListBasedTargetContext) getTargetContext();
+            Pane targetPane = (Pane) ctx.getTargetNode();
             Node innerNode = null;
             for (int i = 0; i < ctx.getItems().size(); i++) {
                 if (DockUtil.contains(ctx.getItems().get(i), x, y)) {
@@ -597,25 +639,39 @@ public class TargetContextFactory {
 
             if (innerNode != null) {
                 b = innerNode.getBoundsInParent();
+                if ((targetPane instanceof VBox)) {
+                    Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
+                    r.setWidth(targetPane.getWidth());
+                    r.setX(b.getMinX());
+                    r.setHeight(b.getHeight() / 2);
+
+                    if (y < b1.getMinY() + b.getHeight() / 2) {
+                        r.setY(b.getMinY());
+                    } else {
+                        r.setY(b.getMinY() + b.getHeight() / 2);
+                    }
+
+                } else if (targetPane instanceof HBox) {
+
+                } else {
+                    r.setWidth(b.getWidth());
+                    r.setHeight(b.getHeight());
+
+                    r.setX(b.getMinX());
+                    r.setY(b.getMinY());
+                }
             }
-
-            r.setWidth(b.getWidth());
-            r.setHeight(b.getHeight());
-
-            r.setX(b.getMinX());
-            r.setY(b.getMinY());
         }
-
     }
 
-   public static class NodeListChangeListener implements ListChangeListener<Node> {
-        
+    public static class NodeListChangeListener implements ListChangeListener<Node> {
+
         private final TargetContext context;
 
         public NodeListChangeListener(TargetContext context) {
             this.context = context;
         }
-        
+
         @Override
         public void onChanged(ListChangeListener.Change<? extends Node> change) {
             while (change.next()) {

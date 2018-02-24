@@ -191,7 +191,7 @@ public class DragPopup extends IndicatorPopup {
      * @return a pop up window which is used to display a doc node side
      * indicators.
      */
-    public Popup getNodeIndicatorPopup() {
+    public IndicatorPopup getNodeIndicatorPopup() {
         return nodeIndicatorPopup;
     }
 
@@ -235,6 +235,13 @@ public class DragPopup extends IndicatorPopup {
         Point2D pos = getTargetNode().localToScreen(0, 0);
         dragTarget = null;
         getPaneIndicator().showIndicator(pos.getX(), pos.getY());
+    }
+   
+    public void showSideIndicator(Node targetNode) {
+        setAutoFix(false);
+        Point2D pos = getTargetNode().localToScreen(0, 0);
+        dragTarget = null;
+        getPaneIndicator().showIndicator(pos.getX(), pos.getY(), targetNode);
     }
 
     /**
@@ -358,6 +365,7 @@ public class DragPopup extends IndicatorPopup {
         // findDockable returns null
         //
         Node targetNode = DockUtil.findDockable(getTargetNode(), screenX, screenY);
+        //getNodeIndicator().showIndicator(screenX, screenY, targetNode);
         getNodeIndicator().showIndicator(screenX, screenY, targetNode);
 
         getPaneIndicator().hideDockPlace();

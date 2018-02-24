@@ -15,15 +15,19 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
+import com.sun.javafx.stage.WindowHelper;
+import javafx.application.Platform;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -37,6 +41,7 @@ import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIERED;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.NONE;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
+import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 
 /**
  * The class manages the process of dragging of the object of type
@@ -260,12 +265,29 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         indicatorManager = newPopup;
 
         if (!indicatorManager.isShowing()) {
+            //((Stage)root.getScene().getWindow()).setAlwaysOnTop(false);
+/*            System.err.println("OWNER: ((Popup)indicatorManager).getOwnerNode() = " + ((Popup)indicatorManager).getOwnerNode());
+            Node owner = ((Popup)indicatorManager).getOwnerNode();
+            if ( owner != null && owner.getScene() != null && owner.getScene().getWindow() != null  ) {
+                ((Stage)((Popup)indicatorManager).getOwnerNode().getScene().getWindow()).setAlwaysOnTop(false);
+                ((Stage)((Popup)indicatorManager).getOwnerNode().getScene().getWindow()).toBack();;
+            }
+*/            
+            //indicatorManager.showIndicator(dockable.node());
             indicatorManager.showIndicator();
-            indicatorManager.showIndicator(ev.getScreenX(), ev.getScreenY());
+//            System.err.println("owner w = " + ((IndicatorPopup)indicatorManager).getOwnerWindow().getScene().getRoot());
+//            System.err.println("owner dockable.node() = " + dockable.node());                        
+//            System.err.println("owner n = " + ((IndicatorPopup)indicatorManager).getOwnerNode());            
+            //indicatorManager.showIndicator(ev.getScreenX(), ev.getScreenY());
+            
+            //final Node nn = root;
+            //Platform.runLater(() -> { ((Stage)nn.getScene().getWindow()).setAlwaysOnTop(true);});
+            
         }
         if (indicatorManager == null) {
             return;
         }
+
         indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
     }
 

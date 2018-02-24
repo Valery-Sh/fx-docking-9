@@ -154,7 +154,7 @@ public class FloatStageView implements FloatWindowView {
         Object v;
         if (dc != null) {
             v = dc.getValue();
-            if (v != null && !(dc.isValueDockable())) {
+            if (v != null && ( ( !dc.isValueDockable() || dc.isDragAsObject()))) {
                 return make(dockable, v, show);
             } else if (dc.isValueDockable()) {
                 return make(dockable, Dockable.of(v), show);
@@ -292,17 +292,15 @@ public class FloatStageView implements FloatWindowView {
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
-/*        TargetContext tc = context.getTargetContext();
-        if (tc instanceof ObjectReceiver) {
-            ((ObjectReceiver) tc).undockObject(dockable);
-            if (context.getDragContainer().getFloatingWindow(dockable) != null && context.getDragContainer().getFloatingWindow(dockable).isShowing()) {
-                return context.getDragContainer().getFloatingWindow(dockable);
-            }
-        }
-*/
-        Stage window = new Stage();
-        DockRegistry.register(window);
 
+        Stage window = new Stage();
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
+        });
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
+        });
+  
         window.setTitle("FLOATING STAGE");
 
         window.initStyle(stageStyle);
@@ -310,7 +308,6 @@ public class FloatStageView implements FloatWindowView {
         windowRoot = new StackPane();
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
-
         //windowRoot = windowRoot;
 
         Node node = context.getDragContainer().getPlaceholder();

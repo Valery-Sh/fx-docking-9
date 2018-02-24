@@ -169,7 +169,11 @@ public class PalettePane extends Control {
 
         lb = new Label("Rectangle");
         lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-        pc.addItem(lb, Rectangle.class);
+        pc.addItem(lb, Rectangle.class, v -> {
+            Rectangle r = (Rectangle) v;
+            r.setWidth(75);
+            r.setHeight(20);
+        });
         lb.getStyleClass().add("tree-item-node-rectangle");
         lb.applyCss();
 
@@ -186,15 +190,20 @@ public class PalettePane extends Control {
         private final ObjectProperty<Label> label = new SimpleObjectProperty<>();
         private final Class<?> valueClass;
         private PaletteModel model;
-
+        private DragValueCustomizer customizer;
+        
         public Class<?> getValueClass() {
             return valueClass;
         }
 
         public PaletteItem(PaletteModel model, Label lb, Class<?> clazz) {
+            this(model, lb, clazz, null);
+        }
+        public PaletteItem(PaletteModel model, Label lb, Class<?> clazz, DragValueCustomizer customizer) {
             label.set(lb);
             valueClass = clazz;
             this.model = model;
+            this.customizer = customizer;
             init();
         }
 
@@ -216,6 +225,16 @@ public class PalettePane extends Control {
 
         public Label getLabel() {
             return label.get();
+        }
+        public <T> T lookup(Class<T> clazz) {
+            return null;
+        }
+        public DragValueCustomizer getCustomizer() {
+            return customizer;
+        }
+
+        public void setCustomizer(DragValueCustomizer customizer) {
+            this.customizer = customizer;
         }
 
         public void setLabel(Label graphic) {
@@ -300,6 +319,19 @@ public class PalettePane extends Control {
 
             return item;
         }
+        public PaletteItem addItem(Label label, Class<?> clazz, DragValueCustomizer customizer ) {
+            return addItem(items.size(), label, clazz, customizer);
+        }
+        public PaletteItem addItem(int idx, Label label, Class<?> clazz, DragValueCustomizer customizer ) {
+            if ( getModel().containsItem(clazz)) {   
+               throw new IllegalArgumentException("A PaletteCategory alredy contains a PaletteItem with the specified valueClassClass(valueClass=" + clazz.getName() + ")");
+            }
+            PaletteItem item = new PaletteItem(getModel(), label, clazz, customizer);
+            items.add(item);
+            getGraphic().getChildren().add(idx, item.getLabel());
+
+            return item;
+        }        
     }
 
     public static class PaletteModel {
@@ -395,6 +427,9 @@ public class PalettePane extends Control {
             try {
                 Object value = item.getValueClass().newInstance();
                 item.getModel().getDragValueCustomizer().customize(value);
+                if ( item.getCustomizer() != null ) {
+                    item.getCustomizer().customize(value);
+                }
                 String tx = "";
                 if (value instanceof Labeled) {
                     tx = ((Labeled) value).getText();
@@ -410,6 +445,9 @@ public class PalettePane extends Control {
                         Node imageNode = new ImageView(image);
                         imageNode.setOpacity(0.75);
                         getContext().setDragContainer(new DragContainer(imageNode, value));
+                        if ( (value instanceof Node) || DockRegistry.isDockable(value)) {
+                            getContext().getDragContainer().setDragAsObject(true);
+                        }
                     }
                 }
 
@@ -429,9 +467,8 @@ public class PalettePane extends Control {
     }//PalettePaneMouseDragHandler
 
     @FunctionalInterface
-    public static interface DragValueCustomizer {
-
-        void customize(Object value);
+    public static interface DragValueCustomizer<T> {
+        void customize(T value);
     }
 
     public static class DefaultDragValueCustomizer implements DragValueCustomizer {

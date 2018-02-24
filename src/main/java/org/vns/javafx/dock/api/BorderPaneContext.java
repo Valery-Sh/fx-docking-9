@@ -182,7 +182,7 @@ public class BorderPaneContext extends TargetContext {
                 leftNode.setAlignment(Pos.CENTER);
                 centerNode.setAlignment(Pos.CENTER);
 
-                indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
+                //indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
                 return indicator;
             }
 
