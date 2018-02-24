@@ -237,7 +237,7 @@ public class DragPopup extends IndicatorPopup {
         getPaneIndicator().showIndicator(pos.getX(), pos.getY());
     }
    
-    public void showSideIndicator(Node targetNode) {
+    public void showIndicator(Node targetNode) {
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         dragTarget = null;
