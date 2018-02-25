@@ -1,45 +1,28 @@
 package org.vns.javafx.dock.api.designer;
 
-import com.sun.javafx.scene.control.skin.VirtualScrollBar;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Control;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.TargetContext;
-import static org.vns.javafx.dock.api.designer.TreeItemBuilder.CELL_UUID;
 import org.vns.javafx.dock.api.dragging.DragType;
 
 /**
  *
  * @author Valery
  */
-@DefaultProperty(value = "rootNode")
+@DefaultProperty(value = "root")
 public class SceneGraphView extends Control implements DockTarget {
 
     private SceneGraphViewTargetContext targetContext;
@@ -52,21 +35,17 @@ public class SceneGraphView extends Control implements DockTarget {
     public static double ANCHOR_OFFSET = 4;
 
     private final TreeViewEx treeView;
-    private Node rootNode;
 
-    private final Pane treeViewPane = new StackPane();
+    private ObjectProperty<Node> root = new SimpleObjectProperty<>();
 
+    //private final Pane treeViewPane = new StackPane();
     //
     // ContentPane is a subclass of VBox
     // 
-    private final ContentPane contentPane = new ContentPane(treeViewPane);
-
-    private DragIndicator dragIndicator;
-    private Region statusBar;
+    //private DragIndicator dragIndicator;
+    private ObjectProperty<Node> statusBar = new SimpleObjectProperty<>();
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
-
-    private ScrollAnimation scrollAnimation;
 
     public SceneGraphView() {
         this.treeView = new TreeViewEx<>(this);
@@ -75,20 +54,12 @@ public class SceneGraphView extends Control implements DockTarget {
 
     public SceneGraphView(Node rootNode) {
         this.treeView = new TreeViewEx<>(this);
-        this.rootNode = rootNode;
+        root.set(rootNode);
         init();
     }
 
     private void init() {
-        dragIndicator = new DragIndicator(this);
-        treeViewPane.getChildren().add(treeView);
-
-        sceneProperty().addListener(this::sceneChanged);
         customizeCell();
-        dragIndicator.initIndicatorPane();
-        scrollAnimation = new ScrollAnimation((TreeViewEx) treeView);
-        treeView.addEventHandler(DragEvent.ANY, new TreeViewDragEventHandler(this));
-
     }
 
     public ObservableList<TreeCell> getVisibleCells() {
@@ -103,31 +74,28 @@ public class SceneGraphView extends Control implements DockTarget {
         this.dragType = dragType;
     }
 
-    public Node getRootNode() {
-        return rootNode;
+    public ObjectProperty<Node> rootProperty() {
+        return root;
     }
 
-    public void setRootNode(Node rootNode) {
-        this.rootNode = rootNode;
-        rootChanged();
+    public Node getRoot() {
+        return root.get();
     }
 
-    public Region getStatusBar() {
+    public void setRoot(Node rootNode) {
+        this.root.set(rootNode);
+    }
+
+    public ObjectProperty<Node> statusParProperty() {
         return statusBar;
     }
 
-    public void setStatusBar(Region statusBar) {
-        if (statusBar == null && this.statusBar != null) {
-            contentPane.getChildren().remove(this.statusBar);
-        }
-        this.statusBar = statusBar;
-        if (statusBar != null) {
-            contentPane.getChildren().add(0, statusBar);
-        }
+    public Node getStatusBar() {
+        return statusBar.get();
     }
 
-    protected DragIndicator getDragIndicator() {
-        return dragIndicator;
+    public void setStatusBar(Region statusBar) {
+        this.statusBar.set(statusBar);
     }
 
     @Override
@@ -135,82 +103,8 @@ public class SceneGraphView extends Control implements DockTarget {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
-    protected void contentChanged(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
-        if (oldValue != null) {
-            contentPane.getChildren().remove(oldValue);
-        } else if (newValue != null) {
-            contentPane.getChildren().clear();
-        }
-    }
-
-    protected ScrollAnimation getScrollAnimation() {
-        return scrollAnimation;
-    }
-
-    protected Pane getTreeViewPane() {
-        return treeViewPane;
-    }
-
     public TreeViewEx getTreeView() {
         return treeView;
-    }
-
-
-    protected TreeItemEx createSceneGraph(Node node) {
-        TreeItemEx item = new TreeItemBuilder().build(node);
-        return item;
-    }
-
-    private void sceneChanged(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
-        if (newValue != null) {
-            newValue.windowProperty().addListener(this::windowChanged);
-        }
-    }
-
-    private void windowChanged(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
-        if (newValue != null) {
-            newValue.addEventFilter(WindowEvent.WINDOW_SHOWN, this::windowShown);
-        }
-    }
-
-    private void windowShown(WindowEvent ev) {
-        rootChanged();
-    }
-
-    protected void rootChanged() {
-        if (rootNode == null) {
-            return;
-        }
-        TreeItemEx it = createSceneGraph(rootNode);
-        it.setExpanded(true);
-        treeView.setRoot(it);
-        Platform.runLater(() -> {
-            registerScrollBarEvents();
-        });
-    }
-
-    protected void registerScrollBarEvents() {
-        ScrollBar sb = ((TreeViewEx) treeView).getVScrollBar();
-
-        sb.addEventHandler(DragEvent.DRAG_EXITED, ev -> {
-            dragIndicator.hideDrawShapes();
-            scrollAnimation.stop();
-            ev.consume();
-        });
-        sb.addEventHandler(DragEvent.DRAG_OVER, ev -> {
-            dragIndicator.hideDrawShapes();
-            ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-            if (!scrollAnimation.isRunning()) {
-                scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
-            }
-            ev.consume();
-        });
-
-        sb.addEventHandler(DragEvent.DRAG_ENTERED, ev -> {
-            dragIndicator.hideDrawShapes();
-            ev.consume();
-            scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
-        });
     }
 
     protected void customizeCell() {
@@ -224,7 +118,7 @@ public class SceneGraphView extends Control implements DockTarget {
                     if (empty) {
                         setText(null);
                         setGraphic(null);
-                        if (this.getUserData() != null) {
+                        /*                        if (this.getUserData() != null) {
                             Object[] o = (Object[]) this.getUserData();
                             if (o[0] != null) {
                                 this.removeEventHandler(DragEvent.DRAG_OVER, (TreeItemCellDragEventHandler) o[0]);
@@ -235,13 +129,14 @@ public class SceneGraphView extends Control implements DockTarget {
                         this.setOnDragDone(null);
                         DockRegistry.getInstance().unregisterDockable(this);
                         getVisibleCells().remove(this);
-
+                         */
+                        getVisibleCells().remove(this);
                     } else {
                         this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
                         if (value != null && (value instanceof Node)) {
                             setId(((Node) value).getId());
                         }
-                        TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphView.this, this);
+                        /*                        TreeItemCellDragEventHandler h = new TreeItemCellDragEventHandler(SceneGraphView.this, this);
 
                         this.addEventHandler(DragEvent.ANY, h);
                         this.setUserData(new Object[]{h, null});
@@ -251,7 +146,7 @@ public class SceneGraphView extends Control implements DockTarget {
 
                         registerDragDropped(this);
                         registerDragDone(this);
-
+                         */
                         if (!getVisibleCells().contains(this)) {
                             getVisibleCells().add(this);
                         }
@@ -272,9 +167,14 @@ public class SceneGraphView extends Control implements DockTarget {
 
     public TreeItemEx getTreeItem(double x, double y) {
         TreeItemEx retval = null;
+//        System.err.println("visCells = " + getVisibleCells().size());
+//        System.err.println("x = " + x + "; y = " + y );
         for (TreeCell cell : getVisibleCells()) {
+            
+//            System.err.println("cellX = " + cell.localToScreen(0, 0));
             if (DockUtil.contains(cell, x, y)) {
                 retval = (TreeItemEx) cell.getTreeItem();
+//                System.err.println("retval = " + retval);
                 break;
             }
         }
@@ -285,7 +185,7 @@ public class SceneGraphView extends Control implements DockTarget {
         return getTreeItem(p.getX(), p.getY());
     }
 
-    protected void registerDragDetected(TreeCell cell) {
+    /*    protected void registerDragDetected(TreeCell cell) {
         if (getDragType().equals(DragType.DRAG_AND_DROP)) {
             cell.setOnDragDetected(ev -> {
                 Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
@@ -309,7 +209,7 @@ public class SceneGraphView extends Control implements DockTarget {
 
     protected void registerDragDone(TreeCell cell) {
         cell.setOnDragDone(ev -> {
-            dragIndicator.hideDrawShapes();
+//            dragIndicator.hideDrawShapes();
             ev.consume();
         });
     }
@@ -332,12 +232,9 @@ public class SceneGraphView extends Control implements DockTarget {
             ev.consume();
         });
     }
+     */
 
-    protected TreeItemEx getTargetTreeItem(DragEvent ev, TreeItemEx item) {
-        return dragIndicator.getTargetTreeItem(ev.getScreenX(), ev.getScreenY(), item);
-    }
-
-    @Override
+ /*    @Override
     protected double computePrefHeight(double h) {
         return contentPane.computePrefHeight(h);
     }
@@ -366,7 +263,7 @@ public class SceneGraphView extends Control implements DockTarget {
     protected double computeMaxWidth(double w) {
         return contentPane.computeMaxWidth(w);
     }
-
+     */
     @Override
     public Node target() {
         return this;
@@ -380,7 +277,7 @@ public class SceneGraphView extends Control implements DockTarget {
         return targetContext;
     }
 
-    public static class TreeItemCellDragEventHandler extends DragEventHandler {
+    /*    public static class TreeItemCellDragEventHandler extends DragEventHandler {
 
         public TreeItemCellDragEventHandler(SceneGraphView editor, TreeCell targetCell) {
             super(editor, targetCell);
@@ -464,63 +361,10 @@ public class SceneGraphView extends Control implements DockTarget {
             ev.consume();
         }
     }//TreeViewDragEventHandler
-
+     */
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new SceneGraphViewNodeSkin(this);
-    }
-
-    public static class SceneGraphViewNodeSkin extends SkinBase<SceneGraphView> {
-
-        public SceneGraphViewNodeSkin(SceneGraphView control) {
-            super(control);
-            if (!getChildren().isEmpty()) {
-                getChildren().clear();
-            }
-            getChildren().add(control.contentPane);
-        }
-
-    }
-
-    public static class ContentPane extends VBox {
-
-        public ContentPane() {
-
-        }
-
-        public ContentPane(Node... items) {
-            super(items);
-        }
-
-        @Override
-        protected double computePrefHeight(double h) {
-            return super.computePrefHeight(h);
-        }
-
-        @Override
-        protected double computePrefWidth(double w) {
-            return super.computePrefWidth(w);
-        }
-
-        @Override
-        protected double computeMinHeight(double h) {
-            return super.computeMinHeight(h);
-        }
-
-        @Override
-        protected double computeMinWidth(double w) {
-            return super.computeMinWidth(w);
-        }
-
-        @Override
-        protected double computeMaxHeight(double h) {
-            return super.computeMaxHeight(h);
-        }
-
-        @Override
-        protected double computeMaxWidth(double w) {
-            return super.computeMaxWidth(w);
-        }
+        return new SceneGraphViewSkin(this);
     }
 
 }// SceneGraphView

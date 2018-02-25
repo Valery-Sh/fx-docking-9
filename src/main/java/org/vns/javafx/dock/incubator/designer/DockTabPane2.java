@@ -939,11 +939,11 @@ public class DockTabPane2 extends Control implements Dockable, DockTarget, ListC
             //this.targetContext = targetContext;
         }
 
-        @Override
-        public void showIndicator(double screenX, double screenY) {
+/*        @Override
+        public void showIndicatorPopup(double screenX, double screenY) {
             getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
         }
-
+*/
         public IndicatorPopup getIndicatorPopup() {
             if (indicatorPopup == null) {
                 indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);

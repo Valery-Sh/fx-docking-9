@@ -238,11 +238,11 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
             helper = new TabPaneHelper((DockTabPane2Context) context);
         }
 
-        @Override
-        public void showIndicator(double screenX, double screenY) {
+/*        @Override
+        public void showIndicatorPopup(double screenX, double screenY) {
             getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
         }
-
+*/
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane();

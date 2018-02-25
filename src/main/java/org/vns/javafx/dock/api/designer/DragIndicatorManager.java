@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api.designer;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
@@ -30,9 +31,9 @@ public class DragIndicatorManager implements IndicatorManager {
     private final TargetContext targetContext;
     private final DragIndicator dragIndicator;
     
-    public DragIndicatorManager(TargetContext targetContext, DragIndicator dragIndicator) {
+    public DragIndicatorManager(TargetContext targetContext, DragIndicator indicator) {
         this.targetContext = targetContext;
-        this.dragIndicator = dragIndicator;
+        this.dragIndicator = indicator;
     }
 
     private Node draggedNode;
@@ -58,8 +59,14 @@ public class DragIndicatorManager implements IndicatorManager {
 
     @Override
     public void handle(double screenX, double screenY) {
+        //System.err.println("DragIndicatorManager handle ");
+        showIndicator(screenX, screenY);
     }
-
+    
+    protected TreeItemEx getTargetTreeItem(Point2D screenPos , TreeItemEx item) {
+        return dragIndicator.getTargetTreeItem(screenPos.getX(), screenPos.getY(), item);
+    }
+    
     @Override
     public void hide() {
         dragIndicator.hideDrawShapes();
@@ -70,7 +77,10 @@ public class DragIndicatorManager implements IndicatorManager {
         return dragIndicator.isShowing();
     }
 
-    @Override
+    public void showIndicator() {
+        //Point2D pos = getTargetNode().localToScreen(0, 0);
+    }
+    
     public void showIndicator(double mouseScreenX, double mouseScreenY) {
         TreeItemEx toItem =  getSceneGraphView().getTreeItem(mouseScreenX, mouseScreenY);
         if ( toItem == null ) {
@@ -125,5 +135,6 @@ public class DragIndicatorManager implements IndicatorManager {
         }
         return retval;
     }
+
 
 }

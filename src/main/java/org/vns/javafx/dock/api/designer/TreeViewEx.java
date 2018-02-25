@@ -10,6 +10,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
 
 /**
  *
@@ -45,7 +46,9 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         getStyleClass().add(LOOKUP_SELECTOR);
         this.getStyleClass().add("designer");
     }
-
+    public Pane getParentPane() {
+        return (Pane) getParent();
+    }
     public NodeDragEvent getNodeDragEvent(MouseEvent ev) {
         nodeDragEvent.setMouseEvent(ev);
         return nodeDragEvent;

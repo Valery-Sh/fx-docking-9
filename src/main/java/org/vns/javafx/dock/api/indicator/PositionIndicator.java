@@ -43,18 +43,18 @@ public abstract class PositionIndicator {
 
     }
 
-    protected void showIndicator(Node ownerNode,double screenX, double screenY ) {
+    protected void showIndicatorPopup(Node ownerNode,double screenX, double screenY ) {
         getIndicatorPopup().show(ownerNode, screenX, screenY);
     }
     
-    protected void showIndicator(double screenX, double screenY, Node targetNode) {
+/*    protected void showSideIndicator(double screenX, double screenY, Node targetNode) {
     }
+*/    
     
-    
-    public void showIndicator(double screenX, double screenY) {
+/*    public void showIndicatorPopup(double screenX, double screenY) {
         getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
     }   
-
+*/
     public Node getDockPlace() {
         return dockPlace;
     }

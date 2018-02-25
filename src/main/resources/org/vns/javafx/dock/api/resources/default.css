@@ -313,6 +313,17 @@
 .drag-node-indicator {
 }
 
+.dock-pos-node-indicator {
+  -fx-padding: 10;
+  -fx-hgap: 20;
+  -fx-vgap: 20;
+  -fx-shape: "M0,10 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0";
+  -fx-background-color: rgba(50, 50, 100, 0.4);
+  -fx-border-width: 50;
+  -fx-border-color: rgba(50, 50, 100, 0.2);
+}
+
+
 .drag-node-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;

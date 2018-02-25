@@ -170,8 +170,9 @@ public class TreeItemDragManager extends SimpleDragManager {
         setIndicatorManager(newPopup);
 
         if (!getIndicatorManager().isShowing()) {
-            getIndicatorManager().showIndicator();
-            getIndicatorManager().showIndicator(ev.getScreenX(), ev.getScreenY());
+            //getIndicatorManager().showIndicator();
+            //getIndicatorManager().showIndicator(getDockable().node());
+            ((DragIndicatorManager)getIndicatorManager()).showIndicator(ev.getScreenX(), ev.getScreenY());
         }
         if (getIndicatorManager() == null) {
             return;

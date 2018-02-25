@@ -211,7 +211,7 @@ public class DockUtil {
         if ( b == null ) {
             return false;
         }
-        return node.localToScreen(node.getBoundsInLocal()).contains(x, y);
+        return b.contains(x, y);
     }    
     public static Bounds getHalfBounds(Side side,Node node, double x, double y) {
         Bounds retval;

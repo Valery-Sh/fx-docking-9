@@ -512,7 +512,6 @@ public class DockableContext {
         } else {
             retval = dockable;
         }
-        Dockable dd = Dockable.of(retval);
         return retval;
     }
 
@@ -568,9 +567,9 @@ public class DockableContext {
         @Override
         public void handle(MouseEvent event) {
             dragHandler = getLookup().lookup(MouseDragHandler.class);
-            System.err.println("DragDetector HANDLE = " + dragHandler);
-            System.err.println("   --- ev.type = " + event.getEventType());
-            System.err.println("DragDetector ev.isPrimaryButtonDown()=" + event.isPrimaryButtonDown());
+//            System.err.println("DragDetector HANDLE = " + dragHandler);
+//            System.err.println("   --- ev.type = " + event.getEventType());
+//            System.err.println("DragDetector ev.isPrimaryButtonDown()=" + event.isPrimaryButtonDown());
 
             if (dragHandler == null) {
                 dragHandler = new DefaultMouseDragHandler(dockableContext);

@@ -678,12 +678,12 @@ public class DockTabPane extends TabPane implements Dockable, DockTarget {
             super(context);
         }
 
-        @Override
-        public void showIndicator(double screenX, double screenY) {
+/*        @Override
+        public void showIndicatorPopup(double screenX, double screenY) {
             //getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
             getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
         }
-
+*/
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane();

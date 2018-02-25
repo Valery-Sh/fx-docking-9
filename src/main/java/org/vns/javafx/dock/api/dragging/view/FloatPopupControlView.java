@@ -28,7 +28,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -148,14 +147,13 @@ public class FloatPopupControlView implements FloatWindowView {
         return stageStyle != StageStyle.TRANSPARENT && stageStyle != StageStyle.UNDECORATED;
     }
 
-
     @Override
     public Window make(Dockable dockable, boolean show) {
         DragContainer dc = dockable.getContext().getDragContainer();
         Object v;
         if (dc != null) {
             v = dc.getValue();
-            if (v != null && ( ( ! dc.isValueDockable() || dc.isDragAsObject()))) {
+            if (v != null && ((!dc.isValueDockable() || dc.isDragAsObject()))) {
                 return make(dockable, v, show);
             } else if (dc.isValueDockable()) {
                 return make(dockable, Dockable.of(v), show);
@@ -171,14 +169,14 @@ public class FloatPopupControlView implements FloatWindowView {
         } else {
             owner = node.getScene().getWindow();
         }
-        
+
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
-        
-        if ( node instanceof Region ) {
+
+        if (node instanceof Region) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
-        } 
+        }
 
         Point2D windowPos = node.localToScreen(0, 0);
 
@@ -197,8 +195,9 @@ public class FloatPopupControlView implements FloatWindowView {
                 windowRoot = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
+                Window retval = dockable.node().getScene().getWindow();
                 getTargetContext(dockable).undock(dockable.node());
-                return dockable.node().getScene().getWindow();
+                return retval;
             }
         }
         boolean saveSize = false;
@@ -207,7 +206,7 @@ public class FloatPopupControlView implements FloatWindowView {
                 saveSize = true;
             }
             getTargetContext(dockable).undock(dockable.node());
-        }        
+        }
 //        if (dockable.getContext().isDocked()) {
 //            getTargetContext(dockable).undock(dockable.node());
 //        }
@@ -221,8 +220,6 @@ public class FloatPopupControlView implements FloatWindowView {
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
         windowRoot.setStyle("-fx-border-width: 1; -fx-border-color: red");
-        
-        
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
@@ -251,7 +248,6 @@ public class FloatPopupControlView implements FloatWindowView {
 
 //        Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
 //        FloatView.layout(window, bounds);
-
         window.getStyleClass().clear();
         window.setOnShown(e -> {
             DockRegistry.register(window);
@@ -295,6 +291,15 @@ public class FloatPopupControlView implements FloatWindowView {
 
         if (windowPos == null) {
             windowPos = new Point2D(400, 400);
+        }
+        Dockable d = Dockable.of(dragged);
+        if (d != null && d.getContext().isDocked()) {
+            getTargetContext(d).undock(d.node());
+        } else {
+            DragContainer dc = context.getDragContainer();
+            if (dc != null && dc.getDragSource() != null) {
+                dc.getDragSource().removeValue(dockable);
+            }
         }
 
         PopupControl window = new PopupControl();
@@ -348,7 +353,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
-        if ( node instanceof Region ) {
+        if (node instanceof Region) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
         }
@@ -388,7 +393,6 @@ public class FloatPopupControlView implements FloatWindowView {
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
-
         windowRoot = new StackPane();
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
@@ -414,7 +418,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
         node.applyCss();
         windowRoot.applyCss();
-        
+
         window.getStyleClass().clear();
         window.setOnShown(e -> {
             DockRegistry.register(window);

@@ -180,6 +180,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events
      */
     protected void mouseDragged(MouseEvent ev) {
+        
         if (indicatorManager != null && !(indicatorManager instanceof Window)) {
             indicatorManager.hide();
         }
@@ -227,12 +228,16 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.instanceOfDockTarget(n);
         });
+        System.err.println("topPane = " + topPane);
         if (topPane != null) {
             root = topPane;
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
         TargetContext tc = DockRegistry.dockTarget(root).getTargetContext();
+        System.err.println("Simple: tc.targetNode = " + tc.getTargetNode());
+        
+        tc.mouseDragged(dockable, ev);
         Object o = getDockable().getContext().getDragValue();
         Node node = null;
         if (DockRegistry.isDockable(o)) {
@@ -242,10 +247,18 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (accept && !DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
             return;
         }
-
+        System.err.println("Simple: 1 root = " + root);
+        
+        if ( !DockRegistry.dockTarget(root).getTargetContext().isAdmissiblePosition(dockable,new Point2D(ev.getScreenX(), ev.getScreenY())) ) {
+            return;
+        }
+        System.err.println("Simple: 2");
+        
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
+        System.err.println("Simple: 3");
+        
         //
         // Start use of IndicatorPopup
         //
@@ -256,6 +269,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (newPopup == null) {
             return;
         }
+        System.err.println("Simple: 4");
 
         newPopup.setDraggedNode(getDockable().node());
 
@@ -265,28 +279,15 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         indicatorManager = newPopup;
 
         if (!indicatorManager.isShowing()) {
-            //((Stage)root.getScene().getWindow()).setAlwaysOnTop(false);
-/*            System.err.println("OWNER: ((Popup)indicatorManager).getOwnerNode() = " + ((Popup)indicatorManager).getOwnerNode());
-            Node owner = ((Popup)indicatorManager).getOwnerNode();
-            if ( owner != null && owner.getScene() != null && owner.getScene().getWindow() != null  ) {
-                ((Stage)((Popup)indicatorManager).getOwnerNode().getScene().getWindow()).setAlwaysOnTop(false);
-                ((Stage)((Popup)indicatorManager).getOwnerNode().getScene().getWindow()).toBack();;
-            }
-*/            
-            //indicatorManager.showIndicator(dockable.node());
+        System.err.println("Simple: 5");
+            
             indicatorManager.showIndicator();
-//            System.err.println("owner w = " + ((IndicatorPopup)indicatorManager).getOwnerWindow().getScene().getRoot());
-//            System.err.println("owner dockable.node() = " + dockable.node());                        
-//            System.err.println("owner n = " + ((IndicatorPopup)indicatorManager).getOwnerNode());            
-            //indicatorManager.showIndicator(ev.getScreenX(), ev.getScreenY());
-            
-            //final Node nn = root;
-            //Platform.runLater(() -> { ((Stage)nn.getScene().getWindow()).setAlwaysOnTop(true);});
-            
         }
+        System.err.println("Simple: 6");        
         if (indicatorManager == null) {
             return;
         }
+        System.err.println("Simple: 7");
 
         indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
     }
@@ -329,7 +330,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             if (DockRegistry.isDockable(o)) {
                 node = Dockable.of(o).node();
             }
-            boolean accept = node != tc.getTargetNode();
+            boolean accept = node != tc.getTargetNode() &&  tc.isAdmissiblePosition(getDockable(), pt) ;
             if (accept && (indicatorManager.isShowing() || indicatorManager.getPositionIndicator() == null)) {
                 tc.dock(pt, dockable);
                 boolean isDocked = TargetContext.isDocked(tc, dockable);

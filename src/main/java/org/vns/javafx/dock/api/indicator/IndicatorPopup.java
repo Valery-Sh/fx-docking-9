@@ -259,20 +259,29 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         }
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
-        getPositionIndicator().showIndicator(pos.getX(), pos.getY());
+        getPositionIndicator().showIndicatorPopup(getDraggedNode(),pos.getX(), pos.getY());
     }
 
-    
-    @Override
-    public void showIndicator(Node targetNode) {
+/*    @Override
+    public void showIndicatorPopup(Node dragged) {
         if (getPositionIndicator() == null) {
             return;
         }
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
-        getPositionIndicator().showIndicator(pos.getX(), pos.getY(), targetNode);
+        getPositionIndicator().showIndicatorPopup(dragged,pos.getX(), pos.getY());
     }
-
+  */  
+/*    @Override
+    public void showSideIndicator(Node targetNode) {
+        if (getPositionIndicator() == null) {
+            return;
+        }
+        setAutoFix(false);
+        Point2D pos = getTargetNode().localToScreen(0, 0);
+        getPositionIndicator().showSideIndicator(pos.getX(), pos.getY(), targetNode);
+    }
+*/
     /**
      * Hides the pop up window when some condition are satisfied. If this pop up
      * is hidden returns true. If the mouse cursor is still inside the pane
@@ -323,10 +332,10 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     /**
      * Returns a shape of type {@code  Rectangle} to be displayed to
-     * showIndicator a proposed dock place
+ showSideIndicator a proposed dock place
      *
      * @return a shape of type {@code  Rectangle} to be displayed to
-     * showIndicator a proposed dock place
+ showSideIndicator a proposed dock place
      */
     public Node getDockPlace() {
         return targetContext.getPositionIndicator().getDockPlace();

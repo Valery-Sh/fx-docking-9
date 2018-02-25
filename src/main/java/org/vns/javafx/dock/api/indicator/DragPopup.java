@@ -11,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Popup;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.TargetContext;
@@ -234,16 +233,26 @@ public class DragPopup extends IndicatorPopup {
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         dragTarget = null;
-        getPaneIndicator().showIndicator(pos.getX(), pos.getY());
+        getPaneIndicator().showIndicatorPopup(getDraggedNode(),pos.getX(), pos.getY());
     }
-   
-    public void showIndicator(Node targetNode) {
+    
+/*    @Override
+    public void showIndicatorPopup(Node dragged) {
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
         dragTarget = null;
-        getPaneIndicator().showIndicator(pos.getX(), pos.getY(), targetNode);
+        getPaneIndicator().showIndicatorPopup(dragged,pos.getX(), pos.getY());
     }
+*/   
 
+/*    @Override
+    public void showSideIndicator(Node targetNode) {
+        setAutoFix(false);
+        Point2D pos = getTargetNode().localToScreen(0, 0);
+        dragTarget = null;
+        getPaneIndicator().showSideIndicator(pos.getX(), pos.getY(), targetNode);
+    }
+*/
     /**
      * Hides the pop up window when some condition are satisfied. If this pop up
      * is hidden returns true. If the mouse cursor is still inside the pane
@@ -365,8 +374,8 @@ public class DragPopup extends IndicatorPopup {
         // findDockable returns null
         //
         Node targetNode = DockUtil.findDockable(getTargetNode(), screenX, screenY);
-        //getNodeIndicator().showIndicator(screenX, screenY, targetNode);
-        getNodeIndicator().showIndicator(screenX, screenY, targetNode);
+        //getNodeIndicator().showSideIndicator(screenX, screenY, targetNode);
+        getNodeIndicator().showSideIndicator(screenX, screenY, targetNode);
 
         getPaneIndicator().hideDockPlace();
 
@@ -460,10 +469,10 @@ public class DragPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns a shape of type {@code  Rectangle} to be displayed to showIndicator a
+     * Returns a shape of type {@code  Rectangle} to be displayed to showSideIndicator a
  proposed dock place
      *
-     * @return a shape of type {@code  Rectangle} to be displayed to showIndicator a
+     * @return a shape of type {@code  Rectangle} to be displayed to showSideIndicator a
  proposed dock place
      */
     @Override

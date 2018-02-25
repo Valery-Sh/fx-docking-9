@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.dragging;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 
@@ -44,7 +45,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
-        startMousePos = new Point2D(ev.getX(), ev.getY());
+        setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         ev.consume();
     }
 
@@ -83,9 +84,14 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     }
 
     public void setStartMousePos(Point2D startMousePos) {
-        this.startMousePos = startMousePos;
+        this.startMousePos = convertMousePos(startMousePos);
     }
-
+    protected Point2D convertMousePos(Point2D startMousePos) {
+        if ( getContext().dockable().node() instanceof DockNode) {
+            return startMousePos;
+        }
+        return new Point2D(0,0);
+    }
     public DockableContext getContext() {
         return context;
     }

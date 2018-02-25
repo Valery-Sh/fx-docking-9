@@ -450,11 +450,11 @@ public class SideBarContext extends TargetContext {
             return indicatorPopup;
         }
 
-        @Override
-        public void showIndicator(double screenX, double screenY) {
+/*        @Override
+        public void showIndicatorPopup(double screenX, double screenY) {
             getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
         }
-
+*/
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane();

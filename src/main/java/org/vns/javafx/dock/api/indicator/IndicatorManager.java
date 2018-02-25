@@ -45,12 +45,14 @@ public interface IndicatorManager {
     default void showIndicator() {
         
     }
-    default void showIndicator(Node targetNode) {
+
+/*    default void showSideIndicator(Node targetNode) {
         
     }    
-    default void showIndicator(double mouseScreenX, double mouseScreenY) {
+*/    
+/*    default void showIndicator(double mouseScreenX, double mouseScreenY) {
         
     }
-    
+*/    
     PositionIndicator getPositionIndicator();
 }

@@ -24,18 +24,22 @@ public class DragIndicator {
 
     private static final double LEVEL_SPACE = 15;
 
-    private final SceneGraphView sceneGraphView;
-    private final TreeViewEx treeView;
+    //private final SceneGraphView sceneGraphView;
+    
+    private TreeViewEx treeView;
 
     private final Line vertLine = new Line();
     private final Line horLine = new Line();
     private final Rectangle itemRect = new Rectangle();
 
     private final Pane indicatorPane = new Pane();
+    private Pane treeViewPane;
 
     public DragIndicator(SceneGraphView sceneGraphView) {
-        this.sceneGraphView = sceneGraphView;
-        this.treeView = (TreeViewEx) sceneGraphView.getTreeView();
+        //this.sceneGraphView = sceneGraphView;
+        treeView = (TreeViewEx) sceneGraphView.getTreeView();
+        this.treeViewPane = treeView.getParentPane();
+        //this.treeViewPane = treeViewPane;
     }
 
     protected TreeItemEx findTreeItem(TreeItemEx item, Object sourceGesture) {
@@ -58,7 +62,7 @@ public class DragIndicator {
         
         indicatorPane.setMouseTransparent(true);
         indicatorPane.getChildren().addAll(horLine, vertLine, itemRect);
-        sceneGraphView.getTreeViewPane().getChildren().add(indicatorPane);
+        treeViewPane.getChildren().add(indicatorPane);
         indicatorPane.toFront();
 
         vertLine.getStyleClass().add("tree-view-indicator");
@@ -306,7 +310,7 @@ public class DragIndicator {
             return;
         }
 
-        lb = sceneGraphView.getTreeViewPane().screenToLocal(lb);
+        lb = treeViewPane.screenToLocal(lb);
 
         itemRect.setX(lb.getMinX());
         itemRect.setY(lb.getMinY());
@@ -323,7 +327,7 @@ public class DragIndicator {
         Bounds rootBounds = screenNonValueLevelBounds((TreeItemEx) treeView.getRoot(), to);
 
         Insets pins = treeView.getInsets();
-        Pane p = sceneGraphView.getTreeViewPane();
+        Pane p = treeViewPane;
         Bounds bnd;
 
         bnd = screenNonValueLevelBounds(from, to);

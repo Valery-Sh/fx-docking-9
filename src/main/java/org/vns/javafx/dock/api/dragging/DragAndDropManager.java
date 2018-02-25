@@ -217,6 +217,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
 
         if (!popup.isShowing()) {
             popup.showIndicator();
+//            popup.showIndicator(dockable.node());
         }
         setOnDragEvent(popup);
         if (popup == null) {

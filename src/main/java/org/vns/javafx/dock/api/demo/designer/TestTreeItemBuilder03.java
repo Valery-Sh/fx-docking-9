@@ -159,8 +159,10 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeItemBuilder builder = new TreeItemBuilder();
         //TreeItem rootItem = builder.build(root);
         //TreeView treeView = new TreeView(rootItem);
-        SceneGraphView sceneGraphView = new SceneGraphView(root);
+        
         //sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
+        SceneGraphView sceneGraphView = new SceneGraphView(root);        
+        //Dockable.of(btn1).getContext().setTargetContext(sceneGraphView.getTargetContext());
         Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();
         tvStage.setHeight(300);

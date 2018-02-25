@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
@@ -142,18 +143,18 @@ public abstract class TargetContext {
     public void setDockLoader(AbstractDockStateLoader loader) {
         this.dockLoader = loader;
     }
-    
-/*    protected Dockable getValue(Dockable dockable) {
-        Dockable retval = null;
-        DragContainer dc = dockable.getContext().getDragContainer();
-        if (dc != null && dc.isValueDockable() ) {
-             retval = Dockable.of(dc.getValue());
-        } else if (dc == null ) {
-            retval = dockable;
-        }
-        return retval;
+    /**
+     * The method is called by the object {@code DragManager } when the mouse event
+     * of type {@code MOUSE_DRAGGED} is handled.
+     * May be useful for example when implement animation for scroll bars. 
+     * 
+     * @param dockable the dragged object 
+     * @param ev the object of type {@code MouseEvent }
+     * 
+     */
+    public void mouseDragged(Dockable dockable, MouseEvent ev) {
+        
     }
-*/    
     protected Object getValue(Dockable dockable) {
         Object retval = null;
         DragContainer dc = dockable.getContext().getDragContainer();
@@ -163,6 +164,9 @@ public abstract class TargetContext {
             retval = dockable;
         }
         return retval;
+    }    
+    public boolean isAdmissiblePosition(Dockable dockable,Point2D mousePos) {
+        return true;
     }    
     public boolean isAcceptable(Dockable dockable) {
 
@@ -260,13 +264,18 @@ public abstract class TargetContext {
     }
 
     public void undock(Node node) {
+        System.err.println("TargetContext: UNDOCK");
         if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
             dc.getTargetContext().remove(node);
             dc.setTargetContext(null);
         }
     }
-
+    
+    public void removeValue(Dockable dockable) {
+        
+    }
+    
     public abstract void remove(Node dockNode);
 
 }//class

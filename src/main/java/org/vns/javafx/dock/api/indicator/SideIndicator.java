@@ -45,19 +45,14 @@ public abstract class SideIndicator extends PositionIndicator {
         getDockPlace().setVisible(true);
     }
 
-    
-/*    public Window getIndicatorPopup() {
+    /*    public Window getIndicatorPopup() {
         return null;
     }
-*/
-    @Override
-    public void showIndicator(double screenX, double screenY, Node targetNode) {
+     */
+ /*    @Override
+    public void showSideIndicator(double screenX, double screenY, Node targetNode) {
     }
-
-    @Override
-    public void showIndicator(double screenX, double screenY) {
-    }
-
+     */
     public Button getSelectedButton() {
         return selectedButton;
     }
@@ -199,6 +194,9 @@ public abstract class SideIndicator extends PositionIndicator {
         this.selectedButton = selectedButton;
     }
 
+    protected void showSideIndicator(double screenX, double screenY, Node targetNode) {
+    }
+
     public void showDockPlace(Side side) {
         Node pane = getTargetContext().getTargetNode();
         Button selected = getSelectedButton();
@@ -264,41 +262,41 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         public IndicatorPopup getIndicatorPopup() {
-            DragPopup ip = (DragPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
-            return (IndicatorPopup) ip.getNodeIndicatorPopup();                                
+            DragPopup ip = (DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
+            return (IndicatorPopup) ip.getNodeIndicatorPopup();
         }
 
         @Override
-        public void showIndicator(double screenX, double screenY, Node dockNode) {
-            super.showIndicator(screenX, screenY, dockNode);
+        public void showSideIndicator(double screenX, double screenY, Node dockNode) {
+            //super.showSideIndicator(screenX, screenY, dockNode);
             if (dockNode != null) {
                 nodeContext = Dockable.of(dockNode).getContext();
             } else {
                 nodeContext = null; // 06.05.2017
             }
             Point2D newPos;
-
-            getIndicatorPopup().setOnShown(e -> notifyPopupShown());
-            getIndicatorPopup().setOnHidden(e -> notifyPopupHidden());
+            //resizeButtonPanes();
+            getIndicatorPopup().setOnShown(e -> resizeButtonPanes());
+            //getIndicatorPopup().setOnHidden(e -> notifyPopupHidden());
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
                 //Popup popup = (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class);
                 //((Popup) getIndicatorPopup()).show( popup, newPos.getX(), newPos.getY());                
 //                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
-                ((Popup) getIndicatorPopup()).show( (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());                                
+                ((Popup) getIndicatorPopup()).show((Popup) getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
                     //((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
-                    ((Popup) getIndicatorPopup()).show((Popup)getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
+                    ((Popup) getIndicatorPopup()).show((Popup) getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
                 } else {
                     getIndicatorPopup().hide();
                 }
             }
         }
 
-        public void notifyPopupShown() {
+/*        public void notifyPopupShown() {
             if (getTargetContext() != null && getTargetNode() != null) {
                 resizeButtonPanes();
             }
@@ -306,13 +304,14 @@ public abstract class SideIndicator extends PositionIndicator {
 
         public void notifyPopupHidden() {
             if (getTargetContext() == null || getTargetNode() == null) {
-                resizeButtonPanes();
+                //resizeButtonPanes();
             }
         }
-
+*/
         @Override
         protected Pane createIndicatorPane() {
             GridPane indicatorPane = new GridPane();
+            indicatorPane.getStyleClass().add("dock-pos-node-indicator");
             indicatorPane.getStyleClass().add(getStylePrefix());
             indicatorPane.setMouseTransparent(true);
 
@@ -374,19 +373,19 @@ public abstract class SideIndicator extends PositionIndicator {
         }
 
         protected void resizeButtonPanes() {
-            if (getTargetContext() != null && getTargetNode() != null && intersects()) {
-                if (!getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
-                    getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
+            //if (getTargetContext() != null && getTargetNode() != null && intersects()) {
+            if (!getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
+                getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
 
-                    double w = getIndicatorPane().getWidth() / 2;
-                    double h = getIndicatorPane().getHeight() / 2;
-                    Point2D p = getIndicatorPane().localToParent(w, h);
-                    getSmallbuttonsScale().setPivotX(w);
-                    getSmallbuttonsScale().setPivotY(h);
-                }
-            } else {
-                getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
+                double w = getIndicatorPane().getWidth() / 2;
+                double h = getIndicatorPane().getHeight() / 2;
+                Point2D p = getIndicatorPane().localToParent(w, h);
+                getSmallbuttonsScale().setPivotX(w);
+                getSmallbuttonsScale().setPivotY(h);
             }
+//            } else {
+//                getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
+//            }
         }
 
         protected boolean intersects() {
@@ -436,15 +435,15 @@ public abstract class SideIndicator extends PositionIndicator {
         @Override
         public IndicatorPopup getIndicatorPopup() {
             //return getTargetContext().getIndicatorPopup();
-            return (IndicatorPopup)getTargetContext().getLookup().lookup(IndicatorManager.class);
+            return (IndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
         }
 
-        @Override
-        public void showIndicator(double screenX, double screenY) {
-            super.showIndicator(screenX, screenY);
+        /*        @Override
+        public void showIndicatorPopup(double screenX, double screenY) {
+            super.showIndicatorPopup(screenX, screenY);
             getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
         }
-
+         */
         @Override
         protected Pane createIndicatorPane() {
             BorderPane indicatorPane = new BorderPane();

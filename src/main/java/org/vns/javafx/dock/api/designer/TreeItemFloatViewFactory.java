@@ -39,7 +39,8 @@ public class TreeItemFloatViewFactory extends FloatViewFactory {
             w = node.getScene().getWindow();
         }
         if ( w == null || !(w instanceof EmbeddedWindow)) {
-            retval = new TreeItemFloatStageView(dragManager.getDockable());
+            //retval = new TreeItemFloatStageView(dragManager.getDockable());
+            retval = new FloatPopupControlView(dragManager.getDockable());
         } else if ( w instanceof EmbeddedWindow ) {
             retval = new FloatPopupControlView(dragManager.getDockable());
         }
