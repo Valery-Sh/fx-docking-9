@@ -171,7 +171,7 @@ public abstract class TargetContext {
     public boolean isAcceptable(Dockable dockable) {
 
         Dockable dragged = dockable;
-        Object v  = dockable.getContext().getDragValue();
+        Object v  = getValue(dockable);
         if ( Dockable.of(v) != null ) {
             dragged = Dockable.of(v);
         } else {

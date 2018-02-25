@@ -28,7 +28,6 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
-import javafx.stage.Window;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockSideBar.Rotation;
 
@@ -46,7 +45,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
     public DockSideBarSkin(DockSideBar control) {
         super(control);
 
-        Dockable dc = DockRegistry.makeDockable(control);
+        
         //dc.getContext().setResizable(false);
 
         toolBar = new ToolBar() {
@@ -77,13 +76,13 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         }
 
         toolBar.setOrientation(getSkinnable().getOrientation());
-        SideBarContext targetContext = new SideBarContext(getSkinnable(), toolBar);
+        DockSideBarContext targetContext = new DockSideBarContext(getSkinnable(), toolBar);
         targetContext.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(getSkinnable().getRotation().getAngle());
         });
 
-        DockRegistry.makeDockTarget(getSkinnable(), targetContext);
+        DockRegistry.makeDockTarget(control, targetContext);
 
         changeItems();
         getSkinnable().getItems().addListener(this::itemsChanged);
@@ -139,8 +138,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         getChildren().add(toolBar);
     }
 
-    protected SideBarContext getTargetContext() {
-        return (SideBarContext) DockTarget.of(getSkinnable()).getTargetContext();
+    protected DockSideBarContext getTargetContext() {
+        return (DockSideBarContext) DockTarget.of(getSkinnable()).getTargetContext();
     }
 
     protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {
@@ -244,10 +243,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         dragNodeGroup.getChildren().add(getSkinnable().getDragNode());
     }
 
-    public void temp() {
-        ControlSkin skin = new ControlSkin(toolBar);
-
-    }
 
     /**
      * {@inheritDoc}

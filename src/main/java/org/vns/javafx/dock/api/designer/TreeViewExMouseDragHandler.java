@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,6 +23,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -56,6 +63,10 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
             System.err.println("isDockable = " + Dockable.of(item.getValue()));
             Label lb = new Label(item.getValue().getClass().getSimpleName());
             lb.getStyleClass().add("tree-item-node-" + item.getValue().getClass().getSimpleName().toLowerCase());            
+            BorderStroke stroke = new BorderStroke(Color.BLACK, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.DEFAULT);
+            Border border = new Border(stroke);
+            lb.setBorder(border);
+            lb.setPadding(new Insets(4,4,4,4));
             new Scene(lb); // to be able create snapshot
             
             WritableImage wi = null;
@@ -63,13 +74,15 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
             System.err.println("item.getGraphic = " + item.getCellGraphic());
             //Label lb = new Label
             wi = lb.snapshot(null, null);
-            Node node = new ImageView(wi);
+            ImageView node = new ImageView(wi);
             node.setOpacity(0.75);
+            
 //                getContext().getDragContainer().setPlaceholder(node);
             DragContainer dc = new DragContainer(node, item.getValue());
             dc.setDragAsObject(true);
             dc.setDragSource(DockTarget.of(sgv).getTargetContext());
             getContext().setDragContainer(dc);
+            getContext().setResizable(false);
             
             //pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
         }

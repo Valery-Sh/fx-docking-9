@@ -478,9 +478,11 @@ public class FloatStageView implements FloatWindowView {
         if (dockableContext.isResizable()) {
             removeListeners(dockableContext.dockable());
             addListeners(getFloatingWindow());
-
+        } else {
+            removeListeners(dockableContext.dockable());
         }
         setResizer(new StageResizer(this));
+        
 
     }
 

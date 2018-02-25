@@ -450,9 +450,13 @@ public class FloatPopupControlView implements FloatWindowView {
 
     @Override
     public void addResizer() {
-        removeListeners(getDockable().getContext().dockable());
-        addListeners(getFloatingWindow());
-
+        if (dockableContext.isResizable()) {
+            removeListeners(dockableContext.dockable());
+            addListeners(getFloatingWindow());
+        } else {
+            removeListeners(dockableContext.dockable());
+        }
+     
         setResizer(new PopupControlResizer(this));
 
     }

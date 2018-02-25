@@ -1,7 +1,7 @@
 package org.vns.javafx.dock;
 
 import javafx.scene.layout.BorderPane;
-import org.vns.javafx.dock.api.BorderPaneContext;
+import org.vns.javafx.dock.api.DockBorderPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
 
 /**
@@ -15,7 +15,7 @@ public class DockBorderPane extends BorderPane {
     }
 
     private void init() {
-        DockRegistry.makeDockTarget(this, new BorderPaneContext(this));
+        DockRegistry.makeDockTarget(this, new DockBorderPaneContext(this));
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
         
     }

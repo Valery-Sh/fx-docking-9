@@ -72,7 +72,7 @@ public class TargetContextFactory {
         } else if (targetNode instanceof HBox) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof BorderPane) {
-            retval = new BorderPaneContext(targetNode);
+            retval = new DockBorderPaneContext(targetNode);
         } else if (targetNode instanceof VPane) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof HPane) {
@@ -102,7 +102,7 @@ public class TargetContextFactory {
     }
 
     protected TargetContext getBorderPaneContext(BorderPane pane) {
-        TargetContext retval = new BorderPaneContext(pane);
+        TargetContext retval = new DockBorderPaneContext(pane);
         return retval;
     }
 

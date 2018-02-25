@@ -16,22 +16,18 @@
 package org.vns.javafx.dock.api.designer;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.TargetContext;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
@@ -41,7 +37,8 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
  */
 public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
-    private ContentPane contentPane;
+    //private ContentPane contentPane;
+    private StackPane contentPane;
     private ScrollAnimation scrollAnimation;
     private DragIndicator dragIndicator;
     private final Pane treeViewPane; // = new StackPane();
@@ -57,7 +54,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             getChildren().clear();
         }
 
-        contentPane = new ContentPane(treeViewPane) {
+        contentPane = new StackPane(treeViewPane) {
             @Override
             protected void layoutChildren() {
 //                update(rootLayout);

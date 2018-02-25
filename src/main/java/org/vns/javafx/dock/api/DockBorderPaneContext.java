@@ -32,9 +32,9 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class BorderPaneContext extends TargetContext {
+public class DockBorderPaneContext extends TargetContext {
 
-        public BorderPaneContext(Node dockPane) {
+        public DockBorderPaneContext(Node dockPane) {
             super(dockPane);
             init();
         }

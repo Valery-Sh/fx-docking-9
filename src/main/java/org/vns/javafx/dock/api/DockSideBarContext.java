@@ -53,12 +53,12 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class SideBarContext extends TargetContext {
+public class DockSideBarContext extends TargetContext {
 
     private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
     private final ToolBar toolBar;
 
-    public SideBarContext(Region dockPane, ToolBar toolBar) {
+    public DockSideBarContext(Region dockPane, ToolBar toolBar) {
         super(dockPane);
         this.toolBar = toolBar;
     }
@@ -354,14 +354,16 @@ public class SideBarContext extends TargetContext {
                 ev.consume();
                 return;
             }
-
+            DockSideBarContext targetContext = (DockSideBarContext) dockable.getContext().getTargetContext();
             if (!ev.isPrimaryButtonDown() && !dockable.getContext().isFloating()) {
-                dockable.node().getScene().getWindow().hide();
+                if ( ((DockSideBar)targetContext.getTargetNode()).isHideOnExit() ) {
+                    dockable.node().getScene().getWindow().hide();
+                }
             }
         }
 
         public void adjustScreenPos() {
-            SideBarContext handler = (SideBarContext) dockable.getContext().getTargetContext();
+            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
             Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
 
             ownerStage.xProperty().addListener(this);
@@ -374,7 +376,7 @@ public class SideBarContext extends TargetContext {
         }
 
         public void removeListeners() {
-            SideBarContext handler = (SideBarContext) dockable.getContext().getTargetContext();
+            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
             Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
             ownerStage.xProperty().removeListener(this);
             ownerStage.yProperty().removeListener(this);
@@ -383,7 +385,7 @@ public class SideBarContext extends TargetContext {
         }
 
         public void changeSide() {
-            SideBarContext handler = (SideBarContext) dockable.getContext().getTargetContext();
+            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
             windowBuilder.setSupportedCursors(handler.getSupportedCursors());
 
         }
@@ -479,7 +481,7 @@ public class SideBarContext extends TargetContext {
         }
 
         private ToolBar getToolBar() {
-            return ((SideBarContext) getTargetContext()).getToolBar();
+            return ((DockSideBarContext) getTargetContext()).getToolBar();
         }
 
         private static Node findLastVisibleNode(List<Node> list) {
@@ -503,7 +505,7 @@ public class SideBarContext extends TargetContext {
 
         protected int indexOf(double x, double y) {
             int idx = -1;
-            Node sb = ((SideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
+            Node sb = ((DockSideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
             if (sb != null && (sb instanceof Group)) {
                 idx = getToolBar().getItems().indexOf(sb);
             } else if (sb == null && DockUtil.contains(getToolBar(), x, y)) {

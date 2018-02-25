@@ -36,6 +36,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
@@ -45,6 +46,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
@@ -117,7 +119,7 @@ public class TestTreeItemBuilder03 extends Application {
         btn1.setGraphic(btn1Graphic);
 
         root.getChildren().add(btn1);
-        BorderPane borderPane1 = new BorderPane();
+        DockBorderPane borderPane1 = new DockBorderPane();
         Label lb1 = new Label("lb1");
         HBox hbox1 = new HBox(lb1);
         borderPane1.setRight(hbox1);
@@ -130,6 +132,12 @@ public class TestTreeItemBuilder03 extends Application {
         borderPane1.setLeft(vbox1);
 
         root.getChildren().add(borderPane1);
+        DockBorderPane dockBorderPane1 = new DockBorderPane();
+        root.getChildren().add(dockBorderPane1);
+        Label dockLb2 = new Label("Label: dockLb2");
+        dockBorderPane1.setRight(dockLb2);
+        DockRegistry.makeDockable(dockLb2);
+        
         TitledPane titledPane1 = new TitledPane();
         root.getChildren().add(titledPane1);
         TabPane tabPane1 = new TabPane();
@@ -161,7 +169,14 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeView treeView = new TreeView(rootItem);
         
         //sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
-        SceneGraphView sceneGraphView = new SceneGraphView(root);        
+        SceneGraphView sceneGraphView = new SceneGraphView(root);  
+        btn1.setOnAction(v -> {
+            sceneGraphView.getTreeView().getSelectionModel().selectRange(9,10);
+            sceneGraphView.getTreeView().getFocusModel().focus(9);
+            sceneGraphView.getTreeView().scrollTo(9);
+        });
+
+        
         //Dockable.of(btn1).getContext().setTargetContext(sceneGraphView.getTargetContext());
         Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();

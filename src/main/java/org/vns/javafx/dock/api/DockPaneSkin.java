@@ -15,12 +15,9 @@
  */
 package org.vns.javafx.dock.api;
 
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.SkinBase;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.HPane;
@@ -40,6 +37,8 @@ public class DockPaneSkin extends SkinBase<DockPane> {
     public DockPaneSkin(DockPane control, DockSplitPane root) {
         super(control);
         this.rootLayout = root;
+        DockRegistry.makeDockable(getSkinnable());
+        //getSkinnable().
         layout = new StackPane(rootLayout) {
 
             @Override

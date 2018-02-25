@@ -68,6 +68,9 @@ public class DockPane extends Control {
 
     public void dock(Node node, Side side) {
         Dockable dockable =  Dockable.of(node);
+        if ( dockable == null ) {
+            return;
+        }
         DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();
         if (!targetContext.isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
