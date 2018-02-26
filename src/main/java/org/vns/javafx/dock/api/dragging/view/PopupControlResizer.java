@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.dragging.view;
 import javafx.scene.Cursor;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 
@@ -87,25 +88,42 @@ public class PopupControlResizer extends StageResizer {
 //        if (wDelta + pc.getWidth() > ((PopupControl) getWindow()).getWidth()) {
 
         if ((xDelta != 0 || wDelta != 0) && wDelta + getWindow().getWidth() != ((PopupControl) getWindow()).getWidth()) {
-            pc.setAnchorX(xDelta + pc.getAnchorX());
-            root.setMinWidth(wDelta + root.getWidth());
-            setMouseX(curX);
-            pc.sizeToScene();
+
+            Region child = (Region) ((Pane) root).getChildren().get(0);
+            double childMin = child.minWidth(-1);
+            System.err.println("childMin = " + childMin);         
+            System.err.println("childWidth = " + child.getWidth());         
+            System.err.println("wDelta = " + wDelta);         
+            
+            if (child.getWidth() > childMin || wDelta > 0 && child.getWidth() == childMin) {
+                pc.setAnchorX(xDelta + pc.getAnchorX());
+                root.setPrefWidth(wDelta + root.getWidth());
+                root.setMinWidth(wDelta + root.getWidth());
+                setMouseX(curX);
+                pc.sizeToScene();
+            }
         }
+
         if ((yDelta != 0 || hDelta != 0) && hDelta + getWindow().getHeight() != ((PopupControl) getWindow()).getHeight()) {
-        
-            pc.setAnchorY(yDelta + pc.getAnchorY());
-            root.setMinHeight(hDelta + root.getHeight());
 
-            setMouseY(curY);
-            pc.sizeToScene();
+            Region child = (Region) ((Pane) root).getChildren().get(0);
+            double childMin = child.minHeight(-1);
+            
+            if (child.getHeight() > childMin || hDelta > 0 && child.getHeight() == childMin) {
+                pc.setAnchorY(yDelta + pc.getAnchorY());
+                root.setPrefHeight(hDelta + root.getHeight());
+                root.setMinHeight(hDelta + root.getHeight());
+                setMouseY(curY);
+                pc.sizeToScene();
+            }
 
         }
-
     }
 
     @Override
-    public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
+    public void start(MouseEvent ev, Window stage,
+             Cursor cursor, Cursor... supportedCursors
+    ) {
         super.start(ev, stage, cursor, supportedCursors);
     }
 }

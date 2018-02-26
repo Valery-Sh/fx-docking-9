@@ -70,7 +70,8 @@ public class DemoDesigner extends Application {
         DockPane rootDockPane = new DockPane();
         StackPane root = new StackPane(rootDockPane);
         SceneGraphView sceneGraphView = DesignerLookup.lookup(SceneGraphView.class);
-        
+        sceneGraphView.setPrefHeight(1000);
+        //sceneGraphView.setOpacity(0.2);
         DockNode formDockNode = new DockNode("Form Designer");
         StackPane formPane = new StackPane();
         formDockNode.setContent(formPane);

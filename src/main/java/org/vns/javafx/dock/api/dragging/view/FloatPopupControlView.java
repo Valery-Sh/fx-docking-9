@@ -36,6 +36,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
+//import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -55,7 +56,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
     private final ObjectProperty value = new SimpleObjectProperty();
 
-    private Pane windowRoot;
+    protected Pane windowRoot;
 
     private final DockableContext dockableContext;
 
@@ -201,6 +202,7 @@ public class FloatPopupControlView implements FloatWindowView {
             }
         }
         boolean saveSize = false;
+        
         if (dockable.getContext().isDocked()) {
             if ((dockable.node() instanceof DockNode) && (getTargetContext(dockable).getTargetNode() instanceof DockPane)) {
                 saveSize = true;
@@ -219,7 +221,7 @@ public class FloatPopupControlView implements FloatWindowView {
         windowRoot = new StackPane();
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
-        windowRoot.setStyle("-fx-border-width: 1; -fx-border-color: red");
+        /*windowRoot.setStyle("-fx-border-width: 1; -fx-border-color: red");*/
 
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
@@ -319,6 +321,7 @@ public class FloatPopupControlView implements FloatWindowView {
         windowRoot.setStyle("-fx-background-color: transparent");
 
         addResizer();
+        
         window.getStyleClass().clear();
         window.setOnShown(e -> {
             DockRegistry.register(window);

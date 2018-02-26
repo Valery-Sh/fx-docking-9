@@ -17,7 +17,6 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -83,10 +82,9 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
             dc.setDragSource(DockTarget.of(sgv).getTargetContext());
             getContext().setDragContainer(dc);
             getContext().setResizable(false);
-            
+            setStartMousePos(pos);
             //pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
-        }
-        setStartMousePos(pos);
+        } 
     }
 
     /*    @Override

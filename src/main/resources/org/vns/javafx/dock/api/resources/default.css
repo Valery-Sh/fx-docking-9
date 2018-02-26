@@ -16,10 +16,7 @@
 -fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
 }
 */
-.drag-icon {
-    /*-fx-graphic: url(drag-hand-16x16.png);*/
-    -fx-graphic: url(drag-3lines-16x16.png);
-}
+
 .palette-pane .titled-pane .tile-pane {
     -fx-border-width: 3;
     -fx-border-color: lightgray;
@@ -80,7 +77,9 @@
     -fx-border-width:  0 0 2 0;
     -fx-border-color: transparent;
 }
-
+.tree-view:focused {
+   -fx-background-insets: 0 0 0 0;
+}
 .tree-view-indicator {
     -fx-stroke: RGB(255,148,40);
     -fx-stroke-width: 2
@@ -437,13 +436,31 @@
     -fx-background-color: red;
 }
 */
-.dock-node-border {
-    -fx-padding: 2;
+.dock-side-bar .drag-button {
+   /*-fx-graphic: url(drag-3lines-16x16.png);*/
+   -fx-graphic: url(drag-hand-2-16x16.png); 
+}
+.dock-sidebar-popup-root {
     -fx-background-color: lightgrey; 
+    -fx-border-width: 1 2 1 2;
+    -fx-border-color: lightgrey;;
     /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
-    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
+    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );*/
 
 }
+.dock-node-border {
+    -fx-background-color: lightgrey; 
+    -fx-padding: 2,2,2,2;
+    -fx-border-width: 2;
+    -fx-border-color: lightgrey;;
+}
+/*.dock-node-border {
+    -fx-padding: 2;
+    -fx-background-color: lightgrey; 
+    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
+}
+*/
+    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
 
 .my-test-css {
     -fx-padding: 50 20 50 50;

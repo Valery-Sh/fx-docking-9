@@ -69,7 +69,7 @@ public interface FloatView<T> {
         StackPane pane = (StackPane) window.getScene().getRoot();
         Insets insetsDelta = pane.getInsets();
 
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsWidth  = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
         window.setX(winX - insetsDelta.getLeft());

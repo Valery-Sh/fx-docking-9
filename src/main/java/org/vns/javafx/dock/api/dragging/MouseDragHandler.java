@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,14 +41,14 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     protected void prepare() {
         
     }
-    public void mousePressed(MouseEvent ev) {
+    public abstract void mousePressed(MouseEvent ev); /*8 {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         ev.consume();
     }
-
+*/
     public void mouseReleased(MouseEvent ev) {
         System.err.println("1 !!! mouseReleased");
         System.err.println("2 !!! mouseReleased");
@@ -66,19 +66,22 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent ev ) {
         if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            System.err.println("MouseDragHandler mousePressed");
+            //System.err.println("MouseDragHandler mousePressed");
             mousePressed(ev);
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            System.err.println("MouseDragHandler mouseDragDetected");
+            //System.err.println("MouseDragHandler mouseDragDetected");
             mouseDragDetected(ev);
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            System.err.println("MouseDragHandler mouseReleased");
+            //System.err.println("MouseDragHandler mouseReleased");
             mouseReleased(ev);
         }
         ev.consume();
 
     }
-
+    /**
+     * May return null. If so then Mouse.DRAGDETECTED even is not handled
+     * @return  mouse cursor position
+     */
     public Point2D getStartMousePos() {
         return startMousePos;
     }
@@ -87,6 +90,9 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         this.startMousePos = convertMousePos(startMousePos);
     }
     protected Point2D convertMousePos(Point2D startMousePos) {
+        if ( startMousePos == null ) {
+            return null;
+        }
         if ( getContext().dockable().node() instanceof DockNode) {
             return startMousePos;
         }

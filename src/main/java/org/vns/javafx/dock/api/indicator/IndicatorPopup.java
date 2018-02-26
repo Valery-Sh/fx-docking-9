@@ -131,7 +131,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
         
-        System.err.println("OWNER WINDOW = " + ownerWindow);
         super.show(ownerWindow, anchorX, anchorY);
 
         if (((IndicatorPopup) ownerWindow).getChildWindows().contains(this)) {
@@ -155,7 +154,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
-        System.err.println("SHOW ownerNode = " + ownerNode);
         super.show(ownerNode.getScene().getWindow(), anchorX, anchorY);
     }
 

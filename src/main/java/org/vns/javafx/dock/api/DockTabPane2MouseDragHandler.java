@@ -38,14 +38,17 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
 
     @Override
     public void mousePressed(MouseEvent ev) {
+        System.err.println("DockTabPane2MouseDragHandler mousePressed");
+
         setStartMousePos(null);
         Point2D pos = new Point2D(ev.getX(), ev.getY());
-
-        if (!ev.isPrimaryButtonDown() || getHeaderArea(ev) == null) {
+        Node headerArea = getHeaderArea(ev);
+        if (!ev.isPrimaryButtonDown() || headerArea == null) {
             return;
         }
-        
+
         if (getHeadersRegion(ev) != null) {
+            System.err.println("DockTabPane2MouseDragHandler: headersRegion != null");
             Tab tab = getTab(ev);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
 
@@ -62,21 +65,25 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
 
             }
             pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
-            
+            setStartMousePos(pos);
         }
-        setStartMousePos(pos);
+        if ( getStartMousePos() == null && headerArea != null ) {
+            setStartMousePos(new Point2D(ev.getX(), ev.getY()));
+        }
+        System.err.println("DockTabPane2MouseDragHandler: startMousePos=" + getStartMousePos());
     }
-    
+
     @Override
     protected void prepare() {
         DragContainer dc = getContext().getDragContainer();
-        if ( dc != null && dc.getPlaceholder() != null && dc.getValue() != null && dc.getValue() instanceof Tab ) {
+        if (dc != null && dc.getPlaceholder() != null && dc.getValue() != null && dc.getValue() instanceof Tab) {
             Tab tab = (Tab) dc.getValue();
-            if ( tab.getTabPane() != null ) {
+            if (tab.getTabPane() != null) {
                 tab.getTabPane().getTabs().remove(tab);
             }
         }
     }
+
     private String getUUIDStyle(Tab tab) {
         String retval = null;
         for (String s : tab.getStyleClass()) {
@@ -138,7 +145,7 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
         }
         return retval;
     }
-/*    public void mouseReleased(MouseEvent ev) {
+    /*    public void mouseReleased(MouseEvent ev) {
         System.err.println("TabpaneMouseHandler: ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
         if (!ev.isPrimaryButtonDown()) {
             return;
@@ -146,5 +153,5 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
         System.err.println("!!! mouseReleased");
         ev.consume();
     }
-  */  
+     */
 }

@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.designer;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
@@ -38,7 +39,7 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
 public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
     //private ContentPane contentPane;
-    private StackPane contentPane;
+    private Pane contentPane;
     private ScrollAnimation scrollAnimation;
     private DragIndicator dragIndicator;
     private final Pane treeViewPane; // = new StackPane();
@@ -53,16 +54,21 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         if (!getChildren().isEmpty()) {
             getChildren().clear();
         }
-
+        //StackPane.setAlignment(getSkinnable().getTreeView(), Pos.CENTER);
         contentPane = new StackPane(treeViewPane) {
+            
             @Override
             protected void layoutChildren() {
-//                update(rootLayout);
                 super.layoutChildren();
                 if ( getSkinnable().getTreeView().getSkin() != null ) {
                 }
+                
             }
         };
+        
+//        contentPane.setStyle("-fx-border-color:red; -fx-border-width: 1; -fx-background-color: yellow");
+//        treeViewPane.setStyle("-fx-background-color: red");
+//        getSkinnable().getTreeView().setPrefHeight(1000);
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
@@ -75,8 +81,10 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         
         targetContext.mousePositionProperty().addListener(this::mousePosChange);
         
-        //scrollAnimation = new ScrollAnimation(control.getTreeView());
+        
         getChildren().add(contentPane);
+        //getChildren().add(treeViewPane);
+        
         if ( getSkinnable().getRoot() != null ) {
             createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());

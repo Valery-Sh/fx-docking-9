@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -28,10 +29,19 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
     public DefaultMouseDragHandler(DockableContext context) {
         super(context);
     }
-
+    @Override
+    public void mousePressed(MouseEvent ev) {
+        if (!ev.isPrimaryButtonDown()) {
+            return;
+        }
+//        System.err.println("DefaultMouseDragHandler mousePressed");
+        
+        setStartMousePos(new Point2D(ev.getX(), ev.getY()));
+        ev.consume();
+    }
     @Override
     public void mouseDragDetected(MouseEvent ev) {
-        if (!ev.isPrimaryButtonDown()) {
+        if (!ev.isPrimaryButtonDown() || getStartMousePos() == null ) {
             ev.consume();
             return;
         }
@@ -40,7 +50,11 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
             ev.consume();
             return;
         }
+        System.err.println("DefaultMouseDragHandler mouseDragDetected = " + getStartMousePos());
         
+        if ( getStartMousePos() == null ) {
+            return;
+        }
         prepare();
         
         DragManager dm;

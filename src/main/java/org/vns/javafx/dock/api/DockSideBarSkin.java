@@ -20,6 +20,7 @@ import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -45,9 +46,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
     public DockSideBarSkin(DockSideBar control) {
         super(control);
 
-        
         //dc.getContext().setResizable(false);
-
         toolBar = new ToolBar() {
             @Override
             protected void layoutChildren() {
@@ -70,10 +69,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         controlSkin = new ControlSkin(toolBar);
 
         dragNodeGroup = new Group();
-        toolBar.getItems().add(dragNodeGroup);
-        if (getSkinnable().getDragNode() != null) {
-            toolBar.getItems().add(0, dragNodeGroup);
-        }
 
         toolBar.setOrientation(getSkinnable().getOrientation());
         DockSideBarContext targetContext = new DockSideBarContext(getSkinnable(), toolBar);
@@ -88,8 +83,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         getSkinnable().getItems().addListener(this::itemsChanged);
 
         //getSkinnable().setMaxWidth(USE_PREF_SIZE);
-        getSkinnable().setStyle("-fx-background-color: green");
-
+//        toolBar.setStyle("-fx-background-color: aqua; -fx-border-width: 1 0 0 1;  -fx-border-color: red");
         getSkinnable().sideProperty().addListener((v, ov, nv) -> {
             getTargetContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
@@ -111,8 +105,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
                 Dockable.of(control).getContext().setDragNode(nv);
             }
 
-        }
-        );
+        });
 
         getSkinnable().rotationProperty().addListener((v, ov, nv) -> {
             getTargetContext().getItemMap().keySet().forEach(g -> {
@@ -134,6 +127,19 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
                 d.changeSide();
             });
         });
+        
+        if (getSkinnable().getDragNode() != null) {
+            dragNodeGroup.getChildren().add(getSkinnable().getDragNode());
+        } else {
+            Button dragButton = new Button();
+            dragButton.getStyleClass().add("drag-button");
+            getSkinnable().setDragNode(dragButton);
+            //dragNodeGroup.getChildren().add(dragButton);
+        }
+        
+        if (getSkinnable().getDragNode() != null) {
+            toolBar.getItems().add(0, dragNodeGroup);
+        }
 
         getChildren().add(toolBar);
     }
@@ -242,7 +248,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
     protected void createDragNode() {
         dragNodeGroup.getChildren().add(getSkinnable().getDragNode());
     }
-
 
     /**
      * {@inheritDoc}

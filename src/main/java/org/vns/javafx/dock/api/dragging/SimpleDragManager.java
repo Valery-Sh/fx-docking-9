@@ -228,14 +228,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.instanceOfDockTarget(n);
         });
-        System.err.println("topPane = " + topPane);
+
         if (topPane != null) {
             root = topPane;
         } else if (!DockRegistry.instanceOfDockTarget(root)) {
             return;
         }
         TargetContext tc = DockRegistry.dockTarget(root).getTargetContext();
-        System.err.println("Simple: tc.targetNode = " + tc.getTargetNode());
         
         tc.mouseDragged(dockable, ev);
         Object o = getDockable().getContext().getDragValue();
@@ -247,17 +246,14 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (accept && !DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
             return;
         }
-        System.err.println("Simple: 1 root = " + root);
         
         if ( !DockRegistry.dockTarget(root).getTargetContext().isAdmissiblePosition(dockable,new Point2D(ev.getScreenX(), ev.getScreenY())) ) {
             return;
         }
-        System.err.println("Simple: 2");
         
         if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
             return;
         }
-        System.err.println("Simple: 3");
         
         //
         // Start use of IndicatorPopup
@@ -269,7 +265,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (newPopup == null) {
             return;
         }
-        System.err.println("Simple: 4");
 
         newPopup.setDraggedNode(getDockable().node());
 
@@ -279,15 +274,11 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         indicatorManager = newPopup;
 
         if (!indicatorManager.isShowing()) {
-        System.err.println("Simple: 5");
-            
             indicatorManager.showIndicator();
         }
-        System.err.println("Simple: 6");        
         if (indicatorManager == null) {
             return;
         }
-        System.err.println("Simple: 7");
 
         indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
     }

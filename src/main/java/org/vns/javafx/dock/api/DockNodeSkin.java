@@ -52,12 +52,15 @@ public class DockNodeSkin extends SkinBase<DockNode> {
                 }
             }
         };
+        //content.setStyle("-fx-background-color: yellow");
         this.layout = new VBox() {
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
             }
         };
+        //layout.setStyle("-fx-background-color: green");
+        
         layout.getChildren().add(titleBarPane);
         layout.getChildren().add(contentPane);
 

@@ -56,7 +56,7 @@ public class FloatStageView implements FloatWindowView {
 
     private final ObjectProperty value = new SimpleObjectProperty();
 
-    private Pane windowRoot;
+    protected Pane windowRoot;
 
     private final DockableContext dockableContext;
 

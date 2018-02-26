@@ -264,10 +264,11 @@ public abstract class TargetContext {
     }
 
     public void undock(Node node) {
-        System.err.println("TargetContext: UNDOCK");
+        System.err.println("TargetContext: UNDOCK node = "+ node);
         if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
             dc.getTargetContext().remove(node);
+            System.err.println("TargetContext: = "+ dc.getTargetContext());
             dc.setTargetContext(null);
         }
     }

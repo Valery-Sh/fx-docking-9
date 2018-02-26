@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockSideBarContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockSideBarSkin;
 
@@ -70,6 +69,7 @@ public class DockSideBar extends Control { // ListChangeListener {
         setRotation(Rotation.DEFAULT);
         
         Dockable dc = DockRegistry.makeDockable(this);
+        dc.getContext().setDragNode(null);
     }
     public ObjectProperty<Node> dragNodeProperty() {
         return dragNode;

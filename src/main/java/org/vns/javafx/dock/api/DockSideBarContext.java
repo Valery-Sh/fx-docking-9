@@ -27,6 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -44,6 +45,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
 import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
@@ -190,9 +192,11 @@ public class DockSideBarContext extends TargetContext {
         } else {
             toolBar.getItems().add(item);
         }
-        DockableContext nodeHandler = dockable.getContext();
-        if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
-            nodeHandler.setTargetContext(this);
+        DockableContext context = dockable.getContext();
+        if (context.getTargetContext() == null || context.getTargetContext() != this) {
+            System.err.println("1 context.getTargetContext = " + context.getTargetContext());
+            context.setTargetContext(this);
+            System.err.println("2context.getTargetContext = " + context.getTargetContext());
         }
         container.getFloatView().setSupportedCursors(getSupportedCursors());
         if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null && getTargetNode().getScene().getWindow().isShowing()) {
@@ -262,6 +266,7 @@ public class DockSideBarContext extends TargetContext {
 
     @Override
     public void remove(Node dockNode) {
+        System.err.println("REMOVE");
         Group r = null;
         for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
             if (en.getValue().getDockable().node() == dockNode) {
@@ -354,7 +359,7 @@ public class DockSideBarContext extends TargetContext {
                 ev.consume();
                 return;
             }
-            DockSideBarContext targetContext = (DockSideBarContext) dockable.getContext().getTargetContext();
+            TargetContext targetContext = dockable.getContext().getTargetContext();
             if (!ev.isPrimaryButtonDown() && !dockable.getContext().isFloating()) {
                 if ( ((DockSideBar)targetContext.getTargetNode()).isHideOnExit() ) {
                     dockable.node().getScene().getWindow().hide();
@@ -363,8 +368,8 @@ public class DockSideBarContext extends TargetContext {
         }
 
         public void adjustScreenPos() {
-            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
-            Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
+            DockSideBarContext context = (DockSideBarContext) dockable.getContext().getTargetContext();
+            Window ownerStage = (Window) ((DockSideBar) context.getTargetNode()).getScene().getWindow();
 
             ownerStage.xProperty().addListener(this);
             ownerStage.yProperty().addListener(this);
@@ -400,6 +405,12 @@ public class DockSideBarContext extends TargetContext {
             }
             Pane root = (Pane) popup.getScene().getRoot();
             Point2D pos = sb.localToScreen(0, 0);
+            System.err.println("SIDE BAR INSETS: " + sb.getInsets());
+            Insets ins = new Insets(0,0,0,0);
+            if ( popup.getScene().getRoot() instanceof Region ){
+                ins = ((Region)popup.getScene().getRoot()).getInsets();
+            }
+            System.err.println("SideBarSkin: ins = " + ins);
             switch (sb.getSide()) {
                 case TOP:
                     popup.setAnchorX(pos.getX());
@@ -417,7 +428,7 @@ public class DockSideBarContext extends TargetContext {
                     root.setPrefHeight(sb.getHeight());
                     break;
                 case LEFT:
-                    popup.setAnchorY(pos.getY());
+                    popup.setAnchorY(pos.getY() - ins.getTop());
                     popup.setAnchorX(pos.getX() + sb.getWidth());
                     root.setPrefHeight(sb.getHeight());
                     break;
