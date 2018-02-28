@@ -3,7 +3,7 @@ package org.vns.javafx.dock.api;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.SideIndicator;
-import org.vns.javafx.dock.api.indicator.DragPopup;
+import org.vns.javafx.dock.api.indicator.DockPaneIndicatorPopup;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class DockPaneContext extends TargetContext {
     protected void initLookup(ContextLookup lookup) {
         lookup.putUnique(PositionIndicator.class, new PaneSideIndicator(this));
 
-        lookup.putUnique(IndicatorManager.class,new DragPopup(this));
+        lookup.putUnique(IndicatorManager.class,new DockPaneIndicatorPopup(this));
         lookup.add(new DockTreeItemBuilderFactory());        
     }
 
@@ -80,10 +80,10 @@ public class DockPaneContext extends TargetContext {
         IndicatorPopup popup = (IndicatorPopup)getLookup().lookup(IndicatorManager.class); //21.08
 
         Node node = dragged.node();
-        if (!(popup instanceof DragPopup)) {
+        if (!(popup instanceof DockPaneIndicatorPopup)) {
             return;
         }
-        DragPopup dp = (DragPopup) popup;
+        DockPaneIndicatorPopup dp = (DockPaneIndicatorPopup) popup;
         Dockable d = Dockable.of(node);
         DockPane dockPane = (DockPane) this.getTargetNode();
         

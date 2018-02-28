@@ -56,8 +56,8 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
 import org.vns.javafx.dock.api.designer.TreeItemBuilder;
 import org.vns.javafx.dock.api.designer.TreeItemEx;
-import org.vns.javafx.dock.api.designer.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.bean.ReflectHelper;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
+import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
  *

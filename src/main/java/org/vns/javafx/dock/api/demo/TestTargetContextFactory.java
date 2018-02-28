@@ -84,7 +84,7 @@ public class TestTargetContextFactory extends Application {
             }
         };
         
-        palettePane.getModel().setDragValueCustomizer(customizer);
+        palettePane.getModel().setCustomizer(customizer);
         VBox pvbox = new VBox(palettePane);
         Scene pscene = new Scene(pvbox);
         pvbox.setId("pvbox");

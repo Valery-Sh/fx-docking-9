@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.designer.bean.ReflectHelper.MethodUtil;
+import org.vns.javafx.dock.api.bean.ReflectHelper.MethodUtil;
 
 /**
  *
@@ -52,6 +52,7 @@ public class NodeDescriptorRegistry {
                 try {
 
                     Method method = MethodUtil.getMethod(o.getClass(), "get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
+                    //Method method = o.getClass().getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
                     Class returnType = method.getReturnType();
                     Property p;
                     if (ObservableList.class.equals(returnType)) {

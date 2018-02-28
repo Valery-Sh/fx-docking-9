@@ -31,14 +31,26 @@ public class DockRegistry {
     private final Map<Window, Window> owners = new HashMap<>();
     private final ObservableMap<Node, Dockable> dockables = FXCollections.observableHashMap();
     private final ObservableMap<Node, DockTarget> dockTargets = FXCollections.observableHashMap();
-
+    
+    private BeanRemover beanRemover;
+    
     private boolean registerDone;
 
     private DockRegistry() {
+        beanRemover = new DefaultNodeRemover();
     }
 
     public static DockRegistry getInstance() {
         return SingletonInstance.instance;
+    }
+
+    public BeanRemover getBeanRemover() {
+//        if ( beanRemover == null )
+        return beanRemover;
+    }
+
+    public void setBeanRemover(BeanRemover beanRemover) {
+        this.beanRemover = beanRemover;
     }
 
     public static void register(Window window) {

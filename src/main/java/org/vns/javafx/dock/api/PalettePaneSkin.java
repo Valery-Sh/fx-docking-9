@@ -35,7 +35,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
 
     protected static double DEFAULT_GRAPHIC_WIDTH = 16;
     
-    private ScrollPane layout;
+    private ScrollPane scrollPaneLayout;
     private VBox vboxLayout;
 
     public PalettePaneSkin(final PalettePane control) {
@@ -47,21 +47,21 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
     private void init() {
         vboxLayout = buildPalette(getSkinnable().getModel());
         
-        layout = new ScrollPane(vboxLayout) {
+        scrollPaneLayout = new ScrollPane(vboxLayout) {
                 @Override
                 protected void layoutChildren() {
-                    layout.setVbarPolicy(getSkinnable().getScrollPaneVbarPolicy());
+                    scrollPaneLayout.setVbarPolicy(getSkinnable().getScrollPaneVbarPolicy());
                     resizeLabels();
                     super.layoutChildren();
                 }
             };
-        layout.setFitToWidth(true);
+        scrollPaneLayout.setFitToWidth(true);
         vboxLayout.getStyleClass().add(TITLED_PANE_VBOX);                
         
-        getChildren().add(layout);
+        getChildren().add(scrollPaneLayout);
 
-        getSkinnable().scrollPaneVbarPolicy().addListener( (ovalue, oldValue, newValue) -> {
-            layout.setVbarPolicy(newValue);
+        getSkinnable().scrollPaneVbarPolicy().addListener((ovalue, oldValue, newValue) -> {
+            scrollPaneLayout.setVbarPolicy(newValue);
         });
         getSkinnable().dragNodeProperty().addListener((ovalue, oldValue, newValue) -> {
             if ( oldValue == null && newValue != null ) {
@@ -78,10 +78,9 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
            });
         });
 
-        
     }
     public void setScrollPaneVbarPolicy(ScrollPane.ScrollBarPolicy value) {
-        layout.setVbarPolicy(value);
+        scrollPaneLayout.setVbarPolicy(value);
     }
     protected VBox buildPalette(PaletteModel model) {
         VBox titledBox = new VBox();
@@ -94,7 +93,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
 
             titledBox.getChildren().add(titledPane);
             titledPane.setText(model.getCategories().get(i).getLabel().getText());
-            titledPane.setContent(model.getCategories().get(i).getGraphic());
+            titledPane.setContent(model.getCategories().get(i).getPane());
         }
         return titledBox;
     }

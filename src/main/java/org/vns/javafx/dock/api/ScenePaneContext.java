@@ -30,7 +30,7 @@ public class ScenePaneContext extends TargetContext {
     private void init() {
         parentListener = this::parentChanged;
         if (isDocked(dockable.node())) {
-            setTargetNode((Pane) dockable.node().getParent());
+            setTargetNode(dockable.node().getParent());
         }
         dockable.node().parentProperty().addListener(parentListener);
     }
@@ -40,24 +40,29 @@ public class ScenePaneContext extends TargetContext {
     }
 
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
-        if (newValue != null && !(newValue instanceof Pane)) {
-            return;
-        }
-
-        setTargetNode((Pane) newValue);
-
+        //if (newValue != null && !(newValue instanceof Pane)) {
         if (oldValue != null) {
             oldValue.parentProperty().removeListener(parentListener);
         }
+        
+/*        if (newValue != null) {
+            return;
+        }
+*/
+        setTargetNode(newValue);
+
     }
 
     @Override
     protected boolean isDocked(Node node) {
-        boolean retval = false;
+        return Dockable.of(node) != null && Dockable.of(node).getContext().getTargetContext() == this;
+//        return node.getParent() != null;
+/*        boolean retval = false;
         if (DockRegistry.isDockable(node)) {
             retval = DockUtil.getOwnerWindow(node) != null;
         }
         return retval;
+*/        
     }
 
     /**
@@ -72,9 +77,15 @@ public class ScenePaneContext extends TargetContext {
 
     @Override
     public void remove(Node dockNode) {
-        if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
-            ((Pane) dockNode.getParent()).getChildren().remove(dockNode);
+        if ( ! isDocked(dockNode) ) {
+            return;
         }
+        if ( DockRegistry.getInstance().getBeanRemover() != null ) {
+            boolean b = DockRegistry.getInstance().getBeanRemover().remove(dockNode);
+        } 
+        //else if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
+            //((Pane) dockNode.getParent()).getChildren().remove(dockNode);
+        //}
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
@@ -30,8 +29,8 @@ import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
 import static org.vns.javafx.dock.api.designer.TreeItemEx.ItemType.CONTENT;
 import static org.vns.javafx.dock.api.designer.TreeItemEx.ItemType.DEFAULTLIST;
 import static org.vns.javafx.dock.api.designer.TreeItemEx.ItemType.LIST;
-import org.vns.javafx.dock.api.designer.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.bean.ReflectHelper;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
+import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
  *

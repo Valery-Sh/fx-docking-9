@@ -21,10 +21,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
@@ -68,22 +66,22 @@ public class TestPalettePane01 extends Application {
             System.err.println("SKIN NODE: " + ((SkinBase)palettePane.getSkin()).getChildren().get(0));
         });
         btn2.setOnAction(a -> {
-/*            if (palettePane.dragNodeProperty().get() == null) {
+            if (palettePane.dragNodeProperty().get() == null) {
                 palettePane.setDragNode(new Button("Drag Button"));
                 //palettePane.dragNodeProperty().set( new Button("Drag Button"));
             } else {
                 palettePane.setDragNode(null);
                 //palettePane.dragNodeProperty().set(null);
             }
-
+/*
             btn1.setText("" + palettePane.getScrollPaneVbarPolicy());
-*/
+
             Label lb1 = new Label("TitledPane");
             lb1.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
             lb1.getStyleClass().add("tree-item-node-titledpane");
 
             palettePane.getModel().getCategory("containers").addItem(lb1, TitledPane.class);
-
+*/
         });
 
         VBox root = new VBox(btn1, btn2, palettePane);

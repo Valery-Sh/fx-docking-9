@@ -169,19 +169,11 @@ public class SceneGraphViewTargetContext extends TargetContext {
     }
 
     /**
-     * Checks whether the given event can be accepted and consumed by the event
-     * handler. Fist invokes the method
-     * {@link #isSupportedDragSource(javafx.scene.input.DragEvent)} and if the
-     * resukt is {@code false} then returns the {@code false }. Defines the
-     * target {@code TreeItem} which is an actual item which must accept the
-     * dragged object. If the target is {@code null} then returns false. Then
-     * finds a builder of type {@link TreeItemBuilder } for the target and then
-     * it returns the result of applying the null null     {@code TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)
-     * }
-     * method to this object.
-     *
-     * @param ev the processed event
-     * @return true if the specified event is admissible and can be accepted
+     * Checks whether the given {@code dockable}  can be accepted by this context.
+     * 
+     * @param dockable the object to be checked
+     * @param mousePos the current mouse position
+     * @return true if the {@code dockable} can be accepted
      */
     @Override
     public boolean isAdmissiblePosition(Dockable dockable, Point2D mousePos) {

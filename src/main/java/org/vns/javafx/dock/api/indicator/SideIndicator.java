@@ -262,7 +262,7 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         public IndicatorPopup getIndicatorPopup() {
-            DragPopup ip = (DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
+            DockPaneIndicatorPopup ip = (DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
             return (IndicatorPopup) ip.getNodeIndicatorPopup();
         }
 
@@ -393,20 +393,20 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (getTargetContext() != null) {
 
-                Node node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getTopButtons();
+                Node node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getRightButtons();
+                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getBottomButtons();
+                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DragPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getLeftButtons();
+                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }

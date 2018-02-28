@@ -71,7 +71,7 @@ import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
  *
  * @author Valery Shyshkin
  */
-public class DragPopup extends IndicatorPopup {
+public class DockPaneIndicatorPopup extends IndicatorPopup {
 
     /**
      * The {@code popup} window for dock nodes
@@ -100,7 +100,7 @@ public class DragPopup extends IndicatorPopup {
      *
      * @param context the owner of the object to be created
      */
-    public DragPopup(TargetContext context) {
+    public DockPaneIndicatorPopup(TargetContext context) {
         //super(DockRegistry.dockTarget(context.getTargetNode()));
         //super(DockRegistry.dockTarget(context.getTargetNode()));
         super(context);

@@ -13,6 +13,7 @@ public abstract class PositionIndicator {
     private IndicatorPopup indicatorPopup;
     
     private Node dockPlace;
+    
     private Pane indicatorPane;
 
 
@@ -23,15 +24,20 @@ public abstract class PositionIndicator {
 
     private void init() {
         indicatorPane = createIndicatorPane();
-        dockPlace = new Rectangle();
-        dockPlace.setId("dockPlace");
-        dockPlace.getStyleClass().add("dock-place");
+        dockPlace = createDockPlace();
         addDockPlace();
     }
     
     protected void addDockPlace() {
        indicatorPane.getChildren().add(dockPlace);        
     }
+    
+    protected Node createDockPlace() {
+        Node retval = new Rectangle();
+        retval.setId("dockPlace");
+        retval.getStyleClass().add("dock-place");
+        return retval;
+    } 
     
     protected Boolean intersects(Node node1, Node node2) {
         if (node1 == null || node2 == null) {

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.bean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -185,6 +186,9 @@ public class ReflectHelper {
         }
     }
 
+    public static boolean isPublic(Class<?> clazz) {
+        return clazz.getModifiers() == Modifier.PUBLIC;
+    }    
     /**
      * NOTE: should only be called if a SecurityManager is installed
      */
@@ -224,15 +228,14 @@ public class ReflectHelper {
 
     public static class MethodUtil extends SecureClassLoader {
 
-        private static final String INVOKER = "org.vns.javafx.dock.api.designer.bean.ReflectHelper$MethodUtil$ActualInvoker";
+        private static final String INVOKER = "org.vns.javafx.dock.api.bean.ReflectHelper$MethodUtil$ActualInvoker";
         private static final Method actualInvoker = getActualInvoker();
 
         protected MethodUtil() {
             super();
         }
 
-        public static Method getMethod(Class<?> cls, String name, Class<?>[] args)
-                throws NoSuchMethodException {
+        public static Method getMethod(Class<?> cls, String name, Class<?>[] args) throws NoSuchMethodException {
             ReflectHelper.checkPackageAccess(cls);
             return cls.getMethod(name, args);
         }

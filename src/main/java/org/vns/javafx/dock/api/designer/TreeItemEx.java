@@ -11,8 +11,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import org.vns.javafx.dock.api.designer.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.bean.ReflectHelper;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
+import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
  *

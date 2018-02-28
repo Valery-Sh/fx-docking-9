@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.bean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,9 +15,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javafx.beans.value.ObservableValue;
-import org.vns.javafx.dock.api.designer.bean.ReflectHelper.MethodUtil;
-import static org.vns.javafx.dock.api.designer.bean.ReflectHelper.checkPackageAccess;
-import static org.vns.javafx.dock.api.designer.bean.ReflectHelper.getField;
+import org.vns.javafx.dock.api.bean.ReflectHelper.MethodUtil;
+import static org.vns.javafx.dock.api.bean.ReflectHelper.checkPackageAccess;
+import static org.vns.javafx.dock.api.bean.ReflectHelper.getField;
 
 /**
  * Exposes Java Bean properties of an object via the {@link Map} interface. A

@@ -19,12 +19,15 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.designer.NodeDescriptorRegistry;
 
 /**
  *
@@ -41,7 +44,9 @@ public class TestDockBorderPane extends Application {
         // Create stage witch contains a dockable button
         //
         stage.setTitle("Stage with a DockableButton");
-        VBox rootPane = new VBox();
+        //VBox rootPane = new VBox();
+        SplitPane rootPane = new SplitPane();
+        //Pane rootPane = new Pane();
         scene = new Scene(rootPane, 200, 200);
 
         Button dockButton = new Button("To be docked");
@@ -49,7 +54,8 @@ public class TestDockBorderPane extends Application {
                 = DockRegistry.getInstance().getDefaultDockable(dockButton);
         dockableButton.getContext().setDragNode(dockButton);
 
-        rootPane.getChildren().addAll(dockButton);
+        //rootPane.getChildren().addAll(dockButton);
+        rootPane.getItems().addAll(dockButton);
         //
         // Create Stage with a BorderPane as DockTarget
         //
@@ -59,6 +65,7 @@ public class TestDockBorderPane extends Application {
         Button topNode = new Button("Initial Top");
         borderPane.setTop(topNode);
         topNode.setOnAction(a -> {
+            //NodeDescriptorRegistry.getInstance().getDescriptor(rootPane);
             System.err.println("CENTER  = " + borderPane.getBottom().getParent());
             System.err.println("CENTER0  = " + borderPane.getChildren().size());
             //((BorderPane)borderPane.getBottom().getParent()).getChildren().remove(borderPane.getBottom());
