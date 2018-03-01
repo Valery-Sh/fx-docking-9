@@ -106,14 +106,24 @@ public class DockableContext {
 
         addShowingListeners();
 
-        scenePaneContext = new ScenePaneContext(dockable);
-        targetContext.set(scenePaneContext);
-        targetContext.addListener(this::targetContextChanged);
         getLookup().add(new FloatViewFactory());
         getLookup().putUnique(DragManagerFactory.class, new DragManagerFactory());
+        scenePaneContext = new ScenePaneContext(dockable);
+        targetContext.set(scenePaneContext);
+
+//        if ( dockable.node().getParent() != null ) {
+            
+//        }
+        targetContext.addListener(this::targetContextChanged);        
+        //Platform.runLater(() -> { setDefaultTargetContext();});
 
     }
-
+    
+    protected void setDefaultTargetContext() {
+        scenePaneContext = new ScenePaneContext(dockable);
+        targetContext.set(scenePaneContext);
+    }
+    
     public ContextLookup getLookup() {
         if (lookup == null) {
             lookup = new DefaultContextLookup();

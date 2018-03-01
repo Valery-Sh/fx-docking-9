@@ -47,11 +47,11 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
         init();
     }
 
-    public DockTabPane2Context(Dockable dockable) {
+/*    public DockTabPane2Context(Dockable dockable) {
         super(dockable);
         init();
     }
-
+*/
     private void init() {
         TabPane pane = (TabPane) getTargetNode();
         pane.getTabs().forEach(tab -> {

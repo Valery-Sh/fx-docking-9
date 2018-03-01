@@ -9,7 +9,6 @@ import javafx.scene.Node;
  * be docked to any object which implements {@link DockTarget}.
  * The classes which implement the interface are not forced to be of type
  * {@code javafx.scene.Node} and  rather are wrappers around the nodes.
- * @see DockNodeBox
  * @see org.vns.javafx.dock.DockNode
  * @see org.vns.javafx.dock.DockSideBar
  * 

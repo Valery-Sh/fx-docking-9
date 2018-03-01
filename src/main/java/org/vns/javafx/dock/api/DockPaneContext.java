@@ -18,10 +18,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
-
-import org.vns.javafx.dock.DockUtil;
-import static org.vns.javafx.dock.DockUtil.clearEmptySplitPanes;
-import static org.vns.javafx.dock.DockUtil.getParentSplitPane;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.event.DockEvent;
@@ -53,6 +49,30 @@ public class DockPaneContext extends TargetContext {
     public DockSplitPane getRoot() {
         return root;
     }
+    public DockSplitPane getParentSplitPane(Node node) {
+        if ( node == null ) {
+            return null;
+        }
+        DockSplitPane retval = null;
+        Node parent = node.getParent();
+     
+        if ( node == root) {
+            return root;
+        }
+        while( parent != root ) {
+            if ( (parent instanceof HPane) || (parent instanceof VPane ) ) {
+                retval = (DockSplitPane)parent;
+                break;
+            }
+            if ( parent == null ) {
+                break;
+            }            
+            parent = parent.getParent();
+        
+        }
+        return retval;
+    }
+            
     protected DockExecutor getDockExecutor() {
         if (dockExecutor == null) {
             dockExecutor = new DockExecutor(this, root);
@@ -64,7 +84,8 @@ public class DockPaneContext extends TargetContext {
     protected boolean isDocked(Node node) {
         boolean retval = false;
         if (DockRegistry.isDockable(node)) {
-            retval = DockUtil.getParentSplitPane(root, node) != null;
+            //retval = DockUtil.getParentSplitPane(root, node) != null;
+            retval = getParentSplitPane(node) != null;
         }
         return retval;
     }
@@ -189,18 +210,67 @@ public class DockPaneContext extends TargetContext {
             dockableContext.setTargetContext(this);
         }
     }
+    
+    public static final String RESTORE_KEY = "uuid-restore-key-3def7903-126a-431c-ac8d-078387448565";
+    private RestoreData restoreData;
+    
+    public class RestoreData{
+        
+        DockSplitPane parent;
+        DockSplitPane topEmpty;
+        int index;
+        String UUID = null;
 
+        public RestoreData(DockSplitPane parent, DockSplitPane topEmpty, int index) {
+            this.parent = parent;
+            this.topEmpty = topEmpty;
+            this.index = index;
+        }
+        
+    }
     
     @Override
     public void remove(Node dockNode) {
 
-        DockSplitPane dsp = getParentSplitPane(root, dockNode);
-        if (dsp != null) {
+        //DockSplitPane parent = DockUtil.getParentSplitPane(root, dockNode);
+        
+        DockSplitPane parent = getParentSplitPane(dockNode);
+        int idx = parent.getItems().indexOf(dockNode);
+        DockSplitPane topEmpty = null;
+        
+        if (parent != null) {
             TargetContext ph = Dockable.of(dockNode).getContext().getTargetContext();
-            dsp.getItems().remove(dockNode);
+            parent.getItems().remove(dockNode);
             Dockable.of(dockNode).getContext().setTargetContext(ph);
-            clearEmptySplitPanes(root, dsp);
+            topEmpty = clearEmptySplitPanes(parent);
         }
+    }
+    protected DockSplitPane clearEmptySplitPanes(DockSplitPane empty) {
+        if (root == null || !empty.getItems().isEmpty()) {
+            return null;
+        }
+        DockSplitPane topEmpty = empty;
+        List<DockSplitPane> list = new ArrayList<>();
+
+        DockSplitPane dsp = empty;
+        while (true) {
+            dsp = getParentSplitPane(dsp);
+            if (dsp == null) {
+                break;
+            }
+            list.add(dsp);
+            topEmpty = dsp;
+        }
+        list.add(0, empty);
+        for (int i = 0; i < list.size(); i++) {
+            if (!list.get(i).getItems().isEmpty()) {
+                break;
+            }
+            if (i < list.size() - 1) {
+                list.get(i + 1).getItems().remove(list.get(i));
+            }
+        }
+        return topEmpty;
     }
 
     /**

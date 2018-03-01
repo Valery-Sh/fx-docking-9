@@ -23,6 +23,9 @@ import java.util.logging.Logger;
 import javafx.beans.DefaultProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.TitledPane;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
@@ -64,6 +67,14 @@ public class DefaultNodeRemover implements BeanRemover {
 
     protected boolean remove(Node parent, Object toRemove) {
         boolean retval = false;
+        if ((parent instanceof Accordion) && (toRemove instanceof TitledPane)) {
+            ((Accordion)parent).getPanes().remove((TitledPane)toRemove);
+            return true;
+        } else if ((parent instanceof ButtonBar)) {
+            ((ButtonBar)parent).getButtons().remove((Node)toRemove);
+            return true;
+        }
+
         //
         // try to find DefaultProperty
         //

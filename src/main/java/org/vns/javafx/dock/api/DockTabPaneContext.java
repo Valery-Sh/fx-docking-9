@@ -56,11 +56,11 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
 
     private void init() {
         helper = new TabPaneHelper(this);
-        getTargetNode().getTabs().forEach(tab -> {
+        getTabPane().getTabs().forEach(tab -> {
             getTargetNode().getStyleClass().add("tab-uuid-" + UUID.randomUUID());
         });
 
-        getTargetNode().getTabs().addListener(new ListChangeListener<Tab>() {
+        getTabPane().getTabs().addListener(new ListChangeListener<Tab>() {
             @Override
             public void onChanged(ListChangeListener.Change<? extends Tab> change) {
                 while (change.next()) {
@@ -158,9 +158,8 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
     }
 */
-    @Override
-    public TabPane getTargetNode() {
-        return (TabPane) super.getTargetNode();
+    public TabPane getTabPane() {
+        return (TabPane) getTargetNode();
     }
     //////////////////////////////////////////////////////////
     @Override
@@ -255,7 +254,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
     @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
-        for (Tab tb : getTargetNode().getTabs()) {
+        for (Tab tb : getTabPane().getTabs()) {
             if (tb.getContent() == node) {
                 retval = true;
                 break;
@@ -475,7 +474,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
     @Override
     public void remove(Node dockNode) {
         Tab tab = null;
-        for (Tab tb : getTargetNode().getTabs()) {
+        for (Tab tb : getTabPane().getTabs()) {
             if (tb.getContent() == dockNode) {
                 tab = tb;
                 break;
@@ -483,7 +482,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
         if (tab != null) {
             showContentTitleBar(Dockable.of(dockNode));
-            getTargetNode().getTabs().remove(tab);
+            getTabPane().getTabs().remove(tab);
         }
     }
 

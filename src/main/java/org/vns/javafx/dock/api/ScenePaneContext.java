@@ -1,14 +1,9 @@
 package org.vns.javafx.dock.api;
 
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.Pane;
-import org.vns.javafx.dock.DockUtil;
 
 /**
  *
@@ -18,21 +13,22 @@ public class ScenePaneContext extends TargetContext {
 
     private final Dockable dockable;
 
-    private ChangeListener<? super Parent> parentListener;
+    //private ChangeListener<? super Parent> parentListener;
 
     public ScenePaneContext(Dockable dockable) {
-        super(dockable);
+        super();
         this.dockable = dockable;
         init();
 
     }
 
     private void init() {
-        parentListener = this::parentChanged;
-        if (isDocked(dockable.node())) {
-            setTargetNode(dockable.node().getParent());
-        }
-        dockable.node().parentProperty().addListener(parentListener);
+        //parentListener = this::parentChanged;
+        //if (isDocked(dockable.node())) {
+        //if (dockable.node().getParent() != null ) {
+            //setTargetNode(dockable.node().getParent());
+        //}
+        dockable.node().parentProperty().addListener(this::parentChanged);
     }
 
     @Override
@@ -42,7 +38,7 @@ public class ScenePaneContext extends TargetContext {
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
         //if (newValue != null && !(newValue instanceof Pane)) {
         if (oldValue != null) {
-            oldValue.parentProperty().removeListener(parentListener);
+            oldValue.parentProperty().removeListener(this::parentChanged);
         }
         
 /*        if (newValue != null) {
@@ -55,7 +51,7 @@ public class ScenePaneContext extends TargetContext {
 
     @Override
     protected boolean isDocked(Node node) {
-        return Dockable.of(node) != null && Dockable.of(node).getContext().getTargetContext() == this;
+        return Dockable.of(node) != null && Dockable.of(node).getContext().getTargetContext() == this && node.getParent() != null;
 //        return node.getParent() != null;
 /*        boolean retval = false;
         if (DockRegistry.isDockable(node)) {
@@ -70,18 +66,18 @@ public class ScenePaneContext extends TargetContext {
      *
      * @return the list of dockables
      */
-    public ObservableList<Dockable> getDockables() {
+/*    public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
         return null;
     }
-
+*/
     @Override
     public void remove(Node dockNode) {
         if ( ! isDocked(dockNode) ) {
             return;
         }
         if ( DockRegistry.getInstance().getBeanRemover() != null ) {
-            boolean b = DockRegistry.getInstance().getBeanRemover().remove(dockNode);
+            DockRegistry.getInstance().getBeanRemover().remove(dockNode);
         } 
         //else if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
             //((Pane) dockNode.getParent()).getChildren().remove(dockNode);

@@ -25,7 +25,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.ContextLookup;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
@@ -47,10 +46,10 @@ public class SceneGraphViewTargetContext extends TargetContext {
         super(targetNode);
     }
 
-    public SceneGraphViewTargetContext(Dockable dockable) {
+/*    public SceneGraphViewTargetContext(Dockable dockable) {
         super(dockable);
     }
-
+*/
     @Override
     protected void initLookup(ContextLookup lookup) {
         lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
@@ -180,10 +179,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
 
         SceneGraphView gv = (SceneGraphView) getTargetNode();
         TreeItemEx place = gv.getTreeItem(mousePos);
-//        System.err.println("doDock node = " + dockable.node());
-//        System.err.println("isAdmiss place = " + place);
-//        System.err.println("doDock place.value = " + place.getValue());
-
+        
         if (place == null) {
             return false;
         }
@@ -203,7 +199,6 @@ public class SceneGraphViewTargetContext extends TargetContext {
         if (value instanceof Dockable) {
             value = ((Dockable) value).node();
         }
-        //System.err.println("1 isAdmiss value = " + value);
         return new TreeItemBuilder().isAdmissiblePosition(gv.getTreeView(), target, place, value);
 
     }

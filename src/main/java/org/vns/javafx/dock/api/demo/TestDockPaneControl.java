@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.demo;
 
+import java.util.Random;
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -464,7 +465,8 @@ public class TestDockPaneControl extends Application {
 //        sideBar01.setMinSize(sideBar01.getToolBar().getMinWidth(), sideBar01.getToolBar().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
-
+        System.err.println("uuid-restore-key-" + UUID.randomUUID() );
+        //System.err.println("uuid-restore-data-" + UUID.randomUUID() );
         stage.setOnShown(e -> {
             //sideBar01.setHideOnExit(true);
 //        sideBar01.setPrefSize(sideBar01.getToolBar().getWidth(), sideBar01.getToolBar().getHeight());

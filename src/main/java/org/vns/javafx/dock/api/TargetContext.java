@@ -36,11 +36,15 @@ public abstract class TargetContext {
         this.targetNode = targetNode;
         init();
     }
-
-    protected TargetContext(Dockable dockable) {
+    protected TargetContext() {
         init();
     }
+    
 
+/*    protected TargetContext(Dockable dockable) {
+        init();
+    }
+*/
     public ContextLookup getLookup() {
         if (lookup == null) {
             lookup = new DefaultContextLookup();
@@ -70,35 +74,6 @@ public abstract class TargetContext {
                 dockableContext.setTargetContext(this);
             }
         }
-    }
-
-    /**
-     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
-     * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
-     * in the future
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        if (title != null) {
-            return title;
-        }
-        title = getTargetNode().getId();
-        if (title == null) {
-            title = getTargetNode().getClass().getName();
-        }
-        return title;
-    }
-
-    /**
-     * !!! Used only org.vns.javafx.dock.api.util.NodeTree and
-     * org.vns.javafx.dock.api.util.ParentChainPopup !!! I think may be deleted
-     * in the future
-     *
-     * @param title the text used as a title
-     */
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     protected void inititialize() {
@@ -231,12 +206,24 @@ public abstract class TargetContext {
         }
         return positionIndicator;
     }
-
-    public Node getTargetNode() {
+    /**
+     * Returns the node for which this context was created
+     * The node may throw {@code NullPointerException) in case when 
+     * the both conditions below are met:
+     * <ul>
+     *   <li> ! (this instanceof ScenePaneContext)</li>
+     *   <li>targetNode == null</li>
+     * </ul>
+     * @return the node for which this context was created.
+     */
+    public final Node getTargetNode() {
+        if ( ! (this instanceof ScenePaneContext) && targetNode == null  ) {
+            throw new NullPointerException("The property targetNode cannot be null");
+        }
         return this.targetNode;
     }
 
-    public void setTargetNode(Node targetNode) {
+    protected void setTargetNode(Node targetNode) {
         this.targetNode = targetNode;
     }
 
