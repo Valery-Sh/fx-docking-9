@@ -128,7 +128,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
             targetDockPane.addEventFilter(DragEvent.DRAG_DONE, this);
             targetDockPane.addEventFilter(DragEvent.DRAG_EXITED, this);
 
-            docablePositionSave = dockable.getContext().getLayoutContext().getRestorePosition(dockable);
+            //docablePositionSave = dockable.getContext().getLayoutContext().getRestorePosition(dockable);
             dockable.getContext().getLayoutContext().undock(dockable.node());
             //dockable.getContext().setFloating(true);
         }
@@ -261,7 +261,7 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         System.err.println("dragDone targetController " + dockable.getContext().getLayoutContext());
         System.err.println("dragDone isFloating =  " + dockable.getContext().isFloating());
         if (dockable.getContext().isFloating() && docablePositionSave != null && targetContext != null) {
-            targetContext.restore(dockable, docablePositionSave);
+            //targetContext.restore(dockable, docablePositionSave);
         }
         if (popup != null && popup.isShowing()) {
             popup.hide();

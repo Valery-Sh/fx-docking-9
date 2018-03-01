@@ -214,6 +214,7 @@ public class DockPaneContext extends LayoutContext {
     }
     
     
+    @Override
     public boolean restore(Dockable dockable) {
         boolean retval = true;
         if ( restoreData != null && dockable.getContext().isFloating() ) {
@@ -223,6 +224,8 @@ public class DockPaneContext extends LayoutContext {
             commitDock(dockable.node());
             System.err.println("2 dockable.getTargetContext() = " + dockable.getContext().getLayoutContext());
         }
+        restoreData = null;
+        
         return retval;
     }
     

@@ -191,14 +191,14 @@ public class FloatPopupControlView implements FloatWindowView {
             titleBar.setManaged(true);
         }
 
-        if (dockable.getContext().isDocked() && getTargetContext(dockable).getLayoutNode() != null) {
-            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dockable).getLayoutNode());
+        if (dockable.getContext().isDocked() && getLayoutContext(dockable).getLayoutNode() != null) {
+            Window targetNodeWindow = DockUtil.getOwnerWindow(getLayoutContext(dockable).getLayoutNode());
             if (DockUtil.getOwnerWindow(dockable.node()) != targetNodeWindow) {
                 windowRoot = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
                 Window retval = dockable.node().getScene().getWindow();
-                getTargetContext(dockable).undock(dockable.node());
+                getLayoutContext(dockable).undock(dockable.node());
                 return retval;
             }
         }
@@ -208,14 +208,14 @@ public class FloatPopupControlView implements FloatWindowView {
         
         
         if (dockable.getContext().isDocked()) {
-            if ((dockable.node() instanceof DockNode) && (getTargetContext(dockable).getLayoutNode() instanceof DockPane)) {
+            if ((dockable.node() instanceof DockNode) && (getLayoutContext(dockable).getLayoutNode() instanceof DockPane)) {
                 saveSize = true;
             }
-            LayoutContext oldTargetContext = getTargetContext(dockable);            
-            getTargetContext(dockable).undock(dockable.node());
+            LayoutContext oldLayoutContext = getLayoutContext(dockable);            
+            getLayoutContext(dockable).undock(dockable.node());
             LayoutContext tc = dockable.getContext().getLayoutContext();
             if ( tc instanceof ScenePaneContext ) {
-                ((ScenePaneContext)tc).setRestoreContext(oldTargetContext);
+                ((ScenePaneContext)tc).setRestoreContext(oldLayoutContext);
             }
             
         }
@@ -308,7 +308,7 @@ public class FloatPopupControlView implements FloatWindowView {
         }
         Dockable d = Dockable.of(dragged);
         if (d != null && d.getContext().isDocked()) {
-            getTargetContext(d).undock(d.node());
+            getLayoutContext(d).undock(d.node());
         } else {
             DragContainer dc = context.getDragContainer();
             if (dc != null && dc.getDragSource() != null) {
@@ -387,19 +387,24 @@ public class FloatPopupControlView implements FloatWindowView {
 
         DockableContext draggedContext = dragged.getContext();
 
-        if (draggedContext.isDocked() && getTargetContext(dragged).getLayoutNode() != null) {
-            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dragged).getLayoutNode());
+        if (draggedContext.isDocked() && getLayoutContext(dragged).getLayoutNode() != null) {
+            Window targetNodeWindow = DockUtil.getOwnerWindow(getLayoutContext(dragged).getLayoutNode());
             if (DockUtil.getOwnerWindow(dragged.node()) != targetNodeWindow) {
                 windowRoot = (Pane) dragged.node().getScene().getRoot();
                 markFloating(dragged.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
 
-                getTargetContext(dragged).undock(dragged.node());
+                getLayoutContext(dragged).undock(dragged.node());
                 return dragged.node().getScene().getWindow();
             }
         }
         if (dragged.getContext().isDocked()) {
-            getTargetContext(dragged).undock(dragged.node());
+            LayoutContext oldLayoutContext = getLayoutContext(dragged);            
+            getLayoutContext(dragged).undock(dragged.node());
+            LayoutContext tc = dockable.getContext().getLayoutContext();
+            if ( tc instanceof ScenePaneContext ) {
+                ((ScenePaneContext)tc).setRestoreContext(oldLayoutContext);
+            }            
         }
 
         PopupControl window = new PopupControl();
@@ -454,7 +459,7 @@ public class FloatPopupControlView implements FloatWindowView {
         return window;
     }
 
-    protected LayoutContext getTargetContext(Dockable d) {
+    protected LayoutContext getLayoutContext(Dockable d) {
         return d.getContext().getLayoutContext();
     }
 

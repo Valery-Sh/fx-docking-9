@@ -248,8 +248,14 @@ public abstract class LayoutContext {
     public void undock(Node node) {
         if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
+            
             dc.getLayoutContext().remove(node);
             dc.setLayoutContext(null);
+            LayoutContext tc = dc.getLayoutContext();
+            if ( tc instanceof ScenePaneContext ) {
+                ((ScenePaneContext)tc).setRestoreContext(this);
+            }            
+            
         }
     }
     

@@ -467,7 +467,7 @@ public class DockableContext {
      * Creates the object which manages a dragging execution. Can't be changed
      * during dragging.
      */
-    public void createDragManager() {
+    protected void createDragManager() {
 
         DragManagerFactory dmf = null;
 
