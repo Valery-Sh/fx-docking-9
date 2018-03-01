@@ -38,7 +38,7 @@ public class TestStackPaneContext1 extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         StackPane primaryRoot = new StackPane();
-        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);        
+        DockRegistry.getInstance().toDockLayout(primaryRoot);        
         //dockPane.addEventHandler( new );
         primaryRoot.setId("PRIMARY ROOT");
         //DockEvent ev = new DockEvent(null, primaryRoot,DockEvent.NODE_DOCKED);

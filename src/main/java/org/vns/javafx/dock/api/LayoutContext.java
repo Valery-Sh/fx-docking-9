@@ -58,9 +58,9 @@ public abstract class LayoutContext {
 
     protected abstract boolean doDock(Point2D mousePos, Node node);
 
-    public abstract Object getRestorePosition(Dockable dockable);
-
-    public abstract void restore(Dockable dockable, Object restoreposition);
+    protected boolean restore(Dockable dockable) {
+        return false;
+    }
 
     protected void commitDock(Node node) {
         if (DockRegistry.isDockable(node)) {

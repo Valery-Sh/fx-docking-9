@@ -168,13 +168,9 @@ public class TargetContextFactory {
         }
 
         @Override
-        public Object getRestorePosition(Dockable dockable) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+        public boolean restore(Dockable dockable) {
+            return false;
 
-        @Override
-        public void restore(Dockable dockable, Object restoreposition) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }
@@ -357,15 +353,10 @@ public class TargetContextFactory {
         }
 
         @Override
-        public Object getRestorePosition(Dockable dockable) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+        public boolean restore(Dockable dockable) {
+            return false;
 
-        @Override
-        public void restore(Dockable dockable, Object restoreposition) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
     }
 
     public static class PanePositionIndicator extends PositionIndicator {
@@ -549,15 +540,10 @@ public class TargetContextFactory {
         }
 
         @Override
-        public Object getRestorePosition(Dockable dockable) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+        public boolean restore(Dockable dockable) {
+            return false;
 
-        @Override
-        public void restore(Dockable dockable, Object restoreposition) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
     }
 
     public static class ListBasedPositionIndicator extends PositionIndicator {
@@ -569,8 +555,8 @@ public class TargetContextFactory {
         @Override
         public IndicatorPopup getIndicatorPopup() {
             IndicatorPopup ip = super.getIndicatorPopup();
-            ((Region)ip.getTargetNode()).layout();
-            ((Region)ip.getTargetNode()).requestLayout();
+            ((Region) ip.getTargetNode()).layout();
+            ((Region) ip.getTargetNode()).requestLayout();
             return ip;
         }
 
@@ -596,7 +582,7 @@ public class TargetContextFactory {
             }
             getDockPlace().setVisible(visible);
 
-/*            Window w = getIndicatorPopup().getDraggedNode().getScene().getWindow();
+            /*            Window w = getIndicatorPopup().getDraggedNode().getScene().getWindow();
             Platform.runLater(() -> {
                 if (w instanceof Stage) {
                     System.err.println("getIndpane.size()=" + p.getChildren().size());
@@ -605,7 +591,7 @@ public class TargetContextFactory {
                 }
 
             });
-*/
+             */
         }
 
         protected void adjustPlace(Node node) {

@@ -24,7 +24,7 @@ public class TestStackPaneContext extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         StackPane primaryRoot = new StackPane();
-        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);
+        DockRegistry.getInstance().toDockLayout(primaryRoot);
         primaryRoot.setAlignment(Pos.TOP_LEFT);
         
         primaryRoot.addEventFilter(DockEvent.NODE_DOCKED, ev -> {

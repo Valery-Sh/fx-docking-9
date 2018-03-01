@@ -14,7 +14,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockPane;
@@ -33,6 +32,9 @@ public class DockPaneContext extends LayoutContext {
     private DockTreeItemBuilder dockTreeItemBuilder;
     private SideIndicator.NodeSideIndicator nodeIndicator;
 
+    private RestoreData restoreData;
+    
+    
     public DockPaneContext(Node dockPane, DockSplitPane root) {
         super(dockPane);
         this.root = root;
@@ -211,23 +213,7 @@ public class DockPaneContext extends LayoutContext {
         }
     }
     
-    public static final String RESTORE_KEY = "uuid-restore-key-3def7903-126a-431c-ac8d-078387448565";
-    private RestoreData restoreData;
     
-    public class RestoreData{
-        
-        DockSplitPane parent;
-        DockSplitPane topEmpty;
-        int index;
-        String UUID = null;
-
-        public RestoreData(DockSplitPane parent, int index) {
-            this.parent = parent;
-            //this.topNotEmpty = topNotEmpty;
-            this.index = index;
-        }
-        
-    }
     public boolean restore(Dockable dockable) {
         boolean retval = true;
         if ( restoreData != null && dockable.getContext().isFloating() ) {
@@ -322,7 +308,7 @@ public class DockPaneContext extends LayoutContext {
         });
     }
 
-    @Override
+/*    @Override
     public Object getRestorePosition(Dockable dockable) {
         DockSplitPane dsp = null;
         Parent p = dockable.node().getParent();
@@ -350,7 +336,7 @@ public class DockPaneContext extends LayoutContext {
             commitDock(dockable.node());
         }
     }
-
+*/
 
     public static class DockExecutor {
 
@@ -521,6 +507,17 @@ public class DockPaneContext extends LayoutContext {
         }
 
     }//DockExcecutor
+    public class RestoreData{
+        
+        DockSplitPane parent;
+        int index;
+
+        public RestoreData(DockSplitPane parent, int index) {
+            this.parent = parent;
+            this.index = index;
+        }
+        
+    }
 
 
 }//class DockPaneContext

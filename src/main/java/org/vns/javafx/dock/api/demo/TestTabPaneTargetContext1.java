@@ -139,7 +139,7 @@ public class TestTabPaneTargetContext1 extends Application {
         stg01dp01.dock(stg01tab01, Side.RIGHT);
          */
         TabPane tabPane01 = new TabPane();
-        DockRegistry.getInstance().registerAsDockLayout(tabPane01);
+        DockRegistry.getInstance().toDockLayout(tabPane01);
         
 //        tabPane01.setPrefSize(100, 100);
 //        tabPane01.setMinSize(100, 100);

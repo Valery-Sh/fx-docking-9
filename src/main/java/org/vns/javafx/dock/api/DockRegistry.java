@@ -401,7 +401,7 @@ public class DockRegistry {
 
     }
 
-    public DockLayout registerAsDockLayout(Node node) {
+    public DockLayout toDockLayout(Node node) {
         if (isDockLayout(node)) {
             return dockLayout(node);
         }
@@ -413,13 +413,6 @@ public class DockRegistry {
         DockLayout dt = new DefaultDockLayout(node, c);
         register(dt);
         return dt;
-    }
-    public void registerAsDockLayout(Node node, LayoutContext context) {
-        if (isDockLayout(node)) {
-            return;
-        }
-        DockLayout dt = makeDockLayout(node, context);
-        node.getProperties().put(DockLayout.DOCKLAYOUTS_KEY, dt);
     }
 
     public Dockable getDefaultDockable(Node node) {

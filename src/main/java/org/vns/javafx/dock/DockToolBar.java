@@ -20,8 +20,6 @@ public class DockToolBar extends ToolBar implements Dockable{
     StringProperty title = new SimpleStringProperty("Tool Bar Enabled");
     DockableContext dockableContext = new DockableContext(this);
     
-    private Dockable dockTarget;
-    
     public DockToolBar() {
         init();
     }
@@ -48,14 +46,7 @@ public class DockToolBar extends ToolBar implements Dockable{
         this.title.set(title);
     }
     
-    public Dockable getDockTarget() {
-        return dockTarget;
-    }
-
-    public void setDockTarget(Dockable dockTarget) {
-        this.dockTarget = dockTarget;
-    }
-
+   
     public void useAsTitleBar(Region titleBar) {
         dockableContext.setTitleBar(titleBar);
     }

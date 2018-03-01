@@ -38,7 +38,7 @@ public class TestPaneContext  extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Pane primaryRoot = new Pane();
-        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);
+        DockRegistry.getInstance().toDockLayout(primaryRoot);
         
         primaryRoot.addEventFilter(DockEvent.NODE_DOCKED, ev -> {
             System.err.println("DockPane eventFilter: getSource()       = " + ev.getSource());

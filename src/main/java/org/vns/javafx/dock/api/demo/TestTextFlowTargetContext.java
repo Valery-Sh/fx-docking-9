@@ -27,7 +27,7 @@ public class TestTextFlowTargetContext extends Application {
     public void start(Stage primaryStage) throws Exception {
         TextFlow primaryRoot = new TextFlow();
         primaryRoot.getChildren().addAll(new Button("Btn1"), new Label("Label1"), new Button("Btn2"));
-        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);
+        DockRegistry.getInstance().toDockLayout(primaryRoot);
 
         DockNode custom = new DockNode();
         primaryRoot.getChildren().add(custom);

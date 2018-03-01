@@ -20,7 +20,6 @@ import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -53,7 +52,7 @@ public class DockUtil {
         return h;
     }
 
-    public static DockSplitPane getParentSplitPane(DockSplitPane root, Node childNode) {
+/*    public static DockSplitPane getParentSplitPane(DockSplitPane root, Node childNode) {
         DockSplitPane retval = null;
         DockSplitPane split = root;
         Stack<DockSplitPane> stack = new Stack<>();
@@ -98,8 +97,8 @@ public class DockUtil {
             }
         }
     }
-
-    public static Side sideValue(String dockPos) {
+*/
+/*    public static Side sideValue(String dockPos) {
         Side retval = null;
         if (dockPos == null) {
             retval = Side.BOTTOM;
@@ -121,7 +120,7 @@ public class DockUtil {
         }
         return retval;
     }
-
+*/
     /*    public static ObservableList<Dockable> getAllDockable(Region root) {
         ObservableList<Dockable> retval = FXCollections.observableArrayList();
 
@@ -213,6 +212,7 @@ public class DockUtil {
         }
         return b.contains(x, y);
     }    
+    
     public static Bounds getHalfBounds(Side side,Node node, double x, double y) {
         Bounds retval;
         Bounds b  = node.localToScreen(node.getBoundsInLocal());
@@ -333,7 +333,7 @@ public class DockUtil {
     }
 
     public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
-        //if (child == null || child.getScene() == null || child.getScene().getRoot() == null) {
+
         if (child == null) {
             return null;
         }
@@ -353,11 +353,4 @@ public class DockUtil {
         return retval;
     }
 
-/*    public static DockLayout getParentDockPane(Node dockNode) {
-        Node node = DockUtil.getImmediateParent(dockNode, p -> {
-            return (DockRegistry.instanceOfDockLayout(p));
-        });
-        return DockRegistry.dockLayout(node);
-    }
-*/
 }

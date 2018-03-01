@@ -65,7 +65,7 @@ public class TestTabPane extends Application {
         Label tab3Lb1 = new Label("tab3Lb1");
         tab3.setContent(tab3Lb1);        
         TabPane tabPane = new TabPane(tab1, tab2, tab3);
-        DockRegistry.getInstance().registerAsDockLayout(tabPane, new DockTabPane2Context(tabPane) );
+        DockRegistry.getInstance().makeDockLayout(tabPane, new DockTabPane2Context(tabPane) );
         DockRegistry.getInstance().getDefaultDockable(tabPane);
         DockableContext dc = Dockable.of(tabPane).getContext();
         dc.setLayoutContext(DockLayout.of(tabPane).getLayoutContext());
