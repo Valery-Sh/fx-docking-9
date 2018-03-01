@@ -61,8 +61,8 @@ public class TestTargetContextFactory extends Application {
         tab3.setContent(tab3Lb1);        
         VBox pane = new VBox(tab3Lb1);
         root.getChildren().add(pane);
-//        DockRegistry.getInstance().registerAsDockTarget(pane, new DockTabPane2Context(pane) );
-        DockRegistry.getInstance().registerAsDockTarget(pane);
+//        DockRegistry.getInstance().registerAsDockLayout(pane, new DockTabPane2Context(pane) );
+        DockRegistry.getInstance().registerAsDockLayout(pane);
         //TargetContextFactory f = new TargetContextFactory();
         
         

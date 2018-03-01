@@ -27,10 +27,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -49,7 +49,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
-        d.getContext().setTargetContext(getSkinnable().getTargetContext());
+        d.getContext().setLayoutContext(getSkinnable().getLayoutContext());
         treeViewPane = new StackPane();
         if (!getChildren().isEmpty()) {
             getChildren().clear();
@@ -73,7 +73,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
 //                lookup.putUnique(IndicatorManager.class, new DragIndicatorManager(this);
-        SceneGraphViewTargetContext targetContext = (SceneGraphViewTargetContext) DockTarget.of(getSkinnable()).getTargetContext();
+        SceneGraphViewTargetContext targetContext = (SceneGraphViewTargetContext) DockLayout.of(getSkinnable()).getLayoutContext();
         targetContext
                 .getLookup()
                 .putUnique(IndicatorManager.class, new DragIndicatorManager(targetContext, dragIndicator));

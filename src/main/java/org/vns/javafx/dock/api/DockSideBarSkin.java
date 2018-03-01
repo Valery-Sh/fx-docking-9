@@ -71,13 +71,13 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         dragNodeGroup = new Group();
 
         toolBar.setOrientation(getSkinnable().getOrientation());
-        DockSideBarContext targetContext = new DockSideBarContext(getSkinnable(), toolBar);
-        targetContext.getItemMap().keySet().forEach(g -> {
+        DockSideBarContext layoutContext = new DockSideBarContext(getSkinnable(), toolBar);
+        layoutContext.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(getSkinnable().getRotation().getAngle());
         });
 
-        DockRegistry.makeDockTarget(control, targetContext);
+        DockRegistry.makeDockLayout(control, layoutContext);
 
         changeItems();
         getSkinnable().getItems().addListener(this::itemsChanged);
@@ -85,7 +85,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         //getSkinnable().setMaxWidth(USE_PREF_SIZE);
 //        toolBar.setStyle("-fx-background-color: aqua; -fx-border-width: 1 0 0 1;  -fx-border-color: red");
         getSkinnable().sideProperty().addListener((v, ov, nv) -> {
-            getTargetContext().getItemMap().values().forEach(d -> {
+            getLayoutContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
@@ -108,12 +108,12 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         });
 
         getSkinnable().rotationProperty().addListener((v, ov, nv) -> {
-            getTargetContext().getItemMap().keySet().forEach(g -> {
+            getLayoutContext().getItemMap().keySet().forEach(g -> {
                 Button btn = (Button) g.getChildren().get(0);
                 btn.setRotate(getSkinnable().getRotation().getAngle());
             });
 
-            getTargetContext().getItemMap().values().forEach(d -> {
+            getLayoutContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
@@ -122,7 +122,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             toolBar.setOrientation(nv);
         });
         toolBar.orientationProperty().addListener((v, ov, nv) -> {
-            getTargetContext().getItemMap().values().forEach(d -> {
+            getLayoutContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
                 d.changeSide();
             });
@@ -144,8 +144,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         getChildren().add(toolBar);
     }
 
-    protected DockSideBarContext getTargetContext() {
-        return (DockSideBarContext) DockTarget.of(getSkinnable()).getTargetContext();
+    protected DockSideBarContext getLayoutContext() {
+        return (DockSideBarContext) DockLayout.of(getSkinnable()).getLayoutContext();
     }
 
     protected void itemsChanged(ListChangeListener.Change<? extends Dockable> change) {
@@ -153,14 +153,14 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
                 list.forEach((d) -> {
-                    getTargetContext().undock(d.node());
+                    getLayoutContext().undock(d.node());
                 });
 
             }
             if (change.wasAdded()) {
                 List<? extends Dockable> list = change.getAddedSubList();
                 list.forEach((d) -> {
-                    getTargetContext().dock(d);
+                    getLayoutContext().dock(d);
                 });
             }
         }
@@ -168,8 +168,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     private void changeItems() {
         for (Dockable d : getSkinnable().getItems()) {
-            if (!getTargetContext().isDocked(d.node())) {
-                getTargetContext().dock(d);
+            if (!getLayoutContext().isDocked(d.node())) {
+                getLayoutContext().dock(d);
             }
         }
     }//while

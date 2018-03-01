@@ -13,17 +13,17 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
  * @author Valery
  */
 @DefaultProperty(value = "root")
-public class SceneGraphView extends Control implements DockTarget {
+public class SceneGraphView extends Control implements DockLayout {
 
     private SceneGraphViewTargetContext targetContext;
 
@@ -202,7 +202,7 @@ public class SceneGraphView extends Control implements DockTarget {
                 Node node = (Node) cell.getTreeItem().getValue();
                 DockRegistry.makeDockable(cell);
                 Dockable dockable = DockRegistry.dockable(cell);
-                dockable.getContext().setTargetContext(getTargetContext());
+                dockable.getContext().setTargetContext(getLayoutContext());
             }
         }
     }
@@ -265,12 +265,12 @@ public class SceneGraphView extends Control implements DockTarget {
     }
      */
     @Override
-    public Node target() {
+    public Node layoutNode() {
         return this;
     }
 
     @Override
-    public TargetContext getTargetContext() {
+    public LayoutContext getLayoutContext() {
         if (targetContext == null) {
             targetContext = new SceneGraphViewTargetContext(this);
         }

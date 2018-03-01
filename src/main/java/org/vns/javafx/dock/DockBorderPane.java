@@ -15,7 +15,7 @@ public class DockBorderPane extends BorderPane {
     }
 
     private void init() {
-        DockRegistry.makeDockTarget(this, new DockBorderPaneContext(this));
+        DockRegistry.makeDockLayout(this, new DockBorderPaneContext(this));
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
         
     }

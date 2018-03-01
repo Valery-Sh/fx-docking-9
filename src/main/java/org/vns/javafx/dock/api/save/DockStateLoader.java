@@ -21,12 +21,12 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.*;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -85,12 +85,12 @@ public class DockStateLoader extends AbstractDockStateLoader {
 
         //reset();
         //
-        // Copies all Dockable objects which are not DockTarget.
+        // Copies all Dockable objects which are not DockLayout.
         //
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
             //!!!08
-            if (DockRegistry.isDockable(node) && !DockRegistry.instanceOfDockTarget(node)) {
+            if (DockRegistry.isDockable(node) && !DockRegistry.instanceOfDockLayout(node)) {
                 TreeItem item = DockTreeItemBuilder.build(key, node);
                 getDefaultDockables().put(key, item);
             }
@@ -99,17 +99,17 @@ public class DockStateLoader extends AbstractDockStateLoader {
         //
         // 1. As a result all objects will be implicitly registered
         // 2. The method getDefaultDockables now contains only those dockable
-        //    objects which are not childs of some DockTarget
+        //    objects which are not childs of some DockLayout
         //
-        TargetContext context = DockRegistry.dockTarget(getExplicitlyRegistered().get("dockTabPane1")).getTargetContext();
-        getDockTreeTemBuilder(context.getTargetNode());
-        TreeItem<Properties> it1 = getDockTreeTemBuilder(context.getTargetNode()).build("dockTabPane1");
+        LayoutContext context = DockRegistry.dockLayout(getExplicitlyRegistered().get("dockTabPane1")).getLayoutContext();
+        getDockTreeTemBuilder(context.getLayoutNode());
+        TreeItem<Properties> it1 = getDockTreeTemBuilder(context.getLayoutNode()).build("dockTabPane1");
 
         test(it1);
 
         for (String key : getExplicitlyRegistered().keySet()) {
             Node node = getExplicitlyRegistered().get(key);
-            if (DockRegistry.instanceOfDockTarget(node)) {
+            if (DockRegistry.instanceOfDockLayout(node)) {
                 TreeItem<Properties> it = build(key, node);
                 if ("dockTabPane1".equals(key)) {
                     test(it);
@@ -208,16 +208,16 @@ public class DockStateLoader extends AbstractDockStateLoader {
     /**
      * Restores the previously saved state of the specified node.
      *
-     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockTarget
+     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockLayout
      * } whose state is to be restored.
      * @return the object of type {@code javafx.scene.control.TreeItem } which
      * is the root of TreeItem's tree which corresponds to the {@code Scene Graph
      * }
-     * of the node specified by the parameter {@code dockTarget}.
+     * of the node specified by the parameter {@code dockLayout}.
      */
     @Override
-    public TreeItem<Properties> restore(DockTarget dockTarget) {
-        String fieldName = getFieldName(dockTarget.target());
+    public TreeItem<Properties> restore(DockLayout dockTarget) {
+        String fieldName = getFieldName(dockTarget.layoutNode());
 
         if (fieldName == null) {
             return null;
@@ -255,7 +255,7 @@ public class DockStateLoader extends AbstractDockStateLoader {
                 it.getValue().put(OBJECT_ATTR, getRegistered().get(fieldName));
             }
         }
-        getDockTreeTemBuilder(dockTarget.getTargetContext().getTargetNode()).restore(item);
+        getDockTreeTemBuilder(dockTarget.getLayoutContext().getLayoutNode()).restore(item);
         return item;
     }
 

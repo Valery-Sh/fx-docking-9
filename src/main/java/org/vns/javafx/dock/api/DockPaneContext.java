@@ -25,7 +25,7 @@ import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
-public class DockPaneContext extends TargetContext {
+public class DockPaneContext extends LayoutContext {
 
 
     private DockExecutor dockExecutor;
@@ -49,7 +49,7 @@ public class DockPaneContext extends TargetContext {
     public DockSplitPane getRoot() {
         return root;
     }
-    public DockSplitPane getParentSplitPane(Node node) {
+    protected DockSplitPane getParentSplitPane(Node node) {
         if ( node == null ) {
             return null;
         }
@@ -106,7 +106,7 @@ public class DockPaneContext extends TargetContext {
         }
         DockPaneIndicatorPopup dp = (DockPaneIndicatorPopup) popup;
         Dockable d = Dockable.of(node);
-        DockPane dockPane = (DockPane) this.getTargetNode();
+        DockPane dockPane = (DockPane) this.getLayoutNode();
         
         Node titleBar = dockPane.getTitleBar();
         
@@ -169,8 +169,8 @@ public class DockPaneContext extends TargetContext {
     protected void commitDock(Node node) {
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
-            if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
-                dockableContext.setTargetContext(this);
+            if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+                dockableContext.setLayoutContext(this);
             }
         }
     }
@@ -195,19 +195,19 @@ public class DockPaneContext extends TargetContext {
                 
         if (target == null) {
             dock(dragged, side);
-            event = new DockEvent(DockEvent.NODE_DOCKED,dragged.node(), getTargetNode(), side, null);
+            event = new DockEvent(DockEvent.NODE_DOCKED,dragged.node(), getLayoutNode(), side, null);
         } else {
 
             if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
                 ((Stage) node.getScene().getWindow()).close();
             }
             getDockExecutor().dock(node, side, target);
-            event = new DockEvent(DockEvent.NODE_DOCKED, dragged.node(), getTargetNode(),side, target);
+            event = new DockEvent(DockEvent.NODE_DOCKED, dragged.node(), getLayoutNode(),side, target);
             
         }
         DockableContext dockableContext = dragged.getContext();
-        if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
-            dockableContext.setTargetContext(this);
+        if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+            dockableContext.setLayoutContext(this);
         }
     }
     
@@ -221,12 +221,23 @@ public class DockPaneContext extends TargetContext {
         int index;
         String UUID = null;
 
-        public RestoreData(DockSplitPane parent, DockSplitPane topEmpty, int index) {
+        public RestoreData(DockSplitPane parent, int index) {
             this.parent = parent;
-            this.topEmpty = topEmpty;
+            //this.topNotEmpty = topNotEmpty;
             this.index = index;
         }
         
+    }
+    public boolean restore(Dockable dockable) {
+        boolean retval = true;
+        if ( restoreData != null && dockable.getContext().isFloating() ) {
+            //if ( restoreData.parent )
+            System.err.println("1 dockable.getTargetContext() = " + dockable.getContext().getLayoutContext());
+            restoreData.parent.getItems().add(dockable.node());
+            commitDock(dockable.node());
+            System.err.println("2 dockable.getTargetContext() = " + dockable.getContext().getLayoutContext());
+        }
+        return retval;
     }
     
     @Override
@@ -236,41 +247,51 @@ public class DockPaneContext extends TargetContext {
         
         DockSplitPane parent = getParentSplitPane(dockNode);
         int idx = parent.getItems().indexOf(dockNode);
-        DockSplitPane topEmpty = null;
         
         if (parent != null) {
-            TargetContext ph = Dockable.of(dockNode).getContext().getTargetContext();
+            LayoutContext ph = Dockable.of(dockNode).getContext().getLayoutContext();
             parent.getItems().remove(dockNode);
-            Dockable.of(dockNode).getContext().setTargetContext(ph);
-            topEmpty = clearEmptySplitPanes(parent);
+            Dockable.of(dockNode).getContext().setLayoutContext(ph);
+            restoreData = clearEmptySplitPanes(parent);
+            if ( restoreData == null ) {
+                restoreData = new RestoreData(parent, idx);
+            }
         }
     }
-    protected DockSplitPane clearEmptySplitPanes(DockSplitPane empty) {
-        if (root == null || !empty.getItems().isEmpty()) {
+    protected RestoreData clearEmptySplitPanes(DockSplitPane parent) {
+        if (root == null || !parent.getItems().isEmpty()) {
             return null;
         }
-        DockSplitPane topEmpty = empty;
+        DockSplitPane topNotEmpty = parent;
         List<DockSplitPane> list = new ArrayList<>();
 
-        DockSplitPane dsp = empty;
+        DockSplitPane dsp = parent;
         while (true) {
             dsp = getParentSplitPane(dsp);
             if (dsp == null) {
                 break;
             }
             list.add(dsp);
-            topEmpty = dsp;
+//            topNotEmpty = dsp;
         }
-        list.add(0, empty);
+        
+        list.add(0, parent);
+        int idx = -1;
+        
         for (int i = 0; i < list.size(); i++) {
             if (!list.get(i).getItems().isEmpty()) {
+                topNotEmpty = list.get(i);
                 break;
             }
             if (i < list.size() - 1) {
+                idx = list.get(i + 1).getItems().indexOf(list.get(i));
                 list.get(i + 1).getItems().remove(list.get(i));
             }
         }
-        return topEmpty;
+        if ( topNotEmpty != null && idx >= 0 ) {
+            return new RestoreData(topNotEmpty, idx);
+        }
+        return null;
     }
 
     /**
@@ -280,7 +301,7 @@ public class DockPaneContext extends TargetContext {
      */
     public ObservableList<Dockable> getDockables() {
         ObservableList<Dockable> list = FXCollections.observableArrayList();
-        ((DockPane) getTargetNode()).getItems().forEach(node -> {
+        ((DockPane) getLayoutNode()).getItems().forEach(node -> {
             if (DockRegistry.isDockable(node)) {
                 list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
@@ -318,7 +339,7 @@ public class DockPaneContext extends TargetContext {
         }
         return new Object[]{dsp, idx};
     }
-
+    
     @Override
     public void restore(Dockable dockable, Object restoreposition) {
         Object[] obj = (Object[]) restoreposition;;

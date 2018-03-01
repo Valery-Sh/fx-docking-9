@@ -43,7 +43,7 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class DockTabPaneContext extends TargetContext { //implements ObjectReceiver{
+public class DockTabPaneContext extends LayoutContext { //implements ObjectReceiver{
 
     public static final String SAVE_DRAGNODE_PROP = "UUID-100b8c98-1b22-4f18-959e-66c16aa3a588";
 
@@ -57,7 +57,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
     private void init() {
         helper = new TabPaneHelper(this);
         getTabPane().getTabs().forEach(tab -> {
-            getTargetNode().getStyleClass().add("tab-uuid-" + UUID.randomUUID());
+            getLayoutNode().getStyleClass().add("tab-uuid-" + UUID.randomUUID());
         });
 
         getTabPane().getTabs().addListener(new ListChangeListener<Tab>() {
@@ -159,7 +159,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
     }
 */
     public TabPane getTabPane() {
-        return (TabPane) getTargetNode();
+        return (TabPane) getLayoutNode();
     }
     //////////////////////////////////////////////////////////
     @Override
@@ -189,7 +189,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
             } else {
                 stage.hide();
             }
-            d.getContext().setTargetContext(this);
+            d.getContext().setLayoutContext(this);
         }
 */        
     }
@@ -215,7 +215,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         boolean retval = false;
         int idx = -1;
         TabPaneHelper helper = new TabPaneHelper(this);
-        TabPane pane = (TabPane) getTargetNode();
+        TabPane pane = (TabPane) getLayoutNode();
         if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
 
             idx = pane.getTabs().size();
@@ -271,7 +271,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
 
         Dockable dockable = Dockable.of(node);
-        TabPane pane = (TabPane) getTargetNode();
+        TabPane pane = (TabPane) getLayoutNode();
         //TabGraphic tabGraphic = new TabGraphic(dockable, pane);
         int idx = -1;
         Node headerArea = helper.getHeaderArea(mousePos.getX(), mousePos.getY());
@@ -333,7 +333,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
 
         Dockable dockable = Dockable.of(node);
-        TabPane tabPane = (TabPane) getTargetNode();
+        TabPane tabPane = (TabPane) getLayoutNode();
 
         String txt = getButtonText(dockable);
         if (txt.isEmpty()) {
@@ -356,8 +356,8 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         if (DockRegistry.isDockable(node)) {
             DockableContext context = Dockable.of(node).getContext();
             context.setDragNode(newTab.getGraphic());
-            if (context.getTargetContext() == null || context.getTargetContext() != this) {
-                context.setTargetContext(this);
+            if (context.getLayoutContext() == null || context.getLayoutContext() != this) {
+                context.setLayoutContext(this);
             }
         }
         return true;
@@ -380,7 +380,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
 
         Dockable dockable = Dockable.of(node);
-        TabPane tabPane = (TabPane) getTargetNode();
+        TabPane tabPane = (TabPane) getLayoutNode();
 
         String txt = getButtonText(dockable);
         if (txt.isEmpty()) {
@@ -402,8 +402,8 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         if (DockRegistry.isDockable(node)) {
             DockableContext nodeHandler = Dockable.of(node).getContext();
             nodeHandler.setDragNode(tab.getGraphic());
-            if (nodeHandler.getTargetContext() == null || nodeHandler.getTargetContext() != this) {
-                nodeHandler.setTargetContext(this);
+            if (nodeHandler.getLayoutContext() == null || nodeHandler.getLayoutContext() != this) {
+                nodeHandler.setLayoutContext(this);
             }
         }
     }
@@ -501,7 +501,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         private Rectangle tabDockPlace;
         private TabPaneHelper helper;
 
-        public TabPanePositonIndicator(TargetContext context) {
+        public TabPanePositonIndicator(LayoutContext context) {
             super(context);
             helper = new TabPaneHelper(context);
             
@@ -509,7 +509,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
 
 /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
-            getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
+            getLayoutContext().getLookup().lookup(IndicatorPopup.class).show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
 */
         @Override
@@ -544,8 +544,8 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
 
         @Override
         public void showDockPlace(double x, double y) {
-            DockTabPaneContext ctx = ((DockTabPaneContext) getTargetContext());
-            TabPane pane = (TabPane) getTargetContext().getTargetNode();
+            DockTabPaneContext ctx = ((DockTabPaneContext) getLayoutContext());
+            TabPane pane = (TabPane) getLayoutContext().getLayoutNode();
 
             Bounds tabBounds = helper.tabBounds(x, y);;
             Bounds headerAreaBounds = helper.headerAreaBounds(x, y);
@@ -621,7 +621,7 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
 
     }
 
-    public class TabPaneContextListener implements ChangeListener<TargetContext> {
+    public class TabPaneContextListener implements ChangeListener<LayoutContext> {
 
         private final Node saveDragNode;
         private final DockableContext dockableContext;
@@ -632,12 +632,12 @@ public class DockTabPaneContext extends TargetContext { //implements ObjectRecei
         }
 
         @Override
-        public void changed(ObservableValue<? extends TargetContext> observable, TargetContext oldValue, TargetContext newValue) {
+        public void changed(ObservableValue<? extends LayoutContext> observable, LayoutContext oldValue, LayoutContext newValue) {
             if (newValue != DockTabPaneContext.this) {
                 dockableContext.setDragNode(saveDragNode);
             }
             if (oldValue != null) {
-                dockableContext.targetContextProperty().removeListener(this);
+                dockableContext.layoutContexProperty().removeListener(this);
             }
         }
 

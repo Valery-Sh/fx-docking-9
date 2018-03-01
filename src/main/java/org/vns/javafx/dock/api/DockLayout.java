@@ -4,7 +4,7 @@ import javafx.scene.Node;
 
 /**
  * The interface comprises the minimal requirements for an object which
- * serves as a target for {@code dockable} nodes.
+ serves as a layoutNode for {@code dockable} nodes.
  * 
  * The classes which implement the interface are not forced to be of type
  * {@code javafx.scene.Node} and  rather are wrappers around the nodes.
@@ -16,10 +16,10 @@ import javafx.scene.Node;
  * 
  * @author Valery Shyshkin
  */
-public interface DockTarget {
+public interface DockLayout {
     
-    public static final String LOOKUP_SELECTOR = "docktarget-e651abfa-c321-4249-b78a-120db404b641";
-    public static final String DOCKTARGETS_KEY = "docktarget-marker-e651abfa-c321-4249-b78a-120db404b641";
+    public static final String LOOKUP_SELECTOR = "docklayout-e651abfa-c321-4249-b78a-120db404b641";
+    public static final String DOCKLAYOUTS_KEY = "docklayot-marker-e651abfa-c321-4249-b78a-120db404b641";
     
     /**
      * Returns a node of type {@code Region} that implements this interface or
@@ -27,22 +27,22 @@ public interface DockTarget {
      * 
      * @return an object of type {@code javafx.scene.layout.Region}
      */
-    Node target();
+    Node layoutNode();
     /**
-     * Returns an object which provides a state and behavior of the target panel 
+     * Returns an object which provides a state and behavior of the layoutNode panel 
      * during a docking process. In contrast to the {@link Dockable} interface where
      * a single class of type {@link DockableContext} may be used for various
      * implementations of the {@code Dockable} the method as a rule returns a 
-     * an instance of specific  class depending on the target functionality.
+     * an instance of specific  class depending on the layoutNode functionality.
      * For example, all such classes as {@code DockPane, DockSideBar, 
      * DockTabpane, DockTabPane2} provide their  own implementations of the class
      * {@code DockableContext}.
      * 
-     * @return an object of type {@link TargetContext}
+     * @return an object of type {@link LayoutContext}
      */    
-    TargetContext getTargetContext();
+    LayoutContext getLayoutContext();
     
-    static DockTarget of(Node obj) {
-        return DockRegistry.dockTarget(obj);
+    static DockLayout of(Node obj) {
+        return DockRegistry.dockLayout(obj);
     }
 }

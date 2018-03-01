@@ -97,7 +97,7 @@ public class TestTabPaneTargetContext1 extends Application {
 
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         DockPane stg01dp01 = new DockPane();
-        //stg01dp01.getTargetContext().setUsedAsDockTarget(false);
+        //stg01dp01.getLayoutContext().setUsedAsDockLayout(false);
         stg01dp01.setPrefHeight(200);
         stg01dp01.setPrefWidth(200);
         stg01dp01.setId("stg01dp01");
@@ -139,7 +139,7 @@ public class TestTabPaneTargetContext1 extends Application {
         stg01dp01.dock(stg01tab01, Side.RIGHT);
          */
         TabPane tabPane01 = new TabPane();
-        DockRegistry.getInstance().registerAsDockTarget(tabPane01);
+        DockRegistry.getInstance().registerAsDockLayout(tabPane01);
         
 //        tabPane01.setPrefSize(100, 100);
 //        tabPane01.setMinSize(100, 100);
@@ -159,8 +159,8 @@ public class TestTabPaneTargetContext1 extends Application {
         //tbIv.toFront();
         //tbIv.setTranslateX(-5);
         //tbIv.setTranslateY(-5);
-        //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
-        //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
+        //tabPane01.getLayoutContext().dock(stg01dn02, Side.TOP);
+        //tabPane01.getLayoutContext().dock(stg01dn03, Side.TOP);        
         
         stg01dp01.dock(tabPane01, Side.TOP);
         

@@ -55,7 +55,7 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class DockSideBarContext extends TargetContext {
+public class DockSideBarContext extends LayoutContext {
 
     private final ObservableMap<Group, Container> itemMap = FXCollections.observableHashMap();
     private final ToolBar toolBar;
@@ -104,7 +104,7 @@ public class DockSideBarContext extends TargetContext {
     }
 
     public ObservableList<Dockable> getDockables() {
-        return ((DockSideBar) getTargetNode()).getItems();
+        return ((DockSideBar) getLayoutNode()).getItems();
     }
 
     public void dock(Dockable dockable) {
@@ -166,7 +166,7 @@ public class DockSideBarContext extends TargetContext {
         //itemButton.setContentDisplay(ContentDisplay.CENTER);
         Container container = new Container(dockable);
         getItemMap().put(item, container);
-        itemButton.setRotate(((DockSideBar) getTargetNode()).getRotation().getAngle());
+        itemButton.setRotate(((DockSideBar) getLayoutNode()).getRotation().getAngle());
         itemButton.setOnAction(a -> {
             a.consume();
             PopupControl popup = container.getPopup();
@@ -193,13 +193,11 @@ public class DockSideBarContext extends TargetContext {
             toolBar.getItems().add(item);
         }
         DockableContext context = dockable.getContext();
-        if (context.getTargetContext() == null || context.getTargetContext() != this) {
-            System.err.println("1 context.getTargetContext = " + context.getTargetContext());
-            context.setTargetContext(this);
-            System.err.println("2context.getTargetContext = " + context.getTargetContext());
+        if (context.getLayoutContext() == null || context.getLayoutContext() != this) {
+            context.setLayoutContext(this);
         }
         container.getFloatView().setSupportedCursors(getSupportedCursors());
-        if (getTargetNode().getScene() != null && getTargetNode().getScene().getWindow() != null && getTargetNode().getScene().getWindow().isShowing()) {
+        if (getLayoutNode().getScene() != null && getLayoutNode().getScene().getWindow() != null && getLayoutNode().getScene().getWindow().isShowing()) {
             container.adjustScreenPos();
         }
         if (priorWindow != null && (priorWindow instanceof Stage)) {
@@ -232,7 +230,7 @@ public class DockSideBarContext extends TargetContext {
 
     public Cursor[] getSupportedCursors() {
         List<Cursor> list = new ArrayList<>();
-        switch (((DockSideBar) getTargetNode()).getSide()) {
+        switch (((DockSideBar) getLayoutNode()).getSide()) {
             case RIGHT:
                 list.add(Cursor.W_RESIZE);
                 break;
@@ -251,7 +249,7 @@ public class DockSideBarContext extends TargetContext {
     }
 
     protected void rotate(Button btn) {
-        switch (((DockSideBar) getTargetNode()).getSide()) {
+        switch (((DockSideBar) getLayoutNode()).getSide()) {
             case RIGHT:
                 btn.setRotate(90);
                 break;
@@ -279,7 +277,7 @@ public class DockSideBarContext extends TargetContext {
             itemMap.get(r).getFloatView().setSupportedCursors(FloatView.DEFAULT_CURSORS);
             itemMap.remove(r);
             toolBar.getItems().remove(r);
-            ((DockSideBar) getTargetNode()).getItems().remove(Dockable.of(dockNode));
+            ((DockSideBar) getLayoutNode()).getItems().remove(Dockable.of(dockNode));
         }
     }
 
@@ -290,7 +288,7 @@ public class DockSideBarContext extends TargetContext {
     public void show(Button btn) {
         Group group = (Group) btn.getParent();
         Container container = getItemMap().get(group);
-        DockSideBar sb = (DockSideBar) getTargetNode();
+        DockSideBar sb = (DockSideBar) getLayoutNode();
 
         if (container.getPopup() != null && !container.getPopup().isShowing()) {
             container.getPopup().show(toolBar.getScene().getWindow());
@@ -334,7 +332,7 @@ public class DockSideBarContext extends TargetContext {
         }
 
         public DockSideBar getSideBar() {
-            return (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
+            return (DockSideBar) dockable.getContext().getLayoutContext().getLayoutNode();
         }
 
         public void addMouseExitListener() {
@@ -359,17 +357,17 @@ public class DockSideBarContext extends TargetContext {
                 ev.consume();
                 return;
             }
-            TargetContext targetContext = dockable.getContext().getTargetContext();
+            LayoutContext layoutContext = dockable.getContext().getLayoutContext();
             if (!ev.isPrimaryButtonDown() && !dockable.getContext().isFloating()) {
-                if ( ((DockSideBar)targetContext.getTargetNode()).isHideOnExit() ) {
+                if ( ((DockSideBar)layoutContext.getLayoutNode()).isHideOnExit() ) {
                     dockable.node().getScene().getWindow().hide();
                 }
             }
         }
 
         public void adjustScreenPos() {
-            DockSideBarContext context = (DockSideBarContext) dockable.getContext().getTargetContext();
-            Window ownerStage = (Window) ((DockSideBar) context.getTargetNode()).getScene().getWindow();
+            DockSideBarContext context = (DockSideBarContext) dockable.getContext().getLayoutContext();
+            Window ownerStage = (Window) ((DockSideBar) context.getLayoutNode()).getScene().getWindow();
 
             ownerStage.xProperty().addListener(this);
             ownerStage.yProperty().addListener(this);
@@ -381,8 +379,8 @@ public class DockSideBarContext extends TargetContext {
         }
 
         public void removeListeners() {
-            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
-            Window ownerStage = (Window) ((DockSideBar) handler.getTargetNode()).getScene().getWindow();
+            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getLayoutContext();
+            Window ownerStage = (Window) ((DockSideBar) handler.getLayoutNode()).getScene().getWindow();
             ownerStage.xProperty().removeListener(this);
             ownerStage.yProperty().removeListener(this);
             ownerStage.widthProperty().removeListener(this);
@@ -390,7 +388,7 @@ public class DockSideBarContext extends TargetContext {
         }
 
         public void changeSide() {
-            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getTargetContext();
+            DockSideBarContext handler = (DockSideBarContext) dockable.getContext().getLayoutContext();
             windowBuilder.setSupportedCursors(handler.getSupportedCursors());
 
         }
@@ -399,7 +397,7 @@ public class DockSideBarContext extends TargetContext {
             if (getPopup() == null) {
                 return;
             }
-            DockSideBar sb = (DockSideBar) dockable.getContext().getTargetContext().getTargetNode();
+            DockSideBar sb = (DockSideBar) dockable.getContext().getLayoutContext().getLayoutNode();
             if (!popup.isShowing()) {
                 return;
             }
@@ -451,21 +449,21 @@ public class DockSideBarContext extends TargetContext {
         private Rectangle tabDockPlace;
         private IndicatorPopup indicatorPopup;
 
-        public SideBarPositonIndicator(TargetContext context) {
+        public SideBarPositonIndicator(LayoutContext context) {
             super(context);
         }
 
         @Override
         public IndicatorPopup getIndicatorPopup() {
             if (indicatorPopup == null) {
-                indicatorPopup = getTargetContext().getLookup().lookup(IndicatorPopup.class);
+                indicatorPopup = getLayoutContext().getLookup().lookup(IndicatorPopup.class);
             }
             return indicatorPopup;
         }
 
 /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
-            getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+            getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
 */
         @Override
@@ -492,7 +490,7 @@ public class DockSideBarContext extends TargetContext {
         }
 
         private ToolBar getToolBar() {
-            return ((DockSideBarContext) getTargetContext()).getToolBar();
+            return ((DockSideBarContext) getLayoutContext()).getToolBar();
         }
 
         private static Node findLastVisibleNode(List<Node> list) {
@@ -516,7 +514,7 @@ public class DockSideBarContext extends TargetContext {
 
         protected int indexOf(double x, double y) {
             int idx = -1;
-            Node sb = ((DockSideBarContext) getTargetContext()).findNode(getToolBar().getItems(), x, y);
+            Node sb = ((DockSideBarContext) getLayoutContext()).findNode(getToolBar().getItems(), x, y);
             if (sb != null && (sb instanceof Group)) {
                 idx = getToolBar().getItems().indexOf(sb);
             } else if (sb == null && DockUtil.contains(getToolBar(), x, y)) {

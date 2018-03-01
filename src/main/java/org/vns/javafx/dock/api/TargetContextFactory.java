@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -31,7 +30,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.PopupControl;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
@@ -44,13 +42,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -60,11 +54,11 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  */
 public class TargetContextFactory {
 
-    protected TargetContext getContext(Node targetNode) {
-        if (DockRegistry.isDockTarget(targetNode)) {
-            return DockRegistry.dockTarget(targetNode).getTargetContext();
+    protected LayoutContext getContext(Node targetNode) {
+        if (DockRegistry.isDockLayout(targetNode)) {
+            return DockRegistry.dockLayout(targetNode).getLayoutContext();
         }
-        TargetContext retval = null;
+        LayoutContext retval = null;
         if (targetNode instanceof StackPane) {
             retval = getStackPaneContext((StackPane) targetNode);
         } else if (targetNode instanceof VBox) {
@@ -93,20 +87,20 @@ public class TargetContextFactory {
         return retval;
     }
 
-    protected TargetContext getStackPaneContext(StackPane pane) {
+    protected LayoutContext getStackPaneContext(StackPane pane) {
         return new StackPaneContext(pane);
     }
 
-    protected TargetContext getPaneContext(Pane pane) {
+    protected LayoutContext getPaneContext(Pane pane) {
         return new PaneContext(pane);
     }
 
-    protected TargetContext getBorderPaneContext(BorderPane pane) {
-        TargetContext retval = new DockBorderPaneContext(pane);
+    protected LayoutContext getBorderPaneContext(BorderPane pane) {
+        LayoutContext retval = new DockBorderPaneContext(pane);
         return retval;
     }
 
-    public static class StackPaneContext extends TargetContext {
+    public static class StackPaneContext extends LayoutContext {
 
         public StackPaneContext(Node pane) {
             super(pane);
@@ -114,7 +108,7 @@ public class TargetContextFactory {
         }
 
         private void init() {
-            ((StackPane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this));
+            ((StackPane) getLayoutNode()).getChildren().addListener(new NodeListChangeListener(this));
         }
 
         @Override
@@ -125,7 +119,7 @@ public class TargetContextFactory {
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
-            StackPane target = (StackPane) getTargetNode();
+            StackPane target = (StackPane) getLayoutNode();
             BorderPane bp = (BorderPane) getPositionIndicator().getIndicatorPane();
             if (DockUtil.contains(bp.getTop(), mousePos.getX(), mousePos.getY())) {
                 target.getChildren().add(node);
@@ -153,7 +147,7 @@ public class TargetContextFactory {
 
         @Override
         public void remove(Node dockNode) {
-            ((StackPane) getTargetNode()).getChildren().remove(dockNode);
+            ((StackPane) getLayoutNode()).getChildren().remove(dockNode);
         }
 
         /**
@@ -162,7 +156,7 @@ public class TargetContextFactory {
          * @return th elis of dockables
          */
         public List<Dockable> getDockables() {
-            BorderPane bp = (BorderPane) getTargetNode();
+            BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
                 //!!!08
@@ -187,13 +181,13 @@ public class TargetContextFactory {
 
     public static class StackPositionIndicator extends PositionIndicator {
 
-        public StackPositionIndicator(TargetContext targetContext) {
+        public StackPositionIndicator(LayoutContext targetContext) {
             super(targetContext);
         }
 
         @Override
         protected Pane createIndicatorPane() {
-            Pane targetPane = (Pane) getTargetContext().getTargetNode();
+            Pane targetPane = (Pane) getLayoutContext().getLayoutNode();
             Label topNode = new Label("Top");
             Label rightNode = new Label("Right");
             Label bottomNode = new Label("Bottom");
@@ -235,7 +229,7 @@ public class TargetContextFactory {
         public void showDockPlace(double x, double y) {
 
             boolean visible = true;
-            //BorderPane target = (BorderPane) getTargetContext().getTargetNode();
+            //BorderPane layoutNode = (BorderPane) getLayoutContext().getTargetNode();
 
             BorderPane bp = (BorderPane) getIndicatorPane();
 
@@ -279,7 +273,7 @@ public class TargetContextFactory {
 
     }
 
-    public static class PaneContext extends TargetContext {
+    public static class PaneContext extends LayoutContext {
 
         public PaneContext(Node pane) {
             super(pane);
@@ -288,7 +282,7 @@ public class TargetContextFactory {
 
         private void init() {
 
-            ((Pane) getTargetNode()).getChildren().addListener(new NodeListChangeListener(this));
+            ((Pane) getLayoutNode()).getChildren().addListener(new NodeListChangeListener(this));
             /*            p.getChildren().addListener(new ListChangeListener<Node>() {
                 @Override
                 public void onChanged(ListChangeListener.Change<? extends Node> change) {
@@ -325,11 +319,11 @@ public class TargetContextFactory {
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
-            Pane pane = (Pane) getTargetNode();
+            Pane pane = (Pane) getLayoutNode();
             double x = node.getScene().getWindow().getX();
             double y = node.getScene().getWindow().getY();
 
-            if (!DockUtil.contains(getTargetNode(), x, y)) {
+            if (!DockUtil.contains(getLayoutNode(), x, y)) {
                 return false;
             }
 
@@ -342,7 +336,7 @@ public class TargetContextFactory {
 
         @Override
         public void remove(Node dockNode) {
-            ((Pane) getTargetNode()).getChildren().remove(dockNode);
+            ((Pane) getLayoutNode()).getChildren().remove(dockNode);
         }
 
         /**
@@ -351,7 +345,7 @@ public class TargetContextFactory {
          * @return th elis of dockables
          */
         public List<Dockable> getDockables() {
-            BorderPane bp = (BorderPane) getTargetNode();
+            BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
                 //!!!08
@@ -376,7 +370,7 @@ public class TargetContextFactory {
 
     public static class PanePositionIndicator extends PositionIndicator {
 
-        public PanePositionIndicator(TargetContext targetContext) {
+        public PanePositionIndicator(LayoutContext targetContext) {
             super(targetContext);
         }
 
@@ -436,7 +430,7 @@ public class TargetContextFactory {
 
     }
 
-    public static class ListBasedTargetContext extends TargetContext {
+    public static class ListBasedTargetContext extends LayoutContext {
 
         private boolean listBased;
         private ObservableList<Node> items;
@@ -464,8 +458,8 @@ public class TargetContextFactory {
         }
 
         protected ObservableList<Node> getNodeList(Node node) {
-            if ((getTargetNode() instanceof Pane)) {
-                return ((Pane) getTargetNode()).getChildren();
+            if ((getLayoutNode() instanceof Pane)) {
+                return ((Pane) getLayoutNode()).getChildren();
             }
             ObservableList<Node> retval = null;
 
@@ -491,14 +485,14 @@ public class TargetContextFactory {
 
         private void init() {
             listBased = true;
-            items = getNodeList(getTargetNode());
+            items = getNodeList(getLayoutNode());
             items.addListener(new NodeListChangeListener(this));
         }
 
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
-            Node targetNode = (Pane) getTargetNode();
+            Node targetNode = (Pane) getLayoutNode();
 
             if (!DockUtil.contains(targetNode, mousePos.getX(), mousePos.getY())) {
                 return false;
@@ -543,7 +537,7 @@ public class TargetContextFactory {
          * @return th elis of dockables
          */
         public List<Dockable> getDockables() {
-            BorderPane bp = (BorderPane) getTargetNode();
+            BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
                 //!!!08
@@ -568,7 +562,7 @@ public class TargetContextFactory {
 
     public static class ListBasedPositionIndicator extends PositionIndicator {
 
-        public ListBasedPositionIndicator(TargetContext targetContext) {
+        public ListBasedPositionIndicator(LayoutContext targetContext) {
             super(targetContext);
         }
 
@@ -625,8 +619,8 @@ public class TargetContextFactory {
         protected void adjustPlace(Node pane, double x, double y) {
             Rectangle r = (Rectangle) getDockPlace();
             //Point2D pt = pane.screenToLocal(x, y);
-            ListBasedTargetContext ctx = (ListBasedTargetContext) getTargetContext();
-            Pane targetPane = (Pane) ctx.getTargetNode();
+            ListBasedTargetContext ctx = (ListBasedTargetContext) getLayoutContext();
+            Pane targetPane = (Pane) ctx.getLayoutNode();
             Node innerNode = null;
             for (int i = 0; i < ctx.getItems().size(); i++) {
                 if (DockUtil.contains(ctx.getItems().get(i), x, y)) {
@@ -666,9 +660,9 @@ public class TargetContextFactory {
 
     public static class NodeListChangeListener implements ListChangeListener<Node> {
 
-        private final TargetContext context;
+        private final LayoutContext context;
 
-        public NodeListChangeListener(TargetContext context) {
+        public NodeListChangeListener(LayoutContext context) {
             this.context = context;
         }
 

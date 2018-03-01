@@ -35,12 +35,12 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
     }
 
     /**
-     * Returns a tree item which is an actual target of a drag gesture.
+     * Returns a tree item which is an actual layoutNode of a drag gesture.
      * Delegates the execution to the eponymous one {@code SceneGraphView#getTargetTreeItem(javafx.scene.input.DragEvent, org.vns.javafx.dock.api.editor.TreeItemEx)
      * }
      *
      * @param ev the event of type {@code DragEvent }
-     * @return a tree item which is an actual target of a drag gesture.
+     * @return a tree item which is an actual layoutNode of a drag gesture.
      */
     protected TreeItemEx getTargetTreeItem(DragEvent ev) {
         return null;
@@ -145,11 +145,11 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
      * handler. Fist invokes the method
      * {@link #isSupportedDragSource(javafx.scene.input.DragEvent)} and if the
      * resukt is {@code false} then returns the {@code false }. Defines the
-     * target {@code TreeItem} which is an actual item which must accept the
-     * dragged object. If the target is {@code null} then returns false. Then
-     * finds a builder of type {@link TreeItemBuilder } for the target and then
-     * it returns the result of applying the
-     * {@code TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)
+ layoutNode {@code TreeItem} which is an actual item which must accept the
+ dragged object. If the layoutNode is {@code null} then returns false. Then
+     * finds a builder of type {@link TreeItemBuilder } for the layoutNode and then
+ it returns the result of applying the
+ {@code TreeItemBuilder#isAdmissiblePosition(javafx.scene.control.TreeView, org.vns.javafx.dock.api.editor.TreeItemEx, org.vns.javafx.dock.api.editor.TreeItemEx, java.lang.Object)
      * }
      * method to this object.
      *
@@ -229,12 +229,12 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
     }
 
     /**
-     * Returns an object of type {@code TreeCell} which is a target cell during
-     * dragging processing. It's a cell which the mouse cursor point to. This
+     * Returns an object of type {@code TreeCell} which is a layoutNode cell during
+ dragging processing. It's a cell which the mouse cursor point to. This
      * cell is the one which was used as a parameter of the constructor of this
      * class
      *
-     * @return Returns an object of type {@code TreeCell} which is a target cell
+     * @return Returns an object of type {@code TreeCell} which is a layoutNode cell
      */
     public TreeCell getTreeCell() {
         return dragTargetCell;

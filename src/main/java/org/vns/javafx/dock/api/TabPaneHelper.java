@@ -28,9 +28,9 @@ import org.vns.javafx.dock.DockUtil;
  */
 public class TabPaneHelper {
 
-    private final TargetContext context;
+    private final LayoutContext context;
 
-    public TabPaneHelper(TargetContext context) {
+    public TabPaneHelper(LayoutContext context) {
         this.context = context;
     }
 
@@ -45,12 +45,12 @@ public class TabPaneHelper {
         return retval;
     }
 
-    public TargetContext getContext() {
+    public LayoutContext getContext() {
         return context;
     }
 
     public Node getHeaderArea(double screenX, double screenY) {
-        Node retval = getContext().getTargetNode().lookup(".tab-header-area");
+        Node retval = getContext().getLayoutNode().lookup(".tab-header-area");
         if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
@@ -58,16 +58,16 @@ public class TabPaneHelper {
     }
 
     public Node getHeaderArea() {
-        return getContext().getTargetNode().lookup(".tab-header-area");
+        return getContext().getLayoutNode().lookup(".tab-header-area");
     }
 
     public Node getHeadersRegion() {
-        return getContext().getTargetNode().lookup(".headers-region");
+        return getContext().getLayoutNode().lookup(".headers-region");
     }
 
     public Node getHeadersRegion(double screenX, double screenY) {
 
-        Node retval = getContext().getTargetNode().lookup(".headers-region");
+        Node retval = getContext().getLayoutNode().lookup(".headers-region");
         if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
@@ -83,7 +83,7 @@ public class TabPaneHelper {
 
     public Tab getTab(double screenX, double screenY) {
         Tab retval = null;
-        Set<Node> set = getContext().getTargetNode().lookupAll(".tab");
+        Set<Node> set = getContext().getLayoutNode().lookupAll(".tab");
         Node tabNode = null;
         for (Node node : set) {
             if (DockUtil.contains(node, screenX, screenY)) {
@@ -99,7 +99,7 @@ public class TabPaneHelper {
                     break;
                 }
             }
-            TabPane pane = (TabPane) getContext().getTargetNode();
+            TabPane pane = (TabPane) getContext().getLayoutNode();
             if (style != null) {
                 for (Tab tab : pane.getTabs()) {
                     for (String s : tab.getStyleClass()) {
@@ -115,12 +115,12 @@ public class TabPaneHelper {
     }
 
     public Node getControlButtonsTab() {
-        return getContext().getTargetNode().lookup(".control-buttons-tab ");
+        return getContext().getLayoutNode().lookup(".control-buttons-tab ");
     }
 
     public Node getControlButtonsTab(double screenX, double screenY) {
 
-        Node retval = getContext().getTargetNode().lookup(".control-buttons-tab ");
+        Node retval = getContext().getLayoutNode().lookup(".control-buttons-tab ");
         if (retval == null || !DockUtil.contains(retval, screenX, screenY)) {
             retval = null;
         }
@@ -131,12 +131,12 @@ public class TabPaneHelper {
         if (tab == null) {
             return null;
         }
-        if (!(getContext().getTargetNode() instanceof TabPane)) {
+        if (!(getContext().getLayoutNode() instanceof TabPane)) {
             return null;
         }
         Node tabNode = getTabNode(tab);
 
-        if (!((TabPane) getContext().getTargetNode()).getTabs().contains(tab) || tabNode == null) {
+        if (!((TabPane) getContext().getLayoutNode()).getTabs().contains(tab) || tabNode == null) {
             return null;
         }
         return tabNode.localToScreen(tabNode.getBoundsInLocal());

@@ -18,14 +18,14 @@ package org.vns.javafx.dock.api.save;
 import java.util.Properties;
 import java.util.function.Consumer;
 import javafx.scene.control.TreeItem;
-import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  * This is an implementation of the 
  * {@link  org.vns.javafx.dock.api.save.DockTreeItemBuilder } interface, intended for
- * use with {@link  org.vns.javafx.dock.api.DockTarget } objects.
+ * use with {@link  org.vns.javafx.dock.api.DockLayout } objects.
  *
- * The class constructor requires an object of type {@code DockTarget} and
+ * The class constructor requires an object of type {@code DockLayout} and
  * provides a {@link #getDockTarget() } method to access the {@code dockTarget}
  * object.
  *
@@ -33,25 +33,25 @@ import org.vns.javafx.dock.api.DockTarget;
  */
 public abstract class AbstractDockTreeItemBuilder implements DockTreeItemBuilder {
 
-    private final DockTarget dockTarget;
+    private final DockLayout dockTarget;
     private Consumer<TreeItem<Properties>> notifyOnBuildFunction;
 
     /**
      * Created a new instance of the class for the specified object of type 
-     * {@link  org.vns.javafx.dock.api.DockTarget }
+     * {@link  org.vns.javafx.dock.api.DockLayout }
      *
      * @param dockTarget the object this instance is to be created for.
      */
-    protected AbstractDockTreeItemBuilder(DockTarget dockTarget) {
+    protected AbstractDockTreeItemBuilder(DockLayout dockTarget) {
         this.dockTarget = dockTarget;
     }
 
     /**
-     * Returns an object of type {@link  org.vns.javafx.dock.api.DockTarget }
+     * Returns an object of type {@link  org.vns.javafx.dock.api.DockLayout }
      *
-     * @return the object of type {@code DockTarget }
+     * @return the object of type {@code DockLayout }
      */
-    public DockTarget getDockTarget() {
+    public DockLayout getDockTarget() {
         return this.dockTarget;
     }
 

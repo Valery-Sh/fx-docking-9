@@ -25,20 +25,20 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.ContextLookup;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ScenePaneContext;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragManagerFactory;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class SceneGraphViewTargetContext extends TargetContext {
+public class SceneGraphViewTargetContext extends LayoutContext {
 
     private ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty<>();
 
@@ -116,7 +116,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
             if (d.node().getScene() != null && d.node().getScene().getWindow() != null) {
 
             }
-            //d.getContext().setTargetContext(this);
+            //d.getContext().setLayoutContext(this);
         }
         if (accepted && stage != null) {
             if ((stage instanceof Stage)) {
@@ -132,24 +132,24 @@ public class SceneGraphViewTargetContext extends TargetContext {
         d = Dockable.of(toAccept);
 
         //
-        // Try to find the first Parent which is a DockTarget
+        // Try to find the first Parent which is a DockLayout
         //
         Parent p = d.node().getParent();
 
-        TargetContext tc = null;
+        LayoutContext tc = null;
         if (p instanceof Pane) {
             tc = new ScenePaneContext(d);
         }
         while (p != null) {
-            if (DockTarget.of(p) != null) {
-                if (TargetContext.isDocked(DockTarget.of(p).getTargetContext(), d)) {
-                    tc = DockTarget.of(p).getTargetContext();
+            if (DockLayout.of(p) != null) {
+                if (LayoutContext.isDocked(DockLayout.of(p).getLayoutContext(), d)) {
+                    tc = DockLayout.of(p).getLayoutContext();
                 }
                 break;
             }
             p = p.getParent();
         }
-        d.getContext().setTargetContext(tc);
+        d.getContext().setLayoutContext(tc);
     }
 
     /**
@@ -177,7 +177,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
     @Override
     public boolean isAdmissiblePosition(Dockable dockable, Point2D mousePos) {
 
-        SceneGraphView gv = (SceneGraphView) getTargetNode();
+        SceneGraphView gv = (SceneGraphView) getLayoutNode();
         TreeItemEx place = gv.getTreeItem(mousePos);
         
         if (place == null) {
@@ -204,7 +204,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
     }
 
     protected TreeViewEx getTreeView() {
-        return ((SceneGraphView) getTargetNode()).getTreeView();
+        return ((SceneGraphView) getLayoutNode()).getTreeView();
     }
 
     protected DragIndicatorManager getDragIndicatorManager() {
@@ -221,7 +221,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
     }
 
     protected boolean acceptValue(Point2D mousePos, Object value) {
-        SceneGraphView gv = (SceneGraphView) getTargetNode();
+        SceneGraphView gv = (SceneGraphView) getLayoutNode();
 //        System.err.println("DO DOCK");
         boolean retval = false;
 
@@ -233,10 +233,10 @@ public class SceneGraphViewTargetContext extends TargetContext {
         if (place != null) {
             TreeItemEx target = getDragIndicator().getTargetTreeItem(mousePos.getX(), mousePos.getY(), place);
             if (target != null) {
-//                System.err.println("doDock target = " + target);
+//                System.err.println("doDock layoutNode = " + layoutNode);
                 new TreeItemBuilder().accept(gv.getTreeView(), target, place, value);
 
-//                System.err.println("accept target = " + target.getValue());
+//                System.err.println("accept layoutNode = " + layoutNode.getValue());
 //                System.err.println("accept place = " + place.getValue());
                 retval = true;
             }
@@ -245,8 +245,7 @@ public class SceneGraphViewTargetContext extends TargetContext {
     }
 
     @Override
-    public Object getRestorePosition(Dockable dockable
-    ) {
+    public Object getRestorePosition(Dockable dockable) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

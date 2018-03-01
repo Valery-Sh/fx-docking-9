@@ -28,7 +28,7 @@ public class TestAnchorPaneTargetContext extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         AnchorPane primaryRoot = new AnchorPane();
-        DockRegistry.getInstance().registerAsDockTarget(primaryRoot);
+        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);
         
          // List should stretch as anchorPane is resized
         ListView list = new ListView();

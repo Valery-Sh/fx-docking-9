@@ -63,8 +63,8 @@ public class DemoDockableButton extends Application {
         root.getChildren().addAll(dockButton, dockButton1, dockButton2);
         
 /*        if ( dockButton2.getParent() != null ) {
-            //09.02d.getContext().getTargetContext().changeDockedState(d, true);
-            dockableButton2.getContext().getTargetContext().setTargetNode((Region)dockableButton2.node().getParent());
+            //09.02d.getContext().getLayoutContext().changeDockedState(d, true);
+            dockableButton2.getContext().getLayoutContext().setTargetNode((Region)dockableButton2.node().getParent());
         }        
 */
         Stage stage1 = new Stage();

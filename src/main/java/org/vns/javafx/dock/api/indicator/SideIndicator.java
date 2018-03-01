@@ -15,7 +15,7 @@ import javafx.stage.Popup;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 /**
  *
@@ -31,7 +31,7 @@ public abstract class SideIndicator extends PositionIndicator {
 
     private Button selectedButton;
 
-    protected SideIndicator(TargetContext targetContext) {
+    protected SideIndicator(LayoutContext targetContext) {
         super(targetContext);
         init();
     }
@@ -198,10 +198,10 @@ public abstract class SideIndicator extends PositionIndicator {
     }
 
     public void showDockPlace(Side side) {
-        Node pane = getTargetContext().getTargetNode();
+        Node pane = getLayoutContext().getLayoutNode();
         Button selected = getSelectedButton();
         if (selected != null && selected.getUserData() != null) {
-            pane = ((TargetContext) selected.getUserData()).getTargetNode();
+            pane = ((LayoutContext) selected.getUserData()).getLayoutNode();
         }
         Rectangle dockPlace = (Rectangle) getDockPlace();
 
@@ -244,7 +244,7 @@ public abstract class SideIndicator extends PositionIndicator {
         private DockableContext nodeContext;
         private final Scale smallbuttonsScale;
 
-        public NodeSideIndicator(TargetContext paneContext) {
+        public NodeSideIndicator(LayoutContext paneContext) {
             super(paneContext);
             this.smallbuttonsScale = new Scale(0.5, 0.5);
         }
@@ -262,7 +262,7 @@ public abstract class SideIndicator extends PositionIndicator {
 
         @Override
         public IndicatorPopup getIndicatorPopup() {
-            DockPaneIndicatorPopup ip = (DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
+            DockPaneIndicatorPopup ip = (DockPaneIndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class);
             return (IndicatorPopup) ip.getNodeIndicatorPopup();
         }
 
@@ -281,15 +281,15 @@ public abstract class SideIndicator extends PositionIndicator {
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
-                //Popup popup = (Popup)getTargetContext().getLookup().lookup(IndicatorManager.class);
+                //Popup popup = (Popup)getLayoutContext().getLookup().lookup(IndicatorManager.class);
                 //((Popup) getIndicatorPopup()).show( popup, newPos.getX(), newPos.getY());                
-//                ((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
-                ((Popup) getIndicatorPopup()).show((Popup) getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
+//                ((Popup) getIndicatorPopup()).show(getLayoutContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                ((Popup) getIndicatorPopup()).show((Popup) getLayoutContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
-                    //((Popup) getIndicatorPopup()).show(getTargetContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
-                    ((Popup) getIndicatorPopup()).show((Popup) getTargetContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
+                    //((Popup) getIndicatorPopup()).show(getLayoutContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
+                    ((Popup) getIndicatorPopup()).show((Popup) getLayoutContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
                 } else {
                     getIndicatorPopup().hide();
                 }
@@ -297,13 +297,13 @@ public abstract class SideIndicator extends PositionIndicator {
         }
 
 /*        public void notifyPopupShown() {
-            if (getTargetContext() != null && getTargetNode() != null) {
+            if (getLayoutContext() != null && getTargetNode() != null) {
                 resizeButtonPanes();
             }
         }
 
         public void notifyPopupHidden() {
-            if (getTargetContext() == null || getTargetNode() == null) {
+            if (getLayoutContext() == null || getTargetNode() == null) {
                 //resizeButtonPanes();
             }
         }
@@ -338,10 +338,10 @@ public abstract class SideIndicator extends PositionIndicator {
         @Override
         public void showDockPlace(Side side) {
 
-            TargetContext paneHandler = getTargetContext();
+            LayoutContext paneHandler = getLayoutContext();
             SideIndicator.PaneSideIndicator paneIndicator = (SideIndicator.PaneSideIndicator) paneHandler.getPositionIndicator();
 
-            Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getTargetNode().localToScreen(0, 0));
+            Point2D p = getTargetNode().localToScreen(0, 0).subtract(paneHandler.getLayoutNode().localToScreen(0, 0));
             Rectangle dockPlace = (Rectangle) paneIndicator.getDockPlace();
 
             dockPlace.setX(p.getX());
@@ -373,7 +373,7 @@ public abstract class SideIndicator extends PositionIndicator {
         }
 
         protected void resizeButtonPanes() {
-            //if (getTargetContext() != null && getTargetNode() != null && intersects()) {
+            //if (getLayoutContext() != null && getTargetNode() != null && intersects()) {
             if (!getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
                 getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
 
@@ -391,22 +391,22 @@ public abstract class SideIndicator extends PositionIndicator {
         protected boolean intersects() {
             Pane thisPane = getIndicatorPane();
 
-            if (getTargetContext() != null) {
+            if (getLayoutContext() != null) {
 
-                Node node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getTopButtons();
+                Node node = ((DockPaneIndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getTopButtons();
 
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getRightButtons();
+                node = ((DockPaneIndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getRightButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getBottomButtons();
+                node = ((DockPaneIndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getBottomButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
-                node = ((DockPaneIndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getLeftButtons();
+                node = ((DockPaneIndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class)).getPaneIndicator().getLeftButtons();
                 if (intersects(thisPane, node)) {
                     return true;
                 }
@@ -428,20 +428,20 @@ public abstract class SideIndicator extends PositionIndicator {
 
     public static class PaneSideIndicator extends SideIndicator {
 
-        public PaneSideIndicator(TargetContext context) {
+        public PaneSideIndicator(LayoutContext context) {
             super(context);
         }
 
         @Override
         public IndicatorPopup getIndicatorPopup() {
-            //return getTargetContext().getIndicatorPopup();
-            return (IndicatorPopup) getTargetContext().getLookup().lookup(IndicatorManager.class);
+            //return getLayoutContext().getIndicatorPopup();
+            return (IndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class);
         }
 
         /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
             super.showIndicatorPopup(screenX, screenY);
-            getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+            getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
          */
         @Override

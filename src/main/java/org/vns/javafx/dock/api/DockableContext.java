@@ -69,20 +69,20 @@ public class DockableContext {
     private final BooleanProperty floating = new SimpleBooleanProperty(false);
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
-    private boolean usedAsDockTarget = true;
+    private boolean usedAsDockLayout = true;
 
     private DragDetector dragDetector;
     //private Node dragNode;
     private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
-    private TargetContext scenePaneContext;
+    private LayoutContext scenePaneContext;
 
     private boolean draggable;
 
     /**
-     * dock target pane
+     * dock layout pane
      */
-    private final ObjectProperty<TargetContext> targetContext = new SimpleObjectProperty<>();
+    private final ObjectProperty<LayoutContext> layoutContext = new SimpleObjectProperty<>();
 
     private Properties properties;
 
@@ -109,20 +109,11 @@ public class DockableContext {
         getLookup().add(new FloatViewFactory());
         getLookup().putUnique(DragManagerFactory.class, new DragManagerFactory());
         scenePaneContext = new ScenePaneContext(dockable);
-        targetContext.set(scenePaneContext);
+        layoutContext.set(scenePaneContext);
 
-//        if ( dockable.node().getParent() != null ) {
-            
-//        }
-        targetContext.addListener(this::targetContextChanged);        
-        //Platform.runLater(() -> { setDefaultTargetContext();});
-
+        layoutContext.addListener(this::layoutContextChanged);        
     }
     
-    protected void setDefaultTargetContext() {
-        scenePaneContext = new ScenePaneContext(dockable);
-        targetContext.set(scenePaneContext);
-    }
     
     public ContextLookup getLookup() {
         if (lookup == null) {
@@ -198,32 +189,32 @@ public class DockableContext {
 
     /**
      * If {@code true} the node specified by the method {@code node()} may be
-     * considered as a dock target. This means that an indicator pane which
+     * considered as a dock layout. This means that an indicator pane which
      * allows to choose a dock place appears. If {@code false} then the node
-     * can't be a dock target.
+     * can't be a dock layout.
      *
-     * @return true if the {@literal  dockable} cam be used as a dock target
+     * @return true if the {@literal  dockable} cam be used as a dock layout
      */
-    public boolean isUsedAsDockTarget() {
-        return usedAsDockTarget;
+    public boolean isUsedAsDockLayout() {
+        return usedAsDockLayout;
     }
 
     /**
      * Sets a boolean value to specify whether the node defined by the method
-     * {@code node()} may be considered as a dock target. If true then an
+     * {@code node()} may be considered as a dock layout. If true then an
      * indicator pane which allows to choose a dock place appears. If
-     * {@code false} then the node can't be a dock target.
+     * {@code false} then the node can't be a dock layout.
      *
-     * @param usedAsDockTarget If true then the node may be used as a dock
-     * target.
+     * @param usedAsDockLayout If true then the node may be used as a dock
+     * layout.
      */
-    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        this.usedAsDockTarget = usedAsDockTarget;
+    public void setUsedAsDockLayout(boolean usedAsDockLayout) {
+        this.usedAsDockLayout = usedAsDockLayout;
     }
 
-    protected void targetContextChanged(ObservableValue<? extends TargetContext> observable, TargetContext oldValue, TargetContext newValue) {
+    protected void layoutContextChanged(ObservableValue<? extends LayoutContext> observable, LayoutContext oldValue, LayoutContext newValue) {
         if (newValue == null) {
-            targetContext.set(scenePaneContext);
+            layoutContext.set(scenePaneContext);
         } else {
             //
             // The drag manager may be changed 
@@ -287,37 +278,37 @@ public class DockableContext {
     }
 
     /**
-     * Specifies a TargetContext currently assigned to this object. The context
+     * Specifies a LayoutContext currently assigned to this object. The context
      * is assigned to this object when the last is docked. When this object is
      * created then the value of type {@link ScenePaneContext} is assigned.
      *
-     * @return an object of type {@link TargetContext }
+     * @return an object of type {@link LayoutContext }
      */
-    public ObjectProperty<TargetContext> targetContextProperty() {
-        return targetContext;
+    public ObjectProperty<LayoutContext> layoutContexProperty() {
+        return layoutContext;
     }
 
     /**
      * Returns an instance of type
-     * {@link org.vns.javafx.dock.api.TargetContext}. The pane context is
+     * {@link org.vns.javafx.dock.api.LayoutContext}. The pane context is
      * assigned to this object when the last is docked. When this object is
      * created then the value of type {@link ScenePaneContext} is assigned.
      *
      * @return an instance of type
-     * {@link org.vns.javafx.dock.api.TargetContext}.
+     * {@link org.vns.javafx.dock.api.LayoutContext}.
      */
-    public TargetContext getTargetContext() {
-        return targetContext.get();
+    public LayoutContext getLayoutContext() {
+        return layoutContext.get();
     }
 
     /**
-     * Assigns the specified instance of type {@link TargetContext }
+     * Assigns the specified instance of type {@link LayoutContext }
      * to this object.
      *
-     * @param targetContext the value to be assigned
+     * @param layoutContext the value to be assigned
      */
-    public void setTargetContext(TargetContext targetContext) {
-        this.targetContext.set(targetContext);
+    public void setLayoutContext(LayoutContext layoutContext) {
+        this.layoutContext.set(layoutContext);
     }
 
     /**
@@ -408,14 +399,14 @@ public class DockableContext {
      * The node considers to be in {@code docked} state when both conditions
      * below are {@code true}.
      * <ul>
-     * <li>getTargetContext() != null</li>
-     * <li>getTargetContext().isDocked(node)</li>
+     * <li>getLayoutContext() != null</li>
+     * <li>getLayoutContext().isDocked(node)</li>
      * </ul>
      *
      * @return true if the node is in docked state
      */
     public boolean isDocked() {
-        if (getTargetContext() == null) {
+        if (getLayoutContext() == null) {
             return false;
         }
         if (dockable instanceof DragContainer) {
@@ -429,7 +420,7 @@ public class DockableContext {
             }
             d = Dockable.of(getDragContainer().getValue());
         }
-        return getTargetContext().isDocked(d.node());
+        return getLayoutContext().isDocked(d.node());
     }
 
     /**
@@ -480,7 +471,7 @@ public class DockableContext {
 
         DragManagerFactory dmf = null;
 
-        TargetContext tc = dockable.getContext().getTargetContext();
+        LayoutContext tc = dockable.getContext().getLayoutContext();
 
         if (tc != null) {
             dmf = tc.getLookup().lookup(DragManagerFactory.class);

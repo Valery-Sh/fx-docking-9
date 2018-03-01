@@ -102,7 +102,7 @@ public class TestDockTabPane extends Application {
 
         stage01.setTitle("STAGE01: Tests Several DockPanes ");
         DockPane stg01dp01 = new DockPane();
-        //stg01dp01.getTargetContext().setUsedAsDockTarget(false);
+        //stg01dp01.getLayoutContext().setUsedAsDockLayout(false);
         stg01dp01.setPrefHeight(200);
         stg01dp01.setPrefWidth(200);
         stg01dp01.setId("stg01dp01");
@@ -167,32 +167,14 @@ public class TestDockTabPane extends Application {
         //tbIv.toFront();
         //tbIv.setTranslateX(-5);
         //tbIv.setTranslateY(-5);
-        //tabPane01.getTargetContext().dock(stg01dn02, Side.TOP);
-        //tabPane01.getTargetContext().dock(stg01dn03, Side.TOP);        
+        //tabPane01.getLayoutContext().dock(stg01dn02, Side.TOP);
+        //tabPane01.getLayoutContext().dock(stg01dn03, Side.TOP);        
         
         stg01dp01.dock(tabPane01, Side.TOP);
         
 
         //tabPane01.setSide(Side.RIGHT);
         btn03.setOnAction(a -> {
-            System.err.println("tabPane01.getChildren().size()=" + tabPane01.getChildren().size());
-            tabPane01.getChildren().forEach(n -> {
-                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
-
-                Bounds bnd = n.getBoundsInParent();
-                if (n instanceof Button) {
-                    System.err.println("isRes=" + n.isResizable());
-                    System.err.println("minx=" + bnd.getMinX());
-                    System.err.println("maxx=" + bnd.getMaxX());
-                    System.err.println("miny=" + bnd.getMinY());
-                    System.err.println("maxy=" + bnd.getMaxY());
-                    System.err.println("w=" + bnd.getWidth());
-                    System.err.println("h=" + bnd.getHeight());
-                }
-
-                System.err.println("class=" + n.getClass().getName() + "; vis=" + n.isVisible());
-
-            });
         });
 
         stage.show();

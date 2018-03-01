@@ -28,11 +28,11 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -79,7 +79,7 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
 //                getContext().getDragContainer().setPlaceholder(node);
             DragContainer dc = new DragContainer(node, item.getValue());
             dc.setDragAsObject(true);
-            dc.setDragSource(DockTarget.of(sgv).getTargetContext());
+            dc.setDragSource(DockLayout.of(sgv).getLayoutContext());
             getContext().setDragContainer(dc);
             getContext().setResizable(false);
             setStartMousePos(pos);

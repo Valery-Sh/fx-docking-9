@@ -16,7 +16,7 @@
 package org.vns.javafx.dock.api.indicator;
 
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.vns.javafx.dock.api.TargetContext;
  */
 public interface IndicatorManager {
 
-    TargetContext getTargetContext();
+    LayoutContext getTargetContext();
 
 
     Node getDraggedNode();

@@ -14,11 +14,11 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 /**
  * An instance of the class is created for each object of type
- * {@link TargetContext} when the last is created.
+ * {@link LayoutContext} when the last is created.
  *
  * The instance of the class is used by the object of type
  * {@link org.vns.javafx.dock.api.dragging.DragManager} and provides a pop up
@@ -75,7 +75,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
     /**
      * The owner of this object
      */
-    private final TargetContext targetContext;
+    private final LayoutContext targetContext;
 
     private Node draggedNode;
 
@@ -96,7 +96,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
      *
      * @param target the owner of the object to be created
      */
-    public IndicatorPopup(TargetContext target) {
+    public IndicatorPopup(LayoutContext target) {
         this.targetContext = target;
         init();
     }
@@ -105,7 +105,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         initContent();
     }
 
-    public static IndicatorPopup getInstance(TargetContext context) {
+    public static IndicatorPopup getInstance(LayoutContext context) {
         return context.getLookup().lookup(IndicatorPopup.class);
     }
 
@@ -176,7 +176,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
      * @return Returns an object of type {@code Region}
      */
     public Node getTargetNode() {
-        return targetContext.getTargetNode();
+        return targetContext.getLayoutNode();
     }
 
     protected void initContent() {
@@ -243,7 +243,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
      * @return the owner of this object used when the instance created.
      */
     @Override
-    public TargetContext getTargetContext() {
+    public LayoutContext getTargetContext() {
         return this.targetContext;
     }
 

@@ -30,7 +30,7 @@ import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.DockTabPane2;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.save.DockStateLoader;
@@ -113,7 +113,7 @@ public class TestDockPaneControl011 extends Application {
         ////////// --------------------------
         vs1.getItems().addAll(hs1);
         vs1.getItems().addAll(dnc3);
-        System.err.println("TARGET CONTEXT: " + Dockable.of(dnc3).getContext().getTargetContext());
+        System.err.println("TARGET CONTEXT: " + Dockable.of(dnc3).getContext().getLayoutContext());
         ////////// --------------------------
         dockPane2.getItems().add(vs1);
 
@@ -143,7 +143,7 @@ public class TestDockPaneControl011 extends Application {
         root.getChildren().add(0, dockTabPane1);
 
         DockableContext dc = DockRegistry.dockable(dnc3).getContext();
-        TargetContext dtc = dc.getTargetContext();
+        LayoutContext dtc = dc.getLayoutContext();
 
         Button b1 = new Button("remove dnc1.titleBar");
         Button b2 = new Button("add dnc4");
@@ -468,7 +468,7 @@ public class TestDockPaneControl011 extends Application {
         dn02Btn.setOnAction(a -> {
             System.err.println("SFFFFFFFFFF" + dn02.getContext().isFloating());
             System.err.println(" === " + dn02.getScene().getWindow());
-            // ((SidePaneController)sideBar01.getTargetContext()).cont.changeSize();
+            // ((SidePaneController)sideBar01.getLayoutContext()).cont.changeSize();
         });
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));

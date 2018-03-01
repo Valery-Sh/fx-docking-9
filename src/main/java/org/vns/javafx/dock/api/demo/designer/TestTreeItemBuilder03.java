@@ -177,7 +177,7 @@ public class TestTreeItemBuilder03 extends Application {
         });
 
         
-        //Dockable.of(btn1).getContext().setTargetContext(sceneGraphView.getTargetContext());
+        //Dockable.of(btn1).getContext().setTargetContext(sceneGraphView.getLayoutContext());
         Scene tvScene = new Scene(sceneGraphView);
         Stage tvStage = new Stage();
         tvStage.setHeight(300);

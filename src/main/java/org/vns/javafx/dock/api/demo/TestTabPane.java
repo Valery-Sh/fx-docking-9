@@ -28,13 +28,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DockTabPane2Context;
 import org.vns.javafx.dock.api.DockTabPane2MouseDragHandler;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -65,12 +65,12 @@ public class TestTabPane extends Application {
         Label tab3Lb1 = new Label("tab3Lb1");
         tab3.setContent(tab3Lb1);        
         TabPane tabPane = new TabPane(tab1, tab2, tab3);
-        DockRegistry.getInstance().registerAsDockTarget(tabPane, new DockTabPane2Context(tabPane) );
+        DockRegistry.getInstance().registerAsDockLayout(tabPane, new DockTabPane2Context(tabPane) );
         DockRegistry.getInstance().getDefaultDockable(tabPane);
         DockableContext dc = Dockable.of(tabPane).getContext();
-        dc.setTargetContext(DockTarget.of(tabPane).getTargetContext());
+        dc.setLayoutContext(DockLayout.of(tabPane).getLayoutContext());
         
-        System.err.println("++++ dc.getTargetContext = " + dc.getTargetContext());
+        System.err.println("++++ dc.getTargetContext = " + dc.getLayoutContext());
         dc.setDragNode(tabPane);
         DockTabPane2MouseDragHandler dragHandler = new DockTabPane2MouseDragHandler(dc);
         dc.getLookup().putUnique(MouseDragHandler.class, dragHandler);

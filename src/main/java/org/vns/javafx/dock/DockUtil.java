@@ -17,10 +17,10 @@ import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -130,7 +130,7 @@ public class DockUtil {
         });
         retval.addAll(list.toArray(new Dockable[0]));
         list.forEach(d -> {
-            //((DockTarget)root).dock(root, d.getDockState().getDockPos());
+            //((DockLayout)root).dock(root, d.getDockState().getDockPos());
         });
         return retval;
     }
@@ -165,12 +165,12 @@ public class DockUtil {
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 b = true;
-                TargetContext pd = Dockable.of(node).getContext().getTargetContext();
+                LayoutContext pd = Dockable.of(node).getContext().getLayoutContext();
                 DockableContext st = Dockable.of(node).getContext();
                 if (pd == null) {
                     b = false;
                 } else {
-                    b = pd.isUsedAsDockTarget() && st.isUsedAsDockTarget();
+                    b = pd.isUsedAsDockLayout() && st.isUsedAsDockLayout();
                 }
 
             }
@@ -353,16 +353,11 @@ public class DockUtil {
         return retval;
     }
 
-    public static DockTarget getParentDockPane(Node dockNode) {
+/*    public static DockLayout getParentDockPane(Node dockNode) {
         Node node = DockUtil.getImmediateParent(dockNode, p -> {
-            return (DockRegistry.instanceOfDockTarget(p));
+            return (DockRegistry.instanceOfDockLayout(p));
         });
-        return DockRegistry.dockTarget(node);
-    }
-/*07.05    public static DockTarget getParentDockPane(Node dockNode) {
-        return (DockTarget) DockUtil.getImmediateParent(dockNode, p -> {
-            return (p instanceof DockTarget);
-        });
+        return DockRegistry.dockLayout(node);
     }
 */
 }

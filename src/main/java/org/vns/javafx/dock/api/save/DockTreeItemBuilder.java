@@ -5,20 +5,20 @@ import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  * Defines the methods needed to convert a {@code Scene Graph } node to a tree
  * object of type {@code javafx.scene.control.TreeItem} and vice versa.
  *
  * Each class that inherits the
- * {@link org.vns.javafx.dock.api.TargetContext}} provides a class object
+ * {@link org.vns.javafx.dock.api.LayoutContext}} provides a class object
  * that implements this interface. The object is accessed using the following
- * method of the class {@code TargetContext}:
+ * method of the class {@code LayoutContext}:
  * <pre>
  *  public DockTreeItemBuilder getPreferencesBuilder()
- * </pre> In the {@code TargetContext} class, the method returns
+ * </pre> In the {@code LayoutContext} class, the method returns
  * {@code null}.
  *
  * @author Valery Shyshkin
@@ -39,10 +39,10 @@ public interface DockTreeItemBuilder {
      * Returns a tree of objects of type {@code javafx.scene.control.TreeItem},
      * each node of which corresponds to some object from the {@code Scene Graph
      * }
-     * of the {@link org.vns.javafx.dock.api.DockTarget } node. The root node
-     * corresponds to an object of the {@code DockTarget} type. For which
+     * of the {@link org.vns.javafx.dock.api.DockLayout } node. The root node
+     * corresponds to an object of the {@code DockLayout} type. For which
      * objects the {@code TreeItem} nodes are created is determined by the
-     * specific implementation of the corresponding {@code DockTarget}.
+     * specific implementation of the corresponding {@code DockLayout}.
      *
      * The method uses the property named {@link #OBJECT_ATTR } to store the
      * reference to the registered object.
@@ -85,7 +85,7 @@ public interface DockTreeItemBuilder {
      * </p>
      * <p>
      * If an object from the {@code Scene Graph} is a
-     * {@link org.vns.javafx.dock.api.DockTarget} object, then the value of the
+     * {@link org.vns.javafx.dock.api.DockLayout} object, then the value of the
      * {@code ISDOCKTARGET_ATTR} property is set. This can be the value
      * {@code "yes ", * "true" or "no ", "false "}. If the property value is not
      * set, then the default value is {@code "no"}.
@@ -106,7 +106,7 @@ public interface DockTreeItemBuilder {
      * </p>
      *
      * @param fieldName the String name used to register an object of type
-     * {@code org.vns.javafx.dock.api.DockTarget } may be {@code null}.
+     * {@code org.vns.javafx.dock.api.DockLayout } may be {@code null}.
      *
      * @return an object of type {@code javafx.scene.control.TreeItem}
      * @see #build()
@@ -127,7 +127,7 @@ public interface DockTreeItemBuilder {
 
     /**
      * Modifies the layout and composition of the nodes of the source object
-     * which is an object of type {@link org.vns.javafx.dock.api.DockTarget }
+     * which is an object of type {@link org.vns.javafx.dock.api.DockLayout }
      * by information received from the {@code javafx.scene.control.TreeItem}
      * specified by the parameter and then returns the result.
      *
@@ -175,7 +175,7 @@ public interface DockTreeItemBuilder {
      * </pre>
      *
      * @param fieldName the String name used to register an object of type
-     *   {@code org.vns.javafx.dock.api.DockTarget } may be {@code null}.
+     *   {@code org.vns.javafx.dock.api.DockLayout } may be {@code null}.
      * @param obj the object for which a node of type
      * {@code javafx.scene.control.TreeItem} is built
      * @return an object of type {@code javafx.scene.control.TreeItem}
@@ -205,12 +205,12 @@ public interface DockTreeItemBuilder {
             props.put("id", node.getId());
         }
         //!!!08
-        if (node != null && (DockRegistry.isDockable(node) || DockRegistry.instanceOfDockTarget(node))) {
+        if (node != null && (DockRegistry.isDockable(node) || DockRegistry.instanceOfDockLayout(node))) {
             //!!!08
             if (DockRegistry.isDockable(node)) {
                 props.put(ISDOCKABLE_ATTR, "yes");
             }
-            if (DockRegistry.instanceOfDockTarget(node)) {
+            if (DockRegistry.instanceOfDockLayout(node)) {
                 props.put(ISDOCKTARGET_ATTR, "yes");
             }
         }
@@ -218,8 +218,8 @@ public interface DockTreeItemBuilder {
     }
     default DockTreeItemBuilder getDockTreeItemBuilder(Node node) {
         DockTreeItemBuilder retval = null;
-        DockTarget dockTarget = DockRegistry.dockTarget(node);
-        TargetContext context = dockTarget.getTargetContext();
+        DockLayout dockTarget = DockRegistry.dockLayout(node);
+        LayoutContext context = dockTarget.getLayoutContext();
         DockTreeItemBuilderFactory f = context.getLookup().lookup(DockTreeItemBuilderFactory.class);
         if (f != null) {
             retval = f.getItemBuilder(dockTarget);

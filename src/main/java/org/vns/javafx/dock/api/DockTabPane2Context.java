@@ -40,10 +40,10 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class DockTabPane2Context extends TargetContext { //implements ObjectReceiver {
+public class DockTabPane2Context extends LayoutContext { //implements ObjectReceiver {
 
-    public DockTabPane2Context(Node targetNode) {
-        super(targetNode);
+    public DockTabPane2Context(Node layoutNode) {
+        super(layoutNode);
         init();
     }
 
@@ -53,7 +53,7 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
     }
 */
     private void init() {
-        TabPane pane = (TabPane) getTargetNode();
+        TabPane pane = (TabPane) getLayoutNode();
         pane.getTabs().forEach(tab -> {
             tab.getStyleClass().add("tab-uuid-" + UUID.randomUUID());
         });
@@ -111,7 +111,7 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
             } else {
                 stage.hide();
             }
-            d.getContext().setTargetContext(this);
+            d.getContext().setLayoutContext(this);
         }
     }
 
@@ -136,7 +136,7 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
         boolean retval = false;
         int idx = -1;
         TabPaneHelper helper = new TabPaneHelper(this);
-        TabPane pane = (TabPane) getTargetNode();
+        TabPane pane = (TabPane) getLayoutNode();
         
         if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
 
@@ -233,14 +233,14 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
         private Rectangle tabDockPlace;
         private final TabPaneHelper helper;
 
-        public TabPanePositonIndicator(TargetContext context) {
+        public TabPanePositonIndicator(LayoutContext context) {
             super(context);
             helper = new TabPaneHelper((DockTabPane2Context) context);
         }
 
 /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
-            getTargetContext().getLookup().lookup(IndicatorPopup.class).show(getTargetContext().getTargetNode(), screenX, screenY);
+            getLayoutContext().getLookup().lookup(IndicatorPopup.class).show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
 */
         @Override
@@ -271,8 +271,8 @@ public class DockTabPane2Context extends TargetContext { //implements ObjectRece
 
         @Override
         public void showDockPlace(double x, double y) {
-            DockTabPane2Context ctx = ((DockTabPane2Context) getTargetContext());
-            TabPane pane = (TabPane) getTargetContext().getTargetNode();
+            DockTabPane2Context ctx = ((DockTabPane2Context) getLayoutContext());
+            TabPane pane = (TabPane) getLayoutContext().getLayoutNode();
             Bounds tabBounds = helper.tabBounds(x, y);;
             Bounds headerAreaBounds = helper.headerAreaBounds(x, y);
             Bounds controlBounds = helper.controlButtonBounds(x, y);

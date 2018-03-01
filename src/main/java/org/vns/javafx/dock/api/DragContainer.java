@@ -38,9 +38,9 @@ public class DragContainer { //extends Control implements Dockable{
     private final ObjectProperty value = new SimpleObjectProperty();
     private Node placeholder;
     /**
-     * The context which targetNode is a drag source 
+     * The context which layoutNode is a drag source 
      */
-    private TargetContext dragSource;
+    private LayoutContext dragSource;
     
     private boolean dragAsObject ;
 
@@ -68,11 +68,11 @@ public class DragContainer { //extends Control implements Dockable{
         return value;
     }
 
-    public TargetContext getDragSource() {
+    public LayoutContext getDragSource() {
         return dragSource;
     }
 
-    public void setDragSource(TargetContext dragSource) {
+    public void setDragSource(LayoutContext dragSource) {
         this.dragSource = dragSource;
     }
 

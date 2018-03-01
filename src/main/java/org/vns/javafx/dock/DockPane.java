@@ -12,8 +12,8 @@ import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockPaneSkin;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.TargetContext;
-import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -32,11 +32,14 @@ public class DockPane extends Control {
 
     private void init() {
         root = new HPane();
-        TargetContext tc = new DockPaneContext(this, root);
-        DockRegistry.makeDockTarget(this, tc);
+        LayoutContext tc = new DockPaneContext(this, root);
+        DockRegistry.makeDockLayout(this, tc);
         Dockable d = DockRegistry.makeDockable(this);
         d.getContext().setDragNode(null);
-        //d.getContext().setTargetContext(tc);
+    }
+
+    public HPane getRoot() {
+        return root;
     }
 
     
@@ -62,7 +65,7 @@ public class DockPane extends Control {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        DockPaneSkin skin = new DockPaneSkin(this, root);
+        DockPaneSkin skin = new DockPaneSkin(this);
         return skin;
     }
 
@@ -71,21 +74,21 @@ public class DockPane extends Control {
         if ( dockable == null ) {
             return;
         }
-        DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();
-        if (!targetContext.isAcceptable(dockable)) {
+        DockPaneContext layoutContex = (DockPaneContext) DockLayout.of(this).getLayoutContext();
+        if (!layoutContex.isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
-        if (dockable.getContext().getTargetContext() != null) {
-            dockable.getContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getLayoutContext() != null) {
+            dockable.getContext().getLayoutContext().undock(dockable.node());
         }
-        targetContext.dock(dockable, side);
+        layoutContex.dock(dockable, side);
     }
  /*   public void dockNode(Node dockableNode, Side side) {
         dock( dockableNode, side);
     }
 
-    public void dockNode(Node dockableNode, Side side, Dockable target) {
-        dock( dockableNode, side, target);
+    public void dockNode(Node dockableNode, Side side, Dockable layoutNode) {
+        dock( dockableNode, side, layoutNode);
     }
 */    
     public void dock(Node dockableNode, Side side, Dockable dockableTarget) {
@@ -93,23 +96,23 @@ public class DockPane extends Control {
         Dockable target = Dockable.of(dockableTarget);
         
                 
-        DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();
+        DockPaneContext targetContext = (DockPaneContext) DockLayout.of(this).getLayoutContext();
         if (!targetContext.isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
-        if (dockable.getContext().getTargetContext() != null) {
-            dockable.getContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getLayoutContext() != null) {
+            dockable.getContext().getLayoutContext().undock(dockable.node());
         }
         targetContext.dock(dockable, side, target);
     }
 
-    public boolean isUsedAsDockTarget() {
-        DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();
-        return targetContext.isUsedAsDockTarget();
+    public boolean isUsedAsDockLayout() {
+        DockPaneContext layoutContext = (DockPaneContext) DockLayout.of(this).getLayoutContext();
+        return layoutContext.isUsedAsDockLayout();
     }
 
-    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        DockPaneContext targetContext = (DockPaneContext) DockTarget.of(this).getTargetContext();        
-        targetContext.setUsedAsDockTarget(usedAsDockTarget);
+    public void setUsedAsDockLayout(boolean usedAsDockLayout) {
+        DockPaneContext targetContext = (DockPaneContext) DockLayout.of(this).getLayoutContext();        
+        targetContext.setUsedAsDockLayout(usedAsDockLayout);
     }
 }//class

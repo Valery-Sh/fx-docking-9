@@ -9,10 +9,11 @@ import javafx.scene.Parent;
  *
  * @author Valery Shyshkin
  */
-public class ScenePaneContext extends TargetContext {
+public class ScenePaneContext extends LayoutContext {
 
     private final Dockable dockable;
-
+    private LayoutContext restoreContext;
+    
     //private ChangeListener<? super Parent> parentListener;
 
     public ScenePaneContext(Dockable dockable) {
@@ -45,13 +46,13 @@ public class ScenePaneContext extends TargetContext {
             return;
         }
 */
-        setTargetNode(newValue);
+        setLayoutNode(newValue);
 
     }
 
     @Override
     protected boolean isDocked(Node node) {
-        return Dockable.of(node) != null && Dockable.of(node).getContext().getTargetContext() == this && node.getParent() != null;
+        return Dockable.of(node) != null && Dockable.of(node).getContext().getLayoutContext() == this && node.getParent() != null;
 //        return node.getParent() != null;
 /*        boolean retval = false;
         if (DockRegistry.isDockable(node)) {
@@ -82,6 +83,14 @@ public class ScenePaneContext extends TargetContext {
         //else if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
             //((Pane) dockNode.getParent()).getChildren().remove(dockNode);
         //}
+    }
+
+    public LayoutContext getRestoreContext() {
+        return restoreContext;
+    }
+
+    public void setRestoreContext(LayoutContext restoreContext) {
+        this.restoreContext = restoreContext;
     }
 
     @Override

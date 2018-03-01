@@ -17,38 +17,38 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
  * @author Valery
  */
-public class DemoDockBorderPane implements DockTarget {
+public class DemoDockBorderPane implements DockLayout {
 
     private BorderPane targetPane;
-    private TargetContext targetController;
+    private LayoutContext targetController;
 
     public DemoDockBorderPane(BorderPane targetPane) {
         this.targetPane = targetPane;
     }
 
     @Override
-    public Region target() {
+    public Region layoutNode() {
         return targetPane;
     }
 
     @Override
-    public TargetContext getTargetContext() {
+    public LayoutContext getLayoutContext() {
         if (targetController == null) {
             targetController = new DockBorderPaneController(targetPane);
         }
         return targetController;
     }
 
-    public class DockBorderPaneController extends TargetContext {
+    public class DockBorderPaneController extends LayoutContext {
 
         public DockBorderPaneController(Region dockPane) {
             super(dockPane);
@@ -57,7 +57,7 @@ public class DemoDockBorderPane implements DockTarget {
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
-            BorderPane target = (BorderPane) getTargetNode();
+            BorderPane target = (BorderPane) getLayoutNode();
             BorderPane bp = (BorderPane) getPositionIndicator().getIndicatorPane();
 
             if (target.getTop() == null && DockUtil.contains(bp.getTop(), mousePos.getX(), mousePos.getY())) {
@@ -113,13 +113,13 @@ public class DemoDockBorderPane implements DockTarget {
 
     public static class BorderPanePositionIndicator extends PositionIndicator {
 
-        public BorderPanePositionIndicator(TargetContext targetController) {
+        public BorderPanePositionIndicator(LayoutContext targetController) {
             super(targetController);
         }
 
         @Override
         protected Pane createIndicatorPane() {
-            BorderPane borderPane = (BorderPane) getTargetContext().getTargetNode();
+            BorderPane borderPane = (BorderPane) getLayoutContext().getLayoutNode();
             Label topNode = new Label("Top");
             Label rightNode = new Label("Right");
             Label bottomNode = new Label("Bottom");
@@ -167,7 +167,7 @@ public class DemoDockBorderPane implements DockTarget {
         public void showDockPlace(double x, double y) {
 
             boolean visible = true;
-            BorderPane target = (BorderPane) getTargetContext().getTargetNode();
+            BorderPane target = (BorderPane) getLayoutContext().getLayoutNode();
 
             BorderPane bp = (BorderPane) getIndicatorPane();
 

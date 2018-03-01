@@ -6,7 +6,7 @@ import javafx.scene.Node;
 
 /**
  * The interface comprises the minimal requirements for an object to 
- * be docked to any object which implements {@link DockTarget}.
+ * be docked to any object which implements {@link DockLayout}.
  * The classes which implement the interface are not forced to be of type
  * {@code javafx.scene.Node} and  rather are wrappers around the nodes.
  * @see org.vns.javafx.dock.DockNode

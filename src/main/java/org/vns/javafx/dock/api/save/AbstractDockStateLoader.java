@@ -33,20 +33,20 @@ import javafx.scene.control.TreeView;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.*;
 import org.vns.javafx.dock.api.util.TreeItemStringConverter;
 import org.vns.javafx.dock.api.util.prefs.DockPreferences;
 import org.vns.javafx.dock.api.util.prefs.PrefProperties;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  * The base implementation of the interface 
  * {@link org.vns.javafx.dock.api.save.StateLoader }. The class uses both {@code java.util.prefs.Preferences
  * } and {@code xml }
  * technology to save/restore state of objects of type 
- * {@link org.vns.javafx.dock.api.DockTarget } and 
+ * {@link org.vns.javafx.dock.api.DockLayout } and 
  * {@link org.vns.javafx.dock.api.Dockable }.
  *
  * @author Valery Shyshkin
@@ -123,8 +123,8 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         getDefaultDockTargets().forEach((k, v) -> {
             Node node = (Node) v.getValue().get(OBJECT_ATTR);
 
-            if (node != null && DockRegistry.instanceOfDockTarget(node)) {
-                save(DockRegistry.dockTarget(node));
+            if (node != null && DockRegistry.instanceOfDockLayout(node)) {
+                save(DockRegistry.dockLayout(node));
 
                 DockPreferences cp = new DockPreferences(getPreferencesRoot());
                 PrefProperties prefProps = cp.next(SAVE).getProperties(DOCKTARGETS);
@@ -138,19 +138,19 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * Saves the current state of the specified object.
      *
      * @param dockTarget the object of type 
-     * {@link org.vns.javafx.dock.api.DockTarget } whose state is to be saved
+     * {@link org.vns.javafx.dock.api.DockLayout } whose state is to be saved
      */
-    protected void save(DockTarget dockTarget) {
+    protected void save(DockLayout dockTarget) {
 
         long start = System.currentTimeMillis();
 
-        String fieldName = getFieldName(dockTarget.target());
+        String fieldName = getFieldName(dockTarget.layoutNode());
 
         if (fieldName == null) {
             return;
         }
 
-        TreeItem<Properties> it = builder(dockTarget.target()).build(fieldName);
+        TreeItem<Properties> it = builder(dockTarget.layoutNode()).build(fieldName);
 //        System.err.println(fieldName + " TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
         test(it);
 //        System.err.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
@@ -176,19 +176,19 @@ public abstract class AbstractDockStateLoader implements StateLoader {
     /**
      * Restores the previously saved state of the specified node.
      *
-     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockTarget
+     * @param dockTarget the object of type {@link org.vns.javafx.dock.api.DockLayout
      * } whose state is to be restored.
      * @return the object of type {@code javafx.scene.control.TreeItem } which
      * is the root of TreeItem's tree which corresponds to the {@code Scene Graph
      * }
-     * of the node specified by the parameter {@code dockTarget}.
+     * of the node specified by the parameter {@code dockLayout}.
      */
-    protected abstract TreeItem<Properties> restore(DockTarget dockTarget);
+    protected abstract TreeItem<Properties> restore(DockLayout dockTarget);
 
     /**
      * The method restores the previously saved state of all registered
-     * {@link org.vns.javafx.dock.api.DockTarget} objects. The method looks
-     * through all objects of type {@code DockTarget} that are explicitly
+     * {@link org.vns.javafx.dock.api.DockLayout} objects. The method looks
+     * through all objects of type {@code DockLayout} that are explicitly
      * registered by one of the {@code register} methods and for each calls the {@link #restore(org.vns.javafx.dock.api.DockTarget)
      * }
      * method.
@@ -200,8 +200,8 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             if (store.contains(node)) {
                 continue;
             }
-            if (DockRegistry.instanceOfDockTarget(node)) {
-                TreeItem<Properties> item = restore(DockRegistry.dockTarget(node));
+            if (DockRegistry.instanceOfDockLayout(node)) {
+                TreeItem<Properties> item = restore(DockRegistry.dockLayout(node));
                 markExists(item, store);
             }
         }
@@ -216,7 +216,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
                 continue;
             }
             Node node = (Node) obj;
-            if (DockRegistry.instanceOfDockTarget(node)) {
+            if (DockRegistry.instanceOfDockLayout(node)) {
                 store.add(node);
             }
         }
@@ -324,7 +324,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
     /**
      * The method returns a collection of all explicitly or implicitly
-     * registered objects of type {@link org.vns.javafx.dock.api.DockTarget }.
+     * registered objects of type {@link org.vns.javafx.dock.api.DockLayout }.
      * Here the term {@code "implicitly registered" } objects means that some
      * object was not registered by the {@code register} method, but is a child
      * of some other explicitly registered object.
@@ -355,13 +355,13 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
     /**
      * The method returns a collection of all explicitly registered objects of
-     * type {@link org.vns.javafx.dock.api.DockTarget }. Here the term {@code "explicitly registered"
+     * type {@link org.vns.javafx.dock.api.DockLayout }. Here the term {@code "explicitly registered"
      * } objects means that the object was registered by one of {@code register}
-     * method. Each {@code DockTarget} in the map cannot be a child of some
-     * other explicitly registered object of type {@code DockTarget}.
+     * method. Each {@code DockLayout} in the map cannot be a child of some
+     * other explicitly registered object of type {@code DockLayout}.
      *
      * @return a collection of all explicitly registered objects of type
-     * {@code DockTarget}.
+     * {@code DockLayout}.
      */
     protected Map<String, TreeItem<Properties>> getDefaultDockTargets() {
         return defaultDockTargets;
@@ -372,7 +372,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * type {@link org.vns.javafx.dock.api.Dockable }. Here the term {@code "explicitly registered"
      * } objects means that the object was registered by one of {@code register}
      * method. Each {@code Dockable} in the map cannot be a child of some other
-     * explicitly registered object of type {@code DockTarget}.
+     * explicitly registered object of type {@code DockLayout}.
      *
      * @return a collection of all explicitly registered objects of type
      * {@code Dockable}.
@@ -396,7 +396,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * registered</li>
      * <li>The specified object has already been registered</li>
      * <li>The specified node must be of type {@code Dockable} or
-     * {@code DockTarget}</li>
+     * {@code DockLayout}</li>
      * </ul>
      *
      * @param fieldName the string value used as identifier for the node to be
@@ -422,12 +422,12 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             throw new IllegalArgumentException("Dublicate node. entryName: " + fieldName);
         }
         //!!!08
-        if (!DockRegistry.instanceOfDockTarget(node) && !DockRegistry.isDockable(node)) {
+        if (!DockRegistry.instanceOfDockLayout(node) && !DockRegistry.isDockable(node)) {
             throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + node.getClass().getName());
         }
 
         getExplicitlyRegistered().put(fieldName, node);
-        if (DockRegistry.instanceOfDockTarget(node)) {
+        if (DockRegistry.instanceOfDockLayout(node)) {
             addListeners(node);
         }
     }
@@ -446,7 +446,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
      * <li>An object with the specified fieldName has already been
      * registered</li>
      * <li>The created node must be of type {@code Dockable} or
-     * {@code DockTarget}</li>
+     * {@code DockLayout}</li>
      * </ul>
      *
      * @param fieldName the string value used as identifier for the node to be
@@ -468,12 +468,12 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         try {
             retval = clazz.newInstance();
             //!!!08
-            if (!DockRegistry.instanceOfDockTarget(retval) && !DockRegistry.isDockable(retval)) {
+            if (!DockRegistry.instanceOfDockLayout(retval) && !DockRegistry.isDockable(retval)) {
                 throw new IllegalArgumentException("Illegall className. entry name: " + fieldName + "; class=" + clazz.getName());
             }
 
             getExplicitlyRegistered().put(fieldName, retval);
-            if (DockRegistry.instanceOfDockTarget(retval)) {
+            if (DockRegistry.instanceOfDockLayout(retval)) {
                 addListeners(retval);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
@@ -549,8 +549,8 @@ public abstract class AbstractDockStateLoader implements StateLoader {
 
     public DockTreeItemBuilder getDockTreeTemBuilder(Node node) {
         DockTreeItemBuilder retval = null;
-        DockTarget dockTarget = DockRegistry.dockTarget(node);
-        TargetContext context = dockTarget.getTargetContext();
+        DockLayout dockTarget = DockRegistry.dockLayout(node);
+        LayoutContext context = dockTarget.getLayoutContext();
         DockTreeItemBuilderFactory f = context.getLookup().lookup(DockTreeItemBuilderFactory.class);
         if (f != null) {
             retval = f.getItemBuilder(dockTarget);
@@ -606,7 +606,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
             tv.getTreeItem(i).getValue().setProperty(FIELD_NAME_ATTR, fieldName);
 
             if (!loaded) {
-                if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
+                if ((obj instanceof Node) && DockRegistry.instanceOfDockLayout((Node) obj)) {
                     if (i == 0 && !getAllDockTargets().containsKey(fieldName)) {
                         getDefaultDockTargets().put(fieldName, tv.getTreeItem(i));
                     } else if (getAllDockTargets().containsKey(fieldName)) {
@@ -618,7 +618,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
                 registered.put(fieldName, obj);
             }
             idx++;
-            if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
+            if ((obj instanceof Node) && DockRegistry.instanceOfDockLayout((Node) obj)) {
                 saved.add((Node) obj);
                 int l = tv.getTreeItemLevel(tv.getTreeItem(i));
                 if (l > level) {
@@ -645,7 +645,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         TreeItem<Properties> parent = item.getParent();
         while (parent != null) {
             Object obj = parent.getValue().get(OBJECT_ATTR);
-            if ((obj instanceof Node) && DockRegistry.instanceOfDockTarget((Node) obj)) {
+            if ((obj instanceof Node) && DockRegistry.instanceOfDockLayout((Node) obj)) {
                 retval = parent;
                 break;
             }

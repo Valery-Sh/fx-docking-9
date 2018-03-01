@@ -260,14 +260,14 @@ public class TreeItemBuilder {
     /**
      *
      * @param treeView the treeView/ Cannot be null
-     * @param target the item which is an actual target item to accept a dragged
-     * object
-     * @param place the item which is a gesture target during the drag-and-drop
-     * operation
+     * @param target the item which is an actual layoutNode item to accept a dragged
+ object
+     * @param place the item which is a gesture layoutNode during the drag-and-drop
+ operation
      * @param dragObject an object which is an actual object to be accepted by
-     * the target item.
+ the layoutNode item.
      * @return true if the builder evaluates that a specified dragObject can be
-     * accepted by the given target tree item
+ accepted by the given layoutNode tree item
      */
     public boolean isAdmissiblePosition(TreeViewEx treeView, TreeItemEx target,
             TreeItemEx place,
@@ -280,7 +280,7 @@ public class TreeItemBuilder {
         }
         TreeItemEx dragItem = EditorUtil.findTreeItemByObject(treeView, dragObject);
         //
-        // First check if the target item corresponds to LIST ItemType
+        // First check if the layoutNode item corresponds to LIST ItemType
         //
         boolean isList = target.getItemType() == LIST;
 
@@ -288,7 +288,7 @@ public class TreeItemBuilder {
         if (!isList) {
             nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
 
-            /*          if (target.getValue() != null && nd.getProperties().size() == 1) {
+            /*          if (layoutNode.getValue() != null && nd.getProperties().size() == 1) {
                 Property p = nd.getProperties().get(0);
                 if ((p instanceof NodeList) && !((NodeList) p).isAlwaysVisible()) {
                     isList = true;
@@ -340,7 +340,7 @@ public class TreeItemBuilder {
             }
 
             //
-            // target.getValue() may be null for NodeContent
+            // layoutNode.getValue() may be null for NodeContent
             //
             if (target.getValue() != null) {
                 BeanAdapter ba = new BeanAdapter(target.getValue());
@@ -364,7 +364,7 @@ public class TreeItemBuilder {
         if (target.getItemType() == CONTENT) {
 
             TreeItemEx parent = (TreeItemEx) target.getParent();
-            Property cp = parent.getProperty(target.getPropertyName());//nc.getProperties().get(target.getInsertIndex());
+            Property cp = parent.getProperty(target.getPropertyName());//nc.getProperties().get(layoutNode.getInsertIndex());
             BeanAdapter adapter = new BeanAdapter(parent.getValue());
             retval = adapter.getType(cp.getName()).isAssignableFrom(toAccept.getClass());
         } else if (target.getItemType() == LIST || target.getItemType() == DEFAULTLIST) {
@@ -382,7 +382,7 @@ public class TreeItemBuilder {
             }
         } else {
             //
-            // The ItemType of the target TreeItem equals to NodeElement
+            // The ItemType of the layoutNode TreeItem equals to NodeElement
             //
             nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
             Property prop = nd.getDefaultContentProperty();
@@ -528,7 +528,7 @@ public class TreeItemBuilder {
 
     }
 
-    /*    public void accept(TreeViewEx treeView, TreeItemEx target, TreeItemEx place, Node gestureSource) {
+    /*    public void accept(TreeViewEx treeView, TreeItemEx layoutNode, TreeItemEx place, Node gestureSource) {
         DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
 
         Object value = dg.getGestureSourceObject();
@@ -539,18 +539,18 @@ public class TreeItemBuilder {
         // position can change, since the method updateOnMove deletes the item which
         // corresponds to the dragged value
         //
-        int insertIndex = getInsertIndex(treeView, target, place);
+        int insertIndex = getInsertIndex(treeView, layoutNode, place);
 
-        if (target != null && (target.getItemType() == LIST || target.getItemType() == DEFAULTLIST)) {
+        if (layoutNode != null && (layoutNode.getItemType() == LIST || layoutNode.getItemType() == DEFAULTLIST)) {
             TreeItemEx it = EditorUtil.findTreeItemByObject(treeView, value);
             if (it != null) {
-                int idx = target.getChildren().indexOf(it);
+                int idx = layoutNode.getChildren().indexOf(it);
                 if (idx >= 0 && idx < insertIndex) {
                     insertIndex--;
                 }
             }
         }
-        if (target != null && place != null && value != null) {
+        if (layoutNode != null && place != null && value != null) {
 
             if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
                 TreeItemEx treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
@@ -564,7 +564,7 @@ public class TreeItemBuilder {
                 }
             }
         }
-        update(treeView, target, insertIndex, value);
+        update(treeView, layoutNode, insertIndex, value);
 
     }
      */
@@ -602,17 +602,17 @@ public class TreeItemBuilder {
 
     /**
      * Tries to calculate an index in the children collection of the item
-     * specified by the parameter {@code target } where a new item can be
+     * specified by the parameter {@code layoutNode } where a new item can be
      * inserted.
      *
      * @param treeView the node to search in
-     * @param target the target TreeItem where the new TreeItem should be place
-     * as a children
-     * @param place the object of type TreeItem which represents a drag target
-     * TreeCell
+     * @param target the layoutNode TreeItem where the new TreeItem should be place
+ as a children
+     * @param place the object of type TreeItem which represents a drag layoutNode
+ TreeCell
      *
-     * @return an index in the collection of children in the target TreeItem
-     * used to insert a new TreeItem
+     * @return an index in the collection of children in the layoutNode TreeItem
+ used to insert a new TreeItem
      */
     protected int getInsertIndex(TreeViewEx treeView, TreeItemEx target, TreeItemEx place) {
         int idx = -1;

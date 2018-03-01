@@ -17,9 +17,9 @@ package org.vns.javafx.dock.api.save;
 
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTabPane;
-import org.vns.javafx.dock.api.DockTarget;
 import org.vns.javafx.dock.api.save.builder.DockPaneTreeItemBuilder;
 import org.vns.javafx.dock.api.save.builder.DockTabPaneTreeItemBuilder;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.vns.javafx.dock.api.save.builder.DockTabPaneTreeItemBuilder;
  */
 public class DockTreeItemBuilderFactory {
     
-    public DockTreeItemBuilder getItemBuilder(DockTarget target) {
+    public DockTreeItemBuilder getItemBuilder(DockLayout target) {
         DockTreeItemBuilder  retval = null;
         if ( target instanceof DockPane) {
             retval = new DockPaneTreeItemBuilder(target);

@@ -42,7 +42,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 /**
  *
@@ -183,8 +183,8 @@ public class FloatStageView implements FloatWindowView {
             titleBar.setManaged(true);
         }
 
-        if (dockable.getContext().isDocked() && getTargetContext(dockable).getTargetNode() != null) {
-            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dockable).getTargetNode());
+        if (dockable.getContext().isDocked() && getTargetContext(dockable).getLayoutNode() != null) {
+            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dockable).getLayoutNode());
             if (DockUtil.getOwnerWindow(dockable.node()) != targetNodeWindow) {
                 windowRoot = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
@@ -195,7 +195,7 @@ public class FloatStageView implements FloatWindowView {
         }
         boolean saveSize = false;
         if (dockable.getContext().isDocked()) {
-            if ((dockable.node() instanceof DockNode) && (getTargetContext(dockable).getTargetNode() instanceof DockPane)) {
+            if ((dockable.node() instanceof DockNode) && (getTargetContext(dockable).getLayoutNode() instanceof DockPane)) {
                 saveSize = true;
             }
             getTargetContext(dockable).undock(dockable.node());
@@ -205,7 +205,7 @@ public class FloatStageView implements FloatWindowView {
         DockRegistry.register(window);
 
         window.setTitle("FLOATING STAGE");
-        Node lastDockPane = getTargetContext(dockable).getTargetNode();
+        Node lastDockPane = getTargetContext(dockable).getLayoutNode();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             window.initOwner(lastDockPane.getScene().getWindow());
@@ -373,8 +373,8 @@ public class FloatStageView implements FloatWindowView {
 
         DockableContext draggedContext = dragged.getContext();
 
-        if (draggedContext.isDocked() && getTargetContext(dragged).getTargetNode() != null) {
-            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dragged).getTargetNode());
+        if (draggedContext.isDocked() && getTargetContext(dragged).getLayoutNode() != null) {
+            Window targetNodeWindow = DockUtil.getOwnerWindow(getTargetContext(dragged).getLayoutNode());
             if (DockUtil.getOwnerWindow(dragged.node()) != targetNodeWindow) {
                 windowRoot = (Pane) dragged.node().getScene().getRoot();
                 markFloating(dragged.node().getScene().getWindow());
@@ -392,7 +392,7 @@ public class FloatStageView implements FloatWindowView {
         DockRegistry.register(window);
 
         window.setTitle("FLOATING STAGE");
-        Node lastDockPane = getTargetContext(dragged).getTargetNode();
+        Node lastDockPane = getTargetContext(dragged).getLayoutNode();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             window.initOwner(lastDockPane.getScene().getWindow());
@@ -464,8 +464,8 @@ public class FloatStageView implements FloatWindowView {
         return window;
     }
 
-    protected TargetContext getTargetContext(Dockable d) {
-        return d.getContext().getTargetContext();
+    protected LayoutContext getTargetContext(Dockable d) {
+        return d.getContext().getLayoutContext();
     }
 
     @Override

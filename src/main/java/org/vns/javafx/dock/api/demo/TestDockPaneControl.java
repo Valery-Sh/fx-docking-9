@@ -29,10 +29,12 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
+import org.vns.javafx.dock.api.ScenePaneContext;
 import org.vns.javafx.dock.api.save.DockStateLoader;
 
 /**
@@ -82,10 +84,12 @@ public class TestDockPaneControl extends Application {
 
         VPane vp1_1 = new VPane();
         vp1_1.getItems().addAll(dnc1_1, dnc2_1);
-
+//        System.err.println("");
+        
         vp1_1.setId("vp1_1");
         dockPane2.getItems().add(vp1_1);
-
+        System.err.println("0000 dnc1_1 getTargetContext() = " + dnc1_1.getContext().getLayoutContext());
+        
         dockPane1.setId("dockPane1");
         DockNode dnc1 = new DockNode();
         dnc1.setTitle("dnc1");
@@ -113,7 +117,7 @@ public class TestDockPaneControl extends Application {
         ////////// --------------------------
         vs1.getItems().addAll(hs1);
         vs1.getItems().addAll(dnc3);
-        System.err.println("TARGET CONTEXT: " + Dockable.of(dnc3).getContext().getTargetContext());
+        System.err.println("TARGET CONTEXT: " + Dockable.of(dnc3).getContext().getLayoutContext());
         ////////// --------------------------
         dockPane2.getItems().add(vs1);
 
@@ -143,7 +147,7 @@ public class TestDockPaneControl extends Application {
         root.getChildren().add(0, dockTabPane1);
 
         DockableContext dc = DockRegistry.dockable(dnc3).getContext();
-        TargetContext dtc = dc.getTargetContext();
+        LayoutContext dtc = dc.getLayoutContext();
 
         Button b1 = new Button("remove dnc1.titleBar");
         Button b2 = new Button("add dnc4");
@@ -156,6 +160,9 @@ public class TestDockPaneControl extends Application {
         dnc1.setContent(content);
         Label contentLabel = new Label("CONTENT LABEL");
         dnc2.setContent(contentLabel);
+        contentLabel.setOnMouseClicked(e -> {
+            ((DockPaneContext)((ScenePaneContext)dnc2.getContext().getLayoutContext()).getRestoreContext()).restore(Dockable.of(dnc2));
+        });
         Label childLabel = new Label("dnc3 label");
         dnc3.setContent(new StackPane());
         ((StackPane) dnc3.getContent()).getChildren().add(childLabel);
@@ -289,7 +296,10 @@ public class TestDockPaneControl extends Application {
         rootBorderPane.setStyle("-fx-background-color: red");
         stage2.show();
          */
-
+        System.err.println("VPAne getParent() = " + vp1_1.getParent() + "; getParent.getParent = " +vp1_1.getParent().getParent());
+        System.err.println("2 getParent() = " +  vp1_1.getParent().getParent().getParent().getParent());
+        System.err.println("3 dnc1_1 getTargetContext() = " +  dnc1_1.getContext().getLayoutContext());
+        //dnc1_1
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
 
@@ -438,7 +448,7 @@ public class TestDockPaneControl extends Application {
         dn02Btn.setOnAction(a -> {
             System.err.println("SFFFFFFFFFF" + dn02.getContext().isFloating());
             System.err.println(" === " + dn02.getScene().getWindow());
-            // ((SidePaneController)sideBar01.getTargetContext()).cont.changeSize();
+            // ((SidePaneController)sideBar01.getLayoutContext()).cont.changeSize();
         });
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));

@@ -29,21 +29,18 @@ import org.vns.javafx.dock.VPane;
  */
 public class DockPaneSkin extends SkinBase<DockPane> {
 
-    private StackPane layout;
-    //private VBox vboxlayout;
-    private DockSplitPane rootLayout;
-    //private Node titleNode;
+    private final StackPane layout;
+    
 
-    public DockPaneSkin(DockPane control, DockSplitPane root) {
+    public DockPaneSkin(DockPane control) {
         super(control);
-        this.rootLayout = root;
+        
         DockRegistry.makeDockable(getSkinnable());
-        //getSkinnable().
-        layout = new StackPane(rootLayout) {
 
+        layout = new StackPane(getSkinnable().getRoot()) {
             @Override
             protected void layoutChildren() {
-                update(rootLayout);
+                update(getSkinnable().getRoot());
                 super.layoutChildren();
             }
         };
@@ -61,7 +58,7 @@ public class DockPaneSkin extends SkinBase<DockPane> {
         }
 
         getSkinnable().titleBarProperty().addListener((v, oldValue, newValue) -> {
-            TargetContext tc = DockTarget.of(getSkinnable()).getTargetContext();
+            LayoutContext tc = DockLayout.of(getSkinnable()).getLayoutContext();
             if (oldValue != null) {
                 tc.undock(oldValue);
             }
@@ -86,8 +83,8 @@ public class DockPaneSkin extends SkinBase<DockPane> {
             if (node instanceof DockSplitPane) {
                 update((DockSplitPane) node);
             } else if (Dockable.of(node) != null) {
-                TargetContext tc = DockTarget.of(getSkinnable()).getTargetContext();
-                Dockable.of(node).getContext().setTargetContext(tc);
+                LayoutContext tc = DockLayout.of(getSkinnable()).getLayoutContext();
+                Dockable.of(node).getContext().setLayoutContext(tc);
             }
         }
     }

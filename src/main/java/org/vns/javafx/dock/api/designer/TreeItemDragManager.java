@@ -51,8 +51,8 @@ public class TreeItemDragManager extends SimpleDragManager {
         if (!getDockable().getContext().isFloating()) {
             setTargetDockPane(((Node) ev.getSource()).getScene().getRoot());
             FloatViewFactory f = null;
-            if (getDockable().getContext().getTargetContext() != null) {
-                f = getDockable().getContext().getTargetContext().getLookup().lookup(FloatViewFactory.class);
+            if (getDockable().getContext().getLayoutContext() != null) {
+                f = getDockable().getContext().getLayoutContext().getLookup().lookup(FloatViewFactory.class);
             }
             if (f == null) {
                 f = getDockable().getContext().getLookup().lookup(FloatViewFactory.class);
@@ -77,12 +77,12 @@ public class TreeItemDragManager extends SimpleDragManager {
      * button is pressed. The method checks whether the {@literal  dockable} node
      * is in the {@code floating} state and if not the method returns.<P>
      * If the method encounters a {@literal dockable} node or a
-     * {@code dock target target} then it shows a pop up window which contains
-     * indicators to select a dock place on the target dock node or target.
-     * <p>
+     * {@code dock layoutNode layoutNode} then it shows a pop up window which contains
+ indicators to select a dock place on the layoutNode dock node or layoutNode.
+ <p>
      * The method checks whether the {@code control key} of the keyboard is
-     * pressed and if so then it shows a special indicator window which allows
-     * to select a dock target or one of it's parents.
+ pressed and if so then it shows a special indicator window which allows
+ to select a dock layoutNode or one of it's parents.
      *
      * @param ev the event that describes the mouse events
      */
@@ -132,31 +132,31 @@ public class TreeItemDragManager extends SimpleDragManager {
             return;
         }
         Node root = getResultStage().getScene().getRoot();
-        if (root == null || !(root instanceof Pane) && !(DockRegistry.instanceOfDockTarget(root))) {
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.instanceOfDockLayout(root))) {
             return;
         }
 
         Node topPane = TopNodeHelper.getTopNode(getResultStage(), ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return DockRegistry.instanceOfDockTarget(n);
+            return DockRegistry.instanceOfDockLayout(n);
         });
 
         if (topPane != null) {
             root = topPane;
-        } else if (!DockRegistry.instanceOfDockTarget(root)) {
+        } else if (!DockRegistry.instanceOfDockLayout(root)) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).getTargetContext().isAcceptable(getDockable())) {
+        if (!DockRegistry.dockLayout(root).getLayoutContext().isAcceptable(getDockable())) {
             return;
         }
-        if (!DockRegistry.dockTarget(root).getTargetContext().isUsedAsDockTarget()) {
+        if (!DockRegistry.dockLayout(root).getLayoutContext().isUsedAsDockLayout()) {
             return;
         }
         //
         // Start use of IndicatorPopup
         //
-        IndicatorManager newPopup = DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorManager.class);
+        IndicatorManager newPopup = DockRegistry.dockLayout(root).getLayoutContext().getLookup().lookup(IndicatorManager.class);
         if (newPopup == null) {
-            DockRegistry.dockTarget(root).getTargetContext().getLookup().lookup(IndicatorManager.class);
+            DockRegistry.dockLayout(root).getLayoutContext().getLookup().lookup(IndicatorManager.class);
         }
         if (newPopup == null) {
             return;
@@ -183,8 +183,8 @@ public class TreeItemDragManager extends SimpleDragManager {
     /**
      * The method is called when a user releases the mouse button.
      *
-     * Depending on whether or not the target object is detected during dragging
-     * the method initiates a dock operation or just returns.
+     * Depending on whether or not the layoutNode object is detected during dragging
+ the method initiates a dock operation or just returns.
      *
      * @param ev the event that describes the mouse events.
      */

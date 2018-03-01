@@ -4,11 +4,11 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 
 public abstract class PositionIndicator {
 
-    private final TargetContext targetContext;
+    private final LayoutContext layoutContext;
     
     private IndicatorPopup indicatorPopup;
     
@@ -17,8 +17,8 @@ public abstract class PositionIndicator {
     private Pane indicatorPane;
 
 
-    protected PositionIndicator(TargetContext targetContext) {
-        this.targetContext = targetContext;
+    protected PositionIndicator(LayoutContext layoutContext) {
+        this.layoutContext = layoutContext;
         init();
     }
 
@@ -58,7 +58,7 @@ public abstract class PositionIndicator {
 */    
     
 /*    public void showIndicatorPopup(double screenX, double screenY) {
-        getIndicatorPopup().show(getTargetContext().getTargetNode(), screenX, screenY);
+        getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
     }   
 */
     public Node getDockPlace() {
@@ -69,15 +69,15 @@ public abstract class PositionIndicator {
         getDockPlace().setVisible(true);
     }
 
-    public TargetContext getTargetContext() {
-        return targetContext;
+    public LayoutContext getLayoutContext() {
+        return layoutContext;
     }
 
     protected abstract Pane createIndicatorPane();
 
     public IndicatorPopup getIndicatorPopup() {
         if ( indicatorPopup == null ) {
-            indicatorPopup = (IndicatorPopup)targetContext.getLookup().lookup(IndicatorManager.class);
+            indicatorPopup = (IndicatorPopup)layoutContext.getLookup().lookup(IndicatorManager.class);
         }
         return indicatorPopup;
     }

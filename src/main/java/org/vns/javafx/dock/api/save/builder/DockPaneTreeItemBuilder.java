@@ -33,12 +33,12 @@ import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockSplitPane;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.CLASS_NAME_ATTR;
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.OBJECT_ATTR;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -49,17 +49,17 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
         public static final String DIVIDER_POSITIONS = "dividerPositions";
         public static final String ORIENTATION = "orientation";
 
-        public DockPaneTreeItemBuilder(DockTarget dockTarget) {
+        public DockPaneTreeItemBuilder(DockLayout dockTarget) {
             super(dockTarget);
         }
         private DockSplitPane getRoot() {
-            return ((DockPaneContext)getDockTarget().getTargetContext()).getRoot();
+            return ((DockPaneContext)getDockTarget().getLayoutContext()).getRoot();
         }
         @Override
         public TreeItem<Properties> build(String fieldName) {
 
-            //Node node = getTargetContext().getTargetNode();
-            Node node = getDockTarget().target();
+            //Node node = getLayoutContext().getTargetNode();
+            Node node = getDockTarget().layoutNode();
             TreeItem<Properties> retval = DockTreeItemBuilder.build(fieldName, node);
             setObjectProperties(retval.getValue());
             buildChildren(retval);
@@ -67,8 +67,8 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
         }
 
         protected void buildChildren(TreeItem<Properties> root) {
-            //DockPane pane = (DockPane) getTargetContext().getTargetNode();
-            DockPane pane = (DockPane) getDockTarget().target();
+            //DockPane pane = (DockPane) getLayoutContext().getTargetNode();
+            DockPane pane = (DockPane) getDockTarget().layoutNode();
             for (int i = 0; i < pane.getItems().size(); i++) {
                 TreeItem ti = DockTreeItemBuilder.build(pane.getItems().get(i));
 
@@ -80,9 +80,9 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                 if (pane.getItems().get(i) instanceof DockSplitPane) {
                     setObjectProperties((Properties) ti.getValue());
                     buildPane((SplitPane) pane.getItems().get(i), root, ti);
-                } else if (DockRegistry.instanceOfDockTarget(pane.getItems().get(i))) {
-                    DockTarget t = DockRegistry.dockTarget(pane.getItems().get(i));
-                    TreeItem it = getDockTreeItemBuilder(t.target()).build();
+                } else if (DockRegistry.instanceOfDockLayout(pane.getItems().get(i))) {
+                    DockLayout t = DockRegistry.dockLayout(pane.getItems().get(i));
+                    TreeItem it = getDockTreeItemBuilder(t.layoutNode()).build();
                     ti.getChildren().addAll(it.getChildren());
                 }
             }
@@ -93,9 +93,9 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
             for (int i = 0; i < pane.getItems().size(); i++) {
                 System.err.println("1) buildPane i = " + pane.getItems().get(i));
                 TreeItem ti;
-                if (DockRegistry.instanceOfDockTarget(pane.getItems().get(i))) {
+                if (DockRegistry.instanceOfDockLayout(pane.getItems().get(i))) {
                     System.err.println("2) buildPane = " + pane.getItems().get(i));
-                    Node node = DockRegistry.dockTarget(pane.getItems().get(i)).target();
+                    Node node = DockRegistry.dockLayout(pane.getItems().get(i)).layoutNode();
                     ti = getDockTreeItemBuilder(node).build();
                     System.err.println("1) ti = " + ti.getChildren().size());
                 } else {
@@ -231,7 +231,7 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                     node = buildSplitPane(item);
                     System.err.println("++++++ node=" + node);
                     pane.getItems().add(node);
-                } else if (DockRegistry.instanceOfDockTarget(node)) {
+                } else if (DockRegistry.instanceOfDockLayout(node)) {
                     node = getDockTreeItemBuilder(node)
                             .restore(item);
                     System.err.println("1) ++++++ node=" + node);
@@ -239,9 +239,9 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                     pane.getItems().add(node);
                     //!!!08
                 } else if (DockRegistry.isDockable(node)) {
-                    if (DockRegistry.dockable(node).getContext().getTargetContext() != null) {
-                        TargetContext c = DockRegistry.dockable(node).getContext().getTargetContext();
-                        if (c != getDockTarget().getTargetContext()) {
+                    if (DockRegistry.dockable(node).getContext().getLayoutContext() != null) {
+                        LayoutContext c = DockRegistry.dockable(node).getContext().getLayoutContext();
+                        if (c != getDockTarget().getLayoutContext()) {
                             c.undock(node);
                         }
                     }
@@ -271,7 +271,7 @@ public class DockPaneTreeItemBuilder  extends AbstractDockTreeItemBuilder {
                 } else if ((node instanceof DockSplitPane) && !DockRegistry.isDockable(node)) {
                     node = buildSplitPane(item);
                     pane.getItems().add(node);
-                } else if (DockRegistry.instanceOfDockTarget(node)) {
+                } else if (DockRegistry.instanceOfDockLayout(node)) {
                     node = getDockTreeItemBuilder(node)
                             .restore(item);
                     System.err.println("1) buildSplitPane ++++++ node=" + node);

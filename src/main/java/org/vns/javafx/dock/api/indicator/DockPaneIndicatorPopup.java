@@ -13,12 +13,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
 
 /**
  * An instance of the class is created for each object of type
- * {@link org.vns.javafx.dock.api.TargetContext} when the last is created.
+ * {@link org.vns.javafx.dock.api.LayoutContext} when the last is created.
  *
  * The instance of the class is used by the object of type {@link org.vns.javafx.dock.api.dragging.DragManager}
  * and provides a pop up window in which the user can select a position on the
@@ -100,7 +100,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
      *
      * @param context the owner of the object to be created
      */
-    public DockPaneIndicatorPopup(TargetContext context) {
+    public DockPaneIndicatorPopup(LayoutContext context) {
         //super(DockRegistry.dockTarget(context.getTargetNode()));
         //super(DockRegistry.dockTarget(context.getTargetNode()));
         super(context);
@@ -115,14 +115,14 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
      */
     @Override
     public Node getTargetNode() {
-        return getTargetContext().getTargetNode();
+        return getTargetContext().getLayoutNode();
     }
 
     @Override
     protected void initContent() {
         Pane paneIndicatorPane = getTargetContext().getPositionIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
-        //Pane nodeIndicatorPane = getTargetContext().getNodeIndicator().getIndicatorPane();
+        //Pane nodeIndicatorPane = getLayoutContext().getNodeIndicator().getIndicatorPane();
         Pane nodeIndicatorPane = getNodeIndicator().getIndicatorPane();        
         nodeIndicatorPane.setMouseTransparent(true);
 
@@ -172,7 +172,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
      * @return Returns an object of type {@code SideIndicator}
      */
 /*    public SideIndicator getNodeIndicator() {
-        return (SideIndicator) getTargetContext().getNodeIndicator();
+        return (SideIndicator) getLayoutContext().getNodeIndicator();
     }
 */    
     //@Override
@@ -442,7 +442,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
         getPaneIndicator().showDockPlace(selected, side);
         Node pane = getTargetNode();
         if (selected != null && selected.getUserData() != null) {
-            pane = ((TargetContext) selected.getUserData()).getTargetNode();
+            pane = ((LayoutContext) selected.getUserData()).getLayoutNode();
         }
         dragTarget = pane;
     }

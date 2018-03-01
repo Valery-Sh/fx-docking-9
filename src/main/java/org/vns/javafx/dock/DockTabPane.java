@@ -1,7 +1,5 @@
 package org.vns.javafx.dock;
 
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.TabPane;
@@ -10,10 +8,10 @@ import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockTabPaneContext;
 import org.vns.javafx.dock.api.DockTabPaneMouseDragHandler;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.TargetContext;
-import org.vns.javafx.dock.api.DockTarget;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.TabPaneHelper;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
+import org.vns.javafx.dock.api.DockLayout;
 
 /**
  *
@@ -29,10 +27,10 @@ public class DockTabPane extends TabPane {
     }
 
     private void init() {
-        TargetContext paneContext = new DockTabPaneContext(this);
-        DockRegistry.makeDockTarget(this, paneContext);
+        LayoutContext paneContext = new DockTabPaneContext(this);
+        DockRegistry.makeDockLayout(this, paneContext);
         DockableContext context = DockRegistry.makeDockable(this).getContext();
-        context.setTargetContext(DockTarget.of(this).getTargetContext());
+        context.setLayoutContext(DockLayout.of(this).getLayoutContext());
 
         getStyleClass().add("dock-tab-pane");
         getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
@@ -45,10 +43,6 @@ public class DockTabPane extends TabPane {
         setRotateGraphic(true);
     }
 
-    @Override
-    public ObservableList<Node> getChildren() {
-        return super.getChildren();
-    }
 
     @Override
     public String getUserAgentStylesheet() {
@@ -56,40 +50,40 @@ public class DockTabPane extends TabPane {
     }
 
     public void dock(Dockable dockable) {
-        ((DockTabPaneContext) DockTarget.of(this).getTargetContext()).doDock(0, dockable.node());
+        ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(0, dockable.node());
     }
 
     public void dock(int idx, Dockable dockable) {
-        if (!DockTarget.of(this).getTargetContext().isAcceptable(dockable)) {
+        if (!DockLayout.of(this).getLayoutContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
 
-        if (dockable.getContext().getTargetContext() != null) {
-            dockable.getContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getLayoutContext() != null) {
+            dockable.getContext().getLayoutContext().undock(dockable.node());
         }
-        ((DockTabPaneContext) DockTarget.of(this).getTargetContext()).doDock(idx, dockable.node());
+        ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(idx, dockable.node());
     }
 
     public void dockNode(Node node) {
-        ((DockTabPaneContext) DockTarget.of(this).getTargetContext()).doDock(0, node);
+        ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(0, node);
     }
 
     public void dock(int idx, Node node) {
         Dockable dockable = Dockable.of(node);
-        if (!DockTarget.of(this).getTargetContext().isAcceptable(dockable)) {
+        if (!DockLayout.of(this).getLayoutContext().isAcceptable(dockable)) {
             throw new UnsupportedOperationException("The node '" + dockable + "' to be docked is not registered by the DockLoader");
         }
 
-        if (dockable.getContext().getTargetContext() != null) {
-            dockable.getContext().getTargetContext().undock(dockable.node());
+        if (dockable.getContext().getLayoutContext() != null) {
+            dockable.getContext().getLayoutContext().undock(dockable.node());
         }
-        ((DockTabPaneContext) DockTarget.of(this).getTargetContext()).doDock(idx, dockable.node());
+        ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(idx, dockable.node());
     }
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
         if ( Dockable.of(this).getContext().getDragNode() == null ) {
-            TabPaneHelper helper = new TabPaneHelper(DockTarget.of(this).getTargetContext());
+            TabPaneHelper helper = new TabPaneHelper(DockLayout.of(this).getLayoutContext());
             Dockable.of(this).getContext().setDragNode(helper.getHeaderArea());
         }
     }

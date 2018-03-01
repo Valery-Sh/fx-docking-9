@@ -18,7 +18,7 @@ package org.vns.javafx.dock.api.designer;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
@@ -28,10 +28,10 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
  */
 public class DragIndicatorManager implements IndicatorManager {
 
-    private final TargetContext targetContext;
+    private final LayoutContext targetContext;
     private final DragIndicator dragIndicator;
     
-    public DragIndicatorManager(TargetContext targetContext, DragIndicator indicator) {
+    public DragIndicatorManager(LayoutContext targetContext, DragIndicator indicator) {
         this.targetContext = targetContext;
         this.dragIndicator = indicator;
     }
@@ -49,7 +49,7 @@ public class DragIndicatorManager implements IndicatorManager {
     }
 
     @Override
-    public TargetContext getTargetContext() {
+    public LayoutContext getTargetContext() {
         return targetContext;
     }
 
@@ -77,6 +77,7 @@ public class DragIndicatorManager implements IndicatorManager {
         return dragIndicator.isShowing();
     }
 
+    @Override
     public void showIndicator() {
         //Point2D pos = getTargetNode().localToScreen(0, 0);
     }
@@ -98,7 +99,7 @@ public class DragIndicatorManager implements IndicatorManager {
         }
     }
     private SceneGraphView getSceneGraphView() {
-        return (SceneGraphView)targetContext.getTargetNode();
+        return (SceneGraphView)targetContext.getLayoutNode();
     }
     @Override
     public PositionIndicator getPositionIndicator() {

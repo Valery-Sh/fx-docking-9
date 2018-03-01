@@ -21,16 +21,16 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.DockTabPane;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockTarget;
-import org.vns.javafx.dock.api.TargetContext;
+import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.save.AbstractDockTreeItemBuilder;
 import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.FIELD_NAME_ATTR;
 import static org.vns.javafx.dock.api.save.DockTreeItemBuilder.OBJECT_ATTR;
+import org.vns.javafx.dock.api.DockLayout;
 
 public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
 
-        public DockTabPaneTreeItemBuilder(DockTarget tabPane) {
+        public DockTabPaneTreeItemBuilder(DockLayout tabPane) {
             super(tabPane);
         }
 
@@ -60,14 +60,14 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
                     return pane;
                 }
 
-                if (DockRegistry.instanceOfDockTarget(tab.getContent())) {
+                if (DockRegistry.instanceOfDockLayout(tab.getContent())) {
                     tab.setContent(restore(item));
                     pane.getTabs().add(i, tab);
                     //!!!08
                 } else if (DockRegistry.isDockable(tab.getContent())) {
-                    if (DockRegistry.dockable(tab.getContent()).getContext().getTargetContext() != null) {
-                        TargetContext c = DockRegistry.dockable(tab.getContent()).getContext().getTargetContext();
-                        if (c != getDockTarget().getTargetContext()) {
+                    if (DockRegistry.dockable(tab.getContent()).getContext().getLayoutContext() != null) {
+                        LayoutContext c = DockRegistry.dockable(tab.getContent()).getContext().getLayoutContext();
+                        if (c != getDockTarget().getLayoutContext()) {
                             c.undock(tab.getContent());
                         }
                     }
@@ -96,7 +96,7 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
             if (node == null) {
                 return tab;
             }
-            if (DockRegistry.instanceOfDockTarget(node)) {
+            if (DockRegistry.instanceOfDockLayout(node)) {
                 node = restore(item);
                 tab.setContent(node);
                 //!!!08
@@ -135,7 +135,7 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
          */
         @Override
         public TreeItem<Properties> build(String fieldName) {
-            Node node = getDockTarget().target();
+            Node node = getDockTarget().layoutNode();
             TreeItem<Properties> retval = DockTreeItemBuilder.build(fieldName, node);
             retval.setExpanded(true);
             int sz = retval.getChildren().size();
@@ -146,8 +146,8 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
         }
 
         protected void buildChildren(TreeItem<Properties> root) {
-            //DockPane tab = (DockPane) getTargetContext().getTargetNode();
-            DockTabPane pane = (DockTabPane) getDockTarget().target();
+            //DockPane tab = (DockPane) getLayoutContext().getTargetNode();
+            DockTabPane pane = (DockTabPane) getDockTarget().layoutNode();
             for (int i = 0; i < pane.getTabs().size(); i++) {
                 TreeItem ti = DockTreeItemBuilder.build(pane.getTabs().get(i));
                 root.getChildren().add(ti);
@@ -155,7 +155,7 @@ public class DockTabPaneTreeItemBuilder extends AbstractDockTreeItemBuilder {
 
                 notifyOnBuidItem(ti);
 
-                if (DockRegistry.instanceOfDockTarget(pane.getTabs().get(i).getContent())) {
+                if (DockRegistry.instanceOfDockLayout(pane.getTabs().get(i).getContent())) {
                     Node node = pane.getTabs().get(i).getContent();
                     TreeItem contentItem = getDockTreeItemBuilder(node).build();
                     ti.getChildren().add(contentItem);

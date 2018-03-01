@@ -164,7 +164,7 @@ public class TestDockSideBar1 extends Application {
         dn02Btn.setOnAction(a -> {
             System.err.println("SFFFFFFFFFF" + dn02.getContext().isFloating());
             System.err.println(" === " + dn02.getScene().getWindow());
-           // ((SidePaneController)sideBar01.getTargetContext()).cont.changeSize();
+           // ((SidePaneController)sideBar01.getLayoutContext()).cont.changeSize();
         });
         //dn02.setContent(vb2);
         //vb2.getChildren().add(new Button("dn02 button"));

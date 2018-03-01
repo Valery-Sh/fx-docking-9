@@ -186,8 +186,8 @@ public class TreeItemFloatStageView implements FloatWindowView{
             imageView = new ImageView(wi);
         }
 
-        if (dockable.getContext().isDocked() && dockable.getContext().getTargetContext().getTargetNode() != null) {
-            Window w = dockable.getContext().getTargetContext().getTargetNode().getScene().getWindow();
+        if (dockable.getContext().isDocked() && dockable.getContext().getLayoutContext().getLayoutNode() != null) {
+            Window w = dockable.getContext().getLayoutContext().getLayoutNode().getScene().getWindow();
             if (dockable.node().getScene().getWindow() != w) {
                 rootPane = (Pane) dockable.node().getScene().getRoot();
                 markFloating(dockable.node().getScene().getWindow());
@@ -206,7 +206,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         markFloating(newStage);
 
         newStage.setTitle("FLOATING STAGE");
-        Node lastDockPane = dockable.getContext().getTargetContext().getTargetNode();
+        Node lastDockPane = dockable.getContext().getLayoutContext().getLayoutNode();
         if (lastDockPane != null && lastDockPane.getScene() != null
                 && lastDockPane.getScene().getWindow() != null) {
             newStage.initOwner(lastDockPane.getScene().getWindow());

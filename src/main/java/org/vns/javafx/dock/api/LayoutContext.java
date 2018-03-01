@@ -18,11 +18,11 @@ import org.vns.javafx.dock.DockUtil;
  *
  * @author Valery
  */
-public abstract class TargetContext {
+public abstract class LayoutContext {
 
     private ContextLookup lookup;
 
-    private Node targetNode;
+    private Node layoutNode;
     private String title;
     private PositionIndicator positionIndicator;
 
@@ -30,21 +30,16 @@ public abstract class TargetContext {
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
-    private boolean usedAsDockTarget = true;
+    private boolean usedAsDockLayout = true;
 
-    protected TargetContext(Node targetNode) {
-        this.targetNode = targetNode;
+    protected LayoutContext(Node layoutNode) {
+        this.layoutNode = layoutNode;
         init();
     }
-    protected TargetContext() {
+    protected LayoutContext() {
         init();
     }
-    
 
-/*    protected TargetContext(Dockable dockable) {
-        init();
-    }
-*/
     public ContextLookup getLookup() {
         if (lookup == null) {
             lookup = new DefaultContextLookup();
@@ -70,8 +65,8 @@ public abstract class TargetContext {
     protected void commitDock(Node node) {
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
-            if (dockableContext.getTargetContext() == null || dockableContext.getTargetContext() != this) {
-                dockableContext.setTargetContext(this);
+            if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+                dockableContext.setLayoutContext(this);
             }
         }
     }
@@ -82,12 +77,12 @@ public abstract class TargetContext {
     }
 
     protected void initListeners() {
-        if (getTargetNode() == null) {
+        if (getLayoutNode() == null) {
             return;
         }
-        getTargetNode().sceneProperty().addListener((Observable observable) -> {
-            if (getTargetNode().getScene() != null) {
-                focusedDockNode.bind(getTargetNode().getScene().focusOwnerProperty());
+        getLayoutNode().sceneProperty().addListener((Observable observable) -> {
+            if (getLayoutNode().getScene() != null) {
+                focusedDockNode.bind(getLayoutNode().getScene().focusOwnerProperty());
             }
         });
 
@@ -169,7 +164,7 @@ public abstract class TargetContext {
         if (isDocked(d.node()) && d == dockable) {
             return;
         } else if ( isDocked(d.node()) ) {
-            TargetContext tc =  d.getContext().getTargetContext();
+            LayoutContext tc =  d.getContext().getLayoutContext();
             if ( tc != null && isDocked(tc, d) ) {
                 tc.undock(d.node());
             }
@@ -188,16 +183,16 @@ public abstract class TargetContext {
             } else {
                 stage.hide();
             }
-            d.getContext().setTargetContext(this);
+            d.getContext().setLayoutContext(this);
         }
     }
 
-    public boolean isUsedAsDockTarget() {
-        return usedAsDockTarget;
+    public boolean isUsedAsDockLayout() {
+        return usedAsDockLayout;
     }
 
-    public void setUsedAsDockTarget(boolean usedAsDockTarget) {
-        this.usedAsDockTarget = usedAsDockTarget;
+    public void setUsedAsDockLayout(boolean usedAsDockLayout) {
+        this.usedAsDockLayout = usedAsDockLayout;
     }
 
     public PositionIndicator getPositionIndicator() {
@@ -209,22 +204,22 @@ public abstract class TargetContext {
     /**
      * Returns the node for which this context was created
      * The node may throw {@code NullPointerException) in case when 
-     * the both conditions below are met:
-     * <ul>
-     *   <li> ! (this instanceof ScenePaneContext)</li>
-     *   <li>targetNode == null</li>
-     * </ul>
-     * @return the node for which this context was created.
+ the both conditions below are met:
+ <ul>
+   <li> ! (this instanceof ScenePaneContext)</li>
+   <li>layoutNode == null</li>
+ </ul>
+ @return the node for which this context was created.
      */
-    public final Node getTargetNode() {
-        if ( ! (this instanceof ScenePaneContext) && targetNode == null  ) {
-            throw new NullPointerException("The property targetNode cannot be null");
+    public final Node getLayoutNode() {
+        if ( ! (this instanceof ScenePaneContext) && layoutNode == null  ) {
+            throw new NullPointerException("The property layoutNode cannot be null");
         }
-        return this.targetNode;
+        return this.layoutNode;
     }
 
-    protected void setTargetNode(Node targetNode) {
-        this.targetNode = targetNode;
+    protected void setLayoutNode(Node layoutNode) {
+        this.layoutNode = layoutNode;
     }
 
     protected boolean isDocked(Node node) {
@@ -233,13 +228,13 @@ public abstract class TargetContext {
 
     /**
      * isDocked(Node) returns true even if the node is docked to
-     * the given {@code TargetContext}
+     * the given {@code LayoutContext}
      *
-     * @param tc the object of type {@code TargetContext}
+     * @param tc the object of type {@code LayoutContext}
      * @param dockable the object to chack
-     * @return true even if the node is docked to the given {@code TargetContext} 
+     * @return true even if the node is docked to the given {@code LayoutContext} 
      */
-    public static boolean isDocked(TargetContext tc, Dockable dockable) {
+    public static boolean isDocked(LayoutContext tc, Dockable dockable) {
         Dockable d = dockable;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.getValue() != null && dc.isValueDockable() ) {
@@ -251,12 +246,10 @@ public abstract class TargetContext {
     }
 
     public void undock(Node node) {
-        System.err.println("TargetContext: UNDOCK node = "+ node);
         if (DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
-            dc.getTargetContext().remove(node);
-            System.err.println("TargetContext: = "+ dc.getTargetContext());
-            dc.setTargetContext(null);
+            dc.getLayoutContext().remove(node);
+            dc.setLayoutContext(null);
         }
     }
     

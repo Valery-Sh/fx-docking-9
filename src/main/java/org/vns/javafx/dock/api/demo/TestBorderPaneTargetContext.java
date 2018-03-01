@@ -41,7 +41,7 @@ public class TestBorderPaneTargetContext  extends Application {
     public void start(Stage primaryStage) throws Exception {
         BorderPane primaryRoot = new BorderPane();
         //primaryRoot.getChildren().addAll(new Button("Btn1"), new Label("Label1"), new Button("Btn2"));
-        DockRegistry.getInstance().registerAsDockTarget(primaryRoot);
+        DockRegistry.getInstance().registerAsDockLayout(primaryRoot);
         
         primaryRoot.addEventFilter(DockEvent.NODE_DOCKED, ev -> {
             System.err.println("DockPane eventFilter: getSource()       = " + ev.getSource());
