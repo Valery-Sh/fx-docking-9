@@ -26,20 +26,18 @@ public class DragIndicator {
 
     //private final SceneGraphView sceneGraphView;
     
-    private TreeViewEx treeView;
+    private final TreeViewEx treeView;
 
     private final Line vertLine = new Line();
     private final Line horLine = new Line();
     private final Rectangle itemRect = new Rectangle();
 
     private final Pane indicatorPane = new Pane();
-    private Pane treeViewPane;
+    private final Pane treeViewPane;
 
     public DragIndicator(SceneGraphView sceneGraphView) {
-        //this.sceneGraphView = sceneGraphView;
         treeView = (TreeViewEx) sceneGraphView.getTreeView();
         this.treeViewPane = treeView.getParentPane();
-        //this.treeViewPane = treeViewPane;
     }
 
     protected TreeItemEx findTreeItem(TreeItemEx item, Object sourceGesture) {
@@ -303,18 +301,32 @@ public class DragIndicator {
 
     }
 
+    protected void drawRectangle(TreeViewEx treeView) {
+        System.err.println("drawRectangle(TreeViewEx treeView)");
+        hideDrawShapes();
+        Bounds lb = treeViewPane.getBoundsInLocal();
+        itemRect.setX(lb.getMinX());
+        itemRect.setY(lb.getMinY());
+        itemRect.setWidth(lb.getWidth() - 2*itemRect.getStrokeWidth());
+        itemRect.setHeight(lb.getHeight());
+
+        itemRect.toFront();
+        itemRect.setVisible(true);
+        
+    }    
     protected void drawRectangle(TreeItemEx item) {
+        //if ( true ) return;
+        
         hideDrawShapes();
         Bounds lb = EditorUtil.screenTreeItemBounds(item);
         if (lb == null) {
             return;
         }
-
         lb = treeViewPane.screenToLocal(lb);
 
         itemRect.setX(lb.getMinX());
         itemRect.setY(lb.getMinY());
-        itemRect.setWidth(lb.getWidth());
+        itemRect.setWidth(lb.getWidth() - 2*itemRect.getStrokeWidth());
         itemRect.setHeight(lb.getHeight());
 
         itemRect.toFront();
@@ -322,7 +334,7 @@ public class DragIndicator {
     }
 
     protected void drawLines(TreeItemEx from, TreeItemEx to) {
-        
+
         Bounds lb = EditorUtil.screenHorVisibleBounds(treeView,to);
         Bounds rootBounds = screenNonValueLevelBounds((TreeItemEx) treeView.getRoot(), to);
 

@@ -66,6 +66,8 @@ public abstract class LayoutContext {
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
             if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+                System.err.println("LayoutContext: node = " + node);
+                System.err.println("LayoutContext:  = " + this);
                 dockableContext.setLayoutContext(this);
             }
         }

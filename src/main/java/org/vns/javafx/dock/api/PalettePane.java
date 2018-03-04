@@ -31,20 +31,42 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import static org.vns.javafx.dock.api.PalettePane.NodePolicy.BOTH;
+import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKABLE;
+import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKLAYOUT;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -74,12 +96,22 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 public class PalettePane extends Control {
 
     public static final String PALETTE_PANE = "palette-pane";
+
+    public static enum NodePolicy {
+        DOCKABLE,
+        DOCKLAYOUT,
+        BOTH,
+        NONE
+    }
+
     private PaletteModel model;
 
     private final ObjectProperty<ScrollPane.ScrollBarPolicy> scrollVBarPolicy = new SimpleObjectProperty<>(ScrollPane.ScrollBarPolicy.AS_NEEDED);
     private final ObjectProperty<Node> dragNode = new SimpleObjectProperty<>();
 
-    private BooleanProperty animated = new SimpleBooleanProperty();
+    private BooleanProperty animated = new SimpleBooleanProperty(true);
+
+    private ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
 
     /**
      * Creates an instance of the class. The created palette contains an empty
@@ -93,7 +125,9 @@ public class PalettePane extends Control {
      * Creates an instance of the class. If the given parameter is {@code false
      * } then the created palette contains an empty list of categories.
      * Otherwise a default categories and there items are created.
-     * @param createDefault specifies  whether the new object has a default items.
+     *
+     * @param createDefault specifies whether the new object has a default
+     * items.
      */
     public PalettePane(boolean createDefault) {
         initModel(createDefault);
@@ -104,9 +138,21 @@ public class PalettePane extends Control {
         if (createDefault) {
             model = createDefaultPaleteModel();
         } else {
-            model = new PaletteModel();
+            model = new PaletteModel(this);
         }
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
+    }
+
+    public ObjectProperty<NodePolicy> producedNodepolicy() {
+        return producedNodepolicy;
+    }
+
+    public void setProducedNodeProperty(NodePolicy policy) {
+        this.producedNodepolicy.set(policy);
+    }
+
+    public NodePolicy getProducedNodeProperty() {
+        return this.producedNodepolicy.get();
     }
 
     /**
@@ -180,7 +226,8 @@ public class PalettePane extends Control {
 
     /**
      * Returns a node which serves as a drag node
-     * @return  the node used as a drag node
+     *
+     * @return the node used as a drag node
      */
     public Node getDragNode() {
         return dragNode.get();
@@ -223,55 +270,173 @@ public class PalettePane extends Control {
     }
 
     protected PaletteModel createDefaultPaleteModel() {
-        PaletteModel model = new PaletteModel();
+        PaletteModel model = new PaletteModel(this);
 
         Label lb = new Label("Containers");
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         PaletteCategory pc = model.addCategory("containers", lb);
         lb.getStyleClass().add("tree-item-font-bold");
 
-        lb = new Label("Tab");
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-        lb.getStyleClass().add("tree-item-node-tab");
+        lb = new Label("Accordion");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        pc.addItem(lb, Accordion.class);
+        lb.getStyleClass().add("tree-item-node-accordion");
         lb.applyCss();
-        pc.addItem(lb, Tab.class);
 
+        lb = new Label("AnchorPane");
+        pc.addItem(lb, AnchorPane.class);
+        lb.getStyleClass().add("tree-item-node-anchorpane");
+        lb.applyCss();
+        
+        lb = new Label("BorderPane");
+        pc.addItem(lb, BorderPane.class);
+        lb.getStyleClass().add("tree-item-node-borderpane");
+        lb.applyCss();
+
+        lb = new Label("FlowPane");
+        pc.addItem(lb, FlowPane.class);
+        lb.getStyleClass().add("tree-item-node-flowpane");
+        lb.applyCss();
+        
+        lb = new Label("GridPane");
+        pc.addItem(lb, GridPane.class);
+        lb.getStyleClass().add("tree-item-node-gridpane");
+        lb.applyCss();
+
+
+        lb = new Label("HBox");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        pc.addItem(lb, HBox.class);
+        lb.getStyleClass().add("tree-item-node-hbox");
+        lb.applyCss();
+        
         lb = new Label("VBox");
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-vbox");
         lb.applyCss();
         pc.addItem(lb, VBox.class);
 
-        lb = new Label("HBox");
+        lb = new Label("Pane");
+        pc.addItem(lb, Pane.class);
+        lb.getStyleClass().add("tree-item-node-pane");
+        lb.applyCss();     
+    
+        lb = new Label("ScrollPane");
+        pc.addItem(lb, ScrollPane.class);
+        lb.getStyleClass().add("tree-item-node-scrollpane");
+        lb.applyCss();     
 
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-        pc.addItem(lb, HBox.class);
-        lb.getStyleClass().add("tree-item-node-hbox");
+        lb = new Label("SplitPane");
+        pc.addItem(lb, SplitPane.class);
+        lb.getStyleClass().add("tree-item-node-splitpane");
+        lb.applyCss();     
+
+        lb = new Label("StackPane");
+        pc.addItem(lb, StackPane.class);
+        lb.getStyleClass().add("tree-item-node-stackpane");
+        lb.applyCss();     
+    
+        lb = new Label("Tab");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        lb.getStyleClass().add("tree-item-node-tab");
+        lb.applyCss();
+        pc.addItem(lb, Tab.class);        
+
+        lb = new Label("TabPane");
+        pc.addItem(lb, TabPane.class);
+        lb.getStyleClass().add("tree-item-node-tabpane");
+        lb.applyCss();
+        
+        lb = new Label("TilePane");
+        pc.addItem(lb, TilePane.class);
+        lb.getStyleClass().add("tree-item-node-tilepane");
         lb.applyCss();
 
+        lb = new Label("TitledPane");
+        pc.addItem(lb, TitledPane.class);
+        lb.getStyleClass().add("tree-item-node-titledpane");
+        lb.applyCss();
+        
+        //
+        // Controls
+        //
+        lb = new Label("Controls");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        lb.getStyleClass().add("tree-item-font-bold");
+
+        pc = model.addCategory("controls", lb);
+        lb.applyCss();
+        
+        lb = new Label("Button");
+        pc.addItem(lb, Button.class);
+        lb.getStyleClass().add("tree-item-node-button");
+
+        lb = new Label("CheckBox");
+        pc.addItem(lb, CheckBox.class, v -> {
+            ((CheckBox) v).setText("CheckBox");
+        });
+        lb.getStyleClass().add("tree-item-node-checkbox");
+
+        lb = new Label("ChoiceBox");
+        pc.addItem(lb, ChoiceBox.class);
+        lb.getStyleClass().add("tree-item-node-choicebox");
+        
+        lb = new Label("ComboBox");
+        pc.addItem(lb, ComboBox.class);
+        lb.getStyleClass().add("tree-item-node-combobox");
+
+        lb = new Label("ListView");
+        pc.addItem(lb, ListView.class);
+        lb.getStyleClass().add("tree-item-node-listview");
+
+        lb = new Label("Label");
+        pc.addItem(lb, Label.class);
+        lb.getStyleClass().add("tree-item-node-label");
+
+        lb = new Label("TextArea");
+        pc.addItem(lb, TextArea.class);
+        lb.getStyleClass().add("tree-item-node-textarea");
+        lb.applyCss();
+        
+        lb = new Label("TextField");
+        pc.addItem(lb, TextField.class);
+        lb.getStyleClass().add("tree-item-node-textfield");
+        lb.applyCss();
+        
+        //
+        // Spapes
+        //
         lb = new Label("Shapes");
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-font-bold");
 
         pc = model.addCategory("shapes", lb);
         lb.applyCss();
 
+        lb = new Label("Arc");
+        pc.addItem(lb, Arc.class);
+        lb.getStyleClass().add("tree-item-node-rectangle");
+        
         lb = new Label("Rectangle");
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
+        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, Rectangle.class, v -> {
             Rectangle r = (Rectangle) v;
             r.setWidth(75);
             r.setHeight(20);
+            r.setFill(Color.WHITE);
         });
         lb.getStyleClass().add("tree-item-node-rectangle");
         lb.applyCss();
 
-        lb = new Label("Arc");
-
-        lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-        pc.addItem(lb, Arc.class);
-        lb.getStyleClass().add("tree-item-node-rectangle");
+        lb = new Label("Text");
+        pc.addItem(lb, Text.class, v -> {
+            ((Text) v).setText("Text");
+        });
+        lb.getStyleClass().add("tree-item-node-text");
+        
         return model;
+        
+        
     }
 
     /**
@@ -283,6 +448,8 @@ public class PalettePane extends Control {
         private final Class<?> valueClass;
         private PaletteModel model;
         private DragValueCustomizer customizer;
+        private ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
+        private ObjectProperty<Class<?>> layoutContextClass = new SimpleObjectProperty<>();
 
         /**
          * Create an instance of the class for the specified parameters.
@@ -291,8 +458,8 @@ public class PalettePane extends Control {
          * @param lb this object of type {@code Label} which is used to visually
          * represent an item of the palette.
          *
-         * @param clazz the object of type {@code java.lang.Class} of the objects
-         * this element represents
+         * @param clazz the object of type {@code java.lang.Class} of the
+         * objects this element represents
          */
         public PaletteItem(PaletteModel model, Label lb, Class<?> clazz) {
             this(model, lb, clazz, null);
@@ -305,13 +472,13 @@ public class PalettePane extends Control {
          * @param lb this object of type {@code Label} which is used to visually
          * represent an item of the palette.
          *
-         * @param clazz the object of type {@code java.lang.Class } of the objects
-         * this element represents
+         * @param clazz the object of type {@code java.lang.Class } of the
+         * objects this element represents
          * @param customizer modifies an object created when the palette item is
-         * dragged. For example, for objects of type {@code Labeled },
-         * its {@code text} property is assigned a simple class name with the
-         * first character converted to lower case
-         * ("label" for Label, "button" for Button, etc.).
+         * dragged. For example, for objects of type {@code Labeled }, its
+         * {@code text} property is assigned a simple class name with the first
+         * character converted to lower case ("label" for Label, "button" for
+         * Button, etc.).
          *
          */
         public PaletteItem(PaletteModel model, Label lb, Class<?> clazz, DragValueCustomizer customizer) {
@@ -332,6 +499,30 @@ public class PalettePane extends Control {
                         .getLookup()
                         .putUnique(MouseDragHandler.class, handler);
             }
+        }
+
+        public ObjectProperty<NodePolicy> producedNodepolicy() {
+            return producedNodepolicy;
+        }
+
+        public void setProducedNodeProperty(NodePolicy policy) {
+            this.producedNodepolicy.set(policy);
+        }
+
+        public NodePolicy getProducedNodeProperty() {
+            return this.producedNodepolicy.get();
+        }
+
+        public ObjectProperty<Class<?>> layoutContextClassProperty() {
+            return layoutContextClass;
+        }
+
+        public Class<?> getLayoutContextClass() {
+            return layoutContextClass.get();
+        }
+
+        public void setLayoutContextClass(Class<?> layoutContextClass) {
+            this.layoutContextClass.set(layoutContextClass);
         }
 
         /**
@@ -474,14 +665,15 @@ public class PalettePane extends Control {
         }
 
         /**
-         * Sets the identifier of the category. 
-         * The value must be unique for all categories
+         * Sets the identifier of the category. The value must be unique for all
+         * categories
+         *
          * @param id the identifier to be set
          */
         public void setId(String id) {
             this.id.set(id);
         }
-        
+
         protected TilePane getPane() {
             return pane.get();
         }
@@ -493,27 +685,29 @@ public class PalettePane extends Control {
         protected ObjectProperty<TilePane> paneProperty() {
             return pane;
         }
+
         /**
-         * Creates and a new item of type {@code PaletteItem} and add it to the 
+         * Creates and a new item of type {@code PaletteItem} and add it to the
          * end of the list of items.
-         * 
+         *
          * @param label used to visually represent the item in the palette
-         * @param clazz the object of type {@code java.lang.Class } of the objects
-         *          this element represents
+         * @param clazz the object of type {@code java.lang.Class } of the
+         * objects this element represents
          * @return a newly created instance
          */
         public PaletteItem addItem(Label label, Class<?> clazz) {
             return addItem(items.size(), label, clazz);
         }
+
         /**
-         * 
-         * Creates and a new item of type {@code PaletteItem} and add it to the 
+         *
+         * Creates and a new item of type {@code PaletteItem} and add it to the
          * specified index of the list of items.
-         * 
+         *
          * @param idx the index the new item must be placed
          * @param label used to visually represent the item in the palette
-         * @param clazz the object of type {@code java.lang.Class } of the objects
-         *          this element represents
+         * @param clazz the object of type {@code java.lang.Class } of the
+         * objects this element represents
          * @return a newly created instance
          */
         public PaletteItem addItem(int idx, Label label, Class<?> clazz) {
@@ -526,30 +720,32 @@ public class PalettePane extends Control {
 
             return item;
         }
+
         /**
-         * Creates and a new item of type {@code PaletteItem} and add it to the 
+         * Creates and a new item of type {@code PaletteItem} and add it to the
          * end of the list of items.
-         * 
+         *
          * @param label used to visually represent the item in the palette
-         * @param clazz the object of type {@code java.lang.Class } of the objects
-         *          this element represents
+         * @param clazz the object of type {@code java.lang.Class } of the
+         * objects this element represents
          * @param customizer the value customizer
          * @return a newly created instance
          */
         public PaletteItem addItem(Label label, Class<?> clazz, DragValueCustomizer customizer) {
             return addItem(items.size(), label, clazz, customizer);
         }
+
         /**
-         * Creates and a new item of type {@code PaletteItem} and add it to the 
+         * Creates and a new item of type {@code PaletteItem} and add it to the
          * specified index of the list of items.
-         * 
-        * @param idx the index the new item must be placed
+         *
+         * @param idx the index the new item must be placed
          * @param label used to visually represent the item in the palette
-         * @param clazz the object of type {@code java.lang.Class } of the objects
-         *          this element represents
+         * @param clazz the object of type {@code java.lang.Class } of the
+         * objects this element represents
          * @param customizer the value customizer
          * @return a newly created instance
-         */ 
+         */
         public PaletteItem addItem(int idx, Label label, Class<?> clazz, DragValueCustomizer customizer) {
             if (getModel().containsItem(clazz)) {
                 throw new IllegalArgumentException("A PaletteCategory alredy contains a PaletteItem with the specified valueClassClass(valueClass=" + clazz.getName() + ")");
@@ -561,49 +757,62 @@ public class PalettePane extends Control {
             return item;
         }
     }
+
     /**
      * The object of the class contains a set of items broken down by category.
      * Serves as a model for {@link PalettePane}.
-     * 
+     *
      */
     public static class PaletteModel {
 
         private final ObservableList<PaletteCategory> categories = FXCollections.observableArrayList();
         private DragValueCustomizer customizer;
+        private final PalettePane palette;
         
         /**
-         * Creates a new instance of the class. 
-         * The created object has the property {@code customizer} set to the
-         * object of type {@link DefaultDragValueCustomizer}.
+         * Creates a new instance of the class. The created object has the
+         * property {@code customizer} set to the object of type
+         * {@link DefaultDragValueCustomizer}.
          */
-        public PaletteModel() {
+        public PaletteModel(PalettePane palette) {
+            this.palette = palette;
             customizer = new DefaultDragValueCustomizer();
         }
+
         /**
          * Returns a list of categories.
+         *
          * @return a list of categories
          */
         public ObservableList<PaletteCategory> getCategories() {
             return categories;
         }
+
         /**
          * Return a customizer or null if the customizer is not specified.
+         *
          * @return a customizer
          */
         public DragValueCustomizer getCustomizer() {
             return customizer;
         }
+
         /**
          * Sets a new value of type {@code DragValueCustomizer}.
+         *
          * @param customizer the value of type {@link DragValueCustomizer}
          */
         public void setCustomizer(DragValueCustomizer customizer) {
             this.customizer = customizer;
         }
+
         /**
-         * Checks whether the model contains a category with the given identifier.
+         * Checks whether the model contains a category with the given
+         * identifier.
+         *
          * @param id the identifier to be checked
-         * @return true if the category with the given identifier exists. false otherwise
+         * @return true if the category with the given identifier exists. false
+         * otherwise
          */
         public boolean containsCategory(String id) {
             boolean retval = false;
@@ -615,10 +824,14 @@ public class PalettePane extends Control {
             }
             return retval;
         }
+
         /**
-         * Checks whether the model contains a category for the given {@code java.lang.Class}..
+         * Checks whether the model contains a category for the given
+         * {@code java.lang.Class}..
+         *
          * @param valueClass the class to be checked
-         * @return true if the category for the given {@code Class} exists. false otherwise
+         * @return true if the category for the given {@code Class} exists.
+         * false otherwise
          */
         public boolean containsItem(Class<?> valueClass) {
             boolean retval = false;
@@ -632,13 +845,16 @@ public class PalettePane extends Control {
             }
             return retval;
         }
+
         /**
-         * Creates a new instance of type {@link PaletteCategory} and ads it to the end
-         * of the categories list.
-         * 
-         * @param id the identifier for the new category/ Must be unique 
-         * otherwise the exception of type {@code IllegalArgumentException} will be thrown
-         * @param label the label used to represent the new category in the palette.
+         * Creates a new instance of type {@link PaletteCategory} and ads it to
+         * the end of the categories list.
+         *
+         * @param id the identifier for the new category/ Must be unique
+         * otherwise the exception of type {@code IllegalArgumentException} will
+         * be thrown
+         * @param label the label used to represent the new category in the
+         * palette.
          * @return the newly created category
          */
         public PaletteCategory addCategory(String id, Label label) {
@@ -654,8 +870,10 @@ public class PalettePane extends Control {
             categories.add(c);
             return c;
         }
+
         /**
          * Returns the category with the given identifier.
+         *
          * @param id the identifier to search for
          * @return the category with the given identifier.
          */
@@ -668,6 +886,10 @@ public class PalettePane extends Control {
                 }
             }
             return retval;
+        }
+
+        public PalettePane getPalette() {
+            return palette;
         }
 
     }
@@ -689,9 +911,35 @@ public class PalettePane extends Control {
             if (!ev.isPrimaryButtonDown()) {
                 return;
             }
-
+            PalettePane palette = item.getModel().getPalette();
             try {
                 Object value = item.getValueClass().newInstance();
+                if (Dockable.of(value) == null && (value instanceof Node)) {
+                    NodePolicy itemPolicy = item.getProducedNodeProperty();
+                    if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
+                        if (palette.getProducedNodeProperty() == DOCKABLE || palette.getProducedNodeProperty() == BOTH) {
+                            DockRegistry.makeDockable((Node) value);
+                        }
+                    }
+                }
+                if (DockLayout.of(value) == null && (value instanceof Node)) {
+                    NodePolicy itemPolicy = item.getProducedNodeProperty();
+                    if (itemPolicy == DOCKLAYOUT || itemPolicy == BOTH) {
+                        if (palette.getProducedNodeProperty() == DOCKLAYOUT || palette.getProducedNodeProperty() == BOTH) {
+                            //LayoutContext lc = item.getLayoutContextClass();
+                            LayoutContext lc = null;
+                            if ( item.getLayoutContextClass() == null ) {
+                                LayoutContextFactory f = new LayoutContextFactory();
+                                lc = f.getContext((Node)value);
+                            } else {
+                                
+                            }
+                            if ( lc != null ) {
+                                DockRegistry.makeDockLayout((Node) value, lc);
+                            }
+                        }
+                    }
+                }                
                 if (item.getModel().getCustomizer() != null) {
                     item.getModel().getCustomizer().customize(value);
                 }
@@ -726,6 +974,7 @@ public class PalettePane extends Control {
             setStartMousePos(pos);
         }
 
+
         @Override
         public DragManager getDragManager(MouseEvent ev) {
             DragManager dm = super.getDragManager(ev);
@@ -739,23 +988,29 @@ public class PalettePane extends Control {
 
         void customize(T value);
     }
+
     /**
-     * The objects of the class are used to customize a value which is used 
+     * The objects of the class are used to customize a value which is used
      * during the drag operation.
      */
     public static class DefaultDragValueCustomizer implements DragValueCustomizer {
+
         /**
          * Customize the value depending of the value type.
-         * <p>if  the value is an instance of class {@code javafx.scene.control.Tab }
-         * then the method sets the text property of the {@code Tab} object 
-         * to "tab". 
+         * <p>
+         * if the value is an instance of class {@code javafx.scene.control.Tab
+         * }
+         * then the method sets the text property of the {@code Tab} object to
+         * "tab".
          * </p>
          * <p>
-         * if  the value is an instance of class {@code javafx.scene.control.Labeled }     
-         * then the method sets the text property of the {@code Labeled} object 
-         * to the simple class name of the value with the first letter 
-         * converted to low case.
+         * if the value is an instance of class {@code javafx.scene.control.Labeled
+         * }
+         * then the method sets the text property of the {@code Labeled} object
+         * to the simple class name of the value with the first letter converted
+         * to low case.
          * </p>
+         *
          * @param value the value to be customized
          */
         @Override

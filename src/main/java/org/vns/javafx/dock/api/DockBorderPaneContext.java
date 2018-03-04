@@ -112,6 +112,20 @@ public class DockBorderPaneContext extends LayoutContext {
 
         @Override
         public void remove(Node dockNode) {
+            System.err.println("DockBorderPaneContext: remove");
+            BorderPane target = (BorderPane) getLayoutNode();
+            if ( dockNode == target.getTop()) {
+                target.setTop(null);
+            } else if ( dockNode == target.getRight()) {
+                target.setRight(null);
+            } else if ( dockNode == target.getBottom()) {
+                target.setBottom(null);
+            } else if ( dockNode == target.getLeft()) {
+                target.setLeft(null);
+            } else if ( dockNode == target.getCenter()) {
+                target.setCenter(null);
+            }
+
         }
 
         /**

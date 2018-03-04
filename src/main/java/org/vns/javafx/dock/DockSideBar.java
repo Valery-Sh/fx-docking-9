@@ -13,6 +13,8 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
+import org.vns.javafx.dock.api.ContextLookup;
+import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockSideBarSkin;
@@ -25,7 +27,9 @@ import org.vns.javafx.dock.api.DockSideBarSkin;
 public class DockSideBar extends Control { // ListChangeListener {
 
     public static final PseudoClass TABOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("tabover");
-
+    
+    private final ContextLookup lookup;
+    
     private final ObjectProperty<Side> side = new SimpleObjectProperty<>();
 
     private final ObjectProperty<Rotation> rotation = new SimpleObjectProperty<>();
@@ -56,6 +60,7 @@ public class DockSideBar extends Control { // ListChangeListener {
     }
 
     public DockSideBar() {
+        lookup = new DefaultContextLookup();
         init();
     }
 
@@ -70,7 +75,16 @@ public class DockSideBar extends Control { // ListChangeListener {
         
         Dockable dc = DockRegistry.makeDockable(this);
         dc.getContext().setDragNode(null);
+        //DockSideBarContext layoutContext = new DockSideBarContext(this, toolBar);
+        //DockRegistry.makeDockLayout(control, layoutContext);
+        
+        
     }
+
+    public ContextLookup getLookup() {
+        return lookup;
+    }
+    
     public ObjectProperty<Node> dragNodeProperty() {
         return dragNode;
     }

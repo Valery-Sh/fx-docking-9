@@ -143,7 +143,7 @@ public class StageResizer implements WindowResizer {
 
         }
 
-        ((Stage) window).sizeToScene();
+        //((Stage) window).sizeToScene();
     }
 
     protected double getMinWidth() {

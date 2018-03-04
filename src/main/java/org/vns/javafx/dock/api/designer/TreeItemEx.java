@@ -150,6 +150,7 @@ public class TreeItemEx extends TreeItem<Object> {
         if (getValue() == null) {
             return;
         }
+        System.err.println("TreeItemEx: registerChangeListeners: value = " + getValue());
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
 
         Object changeListener;

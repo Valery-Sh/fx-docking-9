@@ -15,7 +15,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public interface FloatView<T> {
+public interface FloatView {
     public static final String FLOAT_WINDOW = "UUID-11e0c7b3-2873-465a-bfce-d4edce1bed7d";
     public static final String FLOATVIEW = "UUID-d767ecfc-a868-4d95-8847-c331b1989bb1";
     public static final String FLOATVIEW_UUID = "UUID-11e0c7b3-2873-465a-bfce-d4edce1bed7d";
@@ -26,9 +26,9 @@ public interface FloatView<T> {
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
 
-    T make(Dockable dockable);
+    Window make(Dockable dockable);
 
-    T make(Dockable dockable, boolean show);
+    Window make(Dockable dockable, boolean show);
 
     Object getValue();
 

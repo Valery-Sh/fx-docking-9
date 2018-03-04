@@ -20,15 +20,23 @@ import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockSideBar;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.LayoutContextFactory;
+
 import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
+import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 
 /**
  *
@@ -45,9 +53,23 @@ public class DemoDesigner extends Application {
         //sceneGraphView.setOpacity(0.2);
         DockNode formDockNode = new DockNode("Form Designer");
         StackPane formPane = new StackPane();
-        formDockNode.setContent(formPane);
+        formPane.setStyle("-fx-background-color: yellow");
         
+        
+        formDockNode.setContent(formPane);
+        LayoutContextFactory ctxFactory = new LayoutContextFactory();
+        LayoutContext ctx = ctxFactory.getContext(formPane);
+        System.err.println("ctx=" + ctx);
+        DockRegistry.makeDockLayout(formPane, ctx);
         sceneGraphView.setRoot(formPane);
+        sceneGraphView.rootProperty().addListener( (v, ov, nv) -> {
+            if ( nv != null ) {
+                System.err.println("DemoDesigner: rootChanged");
+                formDockNode.setContent(nv);
+            }
+        });
+        
+        
         DockSideBar sgvDockSideBar = new DockSideBar();
         sgvDockSideBar.setOrientation(Orientation.VERTICAL);
         sgvDockSideBar.setRotation(DockSideBar.Rotation.DOWN_UP);
@@ -61,6 +83,12 @@ public class DemoDesigner extends Application {
                 
         PalettePane palettePane = DesignerLookup.lookup(PalettePane.class);
         DockSideBar paletteDockSideBar = new DockSideBar();
+/*        sgvDockSideBar.getLookup().putUnique(FloatViewFactory.class, new FloatViewFactory() {
+            public FloatView getFloatView(Dockable d) {
+                return new FloatPopupControlView2(d);
+            }
+        });
+*/        
         paletteDockSideBar.setOrientation(Orientation.VERTICAL);
         paletteDockSideBar.setRotation(DockSideBar.Rotation.UP_DOWN);
         paletteDockSideBar.setSide(Side.RIGHT);

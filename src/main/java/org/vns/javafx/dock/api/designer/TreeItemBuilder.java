@@ -508,66 +508,12 @@ public class TreeItemBuilder {
                 }
             }
         }
-        if (target != null && place != null && value != null) {
-
-//            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-/*                TreeItemEx treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
-                if (treeItem instanceof TreeItemEx) {
-                    updateOnMove(treeItem);
-                }
-*/            
-/*        } else if (dg.getGestureSource() != null) {
-                TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, value);
-                if (sourceTreeItem != null) {
-                    updateOnMove(sourceTreeItem);
-                }
-            }
-*/                
-        }
+ 
         update(treeView, target, insertIndex, value);
 
     }
 
-    /*    public void accept(TreeViewEx treeView, TreeItemEx layoutNode, TreeItemEx place, Node gestureSource) {
-        DragGesture dg = (DragGesture) gestureSource.getProperties().get(EditorUtil.GESTURE_SOURCE_KEY);
-
-        Object value = dg.getGestureSourceObject();
-
-        //
-        // A position where a new TreeItem should be inserted before uptateOnMove 
-        // method call. We must consider for the list that the insertion 
-        // position can change, since the method updateOnMove deletes the item which
-        // corresponds to the dragged value
-        //
-        int insertIndex = getInsertIndex(treeView, layoutNode, place);
-
-        if (layoutNode != null && (layoutNode.getItemType() == LIST || layoutNode.getItemType() == DEFAULTLIST)) {
-            TreeItemEx it = EditorUtil.findTreeItemByObject(treeView, value);
-            if (it != null) {
-                int idx = layoutNode.getChildren().indexOf(it);
-                if (idx >= 0 && idx < insertIndex) {
-                    insertIndex--;
-                }
-            }
-        }
-        if (layoutNode != null && place != null && value != null) {
-
-            if (dg.getGestureSource() != null && (dg.getGestureSource() instanceof TreeViewEx)) {
-                TreeItemEx treeItem = ((DragTreeViewGesture) dg).getGestureSourceTreeItem();
-                if (treeItem instanceof TreeItemEx) {
-                    updateOnMove(treeItem);
-                }
-            } else if (dg.getGestureSource() != null) {
-                TreeItemEx sourceTreeItem = EditorUtil.findTreeItemByObject(treeView, value);
-                if (sourceTreeItem != null) {
-                    updateOnMove(sourceTreeItem);
-                }
-            }
-        }
-        update(treeView, layoutNode, insertIndex, value);
-
-    }
-     */
+    
     protected void update(TreeViewEx treeView, TreeItemEx target, int insertIndex, Object sourceObject) {
 
         switch (target.getItemType()) {

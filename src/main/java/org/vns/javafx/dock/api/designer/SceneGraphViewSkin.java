@@ -18,14 +18,15 @@ package org.vns.javafx.dock.api.designer;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -47,7 +48,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     public SceneGraphViewSkin(SceneGraphView control) {
         super(control);
         Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
+        
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
+        
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
         d.getContext().setLayoutContext(getSkinnable().getLayoutContext());
         treeViewPane = new StackPane();
@@ -56,39 +59,43 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         }
         //StackPane.setAlignment(getSkinnable().getTreeView(), Pos.CENTER);
         contentPane = new StackPane(treeViewPane) {
-            
+
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                if ( getSkinnable().getTreeView().getSkin() != null ) {
+                //getSkinnable().getParent().layout();
+                //getSkinnable().getParent().requestLayout();
+                //requestParentLayout();
+                if (getSkinnable().getTreeView().getSkin() != null) {
                 }
-                
+
             }
         };
-        
+
 //        contentPane.setStyle("-fx-border-color:red; -fx-border-width: 1; -fx-background-color: yellow");
-//        treeViewPane.setStyle("-fx-background-color: red");
+        treeViewPane.setStyle("-fx-border-color: red; -fx-border-width: 1");
 //        getSkinnable().getTreeView().setPrefHeight(1000);
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
 //                lookup.putUnique(IndicatorManager.class, new DragIndicatorManager(this);
         SceneGraphViewTargetContext targetContext = (SceneGraphViewTargetContext) DockLayout.of(getSkinnable()).getLayoutContext();
+
         targetContext
                 .getLookup()
                 .putUnique(IndicatorManager.class, new DragIndicatorManager(targetContext, dragIndicator));
         getSkinnable().statusParProperty().addListener(this::statusBarChanged);
-        
+
         targetContext.mousePositionProperty().addListener(this::mousePosChange);
-        
-        
+
         getChildren().add(contentPane);
         //getChildren().add(treeViewPane);
-        
-        if ( getSkinnable().getRoot() != null ) {
+
+        if (getSkinnable().getRoot() != null) {
             createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
         }
+        getSkinnable().rootProperty().addListener(this::rootChanged);
 
     }
 
@@ -103,46 +110,59 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
     protected void rootChanged(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
         if (newValue == null) {
-            getSkinnable().getTreeView().setRoot(null);
             return;
         }
-        TreeItemEx it = createSceneGraph(newValue);
+        //((Stage)newValue.getScene().getWindow()).requestFocus();
+        System.err.println("SKIN ROOT CHANGED");
+        createSceneGraph(newValue);
+        scrollAnimation = new ScrollAnimation(getSkinnable().getTreeView());
+        newValue.getStyle();
+        //newValue.setStyle("-fx-border-width: 2; -fx-border-color: aqua");
+        Stage s = (Stage)newValue.getScene().getWindow();
+        
+        //s.setWidth(s.getWidth() + 1);
+        Platform.runLater(() -> {((Stage)newValue.getScene().getWindow()).requestFocus();});
+        
     }
 
     protected TreeItemEx createSceneGraph(Node node) {
         TreeItemEx item = new TreeItemBuilder().build(node);
         item.setExpanded(true);
         getSkinnable().getTreeView().setRoot(item);
-        //registerScrollBarEvents();
         Platform.runLater(() -> {
             registerScrollBarEvents();
         });
         return item;
     }
+
     protected void mousePosChange(ObservableValue<? extends Point2D> observable, Point2D oldValue, Point2D newValue) {
+
+        if (getSkinnable().getTreeView().getRoot() == null) {
+            return;
+        }
         ScrollBar sb = getSkinnable().getTreeView().getVScrollBar();
-        if ( newValue == null ) {
+        if (newValue == null) {
             scrollAnimation.stop();
         }
-        if ( ! sb.contains( sb.screenToLocal(newValue))) {
-           scrollAnimation.stop();
+        if (!sb.contains(sb.screenToLocal(newValue))) {
+            scrollAnimation.stop();
         }
-        if (  sb.contains( sb.screenToLocal(newValue))) {
-           scrollAnimation.start(newValue.getX(), newValue.getY());
+        if (sb.contains(sb.screenToLocal(newValue))) {
+            scrollAnimation.start(newValue.getX(), newValue.getY());
         }
     }
 
     protected void registerScrollBarEvents() {
         ScrollBar sb = getSkinnable().getTreeView().getVScrollBar();
-        
+
 //        sb.addEventHandler(DragEvent.DRAG_EXITED, ev -> {
-        sb.addEventHandler(MouseEvent.MOUSE_EXITED, ev -> {            
+        sb.addEventHandler(MouseEvent.MOUSE_EXITED, ev -> {
             dragIndicator.hideDrawShapes();
             scrollAnimation.stop();
             ev.consume();
         });
         //sb.addEventHandler(DragEvent.DRAG_OVER, ev -> {
-        sb.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {            
+        sb.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
             dragIndicator.hideDrawShapes();
             //ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             if (!scrollAnimation.isRunning()) {
@@ -152,7 +172,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         });
 
         //sb.addEventHandler(DragEvent.DRAG_ENTERED, ev -> {
-        sb.addEventHandler(MouseEvent.MOUSE_ENTERED, ev -> {            
+        sb.addEventHandler(MouseEvent.MOUSE_ENTERED, ev -> {
             dragIndicator.hideDrawShapes();
             ev.consume();
             scrollAnimation.start(ev.getScreenX(), ev.getScreenY());

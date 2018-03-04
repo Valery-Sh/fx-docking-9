@@ -31,7 +31,7 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public interface FloatWindowView extends FloatView<Window> {
+public interface FloatWindowView extends FloatView {
 
     Dockable getDockable();
 

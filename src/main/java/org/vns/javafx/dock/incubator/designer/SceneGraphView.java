@@ -334,7 +334,7 @@ public class SceneGraphView extends Control {
 
         @Override
         public void handle(DragEvent ev) {
-//            System.err.println("BEFORE NOTIFY DRAG EVENT");
+            System.err.println("BEFORE NOTIFY DRAG EVENT");
             ((TreeViewEx) getEditor().getTreeView()).notifyDragEvent(ev);
 
             if (ev.getEventType() == DragEvent.DRAG_OVER) {
@@ -382,6 +382,7 @@ public class SceneGraphView extends Control {
 
         @Override
         public void handle(DragEvent ev) {
+            System.err.println("SceneGraphView HANDLE");
             getEditor().getDragIndicator().hideDrawShapes();
             VirtualScrollBar sb = ((TreeViewEx) getEditor().getTreeView()).getVScrollBar();
             if (sb != null) {

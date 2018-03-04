@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api.demo;
 
-import java.util.Random;
 import java.util.UUID;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -21,7 +20,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
@@ -45,9 +43,11 @@ public class TestDockPaneControl extends Application {
 
     Stage stage;
     Scene scene;
+    Stage primaryStage;
 
     @Override
     public void start(Stage stage) {
+        primaryStage = stage;
         stage.setTitle("PRIMARY");
         System.err.println("UUID = " + UUID.randomUUID());
 
@@ -66,6 +66,9 @@ public class TestDockPaneControl extends Application {
         //dockPane2.getItems().add(new DockSplitPane());
         dockPane2.setId("dockPane2");
         DockNode dnc1_1 = new DockNode();
+        StackPane formPane = new StackPane();
+        formPane.setId("sp1");
+        dnc1_1.setContent(formPane);
         DockNode dnc2_1 = new DockNode();
         dnc1_1.setId("dnc1_1");
         dnc1_1.setTitle("dnc1_1");
@@ -79,17 +82,36 @@ public class TestDockPaneControl extends Application {
             dockPane2.setTitleBar(h);
         });
         Button b1_2 = new Button("b1_2");
-        dnc1_1.setContent(b1_1);
+        //dnc1_1.setContent(b1_1);
         dnc2_1.setContent(b1_2);
+        Stage popup = new Stage();
+        popup.initOwner(stage);
+        VBox vbox = new VBox();
+        Scene popupScene = new Scene(vbox);
+        popup.setScene(popupScene);
+        Button popupBtn = new Button("Popup Button");
+        vbox.getChildren().add(popupBtn);
+        popupBtn.setOnAction(a -> {
+            if (dnc1_1.getContent().getId() == "sp1") {
+                dnc1_1.setContent(new StackPane());
+            } else {
+                ((StackPane) dnc1_1.getContent()).getChildren().add(new Button("New Button"));
+            }
+
+        });
+
+        b1_2.setOnAction(a -> {
+            popup.show();
+        });
 
         VPane vp1_1 = new VPane();
         vp1_1.getItems().addAll(dnc1_1, dnc2_1);
 //        System.err.println("");
-        
+
         vp1_1.setId("vp1_1");
         dockPane2.getItems().add(vp1_1);
         System.err.println("0000 dnc1_1 getTargetContext() = " + dnc1_1.getContext().getLayoutContext());
-        
+
         dockPane1.setId("dockPane1");
         DockNode dnc1 = new DockNode();
         dnc1.setTitle("dnc1");
@@ -161,7 +183,7 @@ public class TestDockPaneControl extends Application {
         Label contentLabel = new Label("CONTENT LABEL");
         dnc2.setContent(contentLabel);
         contentLabel.setOnMouseClicked(e -> {
-            ((DockPaneContext)((ScenePaneContext)dnc2.getContext().getLayoutContext()).getRestoreContext()).restore(Dockable.of(dnc2));
+            ((DockPaneContext) ((ScenePaneContext) dnc2.getContext().getLayoutContext()).getRestoreContext()).restore(Dockable.of(dnc2));
         });
         Label childLabel = new Label("dnc3 label");
         dnc3.setContent(new StackPane());
@@ -192,7 +214,7 @@ public class TestDockPaneControl extends Application {
             //System.err.println("after (b3)hs1.sz=" + hs1.getItems().size());
         });
         b4.setOnAction(a -> {
-            
+
             System.err.println("dockPane2.getRoot().getItems() " + dockPane2.getItems().size());
             dockPane2.getItems().forEach(it -> {
                 System.err.println("   --- item = " + it);
@@ -203,7 +225,7 @@ public class TestDockPaneControl extends Application {
             loader.reset();
         });
 
-/*        b6.setOnAction(a -> {
+        /*        b6.setOnAction(a -> {
             System.err.println("dnc1.dragNose = " + Dockable.of(dnc1).getContext().getDragNode());            
             b6.getScene().getWindow().setWidth(b6.getScene().getWindow().getWidth() + 20);
                         System.err.println("================================");
@@ -215,14 +237,14 @@ public class TestDockPaneControl extends Application {
             System.err.println("================================");
             
         });
-*/
+         */
         b6.setOnMousePressed(e -> {
             System.err.println("b6 pressed");
         });
         b6.setOnMouseReleased(e -> {
             System.err.println("b6 released");
         });
-        
+
         //root.getChildren().add(dockPane1);
         scene = new Scene(root, 550, 550);
 
@@ -230,7 +252,7 @@ public class TestDockPaneControl extends Application {
 
         stage.setScene(scene);
         stage.show();
-
+        //popup.show();
         Stage stage1 = new Stage();
         stage1.setTitle("Node Node Dockables");
         VBox root1 = new VBox();
@@ -271,9 +293,9 @@ public class TestDockPaneControl extends Application {
         stage.setHeight(350);
         stage.setWidth(350);
         stage1.setAlwaysOnTop(true);
-        stage1.show();
-        Stage sideBarStage = getSideBarStage();
-        sideBarStage.show();
+        //stage1.show();
+        Stage sideBarStage = getSideBarStage(dnc1_1);
+        //sideBarStage.show();
         /*        Stage stage2 = new Stage();
         BorderPane rootBorderPane = new BorderPane();
         Scene scene2 = new Scene(rootBorderPane);
@@ -296,9 +318,9 @@ public class TestDockPaneControl extends Application {
         rootBorderPane.setStyle("-fx-background-color: red");
         stage2.show();
          */
-        System.err.println("VPAne getParent() = " + vp1_1.getParent() + "; getParent.getParent = " +vp1_1.getParent().getParent());
-        System.err.println("2 getParent() = " +  vp1_1.getParent().getParent().getParent().getParent());
-        System.err.println("3 dnc1_1 getTargetContext() = " +  dnc1_1.getContext().getLayoutContext());
+        System.err.println("VPAne getParent() = " + vp1_1.getParent() + "; getParent.getParent = " + vp1_1.getParent().getParent());
+        System.err.println("2 getParent() = " + vp1_1.getParent().getParent().getParent().getParent());
+        System.err.println("3 dnc1_1 getTargetContext() = " + dnc1_1.getContext().getLayoutContext());
         //dnc1_1
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
@@ -309,8 +331,9 @@ public class TestDockPaneControl extends Application {
         Application.launch(args);
     }
 
-    public Stage getSideBarStage() {
+    public Stage getSideBarStage(DockNode dn) {
         Stage stage = new Stage();
+        stage.initOwner(primaryStage);
         StackPane root = new StackPane();
 
         stage.setTitle("Test DockSideBar");
@@ -394,11 +417,17 @@ public class TestDockPaneControl extends Application {
         //dragButton2.setStyle("-fx-padding: 0");
 
         b04.setOnAction(a -> {
+            if (dn.getContent().getId() == "sp1") {
+                dn.setContent(new StackPane());
+            } else {
+                ((StackPane) dn.getContent()).getChildren().add(new Button("New Button"));
+            }
+
             if (sideBar01.getDragNode() == null || sideBar01.getDragNode() == dragButton2 || sideBar01.getDragNode() == iv) {
-                sideBar01.setDragNode(dragButton1);
+                //sideBar01.setDragNode(dragButton1);
             } else {
                 //sideBar01.setDragNode(dragButton2);
-                sideBar01.setDragNode(iv);
+                //sideBar01.setDragNode(iv);
                 //iv.setMouseTransparent(true);
             }
 
@@ -407,7 +436,7 @@ public class TestDockPaneControl extends Application {
         b05.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent a) {
-                
+
                 System.err.println(";sideBar01.bounds=" + sideBar01.getLayoutBounds());
                 System.err.println("sideBar width=" + sideBar01.getWidth());
                 System.err.println("sideBar height=" + sideBar01.getHeight());
@@ -475,7 +504,7 @@ public class TestDockPaneControl extends Application {
 //        sideBar01.setMinSize(sideBar01.getToolBar().getMinWidth(), sideBar01.getToolBar().getMinHeight());        
         //stage.setTitle("Main Dockable and Toolbar");
         stage.setScene(scene);
-        System.err.println("uuid-restore-key-" + UUID.randomUUID() );
+        System.err.println("uuid-restore-key-" + UUID.randomUUID());
         //System.err.println("uuid-restore-data-" + UUID.randomUUID() );
         stage.setOnShown(e -> {
             //sideBar01.setHideOnExit(true);

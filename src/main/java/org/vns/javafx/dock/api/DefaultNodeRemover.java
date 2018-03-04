@@ -25,6 +25,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TitledPane;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 
@@ -48,10 +49,11 @@ public class DefaultNodeRemover implements BeanRemover {
      */
     @Override
     public boolean remove(Object obj) {
+        System.err.println("DefaultNodeRemover: obj=" + obj);
         if ( ! (obj instanceof Node) || ((Node)obj).getParent() == null ) {
             return false;
         }
-        
+        System.err.println("DefaultNodeRemover: 1" );
         Node node = ((Node)obj).getParent();
         while (node != null) {
             if ( ReflectHelper.isPublic(node.getClass())) {
@@ -66,12 +68,16 @@ public class DefaultNodeRemover implements BeanRemover {
     }
 
     protected boolean remove(Node parent, Object toRemove) {
+        System.err.println("DefaultNodeRemover: parent = " + parent );
         boolean retval = false;
         if ((parent instanceof Accordion) && (toRemove instanceof TitledPane)) {
             ((Accordion)parent).getPanes().remove((TitledPane)toRemove);
             return true;
         } else if ((parent instanceof ButtonBar)) {
             ((ButtonBar)parent).getButtons().remove((Node)toRemove);
+            return true;
+        }else if ((parent instanceof Labeled) && ((Labeled)parent).getGraphic() == toRemove) {
+            ((Labeled)parent).setGraphic(null);
             return true;
         }
 
@@ -106,6 +112,7 @@ public class DefaultNodeRemover implements BeanRemover {
                 Logger.getLogger(DefaultNodeRemover.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.err.println("DefaultNodeRemover: retval = "+ retval);
         return retval;
     }
 

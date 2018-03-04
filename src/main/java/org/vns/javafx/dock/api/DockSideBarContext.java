@@ -34,7 +34,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.PopupControl;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
@@ -45,9 +45,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView;
 import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
+import org.vns.javafx.dock.api.dragging.view.FloatStageView2;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -118,13 +119,19 @@ public class DockSideBarContext extends LayoutContext {
 
     protected String getButtonText(Dockable d) {
         String txt = d.getContext().getTitle();
-        if (d.getContext().getProperties().getProperty("user-title") != null) {
+        if (txt == null && d.getContext().getProperties().getProperty("user-title") != null) {
             txt = d.getContext().getProperties().getProperty("user-title");
-        } else if (d.getContext().getProperties().getProperty("short-title") != null) {
+        } else if (txt == null && d.getContext().getProperties().getProperty("short-title") != null) {
             txt = d.getContext().getProperties().getProperty("short-title");
         }
+        if ( txt == null && d.node() instanceof Labeled) {
+            txt = ((Labeled)d.node()).getText();
+        }
+        if ( txt == null && d.node().getId() != null ) {
+            txt = d.node().getId();
+        }
         if (txt == null || txt.trim().isEmpty()) {
-            txt = "Dockable";
+            txt = d.node().getClass().getSimpleName();
         }
         return txt;
     }
@@ -164,24 +171,26 @@ public class DockSideBarContext extends LayoutContext {
         }
         Group item = new Group(itemButton);
         //itemButton.setContentDisplay(ContentDisplay.CENTER);
-        Container container = new Container(dockable);
+        Container container = new Container(dockable, (DockSideBar) getLayoutNode());
         getItemMap().put(item, container);
         itemButton.setRotate(((DockSideBar) getLayoutNode()).getRotation().getAngle());
         itemButton.setOnAction(a -> {
             a.consume();
-            PopupControl popup = container.getPopup();
-            if (popup == null) {
-                popup = (PopupControl) container.getFloatView().make(dockable, false);
+            Window window = container.getPopup();
+            if (window == null) {
+                window = container.getFloatView().make(dockable, false);
+                //window = (PopupControl) container.getFloatView().make(dockable, false);
+                //window = (Stage) container.getFloatView().make(dockable, false);
                 container.addMouseExitListener();
-                container.setPopup(popup);
+                container.setPopup(window);
                 show(itemButton);
-            } else if (!popup.isShowing()) {
-                show(itemButton);
+            } else if (!window.isShowing()) {
+                    show(itemButton);
             } else {
-                popup.hide();
+                window.hide();
             }
             for (Container c : getItemMap().values()) {
-                if (c.getPopup() != null && c.getPopup() != popup) {
+                if (c.getPopup() != null && c.getPopup() != window) {
                     c.getPopup().hide();
                 }
             }
@@ -264,7 +273,6 @@ public class DockSideBarContext extends LayoutContext {
 
     @Override
     public void remove(Node dockNode) {
-        System.err.println("REMOVE");
         Group r = null;
         for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
             if (en.getValue().getDockable().node() == dockNode) {
@@ -291,21 +299,29 @@ public class DockSideBarContext extends LayoutContext {
         DockSideBar sb = (DockSideBar) getLayoutNode();
 
         if (container.getPopup() != null && !container.getPopup().isShowing()) {
-            container.getPopup().show(toolBar.getScene().getWindow());
+            if ( container.getPopup() instanceof PopupControl ) {
+                ((PopupControl)container.getPopup()).show(toolBar.getScene().getWindow());
+            } else {
+                if ( ! container.getPopup().isShowing() && ((Stage)container.getPopup()).getOwner() == null ) {
+                    ((Stage)container.getPopup()).initOwner(toolBar.getScene().getWindow());                    
+                }
+                
+                ((Stage)container.getPopup()).show();
+                
+            }
         }
         container.changeSize();
     }
 
-
     @Override
     public boolean restore(Dockable dockable) {
         return false;
-
     }
 
     public static class Container implements ChangeListener<Number> {
 
-        private PopupControl popup;
+        private Window popup;
+
         private final Dockable dockable;
         private final FloatView windowBuilder;
 
@@ -314,17 +330,22 @@ public class DockSideBarContext extends LayoutContext {
 
         private EventHandler<MouseEvent> mouseExitEventListener;
 
-        public Container(Dockable dockable) {
+        public Container(Dockable dockable, DockSideBar sideBar) {
             this.dockable = dockable;
-            //stageBuilder = new StageBuilder(dockable);
-            windowBuilder = new FloatPopupControlView2(dockable);
+            LayoutContext lc = dockable.getContext().getLayoutContext();
+            System.err.println("Container: layouContext= " + lc);
+            if ( sideBar.getLookup().lookup(FloatViewFactory.class) == null ) {
+                windowBuilder = new FloatStageView2(dockable);
+            } else {
+                windowBuilder = sideBar.getLookup().lookup(FloatViewFactory.class).getFloatView(dockable);
+            }
         }
 
-        public PopupControl getPopup() {
+        public Window getPopup() {
             return popup;
         }
 
-        public void setPopup(PopupControl popup) {
+        public void setPopup(Window popup) {
             this.popup = popup;
         }
 
@@ -356,7 +377,7 @@ public class DockSideBarContext extends LayoutContext {
             }
             LayoutContext layoutContext = dockable.getContext().getLayoutContext();
             if (!ev.isPrimaryButtonDown() && !dockable.getContext().isFloating()) {
-                if ( ((DockSideBar)layoutContext.getLayoutNode()).isHideOnExit() ) {
+                if (((DockSideBar) layoutContext.getLayoutNode()).isHideOnExit()) {
                     dockable.node().getScene().getWindow().hide();
                 }
             }
@@ -400,33 +421,63 @@ public class DockSideBarContext extends LayoutContext {
             }
             Pane root = (Pane) popup.getScene().getRoot();
             Point2D pos = sb.localToScreen(0, 0);
-            System.err.println("SIDE BAR INSETS: " + sb.getInsets());
-            Insets ins = new Insets(0,0,0,0);
-            if ( popup.getScene().getRoot() instanceof Region ){
-                ins = ((Region)popup.getScene().getRoot()).getInsets();
+            Insets ins = new Insets(0, 0, 0, 0);
+            if (popup.getScene().getRoot() instanceof Region) {
+                ins = ((Region) popup.getScene().getRoot()).getInsets();
             }
-            System.err.println("SideBarSkin: ins = " + ins);
-            switch (sb.getSide()) {
-                case TOP:
-                    popup.setAnchorX(pos.getX());
-                    popup.setAnchorY(pos.getY() + sb.getHeight());
-                    root.setPrefWidth(sb.getWidth());
-                    break;
-                case BOTTOM:
-                    popup.setAnchorX(pos.getX());
-                    popup.setAnchorY(pos.getY() - popup.getHeight());
-                    root.setPrefWidth(sb.getWidth());
-                    break;
-                case RIGHT:
-                    popup.setAnchorY(pos.getY());
-                    popup.setAnchorX(pos.getX() - popup.getWidth());
-                    root.setPrefHeight(sb.getHeight());
-                    break;
-                case LEFT:
-                    popup.setAnchorY(pos.getY() - ins.getTop());
-                    popup.setAnchorX(pos.getX() + sb.getWidth());
-                    root.setPrefHeight(sb.getHeight());
-                    break;
+            if (popup instanceof PopupControl) {
+                PopupControl window = (PopupControl) this.popup;
+                switch (sb.getSide()) {
+                    case TOP:
+                        window.setAnchorX(pos.getX());
+                        window.setAnchorY(pos.getY() + sb.getHeight());
+                        root.setPrefWidth(sb.getWidth());
+                        break;
+                    case BOTTOM:
+                        window.setAnchorX(pos.getX());
+                        window.setAnchorY(pos.getY() - window.getHeight());
+                        root.setPrefWidth(sb.getWidth());
+                        break;
+                    case RIGHT:
+                        window.setAnchorY(pos.getY());
+                        window.setAnchorX(pos.getX() - window.getWidth());
+                        root.setPrefHeight(sb.getHeight());
+                        break;
+                    case LEFT:
+                        window.setAnchorY(pos.getY() - ins.getTop());
+                        window.setAnchorX(pos.getX() + sb.getWidth());
+                        root.setPrefHeight(sb.getHeight());
+                        break;
+                }
+            } else {
+                Stage window = (Stage) this.popup;
+                switch (sb.getSide()) {
+                    case TOP:
+                        window.setX(pos.getX());
+                        window.setY(pos.getY() + sb.getHeight());
+                        //root.setPrefWidth(sb.getWidth());
+                        window.setWidth(sb.getWidth());
+                        break;
+                    case BOTTOM:
+                        window.setX(pos.getX());
+                        window.setY(pos.getY() - window.getHeight());
+                        //root.setPrefWidth(sb.getWidth());
+                        window.setWidth(sb.getWidth());
+                        break;
+                    case RIGHT:
+                        window.setY(pos.getY());
+                        window.setX(pos.getX() - window.getWidth());
+                        //root.setPrefHeight(sb.getHeight());
+                        window.setHeight(sb.getHeight());
+                        break;
+                    case LEFT:
+                        window.setY(pos.getY() - ins.getTop());
+                        window.setX(pos.getX() + sb.getWidth());
+                        //root.setPrefHeight(sb.getHeight());
+                        window.setHeight(sb.getHeight());
+                        break;
+                }
+                
             }
         }
 
@@ -458,11 +509,11 @@ public class DockSideBarContext extends LayoutContext {
             return indicatorPopup;
         }
 
-/*        @Override
+        /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
             getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
-*/
+         */
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane();
@@ -499,7 +550,7 @@ public class DockSideBarContext extends LayoutContext {
                 if (!(node instanceof Group) || list.indexOf(node) == 0) {
                     continue;
                 }
-                
+
                 Region r = (Region) ((Group) node).getChildren().get(0);
                 if (r.localToScreen(r.getBoundsInLocal()) == null) {
                     continue;
@@ -528,7 +579,7 @@ public class DockSideBarContext extends LayoutContext {
             if (idx < 0) {
                 return;
             }
-           // double tbHeight = tb.getHeight();
+            // double tbHeight = tb.getHeight();
 
             Rectangle dockPlace = (Rectangle) getDockPlace();
 

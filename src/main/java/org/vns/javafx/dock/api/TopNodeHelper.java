@@ -134,12 +134,14 @@ public class TopNodeHelper {
     }
     
     public static Node getTopNode(Stage stage, double screenX, double screenY) {
+        //System.err.println("TopNodeHelper 2");
         return getTopNode(stage, screenX, screenY, (n -> {
             return true;
         }));
     }
 
     public static Node getTopNode(Window stage, Point2D screenPos) {
+        //System.err.println("TopNodeHelper 1");
         return getTopNode(stage, screenPos, (n -> {
             return true;
         }));
@@ -150,6 +152,7 @@ public class TopNodeHelper {
     }
 
     public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
+//System.err.println("TopNodeHelper 3");        
         Node retval = null;
         Node node = getTopNode(getNodes(stage, screenX, screenY));
         while (node != null) {

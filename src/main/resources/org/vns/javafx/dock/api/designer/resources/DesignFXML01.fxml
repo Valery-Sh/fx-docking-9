@@ -19,8 +19,12 @@
         <NodeList name="children" title="List of Child" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.HBox" defaultProperty="children" >
-        <NodeList name="children" alwaysVisible="true"  />
+        <NodeList name="children" />
     </NodeDescriptor>
+    <NodeDescriptor type="javafx.scene.control.Accordion" defaultProperty="panes" >
+        <NodeList name="panes" />
+    </NodeDescriptor>
+    
     <!--
     <NodeDescriptor type="javafx.scene.control.TabPane" defaultProperty="tabs" >
         <NodeList name="tabs" title="List of Tab" />

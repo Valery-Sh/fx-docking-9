@@ -32,6 +32,7 @@ public class DockPane extends Control {
 
     private void init() {
         root = new HPane();
+        //getChildren().add(root);
         LayoutContext tc = new DockPaneContext(this, root);
         DockRegistry.makeDockLayout(this, tc);
         Dockable d = DockRegistry.makeDockable(this);

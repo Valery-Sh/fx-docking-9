@@ -20,7 +20,6 @@ import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -72,18 +71,18 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
         toolBar.setOrientation(getSkinnable().getOrientation());
         DockSideBarContext layoutContext = new DockSideBarContext(getSkinnable(), toolBar);
+
         layoutContext.getItemMap().keySet().forEach(g -> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(getSkinnable().getRotation().getAngle());
         });
+//        layoutContext.getLookup().putUnique(FloatViewFactory.class, this);
 
         DockRegistry.makeDockLayout(control, layoutContext);
 
         changeItems();
         getSkinnable().getItems().addListener(this::itemsChanged);
 
-        //getSkinnable().setMaxWidth(USE_PREF_SIZE);
-//        toolBar.setStyle("-fx-background-color: aqua; -fx-border-width: 1 0 0 1;  -fx-border-color: red");
         getSkinnable().sideProperty().addListener((v, ov, nv) -> {
             getLayoutContext().getItemMap().values().forEach(d -> {
                 d.changeSize();
@@ -127,16 +126,15 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
                 d.changeSide();
             });
         });
-        
+
         if (getSkinnable().getDragNode() != null) {
             dragNodeGroup.getChildren().add(getSkinnable().getDragNode());
         } else {
             Button dragButton = new Button();
             dragButton.getStyleClass().add("drag-button");
             getSkinnable().setDragNode(dragButton);
-            //dragNodeGroup.getChildren().add(dragButton);
         }
-        
+
         if (getSkinnable().getDragNode() != null) {
             toolBar.getItems().add(0, dragNodeGroup);
         }
@@ -167,15 +165,15 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
     }
 
     private void changeItems() {
-        for (Dockable d : getSkinnable().getItems()) {
+        getSkinnable().getItems().forEach(d -> {
             if (!getLayoutContext().isDocked(d.node())) {
                 getLayoutContext().dock(d);
             }
-        }
-    }//while
+        });
+    }
 
     protected void updateDragButton() {
-        Node dragNode = null;
+        Node dragNode;
         if (!dragNodeGroup.getChildren().isEmpty()) {
             dragNode = dragNodeGroup.getChildren().get(0);
         } else {
@@ -184,7 +182,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         ImageView iv = null;
         Labeled lb = null;
 
-        Group ivGroup = null;//new Group(iv);
+        Group ivGroup = null;
         if (dragNode != null && (dragNode instanceof Labeled)) {
             lb = (Labeled) dragNode;
             if (lb.getGraphic() instanceof ImageView) {
@@ -352,4 +350,29 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         }
 
     }
+
+    /*    public static class FloatViewFactory  {
+
+        public FloatViewFactory() {
+
+        }
+
+        public FloatView getFloatView(DragManager dragManager) {
+            FloatView retval = null;
+            Node node = dragManager.getDockable().node();
+            Window w = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) {
+                w = node.getScene().getWindow();
+            }
+            if (w == null || !(w instanceof EmbeddedWindow)) {
+                //retval = new FloatPopupControlView(dragManager.getDockable());
+                retval = new FloatStageView2(dragManager.getDockable());
+            } else if (w instanceof EmbeddedWindow) {
+                retval = new FloatPopupControlView(dragManager.getDockable());
+            }
+            return retval;
+        }
+
+    }
+     */
 }

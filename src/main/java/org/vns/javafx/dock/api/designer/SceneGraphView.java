@@ -59,7 +59,11 @@ public class SceneGraphView extends Control implements DockLayout {
     }
 
     private void init() {
+        getStyleClass().add("scene-graph-view");
+        treeView.getStyleClass().add("tree-view");
+        
         customizeCell();
+        
     }
 
     public ObservableList<TreeCell> getVisibleCells() {

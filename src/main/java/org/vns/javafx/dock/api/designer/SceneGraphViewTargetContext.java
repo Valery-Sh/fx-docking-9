@@ -52,7 +52,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
 */
     @Override
     protected void initLookup(ContextLookup lookup) {
-        lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
+        //lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
         lookup.putUnique(FloatViewFactory.class, new TreeItemFloatViewFactory());
 
     }
@@ -84,10 +84,10 @@ public class SceneGraphViewTargetContext extends LayoutContext {
     public void dock(Point2D mousePos, Dockable dockable) {
         System.err.println("DOCK: dockable.node() = " + dockable.node());
         Dockable d = dockable;
-        Window stage = null;
+        Window window = null;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null && dc.getValue() != null) {
-            stage = dc.getFloatingWindow(dockable);
+            window = dc.getFloatingWindow(dockable);
             d = Dockable.of(dc.getValue());
         }
 
@@ -96,13 +96,13 @@ public class SceneGraphViewTargetContext extends LayoutContext {
             node = d.node();
         }
 
-        if (stage == null && node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
-            stage = node.getScene().getWindow();
+        if (window == null && node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+            window = node.getScene().getWindow();
         }
-        if (stage == null && dockable.node() != node) {
+        if (window == null && dockable.node() != node) {
             node = dockable.node();
             if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
-                stage = node.getScene().getWindow();
+                window = node.getScene().getWindow();
             }
         }
         Object value = getValue(dockable);
@@ -118,11 +118,11 @@ public class SceneGraphViewTargetContext extends LayoutContext {
             }
             //d.getContext().setLayoutContext(this);
         }
-        if (accepted && stage != null) {
-            if ((stage instanceof Stage)) {
-                ((Stage) stage).close();
+        if (accepted && window != null) {
+            if ((window instanceof Stage)) {
+                ((Stage) window).close();
             } else {
-                stage.hide();
+                window.hide();
             }
         }
         if (Dockable.of(toAccept) == null) {
@@ -149,6 +149,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
             }
             p = p.getParent();
         }
+        System.err.println("SceneGraphViewTargetContext: =" + tc);
         d.getContext().setLayoutContext(tc);
     }
 
@@ -178,6 +179,11 @@ public class SceneGraphViewTargetContext extends LayoutContext {
     public boolean isAdmissiblePosition(Dockable dockable, Point2D mousePos) {
 
         SceneGraphView gv = (SceneGraphView) getLayoutNode();
+        if ( gv.getTreeView( mousePos.getX(), mousePos.getY()) != null )  {
+            if ( gv.getTreeView().getRoot() == null ) {
+                return true;
+            }
+        }
         TreeItemEx place = gv.getTreeItem(mousePos);
         
         if (place == null) {
@@ -224,7 +230,11 @@ public class SceneGraphViewTargetContext extends LayoutContext {
         SceneGraphView gv = (SceneGraphView) getLayoutNode();
 //        System.err.println("DO DOCK");
         boolean retval = false;
-
+        if ( gv.getTreeView().getRoot() == null ) {
+            System.err.println("SceneGVcontext: acceptValue value=" + value);
+            gv.setRoot((Node)value);
+            return true;
+        }
         TreeItemEx place = gv.getTreeItem(mousePos);
 //        System.err.println("doDock node = " + node);
 //        System.err.println("doDock place = " + place);

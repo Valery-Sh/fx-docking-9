@@ -29,9 +29,11 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -52,9 +54,9 @@ import org.vns.javafx.dock.api.indicator.PositionIndicator;
  *
  * @author Valery
  */
-public class TargetContextFactory {
+public class LayoutContextFactory {
 
-    protected LayoutContext getContext(Node targetNode) {
+    public LayoutContext getContext(Node targetNode) {
         if (DockRegistry.isDockLayout(targetNode)) {
             return DockRegistry.dockLayout(targetNode).getLayoutContext();
         }
@@ -83,7 +85,9 @@ public class TargetContextFactory {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof Pane) {
             retval = getPaneContext((Pane) targetNode);
-        }
+        } else if (targetNode instanceof Accordion) {
+            retval = new ListBasedTargetContext<TitledPane>(targetNode);
+        } 
         return retval;
     }
 
@@ -421,10 +425,10 @@ public class TargetContextFactory {
 
     }
 
-    public static class ListBasedTargetContext extends LayoutContext {
+    public static class ListBasedTargetContext<T extends Node> extends LayoutContext {
 
         private boolean listBased;
-        private ObservableList<Node> items;
+        private ObservableList<T> items;
 
         public ListBasedTargetContext(Node pane) {
             super(pane);
@@ -440,19 +444,23 @@ public class TargetContextFactory {
             return listBased;
         }
 
-        public ObservableList<Node> getItems() {
+        public ObservableList<T> getItems() {
             return items;
         }
 
-        protected void setItems(ObservableList<Node> items) {
+        protected void setItems(ObservableList<T> items) {
             this.items = items;
         }
 
-        protected ObservableList<Node> getNodeList(Node node) {
+        protected ObservableList<T> getNodeList(Node node) {
             if ((getLayoutNode() instanceof Pane)) {
-                return ((Pane) getLayoutNode()).getChildren();
+                return (ObservableList<T>) ((Pane) getLayoutNode()).getChildren();
             }
-            ObservableList<Node> retval = null;
+            if ((getLayoutNode() instanceof Accordion)) {
+                return (ObservableList<T>) ((Accordion) getLayoutNode()).getPanes();
+            }
+            
+            ObservableList<T> retval = null;
 
             Class<?> clazz = node.getClass();
             DefaultProperty a = clazz.getAnnotation(DefaultProperty.class);
@@ -464,12 +472,12 @@ public class TargetContextFactory {
             try {
                 Method method = clazz.getMethod(methodName, new Class[0]);
                 if (method.getReturnType().isInstance(retval)) {
-                    retval = (ObservableList<Node>) method.invoke(node);
+                    retval = (ObservableList<T>) method.invoke(node);
                 }
             } catch (NoSuchMethodException | SecurityException ex) {
                 return null;
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                Logger.getLogger(TargetContextFactory.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(LayoutContextFactory.class.getName()).log(Level.SEVERE, null, ex);
             }
             return retval;
         }
@@ -483,7 +491,7 @@ public class TargetContextFactory {
         @Override
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
-            Node targetNode = (Pane) getLayoutNode();
+            Node targetNode = getLayoutNode();
 
             if (!DockUtil.contains(targetNode, mousePos.getX(), mousePos.getY())) {
                 return false;
@@ -499,15 +507,15 @@ public class TargetContextFactory {
                 }
             }
             if (idx == -1) {
-                items.add(node);
-            } else if ((targetNode instanceof VBox)) {
+                items.add((T)node);
+            } else if (((targetNode instanceof VBox) || ((targetNode instanceof Accordion)))) {
                 Bounds b = DockUtil.getHalfBounds(Side.TOP, innerNode, mousePos.getX(), mousePos.getY());
                 if (b != null && b.contains(mousePos)) {
-                    items.add(idx, node);
+                    items.add(idx, (T)node);
                 } else {
                     b = DockUtil.getHalfBounds(Side.BOTTOM, innerNode, mousePos.getX(), mousePos.getY());
                     if (b != null && b.contains(mousePos)) {
-                        items.add(idx + 1, node);
+                        items.add(idx + 1, (T)node);
                     }
                 }
             } else if (targetNode instanceof HBox) {
@@ -519,7 +527,7 @@ public class TargetContextFactory {
 
         @Override
         public void remove(Node dockNode) {
-            items.remove(dockNode);
+            items.remove((T)dockNode);
         }
 
         /**
@@ -570,7 +578,7 @@ public class TargetContextFactory {
 
         @Override
         public void showDockPlace(double x, double y) {
-            System.err.println("SHOW DOCK PLACE");
+            
             boolean visible = true;
 
             Pane p = (Pane) getIndicatorPane();
@@ -606,11 +614,11 @@ public class TargetContextFactory {
             Rectangle r = (Rectangle) getDockPlace();
             //Point2D pt = pane.screenToLocal(x, y);
             ListBasedTargetContext ctx = (ListBasedTargetContext) getLayoutContext();
-            Pane targetPane = (Pane) ctx.getLayoutNode();
+            Region targetPane = (Region) ctx.getLayoutNode();
             Node innerNode = null;
             for (int i = 0; i < ctx.getItems().size(); i++) {
-                if (DockUtil.contains(ctx.getItems().get(i), x, y)) {
-                    innerNode = ctx.getItems().get(i);
+                if (DockUtil.contains((Node) ctx.getItems().get(i), x, y)) {
+                    innerNode = (Node) ctx.getItems().get(i);
                     break;
                 }
             }
@@ -619,7 +627,7 @@ public class TargetContextFactory {
 
             if (innerNode != null) {
                 b = innerNode.getBoundsInParent();
-                if ((targetPane instanceof VBox)) {
+                if ((targetPane instanceof VBox) || (targetPane instanceof Accordion)) {
                     Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
                     r.setWidth(targetPane.getWidth());
                     r.setX(b.getMinX());
@@ -667,6 +675,7 @@ public class TargetContextFactory {
                 if (change.wasAdded()) {
                     for (int i = change.getFrom(); i < change.getTo(); i++) {
                         if (DockRegistry.isDockable(change.getList().get(i))) {
+                            System.err.println("LayoutContextFactory: NodeListChangeListener " + context.getLayoutNode());
                             context.commitDock(change.getList().get(i));
                         }
                     }

@@ -42,7 +42,7 @@ public interface DockLayout {
      */    
     LayoutContext getLayoutContext();
     
-    static DockLayout of(Node obj) {
+    static DockLayout of(Object obj) {
         return DockRegistry.dockLayout(obj);
     }
 }
