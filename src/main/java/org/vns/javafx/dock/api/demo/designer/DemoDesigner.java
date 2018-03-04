@@ -20,7 +20,6 @@ import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
@@ -34,9 +33,6 @@ import org.vns.javafx.dock.api.LayoutContextFactory;
 import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
-import org.vns.javafx.dock.api.dragging.view.FloatPopupControlView2;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
-import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 
 /**
  *
@@ -61,7 +57,9 @@ public class DemoDesigner extends Application {
         LayoutContext ctx = ctxFactory.getContext(formPane);
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
-        sceneGraphView.setRoot(formPane);
+        
+        //sceneGraphView.setRoot(formPane);
+        
         sceneGraphView.rootProperty().addListener( (v, ov, nv) -> {
             if ( nv != null ) {
                 System.err.println("DemoDesigner: rootChanged");

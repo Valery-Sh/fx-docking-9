@@ -93,9 +93,9 @@ public class TestResizerUtil extends Application {
         stage2.show();
 
         NodeResizer nr = new NodeResizer(custom1);
-        custom1.setTranslateX(50);
+        //custom1.setTranslateX(50);
         //nr.setWindowType(NodeResizer.WindowType.STAGE);
-        nr.setApplyFtranslateXY(true);
+        //nr.setApplyFtranslateXY(true);
         nr.show();
         
         //ResizeUtil.start(custom1, false);

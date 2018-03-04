@@ -333,7 +333,7 @@ public class DockSideBarContext extends LayoutContext {
         public Container(Dockable dockable, DockSideBar sideBar) {
             this.dockable = dockable;
             LayoutContext lc = dockable.getContext().getLayoutContext();
-            System.err.println("Container: layouContext= " + lc);
+//            System.err.println("Container: layouContext= " + lc);
             if ( sideBar.getLookup().lookup(FloatViewFactory.class) == null ) {
                 windowBuilder = new FloatStageView2(dockable);
             } else {

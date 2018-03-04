@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -27,6 +28,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockTabPane;
+import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.LayoutContext;
@@ -295,8 +297,8 @@ public class TestDockPaneControl extends Application {
         stage1.setAlwaysOnTop(true);
         //stage1.show();
         Stage sideBarStage = getSideBarStage(dnc1_1);
-        //sideBarStage.show();
-        /*        Stage stage2 = new Stage();
+        sideBarStage.show();
+        Stage stage2 = new Stage();
         BorderPane rootBorderPane = new BorderPane();
         Scene scene2 = new Scene(rootBorderPane);
         stage2.setScene(scene2);
@@ -307,17 +309,17 @@ public class TestDockPaneControl extends Application {
  
         stage2.setMinWidth(rootBorderPane.minWidth(DockUtil.heightOf(btnBP)));
         stage2.setMinHeight(rootBorderPane.minHeight(DockUtil.widthOf(btnBP)));
-         */
+        
         //setMinWidth(borderPane.minWidth(node.getHeight()) + insetsWidth);
         //setMinHeight(borderPane.minHeight(node.getWidth()) + insetsHeight);
-/*        double prefWidth = rootBorderPane.prefWidth(DockUtil.heightOf(btnBP));
+        double prefWidth = rootBorderPane.prefWidth(DockUtil.heightOf(btnBP));
         double prefHeight = rootBorderPane.prefHeight(DockUtil.widthOf(btnBP));
 
         rootBorderPane.setPrefWidth(prefWidth);
         rootBorderPane.setPrefHeight(prefHeight);
         rootBorderPane.setStyle("-fx-background-color: red");
         stage2.show();
-         */
+
         System.err.println("VPAne getParent() = " + vp1_1.getParent() + "; getParent.getParent = " + vp1_1.getParent().getParent());
         System.err.println("2 getParent() = " + vp1_1.getParent().getParent().getParent().getParent());
         System.err.println("3 dnc1_1 getTargetContext() = " + dnc1_1.getContext().getLayoutContext());

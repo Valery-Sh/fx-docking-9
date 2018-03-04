@@ -22,10 +22,16 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -48,9 +54,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     public SceneGraphViewSkin(SceneGraphView control) {
         super(control);
         Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
-        
+
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
-        
+
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
         d.getContext().setLayoutContext(getSkinnable().getLayoutContext());
         treeViewPane = new StackPane();
@@ -94,6 +100,11 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         if (getSkinnable().getRoot() != null) {
             createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
+            getSkinnable().getRoot().getScene().setOnMouseClicked( e -> {
+            Selection sel = DesignerLookup.lookup(Selection.class);
+            sel.setSelected(getSkinnable().getRoot().getScene());
+        });
+
         }
         getSkinnable().rootProperty().addListener(this::rootChanged);
 
@@ -113,16 +124,38 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             return;
         }
         //((Stage)newValue.getScene().getWindow()).requestFocus();
-        System.err.println("SKIN ROOT CHANGED");
+        System.err.println("SceneGraphViewSkin: SKIN ROOT CHANGED root = " + getSkinnable().getRoot());
+        System.err.println("SceneGraphViewSkin: SKIN ROOT CHANGED root.getParent() = " + getSkinnable().getRoot().getParent());
+        ((Stage) newValue.getScene().getWindow()).requestFocus();
+        if (newValue instanceof Region) {
+            Region r = (Region) newValue;
+            Border b = r.getBorder();
+            if (b == null) {
+                BorderStroke bs = new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderWidths.EMPTY);
+                b = new Border(bs);
+            }
+
+            r.setBorder(b);
+        }
+
         createSceneGraph(newValue);
         scrollAnimation = new ScrollAnimation(getSkinnable().getTreeView());
-        newValue.getStyle();
+        //newValue.getStyle();
         //newValue.setStyle("-fx-border-width: 2; -fx-border-color: aqua");
-        Stage s = (Stage)newValue.getScene().getWindow();
-        
+        //Stage s = (Stage)newValue.getScene().getWindow();
+        getSkinnable().requestFocus();
+        ((Stage) newValue.getScene().getWindow()).requestFocus();
+        newValue.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            System.err.println("SCENE CLICKED");
+            Selection sel = DesignerLookup.lookup(Selection.class);
+            sel.setSelected(newValue.getScene());
+//            e.consume();
+        });
         //s.setWidth(s.getWidth() + 1);
-        Platform.runLater(() -> {((Stage)newValue.getScene().getWindow()).requestFocus();});
-        
+        Platform.runLater(() -> {
+            //r.setBorder(null);
+        });
+
     }
 
     protected TreeItemEx createSceneGraph(Node node) {

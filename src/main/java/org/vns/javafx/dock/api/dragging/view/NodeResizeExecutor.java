@@ -137,9 +137,9 @@ public class NodeResizeExecutor implements WindowResizer {
 
         if (wDelta + getWindow().getWidth() > getMinWidth()) {
             if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
-                double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
+                //double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
                 if (cursor == Cursor.W_RESIZE) {
-                    node.setTranslateX(nodeNewX + xDelta);
+                    //node.setTranslateX(nodeNewX + xDelta);
                     node.setPrefWidth(wDelta + node.getPrefWidth());
                 } else {
                     node.setPrefWidth(wDelta + node.getPrefWidth());
@@ -151,9 +151,9 @@ public class NodeResizeExecutor implements WindowResizer {
 
         if (hDelta + getWindow().getHeight() > getMinHeight()) {
             if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
-                double nodeNewY = node.getBoundsInParent().getMinY() - node.getLayoutY();
+                //double nodeNewY = node.getBoundsInParent().getMinY() - node.getLayoutY();
                 if (cursor == Cursor.N_RESIZE) {
-                    node.setTranslateY(nodeNewY + yDelta);
+                    //node.setTranslateY(nodeNewY + yDelta);
                     node.setPrefHeight(hDelta + node.getPrefHeight());
                 } else {
                     node.setPrefHeight(hDelta + node.getPrefHeight());

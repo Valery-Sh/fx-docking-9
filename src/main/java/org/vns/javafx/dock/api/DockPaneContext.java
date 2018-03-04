@@ -112,7 +112,7 @@ public class DockPaneContext extends LayoutContext {
         
         Node titleBar = dockPane.getTitleBar();
         
-        if (d.getContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
+        if (dockable.getContext().isFloating() && dp != null && (dp.getTargetNodeSidePos() != null || dp.getTargetPaneSidePos() != null) && dp.getDragTarget() != null) {
             if (dp.getTargetPaneSidePos() != null) {
                 Side pos = dp.getTargetPaneSidePos();
                 if ( pos == Side.TOP && titleBar != null) {

@@ -23,8 +23,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.PalettePane;
 
@@ -51,7 +53,7 @@ public class TestPalettePane01 extends Application {
         lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-pane");
 
-        palettePane.getModel().getCategory("containers").addItem(lb, Pane.class);
+        //palettePane.getModel().getCategory("containers").addItem(lb, Pane.class);
 
         Button btn1 = new Button("btn1");
         Button btn2 = new Button("btn2");
@@ -97,7 +99,12 @@ public class TestPalettePane01 extends Application {
             System.err.println("**************** SHOWN");
         });
         stage.show();
-
+        Stage stage1 = new Stage();
+        DockPane dockPane = new DockPane();
+        StackPane root1 = new StackPane(dockPane);
+        Scene scene1 = new Scene(root1);
+        stage1.setScene(scene1);
+        stage1.show();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
 

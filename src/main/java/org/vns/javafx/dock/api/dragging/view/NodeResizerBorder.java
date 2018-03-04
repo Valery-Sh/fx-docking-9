@@ -46,6 +46,8 @@ public class NodeResizerBorder {
     }
 
     private void init() {
+        //Border bb = new Border()
+        //BorderStroke bs = new BorderStroke();
         URL imageURL = Dockable.class.getResource("resources/border_image.jpg");
         String imageURLString = imageURL.toExternalForm();
 
@@ -54,7 +56,7 @@ public class NodeResizerBorder {
         dashArray.add(1.4);
 
         BorderWidths regionWidths = new BorderWidths(4);
-        BorderWidths sliceWidthы = new BorderWidths(4);
+        BorderWidths sliceWidths = new BorderWidths(4);
         boolean filled = false;
         BorderRepeat repeatX = BorderRepeat.STRETCH;
         BorderRepeat repeatY = BorderRepeat.STRETCH;
@@ -62,7 +64,7 @@ public class NodeResizerBorder {
         BorderImage borderImage = new BorderImage(new Image(imageURLString),
                 regionWidths,
                 new Insets(-1),
-                sliceWidthы,
+                sliceWidths,
                 filled,
                 repeatX,
                 repeatY);

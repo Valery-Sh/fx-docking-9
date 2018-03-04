@@ -4,6 +4,7 @@ import java.util.UUID;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.api.dragging.view.NodeResizer;
 
 /**
  *
@@ -28,7 +30,7 @@ public class TestOwnerStages extends Application {
         primaryStage = stage;
         Stage popup = new Stage();
         popup.initOwner(stage);
-
+        
         Scene popupScene = new Scene(vbox);
 
         popup.setScene(popupScene);
@@ -58,6 +60,21 @@ public class TestOwnerStages extends Application {
         root.getChildren().addAll(pane, pane1);
 
         pane.setStyle("-fx-border-width: 1; -fx-border-color: blue");
+          pane.setOnMouseClicked(e -> {
+              System.err.println("prefWidth = " + createPopup.prefWidth(createPopup.getPrefHeight()));
+              System.err.println("width = " + createPopup.getWidth());
+              System.err.println("prefHeight = " + createPopup.getPrefHeight());
+              createPopup.setPrefWidth(100);
+          });
+/*        pane.setOnMouseClicked(e -> {
+            System.err.println("MOUSE CLICKED");
+            NodeResizer nr = new NodeResizer(pane);
+            //pane.setTranslateX(50);
+            nr.setWindowType(NodeResizer.WindowType.STAGE);
+            nr.setApplyFtranslateXY(true);
+            nr.show();            
+        });
+*/
         //pane1.setStyle("-fx-border-width: 4; -fx-border-color: green");
 
         popupBtn.setOnAction(a -> {

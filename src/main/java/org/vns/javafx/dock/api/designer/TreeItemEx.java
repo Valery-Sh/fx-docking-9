@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 
@@ -151,6 +152,17 @@ public class TreeItemEx extends TreeItem<Object> {
             return;
         }
         System.err.println("TreeItemEx: registerChangeListeners: value = " + getValue());
+        if ( getValue() instanceof Node) {
+            ((Node)getValue()).addEventHandler(MouseEvent.MOUSE_CLICKED,e -> {
+                System.err.println("TreeItemEx registerChangeHandlers: clicked value = " + getValue());
+                System.err.println("   --- MouseTransp = " + ((Node)getValue()).isMouseTransparent());
+                Selection sel = DesignerLookup.lookup(Selection.class);
+                if ( sel.getSelected() != getValue() ) {
+                    sel.setSelected(getValue());
+                }
+                e.consume();
+            });
+        }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
 
         Object changeListener;

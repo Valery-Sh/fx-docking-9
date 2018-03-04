@@ -33,7 +33,7 @@ public class DesignerLookup { // implements ContextLookup {
         init();
     }
     private void init() {
-        lookup.putUnique(Selection.class, new Selection() );
+        lookup.putUnique(Selection.class, new DesignerSelection() );
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
         lookup.putUnique(SceneGraphView.class, new SceneGraphView() );
         

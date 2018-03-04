@@ -278,6 +278,9 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         window.setY(b.getMinY() - borderY);
 
         if (window instanceof Stage) {
+            System.err.println("b.getWidth() = " + node.getWidth() + "; borderWidth = " + borderWidth);
+            System.err.println("b.getHeight() = " + node.getHeight() + "; borderHeight = " + borderHeight);
+            
             window.setWidth(b.getWidth() + borderWidth);
             window.setHeight(b.getHeight() + borderHeight);
         }
