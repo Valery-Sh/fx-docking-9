@@ -44,6 +44,7 @@ import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ScenePaneContext;
 import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.designer.Selection;
 
 /**
  *
@@ -165,6 +166,12 @@ public class FloatPopupControlView implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
+   //
+        // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
+        // and filters of type SeectionListener
+        //
+        Selection.removeListeners(dockable);      
+        
         Window owner;
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {
             return null;
@@ -269,7 +276,7 @@ public class FloatPopupControlView implements FloatWindowView {
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
         });
-        //popup.sizeToScene();
+        
         if (show) {
             window.show(owner);
         }

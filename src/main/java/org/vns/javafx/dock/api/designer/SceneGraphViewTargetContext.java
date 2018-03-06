@@ -82,7 +82,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        System.err.println("DOCK: dockable.node() = " + dockable.node());
+//        System.err.println("DOCK: dockable.node() = " + dockable.node());
         Dockable d = dockable;
         Window window = null;
         DragContainer dc = dockable.getContext().getDragContainer();
@@ -128,7 +128,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
         if (Dockable.of(toAccept) == null) {
             return;
         }
-        System.err.println("toAccept: isDockable = " + toAccept);
+//        System.err.println("toAccept: isDockable = " + toAccept);
         d = Dockable.of(toAccept);
 
         //
@@ -149,7 +149,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
             }
             p = p.getParent();
         }
-        System.err.println("SceneGraphViewTargetContext: =" + tc);
+//        System.err.println("SceneGraphViewTargetContext: =" + tc);
         d.getContext().setLayoutContext(tc);
     }
 
@@ -231,7 +231,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
 //        System.err.println("DO DOCK");
         boolean retval = false;
         if ( gv.getTreeView().getRoot() == null ) {
-            System.err.println("SceneGVcontext: acceptValue value=" + value);
+//            System.err.println("SceneGVcontext: acceptValue value=" + value);
             gv.setRoot((Node)value);
             return true;
         }

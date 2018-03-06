@@ -34,6 +34,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
@@ -107,11 +108,21 @@ public class NodeResizer implements EventHandler<MouseEvent> {
 
     protected Stage createStage() {
         Stage stage = new Stage();
+        stage.setOnShown(e -> {
+            DockRegistry.register(stage, true); // true means exclude when searfor target window
+        });
+        stage.setOnHidden(e -> {
+            DockRegistry.unregister(stage);
+        });
+        
         setWindow(stage);
         stage.initStyle(StageStyle.TRANSPARENT);
 
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: transparent;" );
+        
+        root.setId("nodeResizer " + getNode().getClass().getSimpleName());
+        
         Border b = new NodeResizerBorder().getBorder();
         root.setBorder(b);
         Scene scene = new Scene(root);
@@ -119,9 +130,10 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         stage.setScene(scene);
         nodeWindow = getNode().getScene().getWindow();
         ((Stage) getWindow()).initOwner(nodeWindow);
+//        System.err.println("NodeResizer: ownerWindow = " + nodeWindow.getScene().getRoot().getId());
 
         ((Stage) getWindow()).show();
-
+     
         Insets insetsDelta = getNode().getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -129,11 +141,11 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         getNode().setPrefWidth(getNode().getWidth());
         getNode().setPrefHeight(getNode().getHeight());
 
-        stage.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
+/*        stage.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
         stage.setMinHeight(root.minHeight(DockUtil.widthOf(getNode())) + insetsHeight);
         stage.setMaxWidth(root.maxWidth(DockUtil.heightOf(getNode())) + insetsWidth);
         stage.setMaxHeight(root.maxHeight(DockUtil.widthOf(getNode())) + insetsHeight);
-
+*/
         bindWindowPosition(nodeWindow);
         bindWindowDimensions();
 
@@ -144,6 +156,14 @@ public class NodeResizer implements EventHandler<MouseEvent> {
 
     protected PopupControl createPopupControl() {
         PopupControl popup = new PopupControl();
+        popup.setOnShown(e -> {
+            DockRegistry.register(popup, true); // true means exclude when searfor target window
+        });
+        popup.setOnHidden(e -> {
+            DockRegistry.unregister(popup);
+        });
+        
+        
         setWindow(popup);
 
         StackPane root = new StackPane();
@@ -154,7 +174,9 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         root.applyCss();
         popup.getScene().setRoot(root);
 
-        ((PopupControl) getWindow()).show(getNode().getScene().getWindow());
+        //((PopupControl) getWindow()).show(getNode().getScene().getWindow());
+        Bounds nb = getNode().localToScreen(getNode().getBoundsInLocal());
+        ((PopupControl) getWindow()).show(getNode(), nb.getMinX(), nb.getMinX() );
 
         //popup.setOnShowing(v -> {
         double borderWidth = 0;
@@ -166,9 +188,12 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         Insets insetsDelta = getNode().getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-        root.prefWidthProperty().bind(getNode().prefWidthProperty().add(borderWidth));
-        root.prefHeightProperty().bind(getNode().prefHeightProperty().add(borderHeight));
+        
+        getNode().setPrefWidth(getNode().getWidth());
+        getNode().setPrefHeight(getNode().getHeight());
+        
+        root.prefWidthProperty().bind(getNode().widthProperty().add(borderWidth));
+        root.prefHeightProperty().bind(getNode().heightProperty().add(borderHeight));
 
         root.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
         root.setMinHeight(root.minHeight(DockUtil.widthOf(getNode())) + insetsHeight);
@@ -278,8 +303,8 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         window.setY(b.getMinY() - borderY);
 
         if (window instanceof Stage) {
-            System.err.println("b.getWidth() = " + node.getWidth() + "; borderWidth = " + borderWidth);
-            System.err.println("b.getHeight() = " + node.getHeight() + "; borderHeight = " + borderHeight);
+//            System.err.println("b.getWidth() = " + node.getWidth() + "; borderWidth = " + borderWidth);
+//            System.err.println("b.getHeight() = " + node.getHeight() + "; borderHeight = " + borderHeight);
             
             window.setWidth(b.getWidth() + borderWidth);
             window.setHeight(b.getHeight() + borderHeight);
@@ -373,7 +398,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
                 getNode().setLayoutX(getNode().getLayoutX() + tX);
                 getNode().setLayoutY(getNode().getLayoutY() + tY);
 
-                getNode().getParent().layout();
+                //getNode().getParent().layout();
                 getNode().setPrefWidth(getNode().getWidth());
                 windowBounds(getWindow(), getNode());
                 commitResize();

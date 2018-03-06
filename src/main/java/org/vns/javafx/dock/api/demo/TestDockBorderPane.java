@@ -20,7 +20,9 @@ import static javafx.application.Application.launch;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -49,9 +51,18 @@ public class TestDockBorderPane extends Application {
         Dockable dockableButton
                 = DockRegistry.getInstance().getDefaultDockable(dockButton);
         dockableButton.getContext().setDragNode(dockButton);
-
         //rootPane.getChildren().addAll(dockButton);
         rootPane.getItems().addAll(dockButton);
+        dockButton.setOnAction(a -> {
+            Window w = dockButton.getScene().getWindow();
+            Window owner = null;
+            if ( w instanceof Stage  ) {
+                owner = ((Stage)w).getOwner();
+            } else if ( w instanceof PopupWindow ) {
+                owner = ((PopupWindow)w).getOwnerWindow();
+            }
+            System.err.println("OWNER: " + owner);
+        });
         //
         // Create Stage with a BorderPane as DockTarget
         //

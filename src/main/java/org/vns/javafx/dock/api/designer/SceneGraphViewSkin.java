@@ -38,6 +38,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
 
 /**
  *
@@ -101,8 +102,27 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
             getSkinnable().getRoot().getScene().setOnMouseClicked( e -> {
-            Selection sel = DesignerLookup.lookup(Selection.class);
-            sel.setSelected(getSkinnable().getRoot().getScene());
+                Selection sel = DockRegistry.lookup(Selection.class);
+                sel.setSelected(getSkinnable().getRoot().getScene());
+                SelectionListener sl = DockRegistry.lookup(SelectionListener.class);
+                System.err.println("SceneGraphViewSkin: sl.getSource = " + sl.getSource() + "; dockable=" + Dockable.of(sl.getSource()));
+                if ( sl.getSource() != null && Dockable.of(sl.getSource()) != null ) {
+                    Node node = Dockable.of(sl.getSource()).node();
+                    System.err.println("SceneGraphViewSkin: node = " + node);
+                    node.layoutBoundsProperty().addListener( (o, ov, nv) -> {
+                        System.err.println("==============================================");
+                        System.err.println("SceneGraphViewSkin old bounds = " + ov);
+                        System.err.println("SceneGraphViewSkin new bounds = " + nv);
+                        System.err.println("----------------------------------------------");
+                        sel.setSelected(node);                        
+                    }); 
+                    Platform.runLater(() -> {
+                        sel.setSelected(node);
+                    });
+                    
+                }
+                sl.setSource(null);
+
         });
 
         }
@@ -123,9 +143,6 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         if (newValue == null) {
             return;
         }
-        //((Stage)newValue.getScene().getWindow()).requestFocus();
-        System.err.println("SceneGraphViewSkin: SKIN ROOT CHANGED root = " + getSkinnable().getRoot());
-        System.err.println("SceneGraphViewSkin: SKIN ROOT CHANGED root.getParent() = " + getSkinnable().getRoot().getParent());
         ((Stage) newValue.getScene().getWindow()).requestFocus();
         if (newValue instanceof Region) {
             Region r = (Region) newValue;
@@ -140,14 +157,12 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
         createSceneGraph(newValue);
         scrollAnimation = new ScrollAnimation(getSkinnable().getTreeView());
-        //newValue.getStyle();
-        //newValue.setStyle("-fx-border-width: 2; -fx-border-color: aqua");
-        //Stage s = (Stage)newValue.getScene().getWindow();
+
         getSkinnable().requestFocus();
         ((Stage) newValue.getScene().getWindow()).requestFocus();
         newValue.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             System.err.println("SCENE CLICKED");
-            Selection sel = DesignerLookup.lookup(Selection.class);
+            Selection sel = DockRegistry.lookup(Selection.class);
             sel.setSelected(newValue.getScene());
 //            e.consume();
         });

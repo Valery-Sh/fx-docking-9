@@ -50,12 +50,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     }
 */
     public void mouseReleased(MouseEvent ev) {
-        System.err.println("1 !!! mouseReleased");
-        System.err.println("2 !!! mouseReleased");
-
         startMousePos = null;
-        //dragContainer = null;
-        System.err.println("!!! mouseReleased");
         ev.consume();
         DragContainer dc = getContext().getDragContainer();
         if (dc != null && dc.getPlaceholder() != null ) {

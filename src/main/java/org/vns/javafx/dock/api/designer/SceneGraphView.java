@@ -11,12 +11,14 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
@@ -64,6 +66,20 @@ public class SceneGraphView extends Control implements DockLayout {
         
         customizeCell();
         
+        addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            System.err.println("SceneGraphView: 1");
+            TreeItemEx item = getTreeItem(e.getScreenX(), e.getScreenY());
+            if ( item == null  ) {
+                Selection sel = DockRegistry.lookup(Selection.class);
+                sel.removeSelected();
+                System.err.println("SceneGraphView: 2");
+            } else {
+                Selection sel = DockRegistry.lookup(Selection.class);
+                sel.setSelected(item.getValue());
+            }
+            e.consume();
+        });
+
     }
 
     public ObservableList<TreeCell> getVisibleCells() {

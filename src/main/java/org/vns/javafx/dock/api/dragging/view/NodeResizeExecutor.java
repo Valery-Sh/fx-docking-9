@@ -162,7 +162,7 @@ public class NodeResizeExecutor implements WindowResizer {
                 mouseY.set(curY);
             }
         }
-        windowBounds(window, (Region) node);
+        //windowBounds(window, (Region) node);
     }
 
     public void resizeUnmanaged(double x, double y) {

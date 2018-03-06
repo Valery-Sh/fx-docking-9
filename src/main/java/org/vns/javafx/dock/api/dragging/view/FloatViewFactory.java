@@ -38,7 +38,7 @@ public class FloatViewFactory {
             w = node.getScene().getWindow();
         }
         if ( w == null || !(w instanceof EmbeddedWindow)) {
-           //retval = new FloatPopupControlView(dragManager.getDockable());
+          // retval = new FloatPopupControlView(dragManager.getDockable());
            retval =  new FloatStageView(dragManager.getDockable());
         } else if ( w instanceof EmbeddedWindow ) {
             retval = new FloatPopupControlView(dragManager.getDockable());

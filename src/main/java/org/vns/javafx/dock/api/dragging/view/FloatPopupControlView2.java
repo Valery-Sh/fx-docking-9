@@ -86,6 +86,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
 
         floatPopup.setOnShown(e -> {
            DockRegistry.register(floatPopup);
+           
         });
 
         floatPopup.setOnHidden(e -> {

@@ -18,7 +18,10 @@ package org.vns.javafx.dock.api.designer;
 import java.util.List;
 import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DefaultContextLookup;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PalettePane;
+import org.vns.javafx.dock.api.designer.Selection.SelectionHandler;
+import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
 
 /**
  *
@@ -26,17 +29,17 @@ import org.vns.javafx.dock.api.PalettePane;
  */
 public class DesignerLookup { // implements ContextLookup {
     
-    private ContextLookup lookup;
+    private final ContextLookup lookup;
     
     protected DesignerLookup() {
         lookup = new DefaultContextLookup();
         init();
     }
     private void init() {
-        lookup.putUnique(Selection.class, new DesignerSelection() );
+        DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
+        DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
         lookup.putUnique(SceneGraphView.class, new SceneGraphView() );
-        
     }
     private static DesignerLookup getInstance() {
         return SingletonInstance.instance;

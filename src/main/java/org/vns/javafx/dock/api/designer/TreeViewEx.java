@@ -74,7 +74,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new TreeViewExSkin<>(this);
+        return new TreeViewExSkin(this);
     }
 
     public VirtualScrollBar getVScrollBar() {

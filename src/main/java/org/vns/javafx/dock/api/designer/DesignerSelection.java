@@ -17,7 +17,6 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.dragging.view.NodeResizer;
 
@@ -26,26 +25,60 @@ import org.vns.javafx.dock.api.dragging.view.NodeResizer;
  * @author Valery
  */
 public class DesignerSelection extends Selection {
-    
+
     private NodeResizer resizer;
-    
+
     public DesignerSelection() {
         init();
     }
+
     private void init() {
         selectedProperty().addListener(this::selectedChanged);
     }
-    
+
     protected void selectedChanged(ObservableValue ov, Object oldValue, Object newValue) {
-        if ( resizer != null ) {
+        if (newValue == null) {
+            if (resizer != null) {
+                resizer.hide();
+                resizer = null;
+            }
+            return;
+        }
+        if (resizer != null && resizer.getNode() == newValue) {
+            //selectTreeItem(newValue);
+            //return;
+        }
+        if (resizer != null) {
             resizer.hide();
             resizer = null;
-        } 
-        if ( newValue != null && (newValue instanceof Node) ) {
-            resizer = new NodeResizer((Region)newValue);
-            resizer.setWindowType(NodeResizer.WindowType.STAGE);            
+        }
+        if (newValue != null && (newValue instanceof Node)) {
+            resizer = new NodeResizer((Region) newValue);
+            resizer.setWindowType(NodeResizer.WindowType.STAGE);
             resizer.show();
         }
+        //selectTreeItem(newValue);
     }
-    
+
+
+    @Override
+    public void selectTreeItem(Object value) {
+//        Platform.runLater(() -> {
+        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        if (sgv != null) {
+            TreeItemEx item;
+            if (sgv.getTreeView().getRoot().getValue() == value) {
+                item = (TreeItemEx) sgv.getTreeView().getRoot();
+            } else {
+                item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
+            }
+            System.err.println("DesignerSelection: item = " + item);
+
+            if (item != null) {
+
+                sgv.getTreeView().getSelectionModel().select(item);
+            }
+        }
+    }
+
 }

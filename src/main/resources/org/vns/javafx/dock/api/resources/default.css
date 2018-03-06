@@ -75,21 +75,41 @@
 }
 .scene-graph-view .tree-view .tree-cell {
     -fx-background-color: derive(-fx-base,26.4%);
+    /*-fx-background-color: lightgrey;*/
     
 }
-
-.tree-view:focused {
-   -fx-background-insets: 0 0 0 0;
+.scene-graph-view .tree-view .tree-cell:selected {
+    -fx-font-weight: bold ;  
+    -fx-background-color: lightgrey;
 }
+
+
+/*.scene-graph-view .tree-view:focused .tree-cell:selected {
+    -fx-font-weight: bold ;  
+    -fx-background-color: lightgrey;
+} 
+*/
+/*.scene-graph-view .tree-view .control .tree-cell:focused {
+    -fx-font-weight: bold ;  
+    -fx-background-color: lightgrey;
+}    
+*/
+.tree-view:focused {
+/*   -fx-background-insets: 0 0 0 0;*/
+}
+
 .tree-view-indicator {
     -fx-stroke: RGB(255,148,40);
-    -fx-stroke-width: 2
+    -fx-stroke-width: 2;
+    -fx-background-color: transparent;
+    -fx-fill: transparent    
+        
 }
-.tree-view-indicator {
+/*.tree-view-indicator {
     -fx-background-color: transparent;
     -fx-fill: transparent    
 }
-
+*/
 
 .tree-item-node-button {
     -fx-graphic: url(button-16x16.png);
@@ -245,9 +265,10 @@
 -fx-padding: 4 0.25 4 0.25;
 }
 */
-.custom-control {
+/*.custom-control {
     -fx-skin: "org.vns.javafx.dock.api.controls.CustomControlSkin";
 }
+*/
 /*.dock-dock-indnode-title-label {   
     -fx-padding: 0 0 3 0;
     -fx-text-fill: blue;

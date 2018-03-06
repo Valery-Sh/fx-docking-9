@@ -149,7 +149,7 @@ public class EditorUtil {
     }
 
     public static TreeItemEx findTreeItemByObject(TreeView treeView, Object sourceGesture) {
-        return (TreeItemEx) findChildTreeItem((TreeItemEx) treeView.getRoot(), sourceGesture);
+        return findChildTreeItem((TreeItemEx) treeView.getRoot(), sourceGesture);
     }
 
     protected static TreeItemEx findChildTreeItem(TreeItemEx item, Object sourceGesture) {

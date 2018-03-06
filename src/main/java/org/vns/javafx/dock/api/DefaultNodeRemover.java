@@ -49,11 +49,11 @@ public class DefaultNodeRemover implements BeanRemover {
      */
     @Override
     public boolean remove(Object obj) {
-        System.err.println("DefaultNodeRemover: obj=" + obj);
+//        System.err.println("DefaultNodeRemover: obj=" + obj);
         if ( ! (obj instanceof Node) || ((Node)obj).getParent() == null ) {
             return false;
         }
-        System.err.println("DefaultNodeRemover: 1" );
+//        System.err.println("DefaultNodeRemover: 1" );
         Node node = ((Node)obj).getParent();
         while (node != null) {
             if ( ReflectHelper.isPublic(node.getClass())) {
@@ -68,7 +68,7 @@ public class DefaultNodeRemover implements BeanRemover {
     }
 
     protected boolean remove(Node parent, Object toRemove) {
-        System.err.println("DefaultNodeRemover: parent = " + parent );
+//        System.err.println("DefaultNodeRemover: parent = " + parent );
         boolean retval = false;
         if ((parent instanceof Accordion) && (toRemove instanceof TitledPane)) {
             ((Accordion)parent).getPanes().remove((TitledPane)toRemove);
@@ -112,7 +112,7 @@ public class DefaultNodeRemover implements BeanRemover {
                 Logger.getLogger(DefaultNodeRemover.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        System.err.println("DefaultNodeRemover: retval = "+ retval);
+//        System.err.println("DefaultNodeRemover: retval = "+ retval);
         return retval;
     }
 

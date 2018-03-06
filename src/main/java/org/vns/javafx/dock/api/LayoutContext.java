@@ -66,8 +66,6 @@ public abstract class LayoutContext {
         if (DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
             if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
-                System.err.println("LayoutContext: node = " + node);
-                System.err.println("LayoutContext:  = " + this);
                 dockableContext.setLayoutContext(this);
             }
         }
@@ -127,7 +125,7 @@ public abstract class LayoutContext {
     public void mouseDragged(Dockable dockable, MouseEvent ev) {
         
     }
-    protected Object getValue(Dockable dockable) {
+    public static Object getValue(Dockable dockable) {
         Object retval = null;
         DragContainer dc = dockable.getContext().getDragContainer();
         if (dc != null ) {

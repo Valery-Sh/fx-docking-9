@@ -4,20 +4,34 @@ package org.vns.javafx.dock.api.designer;
 import com.sun.javafx.scene.control.skin.TreeViewSkin;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
+import javafx.application.Platform;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
  * @author Valery
  * @param <T> ???
  */
-public class TreeViewExSkin<T> extends TreeViewSkin {
+public class TreeViewExSkin extends TreeViewSkin<TreeView> {
 
     private VirtualFlowEx<TreeCell> exFlow;
 
-    public TreeViewExSkin(TreeView treeView) {
+    public TreeViewExSkin(TreeViewEx treeView) {
         super(treeView);
+        TreeViewEx tv = (TreeViewEx) getSkinnable();
+        //tv.addEventFilter(MouseEvent., treeView);
+/*        getSkinnable().getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+            if ( newValue != null) {
+                System.err.println("TreeViewEx newValue " + newValue.getValue());
+                Selection sel = DockRegistry.lookup(Selection.class);
+                //sel.setSelected(newValue.getValue());
+            }
+        });
+*/
     }
 
     @Override

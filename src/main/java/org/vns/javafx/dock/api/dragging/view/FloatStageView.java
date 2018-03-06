@@ -44,6 +44,7 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.ScenePaneContext;
+import org.vns.javafx.dock.api.designer.Selection;
 
 /**
  *
@@ -165,8 +166,19 @@ public class FloatStageView implements FloatWindowView {
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
+        Window owner = null;
+        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+            owner = dockable.node().getScene().getWindow();
+        }        
+        //
+        // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
+        // and filters of type SeectionListener
+        //
+        Selection.removeListeners(dockable);
+        
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
+        
         if (node instanceof Region) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
@@ -209,7 +221,16 @@ public class FloatStageView implements FloatWindowView {
         }
 
         Stage window = new Stage();
-        DockRegistry.register(window);
+        if ( owner != null ) {
+            window.initOwner(owner);
+        }        
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
+//            window.toFront();
+        });
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
+        });
 
         window.setTitle("FLOATING STAGE");
         Node lastDockPane = getLayoutContext(dockable).getLayoutNode();
@@ -259,11 +280,11 @@ public class FloatStageView implements FloatWindowView {
         window.setX(stagePosition.getX() - insetsDelta.getLeft());
         window.setY(stagePosition.getY() - insetsDelta.getTop());
 
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(draggedNode)) + insetsWidth);
+        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(draggedNode)) + insetsHeight);
 
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(draggedNode)) + insetsWidth;
+        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(draggedNode)) + insetsHeight;
 
         windowRoot.setPrefWidth(prefWidth);
         windowRoot.setPrefHeight(prefHeight);
@@ -294,7 +315,12 @@ public class FloatStageView implements FloatWindowView {
      */
     protected Window make(Dockable dockable, Object dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
+        Window owner = null;
+        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+            owner = dockable.node().getScene().getWindow();
+        }
 
+        
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
@@ -308,8 +334,13 @@ public class FloatStageView implements FloatWindowView {
             }
         }
         Stage window = new Stage();
+        
+        if ( owner != null ) {
+            window.initOwner(owner);
+        }
         window.setOnShown(e -> {
             DockRegistry.register(window);
+//            window.toFront();
         });
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
@@ -358,16 +389,20 @@ public class FloatStageView implements FloatWindowView {
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
-
-        Node node = dragged.node();
-        double nodeWidth = node.getBoundsInLocal().getWidth();
-        double nodeHeight = node.getBoundsInLocal().getHeight();
-        if (node instanceof Region) {
-            nodeWidth = ((Region) node).getWidth();
-            nodeHeight = ((Region) node).getHeight();
+        Window owner = null;
+        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+            owner = dockable.node().getScene().getWindow();
+        }
+        
+        Node draggedNode = dragged.node();
+        double nodeWidth = draggedNode.getBoundsInLocal().getWidth();
+        double nodeHeight = draggedNode.getBoundsInLocal().getHeight();
+        if (draggedNode instanceof Region) {
+            nodeWidth = ((Region) draggedNode).getWidth();
+            nodeHeight = ((Region) draggedNode).getHeight();
         }
 
-        Point2D windowPos = node.localToScreen(0, 0);
+        Point2D windowPos = draggedNode.localToScreen(0, 0);
 
         if (windowPos == null) {
             windowPos = new Point2D(400, 400);
@@ -403,8 +438,16 @@ public class FloatStageView implements FloatWindowView {
         }
 
         Stage window = new Stage();
-        DockRegistry.register(window);
-
+        if ( owner != null ) {
+            window.initOwner(owner);
+        }
+        window.setOnShown(e -> {
+            DockRegistry.register(window);
+            window.toFront();
+        });
+        window.setOnHidden(e -> {
+            DockRegistry.unregister(window);
+        });
         window.setTitle("FLOATING STAGE");
         Node lastDockPane = getLayoutContext(dragged).getLayoutNode();
         if (lastDockPane != null && lastDockPane.getScene() != null
@@ -433,8 +476,8 @@ public class FloatStageView implements FloatWindowView {
 
         windowRoot.getStyleClass().add("dock-node-border");
 
-        //rootPane.setCenter(node);
-        windowRoot.getChildren().add(node);
+        //rootPane.setCenter(draggedNode);
+        windowRoot.getChildren().add(draggedNode);
 
         Scene scene = new Scene(windowRoot);
 
@@ -442,7 +485,7 @@ public class FloatStageView implements FloatWindowView {
         window.setScene(scene);
         markFloating(window);
 
-        node.applyCss();
+        draggedNode.applyCss();
         windowRoot.setStyle("-fx-background-color: aqua");
         windowRoot.applyCss();
 
@@ -456,11 +499,11 @@ public class FloatStageView implements FloatWindowView {
         window.setX(stagePosition.getX() - insetsDelta.getLeft());
         window.setY(stagePosition.getY() - insetsDelta.getTop());
 
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(node)) + insetsHeight);
+        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(draggedNode)) + insetsWidth);
+        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(draggedNode)) + insetsHeight);
 
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
+        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(draggedNode)) + insetsWidth;
+        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(draggedNode)) + insetsHeight;
 
         windowRoot.setPrefWidth(prefWidth);
         windowRoot.setPrefHeight(prefHeight);
