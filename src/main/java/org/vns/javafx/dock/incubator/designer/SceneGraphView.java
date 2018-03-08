@@ -24,8 +24,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.vns.javafx.dock.api.DockRegistry;
 import static org.vns.javafx.dock.incubator.designer.TreeItemBuilder.CELL_UUID;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.Selection;
 
 /**
  *
@@ -129,20 +131,24 @@ public class SceneGraphView extends Control {
         return treeView;
     }
 
-    /*!!!23.01public void childrenModification(TreeItem.TreeModificationEvent<ItemValue> ev) {
+    public void childrenModification(TreeItem.TreeModificationEvent<Object> ev) {
         if (ev.wasAdded()) {
-            for (TreeItem<ItemValue> item : ev.getAddedChildren()) {
+            for (TreeItem item : ev.getAddedChildren()) {
+                if ( item.getValue() instanceof Node ) {
+                    Selection sel = DockRegistry.lookup(Selection.class);
+                    sel.notifySelected(item.getValue());
+                }
                 //item.getValue().getBuilder().registerChangeHandler(item);
                 //System.err.println("Event:  added item obj = " + item.getValue().getTreeItemObject());
             }
         }
         if (ev.wasRemoved()) {
-            for (TreeItem<ItemValue> item : ev.getRemovedChildren()) {
-                //!!!23.01 TreeViewEx.updateOnMove((TreeItemEx) item);
+            for (TreeItem item : ev.getRemovedChildren()) {
+                
             }
         }
     }
-     */
+    
     protected TreeItemEx createSceneGraph(Node node) {
         //TreeItemBuilder builder = new TreeItemBuilder();
         TreeItemEx item = new TreeItemBuilder().build(node);

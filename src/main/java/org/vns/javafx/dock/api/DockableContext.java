@@ -224,6 +224,7 @@ public class DockableContext {
                 dragManager = dmf.getDragManager(dockable);
             }
         }
+        
     }
 
     /**

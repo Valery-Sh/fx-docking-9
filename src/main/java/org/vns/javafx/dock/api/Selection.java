@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer;
+package org.vns.javafx.dock.api;
 
-import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
@@ -32,12 +26,10 @@ import org.vns.javafx.dock.api.Dockable;
  */
 public abstract class Selection {
 
-    private boolean stopped;
-
-    private ObjectProperty selected = new SimpleObjectProperty();
+    private final ObjectProperty selected = new SimpleObjectProperty();
 
 
-    public abstract void selectTreeItem(Object value);
+    public abstract void notifySelected(Object value);
 
     public ObjectProperty selectedProperty() {
         return selected;
@@ -45,7 +37,6 @@ public abstract class Selection {
 
     
     public void setSelected(Object toSelect) {
-        System.err.println("Selection: setSelected: toSelect = " + toSelect);
         this.selected.set(toSelect);
     }
 
@@ -61,19 +52,21 @@ public abstract class Selection {
         if (getSelected() == obj) {
             setSelected(null);
         }
-        Platform.runLater(() -> {
-            //setSelected(null);
-        });
     }
 
     public static void removeListeners(Dockable dockable) {
         Selection sel = DockRegistry.lookup(Selection.class);
+//        System.err.println("Selection removeListeners");
         if (sel != null) {
-            sel.removeSelected(dockable.node());
+//            System.err.println("1 Selection removeListeners");
+            sel.removeSelected();
         }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
-        dockable.node().removeEventHandler(MouseEvent.MOUSE_CLICKED, l);
-        dockable.node().removeEventFilter(MouseEvent.MOUSE_CLICKED, l);
+        dockable.node().removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
+        dockable.node().removeEventFilter(MouseEvent.MOUSE_PRESSED, l);
+        dockable.node().removeEventHandler(MouseEvent.MOUSE_RELEASED, l);
+        dockable.node().removeEventFilter(MouseEvent.MOUSE_RELEASED, l);
+        
     }
 
     public static interface SelectionListener extends EventHandler<MouseEvent> {
@@ -84,10 +77,6 @@ public abstract class Selection {
 
     }
 
-    public static interface SelectionHandler1 extends SelectionListener {
-
-    }
-
     public static class SelectionHandler implements SelectionListener {
 
         private Object source;
@@ -95,10 +84,12 @@ public abstract class Selection {
         public SelectionHandler() {
         }
 
+        @Override
         public Object getSource() {
             return source;
         }
 
+        @Override
         public void setSource(Object source) {
             this.source = source;
         }
@@ -108,25 +99,30 @@ public abstract class Selection {
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
             }
-            if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                mouseClicked(ev);
+            if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                mouseRelesed(ev);
             }
 
         }
 
         protected void mousePressed(MouseEvent ev) {
-            System.err.println("SelectionHandler mausePressed source       = " + source);
-            System.err.println("SelectionHandler mausePressed event.source = " + ev.getSource());
+//            System.err.println("SelectionHandler mausePressed source       = " + source);
+//            System.err.println("SelectionHandler mausePressed event.source = " + ev.getSource());
+            Selection sel = DockRegistry.lookup(Selection.class);
+            setSource(ev.getSource());
+            sel.notifySelected(ev.getSource());
+            sel.setSelected(ev.getSource());
+            ev.consume();
+            
         }
 
-        protected void mouseClicked(MouseEvent ev) {
-            System.err.println("SelectionHandler mauseClicked source       = " + source);
-            System.err.println("SelectionHandler mauseClicked event.source = " + ev.getSource());
+        protected void mouseRelesed(MouseEvent ev) {
+//            System.err.println("SelectionHandler mouseRelesed source       = " + source);
+//            System.err.println("SelectionHandler mouseRelesed event.source = " + ev.getSource());
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
                 Selection sel = DockRegistry.lookup(Selection.class);
                 //if (sel.getSelected() != getSource()) {
-                System.err.println("   --- setSelected");
-                sel.setSelected(ev.getSource());
+//                System.err.println("   --- setSelected");
                 setSource(null);
                 ev.consume();
                 //}
@@ -135,8 +131,4 @@ public abstract class Selection {
         }
 
     }
-
-    public static interface SelectionFilter extends SelectionListener {
-    }
-
 }

@@ -165,7 +165,7 @@ public class DockRegistry {
                 if (change.wasRemoved()) {
                     change.getRemoved().forEach(s -> {
                         getInstance().windows.remove(s);
-                        //getInstance().owners.remove(s);
+                        //getInstance().owners.clear(s);
                     });
                 } else if (change.wasAdded()) {
                     change.getAddedSubList().forEach(s -> {
@@ -193,7 +193,7 @@ public class DockRegistry {
             return;
         }
         getInstance().windows.remove(window);
-        //getInstance().owners.remove(window);
+        //getInstance().owners.clear(window);
         Platform.runLater(() -> {
             // getInstance().updateRegistry();
         });
@@ -206,7 +206,7 @@ public class DockRegistry {
                 int idx1 = StageHelper.getStages().indexOf(s);
                 int idx2 = StageHelper.getStages().indexOf(s.getOwner());
                 if (idx1 < idx2) {
-                    //owners.remove(s);
+                    //owners.clear(s);
                 }
             }
         });
@@ -222,8 +222,8 @@ public class DockRegistry {
                 int idx1 = windows.indexOf(w);
                 int idx2 = windows.indexOf(p.getOwnerWindow());
                 if (idx1 < idx2) {
-                    //System.err.println("DockRegistry: remove " + w);
-                    //owners.remove(w);
+                    //System.err.println("DockRegistry: clear " + w);
+                    //owners.clear(w);
                 }
             }
         }

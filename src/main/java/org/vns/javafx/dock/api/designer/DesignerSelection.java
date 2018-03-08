@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.Selection;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
@@ -62,7 +64,7 @@ public class DesignerSelection extends Selection {
 
 
     @Override
-    public void selectTreeItem(Object value) {
+    public void notifySelected(Object value) {
 //        Platform.runLater(() -> {
         SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
         if (sgv != null) {
@@ -72,10 +74,13 @@ public class DesignerSelection extends Selection {
             } else {
                 item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
             }
-            System.err.println("DesignerSelection: item = " + item);
-
+//            System.err.println("DesignerSelection: item = " + item);
+            
             if (item != null) {
-
+//                System.err.println("DesignerSelection: item.value = " + item.getValue());
+                Platform.runLater(() -> {
+                    //sgv.getTreeView().getSelectionModel().select(item);
+                });
                 sgv.getTreeView().getSelectionModel().select(item);
             }
         }

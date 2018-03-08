@@ -44,7 +44,7 @@ import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ScenePaneContext;
 import org.vns.javafx.dock.api.LayoutContext;
-import org.vns.javafx.dock.api.designer.Selection;
+import org.vns.javafx.dock.api.Selection;
 
 /**
  *

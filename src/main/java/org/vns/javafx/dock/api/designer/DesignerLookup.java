@@ -15,13 +15,15 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.Selection;
 import java.util.List;
+import org.vns.javafx.dock.api.ApplicationContext;
 import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PalettePane;
-import org.vns.javafx.dock.api.designer.Selection.SelectionHandler;
-import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
+import org.vns.javafx.dock.api.Selection.SelectionHandler;
+import org.vns.javafx.dock.api.Selection.SelectionListener;
 
 /**
  *
@@ -38,6 +40,8 @@ public class DesignerLookup { // implements ContextLookup {
     private void init() {
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
+        DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
+        
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
         lookup.putUnique(SceneGraphView.class, new SceneGraphView() );
     }
@@ -77,4 +81,7 @@ public class DesignerLookup { // implements ContextLookup {
         private static final DesignerLookup instance = new DesignerLookup();
     }
     
+    public static class DesignerApplicationContext implements ApplicationContext {
+        
+    }
 }

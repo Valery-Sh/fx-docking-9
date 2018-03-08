@@ -15,12 +15,15 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.Selection;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -38,7 +41,10 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
-import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
+import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.LayoutContextFactory;
+import org.vns.javafx.dock.api.Selection.SelectionListener;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -47,6 +53,7 @@ import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
 public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
     //private ContentPane contentPane;
+    //private StackPane rootLayout;
     private Pane contentPane;
     private ScrollAnimation scrollAnimation;
     private DragIndicator dragIndicator;
@@ -55,7 +62,21 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     public SceneGraphViewSkin(SceneGraphView control) {
         super(control);
         Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
+        /*        rootLayout = new StackPane() {
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+                TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
+                if (item != null) {
+                    System.err.println("1 SceneGraphViewSkin: LAYOUT: selected = " + item.getValue());
+                    System.err.println("1 SceneGraphViewSkin: LAYOUT: bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                    Selection sel = DockRegistry.lookup(Selection.class);
+                    sel.setSelected(item.getValue());
+                }
 
+            }
+        };
+         */
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
 
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
@@ -70,12 +91,19 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                //getSkinnable().getParent().layout();
-                //getSkinnable().getParent().requestLayout();
-                //requestParentLayout();
-                if (getSkinnable().getTreeView().getSkin() != null) {
-                }
 
+                Platform.runLater(() -> {
+                    if (DockRegistry.lookup(FloatView.class) != null) {
+                        return;
+                    }
+                    TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
+                    if (item != null) {
+//                        System.err.println("SceneGraphViewSkin: LAYOUT: selected = " + item.getValue());
+//                        System.err.println("SceneGraphViewSkin: LAYOUT: bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                        Selection sel = DockRegistry.lookup(Selection.class);
+                        sel.setSelected(item.getValue());
+                    }
+                });
             }
         };
 
@@ -99,37 +127,30 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         //getChildren().add(treeViewPane);
 
         if (getSkinnable().getRoot() != null) {
+            LayoutContext lc = new LayoutContextFactory().getContext(getSkinnable().getRoot());
+            DockRegistry.makeDockLayout(getSkinnable().getRoot(), lc);
+            Dockable dockable = DockRegistry.makeDockable(getSkinnable().getRoot());
+            dockable.getContext().setDragNode(null);
+
             createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
-            getSkinnable().getRoot().getScene().setOnMouseClicked( e -> {
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(getSkinnable().getRoot().getScene());
-                SelectionListener sl = DockRegistry.lookup(SelectionListener.class);
-                System.err.println("SceneGraphViewSkin: sl.getSource = " + sl.getSource() + "; dockable=" + Dockable.of(sl.getSource()));
-                if ( sl.getSource() != null && Dockable.of(sl.getSource()) != null ) {
-                    Node node = Dockable.of(sl.getSource()).node();
-                    System.err.println("SceneGraphViewSkin: node = " + node);
-                    node.layoutBoundsProperty().addListener( (o, ov, nv) -> {
-                        System.err.println("==============================================");
-                        System.err.println("SceneGraphViewSkin old bounds = " + ov);
-                        System.err.println("SceneGraphViewSkin new bounds = " + nv);
-                        System.err.println("----------------------------------------------");
-                        sel.setSelected(node);                        
-                    }); 
-                    Platform.runLater(() -> {
-                        sel.setSelected(node);
-                    });
-                    
-                }
-                sl.setSource(null);
-
-        });
 
         }
+        getSkinnable().getScene().addEventFilter(MouseEvent.MOUSE_PRESSED,this::sceneMousePressed);
+
         getSkinnable().rootProperty().addListener(this::rootChanged);
 
     }
-
+    
+    private void sceneMousePressed( MouseEvent ev) {
+            TreeItemEx item = getSkinnable().getTreeItem(ev.getScreenX(), ev.getScreenY());
+            if (item == null) {
+                Selection sel = DockRegistry.lookup(Selection.class);
+                sel.setSelected(null);
+                ev.consume();
+            }
+        
+    }
     protected void statusBarChanged(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
         if (oldValue == null) {
             contentPane.getChildren().remove(oldValue);
@@ -143,7 +164,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         if (newValue == null) {
             return;
         }
-        ((Stage) newValue.getScene().getWindow()).requestFocus();
+//        ((Stage) newValue.getScene().getWindow()).requestFocus();
         if (newValue instanceof Region) {
             Region r = (Region) newValue;
             Border b = r.getBorder();
@@ -154,22 +175,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
             r.setBorder(b);
         }
-
+        
         createSceneGraph(newValue);
         scrollAnimation = new ScrollAnimation(getSkinnable().getTreeView());
-
-        getSkinnable().requestFocus();
-        ((Stage) newValue.getScene().getWindow()).requestFocus();
-        newValue.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
-            System.err.println("SCENE CLICKED");
-            Selection sel = DockRegistry.lookup(Selection.class);
-            sel.setSelected(newValue.getScene());
-//            e.consume();
-        });
-        //s.setWidth(s.getWidth() + 1);
-        Platform.runLater(() -> {
-            //r.setBorder(null);
-        });
 
     }
 
@@ -180,6 +188,8 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         Platform.runLater(() -> {
             registerScrollBarEvents();
         });
+        item.addEventHandler(TreeItem.childrenModificationEvent(),
+                getSkinnable()::childrenModification);
         return item;
     }
 
@@ -203,23 +213,20 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     protected void registerScrollBarEvents() {
         ScrollBar sb = getSkinnable().getTreeView().getVScrollBar();
 
-//        sb.addEventHandler(DragEvent.DRAG_EXITED, ev -> {
         sb.addEventHandler(MouseEvent.MOUSE_EXITED, ev -> {
             dragIndicator.hideDrawShapes();
             scrollAnimation.stop();
             ev.consume();
         });
-        //sb.addEventHandler(DragEvent.DRAG_OVER, ev -> {
+
         sb.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
             dragIndicator.hideDrawShapes();
-            //ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             if (!scrollAnimation.isRunning()) {
                 scrollAnimation.start(ev.getScreenX(), ev.getScreenY());
             }
             ev.consume();
         });
 
-        //sb.addEventHandler(DragEvent.DRAG_ENTERED, ev -> {
         sb.addEventHandler(MouseEvent.MOUSE_ENTERED, ev -> {
             dragIndicator.hideDrawShapes();
             ev.consume();

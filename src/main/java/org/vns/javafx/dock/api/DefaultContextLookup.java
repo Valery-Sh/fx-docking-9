@@ -129,11 +129,20 @@ public class DefaultContextLookup implements ContextLookup {
     }
 
     @Override
+    public <T> void clear(Class key) {
+        if (lookup.containsKey(key)) {
+            lookup.get(key).clear();
+        }
+    }
+
+    @Override
     public <T> void putUnique(Class key, T obj) {
         if (lookup.containsKey(key)) {
             lookup.get(key).clear();
         }
-        put(key,obj);
+        if ( obj != null ) {
+            put(key,obj);
+        }
     }
 
 }

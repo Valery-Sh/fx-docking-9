@@ -29,7 +29,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.ScenePaneContext;
 import org.vns.javafx.dock.api.LayoutContext;
-import org.vns.javafx.dock.api.dragging.DragManagerFactory;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
@@ -128,29 +127,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
         if (Dockable.of(toAccept) == null) {
             return;
         }
-//        System.err.println("toAccept: isDockable = " + toAccept);
-        d = Dockable.of(toAccept);
 
-        //
-        // Try to find the first Parent which is a DockLayout
-        //
-        Parent p = d.node().getParent();
-
-        LayoutContext tc = null;
-        if (p instanceof Pane) {
-            tc = new ScenePaneContext(d);
-        }
-        while (p != null) {
-            if (DockLayout.of(p) != null) {
-                if (LayoutContext.isDocked(DockLayout.of(p).getLayoutContext(), d)) {
-                    tc = DockLayout.of(p).getLayoutContext();
-                }
-                break;
-            }
-            p = p.getParent();
-        }
-//        System.err.println("SceneGraphViewTargetContext: =" + tc);
-        d.getContext().setLayoutContext(tc);
     }
 
     /**

@@ -418,7 +418,7 @@ public abstract class AbstractDockStateLoader implements StateLoader {
         //
         //!!!08
         if (DockRegistry.isDockable(node) && getExplicitlyRegistered().containsValue(node)) {
-            //getExplicitlyRegistered().remove(getEntryName(node));
+            //getExplicitlyRegistered().clear(getEntryName(node));
             throw new IllegalArgumentException("Dublicate node. entryName: " + fieldName);
         }
         //!!!08

@@ -16,7 +16,6 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -33,7 +32,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
@@ -47,17 +45,31 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
         init();
     }
 
-/*    public DockTabPane2Context(Dockable dockable) {
+    /*    public DockTabPane2Context(Dockable dockable) {
         super(dockable);
         init();
     }
-*/
+     */
     private void init() {
         TabPane pane = (TabPane) getLayoutNode();
         pane.getTabs().forEach(tab -> {
             tab.getStyleClass().add("tab-uuid-" + UUID.randomUUID());
+            if (tab.getContent() != null) {
+                commitDock(tab.getContent());
+            }
+            tab.contentProperty().addListener((o, oldValue, newValue) -> {
+                if (newValue != null) {
+                    commitDock(newValue);
+                }
+                DockLayout.of(pane).getLayoutContext().undock(oldValue);
+                if (newValue != null) {
+                    DockLayout.of(pane).getLayoutContext().commitDock(newValue);
+                }
+
+            });
         });
-        pane.getTabs().addListener(new TabsChangeListener());
+
+        pane.getTabs().addListener(new TabsChangeListener(this));
     }
 
     @Override
@@ -70,16 +82,9 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
     public boolean isAcceptable(Dockable dockable) {
         boolean retval = false;
 
-        /*17.02.2018if (dc != null && (dc.isValueDockable())) {
-        if (dc != null )
-            retval = true;
-        } else if ((dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
-            retval = true;
-        }
-*/
         DragContainer dc = dockable.getContext().getDragContainer();
-        
-        if ( dc != null && (dc.getValue() instanceof Tab) && ! dc.isValueDockable()) {        
+
+        if (dc != null && (dc.getValue() instanceof Tab) && !dc.isValueDockable()) {
             retval = true;
         }
         return retval;
@@ -137,7 +142,7 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
         int idx = -1;
         TabPaneHelper helper = new TabPaneHelper(this);
         TabPane pane = (TabPane) getLayoutNode();
-        
+
         if (helper.getHeaderArea(mousePos.getX(), mousePos.getY()) != null) {
 
             idx = pane.getTabs().size();
@@ -152,6 +157,9 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
         }
         if (idx >= 0) {
             pane.getTabs().add(idx, tab);
+            if (tab.getContent() != null && Dockable.of(tab.getContent()) != null) {
+                Dockable.of(tab.getContent()).getContext().setLayoutContext(this);
+            }
             retval = true;
         }
         return retval;
@@ -172,26 +180,19 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
 
     @Override
     public void remove(Node dockNode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-/*    @Override
-    public void dockObject(Point2D mousePos, Dockable carrier) {
-        DragContainer dc = carrier.getContext().getDragContainer();
-        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
-            ((TabPane) getTargetNode()).getTabs().add((Tab) dc.getValue());
+        TabPane tp = (TabPane) getLayoutNode();
+        for (Tab tab : tp.getTabs()) {
+            if (tab.getContent() == dockNode) {
+                tab.setContent(null);
+            }
         }
     }
-
-    @Override
-    public void undockObject(Dockable carrier) {
-        DragContainer dc = carrier.getContext().getDragContainer();
-        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
-            ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
-        }
-    }
-*/
     public static class TabsChangeListener implements ListChangeListener<Tab> {
+        private final DockTabPane2Context tabPaneContext;
+        
+        public TabsChangeListener(DockTabPane2Context tabPaneContext) {
+            this.tabPaneContext = tabPaneContext;
+        }
 
         @Override
         public void onChanged(Change<? extends Tab> change) {
@@ -210,6 +211,7 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                         if (uuidStyle != null) {
                             tab.getStyleClass().remove(uuidStyle);
                         }
+                        tabPaneContext.undock(tab.getContent());
                     }
 
                 }
@@ -217,6 +219,13 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                     List<? extends Tab> list = change.getAddedSubList();
                     list.forEach((tab) -> {
                         tab.getStyleClass().add("tab-uuid-" + UUID.randomUUID());
+                        tabPaneContext.commitDock(tab.getContent());
+                        tab.contentProperty().addListener((o, oldValue, newValue) -> {
+                            tabPaneContext.undock(oldValue);
+                            if (newValue != null) {
+                                tabPaneContext.commitDock(newValue);
+                            }
+                        });
                     });
                 }
 
@@ -234,11 +243,11 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             helper = new TabPaneHelper((DockTabPane2Context) context);
         }
 
-/*        @Override
+        /*        @Override
         public void showIndicatorPopup(double screenX, double screenY) {
             getLayoutContext().getLookup().lookup(IndicatorPopup.class).show(getLayoutContext().getTargetNode(), screenX, screenY);
         }
-*/
+         */
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane();
@@ -278,10 +287,10 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                 Bounds firstTabBounds = helper.tabBounds(pane.getTabs().get(0));
                 double delta = 0;
                 tabBounds = controlBounds;
-                if ( ! tabBounds.intersects(firstTabBounds)) {
+                if (!tabBounds.intersects(firstTabBounds)) {
                     //delta = firstTabBounds.getWidth() / 2;
                 }
-                
+
                 //double delta = Math.max(lastTabBounds.getWidth() / 3, 10);
                 tabBounds = new BoundingBox(tabBounds.getMinX() - delta, lastTabBounds.getMinY(), tabBounds.getWidth() + delta, lastTabBounds.getHeight());
                 //tabBounds = new BoundingBox(tabBounds.getMinX(), lastTabBounds.getMinY(), tabBounds.getWidth(), lastTabBounds.getHeight());                

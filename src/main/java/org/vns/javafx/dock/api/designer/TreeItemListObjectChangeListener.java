@@ -67,14 +67,14 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
                 if (!list.isEmpty()) {
-                    System.err.println("TreeItemListObjectChangeListener: item added for " + list.get(0));
+                    //System.err.println("TreeItemListObjectChangeListener: item added for " + list.get(0));
                 }
                 
                 list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
                     itemList.add(it);
                 });
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
-                System.err.println("TreeItemListObjectChangeListener: ");
+//                System.err.println("TreeItemListObjectChangeListener: ");
             }
         }//while
     }

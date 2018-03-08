@@ -22,6 +22,7 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -57,17 +58,6 @@ public class DemoDesigner1 extends Application {
         DockNode formDockNode = new DockNode("Form Designer");
         Button formButton = new Button("CLICK");
 
-        formButton.setOnAction(a -> {
-            DockRegistry.getWindows().forEach(w -> {
-                System.err.println("******************** w = " + w.getScene().getRoot().getId());
-                System.err.println("******************** w = " + w.getScene().getRoot().isVisible());
-                System.err.println("******************** w.isShowing() = " + w.isShowing());
-                System.err.println("DockRegistry FOCUSED WIN.bounds = " + w.getScene().getRoot().localToScreen(w.getScene().getRoot().getBoundsInLocal()));
-
-                System.err.println("=============================================");
-            });
-
-        });
         StackPane formPane = new StackPane();
         formPane.setStyle("-fx-background-color: yellow");
         formPane.getChildren().add(formButton);
@@ -77,9 +67,27 @@ public class DemoDesigner1 extends Application {
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
         VBox root1 = new VBox();
+        
+        sceneGraphView.setRoot(root1);
         Scene scene1 = new Scene(root1);
+        //sceneGraphView.getRootLayout().getChildren().add(root1);
+        //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
+        formButton.setOnAction(a -> {
+            ((Region)sceneGraphView.getRoot()).requestLayout();
+            DockRegistry.getWindows().forEach(w -> {
+/*                System.err.println("******************** w = " + w.getScene().getRoot().getId());
+                System.err.println("******************** w = " + w.getScene().getRoot().isVisible());
+                System.err.println("******************** w.isShowing() = " + w.isShowing());
+                System.err.println("DockRegistry FOCUSED WIN.bounds = " + w.getScene().getRoot().localToScreen(w.getScene().getRoot().getBoundsInLocal()));
 
-        root1.setId("FormStage " + root.getClass().getSimpleName());
+                System.err.println("=============================================");
+*/
+                
+            });
+
+        });
+
+        root1.setId("root1 " + root.getClass().getSimpleName());
 
         Stage stage1 = new Stage();
         stage1.setAlwaysOnTop(true);
@@ -90,7 +98,7 @@ public class DemoDesigner1 extends Application {
         scene1.setOnZoom(value -> {
             System.err.println("!!!!!!!!!!!!!!!!!!!!!! ZOOOO MED");
         });
-        sceneGraphView.setRoot(root1);
+     
         //Rectangle rect = new Rectangle(50,25);
 
         sceneGraphView.rootProperty().addListener((v, ov, nv) -> {
@@ -156,5 +164,4 @@ public class DemoDesigner1 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -28,6 +29,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventDispatcher;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -50,6 +54,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -70,6 +75,7 @@ import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKLAYOUT;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
+import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  * Provides a set of {@code javafx.scene.control.Label } nodes, each of which
@@ -156,7 +162,7 @@ public class PalettePane extends Control {
     }
 
     /**
-     * Sets the custom customizer of the palette model.
+     * Sets the custom customizer of the palette paletteModel.
      *
      * @param customizer the custom customizer
      */
@@ -200,7 +206,7 @@ public class PalettePane extends Control {
     }
 
     /**
-     * Returns the model of the palette.
+     * Returns the paletteModel of the palette.
      *
      * @return the object of type {@link PaletteModel}
      */
@@ -270,11 +276,11 @@ public class PalettePane extends Control {
     }
 
     protected PaletteModel createDefaultPaleteModel() {
-        PaletteModel model = new PaletteModel(this);
+        PaletteModel paletteModel = new PaletteModel(this);
 
         Label lb = new Label("Containers");
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
-        PaletteCategory pc = model.addCategory("containers", lb);
+        PaletteCategory pc = paletteModel.addCategory("containers", lb);
         lb.getStyleClass().add("tree-item-font-bold");
 
         lb = new Label("Accordion");
@@ -287,7 +293,7 @@ public class PalettePane extends Control {
         pc.addItem(lb, AnchorPane.class);
         lb.getStyleClass().add("tree-item-node-anchorpane");
         lb.applyCss();
-        
+
         lb = new Label("BorderPane");
         pc.addItem(lb, BorderPane.class);
         lb.getStyleClass().add("tree-item-node-borderpane");
@@ -297,19 +303,18 @@ public class PalettePane extends Control {
         pc.addItem(lb, FlowPane.class);
         lb.getStyleClass().add("tree-item-node-flowpane");
         lb.applyCss();
-        
+
         lb = new Label("GridPane");
         pc.addItem(lb, GridPane.class);
         lb.getStyleClass().add("tree-item-node-gridpane");
         lb.applyCss();
-
 
         lb = new Label("HBox");
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, HBox.class);
         lb.getStyleClass().add("tree-item-node-hbox");
         lb.applyCss();
-        
+
         lb = new Label("VBox");
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-vbox");
@@ -319,34 +324,34 @@ public class PalettePane extends Control {
         lb = new Label("Pane");
         pc.addItem(lb, Pane.class);
         lb.getStyleClass().add("tree-item-node-pane");
-        lb.applyCss();     
-    
+        lb.applyCss();
+
         lb = new Label("ScrollPane");
         pc.addItem(lb, ScrollPane.class);
         lb.getStyleClass().add("tree-item-node-scrollpane");
-        lb.applyCss();     
+        lb.applyCss();
 
         lb = new Label("SplitPane");
         pc.addItem(lb, SplitPane.class);
         lb.getStyleClass().add("tree-item-node-splitpane");
-        lb.applyCss();     
+        lb.applyCss();
 
         lb = new Label("StackPane");
         pc.addItem(lb, StackPane.class);
         lb.getStyleClass().add("tree-item-node-stackpane");
-        lb.applyCss();     
-    
+        lb.applyCss();
+
         lb = new Label("Tab");
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-tab");
         lb.applyCss();
-        pc.addItem(lb, Tab.class);        
+        pc.addItem(lb, Tab.class);
 
         lb = new Label("TabPane");
         pc.addItem(lb, TabPane.class);
         lb.getStyleClass().add("tree-item-node-tabpane");
         lb.applyCss();
-        
+
         lb = new Label("TilePane");
         pc.addItem(lb, TilePane.class);
         lb.getStyleClass().add("tree-item-node-tilepane");
@@ -356,7 +361,7 @@ public class PalettePane extends Control {
         pc.addItem(lb, TitledPane.class);
         lb.getStyleClass().add("tree-item-node-titledpane");
         lb.applyCss();
-        
+
         //
         // Controls
         //
@@ -364,26 +369,34 @@ public class PalettePane extends Control {
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-font-bold");
 
-        pc = model.addCategory("controls", lb);
+        pc = paletteModel.addCategory("controls", lb);
         lb.applyCss();
-        
+
         lb = new Label("Button");
         pc.addItem(lb, Button.class);
         lb.getStyleClass().add("tree-item-node-button");
 
         lb = new Label("CheckBox");
-        pc.addItem(lb, CheckBox.class, v -> {
+        PaletteItem item = pc.addItem(lb, CheckBox.class, v -> {
             ((CheckBox) v).setText("CheckBox");
         });
+        //
+        // Prevents MOUSE_RELEASED
+        //
+        item.setEventDispatcher(new DefaultEventDispatcher());
+        
         lb.getStyleClass().add("tree-item-node-checkbox");
 
         lb = new Label("ChoiceBox");
         pc.addItem(lb, ChoiceBox.class);
         lb.getStyleClass().add("tree-item-node-choicebox");
-        
+
         lb = new Label("ComboBox");
-        pc.addItem(lb, ComboBox.class);
+        item = pc.addItem(lb, ComboBox.class);
         lb.getStyleClass().add("tree-item-node-combobox");
+        item.setEventDispatcher(new DefaultEventDispatcher( n -> {
+            return ((ComboBox)n).getItems().isEmpty();} 
+        ));
 
         lb = new Label("ListView");
         pc.addItem(lb, ListView.class);
@@ -397,12 +410,12 @@ public class PalettePane extends Control {
         pc.addItem(lb, TextArea.class);
         lb.getStyleClass().add("tree-item-node-textarea");
         lb.applyCss();
-        
+
         lb = new Label("TextField");
         pc.addItem(lb, TextField.class);
         lb.getStyleClass().add("tree-item-node-textfield");
         lb.applyCss();
-        
+
         //
         // Spapes
         //
@@ -410,13 +423,13 @@ public class PalettePane extends Control {
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-font-bold");
 
-        pc = model.addCategory("shapes", lb);
+        pc = paletteModel.addCategory("shapes", lb);
         lb.applyCss();
 
         lb = new Label("Arc");
         pc.addItem(lb, Arc.class);
         lb.getStyleClass().add("tree-item-node-rectangle");
-        
+
         lb = new Label("Rectangle");
         //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, Rectangle.class, v -> {
@@ -433,10 +446,9 @@ public class PalettePane extends Control {
             ((Text) v).setText("Text");
         });
         lb.getStyleClass().add("tree-item-node-text");
-        
-        return model;
-        
-        
+
+        return paletteModel;
+
     }
 
     /**
@@ -448,8 +460,10 @@ public class PalettePane extends Control {
         private final Class<?> valueClass;
         private PaletteModel model;
         private DragValueCustomizer customizer;
-        private ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
-        private ObjectProperty<Class<?>> layoutContextClass = new SimpleObjectProperty<>();
+        private final ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
+        private final ObjectProperty<Class<?>> layoutContextClass = new SimpleObjectProperty<>();
+        
+        private PaletteEventDispatcher eventDispatcher;
 
         /**
          * Create an instance of the class for the specified parameters.
@@ -501,6 +515,14 @@ public class PalettePane extends Control {
             }
         }
 
+        public PaletteEventDispatcher getEventDispatcher() {
+            return eventDispatcher;
+        }
+
+        public void setEventDispatcher(PaletteEventDispatcher eventDispatcher) {
+            this.eventDispatcher = eventDispatcher;
+        }
+
         public ObjectProperty<NodePolicy> producedNodepolicy() {
             return producedNodepolicy;
         }
@@ -526,7 +548,7 @@ public class PalettePane extends Control {
         }
 
         /**
-         * Returns the model of the palette.
+         * Returns the paletteModel of the palette.
          *
          * @return the object of type PaletteModel which contains a set of
          * categories of items/
@@ -612,9 +634,9 @@ public class PalettePane extends Control {
         /**
          * Creates an instance of the class for the given parameters.
          *
-         * @param model the model of the palette
-         * @param id the unique identifier for all categories in the model of
-         * the palette.
+         * @param model the paletteModel of the palette
+         * @param id the unique identifier for all categories in the paletteModel of
+ the palette.
          * @param lb the object of type {@code Label } to visually represent the
          * category
          */
@@ -760,7 +782,7 @@ public class PalettePane extends Control {
 
     /**
      * The object of the class contains a set of items broken down by category.
-     * Serves as a model for {@link PalettePane}.
+     * Serves as a paletteModel for {@link PalettePane}.
      *
      */
     public static class PaletteModel {
@@ -768,7 +790,7 @@ public class PalettePane extends Control {
         private final ObservableList<PaletteCategory> categories = FXCollections.observableArrayList();
         private DragValueCustomizer customizer;
         private final PalettePane palette;
-        
+
         /**
          * Creates a new instance of the class. The created object has the
          * property {@code customizer} set to the object of type
@@ -807,8 +829,8 @@ public class PalettePane extends Control {
         }
 
         /**
-         * Checks whether the model contains a category with the given
-         * identifier.
+         * Checks whether the paletteModel contains a category with the given
+ identifier.
          *
          * @param id the identifier to be checked
          * @return true if the category with the given identifier exists. false
@@ -826,8 +848,8 @@ public class PalettePane extends Control {
         }
 
         /**
-         * Checks whether the model contains a category for the given
-         * {@code java.lang.Class}..
+         * Checks whether the paletteModel contains a category for the given
+ {@code java.lang.Class}..
          *
          * @param valueClass the class to be checked
          * @return true if the category for the given {@code Class} exists.
@@ -928,24 +950,120 @@ public class PalettePane extends Control {
                         if (palette.getProducedNodeProperty() == DOCKLAYOUT || palette.getProducedNodeProperty() == BOTH) {
                             //LayoutContext lc = item.getLayoutContextClass();
                             LayoutContext lc = null;
-                            if ( item.getLayoutContextClass() == null ) {
+                            if (item.getLayoutContextClass() == null) {
                                 LayoutContextFactory f = new LayoutContextFactory();
-                                lc = f.getContext((Node)value);
+                                lc = f.getContext((Node) value);
                             } else {
-                                
+
                             }
-                            if ( lc != null ) {
+                            if (lc != null) {
                                 DockRegistry.makeDockLayout((Node) value, lc);
                             }
                         }
                     }
-                }                
+                }
                 if (item.getModel().getCustomizer() != null) {
                     item.getModel().getCustomizer().customize(value);
                 }
                 if (item.getCustomizer() != null) {
                     item.getCustomizer().customize(value);
                 }
+/////////////////////////////////////////////////////////////////////
+                if ( (value instanceof Node) && item.getEventDispatcher() != null ) {
+                    item.getEventDispatcher().start((Node)value);
+                }
+/*                if ((value instanceof CheckBox)) { //&& DockRegistry.lookup(ApplicationContext.class)) {
+                    Node node = (Node) value;
+                    if (value instanceof Integer) {
+                        node.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+                            System.err.println("TEST VBox handler mouseClicked");
+                            //DockRegistry.getInstance().getLookup().clear(FloatView.class);
+                        });
+                        node.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                            System.err.println("TEST VBox filter mouseClicked");
+                        });
+
+                        node.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+                            System.err.println("TEST VBox handler mousePressed");
+                        });
+                        node.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+                            System.err.println("TEST VBox filter mousePressed");
+                        });
+
+                        node.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
+                            System.err.println("TEST VBox handler mouseReleased");
+                        });
+                        node.addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
+                            System.err.println("TEST VBox filter mouseReleased");
+                        });
+
+                        node.addEventHandler(MouseEvent.DRAG_DETECTED, e -> {
+                            System.err.println("TEST VBox handler dragDetected");
+                        });
+                        node.addEventFilter(MouseEvent.DRAG_DETECTED, e -> {
+                            System.err.println("TEST VBox filter dragDetected");
+                        });
+                        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
+                            System.err.println("TEST VBox handler dragDragged");
+                        });
+                        node.addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
+                            System.err.println("TEST VBox filter dragDragged");
+                        });
+
+                    }
+
+                    final EventDispatcher initial = node.getEventDispatcher();
+
+                    node.setEventDispatcher(new EventDispatcher() {
+                        @Override
+                        public Event dispatchEvent(Event event, EventDispatchChain tail) {
+                            if (event instanceof MouseEvent) {
+
+                                MouseEvent mouseEvent = (MouseEvent) event;
+
+                                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                                    System.err.println("MouseEvent.MOUSE_PRESSED node = " + node);
+                                                                        
+                                    //System.err.println("   --- source = " + event.getSource());
+                                    //System.err.println("   --- target = " + event.getTarget());
+                                     
+                                    //return null;
+
+                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                                    System.err.println("MouseEvent.MOUSE_RELEASED node = " + node);
+                                    //                                    System.err.println("   --- source = " + event.getSource());
+                                    //System.err.println("   --- target = " + event.getTarget());
+                                    //                                  //if ( DockRegistry.lookup(FloatView.class) == null ) {  
+                                    if (node instanceof CheckBox) {
+                                        return null;
+                                    }
+                                    //}                                        
+
+                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
+                                    System.err.println("MouseEvent.MOUSE_CLICKED node = " + node);
+                                    //                                    System.err.println("   --- source = " + event.getSource());
+                                    //System.err.println("   --- target = " + event.getTarget());
+                                    //
+                                    //return null;
+                                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
+                                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                                    //                                    System.err.println("   --- source = " + event.getSource());
+                                    //System.err.println("   --- target = " + event.getTarget());                                    
+                                    //
+                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                                    //                                    System.err.println("   --- source = " + event.getSource());
+                                    //System.err.println("   --- target = " + event.getTarget());                                    
+                                    //
+                                }
+                            }
+                            return initial.dispatchEvent(event, tail);
+                        }
+                    });
+
+                }
+*/
+/////////////////////////////////////////////////////////////////////
                 String tx = "";
                 if (value instanceof Labeled) {
                     tx = ((Labeled) value).getText();
@@ -973,7 +1091,6 @@ public class PalettePane extends Control {
 
             setStartMousePos(pos);
         }
-
 
         @Override
         public DragManager getDragManager(MouseEvent ev) {
@@ -1024,4 +1141,58 @@ public class PalettePane extends Control {
             }
         }
     }
+    public static interface PaletteEventDispatcher extends EventDispatcher {
+         void start(Node node);
+    }
+    public static class DefaultEventDispatcher implements PaletteEventDispatcher {
+
+        private EventDispatcher initial;
+        private Node node;
+        private Predicate<Node> preventCondition;
+                
+        public DefaultEventDispatcher() {
+            this(null);
+        }
+
+        public DefaultEventDispatcher(Predicate<Node> cond ) {
+            preventCondition = cond;
+            init();
+        }
+        
+        private void init() {
+        }
+        
+        public void start(Node node) {
+            this.node = node;
+            initial = node.getEventDispatcher();
+            node.setEventDispatcher(this);
+        }
+
+        @Override
+        public Event dispatchEvent(Event event, EventDispatchChain tail) {
+            if (event instanceof MouseEvent) {
+
+                MouseEvent mouseEvent = (MouseEvent) event;
+
+                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                    System.err.println("MouseEvent.MOUSE_PRESSED node = " + node);
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                    System.err.println("MouseEvent.MOUSE_RELEASED node = " + node);
+                    if ( preventCondition == null ||  preventCondition.test(node) ) {
+                        return null;
+                    }
+
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
+                    System.err.println("MouseEvent.MOUSE_CLICKED node = " + node);
+                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
+                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                }
+            }
+
+            return initial.dispatchEvent(event, tail);
+        }
+    }
+
 }//PalettePane

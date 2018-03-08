@@ -63,9 +63,11 @@ public abstract class LayoutContext {
     }
 
     protected void commitDock(Node node) {
-        if (DockRegistry.isDockable(node)) {
+        if (node != null && DockRegistry.isDockable(node)) {
             DockableContext dockableContext = Dockable.of(node).getContext();
-            if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+            //if (dockableContext.getLayoutContext() == null || dockableContext.getLayoutContext() != this) {
+//            System.err.println("COMMIT DOCK TO" + this);
+            if (dockableContext.getLayoutContext() != this) {
                 dockableContext.setLayoutContext(this);
             }
         }
@@ -246,7 +248,7 @@ public abstract class LayoutContext {
     }
 
     public void undock(Node node) {
-        if (DockRegistry.isDockable(node)) {
+        if (node != null && DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
             
             dc.getLayoutContext().remove(node);

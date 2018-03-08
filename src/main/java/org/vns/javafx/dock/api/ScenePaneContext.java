@@ -74,6 +74,7 @@ public class ScenePaneContext extends LayoutContext {
 */
     @Override
     public void remove(Node dockNode) {
+//        System.err.println("ScenePaneContext dockNode=" + dockNode);
         if ( ! isDocked(dockNode) ) {
             return;
         }

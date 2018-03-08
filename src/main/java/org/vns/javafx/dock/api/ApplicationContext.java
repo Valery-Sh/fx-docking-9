@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,13 @@
  */
 package org.vns.javafx.dock.api;
 
-import java.util.List;
-
 /**
  *
  * @author Valery
  */
-public interface ContextLookup {
-    <T> T lookup(Class<T> clazz);
-    <T> List<? extends T> lookupAll(Class<T> clazz);    
-    <T> void add(T obj);
-    <T> void remove(T obj);
-    //<T> void put(Class key, T obj);
-    <T> void putUnique(Class key, T obj);
-    <T> void remove(Class key, T obj);
-    <T> void clear(Class key);
+public interface ApplicationContext {
     
+    public static class DockingContext implements ApplicationContext {
+        
+    }
 }

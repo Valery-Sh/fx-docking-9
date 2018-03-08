@@ -36,6 +36,9 @@ public class TreeItemObjectChangeListener implements ChangeListener {
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
         Property prop = treeItem.getProperty(propertyName);
+//        System.err.println("TreeItemObjectChangeListener: propName = " + propertyName);
+//        System.err.println("   --- oldValue = " + oldValue);
+//        System.err.println("   --- newValue = " + newValue);
         TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
         int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propertyName);
         if (propTreeItem == null) {

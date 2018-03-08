@@ -45,6 +45,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         addEventFilter(NodeDragEvent.NODE_DRAG, this);
         getStyleClass().add(LOOKUP_SELECTOR);
         this.getStyleClass().add("designer");
+        
     }
     public Pane getParentPane() {
         return (Pane) getParent();

@@ -4,12 +4,8 @@ package org.vns.javafx.dock.api.designer;
 import com.sun.javafx.scene.control.skin.TreeViewSkin;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
-import javafx.application.Platform;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
-import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *

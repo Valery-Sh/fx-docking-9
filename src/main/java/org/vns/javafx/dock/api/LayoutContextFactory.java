@@ -675,7 +675,7 @@ public class LayoutContextFactory {
                 if (change.wasAdded()) {
                     for (int i = change.getFrom(); i < change.getTo(); i++) {
                         if (DockRegistry.isDockable(change.getList().get(i))) {
-                            System.err.println("LayoutContextFactory: NodeListChangeListener " + context.getLayoutNode());
+//                            System.err.println("LayoutContextFactory: NodeListChangeListener " + context.getLayoutNode());
                             context.commitDock(change.getList().get(i));
                         }
                     }

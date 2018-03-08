@@ -154,7 +154,7 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
     public void undockObject(Dockable carrier) {
         DragContainer dc = carrier.getContext().getDragContainer();
         if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
-            ((TabPane) getTargetNode()).getTabs().remove(dc.getValue());
+            ((TabPane) getTargetNode()).getTabs().clear(dc.getValue());
         }
     }
 */

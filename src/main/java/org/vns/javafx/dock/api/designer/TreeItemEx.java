@@ -16,7 +16,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
-import org.vns.javafx.dock.api.designer.Selection.SelectionListener;
+import org.vns.javafx.dock.api.Selection.SelectionListener;
 
 /**
  *
@@ -154,79 +154,54 @@ public class TreeItemEx extends TreeItem<Object> {
         if (getValue() == null) {
             return;
         }
-
-        if ( (getValue() instanceof Node)) {
+//        System.err.println("registerChangeHandlers getValue() = " + getValue());
+        if ((getValue() instanceof Node)) {
 
             if (Dockable.of(getValue()) != null) {
                 SelectionListener l = DockRegistry.getInstance().lookup(SelectionListener.class);
-                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_CLICKED, l);
-/*                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-                    System.err.println("TreeItemEx: CLICKRD isteners: value = " + getValue());
-                    //System.err.println("TreeItemEx registerChangeHandlers: clicked value = " + getValue());
-                    //System.err.println("   --- MouseTransp = " + ((Node)getValue()).isMouseTransparent());
-                    if (Dockable.of(getValue()) != null && !Dockable.of(getValue()).getContext().isFloating()) {
-                        Selection sel = DockRegistry.lookup(Selection.class);
-                        sel.resume();
-                        
-                        if (sel.getSelected() != getValue()) {
-                            //sel.setSelected(getValue());
-                            sel.selectTreeItem(getValue());
-                            sel.setSelected(getValue());
-                        }
-                    }
-                    e.consume();
-                });
-*/
-                /*            ((Node)getValue()).focusedProperty().addListener((o, oldValue, newValue) -> {
-                System.err.println("TreeItemEx: FOCUS node = " + getValue());
-                System.err.println("   --- FOCUS isFocusTraversable = " + ((Node)getValue()).isFocusTraversable());
-                System.err.println("   --- FOCUS oldValue=" + oldValue);
-                System.err.println("   --- FOCUS newValue=" + newValue);
-                System.err.println("---------------------------------------------------------------");
-            });
-                 */
-            }
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
-
-            Object changeListener;
-            if (this.getItemType() == ItemType.LIST) {
-                changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
-                ObservableList ol = (ObservableList) getValue();
-                ol.addListener((ListChangeListener) changeListener);
-                changeListeners.put(getPropertyName(), changeListener);
-                return;
-            }
-
-            for (int i = 0; i < nd.getProperties().size(); i++) {
-                Property p = nd.getProperties().get(i);
-                Object v = new BeanAdapter(getValue()).get(p.getName());
-                if (v != null && (v instanceof List)) {
-                    TreeItemEx item = this;
-                    if ((p instanceof NodeList) && ((NodeList) p).isAlwaysVisible()) {
-                        continue;
-                    }
-                    changeListener = new TreeItemListObjectChangeListener(item, p.getName());
-                    Object propValue = new BeanAdapter(getValue()).get(p.getName());
-                    //Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName(), new Class[0]);
-                    //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
-                    Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
-                    ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
-                    changeListeners.put(p.getName(), changeListener);
-
-                } else {
-                    changeListener = new TreeItemObjectChangeListener(this, p.getName());
-                    Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
-                    Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
-                    Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
-                    ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
-                    changeListeners.put(p.getName(), changeListener);
-                }
+                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_PRESSED, l);
+                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_RELEASED, l);
             }
         }
-    }
-    
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
 
-    
+        Object changeListener;
+        if (this.getItemType() == ItemType.LIST) {
+            changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
+            ObservableList ol = (ObservableList) getValue();
+            ol.addListener((ListChangeListener) changeListener);
+            changeListeners.put(getPropertyName(), changeListener);
+            return;
+        }
+
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+            Property p = nd.getProperties().get(i);
+            Object v = new BeanAdapter(getValue()).get(p.getName());
+            if (v != null && (v instanceof List)) {
+                TreeItemEx item = this;
+                if ((p instanceof NodeList) && ((NodeList) p).isAlwaysVisible()) {
+                    continue;
+                }
+                changeListener = new TreeItemListObjectChangeListener(item, p.getName());
+                Object propValue = new BeanAdapter(getValue()).get(p.getName());
+                //Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName(), new Class[0]);
+                //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
+                ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
+                changeListeners.put(p.getName(), changeListener);
+
+            } else {
+                changeListener = new TreeItemObjectChangeListener(this, p.getName());
+                Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
+                Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
+                ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
+                //System.err.println("registerChangeHandlers: p.getName() = " + p.getName());
+                changeListeners.put(p.getName(), changeListener);
+            }
+        }
+
+    }
 
     public void unregisterChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if (getValue() == null || changeListeners.isEmpty()) {

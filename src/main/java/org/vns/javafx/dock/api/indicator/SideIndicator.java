@@ -384,7 +384,7 @@ public abstract class SideIndicator extends PositionIndicator {
                 getSmallbuttonsScale().setPivotY(h);
             }
 //            } else {
-//                getIndicatorPane().getTransforms().remove(getSmallbuttonsScale());
+//                getIndicatorPane().getTransforms().clear(getSmallbuttonsScale());
 //            }
         }
 

@@ -1,5 +1,7 @@
 package org.vns.javafx.dock.api.designer;
 
+import org.vns.javafx.dock.api.Selection;
+import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,9 +12,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
@@ -40,6 +44,8 @@ public class SceneGraphView extends Control implements DockLayout {
 
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
 
+    //private StackPane rootLayout;
+
     //private final Pane treeViewPane = new StackPane();
     //
     // ContentPane is a subclass of VBox
@@ -48,6 +54,7 @@ public class SceneGraphView extends Control implements DockLayout {
     private ObjectProperty<Node> statusBar = new SimpleObjectProperty<>();
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
+
 
     public SceneGraphView() {
         this.treeView = new TreeViewEx<>(this);
@@ -63,23 +70,56 @@ public class SceneGraphView extends Control implements DockLayout {
     private void init() {
         getStyleClass().add("scene-graph-view");
         treeView.getStyleClass().add("tree-view");
-        
+
         customizeCell();
-        
-        addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
-            System.err.println("SceneGraphView: 1");
+
+/*        addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            //System.err.println("SceneGraphView: 1");
             TreeItemEx item = getTreeItem(e.getScreenX(), e.getScreenY());
-            if ( item == null  ) {
+            if (item == null) {
                 Selection sel = DockRegistry.lookup(Selection.class);
                 sel.removeSelected();
-                System.err.println("SceneGraphView: 2");
+                //System.err.println("SceneGraphView: 2");
             } else {
                 Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(item.getValue());
+                //sel.setSelected(item.getValue());
             }
             e.consume();
         });
-
+*/        
+/*        rootLayout = new StackPane() {
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+                CheckBox cb = (CheckBox)lookup(".check-box");
+                System.err.println("LAYOUT CHILDREN");
+                if ( cb != null ) {
+                    System.err.println(" --- " + cb);
+                    System.err.println(" --- CheckBox bounds = " + cb.getBoundsInParent());
+                }
+                    
+                ((VBox)getChildren().get(0)).getChildren().forEach(n -> {
+                    if ( n instanceof CheckBox) {
+                        System.err.println("StackPane: LAYOUT: bounds = " + n.getBoundsInParent());                        
+                    }
+                });
+                Platform.runLater(() -> {
+                CheckBox cb1 = (CheckBox)lookup(".check-box");
+                System.err.println("RUNLATER LAYOUT CHILDREN");
+                if ( cb1 != null ) {
+                    System.err.println(" --- " + cb1);
+                    System.err.println(" --- CheckBox bounds = " + cb1.getBoundsInParent());
+                }                    
+                TreeItemEx item = (TreeItemEx) getTreeView().getSelectionModel().getSelectedItem();
+                if (item != null) {
+                    System.err.println("   --- StackPane: LAYOUT: selected = " + item.getValue());
+                    System.err.println("      --- StackPane: LAYOUT: bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                    Selection sel = DockRegistry.lookup(Selection.class);
+                    //sel.setSelected(item.getValue());
+                }
+                }); }
+        };
+*/        
     }
 
     public ObservableList<TreeCell> getVisibleCells() {
@@ -190,7 +230,7 @@ public class SceneGraphView extends Control implements DockLayout {
 //        System.err.println("visCells = " + getVisibleCells().size());
 //        System.err.println("x = " + x + "; y = " + y );
         for (TreeCell cell : getVisibleCells()) {
-            
+
 //            System.err.println("cellX = " + cell.localToScreen(0, 0));
             if (DockUtil.contains(cell, x, y)) {
                 retval = (TreeItemEx) cell.getTreeItem();
@@ -382,6 +422,32 @@ public class SceneGraphView extends Control implements DockLayout {
         }
     }//TreeViewDragEventHandler
      */
+    public void childrenModification(TreeItem.TreeModificationEvent<Object> ev) {
+        if (ev.wasAdded()) {
+            for (TreeItem item : ev.getAddedChildren()) {
+                if (item.getValue() instanceof Node) {
+                    Selection sel = DockRegistry.lookup(Selection.class);
+                    System.err.println("item.getValue() = " + item.getValue());
+                    System.err.println("   --- bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                    Platform.runLater(() -> {
+                        sel.notifySelected(item.getValue());
+                        System.err.println("   --- bounds 1 = " + ((Node) item.getValue()).getBoundsInParent());
+                    });
+                    //sel.notifySelected(item.getValue());
+
+                    //sel.setSelected(item.getValue());
+                }
+                //item.getValue().getBuilder().registerChangeHandler(item);
+                //System.err.println("Event:  added item obj = " + item.getValue().getTreeItemObject());
+            }
+        }
+        if (ev.wasRemoved()) {
+            for (TreeItem item : ev.getRemovedChildren()) {
+
+            }
+        }
+    }
+
     @Override
     protected Skin<?> createDefaultSkin() {
         return new SceneGraphViewSkin(this);

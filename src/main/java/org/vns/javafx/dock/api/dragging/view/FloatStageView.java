@@ -44,7 +44,7 @@ import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.ScenePaneContext;
-import org.vns.javafx.dock.api.designer.Selection;
+import org.vns.javafx.dock.api.Selection;
 
 /**
  *
@@ -157,8 +157,10 @@ public class FloatStageView implements FloatWindowView {
         if (dc != null) {
             v = dc.getValue();
             if (v != null && ((!dc.isValueDockable() || dc.isDragAsObject()))) {
+//                System.err.println("1.0 FloatStageView: ");            
                 return make(dockable, v, show);
             } else if (dc.isValueDockable()) {
+//                System.err.println("1.1 FloatStageView: ");                            
                 return make(dockable, Dockable.of(v), show);
             }
         }
@@ -167,18 +169,13 @@ public class FloatStageView implements FloatWindowView {
 
         Node node = dockable.node();
         Window owner = null;
-        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+        if (dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null) {
             owner = dockable.node().getScene().getWindow();
-        }        
-        //
-        // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
-        // and filters of type SeectionListener
-        //
-        Selection.removeListeners(dockable);
-        
+        }
+
         double nodeWidth = node.getBoundsInLocal().getWidth();
         double nodeHeight = node.getBoundsInLocal().getHeight();
-        
+
         if (node instanceof Region) {
             nodeWidth = ((Region) node).getWidth();
             nodeHeight = ((Region) node).getHeight();
@@ -203,29 +200,41 @@ public class FloatStageView implements FloatWindowView {
                 markFloating(dockable.node().getScene().getWindow());
                 setSupportedCursors(DEFAULT_CURSORS);
                 getLayoutContext(dockable).undock(dockable.node());
+//                System.err.println("1.5 FloatStageView: ");            
                 return dockable.node().getScene().getWindow();
             }
         }
         boolean saveSize = false;
+
         if (dockable.getContext().isDocked()) {
             if ((dockable.node() instanceof DockNode) && (getLayoutContext(dockable).getLayoutNode() instanceof DockPane)) {
                 saveSize = true;
             }
-            LayoutContext oldLayoutContext = getLayoutContext(dockable);            
+            LayoutContext oldLayoutContext = getLayoutContext(dockable);
+
             getLayoutContext(dockable).undock(dockable.node());
-            LayoutContext tc = dockable.getContext().getLayoutContext();
-            if ( tc instanceof ScenePaneContext ) {
-                ((ScenePaneContext)tc).setRestoreContext(oldLayoutContext);
-            }
             
+            LayoutContext tc = dockable.getContext().getLayoutContext();
+            if (tc instanceof ScenePaneContext) {
+                ((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
+            }
+
         }
 
         Stage window = new Stage();
-        if ( owner != null ) {
+        if (owner != null) {
             window.initOwner(owner);
-        }        
+        }
+//        System.err.println("0 FloatStageView: Selection.removeListeners");            
         window.setOnShown(e -> {
             DockRegistry.register(window);
+            //
+            // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
+            // and filters of type SeectionListener
+            //
+//            System.err.println("1 FloatStageView: Selection.removeListeners");            
+            Selection.removeListeners(dockable);
+//            System.err.println("2 FloatStageView: Selection.removeListeners");
 //            window.toFront();
         });
         window.setOnHidden(e -> {
@@ -316,11 +325,10 @@ public class FloatStageView implements FloatWindowView {
     protected Window make(Dockable dockable, Object dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
         Window owner = null;
-        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+        if (dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null) {
             owner = dockable.node().getScene().getWindow();
         }
 
-        
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
@@ -334,12 +342,18 @@ public class FloatStageView implements FloatWindowView {
             }
         }
         Stage window = new Stage();
-        
-        if ( owner != null ) {
+
+        if (owner != null) {
             window.initOwner(owner);
         }
         window.setOnShown(e -> {
             DockRegistry.register(window);
+//            System.err.println("FloatStageView make(Object) dragged = " + dragged);
+            if ( Dockable.of(dragged) != null ) {
+//                System.err.println("1 FloatStageView make(Object) Dockable.of(dragged) = " + Dockable.of(dragged));
+                Selection.removeListeners(Dockable.of(dragged));
+            }
+
 //            window.toFront();
         });
         window.setOnHidden(e -> {
@@ -390,10 +404,10 @@ public class FloatStageView implements FloatWindowView {
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
         setSupportedCursors(DEFAULT_CURSORS);
         Window owner = null;
-        if ( dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null ) {
+        if (dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null) {
             owner = dockable.node().getScene().getWindow();
         }
-        
+
         Node draggedNode = dragged.node();
         double nodeWidth = draggedNode.getBoundsInLocal().getWidth();
         double nodeHeight = draggedNode.getBoundsInLocal().getHeight();
@@ -427,23 +441,27 @@ public class FloatStageView implements FloatWindowView {
             }
         }
         if (dragged.getContext().isDocked()) {
-            LayoutContext oldLayoutContext = getLayoutContext(dragged);            
+            LayoutContext oldLayoutContext = getLayoutContext(dragged);
             getLayoutContext(dragged).undock(dragged.node());
             LayoutContext tc = dockable.getContext().getLayoutContext();
-            if ( tc instanceof ScenePaneContext ) {
-                ((ScenePaneContext)tc).setRestoreContext(oldLayoutContext);
+            if (tc instanceof ScenePaneContext) {
+                ((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
             }
-            
-            
+
         }
 
         Stage window = new Stage();
-        if ( owner != null ) {
+        if (owner != null) {
             window.initOwner(owner);
         }
         window.setOnShown(e -> {
             DockRegistry.register(window);
-            window.toFront();
+//            System.err.println("FloatStageView make(Dockable) dragged = " + dragged);
+            if ( Dockable.of(dragged) != null ) {
+//                System.err.println("1 FloatStageView make(Dockable) Dockable.of(dragged) = " + Dockable.of(dragged));
+                Selection.removeListeners(Dockable.of(dragged));
+            }
+
         });
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
@@ -539,7 +557,6 @@ public class FloatStageView implements FloatWindowView {
             removeListeners(dockableContext.dockable());
         }
         setResizer(new StageResizer(this));
-        
 
     }
 
