@@ -8,7 +8,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.incubator.designer.NodeDragEvent;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -32,13 +31,7 @@ public class TestFireEvent  extends Application {
         Button btn03 = new Button("target btn03");
         vboxPane.getChildren().add(btn03);
         
-        vboxPane.addEventFilter(NodeDragEvent.NODE_DRAG, ev -> {
-               System.err.println("vBoxPane accepted event");
-        });
 
-        btn02.addEventFilter(NodeDragEvent.NODE_DRAG, ev -> {
-            System.err.println("btn02 accepted event");
-        });
         Scene scene = new Scene(rootPane);
         
         stage.setHeight(300);

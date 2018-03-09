@@ -87,7 +87,7 @@ public class LayoutContextFactory {
             retval = getPaneContext((Pane) targetNode);
         } else if (targetNode instanceof Accordion) {
             retval = new ListBasedTargetContext<TitledPane>(targetNode);
-        } 
+        }
         return retval;
     }
 
@@ -187,41 +187,47 @@ public class LayoutContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
+            
             Pane targetPane = (Pane) getLayoutContext().getLayoutNode();
             Label topNode = new Label("Top");
+            topNode.getStyleClass().add("top");
             Label rightNode = new Label("Right");
+            rightNode.getStyleClass().add("right");
             Label bottomNode = new Label("Bottom");
+            bottomNode.getStyleClass().add("bottom");
             Label leftNode = new Label("Left");
+            leftNode.getStyleClass().add("left");
             Label centerNode = new Label("Center");
+            centerNode.getStyleClass().add("center");
 
             topNode.prefWidthProperty().bind(targetPane.widthProperty());
             topNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-            topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+            //topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-            rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+            //rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
             rightNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             rightNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
-            leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+            //leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
             leftNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             leftNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
             bottomNode.prefWidthProperty().bind(targetPane.widthProperty());
             bottomNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-            bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+            //bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             centerNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
-            centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+            //centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode);
+            indicator.getStyleClass().add("stack-pane-indicator");
             topNode.setAlignment(Pos.CENTER);
             rightNode.setAlignment(Pos.CENTER);
             bottomNode.setAlignment(Pos.CENTER);
             leftNode.setAlignment(Pos.CENTER);
             centerNode.setAlignment(Pos.CENTER);
 
-            //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
         }
 
@@ -459,7 +465,7 @@ public class LayoutContextFactory {
             if ((getLayoutNode() instanceof Accordion)) {
                 return (ObservableList<T>) ((Accordion) getLayoutNode()).getPanes();
             }
-            
+
             ObservableList<T> retval = null;
 
             Class<?> clazz = node.getClass();
@@ -507,15 +513,15 @@ public class LayoutContextFactory {
                 }
             }
             if (idx == -1) {
-                items.add((T)node);
+                items.add((T) node);
             } else if (((targetNode instanceof VBox) || ((targetNode instanceof Accordion)))) {
                 Bounds b = DockUtil.getHalfBounds(Side.TOP, innerNode, mousePos.getX(), mousePos.getY());
                 if (b != null && b.contains(mousePos)) {
-                    items.add(idx, (T)node);
+                    items.add(idx, (T) node);
                 } else {
                     b = DockUtil.getHalfBounds(Side.BOTTOM, innerNode, mousePos.getX(), mousePos.getY());
                     if (b != null && b.contains(mousePos)) {
-                        items.add(idx + 1, (T)node);
+                        items.add(idx + 1, (T) node);
                     }
                 }
             } else if (targetNode instanceof HBox) {
@@ -527,7 +533,7 @@ public class LayoutContextFactory {
 
         @Override
         public void remove(Node dockNode) {
-            items.remove((T)dockNode);
+            items.remove((T) dockNode);
         }
 
         /**
@@ -572,13 +578,13 @@ public class LayoutContextFactory {
         protected Pane createIndicatorPane() {
             Pane indicator = new Pane();
             indicator.getStyleClass().add("list-based-indicator");
-            indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
+            //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
         }
 
         @Override
         public void showDockPlace(double x, double y) {
-            
+
             boolean visible = true;
 
             Pane p = (Pane) getIndicatorPane();

@@ -2,7 +2,6 @@ package org.vns.javafx.dock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Predicate;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -16,7 +15,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.DockSplitPane;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.Dockable;

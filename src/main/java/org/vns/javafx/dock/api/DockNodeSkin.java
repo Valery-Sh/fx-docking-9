@@ -52,19 +52,15 @@ public class DockNodeSkin extends SkinBase<DockNode> {
                 }
             }
         };
-        //content.setStyle("-fx-background-color: yellow");
         this.layout = new VBox() {
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
             }
         };
-        //layout.setStyle("-fx-background-color: green");
         
         layout.getChildren().add(titleBarPane);
         layout.getChildren().add(contentPane);
-        //layout.setStyle("-fx-border-width: 1; -fx-border-color: red");
-        //contentPane.setStyle("-fx-border-width: 1; -fx-border-color: green");
         getSkinnable().contentProperty().addListener(this::contentChanged);
         Dockable.of(getSkinnable()).getContext().titleBarProperty().addListener(this::titlebarChanged);
 

@@ -24,7 +24,9 @@ public abstract class PositionIndicator {
 
     private void init() {
         indicatorPane = createIndicatorPane();
+//        indicatorPane.getStyleClass().add("indicator-pane");
         dockPlace = createDockPlace();
+        dockPlace.getStyleClass().add("dock-place");        
         addDockPlace();
     }
     
@@ -35,7 +37,6 @@ public abstract class PositionIndicator {
     protected Node createDockPlace() {
         Node retval = new Rectangle();
         retval.setId("dockPlace");
-        retval.getStyleClass().add("dock-place");
         return retval;
     } 
     

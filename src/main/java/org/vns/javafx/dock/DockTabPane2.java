@@ -48,5 +48,6 @@ public class DockTabPane2 extends TabPane {
         d.getContext().setDragNode(this);
         DockTabPane2MouseDragHandler dragHandler = new DockTabPane2MouseDragHandler(d.getContext());
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
+        getStyleClass().add("dock-tab-pane2");
     }
 }

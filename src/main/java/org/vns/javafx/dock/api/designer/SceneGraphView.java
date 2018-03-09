@@ -427,11 +427,11 @@ public class SceneGraphView extends Control implements DockLayout {
             for (TreeItem item : ev.getAddedChildren()) {
                 if (item.getValue() instanceof Node) {
                     Selection sel = DockRegistry.lookup(Selection.class);
-                    System.err.println("item.getValue() = " + item.getValue());
-                    System.err.println("   --- bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                    //System.err.println("item.getValue() = " + item.getValue());
+                    //System.err.println("   --- bounds = " + ((Node) item.getValue()).getBoundsInParent());
                     Platform.runLater(() -> {
                         sel.notifySelected(item.getValue());
-                        System.err.println("   --- bounds 1 = " + ((Node) item.getValue()).getBoundsInParent());
+                        //System.err.println("   --- bounds 1 = " + ((Node) item.getValue()).getBoundsInParent());
                     });
                     //sel.notifySelected(item.getValue());
 

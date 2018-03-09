@@ -28,14 +28,12 @@ public abstract class Selection {
 
     private final ObjectProperty selected = new SimpleObjectProperty();
 
-
     public abstract void notifySelected(Object value);
 
     public ObjectProperty selectedProperty() {
         return selected;
     }
 
-    
     public void setSelected(Object toSelect) {
         this.selected.set(toSelect);
     }
@@ -62,11 +60,13 @@ public abstract class Selection {
             sel.removeSelected();
         }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
-        dockable.node().removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
-        dockable.node().removeEventFilter(MouseEvent.MOUSE_PRESSED, l);
-        dockable.node().removeEventHandler(MouseEvent.MOUSE_RELEASED, l);
-        dockable.node().removeEventFilter(MouseEvent.MOUSE_RELEASED, l);
-        
+        if (l != null) {
+            dockable.node().removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
+            dockable.node().removeEventFilter(MouseEvent.MOUSE_PRESSED, l);
+            dockable.node().removeEventHandler(MouseEvent.MOUSE_RELEASED, l);
+            dockable.node().removeEventFilter(MouseEvent.MOUSE_RELEASED, l);
+        }
+
     }
 
     public static interface SelectionListener extends EventHandler<MouseEvent> {
@@ -113,7 +113,7 @@ public abstract class Selection {
             sel.notifySelected(ev.getSource());
             sel.setSelected(ev.getSource());
             ev.consume();
-            
+
         }
 
         protected void mouseRelesed(MouseEvent ev) {
@@ -127,7 +127,7 @@ public abstract class Selection {
                 ev.consume();
                 //}
             }
-            
+
         }
 
     }

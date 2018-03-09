@@ -52,9 +52,8 @@ public class NodeResizer implements EventHandler<MouseEvent> {
     private final ObjectProperty<Window> window = new SimpleObjectProperty<>();
 
     private final Region node;
-    
-    private WindowResizer windowResizer;
 
+    private WindowResizer windowResizer;
 
     public enum WindowType {
         STAGE,
@@ -107,6 +106,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
     }
 
     protected Stage createStage() {
+        System.err.println("NodeResizer: STAGE ");
         Stage stage = new Stage();
         stage.setOnShown(e -> {
             DockRegistry.register(stage, true); // true means exclude when searfor target window
@@ -114,15 +114,15 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         stage.setOnHidden(e -> {
             DockRegistry.unregister(stage);
         });
-        
+
         setWindow(stage);
         stage.initStyle(StageStyle.TRANSPARENT);
 
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: transparent;" );
-        
+        root.setStyle("-fx-background-color: transparent;");
+
         root.setId("nodeResizer " + getNode().getClass().getSimpleName());
-        
+
         Border b = new NodeResizerBorder().getBorder();
         root.setBorder(b);
         Scene scene = new Scene(root);
@@ -133,7 +133,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
 //        System.err.println("NodeResizer: ownerWindow = " + nodeWindow.getScene().getRoot().getId());
 
         ((Stage) getWindow()).show();
-     
+
         Insets insetsDelta = getNode().getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
@@ -141,11 +141,11 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         getNode().setPrefWidth(getNode().getWidth());
         getNode().setPrefHeight(getNode().getHeight());
 
-/*        stage.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
+        /*        stage.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
         stage.setMinHeight(root.minHeight(DockUtil.widthOf(getNode())) + insetsHeight);
         stage.setMaxWidth(root.maxWidth(DockUtil.heightOf(getNode())) + insetsWidth);
         stage.setMaxHeight(root.maxHeight(DockUtil.widthOf(getNode())) + insetsHeight);
-*/
+         */
         bindWindowPosition(nodeWindow);
         bindWindowDimensions();
 
@@ -154,7 +154,8 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         return stage;
     }
 
-    protected PopupControl createPopupControl() {
+    protected PopupControl createPopupControl_NEW() {
+        System.err.println("NodeResizer: PopupControl ");
         PopupControl popup = new PopupControl();
         popup.setOnShown(e -> {
             DockRegistry.register(popup, true); // true means exclude when searfor target window
@@ -162,21 +163,84 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         popup.setOnHidden(e -> {
             DockRegistry.unregister(popup);
         });
-        
-        
+
         setWindow(popup);
 
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: transparent;");        
+        root.setStyle("-fx-background-color: transparent;");
         Border b = new NodeResizerBorder().getBorder();
         root.setBorder(b);
-        
+
         root.applyCss();
         popup.getScene().setRoot(root);
 
         //((PopupControl) getWindow()).show(getNode().getScene().getWindow());
         Bounds nb = getNode().localToScreen(getNode().getBoundsInLocal());
-        ((PopupControl) getWindow()).show(getNode(), nb.getMinX(), nb.getMinX() );
+        popup.show(getNode(), nb.getMinX(), nb.getMinX());
+
+        ObjectProperty<Bounds> nodeScreenBounds = new SimpleObjectProperty<>();
+        getNode().localToSceneTransformProperty().addListener((o, ov, nv) -> {
+            nodeScreenBounds.set(getNode().localToScreen(getNode().getBoundsInLocal()));
+        });
+        nodeScreenBounds.addListener((o, ov, nv) -> {
+            if ( popup != null && nv != null) {
+                popup.setX(nv.getMinX());
+                popup.setY(nv.getMinY());
+            }
+        });
+
+        double borderWidth = 0;
+        double borderHeight = 0;
+        if (root.getInsets() != null) {
+            borderWidth = root.getInsets().getLeft() + root.getInsets().getRight();
+            borderHeight = root.getInsets().getTop() + root.getInsets().getBottom();
+        }
+        Insets insetsDelta = getNode().getInsets();
+        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+
+        getNode().setPrefWidth(getNode().getWidth());
+        getNode().setPrefHeight(getNode().getHeight());
+        root.prefWidthProperty().bind(getNode().widthProperty().add(borderWidth));
+        root.prefHeightProperty().bind(getNode().heightProperty().add(borderHeight));
+
+        root.setMinWidth(root.minWidth(DockUtil.heightOf(getNode())) + insetsWidth);
+        root.setMinHeight(root.minHeight(DockUtil.widthOf(getNode())) + insetsHeight);
+
+        //getNode().setPrefWidth(getNode().getWidth());
+        //getNode().setPrefHeight(getNode().getHeight());
+
+        //bindWindowPosition(getNode().getScene().getWindow());
+        windowBounds(getWindow(), getNode());
+
+        nodeWindow = getNode().getScene().getWindow();
+
+        return popup;
+    }
+
+    protected PopupControl createPopupControl() {
+        System.err.println("NodeResizer: PopupControl ");
+        PopupControl popup = new PopupControl();
+        popup.setOnShown(e -> {
+            DockRegistry.register(popup, true); // true means exclude when searfor target window
+        });
+        popup.setOnHidden(e -> {
+            DockRegistry.unregister(popup);
+        });
+
+        setWindow(popup);
+
+        StackPane root = new StackPane();
+        root.setStyle("-fx-background-color: transparent;");
+        Border b = new NodeResizerBorder().getBorder();
+        root.setBorder(b);
+
+        root.applyCss();
+        popup.getScene().setRoot(root);
+
+        //((PopupControl) getWindow()).show(getNode().getScene().getWindow());
+        Bounds nb = getNode().localToScreen(getNode().getBoundsInLocal());
+        ((PopupControl) getWindow()).show(getNode(), nb.getMinX(), nb.getMinX());
 
         //popup.setOnShowing(v -> {
         double borderWidth = 0;
@@ -188,10 +252,10 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         Insets insetsDelta = getNode().getInsets();
         double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-        
+
         getNode().setPrefWidth(getNode().getWidth());
         getNode().setPrefHeight(getNode().getHeight());
-        
+
         root.prefWidthProperty().bind(getNode().widthProperty().add(borderWidth));
         root.prefHeightProperty().bind(getNode().heightProperty().add(borderHeight));
 
@@ -237,7 +301,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
             createPopupControl();
         }
 
-        if ( windowResizer == null ) {
+        if (windowResizer == null) {
             windowResizer = new NodeResizeExecutor(this);
         }
         translateX = getNode().getTranslateX();
@@ -247,7 +311,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         getWindow().addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         getWindow().addEventFilter(MouseEvent.MOUSE_MOVED, this);
         getWindow().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        
+
         return getWindow();
     }
 
@@ -274,7 +338,6 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         }
         return retval;
     }
-
 
     public boolean isHideOnMouseRelease() {
         return hideOnMouseRelease;
@@ -305,15 +368,17 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         if (window instanceof Stage) {
 //            System.err.println("b.getWidth() = " + node.getWidth() + "; borderWidth = " + borderWidth);
 //            System.err.println("b.getHeight() = " + node.getHeight() + "; borderHeight = " + borderHeight);
-            
+
             window.setWidth(b.getWidth() + borderWidth);
             window.setHeight(b.getHeight() + borderHeight);
         }
         return b;
     }
+
     public ObjectProperty<Window> window() {
         return window;
     }
+
     public Window getWindow() {
         return window.get();
     }

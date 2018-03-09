@@ -155,45 +155,51 @@ public class DockBorderPaneContext extends LayoutContext {
 
             public BorderPanePositionIndicator(LayoutContext targetContext) {
                 super(targetContext);
+                //getStyleClass().add("");
             }
 
             @Override
             protected Pane createIndicatorPane() {
                 Pane targetPane = (Pane) getLayoutContext().getLayoutNode();
                 Label topNode = new Label("Top");
+                topNode.getStyleClass().add("top");
                 Label rightNode = new Label("Right");
+                rightNode.getStyleClass().add("right");
                 Label bottomNode = new Label("Bottom");
+                bottomNode.getStyleClass().add("bottom");
                 Label leftNode = new Label("Left");
+                leftNode.getStyleClass().add("left");                
                 Label centerNode = new Label("Center");
+                centerNode.getStyleClass().add("center");                
 
                 topNode.prefWidthProperty().bind(targetPane.widthProperty());
                 topNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-                topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+                //topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-                rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+                //rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
                 rightNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
                 rightNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
-                leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+                //leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
                 leftNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
                 leftNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
                 bottomNode.prefWidthProperty().bind(targetPane.widthProperty());
                 bottomNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-                bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+                //bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
                 centerNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
                 centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
-                centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
+                //centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
                 BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode);
+                indicator.getStyleClass().add("border-pane-indicator");
                 topNode.setAlignment(Pos.CENTER);
                 rightNode.setAlignment(Pos.CENTER);
                 bottomNode.setAlignment(Pos.CENTER);
                 leftNode.setAlignment(Pos.CENTER);
                 centerNode.setAlignment(Pos.CENTER);
 
-                //indicator.setStyle("-fx-border-width: 2px; -fx-border-color: red");
                 return indicator;
             }
 

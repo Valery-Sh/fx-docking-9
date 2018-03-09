@@ -117,7 +117,7 @@ public class PalettePane extends Control {
 
     private BooleanProperty animated = new SimpleBooleanProperty(true);
 
-    private ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
+    private ObjectProperty<NodePolicy> producedNodePolicy = new SimpleObjectProperty(BOTH);
 
     /**
      * Creates an instance of the class. The created palette contains an empty
@@ -148,19 +148,6 @@ public class PalettePane extends Control {
         }
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
     }
-
-    public ObjectProperty<NodePolicy> producedNodepolicy() {
-        return producedNodepolicy;
-    }
-
-    public void setProducedNodeProperty(NodePolicy policy) {
-        this.producedNodepolicy.set(policy);
-    }
-
-    public NodePolicy getProducedNodeProperty() {
-        return this.producedNodepolicy.get();
-    }
-
     /**
      * Sets the custom customizer of the palette paletteModel.
      *
@@ -168,6 +155,17 @@ public class PalettePane extends Control {
      */
     public void setDragValueCustomizer(DragValueCustomizer customizer) {
         getModel().setCustomizer(customizer);
+    }
+    public ObjectProperty<NodePolicy> producedNodePolicy() {
+        return producedNodePolicy;
+    }
+
+    public void setProducedNodePolicy(NodePolicy policy) {
+        this.producedNodePolicy.set(policy);
+    }
+
+    public NodePolicy getProducedNodePolicy() {
+        return this.producedNodePolicy.get();
     }
 
     /**
@@ -279,12 +277,10 @@ public class PalettePane extends Control {
         PaletteModel paletteModel = new PaletteModel(this);
 
         Label lb = new Label("Containers");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         PaletteCategory pc = paletteModel.addCategory("containers", lb);
         lb.getStyleClass().add("tree-item-font-bold");
 
         lb = new Label("Accordion");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, Accordion.class);
         lb.getStyleClass().add("tree-item-node-accordion");
         lb.applyCss();
@@ -295,7 +291,7 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("BorderPane");
-        pc.addItem(lb, BorderPane.class);
+        pc.addItem(lb, BorderPane.class, node -> { ((Pane)node).setPrefSize(100, 100); ((Pane)node).setMinHeight(100);System.err.println("BORDERPANE +++++++++++++");});
         lb.getStyleClass().add("tree-item-node-borderpane");
         lb.applyCss();
 
@@ -310,13 +306,11 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("HBox");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, HBox.class);
         lb.getStyleClass().add("tree-item-node-hbox");
         lb.applyCss();
 
         lb = new Label("VBox");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-vbox");
         lb.applyCss();
         pc.addItem(lb, VBox.class);
@@ -342,7 +336,6 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("Tab");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-node-tab");
         lb.applyCss();
         pc.addItem(lb, Tab.class);
@@ -366,7 +359,6 @@ public class PalettePane extends Control {
         // Controls
         //
         lb = new Label("Controls");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-font-bold");
 
         pc = paletteModel.addCategory("controls", lb);
@@ -383,8 +375,8 @@ public class PalettePane extends Control {
         //
         // Prevents MOUSE_RELEASED
         //
-        item.setEventDispatcher(new DefaultEventDispatcher());
-        
+        item.setEventDispatcher(new MouseEventDispatcher());
+
         lb.getStyleClass().add("tree-item-node-checkbox");
 
         lb = new Label("ChoiceBox");
@@ -394,9 +386,8 @@ public class PalettePane extends Control {
         lb = new Label("ComboBox");
         item = pc.addItem(lb, ComboBox.class);
         lb.getStyleClass().add("tree-item-node-combobox");
-        item.setEventDispatcher(new DefaultEventDispatcher( n -> {
-            return ((ComboBox)n).getItems().isEmpty();} 
-        ));
+        item.setEventDispatcher(new MouseEventDispatcher( n -> { return ((ComboBox) n).getItems().isEmpty();} ));
+        
 
         lb = new Label("ListView");
         pc.addItem(lb, ListView.class);
@@ -420,7 +411,6 @@ public class PalettePane extends Control {
         // Spapes
         //
         lb = new Label("Shapes");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         lb.getStyleClass().add("tree-item-font-bold");
 
         pc = paletteModel.addCategory("shapes", lb);
@@ -431,7 +421,6 @@ public class PalettePane extends Control {
         lb.getStyleClass().add("tree-item-node-rectangle");
 
         lb = new Label("Rectangle");
-        //lb.setStyle("-fx-border-color: green; -fx-background-color: yellow ");
         pc.addItem(lb, Rectangle.class, v -> {
             Rectangle r = (Rectangle) v;
             r.setWidth(75);
@@ -460,10 +449,10 @@ public class PalettePane extends Control {
         private final Class<?> valueClass;
         private PaletteModel model;
         private DragValueCustomizer customizer;
-        private final ObjectProperty<NodePolicy> producedNodepolicy = new SimpleObjectProperty(BOTH);
+        private final ObjectProperty<NodePolicy> producedNodePolicy = new SimpleObjectProperty(BOTH);
         private final ObjectProperty<Class<?>> layoutContextClass = new SimpleObjectProperty<>();
-        
-        private PaletteEventDispatcher eventDispatcher;
+
+        private final ObjectProperty<PaletteEventDispatcher> eventDispatcher = new SimpleObjectProperty<>();
 
         /**
          * Create an instance of the class for the specified parameters.
@@ -515,24 +504,28 @@ public class PalettePane extends Control {
             }
         }
 
-        public PaletteEventDispatcher getEventDispatcher() {
+        public ObjectProperty<PaletteEventDispatcher> eventDispatcherProperty() {
             return eventDispatcher;
         }
 
+        public PaletteEventDispatcher getEventDispatcher() {
+            return eventDispatcher.get();
+        }
+
         public void setEventDispatcher(PaletteEventDispatcher eventDispatcher) {
-            this.eventDispatcher = eventDispatcher;
+            this.eventDispatcher.set(eventDispatcher);
         }
 
-        public ObjectProperty<NodePolicy> producedNodepolicy() {
-            return producedNodepolicy;
+        public ObjectProperty<NodePolicy> producedNodePolicy() {
+            return producedNodePolicy;
         }
 
-        public void setProducedNodeProperty(NodePolicy policy) {
-            this.producedNodepolicy.set(policy);
+        public void setProducedNodePolicy(NodePolicy policy) {
+            this.producedNodePolicy.set(policy);
         }
 
-        public NodePolicy getProducedNodeProperty() {
-            return this.producedNodepolicy.get();
+        public NodePolicy getProducedNodePolicy() {
+            return this.producedNodePolicy.get();
         }
 
         public ObjectProperty<Class<?>> layoutContextClassProperty() {
@@ -591,7 +584,7 @@ public class PalettePane extends Control {
         }
 
         /**
-         * /**
+         *
          * Sets the object which serves to modify an object created when the
          * palette item is dragged. For example, for objects of type {@code Labeled
          * }, its {@code text} property is assigned a simple class name with the
@@ -635,8 +628,8 @@ public class PalettePane extends Control {
          * Creates an instance of the class for the given parameters.
          *
          * @param model the paletteModel of the palette
-         * @param id the unique identifier for all categories in the paletteModel of
- the palette.
+         * @param id the unique identifier for all categories in the
+         * paletteModel of the palette.
          * @param lb the object of type {@code Label } to visually represent the
          * category
          */
@@ -830,7 +823,7 @@ public class PalettePane extends Control {
 
         /**
          * Checks whether the paletteModel contains a category with the given
- identifier.
+         * identifier.
          *
          * @param id the identifier to be checked
          * @return true if the category with the given identifier exists. false
@@ -849,7 +842,7 @@ public class PalettePane extends Control {
 
         /**
          * Checks whether the paletteModel contains a category for the given
- {@code java.lang.Class}..
+         * {@code java.lang.Class}..
          *
          * @param valueClass the class to be checked
          * @return true if the category for the given {@code Class} exists.
@@ -937,18 +930,17 @@ public class PalettePane extends Control {
             try {
                 Object value = item.getValueClass().newInstance();
                 if (Dockable.of(value) == null && (value instanceof Node)) {
-                    NodePolicy itemPolicy = item.getProducedNodeProperty();
+                    NodePolicy itemPolicy = item.getProducedNodePolicy();
                     if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
-                        if (palette.getProducedNodeProperty() == DOCKABLE || palette.getProducedNodeProperty() == BOTH) {
+                        if (palette.getProducedNodePolicy() == DOCKABLE || palette.getProducedNodePolicy() == BOTH) {
                             DockRegistry.makeDockable((Node) value);
                         }
                     }
                 }
                 if (DockLayout.of(value) == null && (value instanceof Node)) {
-                    NodePolicy itemPolicy = item.getProducedNodeProperty();
+                    NodePolicy itemPolicy = item.getProducedNodePolicy();
                     if (itemPolicy == DOCKLAYOUT || itemPolicy == BOTH) {
-                        if (palette.getProducedNodeProperty() == DOCKLAYOUT || palette.getProducedNodeProperty() == BOTH) {
-                            //LayoutContext lc = item.getLayoutContextClass();
+                        if (palette.getProducedNodePolicy() == DOCKLAYOUT || palette.getProducedNodePolicy() == BOTH) {
                             LayoutContext lc = null;
                             if (item.getLayoutContextClass() == null) {
                                 LayoutContextFactory f = new LayoutContextFactory();
@@ -968,102 +960,11 @@ public class PalettePane extends Control {
                 if (item.getCustomizer() != null) {
                     item.getCustomizer().customize(value);
                 }
-/////////////////////////////////////////////////////////////////////
-                if ( (value instanceof Node) && item.getEventDispatcher() != null ) {
-                    item.getEventDispatcher().start((Node)value);
+
+                if ((value instanceof Node) && item.getEventDispatcher() != null) {
+                    item.getEventDispatcher().start((Node) value);
                 }
-/*                if ((value instanceof CheckBox)) { //&& DockRegistry.lookup(ApplicationContext.class)) {
-                    Node node = (Node) value;
-                    if (value instanceof Integer) {
-                        node.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-                            System.err.println("TEST VBox handler mouseClicked");
-                            //DockRegistry.getInstance().getLookup().clear(FloatView.class);
-                        });
-                        node.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
-                            System.err.println("TEST VBox filter mouseClicked");
-                        });
 
-                        node.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
-                            System.err.println("TEST VBox handler mousePressed");
-                        });
-                        node.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-                            System.err.println("TEST VBox filter mousePressed");
-                        });
-
-                        node.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
-                            System.err.println("TEST VBox handler mouseReleased");
-                        });
-                        node.addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
-                            System.err.println("TEST VBox filter mouseReleased");
-                        });
-
-                        node.addEventHandler(MouseEvent.DRAG_DETECTED, e -> {
-                            System.err.println("TEST VBox handler dragDetected");
-                        });
-                        node.addEventFilter(MouseEvent.DRAG_DETECTED, e -> {
-                            System.err.println("TEST VBox filter dragDetected");
-                        });
-                        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
-                            System.err.println("TEST VBox handler dragDragged");
-                        });
-                        node.addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
-                            System.err.println("TEST VBox filter dragDragged");
-                        });
-
-                    }
-
-                    final EventDispatcher initial = node.getEventDispatcher();
-
-                    node.setEventDispatcher(new EventDispatcher() {
-                        @Override
-                        public Event dispatchEvent(Event event, EventDispatchChain tail) {
-                            if (event instanceof MouseEvent) {
-
-                                MouseEvent mouseEvent = (MouseEvent) event;
-
-                                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                                    System.err.println("MouseEvent.MOUSE_PRESSED node = " + node);
-                                                                        
-                                    //System.err.println("   --- source = " + event.getSource());
-                                    //System.err.println("   --- target = " + event.getTarget());
-                                     
-                                    //return null;
-
-                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                                    System.err.println("MouseEvent.MOUSE_RELEASED node = " + node);
-                                    //                                    System.err.println("   --- source = " + event.getSource());
-                                    //System.err.println("   --- target = " + event.getTarget());
-                                    //                                  //if ( DockRegistry.lookup(FloatView.class) == null ) {  
-                                    if (node instanceof CheckBox) {
-                                        return null;
-                                    }
-                                    //}                                        
-
-                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                                    System.err.println("MouseEvent.MOUSE_CLICKED node = " + node);
-                                    //                                    System.err.println("   --- source = " + event.getSource());
-                                    //System.err.println("   --- target = " + event.getTarget());
-                                    //
-                                    //return null;
-                                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
-                                    System.err.println(mouseEvent.getEventType() + " node = " + node);
-                                    //                                    System.err.println("   --- source = " + event.getSource());
-                                    //System.err.println("   --- target = " + event.getTarget());                                    
-                                    //
-                                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                                    System.err.println(mouseEvent.getEventType() + " node = " + node);
-                                    //                                    System.err.println("   --- source = " + event.getSource());
-                                    //System.err.println("   --- target = " + event.getTarget());                                    
-                                    //
-                                }
-                            }
-                            return initial.dispatchEvent(event, tail);
-                        }
-                    });
-
-                }
-*/
-/////////////////////////////////////////////////////////////////////
                 String tx = "";
                 if (value instanceof Labeled) {
                     tx = ((Labeled) value).getText();
@@ -1102,7 +1003,6 @@ public class PalettePane extends Control {
 
     @FunctionalInterface
     public static interface DragValueCustomizer<T> {
-
         void customize(T value);
     }
 
@@ -1141,27 +1041,31 @@ public class PalettePane extends Control {
             }
         }
     }
+
     public static interface PaletteEventDispatcher extends EventDispatcher {
-         void start(Node node);
+
+        void start(Node node);
+
     }
-    public static class DefaultEventDispatcher implements PaletteEventDispatcher {
+
+    public static class MouseEventDispatcher implements PaletteEventDispatcher {
 
         private EventDispatcher initial;
         private Node node;
         private Predicate<Node> preventCondition;
-                
-        public DefaultEventDispatcher() {
+
+        public MouseEventDispatcher() {
             this(null);
         }
 
-        public DefaultEventDispatcher(Predicate<Node> cond ) {
+        public MouseEventDispatcher(Predicate<Node> cond) {
             preventCondition = cond;
             init();
         }
-        
+
         private void init() {
         }
-        
+
         public void start(Node node) {
             this.node = node;
             initial = node.getEventDispatcher();
@@ -1175,24 +1079,44 @@ public class PalettePane extends Control {
                 MouseEvent mouseEvent = (MouseEvent) event;
 
                 if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    System.err.println("MouseEvent.MOUSE_PRESSED node = " + node);
+                    return pressed(event, tail);
                 } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                    System.err.println("MouseEvent.MOUSE_RELEASED node = " + node);
-                    if ( preventCondition == null ||  preventCondition.test(node) ) {
-                        return null;
-                    }
-
+                    return released(event, tail);
                 } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                    System.err.println("MouseEvent.MOUSE_CLICKED node = " + node);
+                    return clicked(event, tail);
                 } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
-                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                    return dragDetected(event, tail);
                 } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    System.err.println(mouseEvent.getEventType() + " node = " + node);
+                    return dragged(event, tail);
                 }
             }
 
             return initial.dispatchEvent(event, tail);
         }
+
+        protected Event pressed(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event released(Event event, EventDispatchChain tail) {
+            if (preventCondition == null || preventCondition.test(node)) {
+                return null;
+            }
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event clicked(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event dragDetected(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event dragged(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
     }
 
 }//PalettePane

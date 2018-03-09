@@ -12,9 +12,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.incubator.designer.NodeDragManager;
-import org.vns.javafx.dock.incubator.designer.SceneGraphView;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.designer.NodeDragManager;
+import org.vns.javafx.dock.api.designer.SceneGraphView;
 
 public class TestNodeDragManager  extends Application {
 

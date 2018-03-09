@@ -18,7 +18,6 @@ package org.vns.javafx.dock.api.designer;
 import org.vns.javafx.dock.api.Selection;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
@@ -35,7 +34,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -43,7 +41,6 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
-import org.vns.javafx.dock.api.Selection.SelectionListener;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
@@ -52,8 +49,6 @@ import org.vns.javafx.dock.api.dragging.view.FloatView;
  */
 public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
-    //private ContentPane contentPane;
-    //private StackPane rootLayout;
     private Pane contentPane;
     private ScrollAnimation scrollAnimation;
     private DragIndicator dragIndicator;
@@ -62,21 +57,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     public SceneGraphViewSkin(SceneGraphView control) {
         super(control);
         Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
-        /*        rootLayout = new StackPane() {
-            @Override
-            protected void layoutChildren() {
-                super.layoutChildren();
-                TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
-                if (item != null) {
-                    System.err.println("1 SceneGraphViewSkin: LAYOUT: selected = " + item.getValue());
-                    System.err.println("1 SceneGraphViewSkin: LAYOUT: bounds = " + ((Node) item.getValue()).getBoundsInParent());
-                    Selection sel = DockRegistry.lookup(Selection.class);
-                    sel.setSelected(item.getValue());
-                }
 
-            }
-        };
-         */
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
 
         d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
@@ -85,35 +66,37 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         if (!getChildren().isEmpty()) {
             getChildren().clear();
         }
-        //StackPane.setAlignment(getSkinnable().getTreeView(), Pos.CENTER);
         contentPane = new StackPane(treeViewPane) {
 
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-
-                Platform.runLater(() -> {
+                Node root = ((Region)getSkinnable().getTreeView().getRoot().getValue());
+//                Platform.runLater(() -> {
                     if (DockRegistry.lookup(FloatView.class) != null) {
                         return;
                     }
                     TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
                     if (item != null) {
-//                        System.err.println("SceneGraphViewSkin: LAYOUT: selected = " + item.getValue());
-//                        System.err.println("SceneGraphViewSkin: LAYOUT: bounds = " + ((Node) item.getValue()).getBoundsInParent());
+                        System.err.println("layoutChildren");
                         Selection sel = DockRegistry.lookup(Selection.class);
                         sel.setSelected(item.getValue());
+                        root.getScene().getWindow().requestFocus();
+                        //if ( root != null && item.getValue() != null ) {
+                        //    Platform.runLater(() -> {
+                                //root.getScene().getWindow().requestFocus();
+                        //    });
+                        //}
+                        
                     }
-                });
+  //              });
             }
         };
 
-//        contentPane.setStyle("-fx-border-color:red; -fx-border-width: 1; -fx-background-color: yellow");
         treeViewPane.setStyle("-fx-border-color: red; -fx-border-width: 1");
-//        getSkinnable().getTreeView().setPrefHeight(1000);
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
-//                lookup.putUnique(IndicatorManager.class, new DragIndicatorManager(this);
         SceneGraphViewTargetContext targetContext = (SceneGraphViewTargetContext) DockLayout.of(getSkinnable()).getLayoutContext();
 
         targetContext

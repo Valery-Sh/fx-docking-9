@@ -136,6 +136,24 @@
 .tree-item-node-borderpane {
     -fx-graphic: url(borderpane-16x16.png);
 }
+/*
+   BorderPane IndicatorPane
+*/
+.border-pane-indicator .center,.top,.right,.bottom,.left{
+    -fx-border-color: black; 
+    -fx-border-width:1.5; 
+    -fx-opacity: 0.3; 
+    -fx-background-color: lightgray; 
+    -fx-text-fill: black
+}
+
+.stack-pane-indicator .center,.top,.right,.bottom,.left{
+    -fx-border-color: black; 
+    -fx-border-width:1.5; 
+    -fx-opacity: 0.3; 
+    -fx-background-color: lightgray; 
+    -fx-text-fill: black
+}
 
 /*
     BorderPane placeholders
@@ -321,6 +339,7 @@
     -fx-stroke-line-cap: butt;
 
 }
+
 .dock-place-hide {
     -fx-fill: -fx-selection-bar;
     -fx-opacity: 0.5;
@@ -588,7 +607,7 @@
 /* ***********************************************
  *   ------  DockTabPane2 --------
  * ***********************************************/   
-.dock-tab-pane2 .tab-area .dock-title-bar {
+/*.dock-tab-pane2 .tab-area .dock-title-bar {
     -fx-border-width: 0.5; 
 
 }
@@ -618,7 +637,6 @@
 }
 
 .dock-tab-pane2 .tab-area .scroll-buttons-pane {
-    /*-fx-spacing: 2;*/
 }
 
 .dock-tab-pane2 .tab-area .hscroll-button {
@@ -655,7 +673,7 @@
     -fx-background-color: transparent;
     -fx-border-width:  0 1 0 0;
 }
-
+*/
 .scroll-pane > .viewport {
     /*-fx-background-color: aqua;*/
 }

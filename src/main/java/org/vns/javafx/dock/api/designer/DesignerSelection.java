@@ -56,7 +56,8 @@ public class DesignerSelection extends Selection {
         }
         if (newValue != null && (newValue instanceof Node)) {
             resizer = new NodeResizer((Region) newValue);
-            resizer.setWindowType(NodeResizer.WindowType.STAGE);
+            //resizer.setWindowType(NodeResizer.WindowType.STAGE);
+            resizer.setWindowType(NodeResizer.WindowType.POPUPCONTROL);
             resizer.show();
         }
         //selectTreeItem(newValue);
