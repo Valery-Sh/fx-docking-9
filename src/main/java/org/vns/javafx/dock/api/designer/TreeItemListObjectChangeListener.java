@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
 
 /**
@@ -28,7 +30,7 @@ import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
 public class TreeItemListObjectChangeListener implements ListChangeListener {
 
     private final TreeItemEx treeItem;
-    private String propertyName;
+    private final String propertyName;
 
     public TreeItemListObjectChangeListener(TreeItemEx treeItem, String propertyName) {
         this.treeItem = treeItem;
@@ -66,15 +68,13 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
             if (change.wasAdded()) {
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
-                if (!list.isEmpty()) {
-                    //System.err.println("TreeItemListObjectChangeListener: item added for " + list.get(0));
-                }
                 
                 list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
                     itemList.add(it);
                 });
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
-//                System.err.println("TreeItemListObjectChangeListener: ");
+                Selection sel = DockRegistry.lookup(Selection.class);
+                sel.setSelected(list.get(list.size() - 1));
             }
         }//while
     }

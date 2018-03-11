@@ -19,7 +19,6 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -69,7 +68,12 @@ public class DemoDesigner1 extends Application {
         VBox root1 = new VBox();
         
         sceneGraphView.setRoot(root1);
-        Scene scene1 = new Scene(root1);
+        
+        StackPane sp = new StackPane(root1);
+        root1.setStyle("-fx-background-color: white;");
+        //rightPaneRoot.setStyle("-fx-background-color: SIENNA; -fx-padding: 10 10 10 10");
+        sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");        
+        Scene scene1 = new Scene(sp);
         //sceneGraphView.getRootLayout().getChildren().add(root1);
         //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
         formButton.setOnAction(a -> {
@@ -164,4 +168,5 @@ public class DemoDesigner1 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    
 }

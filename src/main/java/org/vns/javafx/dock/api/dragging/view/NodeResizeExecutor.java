@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.PopupControl;
@@ -28,37 +27,26 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import static org.vns.javafx.dock.api.dragging.view.NodeResizer.windowBounds;
+//import static org.vns.javafx.dock.api.dragging.view.NodeResizer.windowBounds;
 
 /**
  *
  * @author Valery
  */
-public class NodeResizeExecutor implements WindowResizer {
+public class NodeResizeExecutor implements WindowResizeExecutor {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private Cursor cursor;
 
-    private NodeResizer nodeResizer;
-
     private Region node;
-
-    public NodeResizer getNodeResizer() {
-        return nodeResizer;
-    }
 
     public Region getNode() {
         return node;
     }
     private Window window;
     private final Set<Cursor> cursorTypes = new HashSet<>();
-
-    public NodeResizeExecutor(NodeResizer nodeResizer) {
-        this(nodeResizer.getWindow(), nodeResizer.getNode());
-        this.nodeResizer = nodeResizer;
-    }
 
     public NodeResizeExecutor(Window window, Region node) {
         this.window = window;
@@ -67,7 +55,7 @@ public class NodeResizeExecutor implements WindowResizer {
                 Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
                 Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE);
     }
-
+    
     protected Window getWindow() {
         return window;
     }
@@ -134,31 +122,19 @@ public class NodeResizeExecutor implements WindowResizer {
         }
         Region root = (Region) getWindow().getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-
+        Window win = getWindow();
         if (wDelta + getWindow().getWidth() > getMinWidth()) {
             if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
-                //double nodeNewX = node.getBoundsInParent().getMinX() - node.getLayoutX();
-                if (cursor == Cursor.W_RESIZE) {
-                    //node.setTranslateX(nodeNewX + xDelta);
-                    node.setPrefWidth(wDelta + node.getPrefWidth());
-                } else {
-                    node.setPrefWidth(wDelta + node.getPrefWidth());
-                }
-
+//                win.setWorkWidth(wDelta + win.getWorkWidth());
+                node.setPrefWidth(wDelta + node.getPrefWidth());
                 mouseX.set(curX);
             }
         }
 
         if (hDelta + getWindow().getHeight() > getMinHeight()) {
             if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
-                //double nodeNewY = node.getBoundsInParent().getMinY() - node.getLayoutY();
-                if (cursor == Cursor.N_RESIZE) {
-                    //node.setTranslateY(nodeNewY + yDelta);
-                    node.setPrefHeight(hDelta + node.getPrefHeight());
-                } else {
-                    node.setPrefHeight(hDelta + node.getPrefHeight());
-                }
-
+//                win.setWorkHeight(hDelta + win.getWorkHeight());
+                node.setPrefHeight(hDelta + node.getPrefHeight());
                 mouseY.set(curY);
             }
         }
@@ -166,72 +142,9 @@ public class NodeResizeExecutor implements WindowResizer {
     }
 
     public void resizeUnmanaged(double x, double y) {
-        double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
-
-        double curX = mouseX.get();
-        double curY = mouseY.get();
-        if (cursor == Cursor.S_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            curY = y;
-        } else if (cursor == Cursor.E_RESIZE) {
-            wDelta = x - this.mouseX.get();
-            curX = x;
-        } else if (cursor == Cursor.N_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            yDelta = -hDelta;
-            curY = y;
-        } else if (cursor == Cursor.W_RESIZE) {
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            curX = x;
-        } else if (cursor == Cursor.SE_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            curY = y;
-            wDelta = x - this.mouseX.get();
-            curX = x;
-
-        } else if (cursor == Cursor.NE_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            wDelta = x - this.mouseX.get();
-            yDelta = -hDelta;
-            curX = x;
-            curY = y;
-        } else if (cursor == Cursor.SW_RESIZE) {
-            hDelta = y - this.mouseY.get();
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            curX = x;
-            curY = y;
-        } else if (cursor == Cursor.NW_RESIZE) {
-            hDelta = this.mouseY.get() - y;
-            wDelta = this.mouseX.get() - x;
-            xDelta = -wDelta;
-            yDelta = -hDelta;
-            curX = x;
-            curY = y;
-        }
-
-        Region root = (Region) getWindow().getScene().getRoot();
-        root.setMaxWidth(Double.MAX_VALUE);
-
-        Bounds oldBounds = node.getBoundsInParent();
-
-        double oldX = oldBounds.getMinX();
-        double oldY = oldBounds.getMinY();
-
-        double oldWidth = node.getWidth();
-        double oldHeight = node.getHeight();
-
-        double newX = oldX + xDelta;
-        double newY = oldY + yDelta;
-        double newWidth = wDelta + oldWidth;
-        double newHeight = hDelta + oldHeight;
-
-        node.resizeRelocate(newX, newY, newWidth, newHeight);
-        windowBounds(window, (Region) node);
-        mouseX.set(curX);
-        mouseY.set(curY);
+        
     }
+    
 
     protected double getMinWidth() {
         double retval = 0.0;
@@ -263,15 +176,17 @@ public class NodeResizeExecutor implements WindowResizer {
     }
 
     @Override
-    public void start(MouseEvent ev, Window stage, Cursor cursor, Cursor... supportedCursors) {
+    public void start(MouseEvent ev, WindowNodeFraming nodeResizer, Cursor cursor, Cursor... supportedCursors) {
 
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
 
         this.cursor = cursor;
-        this.window = stage;
+        this.window = window;
         Region r = (Region) window.getScene().getRoot();
+        node.setPrefWidth(nodeResizer.getWorkWidth());
+        node.setPrefHeight(nodeResizer.getWorkHeight());
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {
@@ -361,4 +276,10 @@ public class NodeResizeExecutor implements WindowResizer {
     public void setMouseY(Double mY) {
         this.mouseY.set(mY);
     }
+
+    @Override
+    public void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

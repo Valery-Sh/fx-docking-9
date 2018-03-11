@@ -34,7 +34,7 @@ import javafx.stage.Window;
  *
  * @author Valery
  */
-public class StageResizer implements WindowResizer {
+public class StageResizer implements WindowResizeExecutor {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
@@ -311,5 +311,10 @@ public class StageResizer implements WindowResizer {
 
     public FloatWindowView getWindowView() {
         return windowView;
+    }
+
+    @Override
+    public void start(MouseEvent ev, WindowNodeFraming resizer, Cursor cursor, Cursor... supportedCursors) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

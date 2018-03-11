@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import org.vns.javafx.dock.api.save.DockTreeItemBuilder;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.SideIndicator;
 import org.vns.javafx.dock.api.indicator.DockPaneIndicatorPopup;
@@ -21,7 +20,6 @@ import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
 import org.vns.javafx.dock.api.event.DockEvent;
 import org.vns.javafx.dock.api.indicator.SideIndicator.PaneSideIndicator;
-import org.vns.javafx.dock.api.save.DockTreeItemBuilderFactory;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 public class DockPaneContext extends LayoutContext {
@@ -29,7 +27,6 @@ public class DockPaneContext extends LayoutContext {
 
     private DockExecutor dockExecutor;
     private final DockSplitPane root;
-    private DockTreeItemBuilder dockTreeItemBuilder;
     private SideIndicator.NodeSideIndicator nodeIndicator;
 
     private RestoreData restoreData;
@@ -45,7 +42,6 @@ public class DockPaneContext extends LayoutContext {
         lookup.putUnique(PositionIndicator.class, new PaneSideIndicator(this));
 
         lookup.putUnique(IndicatorManager.class,new DockPaneIndicatorPopup(this));
-        lookup.add(new DockTreeItemBuilderFactory());        
     }
 
     public DockSplitPane getRoot() {

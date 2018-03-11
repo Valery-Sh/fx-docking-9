@@ -54,9 +54,7 @@ public abstract class Selection {
 
     public static void removeListeners(Dockable dockable) {
         Selection sel = DockRegistry.lookup(Selection.class);
-//        System.err.println("Selection removeListeners");
         if (sel != null) {
-//            System.err.println("1 Selection removeListeners");
             sel.removeSelected();
         }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
@@ -102,12 +100,9 @@ public abstract class Selection {
             if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 mouseRelesed(ev);
             }
-
         }
 
         protected void mousePressed(MouseEvent ev) {
-//            System.err.println("SelectionHandler mausePressed source       = " + source);
-//            System.err.println("SelectionHandler mausePressed event.source = " + ev.getSource());
             Selection sel = DockRegistry.lookup(Selection.class);
             setSource(ev.getSource());
             sel.notifySelected(ev.getSource());
@@ -117,17 +112,11 @@ public abstract class Selection {
         }
 
         protected void mouseRelesed(MouseEvent ev) {
-//            System.err.println("SelectionHandler mouseRelesed source       = " + source);
-//            System.err.println("SelectionHandler mouseRelesed event.source = " + ev.getSource());
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
                 Selection sel = DockRegistry.lookup(Selection.class);
-                //if (sel.getSelected() != getSource()) {
-//                System.err.println("   --- setSelected");
                 setSource(null);
                 ev.consume();
-                //}
             }
-
         }
 
     }

@@ -62,28 +62,15 @@ public class ScenePaneContext extends LayoutContext {
 */        
     }
 
-    /**
-     * For test purpose
-     *
-     * @return the list of dockables
-     */
-/*    public ObservableList<Dockable> getDockables() {
-        ObservableList<Dockable> list = FXCollections.observableArrayList();
-        return null;
-    }
-*/
+
     @Override
     public void remove(Node dockNode) {
-//        System.err.println("ScenePaneContext dockNode=" + dockNode);
         if ( ! isDocked(dockNode) ) {
             return;
         }
         if ( DockRegistry.getInstance().getBeanRemover() != null ) {
             DockRegistry.getInstance().getBeanRemover().remove(dockNode);
         } 
-        //else if (dockNode.getParent() != null && (dockNode.getParent() instanceof Pane)) {
-            //((Pane) dockNode.getParent()).getChildren().remove(dockNode);
-        //}
     }
 
     public LayoutContext getRestoreContext() {

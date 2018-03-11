@@ -72,18 +72,23 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             protected void layoutChildren() {
                 super.layoutChildren();
                 Node root = ((Region)getSkinnable().getTreeView().getRoot().getValue());
-                //Platform.runLater(() -> {
+/*                Platform.runLater(() -> {
+                    System.err.println("layoutChildren 0");
+                    
                     if (DockRegistry.lookup(FloatView.class) != null) {
                         return;
                     }
+                    System.err.println("layoutChildren 1");
+                    
                     TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
                     if (item != null) {
-                        System.err.println("layoutChildren");
+                        System.err.println("layoutChildren 2");
                         Selection sel = DockRegistry.lookup(Selection.class);
                         sel.setSelected(item.getValue());
-                        //root.getScene().getWindow().requestFocus();
+                        root.getScene().getWindow().requestFocus();
                     }
-              //});
+              });
+*/
             }
         };
 
@@ -116,6 +121,18 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         getSkinnable().getScene().addEventFilter(MouseEvent.MOUSE_PRESSED,this::sceneMousePressed);
 
         getSkinnable().rootProperty().addListener(this::rootChanged);
+        
+        getSkinnable().getTreeView().getSelectionModel().selectedItemProperty().addListener((o,ov,nv) -> {
+            System.err.println("getSkinnable().getTreeView().getSelectionModel()  oldItem Item = " + ov);
+            if ( ov != null ) {
+                System.err.println("getSkinnable().getTreeView().getSelectionModel()  oldItem.value = " + ((TreeItem)ov).getValue());
+            }
+            
+            System.err.println("getSkinnable().getTreeView().getSelectionModel()  newItem Item = " + nv);
+            if ( nv != null ) {
+                System.err.println("getSkinnable().getTreeView().getSelectionModel()  newItem.value = " + ((TreeItem)nv).getValue());
+            }
+        });
 
     }
     

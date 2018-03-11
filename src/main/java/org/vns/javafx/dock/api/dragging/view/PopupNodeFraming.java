@@ -16,49 +16,41 @@
 package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.geometry.Bounds;
-import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 /**
  *
  * @author Valery
  */
-public class StageNodeResizer extends WindowNodeResizer {
+public class PopupNodeFraming extends WindowNodeFraming {
 
-    protected StageNodeResizer() {
+    protected PopupNodeFraming() {
+        super();
+        //setWindow(new PopupControl());
     }
-    public static WindowNodeResizer getInstance() {
+    
+    public static WindowNodeFraming getInstance() {
         return SingletonInstance.instance;
     }
 
     @Override
     protected void createWindow() {
-        Stage stage = new Stage(StageStyle.TRANSPARENT);
-        setWindow(stage);
-    }
-    @Override
-   protected void initScene() {
-        Scene scene = new Scene(getRoot());
-        scene.setFill(Color.TRANSPARENT);
-        ((Stage)getWindow()).setScene(scene);            
-    }
-    @Override
-    protected void setWindowSize(Bounds bounds, double borderWidth, double borderHeight) {
-        getWindow().setWidth(bounds.getWidth() + borderWidth);
-        getWindow().setHeight(bounds.getHeight() + borderHeight);        
-    }    
-    @Override
-    protected void doShow(Window owner) {
-        ((Stage)getWindow()).initOwner(owner);
-        ((Stage)getWindow()).show();
-    }
-    private static class SingletonInstance {
-        private static final StageNodeResizer instance = new StageNodeResizer();
+        setWindow(new PopupControl());
     }
     
+    @Override
+    protected void initScene() {
+        getWindow().getScene().setRoot((Parent)getRoot());
+    }
+
+    @Override
+    protected void doShow(Window owner) {
+        ((PopupControl) getWindow()).show(owner);
+    }
+    
+    private static class SingletonInstance {
+        private static final PopupNodeFraming instance = new PopupNodeFraming();
+    }
 }

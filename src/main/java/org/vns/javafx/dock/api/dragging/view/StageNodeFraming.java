@@ -16,48 +16,49 @@
 package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.geometry.Bounds;
-import javafx.scene.control.PopupControl;
-import javafx.stage.Popup;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 /**
  *
  * @author Valery
  */
-public class PopupNodeResizer extends WindowNodeResizer {
+public class StageNodeFraming extends WindowNodeFraming {
 
-    protected PopupNodeResizer() {
-        super();
-        //setWindow(new PopupControl());
+    protected StageNodeFraming() {
     }
-    
-    public static WindowNodeResizer getInstance() {
+    public static WindowNodeFraming getInstance() {
         return SingletonInstance.instance;
     }
 
     @Override
     protected void createWindow() {
-        setWindow(new PopupControl());
-        //setWindow(new Popup());
+        Stage stage = new Stage(StageStyle.TRANSPARENT);
+        setWindow(stage);
+        stage.setAlwaysOnTop(false);
     }
-    
+    @Override
+   protected void initScene() {
+        Scene scene = new Scene((Parent)getRoot());
+        scene.setFill(Color.TRANSPARENT);
+        ((Stage)getWindow()).setScene(scene);            
+    }
     @Override
     protected void setWindowSize(Bounds bounds, double borderWidth, double borderHeight) {
-        //getWindow().setHeight(bounds.getHeight() + 2 * borderHeight);
-        //getWindow().setHeight(bounds.getWidth() + 2 * borderWidth);
-    }
-
-    @Override
-    protected void initScene() {
-        getWindow().getScene().setRoot(getRoot());
-    }
-
+        getWindow().setWidth(bounds.getWidth() + borderWidth);
+        getWindow().setHeight(bounds.getHeight() + borderHeight);        
+    }    
     @Override
     protected void doShow(Window owner) {
-        ((PopupControl) getWindow()).show(owner);
+        ((Stage)getWindow()).initOwner(owner);
+        ((Stage)getWindow()).show();
+    }
+    private static class SingletonInstance {
+        private static final StageNodeFraming instance = new StageNodeFraming();
     }
     
-    private static class SingletonInstance {
-        private static final PopupNodeResizer instance = new PopupNodeResizer();
-    }
 }

@@ -788,6 +788,7 @@ public class PalettePane extends Control {
          * Creates a new instance of the class. The created object has the
          * property {@code customizer} set to the object of type
          * {@link DefaultDragValueCustomizer}.
+         * @param palette the palette this model belongs to
          */
         public PaletteModel(PalettePane palette) {
             this.palette = palette;

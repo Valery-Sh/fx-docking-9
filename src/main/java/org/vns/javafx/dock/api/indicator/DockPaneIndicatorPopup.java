@@ -24,10 +24,11 @@ import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
  * and provides a pop up window in which the user can select a position on the
  * screen where the dragged node will be placed. As a rule, the position is
  * determined as a relative position to the target object, which can be an
- * object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}. The position of
+ * object of type {@link org.vns.javafx.dock.api.Dockable} or 
+ * {@link org.vns.javafx.dock.api.DockLayout}. The position of
  * the target object is set as a value of type {@code javafx.geometry.Side} the
- * object is given {@literal  enum} type Side and can take one of the values: Side.TOP,
- * Side.RIGHT, Side.BOTTOM or Side.LEFT.
+ * object is given {@literal  enum} type Side and can take one of the values: 
+ * Side.TOP, Side.RIGHT, Side.BOTTOM or Side.LEFT.
  * <p>
  * Most of the work with the object of the class is done in the method 
  * DragManager#mouseDragged(MouseEvent) . If the
@@ -157,7 +158,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
 */
     /**
      * Returns an object of type {@link SideIndicator} to display indicators for
-     * an object of type {@link org.vns.javafx.dock.api.DockTarget}.
+     * an object of type {@link org.vns.javafx.dock.api.DockLayout}.
      *
      * @return Returns an object of type {@code SideIndicator}
      */
@@ -195,7 +196,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
     }
 
     /**
-     * Returns an object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockTarget}
+     * Returns an object of type {@link org.vns.javafx.dock.api.Dockable} or {@link org.vns.javafx.dock.api.DockLayout}
      * depending on the user selection or null if no object has been selected.
      *
      * @return a target object to dock to or null.

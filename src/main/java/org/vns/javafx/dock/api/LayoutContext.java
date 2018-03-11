@@ -1,6 +1,5 @@
 package org.vns.javafx.dock.api;
 
-import org.vns.javafx.dock.api.save.AbstractDockStateLoader;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import javafx.beans.Observable;
@@ -26,7 +25,6 @@ public abstract class LayoutContext {
     private String title;
     private PositionIndicator positionIndicator;
 
-    private AbstractDockStateLoader dockLoader;
 
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
@@ -108,13 +106,6 @@ public abstract class LayoutContext {
 
     }
 
-    public AbstractDockStateLoader getDockLoader() {
-        return dockLoader;
-    }
-
-    public void setDockLoader(AbstractDockStateLoader loader) {
-        this.dockLoader = loader;
-    }
     /**
      * The method is called by the object {@code DragManager } when the mouse event
      * of type {@code MOUSE_DRAGGED} is handled.
@@ -150,7 +141,7 @@ public abstract class LayoutContext {
             return false;
         }
         
-        return (dockLoader != null && dockLoader.isRegistered(dragged.node())) || dockLoader == null;
+        return true;
     }
 
     public void dock(Point2D mousePos, Dockable dockable) {
@@ -205,14 +196,14 @@ public abstract class LayoutContext {
     }
     /**
      * Returns the node for which this context was created
-     * The node may throw {@code NullPointerException) in case when 
- the both conditions below are met:
- <ul>
-   <li> ! (this instanceof ScenePaneContext)</li>
-   <li>layoutNode == null</li>
- </ul>
- @return the node for which this context was created.
-     */
+     * The node may throw {@code NullPointerException} in case when  the 
+     * both conditions below are met:
+     * <ul>
+     * <li> ! (this instanceof ScenePaneContext)</li>
+     * <li>layoutNode == null</li>
+     * </ul>
+     * @return the node for which this context was created.
+    */
     public final Node getLayoutNode() {
         if ( ! (this instanceof ScenePaneContext) && layoutNode == null  ) {
             throw new NullPointerException("The property layoutNode cannot be null");

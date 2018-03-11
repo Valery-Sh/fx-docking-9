@@ -62,7 +62,7 @@ public class FloatStageView implements FloatWindowView {
 
     private final DockableContext dockableContext;
 
-    private WindowResizer resizer;
+    private WindowResizeExecutor resizer;
 
     private final MouseResizeHandler mouseResizeHanler;
 
@@ -104,7 +104,7 @@ public class FloatStageView implements FloatWindowView {
     }
 
     @Override
-    public WindowResizer getResizer() {
+    public WindowResizeExecutor getResizer() {
         return resizer;
     }
 
@@ -560,7 +560,7 @@ public class FloatStageView implements FloatWindowView {
 
     }
 
-    protected void setResizer(WindowResizer resizer) {
+    protected void setResizer(WindowResizeExecutor resizer) {
         this.resizer = resizer;
     }
 

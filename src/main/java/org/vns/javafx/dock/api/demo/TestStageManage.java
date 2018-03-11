@@ -15,30 +15,16 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockPane;
-import org.vns.javafx.dock.DockTabPane;
-import org.vns.javafx.dock.HPane;
-import org.vns.javafx.dock.VPane;
-import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.save.DockStateLoader;
-import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.DockableContext;
 
 /**
  *

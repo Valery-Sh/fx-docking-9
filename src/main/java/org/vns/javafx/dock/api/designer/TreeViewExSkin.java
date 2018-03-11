@@ -11,8 +11,8 @@ import org.vns.javafx.dock.api.Selection;
 
 /**
  *
- * @author Valery
- * @param <T> ???
+ * @author Valery Shyshkin
+ * 
  */
 public class TreeViewExSkin extends TreeViewSkin<TreeView> {
 

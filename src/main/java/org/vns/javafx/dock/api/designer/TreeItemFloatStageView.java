@@ -63,7 +63,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
 
     private final DockableContext dockableController;
 
-    private WindowResizer resizer;
+    private WindowResizeExecutor resizer;
 
     private final MouseResizeHandler mouseResizeHanler;
 
@@ -108,7 +108,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
     }
 
     @Override
-    public WindowResizer getResizer() {
+    public WindowResizeExecutor getResizer() {
         return resizer;
     }
     public void setStageStyle(StageStyle stageStyle) {
@@ -305,7 +305,7 @@ public class TreeItemFloatStageView implements FloatWindowView{
         setResizer(new StageResizer(this));
     }
     
-    protected void setResizer(WindowResizer resizer) {
+    protected void setResizer(WindowResizeExecutor resizer) {
         this.resizer = resizer;
     }
     protected void addListeners(Window window) {

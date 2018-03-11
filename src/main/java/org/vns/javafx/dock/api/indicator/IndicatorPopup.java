@@ -26,7 +26,7 @@ import org.vns.javafx.dock.api.LayoutContext;
  * dragged node will be placed. As a rule, the position is determined as a
  * relative position to the target object, which can be an object of type
  * {@link org.vns.javafx.dock.api.Dockable} or
- * {@link org.vns.javafx.dock.api.DockTarget}. The position of the target object
+ * {@link org.vns.javafx.dock.api.DockLayout}. The position of the target object
  * is set as a value of type {@code javafx.geometry.Side} the object is given
  * enum type Side and can take one of the values: Side.TOP, Side.RIGHT,
  * Side.BOTTOM or Side.LEFT.

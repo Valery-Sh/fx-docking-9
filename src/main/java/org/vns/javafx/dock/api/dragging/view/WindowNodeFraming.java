@@ -38,11 +38,11 @@ import org.vns.javafx.dock.api.DockRegistry;
  *
  * @author Valery
  */
-public class WindowNodeResizer implements EventHandler<MouseEvent> {
+public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> {
 
     private Window window;
 
-    private WindowResizer windowResizer;
+    private WindowResizeExecutor windowResizer;
 
     private StackPane root;
 
@@ -73,7 +73,7 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
     private Cursor saveCursor;
     private boolean applyTranslateXY;
 
-    protected WindowNodeResizer() {
+    protected WindowNodeFraming() {
         super();
         nodeProperty().addListener((v, ov, nv) -> {
             if (ov != null) {
@@ -120,7 +120,7 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
     protected void doShow(Window owner) {
     }
 
-    public StackPane getRoot() {
+    public Node getRoot() {
         return root;
     }
 
@@ -155,8 +155,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         window.setY(screenBounds.getMinY() - insetsTop);
         window.setWidth(screenBounds.getWidth() + insetsWidth);
         window.setHeight(screenBounds.getHeight() + insetsHeight);
-        //root.setPrefWidth(screenBounds.getWidth() + insetsWidth);
-        //root.setPrefHeight(screenBounds.getHeight() + insetsHeight);
         
         getNode().layoutYProperty().addListener((o, ov, nv) -> {
             Bounds sb = getNode().localToScreen(getNode().getLayoutBounds());
@@ -174,8 +172,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         root.prefWidthProperty().bind(workWidth.add(borderWidth));
         root.prefHeightProperty().bind(workHeight.add(borderHeight));
 
-        //root.setMinWidth(root.minWidth(DockUtil.heightOf(region)) + insetsWidth);
-        //root.setMinHeight(root.minHeight(DockUtil.widthOf(region)) + insetsHeight);
         screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
         
         setWorkWidth(screenBounds.getWidth());
@@ -187,32 +183,7 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         bindWindowPosition(nodeWindow);
     }
 
-/*    protected void boundsChanged(ObservableValue<? extends Bounds> v, Bounds ov, Bounds nv) {
-        if (nv == null) {
-            return;
-        }
-        System.err.println("getLayoutY = " + getNode().getLayoutY());
-        //Bounds sb = getNode().localToScreen(getNode().parentToLocal(nv));
-        Bounds sb = getNode().localToScreen(getNode().getBoundsInLocal());
-        if (sb == null) {
-            return;
-        }
-  
-        System.err.println("WindowNodeResizer parentListener: node = " + getNode());
-        System.err.println("  --- screen  X = " + sb.getMinX() + "; Y = " + sb.getMinY());
-        System.err.println("  --- local   X = " + nv.getMinX() + "; Y = " + nv.getMinY());
 
-        System.err.println("  --- Width = " + sb.getWidth() + "; Height =  + sb.getHeight()");
-        //if ( (nv.getMinX()%1) != 0 || (nv.getMinY()%1) != 0 || (nv.getWidth()%1) != 0 || (nv.getHeight()%1) != 0) {
-        //return;
-        //}
-        System.err.println("  --- WindowNodeResizer: boundsInParentPropertybounds=" + nv);
- 
-        window.setX(sb.getMinX() - insetsLeft);
-        window.setY(sb.getMinY() - insetsTop);
- 
-    }
-*/
     protected void layoutBoundsChanged(ObservableValue<? extends Bounds> v, Bounds ov, Bounds nv) {
         if (nv == null) {
             return;
@@ -222,24 +193,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         if (sb == null) {
             return;
         }
-        System.err.println("******* ");
-
-        System.err.println("WindowNodeResizer layoutListener: node = " + getNode());
-        System.err.println("  --- screen  X = " + sb.getMinX() + "; Y = " + sb.getMinY());
-        System.err.println("  --- local   X = " + nv.getMinX() + "; Y = " + nv.getMinY());
-
-        System.err.println("  --- Width = " + sb.getWidth() + "; Height =  + sb.getHeight()");
-        System.err.println("  --- WindowNodeResizer: layoutBounds=" + sb);
-
-        /*            System.err.println("  --- floorX = " + Math.floor(nv.getMinX()));
-            System.err.println("  --- floorY = " + Math.floor(nv.getMinY()));            
-            System.err.println("  --- floorWidth = " + Math.floor(nv.getWidth()));                        
-            System.err.println("  --- floorHeight = " + Math.floor(nv.getHeight()));                                    
-         */
-        System.err.println("-----------------------------------");
-
-        //window.setX(sb.getMinX() - insetsLeft);
-        //window.setY(sb.getMinY() - insetsTop );
         setWorkWidth(nv.getWidth());
         setWorkHeight(nv.getHeight());
         setWindowSize(nv, borderWidth, borderHeight);
@@ -274,9 +227,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         window.setY(b.getMinY() - borderY);
 
         if (window instanceof Stage) {
-//            System.err.println("b.getWidth() = " + node.getWidth() + "; borderWidth = " + borderWidth);
-//            System.err.println("b.getHeight() = " + node.getHeight() + "; borderHeight = " + borderHeight);
-
             window.setWidth(b.getWidth() + borderWidth);
             window.setHeight(b.getHeight() + borderHeight);
         }
@@ -358,14 +308,8 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
             window.hide();
         }
 
-        //if (windowResizer == null) {
-        windowResizer = new NodeResizeExecutor2(window, (Region) getNode());
-        //}
-/*        getNode().addEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        getNode().addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        getNode().addEventFilter(MouseEvent.MOUSE_MOVED, this);
-        getNode().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-         */
+        windowResizer = new NodeResizeExecutor(window, (Region) getNode());
+
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
         window.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         window.addEventFilter(MouseEvent.MOUSE_MOVED, this);
@@ -379,20 +323,13 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         window.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         window.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
         window.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-
-        /*        getNode().removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        getNode().removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        getNode().removeEventFilter(MouseEvent.MOUSE_MOVED, this);
-        getNode().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-         */
     }
 
     @Override
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-//             System.err.println("MOUSE MOVED 0");
 
-            Cursor c = NodeResizeExecutor2.cursorBy(ev, (Region) window.getScene().getRoot());
+            Cursor c = NodeResizeExecutor.cursorBy(ev, (Region) window.getScene().getRoot());
 
             if (!isCursorSupported(c)) {
                 window.getScene().setCursor(Cursor.DEFAULT);
@@ -404,15 +341,13 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
             }
 
         } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-//             System.err.println("MOUSE PRESSED 0");
             if (!window.getScene().getRoot().contains(ev.getX(), ev.getY())) {
-//                System.err.println("MOUSE PRESSED");
                 removeWindowListeners();
                 hide();
 
                 return;
             }
-            saveCursor = NodeResizeExecutor2.cursorBy(ev, root);
+            saveCursor = NodeResizeExecutor.cursorBy(ev, root);
             if (!applyTranslateXY) {
                 translateX = getNode().getTranslateX();
                 translateY = getNode().getTranslateY();
@@ -438,8 +373,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
                 });
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            System.err.println("MOUSE RELEASED 0");
-
             if (isApplyTranslateXY()) {
                 double tX = getNode().getTranslateX();
                 double tY = getNode().getTranslateY();
@@ -486,7 +419,7 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         this.applyTranslateXY = useTranslateXY;
     }
 
-    public WindowResizer getResizer() {
+    public WindowResizeExecutor getResizer() {
         return windowResizer;
     }
 
@@ -507,5 +440,6 @@ public class WindowNodeResizer implements EventHandler<MouseEvent> {
         }
         return retval;
     }
+
 
 }

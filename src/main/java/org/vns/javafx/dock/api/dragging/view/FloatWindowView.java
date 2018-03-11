@@ -37,7 +37,7 @@ public interface FloatWindowView extends FloatView {
 
     Region getWindowRoot();
     
-    WindowResizer getResizer();
+    WindowResizeExecutor getResizer();
     
     void addResizer();
 

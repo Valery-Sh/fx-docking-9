@@ -33,7 +33,6 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
-import org.vns.javafx.dock.api.save.DockStateLoader;
 
 /**
  *
@@ -55,11 +54,9 @@ public class TestDockPaneControl011 extends Application {
         //StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();
         //DockNode dnc1 = new DockNode("DockNodeControl dnc1");
-        DockStateLoader loader = new DockStateLoader(TestDockPaneControl011.class);
 
         //loader.setSaveOnClose(true);
         DockPane dockPane2 = new DockPane();
-        DockPane dockPane1 = (DockPane) loader.register("dockPane1", DockPane.class);
         //loader.register("dockPane2", dockPane2);
         //dockPane2.getItems().add(new DockSplitPane());
         dockPane2.setId("dockPane2");
@@ -86,7 +83,6 @@ public class TestDockPaneControl011 extends Application {
         vp1_1.setId("vp1_1");
         dockPane2.getItems().add(vp1_1);
 
-        dockPane1.setId("dockPane1");
         DockNode dnc1 = new DockNode();
         dnc1.setTitle("dnc1");
         DockNode dnc2 = new DockNode();
@@ -192,9 +188,6 @@ public class TestDockPaneControl011 extends Application {
             });
         });
 
-        b5.setOnAction(a -> {
-            loader.reset();
-        });
 
 /*        b6.setOnAction(a -> {
             System.err.println("dnc1.dragNose = " + Dockable.of(dnc1).getContext().getDragNode());            

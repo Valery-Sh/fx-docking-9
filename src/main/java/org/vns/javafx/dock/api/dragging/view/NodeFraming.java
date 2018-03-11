@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,13 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import javafx.scene.Cursor;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Window;
+import javafx.scene.Node;
 
 /**
  *
  * @author Valery
  */
-public interface WindowResizer {
-    boolean isStarted();
-    void resize(double x, double y);
-    void resize(MouseEvent event);
-    default void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors) {
-        
-    }    
-    default void start(MouseEvent ev, WindowNodeResizer windowEx, Cursor cursor, Cursor... supportedCursors) {
-        
-    }        
+public interface NodeFraming {
+    void show(Node node);
+    void hide();
 }
