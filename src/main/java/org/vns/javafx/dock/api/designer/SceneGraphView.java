@@ -1,7 +1,6 @@
 package org.vns.javafx.dock.api.designer;
 
 import org.vns.javafx.dock.api.Selection;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,9 +13,7 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
@@ -429,10 +426,10 @@ public class SceneGraphView extends Control implements DockLayout {
                     Selection sel = DockRegistry.lookup(Selection.class);
                     //System.err.println("item.getValue() = " + item.getValue());
                     //System.err.println("   --- bounds = " + ((Node) item.getValue()).getBoundsInParent());
-                    Platform.runLater(() -> {
+                    //Platform.runLater(() -> {
                         sel.notifySelected(item.getValue());
-                        //System.err.println("   --- bounds 1 = " + ((Node) item.getValue()).getBoundsInParent());
-                    });
+                        System.err.println("SceneGraphView   NOTIFY SELECTED  ");
+                    //});
                     //sel.notifySelected(item.getValue());
 
                     //sel.setSelected(item.getValue());

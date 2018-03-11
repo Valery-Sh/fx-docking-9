@@ -72,7 +72,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             protected void layoutChildren() {
                 super.layoutChildren();
                 Node root = ((Region)getSkinnable().getTreeView().getRoot().getValue());
-//                Platform.runLater(() -> {
+                //Platform.runLater(() -> {
                     if (DockRegistry.lookup(FloatView.class) != null) {
                         return;
                     }
@@ -81,15 +81,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                         System.err.println("layoutChildren");
                         Selection sel = DockRegistry.lookup(Selection.class);
                         sel.setSelected(item.getValue());
-                        root.getScene().getWindow().requestFocus();
-                        //if ( root != null && item.getValue() != null ) {
-                        //    Platform.runLater(() -> {
-                                //root.getScene().getWindow().requestFocus();
-                        //    });
-                        //}
-                        
+                        //root.getScene().getWindow().requestFocus();
                     }
-  //              });
+              //});
             }
         };
 

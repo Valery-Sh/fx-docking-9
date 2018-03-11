@@ -27,5 +27,10 @@ public interface WindowResizer {
     boolean isStarted();
     void resize(double x, double y);
     void resize(MouseEvent event);
-    void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors);    
+    default void start(MouseEvent ev, Window window, Cursor cursor, Cursor... supportedCursors) {
+        
+    }    
+    default void start(MouseEvent ev, WindowNodeResizer windowEx, Cursor cursor, Cursor... supportedCursors) {
+        
+    }        
 }

@@ -6,6 +6,8 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Selection;
 
 /**
  *
@@ -20,14 +22,14 @@ public class TreeViewExSkin extends TreeViewSkin<TreeView> {
         super(treeView);
         TreeViewEx tv = (TreeViewEx) getSkinnable();
         //tv.addEventFilter(MouseEvent., treeView);
-/*        getSkinnable().getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+        getSkinnable().getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
             if ( newValue != null) {
                 System.err.println("TreeViewEx newValue " + newValue.getValue());
                 Selection sel = DockRegistry.lookup(Selection.class);
-                //sel.setSelected(newValue.getValue());
+                sel.setSelected(newValue.getValue());
             }
         });
-*/
+
     }
 
     @Override

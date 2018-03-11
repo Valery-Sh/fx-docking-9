@@ -24,6 +24,8 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.Selection.SelectionHandler;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
+import org.vns.javafx.dock.api.dragging.view.StageNodeResizer;
+import org.vns.javafx.dock.api.dragging.view.WindowNodeResizer;
 
 /**
  *
@@ -38,7 +40,8 @@ public class DesignerLookup { // implements ContextLookup {
         init();
     }
     private void init() {
-        DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
+        DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection2() );
+        DockRegistry.getInstance().getLookup().putUnique(WindowNodeResizer.class, StageNodeResizer.getInstance() );
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
         

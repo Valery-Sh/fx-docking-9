@@ -20,18 +20,21 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.dragging.view.NodeResizer;
+import org.vns.javafx.dock.api.dragging.view.PopupNodeResizer;
+import org.vns.javafx.dock.api.dragging.view.WindowNodeResizer;
 
 /**
  *
  * @author Valery
  */
-public class DesignerSelection extends Selection {
+public class DesignerSelection2 extends Selection {
 
-    private NodeResizer resizer;
-    //private WindowNodeResizer resizer;
+    //private NodeResizer resizer;
+    private WindowNodeResizer resizer;
     
-    public DesignerSelection() {
+    public DesignerSelection2() {
         init();
     }
 
@@ -44,27 +47,29 @@ public class DesignerSelection extends Selection {
         if (newValue == null) {
             if (resizer != null) {
                 resizer.hide();
-                resizer = null;
+//                resizer = null;
             }
             return;
         }
      
         if (resizer != null) {
             resizer.hide();
-            resizer = null;
+//            resizer = null;
         }
         if (newValue != null && (newValue instanceof Node)) {
-
-            //nodeResizer = new PopupNodeResizer((Node) newValue);
-            resizer = new NodeResizer( (Region) newValue);
+            
+            //resizer = PopupNodeResizer.getInstance();
+            resizer = DockRegistry.lookup(WindowNodeResizer.class);
+            System.err.println("SesignerSelection2 resizer=" + resizer);
+            //resizer = new NodeResizer( (Region) newValue);
             //resizer.setWindowType(NodeResizer.WindowType.STAGE);
-            resizer.setWindowType(NodeResizer.WindowType.POPUPCONTROL);
-            resizer.show();
+            //resizer.setWindowType(NodeResizer.WindowType.POPUPCONTROL);
+            resizer.show((Node) newValue);
         }
-        //selectTreeItem(newValue);
+        notifySelected(newValue);
     }
 
-    protected void selectedChanged_OLD(ObservableValue ov, Object oldValue, Object newValue) {
+/*    protected void selectedChanged_OLD(ObservableValue ov, Object oldValue, Object newValue) {
         if (newValue == null) {
             if (resizer != null) {
                 resizer.hide();
@@ -88,7 +93,7 @@ public class DesignerSelection extends Selection {
         }
         //selectTreeItem(newValue);
     }
-
+*/
     @Override
     public void notifySelected(Object value) {
 //        Platform.runLater(() -> {
@@ -100,10 +105,10 @@ public class DesignerSelection extends Selection {
             } else {
                 item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
             }
-//            System.err.println("DesignerSelection: item = " + item);
+//            System.err.println("DesignerSelection2: item = " + item);
             
             if (item != null) {
-//                System.err.println("DesignerSelection: item.value = " + item.getValue());
+                System.err.println("DesignerSelection2: item.value = " + item.getValue());
                 Platform.runLater(() -> {
                     //sgv.getTreeView().getSelectionModel().select(item);
                 });

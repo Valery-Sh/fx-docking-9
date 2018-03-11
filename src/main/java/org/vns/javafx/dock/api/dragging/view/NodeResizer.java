@@ -23,6 +23,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
@@ -71,7 +72,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
     private double translateX;
     private double translateY;
     private Cursor saveCursor;
-    private boolean applyTranskateXY;
+
 
     public NodeResizer(Region node) {
         this.node = node;
@@ -347,7 +348,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
         this.hideOnMouseRelease = hideOnMouseRelease;
     }
 
-    protected static Bounds windowBounds(Window window, Region node) {
+    protected static Bounds windowBounds(Window window, Node node) {
         Bounds b = node.localToScreen(node.getBoundsInLocal());
         double borderWidth = 0;
         double borderHeight = 0;
@@ -423,7 +424,7 @@ public class NodeResizer implements EventHandler<MouseEvent> {
 
         } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
             saveCursor = NodeResizeExecutor.cursorBy(ev, (Region) getWindow().getScene().getRoot());
-            if (!applyTranskateXY) {
+            if (!applyTranslateXY) {
                 translateX = getNode().getTranslateX();
                 translateY = getNode().getTranslateY();
             }
