@@ -20,10 +20,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -40,6 +42,10 @@ import org.vns.javafx.dock.api.DockRegistry;
  */
 public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> {
 
+    //private LBListener layoutBoundsListener;
+    private ChangeListener<Bounds> layoutBoundsListener;
+    private ChangeListener layoutXListener;    
+    private ChangeListener layoutYListener;        
     private Window window;
 
     private WindowResizeExecutor windowResizer;
@@ -49,7 +55,7 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
     private final ObjectProperty<Node> node = new SimpleObjectProperty<>();
 
     private Window nodeWindow;
-    double borderWidth = 0;
+    protected double borderWidth = 0;
     double borderHeight = 0;
     double insetsWidth = 0;
     double insetsHeight = 0;
@@ -77,7 +83,13 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         super();
         nodeProperty().addListener((v, ov, nv) -> {
             if (ov != null) {
+                System.err.println("nodeProperty() ov = " + ov + " ; nv = " + nv);
                 ov.layoutBoundsProperty().removeListener(this::layoutBoundsChanged);
+
+                if (layoutBoundsListener != null) {
+                    ov.layoutBoundsProperty().removeListener(layoutBoundsListener);
+                }
+
             }
         });
     }
@@ -89,7 +101,7 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
 
     private void init() {
         workHeight.set(-1);
-        workHeight.set(-1);
+        workWidth.set(-1);
         workX.set(-1);
         workY.set(-1);
 
@@ -148,7 +160,11 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         insetsTop = root.getInsets() != null ? root.getInsets().getTop() : 0;
         insetsLeft = root.getInsets() != null ? root.getInsets().getLeft() : 0;
 
-        getNode().layoutBoundsProperty().addListener(this::layoutBoundsChanged);
+        //getNode().layoutBoundsProperty().addListener(this::layoutBoundsChanged);
+        //this.layoutBoundsListener = new LBListener(this);
+        
+        layoutBoundsListener = this::layoutBoundsChanged;
+        getNode().layoutBoundsProperty().addListener(layoutBoundsListener);
 
         Bounds screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
         window.setX(screenBounds.getMinX() - insetsLeft);
@@ -156,16 +172,27 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         window.setWidth(screenBounds.getWidth() + insetsWidth);
         window.setHeight(screenBounds.getHeight() + insetsHeight);
         
-        getNode().layoutYProperty().addListener((o, ov, nv) -> {
+        layoutXListener = (o, ov, nv) -> {
+            Bounds sb = getNode().localToScreen(getNode().getLayoutBounds());
+            window.setX(sb.getMinX() - insetsLeft);
+        };
+        layoutYListener = (o, ov, nv) -> {
+          Bounds sb = getNode().localToScreen(getNode().getLayoutBounds());
+            window.setY(sb.getMinY() - insetsTop);
+        };        
+        getNode().layoutXProperty().addListener(layoutXListener);
+        getNode().layoutYProperty().addListener(layoutYListener);
+        
+/*        getNode().layoutYProperty().addListener((o, ov, nv) -> {
             Bounds sb = getNode().localToScreen(getNode().getLayoutBounds());
             window.setY(sb.getMinY() - insetsTop);
-
         });
 
         getNode().layoutXProperty().addListener((o, ov, nv) -> {
             Bounds sb = getNode().localToScreen(getNode().getLayoutBounds());
             window.setX(sb.getMinX() - insetsLeft);
         });
+*/
         //
         //  bind to widthProperty and heightProperty
         //
@@ -173,16 +200,15 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         root.prefHeightProperty().bind(workHeight.add(borderHeight));
 
         screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
-        
+
         setWorkWidth(screenBounds.getWidth());
         setWorkHeight(screenBounds.getHeight());
-        
+
         nodeWindow = region.getScene().getWindow();
         setWindowSize(getNode().getLayoutBounds(), borderWidth, borderHeight);
-        
+
         bindWindowPosition(nodeWindow);
     }
-
 
     protected void layoutBoundsChanged(ObservableValue<? extends Bounds> v, Bounds ov, Bounds nv) {
         if (nv == null) {
@@ -290,13 +316,19 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         return node.get();
     }
 
+    @Override
     public void show(Node node) {
+        if ( isShowing() || node == null ) {
+            return;
+        }
         if (window != null) {
             removeWindowListeners();
         }
 
         createWindow();
-
+        if ( window == null ) {
+            return;
+        }
         this.node.set(node);
         init();
         this.show();
@@ -329,7 +361,8 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
 
-            Cursor c = NodeResizeExecutor.cursorBy(ev, (Region) window.getScene().getRoot());
+//            Cursor c = NodeResizeExecutor.cursorBy(ev, (Region) window.getScene().getRoot());
+            Cursor c = NodeResizeExecutor.cursorBy(new Point2D(ev.getX(), ev.getY()), (Region) window.getScene().getRoot());
 
             if (!isCursorSupported(c)) {
                 window.getScene().setCursor(Cursor.DEFAULT);
@@ -347,7 +380,8 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
 
                 return;
             }
-            saveCursor = NodeResizeExecutor.cursorBy(ev, root);
+            saveCursor = NodeResizeExecutor.cursorBy(new Point2D(ev.getX(), ev.getY()), root);
+            //saveCursor = NodeResizeExecutor.cursorBy(new Point2D(ev, root);
             if (!applyTranslateXY) {
                 translateX = getNode().getTranslateX();
                 translateY = getNode().getTranslateY();
@@ -360,16 +394,18 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
             }
             windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
         } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-//             System.err.println("MOUSE DRAGGED 0");
+            System.err.println("MOUSE DRAGGED 0");
 
             if (!cursorSupported) {
                 return;
             }
             if (!windowResizer.isStarted()) {
+                System.err.println("MOUSE DRAGGED 1");
                 windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
             } else {
                 Platform.runLater(() -> {
-                    windowResizer.resize(ev);
+                    System.err.println("MOUSE DRAGGED 2");
+                    windowResizer.resize(ev.getScreenX(), ev.getScreenY());
                 });
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
@@ -397,10 +433,75 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
 
         }
     }
+    private Point2D startMousePos;
+    private NodeFraming redirectSource;
 
+    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, NodeFraming redirectSource) {
+        this.startMousePos = startMousePos;
+        this.redirectSource = redirectSource;
+
+        removeWindowListeners();
+        System.err.println("redirectMouseEvents: cursor=" + getNode().getScene().getCursor());
+        saveCursor = getNode().getScene().getCursor();
+        System.err.println("redirectMouseEvents: window.getScene().getCursor()=" + window.getScene().getCursor());
+        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, this::redirectMouseReleased);
+        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+        redirectMousePressed(ev);
+        windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
+    }
+
+    protected void redirectMousePressed(MouseEvent ev) {
+        if (!applyTranslateXY) {
+            translateX = getNode().getTranslateX();
+            translateY = getNode().getTranslateY();
+        }
+        System.err.println("saveCursor = " + saveCursor);
+        cursorSupported = isCursorSupported(saveCursor);
+        System.err.println("CURSOR SUPPORTED " + cursorSupported);
+        if (!cursorSupported) {
+            window.getScene().setCursor(Cursor.DEFAULT);
+            return;
+        }
+    }
+
+    protected void redirectMouseReleased(MouseEvent ev) {
+        getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, this::redirectMouseReleased);
+        getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+
+        hide();
+        if (redirectSource != null) {
+            Platform.runLater(() -> {
+                redirectSource.show(getNode());
+            });
+        }
+    }
+
+    @Override
     public void hide() {
+        if ( ! isShowing() ) {
+            return;
+        }
+        System.err.println("hide() window = " + window);
+        System.err.println("   --- hide() root.id = " + root);
+        
+        if (root != null) {
+            root.prefWidthProperty().unbind();
+            root.prefHeightProperty().unbind();
+            root.setPrefWidth(-1);
+            root.setPrefHeight(-1);
+            root = null;
+        }
+        if (getNode() != null) {
+            getNode().layoutBoundsProperty().removeListener(this::layoutBoundsChanged);
+            getNode().layoutBoundsProperty().removeListener(layoutBoundsListener);
+            getNode().layoutXProperty().removeListener(layoutXListener);
+            getNode().layoutYProperty().removeListener(layoutYListener);
+            node.set(null);
+        }
         if (window != null) {
+            removeWindowListeners();
             window.hide();
+            window = null;
         }
     }
 
@@ -441,5 +542,27 @@ public class WindowNodeFraming implements NodeFraming, EventHandler<MouseEvent> 
         return retval;
     }
 
+    public static class LBListener implements ChangeListener<Bounds> {
+        private WindowNodeFraming wnf;
+        public LBListener(WindowNodeFraming wnf) {
+           this.wnf = wnf;     
+        }
 
+        @Override
+        public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+            if (newValue == null) {
+                return;
+            }
+
+            Bounds sb = wnf.getNode().localToScreen(wnf.getNode().getBoundsInLocal());
+            if (sb == null) {
+                return;
+            }
+            wnf.setWorkWidth(newValue.getWidth());
+            wnf.setWorkHeight(newValue.getHeight());
+            wnf.setWindowSize(newValue, wnf.borderWidth, wnf.borderHeight);
+
+        }
+
+    }
 }

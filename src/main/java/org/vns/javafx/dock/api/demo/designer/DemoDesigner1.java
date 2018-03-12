@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 Your Organisation.
  *
@@ -34,8 +35,10 @@ import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
 
 import org.vns.javafx.dock.api.PalettePane;
+import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
+import org.vns.javafx.dock.api.designer.TreeItemEx;
 
 /**
  *
@@ -66,29 +69,34 @@ public class DemoDesigner1 extends Application {
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
         VBox root1 = new VBox();
-        
+
         sceneGraphView.setRoot(root1);
-        
+
         StackPane sp = new StackPane(root1);
         root1.setStyle("-fx-background-color: white;");
         //rightPaneRoot.setStyle("-fx-background-color: SIENNA; -fx-padding: 10 10 10 10");
-        sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");        
+        sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");
         Scene scene1 = new Scene(sp);
         //sceneGraphView.getRootLayout().getChildren().add(root1);
         //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
         formButton.setOnAction(a -> {
-            ((Region)sceneGraphView.getRoot()).requestLayout();
-            DockRegistry.getWindows().forEach(w -> {
+            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
+            System.err.println("SELECTED = " + it);
+            if (it != null) {
+                System.err.println("SELECTED value = " + it.getValue());
+                DockRegistry.lookup(Selection.class).removeSelected(it.getValue());
+                DockRegistry.lookup(Selection.class).setSelected(it.getValue());
+            }
+
+//            ((Region)sceneGraphView.getRoot()).requestLayout();
+//            DockRegistry.getWindows().forEach(w -> {
 /*                System.err.println("******************** w = " + w.getScene().getRoot().getId());
                 System.err.println("******************** w = " + w.getScene().getRoot().isVisible());
                 System.err.println("******************** w.isShowing() = " + w.isShowing());
                 System.err.println("DockRegistry FOCUSED WIN.bounds = " + w.getScene().getRoot().localToScreen(w.getScene().getRoot().getBoundsInLocal()));
 
                 System.err.println("=============================================");
-*/
-                
-            });
-
+             */
         });
 
         root1.setId("root1 " + root.getClass().getSimpleName());
@@ -102,9 +110,8 @@ public class DemoDesigner1 extends Application {
         scene1.setOnZoom(value -> {
             System.err.println("!!!!!!!!!!!!!!!!!!!!!! ZOOOO MED");
         });
-     
-        //Rectangle rect = new Rectangle(50,25);
 
+        //Rectangle rect = new Rectangle(50,25);
         sceneGraphView.rootProperty().addListener((v, ov, nv) -> {
             if (nv != null) {
                 System.err.println("DemoDesigner: rootChanged");
@@ -168,5 +175,5 @@ public class DemoDesigner1 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

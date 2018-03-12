@@ -35,13 +35,12 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
  * @author Valery
  */
-public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> {
+public class ShapeNodeFraming_OLD implements NodeFraming , EventHandler<MouseEvent> {
 
     private Rectangle indicator;
     private Line topLine;
@@ -80,7 +79,7 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
     private Cursor saveCursor;
     private boolean applyTranslateXY;
 
-    protected ShapeNodeFraming() {
+    protected ShapeNodeFraming_OLD() {
         super();
         nodeProperty().addListener((v, ov, nv) -> {
             if (ov != null) {
@@ -131,8 +130,8 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         if (indicator != null) {
             indicator.widthProperty().unbind();
             indicator.heightProperty().unbind();
-            if (((Pane) getNode().getScene().getRoot()).getChildren().contains(indicator)) {
-//                ((Pane) getNode().getScene().getRoot()).getChildren().remove(indicator);
+            if (!((Pane) getNode().getScene().getRoot()).getChildren().contains(indicator)) {
+                ((Pane) getNode().getScene().getRoot()).getChildren().remove(indicator);
             }
         } else {
             indicator = new Rectangle(50, 20);    
@@ -156,11 +155,9 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         indicator.toFront();
         Insets insetsDelta = ((Region) region).getInsets();
         insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-//        insetsHeight = insetsDelta.getTop();
+//        insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+        insetsHeight = insetsDelta.getTop();
         
-        insetsWidth = 0;
-        insetsHeight = 0;       
         insetsTop = 0;
         insetsLeft = 0;
 
@@ -169,11 +166,7 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         //getNode().layoutBoundsProperty().addListener(this::layoutBoundsChanged);
 
         Bounds sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
-        System.err.println("node width  = " + sceneBounds.getWidth());
-        System.err.println("node height = " + sceneBounds.getHeight());
-        System.err.println("   --- insetsWidth  = " + insetsWidth);
-        System.err.println("   --- insetsHeight = " + insetsHeight);
-        
+
         indicator.setX(sceneBounds.getMinX() - insetsLeft);
         indicator.setY(sceneBounds.getMinY() - insetsTop);
         indicator.setWidth(sceneBounds.getWidth() + insetsWidth);
@@ -181,7 +174,7 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         //indicator.setHeight(sceneBounds.getHeight() + insetsHeight);
         
         //region.setPrefWidth(sceneBounds.getWidth());
-        //region.setPrefHeight(sceneBounds.getHeight());
+        region.setPrefHeight(sceneBounds.getHeight());
         
         topLine.startXProperty().bind(indicator.xProperty());
         topLine.startYProperty().bind(indicator.yProperty());
@@ -200,19 +193,19 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         });
 
         indicator.widthProperty().bind(region.widthProperty().add(insetsWidth));
-        indicator.heightProperty().bind(region.heightProperty().add(insetsHeight));
+        //indicator.heightProperty().bind(region.prefHeightProperty().add(insetsHeight));
         //region.prefWidthProperty().bind(indicator.widthProperty().subtract(insetsWidth));
-        //region.prefHeightProperty().bind(indicator.heightProperty().subtract(insetsHeight));        
+        region.prefHeightProperty().bind(indicator.heightProperty().subtract(insetsHeight));        
         
         //region.setPrefHeight(region.getHeight());        
                 //.bind(workWidth.add(borderWidth));
 //        indicator.heightProperty()
 //                .bind(workHeight.add(borderHeight));
 
-        //sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
+        sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
 
-        //setWorkWidth(sceneBounds.getWidth());
-        //setWorkHeight(sceneBounds.getHeight());
+        setWorkWidth(sceneBounds.getWidth());
+        setWorkHeight(sceneBounds.getHeight());
 
         nodeWindow = region.getScene().getWindow();
 
@@ -311,10 +304,9 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         resizeExecutor = new ShapeNodeResizeExecutor(indicator, (Region) getNode());
 
         indicator.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        //indicator.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+        indicator.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         indicator.addEventFilter(MouseEvent.MOUSE_MOVED, this);
-        //indicator.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        indicator.addEventFilter(MouseEvent.DRAG_DETECTED, this);
+        indicator.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
         
         indicator.setVisible(true);
         topLine.setVisible(true);
@@ -325,12 +317,9 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         indicator.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
         indicator.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
         indicator.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        indicator.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
 
     }
-    
-    Point2D startMousePos;
-    
+
     @Override
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
@@ -367,25 +356,18 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
                 indicator.getScene().setCursor(Cursor.DEFAULT);
                 return;
             }
-            startMousePos = new Point2D(ev.getScreenX(), ev.getScreenY());
             //resizeExecutor.start(ev, this, indicator.getScene().getCursor(), getSupportedCursors());
-        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
-            hide();
-            wnf.show(getNode());
-            wnf.redirectMouseEvents(ev, startMousePos, this);
-        }
-        
-        /*  else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+        } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             if (!cursorSupported) {
                 return;
             }
+            
             if (!resizeExecutor.isStarted()) {
-                resizeExecutor.start(ev, this, indicator.getScene().getCursor(), getSupportedCursors());
+                //resizeExecutor.start(ev, this, indicator.getScene().getCursor(), getSupportedCursors());
             } else {
                 //Platform.runLater(() -> {
 //                    System.err.println("MOUSE DRAGGED RESIZE");
-                    resizeExecutor.resize(ev);
+                    resizeExecutor.resize(ev.getScreenX(),ev.getScreenY());
                 //});
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
@@ -410,9 +392,7 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
             } else {
                 //commitResize();
             }
-
         }
-*/
     }
 
     public void hide() {
@@ -456,13 +436,13 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         return retval;
     }
 
-    public static ShapeNodeFraming getInstance() {
-        return ShapeNodeFraming.SingletonInstance.instance;
+    public static ShapeNodeFraming_OLD getInstance() {
+        return ShapeNodeFraming_OLD.SingletonInstance.instance;
 
     }
 
     private static class SingletonInstance {
-        private static final ShapeNodeFraming instance = new ShapeNodeFraming();
+        private static final ShapeNodeFraming_OLD instance = new ShapeNodeFraming_OLD();
     }
 
 }

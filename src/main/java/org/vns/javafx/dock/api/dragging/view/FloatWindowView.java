@@ -112,7 +112,7 @@ public interface FloatWindowView extends FloatView {
                    windowView. getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
                 } else {
                     Platform.runLater(() -> {
-                        windowView.getResizer().resize(ev);
+                        windowView.getResizer().resize(ev.getScreenX(), ev.getScreenY());
                     });
                     
                 }

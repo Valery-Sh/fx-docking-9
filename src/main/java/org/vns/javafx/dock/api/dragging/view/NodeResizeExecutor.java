@@ -21,6 +21,7 @@ import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.MouseEvent;
@@ -40,12 +41,12 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
 
     private Cursor cursor;
 
-    private Region node;
+    private final Region node;
 
     public Region getNode() {
         return node;
     }
-    private Window window;
+    private final Window window;
     private final Set<Cursor> cursorTypes = new HashSet<>();
 
     public NodeResizeExecutor(Window window, Region node) {
@@ -122,10 +123,12 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         }
         Region root = (Region) getWindow().getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        Window win = getWindow();
+        System.err.println("RESIZE === ");
+        //Window win = getWindow();
         if (wDelta + getWindow().getWidth() > getMinWidth()) {
             if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
 //                win.setWorkWidth(wDelta + win.getWorkWidth());
+                
                 node.setPrefWidth(wDelta + node.getPrefWidth());
                 mouseX.set(curX);
             }
@@ -134,6 +137,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         if (hDelta + getWindow().getHeight() > getMinHeight()) {
             if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
 //                win.setWorkHeight(hDelta + win.getWorkHeight());
+                System.err.println("hDelta = " + hDelta + "; node.prefH=" + node.getPrefHeight());
                 node.setPrefHeight(hDelta + node.getPrefHeight());
                 mouseY.set(curY);
             }
@@ -165,11 +169,11 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         }
         return retval;
     }
-    @Override
+/*    @Override
     public void resize(MouseEvent ev) {
         resize(ev.getScreenX(), ev.getScreenY());
     }
-
+*/
     @Override
     public boolean isStarted() {
         return getWindow() != null;
@@ -183,7 +187,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         this.mouseY.set(ev.getScreenY());
 
         this.cursor = cursor;
-        this.window = window;
+        //this.window = window;
         Region r = (Region) window.getScene().getRoot();
         node.setPrefWidth(nodeResizer.getWorkWidth());
         node.setPrefHeight(nodeResizer.getWorkHeight());
@@ -227,24 +231,25 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         return cursor;
     }
 
-    public static Cursor cursorBy(MouseEvent ev, double width, double height, double left, double right, double top, double bottom) {
-        Window w = (Window) ev.getSource();
-        double x = ev.getX();
-        double y = ev.getY();
-        return cursorBy(x, ev.getY(), width, height, left, right, top, bottom);
+
+    public static Cursor cursorBy(Point2D mousePos, double width, double height, double left, double right, double top, double bottom) {
+        double x = mousePos.getX();
+        double y = mousePos.getY();
+        return cursorBy(mousePos.getX(), mousePos.getY(), width, height, left, right, top, bottom);
     }
 
-    public static Cursor cursorBy(MouseEvent ev, Region r) {
+
+    public static Cursor cursorBy(Point2D mousePos, Region r) {
         double x, y, w, h;
 
         Insets ins = r.getInsets();
 
         if (ins == Insets.EMPTY) {
-            return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);
+            return cursorBy(mousePos, r.getWidth(), r.getHeight(), ins.getLeft() + 5, 5, 5, 5);
         }
-        return cursorBy(ev, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
+        return cursorBy(mousePos, r.getWidth(), r.getHeight(), ins.getLeft(), ins.getRight(), ins.getTop(), ins.getBottom());
     }
-
+    
     public Cursor getCursor() {
         return cursor;
     }

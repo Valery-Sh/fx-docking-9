@@ -23,18 +23,23 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.dragging.view.PopupNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
  *
@@ -61,7 +66,7 @@ public class TestLayoutBase extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
+        DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, PopupNodeFraming.getInstance());
         stage.setAlwaysOnTop(true);
         Button addButton = new Button("add new Node");
         Button infoButton = new Button("Show layout");
@@ -94,9 +99,10 @@ public class TestLayoutBase extends Application {
 
             last = new Button("Button" + counter++);
             Button btn = (Button) last;
-            btn.setStyle("-fx-border-width: 5; -fx-border-color: aqua; ");
+
+            //btn.setStyle("-fx-border-width: 10; -fx-border-color: aqua; ");
             rightPane.getChildren().add(last);
-            
+
         });
 
         /*        leftPane.addEventHandler(MouseEvent.MOUSE_RELEASED, a -> {
@@ -113,7 +119,17 @@ public class TestLayoutBase extends Application {
             System.err.println("oBounds      = " + oBounds.get());
             System.err.println("localBounds  = " + last.getLayoutBounds());
             System.err.println("parentBounds = " + last.localToParent(last.getLayoutBounds()));
+            System.err.println("last.height = " + ((Region) last).getHeight());
             System.err.println("--------------------------------------------------");
+
+            Insets insetsDelta = ((Region) last).getInsets();
+            double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+            double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+            Bounds sceneBounds = last.localToScene(last.getLayoutBounds());
+            System.err.println("node width  = " + sceneBounds.getWidth());
+            System.err.println("node height = " + sceneBounds.getHeight());
+            System.err.println("   --- insetsWidth  = " + insetsWidth);
+            System.err.println("   --- insetsHeight = " + insetsHeight);
         });
 
         rightPane.getChildren().addListener(this::rightPaneChanged);

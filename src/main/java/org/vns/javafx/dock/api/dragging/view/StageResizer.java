@@ -162,10 +162,6 @@ public class StageResizer implements WindowResizeExecutor {
         return retval;
     }
 
-    @Override
-    public void resize(MouseEvent ev) {
-        resize(ev.getScreenX(), ev.getScreenY());
-    }
 
     @Override
     public boolean isStarted() {

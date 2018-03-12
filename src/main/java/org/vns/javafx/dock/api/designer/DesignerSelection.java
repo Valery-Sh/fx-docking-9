@@ -69,7 +69,10 @@ public class DesignerSelection extends Selection {
                 item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
             }
             if (item != null) {
+                System.err.println("DesignerSelection: item.value=" + item.getValue());
+                sgv.getTreeView().getSelectionModel().selectFirst();
                 sgv.getTreeView().getSelectionModel().select(item);
+                //DesignerLookup.lookup(SceneGraphView.class).getTreeView().requestFocus();
             }
         }
     }

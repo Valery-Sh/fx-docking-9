@@ -35,6 +35,10 @@ public abstract class Selection {
     }
 
     public void setSelected(Object toSelect) {
+        System.err.println("Selection: setLelected = " + toSelect);
+        if ( toSelect == getSelected() ) {
+            notifySelected(toSelect);
+        }
         this.selected.set(toSelect);
     }
 
@@ -43,10 +47,12 @@ public abstract class Selection {
     }
 
     public void removeSelected() {
+        System.err.println("removeSelected() old = " + getSelected());
         setSelected(null);
     }
 
     public void removeSelected(Object obj) {
+         System.err.println("removeSelected(Object ) old = " + getSelected() + "; obj = " + obj);
         if (getSelected() == obj) {
             setSelected(null);
         }
@@ -55,7 +61,8 @@ public abstract class Selection {
     public static void removeListeners(Dockable dockable) {
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {
-            sel.removeSelected();
+            System.err.println("Selection: removeListeners selected=" + sel.getSelected());
+            //sel.removeSelected();
         }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
         if (l != null) {

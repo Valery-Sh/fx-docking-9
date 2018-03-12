@@ -24,5 +24,4 @@ import javafx.scene.input.MouseEvent;
 public interface ResizeExecutor {
     boolean isStarted();
     void resize(double x, double y);
-    void resize(MouseEvent event);    
 }

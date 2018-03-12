@@ -41,7 +41,6 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  *
@@ -71,28 +70,17 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                Node root = ((Region)getSkinnable().getTreeView().getRoot().getValue());
-/*                Platform.runLater(() -> {
-                    System.err.println("layoutChildren 0");
-                    
-                    if (DockRegistry.lookup(FloatView.class) != null) {
-                        return;
-                    }
-                    System.err.println("layoutChildren 1");
-                    
-                    TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
-                    if (item != null) {
-                        System.err.println("layoutChildren 2");
-                        Selection sel = DockRegistry.lookup(Selection.class);
-                        sel.setSelected(item.getValue());
-                        root.getScene().getWindow().requestFocus();
-                    }
-              });
-*/
+                System.err.println("SceneGraphViewSkin: LAYOUT CHILDREN ");
+                TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
+                System.err.println("SELECTED = " + getSkinnable().getTreeView().getSelectionModel().getSelectedItem());
+                if ( item != null ) {
+                    getSkinnable().getTreeView().getSelectionModel().select(item);
+                }
             }
         };
 
         treeViewPane.setStyle("-fx-border-color: red; -fx-border-width: 1");
+        
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
@@ -122,7 +110,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
         getSkinnable().rootProperty().addListener(this::rootChanged);
         
-        getSkinnable().getTreeView().getSelectionModel().selectedItemProperty().addListener((o,ov,nv) -> {
+/*        getSkinnable().getTreeView().getSelectionModel().selectedItemProperty().addListener((o,ov,nv) -> {
             System.err.println("getSkinnable().getTreeView().getSelectionModel()  oldItem Item = " + ov);
             if ( ov != null ) {
                 System.err.println("getSkinnable().getTreeView().getSelectionModel()  oldItem.value = " + ((TreeItem)ov).getValue());
@@ -133,7 +121,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                 System.err.println("getSkinnable().getTreeView().getSelectionModel()  newItem.value = " + ((TreeItem)nv).getValue());
             }
         });
-
+*/
     }
     
     private void sceneMousePressed( MouseEvent ev) {

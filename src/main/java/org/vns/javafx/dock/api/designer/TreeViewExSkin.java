@@ -23,10 +23,15 @@ public class TreeViewExSkin extends TreeViewSkin<TreeView> {
         TreeViewEx tv = (TreeViewEx) getSkinnable();
         //tv.addEventFilter(MouseEvent., treeView);
         getSkinnable().getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+            Selection sel = DockRegistry.lookup(Selection.class);
+
+            if (  oldValue != null ) {
+                System.err.println("(No action)TreeViewExSkin (sel model listener): REMOVE TreeViewEx newValue " + oldValue.getValue());
+                //sel.removeSelected();
+            }
             if ( newValue != null) {
-                System.err.println("TreeViewEx newValue " + newValue.getValue());
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(newValue.getValue());
+                System.err.println("(No action)TreeViewExSkin (sel model listener): SET TreeViewEx newValue " + newValue.getValue());
+                //sel.setSelected(newValue.getValue());
             }
         });
 

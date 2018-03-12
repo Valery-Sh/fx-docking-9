@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -33,7 +32,10 @@ import javafx.scene.shape.Rectangle;
 public class ShapeNodeResizeExecutor implements ResizeExecutor {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
+
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
+
+    private double startHeight;
 
     private Cursor cursor;
 
@@ -117,54 +119,67 @@ public class ShapeNodeResizeExecutor implements ResizeExecutor {
             curY = y;
         }
 
-        if (wDelta + indicator.getWidth() > getMinWidth()) {
-            if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
-                node.setPrefWidth(wDelta + node.getPrefWidth());
-                mouseX.set(curX);
-            }
+        //if (wDelta + indicator.getWidth() > getMinWidth()) {
+        //    if ((node.getWidth() > node.getMinWidth() || xDelta <= 0)) {
+        if (wDelta != 0) {
+            node.setPrefWidth(wDelta + node.getWidth());
+            mouseX.set(curX);
         }
+        //node.setPrefWidth(wDelta + node.getWidth());
+        //}
+        //}
 
-        if (hDelta + indicator.getHeight() > getMinHeight()) {
-            if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
-                node.setPrefHeight(hDelta + node.getPrefHeight());
-                mouseY.set(curY);
-            }
-        }
+        //if (hDelta + indicator.getHeight() > getMinHeight()) {
+        //    if ((node.getHeight() > node.getMinHeight() || yDelta <= 0)) {
+        //System.err.println("node.prefHeight = " + node.getPrefHeight() + "; node = " + node);
+        //node.setPrefHeight(y - mouseY.get() - startHeight + node.getHeight());
+        
+            //System.err.println("before node.hetHeight=" + node.getHeight());
+            //System.err.println("indicator.getHeight=" + indicator.getHeight());
+            
+            //node.setPrefHeight(hDelta + node.getHeight());
+            indicator.setHeight(hDelta + indicator.getHeight());
+            //System.err.println("after node.hetHeight=" + node.getHeight());
+
+            //System.err.println("hDelta = " + hDelta + "; curY=" + curY);
+            //System.err.println("--------------------------------------------");            
+        
+
+        mouseY.set(curY);
+        //    }
+        //}
         //windowBounds(window, (Region) node);
     }
 
     public void resizeUnmanaged(double x, double y) {
-        
+
     }
 
     protected double getMinWidth() {
-        return 10;
+        return node.getMinWidth();
     }
 
     protected double getMinHeight() {
-        return 10;
+        return node.getMinHeight();
     }
 
-    @Override
-    public void resize(MouseEvent ev) {
-        resize(ev.getScreenX(), ev.getScreenY());
-    }
 
     @Override
     public boolean isStarted() {
         return indicator != null;
     }
 
-
     public void start(MouseEvent ev, ShapeNodeFraming nodeResizer, Cursor cursor, Cursor... supportedCursors) {
-
+        System.err.println("START startHeight = " + startHeight);
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
-
+        startHeight = node.getHeight();
+        System.err.println("START startHeight 1 = " + startHeight);
+        System.err.println("startHeight = " + startHeight);
         this.cursor = cursor;
-        node.setPrefWidth(nodeResizer.getWorkWidth());
-        node.setPrefHeight(nodeResizer.getWorkHeight());
+        //node.setPrefWidth(nodeResizer.getWorkWidth());
+        //node.setPrefHeight(nodeResizer.getWorkHeight());
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {
@@ -219,13 +234,12 @@ public class ShapeNodeResizeExecutor implements ResizeExecutor {
 
         return cursorBy(ev, r.getWidth(), r.getHeight(), 5, 5, 5, 5);
     }
-    
+
     public static Cursor cursorBy(double x, double y, Rectangle r) {
         double strokeWidth = r.getStrokeWidth();
 
         return cursorBy(x, y, r.getWidth(), r.getHeight(), 5, 5, 5, 5);
     }
-    
 
     public Cursor getCursor() {
         return cursor;

@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.stage.Window;

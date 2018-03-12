@@ -23,6 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Selection;
 import static org.vns.javafx.dock.api.designer.SceneGraphView.ANCHOR_OFFSET;
 import static org.vns.javafx.dock.api.designer.SceneGraphView.FIRST;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
@@ -260,14 +262,14 @@ public class TreeItemBuilder {
     /**
      *
      * @param treeView the treeView/ Cannot be null
-     * @param target the item which is an actual layoutNode item to accept a dragged
- object
-     * @param place the item which is a gesture layoutNode during the drag-and-drop
- operation
+     * @param target the item which is an actual layoutNode item to accept a
+     * dragged object
+     * @param place the item which is a gesture layoutNode during the
+     * drag-and-drop operation
      * @param dragObject an object which is an actual object to be accepted by
- the layoutNode item.
+     * the layoutNode item.
      * @return true if the builder evaluates that a specified dragObject can be
- accepted by the given layoutNode tree item
+     * accepted by the given layoutNode tree item
      */
     public boolean isAdmissiblePosition(TreeViewEx treeView, TreeItemEx target,
             TreeItemEx place,
@@ -312,7 +314,7 @@ public class TreeItemBuilder {
                     }
                 }
             }
-            
+
             int insPos = getInsertIndex(treeView, target, place);
             int dragPos = target.getChildren().indexOf(dragItem);
             int targetSize = target.getChildren().size();
@@ -418,12 +420,14 @@ public class TreeItemBuilder {
         }
         return retval;
     }
+
     public void removeByItemValue(TreeViewEx treeView, Object value) {
         TreeItemEx item = EditorUtil.findTreeItemByObject(treeView, value);
-        if ( item != null) {
+        if (item != null) {
             updateOnMove(item);
         }
     }
+
     public void updateOnMove(TreeItemEx child) {
         TreeItemEx parent = (TreeItemEx) child.getParent();
         if (parent == null) {
@@ -438,12 +442,26 @@ public class TreeItemBuilder {
         } else {
             switch (parent.getItemType()) {
                 case LIST:
+                    //DockRegistry.lookup(Selection.class).removeSelected(child.getValue());
+                    System.err.println("!! 1 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
                     ((ObservableList) parent.getValue()).remove(child.getValue());
                     break;
                 case DEFAULTLIST: {
                     NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parent.getValue());
                     BeanAdapter ba = new BeanAdapter(parent.getValue());
-                    //((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
+/*                    try {
+                        //((ObservableList) ba.get(nd.getProperties().get(0).getName())).remove(child.getValue());
+                        child.unregisterChangeHandlers();
+                    } catch (NoSuchMethodException ex) {
+                        Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InvocationTargetException ex) {
+                        Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IllegalAccessException ex) {
+                        Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+*/                    
+                    //DockRegistry.lookup(Selection.class).removeSelected(child.getValue());
+                    System.err.println("!! 2 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
                     ((ObservableList) ba.get(nd.getDefaultListProperty().getName())).remove(child.getValue());
                     break;
                 }
@@ -508,12 +526,11 @@ public class TreeItemBuilder {
                 }
             }
         }
- 
+
         update(treeView, target, insertIndex, value);
 
     }
 
-    
     protected void update(TreeViewEx treeView, TreeItemEx target, int insertIndex, Object sourceObject) {
 
         switch (target.getItemType()) {
@@ -552,13 +569,13 @@ public class TreeItemBuilder {
      * inserted.
      *
      * @param treeView the node to search in
-     * @param target the layoutNode TreeItem where the new TreeItem should be place
- as a children
-     * @param place the object of type TreeItem which represents a drag layoutNode
- TreeCell
+     * @param target the layoutNode TreeItem where the new TreeItem should be
+     * place as a children
+     * @param place the object of type TreeItem which represents a drag
+     * layoutNode TreeCell
      *
      * @return an index in the collection of children in the layoutNode TreeItem
- used to insert a new TreeItem
+     * used to insert a new TreeItem
      */
     protected int getInsertIndex(TreeViewEx treeView, TreeItemEx target, TreeItemEx place) {
         int idx = -1;

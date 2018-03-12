@@ -61,7 +61,9 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             break;
                         }
                     }
+                 
                     treeItem.getChildren().remove(toRemove);
+                    DockRegistry.lookup(Selection.class).removeSelected(toRemove.getValue());
                 }
 
             }
@@ -72,8 +74,11 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
                     itemList.add(it);
                 });
+                System.err.println("TreeItemListChangeListe: onChanged: itemList.size() = " + itemList.size() + "; list.size()=" + list.size());
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
                 Selection sel = DockRegistry.lookup(Selection.class);
+                //DockRegistry.lookup(Selection.class).removeSelected();  
+                System.err.println("TreeItemListChangeListe: onChanged: setSelected = " + list.get(list.size() - 1));
                 sel.setSelected(list.get(list.size() - 1));
             }
         }//while
