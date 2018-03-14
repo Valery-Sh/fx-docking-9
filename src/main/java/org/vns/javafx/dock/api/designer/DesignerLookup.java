@@ -46,7 +46,7 @@ public class DesignerLookup { // implements ContextLookup {
     private void init() {
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
         //DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, ShapeNodeFraming.getInstance() );
-        DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, PopupNodeFraming.getInstance() );        
+        DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance() );        
         DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, ShapeNodeFraming.getInstance() );        
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());

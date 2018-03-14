@@ -78,10 +78,12 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
 
     public void resizeManaged(double x, double y) {
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
+        System.err.println("resizeManaged: x=" + x + "; y=" + y + "; cursor=" + cursor);
 
         double curX = mouseX.get();
         double curY = mouseY.get();
         if (cursor == Cursor.S_RESIZE) {
+            System.err.println("resizeManaged: y=" + y + "; mouseY=" + this.mouseY.get());
             hDelta = y - this.mouseY.get();
             curY = y;
         } else if (cursor == Cursor.E_RESIZE) {
@@ -153,7 +155,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
     protected double getMinWidth() {
         double retval = 0.0;
         if (window instanceof Stage) {
-            retval = ((Stage) window).getMinWidth();
+            //retval = ((Stage) window).getMinWidth();
         } else if (window instanceof PopupControl) {
             retval = ((PopupControl) window).getMinWidth();
         }
@@ -185,12 +187,15 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
-
+        System.err.println("start: cursor = " + cursor);
         this.cursor = cursor;
         //this.window = window;
         Region r = (Region) window.getScene().getRoot();
-        node.setPrefWidth(nodeResizer.getWorkWidth());
-        node.setPrefHeight(nodeResizer.getWorkHeight());
+//        node.setPrefWidth(nodeResizer.getWorkWidth());
+//        node.setPrefHeight(nodeResizer.getWorkHeight());
+        node.setPrefWidth(node.getWidth());
+        node.setPrefHeight(node.getHeight());
+        
     }
 
     public static Cursor cursorBy(double nodeX, double nodeY, double width, double height, double left, double right, double top, double bottom, Cursor... supported) {

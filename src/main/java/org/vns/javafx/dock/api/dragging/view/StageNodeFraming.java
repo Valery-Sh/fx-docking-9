@@ -49,8 +49,10 @@ public class StageNodeFraming extends WindowNodeFraming {
     }
     @Override
     protected void setWindowSize(Bounds bounds, double borderWidth, double borderHeight) {
-        getWindow().setWidth(bounds.getWidth() + borderWidth);
-        getWindow().setHeight(bounds.getHeight() + borderHeight);        
+        System.err.println("bounds.getWidth() = " + bounds.getWidth());
+        //getWindow().setWidth(bounds.getWidth() + borderWidth);
+        //getWindow().setHeight(bounds.getHeight() + borderHeight);  
+        getWindow().sizeToScene();
     }    
     @Override
     protected void doShow(Window owner) {

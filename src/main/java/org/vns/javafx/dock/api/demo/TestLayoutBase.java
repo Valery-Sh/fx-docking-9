@@ -40,6 +40,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.view.PopupNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
@@ -50,7 +51,7 @@ public class TestLayoutBase extends Application {
 
     ShapeNodeFraming resizer = ShapeNodeFraming.getInstance();
     int counter = 0;
-
+    int click = 0;
     Node last;
 
     Rectangle rect = new Rectangle(50, 20);
@@ -67,7 +68,7 @@ public class TestLayoutBase extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
+
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, PopupNodeFraming.getInstance());
         stage.setAlwaysOnTop(true);
         Button addButton = new Button("add new Node");
@@ -89,7 +90,7 @@ public class TestLayoutBase extends Application {
 
         rightPane.setStyle("-fx-background-color: white;");
         //rightPaneRoot.setStyle("-fx-background-color: SIENNA; -fx-padding: 10 10 10 10");
-        rightPaneRoot.setStyle("-fx-background-color: yellow; -fx-padding: 20 20 20 20");
+        rightPaneRoot.setStyle("-fx-background-color: brown; -fx-padding: 30 30 30 30");
 
         rightStage.setScene(rightScene);
 
@@ -101,7 +102,10 @@ public class TestLayoutBase extends Application {
 
             last = new Button("Button" + counter++);
             Button btn = (Button) last;
-
+            btn.arm();
+            btn.setStyle("-fx-border-color: aqua; ");
+            btn.setFocusTraversable(false);
+            //btn.setStyle("-fx-background-insets: 0 0 0 0, 0, 1, 2;");
             //btn.setStyle("-fx-border-width: 10; -fx-border-color: aqua; ");
             rightPane.getChildren().add(last);
 
@@ -116,8 +120,17 @@ public class TestLayoutBase extends Application {
             //rightPane.getChildren().add(last);
         });
          */
+       
         infoButton.setOnAction(a -> {
-            System.err.println("=== " + last + " ====================================");
+            //rightPane.getChildren().add(0, new Label("VALERY"));
+            ((Button)last).getInsets();
+            System.err.println("LAYOUT Y = " + last.getLayoutY());
+            System.err.println("   -- last layoutBounds  = " + last.getLayoutBounds());
+            System.err.println("   -- last Insets  = " + ((Button)last).getInsets());
+            
+            //last.setTranslateY(last.getLayoutY() + 10*( ++click));
+            last.setScaleX(2);
+/*            System.err.println("=== " + last + " ====================================");
             System.err.println("oBounds      = " + oBounds.get());
             System.err.println("localBounds  = " + last.getLayoutBounds());
             System.err.println("parentBounds = " + last.localToParent(last.getLayoutBounds()));
@@ -132,6 +145,7 @@ public class TestLayoutBase extends Application {
             System.err.println("node height = " + sceneBounds.getHeight());
             System.err.println("   --- insetsWidth  = " + insetsWidth);
             System.err.println("   --- insetsHeight = " + insetsHeight);
+*/            
         });
 
         rightPane.getChildren().addListener(this::rightPaneChanged);
@@ -197,8 +211,15 @@ public class TestLayoutBase extends Application {
                     //if (resizer != null && resizer.isShowing()) {
                     //    resizer.hide();
                 }
-
+                //last.setTranslateY(60);
                 resizer.show(last);
+                //last.setTranslateY(60);
+                //Platform.runLater(() -> {
+                    
+                    System.err.println("getTransforms = " + last.getTransforms());
+                //});
+                
+
                 //resizer.getIndicator().setVisible(false);
                 //last.setOpacity(0.5);
                 //System.err.println("lastParentBounds = " + list.get(0).localToParent(list.get(0).getLayoutBounds()));

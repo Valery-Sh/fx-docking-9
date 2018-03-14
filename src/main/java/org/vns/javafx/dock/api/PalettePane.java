@@ -363,7 +363,7 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("Button");
-        pc.addItem(lb, Button.class);
+        pc.addItem(lb, Button.class, n -> { ( (Button)n).setFocusTraversable(false); });
         lb.getStyleClass().add("tree-item-node-button");
 
         lb = new Label("CheckBox");

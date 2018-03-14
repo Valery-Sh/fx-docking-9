@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -40,15 +41,15 @@ import org.vns.javafx.dock.api.DockRegistry;
  */
 public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandler<MouseEvent> {
 
-    private ChangeListener<Bounds> layoutBoundsListener;
-    private ChangeListener layoutXListener;
-    private ChangeListener layoutYListener;
+    private ChangeListener<Bounds> boundsInParentListener;
+    //private ChangeListener layoutXListener;
+    //private ChangeListener layoutYListener;
 
     private Rectangle indicator;
     private IndicatorShape indicatorShape;
 
     //private ShapeNodeResizeExecutor resizeExecutor;
-    private Window window;
+//    private Window window;
 
     private Node root;
 
@@ -107,6 +108,7 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         if (indicator != null) {
             indicator.widthProperty().unbind();
             indicator.heightProperty().unbind();
+            
             indicatorShape.unbind();
 
             if (((Pane) getNode().getScene().getRoot()).getChildren().contains(indicator)) {
@@ -120,7 +122,7 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         indicator.setFill(Color.TRANSPARENT);
         indicator.setStrokeType(StrokeType.OUTSIDE);
         indicator.setStroke(Color.rgb(255, 148, 40));
-        indicator.setStrokeWidth(3);
+        indicator.setStrokeWidth(2);
         indicator.setX(20);
         indicator.setY(50);
         indicator.setManaged(false);
@@ -136,50 +138,49 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         }
 
         Insets insetsDelta = ((Region) region).getInsets();
-        insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
+    
+    
         insetsWidth = 0;
         insetsHeight = 0;
         insetsTop = 0;
         insetsLeft = 0;
         
+/*        if ( insetsDelta != null ) {
+            insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+            insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+            insetsRootTop = insetsDelta.getTop();
+            insetsRootLeft = insetsDelta.getLeft();
+        }
+*/        
         indicatorShape.setPosition();
-        
-        indicatorShape.bind();
-        
-        root = getNode().getScene().getRoot();
 
+        indicatorShape.bind();
+
+        root = getNode().getScene().getRoot();
+        Bounds pb = getNode().getBoundsInParent();
+        
         Bounds sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
-        /*        System.err.println("node width  = " + sceneBounds.getWidth());
-        System.err.println("node height = " + sceneBounds.getHeight());
-        System.err.println("   --- insetsWidth  = " + insetsWidth);
-        System.err.println("   --- insetsHeight = " + insetsHeight);
-         */
+        getNode().getScene().getRoot().layoutXProperty();
+        System.err.println("sceneBounds = " + sceneBounds);
+
         indicator.setX(sceneBounds.getMinX() - insetsLeft);
         indicator.setY(sceneBounds.getMinY() - insetsTop);
         indicator.setWidth(sceneBounds.getWidth() + insetsWidth);
         indicator.setHeight(sceneBounds.getHeight() + insetsHeight);
 
-//        indicatorShape.setPosition();
 
-        layoutYListener = (o, ov, nv) -> {
+        boundsInParentListener =  (o, ov, nv) -> {
             Bounds sb = getNode().localToScene(getNode().getLayoutBounds());
-            indicator.setY(sb.getMinY() - insetsTop);
-        };
-        layoutXListener = (o, ov, nv) -> {
-            Bounds sb = getNode().localToScene(getNode().getLayoutBounds());
+
+            indicator.setY(sb.getMinY() - insetsTop);  
             indicator.setX(sb.getMinX() - insetsLeft);
+            indicator.setWidth(nv.getWidth() + insetsWidth);
+            indicator.setHeight(nv.getHeight() + insetsHeight);
+            //System.err.println("boundsInParentListener: parentBounds " + nv);
         };
-
-        getNode().layoutXProperty().addListener(layoutXListener);
-        getNode().layoutYProperty().addListener(layoutYListener);
-
-        indicator.widthProperty().bind(region.widthProperty().add(insetsWidth));
-        indicator.heightProperty().bind(region.heightProperty().add(insetsHeight));
-
-        //indicatorShape.bind();        
         
+        getNode().boundsInParentProperty().addListener(boundsInParentListener);
+
         nodeWindow = region.getScene().getWindow();
 
         setWindowSize(getNode().getLayoutBounds(), borderWidth, borderHeight);
@@ -317,7 +318,9 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
     public void finalizeOnHide(Node node) {
         if (indicator != null) {
             indicator.setVisible(false);
+            node.boundsInParentProperty().removeListener(boundsInParentListener);            
             indicatorShape.setVisible(false);
+            
         }
     }
 
@@ -363,9 +366,10 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         private final ShapeNodeFraming framing;
 
         private final Class<?> shapeClass;
-        private double shapeWidth = 3;
-        private double shapeHeight = 3;
-
+        private double shapeWidth = 2;
+        private double shapeHeight = 2;
+        private double strokeWidth = 1;
+        
         private Shape nShape;    //north shape
         private Shape neShape;   //north-east shape
         private Shape eShape;    //east shape
@@ -398,21 +402,23 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         }
 
         protected void show(Shape shape) {
-            shape.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
+            shape.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
             shape.addEventFilter(MouseEvent.MOUSE_MOVED, this);
-            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);  
-            
+            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);
+
             shape.addEventFilter(MouseEvent.DRAG_DETECTED, this);
-            shape.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            shape.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
             shape.setVisible(true);
         }
-        
+
         protected void removeMouseExitedListener(Shape shape) {
-            shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);            
+            shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);
         }
+
         protected void addMouseExitedListener(Shape shape) {
-            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);            
-        }        
+            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);
+        }
+
         protected void createShapes() {
             try {
                 nShape = (Shape) shapeClass.newInstance(); //north shape
@@ -445,9 +451,10 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         protected void initShape(Shape shape) {
             //shape.setFill(Color.TRANSPARENT);
             shape.setFill(Color.WHITE);
-            shape.setStrokeType(StrokeType.OUTSIDE);
+            shape.setStrokeType(StrokeType.CENTERED);
             shape.setStroke(Color.rgb(255, 148, 40));
-            shape.setStrokeWidth(1);
+            shape.setStrokeWidth(strokeWidth);
+            
             ((Rectangle) shape).setX(20);
             ((Rectangle) shape).setY(50);
             shape.setManaged(false);
@@ -482,35 +489,34 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
         }
 
         protected void bind() {
-           Rectangle ind = framing.getIndicator();      
-           double sw = ind.getStrokeWidth() - 3;
-           
-           ((Rectangle) nShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2) ));
-           ((Rectangle) nShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
+            Rectangle ind = framing.getIndicator();
+            double sw = ind.getStrokeWidth();// - 3;
+            System.err.println("shape.width = " + shapeWidth + "; sw = " + sw );
+            ((Rectangle) nShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2)));
+            ((Rectangle) nShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
 
-           ((Rectangle) neShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
-           ((Rectangle) neShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
-            
-           ((Rectangle) eShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
-           ((Rectangle) eShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2) ));
+            ((Rectangle) neShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+            ((Rectangle) neShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
 
-           ((Rectangle) seShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
-           ((Rectangle) seShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+            ((Rectangle) eShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+            ((Rectangle) eShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2)));
 
-           ((Rectangle) sShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2) ));
-           ((Rectangle) sShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+            ((Rectangle) seShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+            ((Rectangle) seShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
 
-           ((Rectangle) swShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
-           ((Rectangle) swShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
-           
-           ((Rectangle) wShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
-           ((Rectangle) wShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2) ));
+            ((Rectangle) sShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2)));
+            ((Rectangle) sShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
 
-           ((Rectangle) nwShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
-           ((Rectangle) nwShape).yProperty().bind(ind.yProperty().subtract(shapeHeight+sw));
+            ((Rectangle) swShape).xProperty().bind(ind.xProperty().subtract(shapeWidth + sw));
+            ((Rectangle) swShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+
+            ((Rectangle) wShape).xProperty().bind(ind.xProperty().subtract(shapeWidth + sw));
+            ((Rectangle) wShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2)));
+
+            ((Rectangle) nwShape).xProperty().bind(ind.xProperty().subtract(shapeWidth + sw));
+            ((Rectangle) nwShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
 
         }
-
 
         protected void unbind(Shape shape) {
             ((Rectangle) shape).xProperty().unbind();
@@ -559,11 +565,10 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
 
         protected void setSize(Shape shape) {
             Rectangle r = (Rectangle) shape;
-            r.setWidth(3);
-            r.setHeight(3);
+            r.setWidth(shapeWidth);
+            r.setHeight(shapeHeight);
 
         }
-
 
         protected void setPosition() {
             Rectangle ind = framing.getIndicator();
@@ -639,7 +644,7 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
                 wnf.redirectMouseEvents(ev, framing.startMousePos, framing);
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 //addMouseExitedListener(shape);
-                shape.getScene().setCursor(Cursor.DEFAULT);                
+                shape.getScene().setCursor(Cursor.DEFAULT);
             }
         }
 
@@ -653,8 +658,8 @@ public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandle
             } else if (ev.getSource() == neShape) {
 //                System.err.println("NEW HANDLE(EV) 2");
                 handle(ev, neShape, Cursor.NE_RESIZE);
-                
-            }  else if (ev.getSource() == eShape) {
+
+            } else if (ev.getSource() == eShape) {
 //                System.err.println("NEW HANDLE(EV) 2.1");
                 handle(ev, eShape, Cursor.E_RESIZE);
             } else if (ev.getSource() == seShape) {
