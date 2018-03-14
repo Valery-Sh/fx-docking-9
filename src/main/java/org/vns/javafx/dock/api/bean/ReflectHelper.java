@@ -44,8 +44,11 @@ public class ReflectHelper {
     public static Class<?> getGetterReturnType(Class<?> forClass, String key) {
         Class<?> retval = null;
         try {
-
             Method method = MethodUtil.getMethod(forClass, "get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+            if (method == null) {
+                method = MethodUtil.getMethod(forClass, "is" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[0]);
+
+            }
             retval = method.getReturnType();
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(ReflectHelper.class.getName()).log(Level.SEVERE, null, ex);

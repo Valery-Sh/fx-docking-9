@@ -72,6 +72,7 @@ public class NodeDescriptor {
 
     public void setType(String type) {
         this.type = type;
+        
         try {
             Class clazz = Class.forName(type);
             DefaultProperty[] dp = (DefaultProperty[]) clazz.getAnnotationsByType(DefaultProperty.class);
@@ -79,7 +80,7 @@ public class NodeDescriptor {
                 annotationDefaultProperty = dp[0].value();
             }
         } catch (ClassNotFoundException ex) {
-            System.err.println("EXCEPTION");
+            System.err.println("EXCEPTION. " + ex.getMessage());
             Logger.getLogger(NodeDescriptor.class.getName()).log(Level.SEVERE, null, ex);
         }
 

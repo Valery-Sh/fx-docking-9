@@ -15,14 +15,18 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.DefaultProperty;
 
 /**
  *
  * @author Valery
  */
-public class Property extends NodeElement{
+public class Property extends NodeElement {
+
     private String name;
-    
+
     private NodeDescriptor descriptor;
 
     public String getName() {
@@ -51,9 +55,33 @@ public class Property extends NodeElement{
      * 
      * 
      */
-     public static Object getValue(TreeItemEx item, String propertyName) {
-         Object retval = null;
-         return retval;
-     }
-    
+    public static Object getValue(TreeItemEx item, String propertyName) {
+        Object retval = null;
+        return retval;
+    }
+
+    public static String getDefaulrPropertyAnnotation(Class<?> clazz) {
+        String retval = null;
+        DefaultProperty[] dp = (DefaultProperty[]) clazz.getAnnotationsByType(DefaultProperty.class);
+        if (dp.length > 0) {
+            retval = dp[0].value();
+        }
+        return retval;
+    }
+
+    public static String getDefaulrPropertyAnnotation(String className) {
+        String retval = null;
+        try {
+            Class clazz = Class.forName(className);
+            DefaultProperty[] dp = (DefaultProperty[]) clazz.getAnnotationsByType(DefaultProperty.class);
+            if (dp.length > 0) {
+                retval = dp[0].value();
+            }
+        } catch (ClassNotFoundException ex) {
+            System.err.println("EXCEPTION");
+            Logger.getLogger(NodeDescriptor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retval;
+    }
+
 }

@@ -18,10 +18,11 @@ package org.vns.javafx.dock.api.designer;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
  *
@@ -47,8 +48,8 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
                     for (TreeItem it : treeItem.getChildren()) {
-                        if (((TreeItemEx) it).getItemType() == ItemType.LIST ) {
-                            for (TreeItem ith : ((TreeItemEx)it).getChildren()) {
+                        if (((TreeItemEx) it).getItemType() == ItemType.LIST) {
+                            for (TreeItem ith : ((TreeItemEx) it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
                                     it.getChildren().remove(toRemove);
@@ -61,25 +62,29 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             break;
                         }
                     }
-                 
+
                     treeItem.getChildren().remove(toRemove);
-                    DockRegistry.lookup(Selection.class).removeSelected(toRemove.getValue());
+                    //13.03DockRegistry.lookup(Selection.class).removeSelected(toRemove.getValue());
                 }
 
             }
             if (change.wasAdded()) {
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
-                
+
                 list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
                     itemList.add(it);
                 });
-                System.err.println("TreeItemListChangeListe: onChanged: itemList.size() = " + itemList.size() + "; list.size()=" + list.size());
+//                System.err.println("TreeItemListChangeListe: onChanged: itemList.size() = " + itemList.size() + "; list.size()=" + list.size());
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
-                Selection sel = DockRegistry.lookup(Selection.class);
+                //Selection sel = DockRegistry.lookup(Selection.class);
                 //DockRegistry.lookup(Selection.class).removeSelected();  
-                System.err.println("TreeItemListChangeListe: onChanged: setSelected = " + list.get(list.size() - 1));
-                sel.setSelected(list.get(list.size() - 1));
+//                System.err.println("TreeItemListChangeListe: onChanged: setSelected = " + list.get(list.size() - 1));
+                //sel.setSelected(list.get(list.size() - 1));
+                NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+                if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
+                    nf.show((Node) list.get(list.size() - 1));
+                }
             }
         }//while
     }

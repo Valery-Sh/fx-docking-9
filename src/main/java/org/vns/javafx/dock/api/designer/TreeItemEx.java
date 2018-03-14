@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
@@ -39,6 +40,7 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public TreeItemEx() {
+        init();
     }
 
     public TreeItemEx(Object value) {
@@ -47,6 +49,23 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public TreeItemEx(Object value, Node graphic) {
         super(value, graphic);
+    }
+
+    private void init() {
+        SceneGraphView gv = DesignerLookup.lookup(SceneGraphView.class);
+        if ( gv != null ) {
+            gv.addTreeItemEventHandlers(this);
+        }
+        
+        //addEventHandler(TreeItem.valueChangedEvent(), 
+//        addEventHandler(TreeItem.valueChangedEvent(), ev -> {
+            
+           // TreeItem it = ev.getSource();
+            //if ( it.getValue() != null && (it.getValue() instanceof StackPane )) {
+           //     System.err.println("TreeItemEx: valueChangeEvent item = " + it);
+            //}
+//        });
+
     }
 
     public Node getCellGraphic() {

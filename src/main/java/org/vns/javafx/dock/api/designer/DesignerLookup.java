@@ -25,7 +25,11 @@ import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.Selection.SelectionHandler;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
+import org.vns.javafx.dock.api.dragging.view.PopupNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
  *
@@ -42,7 +46,8 @@ public class DesignerLookup { // implements ContextLookup {
     private void init() {
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
         //DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, ShapeNodeFraming.getInstance() );
-        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, StageNodeFraming.getInstance() );        
+        DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, PopupNodeFraming.getInstance() );        
+        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, ShapeNodeFraming.getInstance() );        
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
         

@@ -37,23 +37,33 @@ public class DesignerSelection extends Selection {
     private void init() {
         selectedProperty().addListener(this::selectedChanged);
     }
-
+    @Override
+    public void setSelected(Object toSelect) {
+//        System.err.println("DesignerSelection: setLelected = " + toSelect);
+        if ( toSelect instanceof Node ) {
+            NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+            if ( nf != null ) {
+                nf.show((Node) toSelect);
+            }
+        }
+        notifySelected(toSelect);
+        //this.selected.set(toSelect);
+    }
     protected void selectedChanged(ObservableValue ov, Object oldValue, Object newValue) {
-
+        NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
         if (newValue == null) {
-            if (resizer != null) {
-                resizer.hide();
+            if (nf != null) {
+                nf.hide();
 //                resizer = null;
             }
             return;
         }
      
-        if (resizer != null) {
-            resizer.hide();
+        if (nf != null) {
+            nf.hide();
         }
         if (newValue != null && (newValue instanceof Node)) {
-            resizer = DockRegistry.lookup(NodeFraming.class);
-            resizer.show((Node) newValue);
+            nf.show((Node) newValue);
         }
         notifySelected(newValue);
     }
@@ -69,8 +79,8 @@ public class DesignerSelection extends Selection {
                 item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
             }
             if (item != null) {
-                System.err.println("DesignerSelection: item.value=" + item.getValue());
-                sgv.getTreeView().getSelectionModel().selectFirst();
+//                System.err.println("DesignerSelection: item.value=" + item.getValue());
+//                sgv.getTreeView().getSelectionModel().selectFirst();
                 sgv.getTreeView().getSelectionModel().select(item);
                 //DesignerLookup.lookup(SceneGraphView.class).getTreeView().requestFocus();
             }

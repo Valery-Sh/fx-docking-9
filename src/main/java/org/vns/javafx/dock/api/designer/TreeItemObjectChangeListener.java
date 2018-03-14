@@ -17,9 +17,10 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.Selection;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
  *
@@ -37,15 +38,22 @@ public class TreeItemObjectChangeListener implements ChangeListener {
 
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+        
         Property prop = treeItem.getProperty(propertyName);
         TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
         int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propertyName);
+
+        NodeFraming nf = DockRegistry.lookup(NodeFraming.class);        
+        
         if (propTreeItem == null) {
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
                 treeItem.getChildren().add(insertPos, item);
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(newValue);                
+                //Selection sel = DockRegistry.lookup(Selection.class);
+                //sel.setSelected(newValue);                
+                if (nf != null && (newValue instanceof Node))  {
+                    nf.show((Node) newValue);
+                }
             }
         } else {
             
@@ -63,14 +71,21 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                 // May be is NodeContent and not hidden when null
                 TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
                 p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(newValue);                
+                //Selection sel = DockRegistry.lookup(Selection.class);
+                //sel.setSelected(newValue);                
+                if (nf != null && (newValue instanceof Node))  {
+                    nf.show((Node) newValue);
+                }
                 
             } else if (oldValue != null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
                 p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(newValue);                
+                //Selection sel = DockRegistry.lookup(Selection.class);
+//                sel.setSelected(newValue);                
+                if (nf != null && (newValue instanceof Node))  {
+                    nf.show((Node) newValue);
+                }
+                
                 
             }
         }
@@ -82,9 +97,10 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         return retval;
     }
 
-    protected TreeItemEx getPropertyTreeItem() {
+/*    protected TreeItemEx getPropertyTreeItem() {
         TreeItemEx retval = null;
 //        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(treeItem.getValue());
         return retval;
     }
+*/
 }

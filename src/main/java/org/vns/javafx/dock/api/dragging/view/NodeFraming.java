@@ -24,4 +24,6 @@ import javafx.scene.Node;
 public interface NodeFraming {
     void show(Node node);
     void hide();
+    boolean isShowing();
+    boolean isShowing(Node node);
 }

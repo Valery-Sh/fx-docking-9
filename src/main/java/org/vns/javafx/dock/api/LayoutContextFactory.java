@@ -47,6 +47,7 @@ import javafx.scene.text.TextFlow;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
+import static org.vns.javafx.dock.api.LayoutContext.getValue;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -86,7 +87,21 @@ public class LayoutContextFactory {
         } else if (targetNode instanceof Pane) {
             retval = getPaneContext((Pane) targetNode);
         } else if (targetNode instanceof Accordion) {
-            retval = new ListBasedTargetContext<TitledPane>(targetNode);
+            retval = new ListBasedTargetContext<TitledPane>(targetNode) {
+                @Override
+                public boolean isAcceptable(Dockable obj) {
+                    boolean b = super.isAcceptable(obj);
+                    if (b) {
+                        Dockable dragged = obj;
+                        Object v = getValue(obj);
+                        if (Dockable.of(v) != null) {
+                            dragged = Dockable.of(v);
+                            b = (dragged.node() instanceof TitledPane);
+                        }
+                    }
+                    return b;
+                }
+            };
         }
         return retval;
     }
@@ -102,6 +117,7 @@ public class LayoutContextFactory {
     protected LayoutContext getBorderPaneContext(BorderPane pane) {
         LayoutContext retval = new DockBorderPaneContext(pane);
         return retval;
+
     }
 
     public static class StackPaneContext extends LayoutContext {
@@ -187,7 +203,7 @@ public class LayoutContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            
+
             Pane targetPane = (Pane) getLayoutContext().getLayoutNode();
             Label topNode = new Label("Top");
             topNode.getStyleClass().add("top");

@@ -39,6 +39,7 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.dragging.view.PopupNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
@@ -66,6 +67,7 @@ public class TestLayoutBase extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, PopupNodeFraming.getInstance());
         stage.setAlwaysOnTop(true);
         Button addButton = new Button("add new Node");
@@ -197,7 +199,8 @@ public class TestLayoutBase extends Application {
                 }
 
                 resizer.show(last);
-
+                //resizer.getIndicator().setVisible(false);
+                //last.setOpacity(0.5);
                 //System.err.println("lastParentBounds = " + list.get(0).localToParent(list.get(0).getLayoutBounds()));
                 //System.err.println("lastParentBounds = " + last.localToParent(last.getLayoutBounds()));
                 Platform.runLater(() -> {

@@ -41,6 +41,7 @@ import org.vns.javafx.dock.api.indicator.IndicatorManager;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
  *
@@ -70,9 +71,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                System.err.println("SceneGraphViewSkin: LAYOUT CHILDREN ");
+//                System.err.println("SceneGraphViewSkin: LAYOUT CHILDREN ");
                 TreeItemEx item = (TreeItemEx) getSkinnable().getTreeView().getSelectionModel().getSelectedItem();
-                System.err.println("SELECTED = " + getSkinnable().getTreeView().getSelectionModel().getSelectedItem());
+//                System.err.println("SELECTED = " + getSkinnable().getTreeView().getSelectionModel().getSelectedItem());
                 if ( item != null ) {
                     getSkinnable().getTreeView().getSelectionModel().select(item);
                 }
@@ -102,9 +103,9 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             Dockable dockable = DockRegistry.makeDockable(getSkinnable().getRoot());
             dockable.getContext().setDragNode(null);
 
-            createSceneGraph(getSkinnable().getRoot());
+            TreeItemEx rootItem = createSceneGraph(getSkinnable().getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
-
+            TreeViewEx tv = getSkinnable().getTreeView();
         }
         getSkinnable().getScene().addEventFilter(MouseEvent.MOUSE_PRESSED,this::sceneMousePressed);
 
@@ -126,10 +127,17 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     
     private void sceneMousePressed( MouseEvent ev) {
             TreeItemEx item = getSkinnable().getTreeItem(ev.getScreenX(), ev.getScreenY());
-            if (item == null) {
-                Selection sel = DockRegistry.lookup(Selection.class);
-                sel.setSelected(null);
-                ev.consume();
+            NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+            if ( nf == null ) {
+                return;
+            }
+            if (item == null || item.getValue() == null) {
+                //Selection sel = DockRegistry.lookup(Selection.class);
+                //sel.setSelected(null);
+                nf.hide();
+                //ev.consume();
+            } else if (item.getValue() instanceof Node){
+                nf.show((Node) item.getValue());
             }
         
     }
@@ -166,12 +174,12 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     protected TreeItemEx createSceneGraph(Node node) {
         TreeItemEx item = new TreeItemBuilder().build(node);
         item.setExpanded(true);
+        
         getSkinnable().getTreeView().setRoot(item);
         Platform.runLater(() -> {
             registerScrollBarEvents();
         });
-        item.addEventHandler(TreeItem.childrenModificationEvent(),
-                getSkinnable()::childrenModification);
+
         return item;
     }
 

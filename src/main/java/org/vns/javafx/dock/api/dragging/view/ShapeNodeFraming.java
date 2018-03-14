@@ -15,12 +15,9 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -31,8 +28,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
@@ -41,19 +38,19 @@ import org.vns.javafx.dock.api.DockRegistry;
  *
  * @author Valery
  */
-public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> {
+public class ShapeNodeFraming extends AbstractNodeFraming implements EventHandler<MouseEvent> {
+
+    private ChangeListener<Bounds> layoutBoundsListener;
+    private ChangeListener layoutXListener;
+    private ChangeListener layoutYListener;
 
     private Rectangle indicator;
-    private Line topLine;
-    private Line rightLine;
-    private Line bottomLine;
-    private Line leftLine;
+    private IndicatorShape indicatorShape;
 
-    private ShapeNodeResizeExecutor resizeExecutor;
+    //private ShapeNodeResizeExecutor resizeExecutor;
+    private Window window;
 
     private Node root;
-
-    private final ObjectProperty<Node> node = new SimpleObjectProperty<>();
 
     private Window nodeWindow;
     double borderWidth = 0;
@@ -63,40 +60,22 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
     double insetsTop = 0;
     double insetsLeft = 0;
 
-    private final DoubleProperty workWidth = new SimpleDoubleProperty(-1);
-    private final DoubleProperty workHeight = new SimpleDoubleProperty(-1);
-    private final DoubleProperty workX = new SimpleDoubleProperty(-1);
-    private final DoubleProperty workY = new SimpleDoubleProperty(-1);
-
     private final Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
     };
 
     private boolean cursorSupported = false;
-
-    private double translateX;
-    private double translateY;
     private Cursor saveCursor;
-    private boolean applyTranslateXY;
 
     protected ShapeNodeFraming() {
         super();
-        nodeProperty().addListener((v, ov, nv) -> {
-            if (ov != null) {
-                ov.layoutBoundsProperty().removeListener(this::layoutBoundsChanged);
-            }
-        });
     }
 
     protected void initWindow() {
     }
 
     private void init() {
-        workHeight.set(-1);
-        workHeight.set(-1);
-        workX.set(-1);
-        workY.set(-1);
 
         initWindow();
 
@@ -114,9 +93,6 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
 
     }
 
-    protected void createWindow() {
-    }
-
     protected void doShow(Window owner) {
     }
 
@@ -131,89 +107,79 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         if (indicator != null) {
             indicator.widthProperty().unbind();
             indicator.heightProperty().unbind();
+            indicatorShape.unbind();
+
             if (((Pane) getNode().getScene().getRoot()).getChildren().contains(indicator)) {
 //                ((Pane) getNode().getScene().getRoot()).getChildren().remove(indicator);
             }
         } else {
-            indicator = new Rectangle(50, 20);    
-            topLine = new Line(50,20,60,20 );
+            indicator = new Rectangle(50, 20);
+            indicatorShape = new IndicatorShape(this, Rectangle.class);
         }
 
-        
         indicator.setFill(Color.TRANSPARENT);
         indicator.setStrokeType(StrokeType.OUTSIDE);
-        indicator.setStroke(Color.rgb(255,148,40));
+        indicator.setStroke(Color.rgb(255, 148, 40));
         indicator.setStrokeWidth(3);
         indicator.setX(20);
         indicator.setY(50);
         indicator.setManaged(false);
-        //indicator.setMouseTransparent(true);
-        
+        indicator.setMouseTransparent(true);
+        indicator.toFront();
+
+        indicatorShape.initShape();
+
         if (!((Pane) getNode().getScene().getRoot()).getChildren().contains(indicator)) {
             ((Pane) getNode().getScene().getRoot()).getChildren().add(indicator);
+            indicatorShape.addToPane((Pane) getNode().getScene().getRoot());
+
         }
 
-        indicator.toFront();
         Insets insetsDelta = ((Region) region).getInsets();
         insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
         insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-//        insetsHeight = insetsDelta.getTop();
-        
+
         insetsWidth = 0;
-        insetsHeight = 0;       
+        insetsHeight = 0;
         insetsTop = 0;
         insetsLeft = 0;
-
-        root = getNode().getScene().getRoot();
         
-        //getNode().layoutBoundsProperty().addListener(this::layoutBoundsChanged);
+        indicatorShape.setPosition();
+        
+        indicatorShape.bind();
+        
+        root = getNode().getScene().getRoot();
 
         Bounds sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
-        System.err.println("node width  = " + sceneBounds.getWidth());
+        /*        System.err.println("node width  = " + sceneBounds.getWidth());
         System.err.println("node height = " + sceneBounds.getHeight());
         System.err.println("   --- insetsWidth  = " + insetsWidth);
         System.err.println("   --- insetsHeight = " + insetsHeight);
-        
+         */
         indicator.setX(sceneBounds.getMinX() - insetsLeft);
         indicator.setY(sceneBounds.getMinY() - insetsTop);
         indicator.setWidth(sceneBounds.getWidth() + insetsWidth);
         indicator.setHeight(sceneBounds.getHeight() + insetsHeight);
-        //indicator.setHeight(sceneBounds.getHeight() + insetsHeight);
-        
-        //region.setPrefWidth(sceneBounds.getWidth());
-        //region.setPrefHeight(sceneBounds.getHeight());
-        
-        topLine.startXProperty().bind(indicator.xProperty());
-        topLine.startYProperty().bind(indicator.yProperty());
-        topLine.endXProperty().bind(indicator.xProperty().add(indicator.widthProperty().subtract(1)));
-        topLine.startYProperty().bind(indicator.yProperty());
-        
-        getNode().layoutYProperty().addListener((o, ov, nv) -> {
+
+//        indicatorShape.setPosition();
+
+        layoutYListener = (o, ov, nv) -> {
             Bounds sb = getNode().localToScene(getNode().getLayoutBounds());
             indicator.setY(sb.getMinY() - insetsTop);
-        }
-        );
-
-        getNode().layoutXProperty().addListener((o, ov, nv) -> {
+        };
+        layoutXListener = (o, ov, nv) -> {
             Bounds sb = getNode().localToScene(getNode().getLayoutBounds());
             indicator.setX(sb.getMinX() - insetsLeft);
-        });
+        };
+
+        getNode().layoutXProperty().addListener(layoutXListener);
+        getNode().layoutYProperty().addListener(layoutYListener);
 
         indicator.widthProperty().bind(region.widthProperty().add(insetsWidth));
         indicator.heightProperty().bind(region.heightProperty().add(insetsHeight));
-        //region.prefWidthProperty().bind(indicator.widthProperty().subtract(insetsWidth));
-        //region.prefHeightProperty().bind(indicator.heightProperty().subtract(insetsHeight));        
+
+        //indicatorShape.bind();        
         
-        //region.setPrefHeight(region.getHeight());        
-                //.bind(workWidth.add(borderWidth));
-//        indicator.heightProperty()
-//                .bind(workHeight.add(borderHeight));
-
-        //sceneBounds = getNode().localToScene(getNode().getLayoutBounds());
-
-        //setWorkWidth(sceneBounds.getWidth());
-        //setWorkHeight(sceneBounds.getHeight());
-
         nodeWindow = region.getScene().getWindow();
 
         setWindowSize(getNode().getLayoutBounds(), borderWidth, borderHeight);
@@ -221,103 +187,39 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
 
     }
 
-    protected void layoutBoundsChanged(ObservableValue<? extends Bounds> v, Bounds ov, Bounds nv) {
-        if (nv == null) {
-            return;
-        }
-
-        Bounds sb = getNode().localToScreen(getNode().getBoundsInLocal());
-        if (sb == null) {
-            return;
-        }
-        setWorkWidth(nv.getWidth());
-        setWorkHeight(nv.getHeight());
-        System.err.println(" -- layoutChanged height = " + indicator.getHeight());
-        setWindowSize(nv, borderWidth, borderHeight);
+    public Rectangle getIndicator() {
+        return indicator;
     }
 
-    public DoubleProperty workWidthProperty() {
-        return workWidth;
+    public Point2D getStartMousePos() {
+        return startMousePos;
     }
 
-    public double getWorkWidth() {
-        return workWidth.get();
-    }
-
-    public void setWorkWidth(double width) {
-        workWidth.set(width);
-    }
-
-    public DoubleProperty workHeightProperty() {
-        return workHeight;
-    }
-
-    public double getWorkHeight() {
-        return workHeight.get();
-    }
-
-    public void setWorkHeight(double height) {
-        workHeight.set(height);
-    }
-
-    public DoubleProperty workXProperty() {
-        return workX;
-    }
-
-    public double getWorkX() {
-        return workX.get();
-    }
-
-    public void setWorkX(double x) {
-        workX.set(x);
-    }
-///
-
-    public DoubleProperty workYProperty() {
-        return workY;
-    }
-
-    public double getWorkY() {
-        return workY.get();
-    }
-
-    public void setWorkY(double y) {
-        workY.set(y);
-    }
-
-    public ObjectProperty<Node> nodeProperty() {
-        return node;
-    }
-
-    public Node getNode() {
-        return node.get();
+    public void setStartMousePos(Point2D startMousePos) {
+        this.startMousePos = startMousePos;
     }
 
     @Override
-    public void show(Node node) {
+    protected void initializeOnShow(Node node) {
         if (indicator != null) {
             removeWindowListeners();
         }
-
-        createWindow();
-
-        this.node.set(node);
+        if (indicatorShape != null) {
+            indicatorShape.removeShapeListeners();
+        }
         init();
-        this.show();
+        show();
+
     }
 
     protected void show() {
 
-        resizeExecutor = new ShapeNodeResizeExecutor(indicator, (Region) getNode());
-
-        indicator.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        //indicator.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        indicator.addEventFilter(MouseEvent.MOUSE_MOVED, this);
-        //indicator.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        indicator.addEventFilter(MouseEvent.DRAG_DETECTED, this);
-        
+//        indicator.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
+//        indicator.addEventFilter(MouseEvent.MOUSE_MOVED, this);
+//        indicator.addEventFilter(MouseEvent.DRAG_DETECTED, this);
         indicator.setVisible(true);
-        topLine.setVisible(true);
+
+        indicatorShape.show();
     }
 
     protected void removeWindowListeners() {
@@ -326,11 +228,10 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
         indicator.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
         indicator.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
         indicator.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
-
     }
-    
+
     Point2D startMousePos;
-    
+
     @Override
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
@@ -348,7 +249,7 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
             }
 
         } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-          
+
             if (!indicator.getScene().getRoot().contains(ev.getX(), ev.getY())) {
                 //removeWindowListeners();
                 //hide();
@@ -357,10 +258,6 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
             }
             Bounds ib = indicator.getBoundsInLocal();
             saveCursor = ShapeNodeResizeExecutor.cursorBy(ev.getX() - ib.getMinX(), ev.getY() - ib.getMinY(), indicator);
-            if (!applyTranslateXY) {
-                translateX = getNode().getTranslateX();
-                translateY = getNode().getTranslateY();
-            }
 
             cursorSupported = isCursorSupported(saveCursor);
             if (!cursorSupported) {
@@ -371,11 +268,12 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
             //resizeExecutor.start(ev, this, indicator.getScene().getCursor(), getSupportedCursors());
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
             WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
+
             hide();
             wnf.show(getNode());
             wnf.redirectMouseEvents(ev, startMousePos, this);
         }
-        
+
         /*  else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             if (!cursorSupported) {
                 return;
@@ -412,32 +310,26 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
             }
 
         }
-*/
+         */
     }
 
-    public void hide() {
+    @Override
+    public void finalizeOnHide(Node node) {
         if (indicator != null) {
             indicator.setVisible(false);
-            topLine.setVisible(true);
+            indicatorShape.setVisible(false);
         }
     }
 
+    @Override
     public boolean isShowing() {
-        return indicator != null && indicator.isDisable();
+        return super.isShowing() && indicator != null && indicator.isDisable();
     }
 
-    public boolean isApplyTranslateXY() {
-        return applyTranslateXY;
-    }
-
-    public void setApplyFtranslateXY(boolean useTranslateXY) {
-        this.applyTranslateXY = useTranslateXY;
-    }
-
-    public ShapeNodeResizeExecutor getResizeExecutor() {
+    /*    public ShapeNodeResizeExecutor getResizeExecutor() {
         return resizeExecutor;
     }
-
+     */
     public Cursor[] getSupportedCursors() {
         return supportedCursors;
     }
@@ -462,7 +354,326 @@ public class ShapeNodeFraming implements NodeFraming , EventHandler<MouseEvent> 
     }
 
     private static class SingletonInstance {
+
         private static final ShapeNodeFraming instance = new ShapeNodeFraming();
     }
 
-}
+    public static class IndicatorShape implements EventHandler<MouseEvent> {
+
+        private final ShapeNodeFraming framing;
+
+        private final Class<?> shapeClass;
+        private double shapeWidth = 3;
+        private double shapeHeight = 3;
+
+        private Shape nShape;    //north shape
+        private Shape neShape;   //north-east shape
+        private Shape eShape;    //east shape
+        private Shape seShape;   //south-east shape
+        private Shape sShape;    //south shape
+
+        private Shape swShape;   // south-west shape
+        private Shape wShape;    // west shape
+        private Shape nwShape;   // north-west shape
+
+        public IndicatorShape(ShapeNodeFraming framing, Class<?> shapeClass) {
+            this.framing = framing;
+            this.shapeClass = shapeClass;
+            init();
+        }
+
+        private void init() {
+            createShapes();
+        }
+
+        public void show() {
+            show(nShape);
+            show(neShape);
+            show(eShape);
+            show(seShape);
+            show(sShape);
+            show(swShape);
+            show(wShape);
+            show(nwShape);
+        }
+
+        protected void show(Shape shape) {
+            shape.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
+            shape.addEventFilter(MouseEvent.MOUSE_MOVED, this);
+            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);  
+            
+            shape.addEventFilter(MouseEvent.DRAG_DETECTED, this);
+            shape.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            shape.setVisible(true);
+        }
+        
+        protected void removeMouseExitedListener(Shape shape) {
+            shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);            
+        }
+        protected void addMouseExitedListener(Shape shape) {
+            shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);            
+        }        
+        protected void createShapes() {
+            try {
+                nShape = (Shape) shapeClass.newInstance(); //north shape
+                neShape = (Shape) shapeClass.newInstance(); //north-east shape
+                eShape = (Shape) shapeClass.newInstance(); //east shape
+                seShape = (Shape) shapeClass.newInstance(); //south-east shape
+                sShape = (Shape) shapeClass.newInstance(); //south shape
+
+                swShape = (Shape) shapeClass.newInstance(); // south-west shape
+                wShape = (Shape) shapeClass.newInstance(); // west shape
+                nwShape = (Shape) shapeClass.newInstance();   // north-west shape            
+
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(ShapeNodeFraming.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        protected void initShape() {
+            initShape(nShape);
+            initShape(neShape);
+            initShape(eShape);
+            initShape(seShape);
+            initShape(sShape);
+            initShape(swShape);
+            initShape(wShape);
+            initShape(nwShape);
+
+        }
+
+        protected void initShape(Shape shape) {
+            //shape.setFill(Color.TRANSPARENT);
+            shape.setFill(Color.WHITE);
+            shape.setStrokeType(StrokeType.OUTSIDE);
+            shape.setStroke(Color.rgb(255, 148, 40));
+            shape.setStrokeWidth(1);
+            ((Rectangle) shape).setX(20);
+            ((Rectangle) shape).setY(50);
+            shape.setManaged(false);
+            shape.toFront();
+
+        }
+
+        protected void setVisible(Shape shape, boolean visible) {
+            shape.setVisible(visible);
+        }
+
+        protected void setVisible(boolean visible) {
+            setVisible(nShape, visible);
+            setVisible(neShape, visible);
+            setVisible(eShape, visible);
+            setVisible(seShape, visible);
+            setVisible(sShape, visible);
+            setVisible(swShape, visible);
+            setVisible(wShape, visible);
+            setVisible(nwShape, visible);
+        }
+
+        protected void unbind() {
+            unbind(nShape);
+            unbind(neShape);
+            unbind(eShape);
+            unbind(seShape);
+            unbind(sShape);
+            unbind(swShape);
+            unbind(wShape);
+            unbind(nwShape);
+        }
+
+        protected void bind() {
+           Rectangle ind = framing.getIndicator();      
+           double sw = ind.getStrokeWidth() - 3;
+           
+           ((Rectangle) nShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2) ));
+           ((Rectangle) nShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
+
+           ((Rectangle) neShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+           ((Rectangle) neShape).yProperty().bind(ind.yProperty().subtract(shapeHeight + sw));
+            
+           ((Rectangle) eShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+           ((Rectangle) eShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2) ));
+
+           ((Rectangle) seShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().add(sw)));
+           ((Rectangle) seShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+
+           ((Rectangle) sShape).xProperty().bind(ind.xProperty().add(ind.widthProperty().subtract(shapeWidth).divide(2) ));
+           ((Rectangle) sShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+
+           ((Rectangle) swShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
+           ((Rectangle) swShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().add(sw)));
+           
+           ((Rectangle) wShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
+           ((Rectangle) wShape).yProperty().bind(ind.yProperty().add(ind.heightProperty().subtract(shapeHeight).divide(2) ));
+
+           ((Rectangle) nwShape).xProperty().bind(ind.xProperty().subtract(shapeWidth+sw));
+           ((Rectangle) nwShape).yProperty().bind(ind.yProperty().subtract(shapeHeight+sw));
+
+        }
+
+
+        protected void unbind(Shape shape) {
+            ((Rectangle) shape).xProperty().unbind();
+            ((Rectangle) shape).yProperty().unbind();
+        }
+
+        protected void addToPane(Pane pane) {
+            pane.getChildren().add(nShape);
+            nShape.toFront();
+            pane.getChildren().add(neShape);
+            neShape.toFront();
+            pane.getChildren().add(eShape);
+            eShape.toFront();
+            pane.getChildren().add(seShape);
+            seShape.toFront();
+            pane.getChildren().add(sShape);
+            sShape.toFront();
+            pane.getChildren().add(swShape);
+            swShape.toFront();
+            pane.getChildren().add(wShape);
+            wShape.toFront();
+            pane.getChildren().add(nwShape);
+            nwShape.toFront();
+            setVisible(true);
+        }
+
+        protected void removeShapeListeners() {
+            removeShapeListeners(nShape);
+            removeShapeListeners(neShape);
+            removeShapeListeners(eShape);
+            removeShapeListeners(seShape);
+            removeShapeListeners(sShape);
+            removeShapeListeners(swShape);
+            removeShapeListeners(wShape);
+            removeShapeListeners(nwShape);
+        }
+
+        protected void removeShapeListeners(Shape shape) {
+            shape.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
+            shape.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            shape.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
+            shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);
+            shape.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+            shape.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
+        }
+
+        protected void setSize(Shape shape) {
+            Rectangle r = (Rectangle) shape;
+            r.setWidth(3);
+            r.setHeight(3);
+
+        }
+
+
+        protected void setPosition() {
+            Rectangle ind = framing.getIndicator();
+            ((Rectangle) nShape).setX(ind.getX() + (ind.getWidth() - shapeWidth) / 2);
+            ((Rectangle) nShape).setY(ind.getY() - shapeHeight);
+            setSize(nShape);
+
+            ((Rectangle) neShape).setX(ind.getX() + ind.getWidth() - shapeWidth);
+            ((Rectangle) neShape).setY(ind.getY() - shapeHeight);
+            setSize(neShape);
+
+            ((Rectangle) eShape).setX(ind.getX() + ind.getWidth() - shapeWidth);
+            ((Rectangle) eShape).setY(ind.getY() - (ind.getHeight() - shapeHeight) / 2);
+            setSize(eShape);
+
+            ((Rectangle) seShape).setX(ind.getX() + ind.getWidth() - shapeWidth);
+            ((Rectangle) seShape).setY(ind.getY() - +ind.getHeight());
+            setSize(seShape);
+
+            ((Rectangle) sShape).setX(ind.getX() + (ind.getWidth() - shapeWidth) / 2);
+            ((Rectangle) sShape).setY(ind.getY() - ind.getHeight());
+            setSize(sShape);
+
+            ((Rectangle) swShape).setX(ind.getX() - shapeWidth);
+            ((Rectangle) swShape).setY(ind.getY() - +ind.getHeight());
+            setSize(swShape);
+
+            ((Rectangle) wShape).setX(ind.getX() - shapeWidth);
+            ((Rectangle) wShape).setY(ind.getY() - ind.getHeight());
+            setSize(wShape);
+
+            ((Rectangle) nwShape).setX(ind.getX() - shapeWidth);
+            ((Rectangle) nwShape).setY(ind.getY() - shapeHeight);
+            setSize(nwShape);
+
+        }
+
+        public void handle(MouseEvent ev, Shape shape, Cursor c) {
+//            System.err.println("Event.getType = " + ev.getEventType());
+            if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
+//                System.err.println("NEW HANDLE(EV,Shape,Cursor) = " + c);
+                Point2D pt = shape.screenToLocal(ev.getScreenX(), ev.getScreenY());
+
+                if (!framing.isCursorSupported(c)) {
+                    shape.getScene().setCursor(Cursor.DEFAULT);
+                } else {
+                    shape.getScene().setCursor(c);
+                }
+                if (!c.equals(Cursor.DEFAULT)) {
+                    ev.consume();
+                }
+
+            } else if (ev.getEventType() == MouseEvent.MOUSE_EXITED) {
+//                System.err.println("MOUSE EXITED");
+                shape.getScene().setCursor(Cursor.DEFAULT);
+            } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+//                System.err.println("MOUSE PRESSED");
+                removeMouseExitedListener(shape);
+                Bounds ib = shape.getBoundsInLocal();
+                framing.saveCursor = c;
+                framing.cursorSupported = framing.isCursorSupported(framing.saveCursor);
+                if (!framing.cursorSupported) {
+                    shape.getScene().setCursor(Cursor.DEFAULT);
+                    return;
+                }
+                framing.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
+
+            } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+                WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
+//                System.err.println("MOUSE DRAG_DETECTED");
+                framing.hide();
+                wnf.show(framing.getNode());
+                wnf.redirectMouseEvents(ev, framing.startMousePos, framing);
+            } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                //addMouseExitedListener(shape);
+                shape.getScene().setCursor(Cursor.DEFAULT);                
+            }
+        }
+
+        @Override
+        public void handle(MouseEvent ev) {
+//            System.err.println("NEW HANDLE(EV) " + ev.getSource());
+            if (ev.getSource() == nShape) {
+//                System.err.println("NEW HANDLE(EV) 1");
+                handle(ev, nShape, Cursor.N_RESIZE);
+
+            } else if (ev.getSource() == neShape) {
+//                System.err.println("NEW HANDLE(EV) 2");
+                handle(ev, neShape, Cursor.NE_RESIZE);
+                
+            }  else if (ev.getSource() == eShape) {
+//                System.err.println("NEW HANDLE(EV) 2.1");
+                handle(ev, eShape, Cursor.E_RESIZE);
+            } else if (ev.getSource() == seShape) {
+//                System.err.println("NEW HANDLE(EV) 3");
+                handle(ev, seShape, Cursor.SE_RESIZE);
+            } else if (ev.getSource() == sShape) {
+//                System.err.println("NEW HANDLE(EV) 4");
+                handle(ev, sShape, Cursor.S_RESIZE);
+            } else if (ev.getSource() == swShape) {
+                handle(ev, swShape, Cursor.SW_RESIZE);
+            } else if (ev.getSource() == wShape) {
+//                System.err.println("NEW HANDLE(EV) 5");
+                handle(ev, wShape, Cursor.W_RESIZE);
+            } else if (ev.getSource() == nwShape) {
+//                System.err.println("NEW HANDLE(EV) 6");
+                handle(ev, nwShape, Cursor.NW_RESIZE);
+            }
+        }
+
+    } //class 
+
+}// class ShapeNodeFraming

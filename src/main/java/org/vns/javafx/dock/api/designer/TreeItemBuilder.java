@@ -23,8 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.Selection;
 import static org.vns.javafx.dock.api.designer.SceneGraphView.ANCHOR_OFFSET;
 import static org.vns.javafx.dock.api.designer.SceneGraphView.FIRST;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
@@ -443,7 +441,7 @@ public class TreeItemBuilder {
             switch (parent.getItemType()) {
                 case LIST:
                     //DockRegistry.lookup(Selection.class).removeSelected(child.getValue());
-                    System.err.println("!! 1 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
+//                    System.err.println("!! 1 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
                     ((ObservableList) parent.getValue()).remove(child.getValue());
                     break;
                 case DEFAULTLIST: {
@@ -461,7 +459,7 @@ public class TreeItemBuilder {
                     }
 */                    
                     //DockRegistry.lookup(Selection.class).removeSelected(child.getValue());
-                    System.err.println("!! 2 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
+//                    System.err.println("!! 2 TreeItemBuilder: REMOVE child.value()=" + child.getValue());
                     ((ObservableList) ba.get(nd.getDefaultListProperty().getName())).remove(child.getValue());
                     break;
                 }
@@ -556,7 +554,7 @@ public class TreeItemBuilder {
     }
 
     protected void updateList(TreeViewEx treeView, TreeItemEx target, int placeIndex, Object sourceObject) {
-        System.err.println("updateList: sourceObject = " + sourceObject);
+//        System.err.println("updateList: sourceObject = " + sourceObject);
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue());
         BeanAdapter ba = new BeanAdapter(target.getValue());
         ObservableList ol = (ObservableList) ba.get(nd.getProperties().get(0).getName());

@@ -54,7 +54,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -75,7 +74,6 @@ import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKLAYOUT;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
-import org.vns.javafx.dock.api.dragging.view.FloatView;
 
 /**
  * Provides a set of {@code javafx.scene.control.Label } nodes, each of which

@@ -441,6 +441,11 @@ public class ShapeNodeFraming_OLD implements NodeFraming , EventHandler<MouseEve
 
     }
 
+    @Override
+    public boolean isShowing(Node node) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private static class SingletonInstance {
         private static final ShapeNodeFraming_OLD instance = new ShapeNodeFraming_OLD();
     }

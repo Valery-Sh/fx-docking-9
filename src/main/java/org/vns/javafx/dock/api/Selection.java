@@ -18,7 +18,9 @@ package org.vns.javafx.dock.api;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
  *
@@ -35,24 +37,26 @@ public abstract class Selection {
     }
 
     public void setSelected(Object toSelect) {
-        System.err.println("Selection: setLelected = " + toSelect);
-        if ( toSelect == getSelected() ) {
-            notifySelected(toSelect);
-        }
+//        System.err.println("Selection: setLelected = " + toSelect);
         this.selected.set(toSelect);
     }
-
+    
+    protected boolean doSelect(Object toSelect) {
+        boolean retval = false;
+        return retval;
+    }
+            
     public Object getSelected() {
         return selected.get();
     }
 
     public void removeSelected() {
-        System.err.println("removeSelected() old = " + getSelected());
+//        System.err.println("removeSelected() old = " + getSelected());
         setSelected(null);
     }
 
     public void removeSelected(Object obj) {
-         System.err.println("removeSelected(Object ) old = " + getSelected() + "; obj = " + obj);
+//         System.err.println("removeSelected(Object ) old = " + getSelected() + "; obj = " + obj);
         if (getSelected() == obj) {
             setSelected(null);
         }
@@ -61,7 +65,7 @@ public abstract class Selection {
     public static void removeListeners(Dockable dockable) {
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {
-            System.err.println("Selection: removeListeners selected=" + sel.getSelected());
+//            System.err.println("Selection: removeListeners selected=" + sel.getSelected());
             //sel.removeSelected();
         }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
@@ -110,18 +114,30 @@ public abstract class Selection {
         }
 
         protected void mousePressed(MouseEvent ev) {
+//          Selection sel = DockRegistry.lookup(Selection.class);
+//            setSource(ev.getSource());
+//            sel.notifySelected(ev.getSource());
+//            sel.setSelected(ev.getSource());
+        
+            System.err.println("selection handler mousepressed");
+            NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+            if ( nf != null && (ev.getSource() instanceof Node )) {
+                nf.show((Node) ev.getSource());
             Selection sel = DockRegistry.lookup(Selection.class);
-            setSource(ev.getSource());
-            sel.notifySelected(ev.getSource());
-            sel.setSelected(ev.getSource());
+            if ( sel != null ) {
+                sel.notifySelected(ev.getSource());                
+            }
+            }
             ev.consume();
 
         }
 
         protected void mouseRelesed(MouseEvent ev) {
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
+                
                 Selection sel = DockRegistry.lookup(Selection.class);
-                setSource(null);
+                
+                
                 ev.consume();
             }
         }

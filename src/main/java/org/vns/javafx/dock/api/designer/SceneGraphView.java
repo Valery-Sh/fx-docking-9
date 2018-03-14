@@ -5,6 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
@@ -42,7 +43,6 @@ public class SceneGraphView extends Control implements DockLayout {
     private ObjectProperty<Node> statusBar = new SimpleObjectProperty<>();
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
-
 
     public SceneGraphView() {
         this.treeView = new TreeViewEx<>(this);
@@ -157,7 +157,6 @@ public class SceneGraphView extends Control implements DockLayout {
         return getTreeItem(p.getX(), p.getY());
     }
 
-
     @Override
     public Node layoutNode() {
         return this;
@@ -171,22 +170,52 @@ public class SceneGraphView extends Control implements DockLayout {
         return targetContext;
     }
 
-    public void childrenModification(TreeItem.TreeModificationEvent<Object> ev) {
-        if (ev.wasAdded()) {
-            for (TreeItem item : ev.getAddedChildren()) {
-                if (item.getValue() instanceof Node) {
-                }
-            }
-        }
-        if (ev.wasRemoved()) {
-            for (TreeItem item : ev.getRemovedChildren()) {
-            }
-        }
-    }
-
     @Override
     protected Skin<?> createDefaultSkin() {
         return new SceneGraphViewSkin(this);
+    }
+    private EventHandler<TreeItem.TreeModificationEvent<Object>> treeItemEventHandler;
+    private EventHandler<TreeItem.TreeModificationEvent<Object>> valueChangedHandler;
+    private EventHandler<TreeItem.TreeModificationEvent<Object>> childrenModificationEvent;
+
+    public void addTreeItemEventHandlers(TreeItemEx item) {
+        valueChangedHandler = ev -> {
+            System.err.println("TreeItem: (value...) EventType = " + ev.getEventType() + "; item = " + ev.getSource());
+            System.err.println("   --- value = " +  ev.getTreeItem().getValue() + "; newValue = " + ev.getNewValue());
+            
+        };
+        childrenModificationEvent = ev -> {
+            System.err.println("TreeItem: (childremM...) EventType = " + ev.getEventType() + "; item = " + ev.getTreeItem());
+            if (ev.wasAdded()) {
+                for (TreeItem it : ev.getAddedChildren()) {
+                    System.err.println("   --- added it = " +  it);
+                    if (it.getValue() instanceof Node) {
+                    }
+                }
+            }
+            if (ev.wasRemoved()) {
+                
+                for (TreeItem it : ev.getRemovedChildren()) {
+                    System.err.println("   --- removed it = " +  it);                    
+                }
+            }
+            if (ev.wasPermutated()) {
+                for (TreeItem it : ev.getRemovedChildren()) {
+                    System.err.println("   --- permutated it = " +  it);                    
+                }
+            }
+            
+
+        };
+
+        treeItemEventHandler = ev -> {
+            System.err.println("TreeItem: (ALL)  EventType = " + ev.getEventType() + "; item = " + ev.getSource());
+        };
+
+        item.addEventHandler(TreeItem.valueChangedEvent(), valueChangedHandler);
+        item.addEventHandler(TreeItem.childrenModificationEvent(), childrenModificationEvent);
+
+        //item.addEventHandler(TreeItem.treeNotificationEvent(),  treeItemEventHandler);                
     }
 
 }// SceneGraphView

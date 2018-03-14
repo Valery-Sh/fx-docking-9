@@ -40,6 +40,7 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
 import org.vns.javafx.dock.api.designer.TreeItemEx;
 
+
 /**
  *
  * @author Valery
