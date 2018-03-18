@@ -23,25 +23,23 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.dragging.view.PopupNodeFraming;
-import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.SelectPane;
+import org.vns.javafx.dock.api.SelectPane.SideCircles;
 import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
@@ -50,13 +48,15 @@ import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
  *
  * @author Valery
  */
-public class TestLayoutBase extends Application {
+public class TestSelectPane extends Application {
+
+    SelectPane selPane;
 
     ShapeNodeFraming resizer = ShapeNodeFraming.getInstance();
     int counter = 0;
     int click = 0;
     Node last;
-
+    Label lastLabel;
     Rectangle rect = new Rectangle(50, 20);
 
     VBox rightPane = new VBox();
@@ -66,24 +66,36 @@ public class TestLayoutBase extends Application {
         @Override
         protected void layoutChildren() {
             super.layoutChildren();
+
         }
     };
 
     @Override
     public void start(Stage stage) throws Exception {
-
+        System.err.println(java.util.UUID.randomUUID());
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance());
         stage.setAlwaysOnTop(true);
 
-        Rectangle rect = new Rectangle(70, 30);
-        rect.setFill(Color.AQUA);
+        Circle rect = new Circle(5);
+        rect.getStyleClass().add("circle");
+        //rect.setFill(Color.AQUA);
+
+        Button createLabelButton = new Button("create Label");
+        Button addLabelButton = new Button("add Label");
+        Button applyCssButton = new Button("applyCss");        
+        
+        Button nullShapeClassButton = new Button("Null Shape Class");
+        Button configShapeClassButton = new Button("Config Side Shapes");
 
         Button addButton = new Button("add new Node");
         Button doTransformButton = new Button("Show layout");
         Button rectButton = new Button("Test KeyStroke");
         Button infoButton = new Button("print info");
-        
-        VBox root = new VBox(rect, addButton, doTransformButton, rectButton, infoButton);
+
+        Button addSelectPaneButton = new Button("add SelectPane");
+
+        VBox root = new VBox(createLabelButton, addLabelButton, addSelectPaneButton, applyCssButton, configShapeClassButton, nullShapeClassButton,addButton, doTransformButton, rectButton, infoButton);
+
         Scene rootScene = new Scene(root);
         stage.setScene(rootScene);
 
@@ -107,13 +119,75 @@ public class TestLayoutBase extends Application {
         ObjectProperty<Bounds> oBounds = new SimpleObjectProperty();
         //oBounds.bind(last.boundsInParentProperty());
         BorderPane bp = new BorderPane();
+        createLabelButton.setOnAction(a -> {
+            lastLabel = new Label("Label to Bind");
 
+        });
+        addLabelButton.setOnAction(a -> {
+            //rightPane.getChildren().add(lastLabel);
+            if (selPane == null) {
+                selPane = new SelectPane();
+                leftPane.getChildren().add(selPane);
+                //selPane.setPrefWidth(-1);
+                //selPane.setMinHeight(80);
+                //selPane.setLayoutX(-1);
+                //selPane.setLayoutY(-1);
+                // selPane.setBoundNode(last);
+                rightPane.getChildren().add(lastLabel);
+                selPane.bind(lastLabel);
+                //selPane.getSideShapes().applyCss();
+
+            } else {
+                leftPane.getChildren().add(lastLabel);
+            }
+            
+//            selPane.getSideShapes().applyCss();
+            //selPane.setVisible(true);
+            //
+
+        });
+        applyCssButton.setOnAction(a -> {
+            if ( selPane.getSideShapes().isCssApplied() ) {
+                selPane.getSideShapes().setCssApplied(false);
+            } else {
+                selPane.getSideShapes().applyCss();
+            }
+
+        });        
+        
+        nullShapeClassButton.setOnAction(a -> {
+            if ( selPane.getSideShapes() != null ) {
+                selPane.setSideShapes(null);
+            } else {
+                selPane.setSideShapes(new SideCircles());
+                selPane.getSideShapes().bind(selPane);
+                
+            }
+        });
+        
+        configShapeClassButton.setOnAction(a -> {
+/*            CircleConfig  cfg = (CircleConfig) selPane.getSideShapes().getConfig();
+            double radius = cfg.getShape().getRadius();
+            
+            if ( radius < 3  ) {
+                cfg.getShape().setRadius(radius + 1);
+            } else if (radius == 1)  {
+                cfg.getShape().setRadius(2);
+            } else {
+                cfg.getShape().setRadius(radius - 1);
+            }
+            cfg.apply();
+            
+            selPane.getSideShapes().applyCss();
+  */          
+        });        
+        
         addButton.setOnAction(a -> {
 
             last = new Button("Button" + counter++);
             Button btn = (Button) last;
             //btn.arm();
-            //btn.setStyle("-fx-border-color: aqua; ");
+            btn.setStyle("-fx-border-width: 5;-fx-border-color: aqua; ");
             btn.setFocusTraversable(false);
             btn.setTranslateX(12);
             btn.setTranslateY(12);
@@ -130,8 +204,26 @@ public class TestLayoutBase extends Application {
 
         });
 
+        addSelectPaneButton.setOnAction(e -> {
+            if (selPane == null) {
+                selPane = new SelectPane();
+                leftPane.getChildren().add(selPane);
+                //selPane.setPrefWidth(-1);
+                //selPane.setMinHeight(80);
+                //selPane.setLayoutX(-1);
+                //selPane.setLayoutY(-1);
+                // selPane.setBoundNode(last);
+
+            }
+            selPane.bind(last);
+            selPane.setVisible(true);
+
+            //selPane.setMinWidth(80);
+        });
+
         rectButton.setOnAction(a -> {
             System.err.println("rect StrokeType = " + rect.getStrokeType() + "; getStroke()=" + rect.getStroke());
+            //rect.setFill(Color.BLUE);
             if (rect.getStroke() == null) {
                 rect.setStroke(Color.BLUE);
                 rect.setStrokeWidth(5);
@@ -142,20 +234,21 @@ public class TestLayoutBase extends Application {
             }
         });
         infoButton.setOnAction(a -> {
+
             System.err.println("rect bounds = " + rect.getLayoutBounds());
-            System.err.println("   --- rect width = " + rect.getWidth());
-            System.err.println("   --- rect height = " + rect.getHeight());
+//            System.err.println("   --- rect width = " + rect.getWidth());
+//            System.err.println("   --- rect height = " + rect.getHeight());
         });
 
         doTransformButton.setOnAction(a -> {
-            
+
             //rightPane.getChildren().add(0, new Label("VALERY"));
 /*            ((Button) last).getInsets();
             System.err.println("LAYOUT Y = " + last.getLayoutY());
             System.err.println("   -- last layoutBounds  = " + last.getLayoutBounds());
             System.err.println("   -- last Insets  = " + ((Button) last).getInsets());
-*/
-            last.setTranslateY(last.getLayoutY() + 10*( ++click));
+             */
+            last.setTranslateY(last.getLayoutY() + 10 * (++click));
             last.setScaleX(2);
             /*            System.err.println("=== " + last + " ====================================");
             System.err.println("oBounds      = " + oBounds.get());
@@ -239,11 +332,16 @@ public class TestLayoutBase extends Application {
                     //    resizer.hide();
                 }
                 //last.setTranslateY(60);
-                resizer.show(last);
+                if ( list.get(0) == last ) {
+                    resizer.show(last);
+                } else if ( list.get(0) == lastLabel ) {
+                    resizer.show(lastLabel);
+                }
+
                 //last.setTranslateY(60);
                 //Platform.runLater(() -> {
 
-                System.err.println("getTransforms = " + last.getTransforms());
+//                System.err.println("getTransforms = " + last.getTransforms());
                 //});
 
                 //resizer.getIndicator().setVisible(false);

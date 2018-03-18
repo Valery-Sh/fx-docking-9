@@ -78,12 +78,12 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
 
     public void resizeManaged(double x, double y) {
         double xDelta = 0, yDelta = 0, wDelta = 0, hDelta = 0;
-        System.err.println("resizeManaged: x=" + x + "; y=" + y + "; cursor=" + cursor);
+//        System.err.println("resizeManaged: x=" + x + "; y=" + y + "; cursor=" + cursor);
 
         double curX = mouseX.get();
         double curY = mouseY.get();
         if (cursor == Cursor.S_RESIZE) {
-            System.err.println("resizeManaged: y=" + y + "; mouseY=" + this.mouseY.get());
+//            System.err.println("resizeManaged: y=" + y + "; mouseY=" + this.mouseY.get());
             hDelta = y - this.mouseY.get();
             curY = y;
         } else if (cursor == Cursor.E_RESIZE) {
@@ -125,7 +125,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         }
         Region root = (Region) getWindow().getScene().getRoot();
         root.setMaxWidth(Double.MAX_VALUE);
-        System.err.println("RESIZE === ");
+//        System.err.println("RESIZE === ");
         //Window win = getWindow();
         if (wDelta + getWindow().getWidth() > getMinWidth()) {
             if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
@@ -139,7 +139,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         if (hDelta + getWindow().getHeight() > getMinHeight()) {
             if ((node.getHeight() > node.minHeight(-1) || yDelta <= 0)) {
 //                win.setWorkHeight(hDelta + win.getWorkHeight());
-                System.err.println("hDelta = " + hDelta + "; node.prefH=" + node.getPrefHeight());
+//                System.err.println("hDelta = " + hDelta + "; node.prefH=" + node.getPrefHeight());
                 node.setPrefHeight(hDelta + node.getPrefHeight());
                 mouseY.set(curY);
             }
@@ -187,7 +187,7 @@ public class NodeResizeExecutor implements WindowResizeExecutor {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
-        System.err.println("start: cursor = " + cursor);
+//        System.err.println("start: cursor = " + cursor);
         this.cursor = cursor;
         //this.window = window;
         Region r = (Region) window.getScene().getRoot();

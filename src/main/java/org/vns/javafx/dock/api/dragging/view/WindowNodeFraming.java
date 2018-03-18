@@ -169,7 +169,7 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
         
         boundsInParentListener = (o, ov, nv) -> {
-            System.err.println("boundsInParentListener");
+            //System.err.println("boundsInParentListener");
             borderWidth = root.getInsets().getLeft() + root.getInsets().getRight();
             borderHeight = root.getInsets().getTop() + root.getInsets().getBottom();
 

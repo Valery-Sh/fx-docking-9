@@ -16,7 +16,20 @@
 -fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
 }
 */
+.side-shape {
+    -fx-fill: red;
+    
+}
+/*.select-pane {
+    -fx-fill: blue;
+    
+}
+*/
 
+/*.select-pane1 .circle {
+    -fx-fill: blue;
+}
+*/
 .palette-pane .titled-pane .tile-pane {
     -fx-border-width: 3;
     -fx-border-color: lightgray;
