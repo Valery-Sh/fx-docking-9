@@ -40,12 +40,12 @@ public abstract class Selection {
 //        System.err.println("Selection: setLelected = " + toSelect);
         this.selected.set(toSelect);
     }
-    
+
     protected boolean doSelect(Object toSelect) {
         boolean retval = false;
         return retval;
     }
-            
+
     public Object getSelected() {
         return selected.get();
     }
@@ -108,7 +108,7 @@ public abstract class Selection {
             System.err.println("++ SelectionHandler");
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
-                
+
             }
             if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 mouseRelesed(ev);
@@ -120,15 +120,16 @@ public abstract class Selection {
 //            setSource(ev.getSource());
 //            sel.notifySelected(ev.getSource());
 //            sel.setSelected(ev.getSource());
-        
+
             System.err.println("******* selection handler mousepressed");
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-            if ( nf != null && (ev.getSource() instanceof Node )) {
+            if (nf != null && (ev.getSource() instanceof Node)) {
                 nf.show((Node) ev.getSource());
-            Selection sel = DockRegistry.lookup(Selection.class);
-            if ( sel != null ) {
-                sel.notifySelected(ev.getSource());                
-            }
+/*                Selection sel = DockRegistry.lookup(Selection.class);
+                if (sel != null) {
+                    sel.notifySelected(ev.getSource());
+                }
+*/
             }
             ev.consume();
 
@@ -136,10 +137,9 @@ public abstract class Selection {
 
         protected void mouseRelesed(MouseEvent ev) {
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
-                
+
                 Selection sel = DockRegistry.lookup(Selection.class);
-                
-                
+
                 ev.consume();
             }
         }

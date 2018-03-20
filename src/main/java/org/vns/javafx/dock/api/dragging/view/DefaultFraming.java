@@ -22,6 +22,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Selection;
 
 /**
  *
@@ -93,15 +95,19 @@ public class DefaultFraming implements NodeFraming {
             sc.setRadius(1.5);
 
             if (!applyCss) {
-                sc.setDefaultStyles();
+                sc.setDefaultStyle();
             } else {
-                sc.addStyleClass("side-shape");
+                sc.getStyleClass().add("side-shape");
             }
             shapeFraming.setSideShapes(sc);
         }
 
         shapeFraming.bind(node);
         shapeFraming.setVisible(true);
+        Selection sel = DockRegistry.lookup(Selection.class);
+        if (sel != null) {
+            sel.notifySelected(node);
+        }
     }
 
     @Override
@@ -114,18 +120,17 @@ public class DefaultFraming implements NodeFraming {
 
     }
 
-/*    public boolean isShowing(Node node) {
+    /*    public boolean isShowing(Node node) {
         return isShowing() && (getNode() == node);
     }
 
     public boolean isShowing() {
         return getNode() != null;
     }
-*/
+     */
     //
     //
     //
-
     public ReadOnlyObjectProperty<Node> nodeProperty() {
         return nodeWrapper.getReadOnlyProperty();
     }

@@ -22,13 +22,9 @@ import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PalettePane;
-import org.vns.javafx.dock.api.dragging.view.ShapeFraming;
-import org.vns.javafx.dock.api.dragging.view.ShapeFraming.SideShapes;
 import org.vns.javafx.dock.api.Selection.SelectionHandler;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
 import org.vns.javafx.dock.api.dragging.view.DefaultFraming;
-import org.vns.javafx.dock.api.dragging.view.ShapeFraming;
-import org.vns.javafx.dock.api.dragging.view.ShapeFraming.SideCircles;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
@@ -47,7 +43,10 @@ public class DesignerLookup { // implements ContextLookup {
     }
     private void init() {
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
+        WindowNodeFraming f = StageNodeFraming.getInstance();
+        //f.getStyleClass().add("window-node-framing");
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance() );        
+        //DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, f );        
 
 /*        ShapeFraming ns = new ShapeFraming();
         ns.setDefaultStyles();
@@ -57,7 +56,7 @@ public class DesignerLookup { // implements ContextLookup {
         ns.setSideShapes(ss);
 */
         
-        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DefaultFraming(true) );                
+        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DefaultFraming() );                
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
         

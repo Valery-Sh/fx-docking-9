@@ -180,18 +180,23 @@ public class SceneGraphView extends Control implements DockLayout {
 
     public void addTreeItemEventHandlers(TreeItemEx item) {
         valueChangedHandler = ev -> {
-            System.err.println("TreeItem: (value...) EventType = " + ev.getEventType() + "; item = " + ev.getSource());
+            System.err.println("SceneGraphView: TreeItem: (value...) EventType = " + ev.getEventType() + "; item = " + ev.getSource());
             System.err.println("   --- value = " +  ev.getTreeItem().getValue() + "; newValue = " + ev.getNewValue());
             
         };
         childrenModificationEvent = ev -> {
-            System.err.println("TreeItem: (childremM...) EventType = " + ev.getEventType() + "; item = " + ev.getTreeItem());
+            System.err.println("SceneGraphView: TreeItem: (childremM...) EventType = " + ev.getEventType() + "; item = " + ev.getTreeItem());
             if (ev.wasAdded()) {
                 for (TreeItem it : ev.getAddedChildren()) {
                     System.err.println("   --- added it = " +  it);
                     if (it.getValue() instanceof Node) {
                     }
+                    
                 }
+                int row = getTreeView().getRow(ev.getAddedChildren().get(ev.getAddedSize()-1) );
+                System.err.println("   --- SceneGraphView: TreeItem: row = " + row);
+                System.err.println("   --- SceneGraphView: TreeItem: item = " + ev.getAddedChildren().get(ev.getAddedSize()-1));
+                getTreeView().getSelectionModel().select(ev.getAddedChildren().get(ev.getAddedSize()-1));
             }
             if (ev.wasRemoved()) {
                 

@@ -19,7 +19,8 @@
 .side-shape {
     -fx-fill: white;
     -fx-stroke-width: 1;
-    -fx-stroke: rgb(255, 148, 40);
+    /*-fx-stroke: rgb(255, 148, 40);*/
+    -fx-stroke: red;
     -fx-stroke-type: outside;
     
 }
@@ -29,7 +30,10 @@
     -fx-stroke: rgb(255, 148, 40);
     -fx-stroke-type: inside;
 }
-
+.window-node-framing {
+    -fx-background-color: yellow; 
+    -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed;    
+}
 
 /*.select-pane1 .circle {
     -fx-fill: blue;

@@ -25,6 +25,8 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventDispatchChain;
 import javafx.event.EventDispatcher;
@@ -228,29 +230,33 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         protected Shape wShape;    // west indicator
         protected Shape nwShape;   // north-west indicator
 
-        private String defaultStyles;
+        private final ObservableList<String> styleClass = FXCollections.observableArrayList();
 
-        /*        private final ObservableMap<String, String> defaultStyles = FXCollections.observableHashMap();
+        private final ObjectProperty<String> style = new SimpleObjectProperty<>();
 
-        {
-            defaultStyles.put("-fx-stroke-type", "outside");
-            defaultStyles.put("-fx-stroke", "rgb(255, 148, 40)");
-            defaultStyles.put("-fx-stroke-width", "1");
-            defaultStyles.put("-fx-fill", "white");
-        }
-         */
         public SideShapes() {
             createShapes();
         }
 
-        public void setDefaultStyles() {
-            defaultStyles = "-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 1; -fx-fill: white";
+        public void setDefaultStyle() {
+            setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 1; -fx-fill: white");
         }
 
-        public void addStyleClass(String styleClass) {
-            for (Shape s : getShapes()) {
-                s.getStyleClass().add(styleClass);
-            }
+
+        public ObservableList<String> getStyleClass() {
+            return styleClass;
+        }
+
+        public ObjectProperty<String> styleProperty() {
+            return style;
+        }
+
+        public String getStyle() {
+            return style.get();
+        }
+
+        public void setStyle(String style) {
+            this.style.set(style);
         }
 
         public Shape[] getShapes() {
@@ -274,21 +280,30 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             indicator = shapeFraming;
 
             addToPane((Pane) indicator.getParent());
-            if (defaultStyles != null) {
+            
+            if (getStyle() == null && getStyleClass().isEmpty()) {
+                setDefaultStyle();
                 for (Shape s : getShapes()) {
-                    s.setStyle(defaultStyles);
+                    s.setStyle(getStyle());
                 }
+            } else if (getStyle() != null) {
+                for (Shape s : getShapes()) {
+                    s.setStyle(getStyle());
+                }
+
+            } else {
+                for (Shape sh : getShapes()) {
+                    getStyleClass().forEach(s -> {
+                        sh.getStyleClass().add(s);
+                    });
+                }
+                
+
             }
+
             bind();
         }
 
-        /*        protected void rebind() {
-            if (shapeFraming != null) {
-                System.err.println("REBIND");
-                show(shapeFraming);
-            }
-        }
-         */
         public void removeShapes() {
             remove(nShape);
             remove(neShape);
@@ -552,12 +567,8 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         protected abstract void unbind(Shape shape);
 
         protected void addToPane(Pane pane) {
-            System.err.println("@@@ addToPane ");
             removeShapes();
             pane.getChildren().add(nShape);
-//            if (!nShape.getStyleClass().isEmpty()) {
-//                System.err.println("   --- addToPane css class = " + nShape.getStyleClass().get(0));
-//            }
             nShape.toFront();
             pane.getChildren().add(neShape);
             neShape.toFront();
@@ -587,7 +598,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             } else if (ev.getEventType() == MouseEvent.MOUSE_EXITED) {
                 shape.getScene().setCursor(Cursor.DEFAULT);
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                //System.err.println("MOUSE PRESSED");
                 removeMouseExitedListener(shape);
                 shapeFraming.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
 
@@ -597,7 +607,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 wnf.show(shapeFraming.getBoundNode());
                 wnf.redirectMouseEvents(ev, shapeFraming.getStartMousePos(), shapeFraming);
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                //System.err.println("MOUSE RELEASED");
                 shape.getScene().setCursor(Cursor.DEFAULT);
                 addMouseExitedListener(shape);
             }
@@ -605,7 +614,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
 
         @Override
         public void handle(MouseEvent ev) {
-            //System.err.println("HANDLE");
             if (ev.getSource() == nShape) {
                 handle(ev, nShape, Cursor.N_RESIZE);
 
@@ -641,7 +649,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 for (Shape s : getShapes()) {
                     Circle c = (Circle) s;
                     if (c.getRadius() <= 0) {
-                        System.err.println("RADIUS: " + nv);
                         c.setRadius((double) nv);
                     }
                 }
@@ -739,153 +746,9 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
 
         @Override
         protected void createShapes() {
-            System.err.println("   --- createShapes()");
             createShapes(Circle.class);
-            //addToPane((Pane) getIndicator().getParent());
         }
 
     }//class Circle
-
-    /*public static abstract class Config {
-
-        private double offset = 0;
-        private final SideShapes sideShapes;
-
-        public Config(SideShapes sideShapes) {
-            this.sideShapes = sideShapes;
-
-        }
-
-        public abstract Shape getShape();
-
-        protected SideShapes getSideShapes() {
-            return sideShapes;
-        }
-
-        public double getOffset() {
-            return offset;
-        }
-
-        public void setOffset(double offset) {
-            this.offset = offset;
-        }
-
-        public void apply() {
-            sideShapes.show();
-            //sideShapes.get
-        }
-    }
-
-    public static class CircleConfig extends Config {
-
-        private final Shape indicator;
-
-        public CircleConfig(SideShapes sideShapes) {
-            super(sideShapes);
-            this.indicator = new Circle();
-            init();
-        }
-
-        private void init() {
-            indicator.setStrokeType(StrokeType.OUTSIDE);
-            indicator.setStroke(Color.rgb(255, 148, 40));
-            indicator.setStrokeWidth(1);
-            indicator.setFill(Color.WHITE);
-
-            getShape().setRadius(3);
-        }
-
-        @Override
-        public Circle getShape() {
-            return (Circle) indicator;
-        }
-    }
-
-    public static class RectangleConfig extends Config {
-
-        private final Shape indicator;
-
-        public RectangleConfig(SideShapes sideShapes) {
-            super(sideShapes);
-            this.indicator = new Rectangle(3, 3);
-        }
-
-        @Override
-        public Rectangle getShape() {
-            return (Rectangle) indicator;
-        }
-
-    }
-     */
-    public static class MouseEventDispatcher implements EventDispatcher {
-
-        private EventDispatcher initial;
-        private Node node;
-        private Predicate<Node> preventCondition;
-
-        public MouseEventDispatcher() {
-            this(null);
-        }
-
-        public MouseEventDispatcher(Predicate<Node> cond) {
-            preventCondition = cond;
-            init();
-        }
-
-        private void init() {
-        }
-
-        public void start(Node node) {
-            this.node = node;
-            initial = node.getEventDispatcher();
-            node.setEventDispatcher(this);
-        }
-
-        @Override
-        public Event dispatchEvent(Event event, EventDispatchChain tail) {
-            if (event instanceof MouseEvent) {
-
-                MouseEvent mouseEvent = (MouseEvent) event;
-
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
-//                    return null;
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                    return null;
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                    return null;
-                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
-                    return null;
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    return null;
-                }
-            }
-
-            return initial.dispatchEvent(event, tail);
-        }
-
-        protected Event pressed(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
-        }
-
-        protected Event released(Event event, EventDispatchChain tail) {
-            if (preventCondition == null || preventCondition.test(node)) {
-                return null;
-            }
-            return initial.dispatchEvent(event, tail);
-        }
-
-        protected Event clicked(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
-        }
-
-        protected Event dragDetected(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
-        }
-
-        protected Event dragged(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
-        }
-
-    }
 
 }//class

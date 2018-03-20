@@ -17,9 +17,13 @@ package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -41,7 +45,11 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
 
     private ChangeListener<Bounds> boundsInParentListener;
-
+    
+    private ObservableList<String> styleClass = FXCollections.observableArrayList();
+    
+    private ObjectProperty<String> style = new SimpleObjectProperty<>();
+            
     private Window window;
 
     private Resizer resizer;
@@ -83,10 +91,27 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
     private double translateY;
     private Cursor saveCursor;
 
+    
     protected WindowNodeFraming() {
         super();
     }
 
+    public ObservableList<String> getStyleClass() {
+        return styleClass;
+    }
+    
+    public ObjectProperty<String> styleProperty() {
+        return style;
+    }
+    public String getStyle() {
+        return style.get();
+    }
+    public void setStyle(String style) {
+        this.style.set(style);
+    }
+     public void setDefaultStyle() {
+        setStyle("-fx-background-color: yellow; -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed");
+    }
     protected void setWindow(Window window) {
         this.window = window;
 //        init();
@@ -130,11 +155,22 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
     private void init(Region region) {
 
         root = new StackPane();
-        root.setStyle("-fx-background-color: transparent;");
 
         //Border b = new NodeResizerBorder().getBorder();
         //root.setBorder(b);
-        root.setStyle("-fx-border-width: 6; -fx-border-color: red; -fx-opacity: 0.3");
+        System.err.println("WindowNodeFraming: styles.size() = " + root.getStyleClass().size());
+        //root.setStyle("-fx-background-color: yellow; -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed");
+        if ( getStyle() == null && getStyleClass().isEmpty() ) {
+            setDefaultStyle();
+            root.setStyle(getStyle());
+        } else if (getStyle() != null ) {
+            root.setStyle(getStyle());
+        } else {
+            getStyleClass().forEach( s -> {
+                root.getStyleClass().add(s);
+            });
+
+        }
         root.applyCss();
 
         borderWidth = root.getInsets().getLeft() + root.getInsets().getRight();
