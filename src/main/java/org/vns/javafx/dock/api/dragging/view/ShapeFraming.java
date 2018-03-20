@@ -43,8 +43,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.dragging.view.NodeFraming;
-import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
  *
@@ -214,7 +212,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         this.sideShapes.set(sideShapes);
     }
 
-    public abstract class SideShapes implements EventHandler<MouseEvent> {
+    public abstract static class SideShapes implements EventHandler<MouseEvent> {
 
         private ShapeFraming shapeFraming;
 
@@ -297,14 +295,12 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                         sh.getStyleClass().add(s);
                     });
                 }
-                
-
             }
 
             bind();
         }
 
-        public void removeShapes() {
+        protected void removeShapes() {
             remove(nShape);
             remove(neShape);
             remove(eShape);
@@ -386,7 +382,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             shape.addEventFilter(MouseEvent.MOUSE_EXITED, this);
         }
 
-        private void remove(Shape shape) {
+        protected void remove(Shape shape) {
             if (shape == null) {
                 return;
             }
@@ -605,6 +601,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
                 shapeFraming.setVisible(false);
                 wnf.show(shapeFraming.getBoundNode());
+                System.err.println("ShapeFraming CURSOR = " + shape.getScene().getCursor());
                 wnf.redirectMouseEvents(ev, shapeFraming.getStartMousePos(), shapeFraming);
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 shape.getScene().setCursor(Cursor.DEFAULT);
@@ -634,11 +631,12 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             }
         }
 
-    }//class SidePanes
+        
+    }//class SideShapes
 
-    public static class SideCircles extends SideShapes {
+    public static class SideCircles extends ShapeFraming.SideShapes {
 
-        private DoubleProperty radius = new SimpleDoubleProperty(0);
+        private final DoubleProperty radius = new SimpleDoubleProperty(0);
 
         public SideCircles() {
             init();

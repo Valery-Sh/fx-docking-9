@@ -187,9 +187,9 @@ public class NodeResizer implements Resizer {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
-//        System.err.println("start: cursor = " + cursor);
+        System.err.println("NodeResizer: start: cursor = " + cursor);
         this.cursor = cursor;
-        //this.window = window;
+                //this.window = window;
         Region r = (Region) window.getScene().getRoot();
 //        node.setPrefWidth(nodeResizer.getWorkWidth());
 //        node.setPrefHeight(nodeResizer.getWorkHeight());

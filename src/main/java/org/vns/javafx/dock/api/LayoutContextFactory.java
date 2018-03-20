@@ -541,7 +541,15 @@ public class LayoutContextFactory {
                     }
                 }
             } else if (targetNode instanceof HBox) {
-
+                Bounds b = DockUtil.getHalfBounds(Side.LEFT, innerNode, mousePos.getX(), mousePos.getY());
+                if (b != null && b.contains(mousePos)) {
+                    items.add(idx, (T) node);
+                } else {
+                    b = DockUtil.getHalfBounds(Side.RIGHT, innerNode, mousePos.getX(), mousePos.getY());
+                    if (b != null && b.contains(mousePos)) {
+                        items.add(idx + 1, (T) node);
+                    }
+                }
             } else {
             }
             return retval;
@@ -662,7 +670,16 @@ public class LayoutContextFactory {
                     }
 
                 } else if (targetPane instanceof HBox) {
+                    Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
+                    r.setHeight(targetPane.getHeight());
+                    r.setX(b.getMinX());
+                    r.setWidth(b.getWidth() / 2);
 
+                    if (x < b1.getMinX() + b.getWidth() / 2) {
+                        r.setX(b.getMinX());
+                    } else {
+                        r.setX(b.getMinX() + b.getWidth() / 2);
+                    }
                 } else {
                     r.setWidth(b.getWidth());
                     r.setHeight(b.getHeight());

@@ -442,6 +442,8 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
         redirectMousePressed(ev);
        //windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
+        System.err.println("WindowNodeFraming: saveCursor = " + saveCursor);
+        getWindow().getScene().setCursor(saveCursor);
         resizer.start(ev, this, saveCursor, getSupportedCursors());
     }
 

@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
@@ -48,6 +49,8 @@ public class DemoDesigner1 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        
+
         stage.setAlwaysOnTop(true);
         DockPane rootDockPane = new DockPane();
         rootDockPane.setUsedAsDockLayout(false);

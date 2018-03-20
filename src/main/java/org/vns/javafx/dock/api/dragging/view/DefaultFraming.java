@@ -15,15 +15,23 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeItem;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Selection;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.dock.api.designer.EditorUtil;
+import org.vns.javafx.dock.api.designer.SceneGraphView;
 
 /**
  *
@@ -32,7 +40,18 @@ import org.vns.javafx.dock.api.Selection;
 public class DefaultFraming implements NodeFraming {
 
     private ShapeFraming shapeFraming;
+    private ParentFraming parentFraming;
+
+    private final ObservableList<String> styleClass = FXCollections.observableArrayList();
+    private final ObjectProperty<String> style = new SimpleObjectProperty<>();
+
     private boolean applyCss;
+
+    private final ReadOnlyObjectWrapper<Node> nodeWrapper = new ReadOnlyObjectWrapper<>();
+
+    private ChangeListener<Node> nodeParentListener;
+    private ChangeListener<Scene> nodeSceneListener;
+    private ChangeListener<Window> nodeWindowListener;
 
     public DefaultFraming() {
         this(false);
@@ -51,15 +70,29 @@ public class DefaultFraming implements NodeFraming {
         this.applyCss = applyCss;
     }
 
-    private final ReadOnlyObjectWrapper<Node> nodeWrapper = new ReadOnlyObjectWrapper<>();
+    public void setDefaultStyle() {
+        setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 1; -fx-fill: white");
+    }
+
+    public ObservableList<String> getStyleClass() {
+        return styleClass;
+    }
+
+    public ObjectProperty<String> styleProperty() {
+        return style;
+    }
+
+    public String getStyle() {
+        return style.get();
+    }
+
+    public void setStyle(String style) {
+        this.style.set(style);
+    }
 
     //
-    // NodeFraming Implementation
+    // 
     //
-    private ChangeListener<Node> nodeParentListener;
-    private ChangeListener<Scene> nodeSceneListener;
-    private ChangeListener<Window> nodeWindowListener;
-
     @Override
     public final void show(Node node) {
         if (!isAcceptable(node)) {
@@ -79,35 +112,88 @@ public class DefaultFraming implements NodeFraming {
         //
         // Check when null to avoid proplem when the method isAcceptable is overidden
         //
-        ShapeFraming pane = (ShapeFraming) node.getScene().getRoot().lookup("." + ShapeFraming.ID);
-        if (shapeFraming != null && pane == null) {
+        ShapeFraming shape = lookupShapeFraming();
+        if (shapeFraming != null && shape == null) {
             ((Pane) node.getScene().getRoot()).getChildren().add(shapeFraming);
-        } else if (shapeFraming == null && pane != null) {
-            shapeFraming = pane;
-        } else if (shapeFraming == null && pane == null) {
+        } else if (shapeFraming == null && shape != null) {
+            shapeFraming = shape;
+        } else if (shapeFraming == null && shape == null) {
             shapeFraming = new ShapeFraming();
+            shapeFraming.setId(ShapeFraming.ID);
 
             ((Pane) node.getScene().getRoot()).getChildren().add(shapeFraming);
-            if (!applyCss) {
-                shapeFraming.setDefaultStyles();
-            }
-            ShapeFraming.SideCircles sc = new ShapeFraming.SideCircles();
-            sc.setRadius(1.5);
-
-            if (!applyCss) {
-                sc.setDefaultStyle();
+            if (! applyCss) {
+                if ( getStyle() != null ) {
+                    shapeFraming.setStyle(getStyle());
+                } else {
+                    shapeFraming.setDefaultStyles();
+                }
             } else {
-                sc.getStyleClass().add("side-shape");
+                if ( getStyle() != null ) {
+                    shapeFraming.setStyle(getStyle());
+                } 
+                if ( ! getStyleClass().isEmpty()) {
+                    getStyleClass().forEach(s -> {
+                        shapeFraming.getStyleClass().add(s);
+                    });
+                }
             }
-            shapeFraming.setSideShapes(sc);
+            System.err.println("node.getScene().getRoot()); = " + node.getScene().getRoot());
+            createSideShapes();
         }
 
         shapeFraming.bind(node);
         shapeFraming.setVisible(true);
+
+        createParentFraming();
+
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {
             sel.notifySelected(node);
         }
+    }
+
+    protected ShapeFraming lookupShapeFraming() {
+        return (ShapeFraming) getNode().getScene().getRoot().lookup("." + ShapeFraming.ID);
+    }
+
+    protected void setId() {
+        shapeFraming.setId(ShapeFraming.ID);
+    }
+
+    protected void createParentFraming() {
+        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        if (sgv == null) {
+            return;
+        }
+        TreeItem item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), getNode());
+        if (item != null && item.getParent() != null && item.getParent().getValue() != null && (item.getParent().getValue() instanceof Node)) {
+            Node parent = (Node) item.getParent().getValue();
+            parentFraming = new ParentFraming();
+
+            parentFraming.show(parent);
+            //parentFraming.getShapeFraming().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.7");
+            parentFraming.getShapeFraming().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.8");            
+
+        }
+
+    }
+    //GOLDENROD NAVAJOWHITE SANDYBROWN PERU WHEAT             
+    protected void createSideShapes() {
+        
+        ShapeFraming.SideCircles sc = new ShapeFraming.SideCircles();
+        sc.setRadius(1.5);
+
+        if (!applyCss) {
+            sc.setDefaultStyle();
+        } else {
+            sc.getStyleClass().add("side-shape");
+        }
+        shapeFraming.setSideShapes(sc);
+    }
+
+    public ShapeFraming getShapeFraming() {
+        return shapeFraming;
     }
 
     @Override
@@ -117,17 +203,12 @@ public class DefaultFraming implements NodeFraming {
         }
         shapeFraming.setVisible(false);
         finalizeNode();
+        if (parentFraming != null) {
+            parentFraming.hide();
+        }
 
     }
 
-    /*    public boolean isShowing(Node node) {
-        return isShowing() && (getNode() == node);
-    }
-
-    public boolean isShowing() {
-        return getNode() != null;
-    }
-     */
     //
     //
     //
@@ -181,4 +262,37 @@ public class DefaultFraming implements NodeFraming {
 
     }
 
+    public static class ParentFraming extends DefaultFraming {
+
+        public ParentFraming() {
+            this(false);
+        }
+
+        public ParentFraming(boolean applyCss) {
+            super(applyCss);
+        }
+
+        @Override
+        protected void createSideShapes() {
+
+        }
+
+        protected void createParentFraming() {
+
+        }
+
+        @Override
+        protected ShapeFraming lookupShapeFraming() {
+            return (ShapeFraming) getNode().getScene().getRoot().lookup(".PARENT-" + ShapeFraming.ID);
+        }
+
+        @Override
+        protected void setId() {
+            getShapeFraming().setId("PARENT-" + ShapeFraming.ID);
+        }
+
+        protected boolean isAcceptable(Node node) {
+            return true;
+        }
+    }
 }
