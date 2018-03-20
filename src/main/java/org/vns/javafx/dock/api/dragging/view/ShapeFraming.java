@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.dragging.view;
 
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.event.Event;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -33,45 +35,37 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
-import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
 /**
  *
  * @author Valery
  */
-public class SelectPane extends Pane {
+public class ShapeFraming extends Rectangle { //implements NodeFraming{
 
-    public static String ID = "RECT-ID-89528991-bd7a-4792-911b-21bf56660bfb";
-    private Rectangle rect;
-    double rectStrokeWidth = 1;
-    Paint rectFill = Color.YELLOW;
-    Paint rectStroke = Color.RED;
+    public static String ID = "STYLE-AS-ID-89528991-bd7a-4792-911b-21bf56660bfb";
+    //private Rectangle indicator;
 
-    public static final int N_RESIZE = 0;
-    public static final int NE_RESIZE = 1;
-    public static final int E_RESIZE = 2;
-    public static final int SE_RESIZE = 3;
-    public static final int S_RESIZE = 4;
-    public static final int SW_RESIZE = 5;
-    public static final int W_RESIZE = 6;
-    public static final int NW_RESIZE = 7;
+    public static final int CENTER = 0;
+    public static final int N_RESIZE = 1;
+    public static final int NE_RESIZE = 2;
+    public static final int E_RESIZE = 3;
+    public static final int SE_RESIZE = 4;
+    public static final int S_RESIZE = 5;
+    public static final int SW_RESIZE = 6;
+    public static final int W_RESIZE = 7;
+    public static final int NW_RESIZE = 8;
 
     private final ReadOnlyObjectWrapper<Node> boundNodeWrapper = new ReadOnlyObjectWrapper<>();
 
     private final ObjectProperty<SideShapes> sideShapes = new SimpleObjectProperty<>();
-
-    //private final ObjectProperty<Node> boundNode = new SimpleObjectProperty<>();
-//    private final ObjectProperty<Class<? extends Shape>> shapeClass = new SimpleObjectProperty<>(Circle.class);
-    private final ObjectProperty<Shape> tuningShape = new SimpleObjectProperty<>(new Circle(1.5, Color.WHITE));
-
-    private final BooleanProperty useSideShapes = new SimpleBooleanProperty(true);
 
     private Point2D startMousePos;
 
@@ -79,25 +73,14 @@ public class SelectPane extends Pane {
     // listeners
     //
     private final ChangeListener<Bounds> boundsInParentListener = (o, ov, nv) -> {
-//                    System.err.println("0 boundNode: boundsInParentProperty nv = " + nv);
         adjustBoundsToNode(nv);
-//                    System.err.println("1 boundNode: boundsInParentProperty nv = " + nv);
-    };
-    private final ChangeListener<Boolean> useSideShapesListener = (o, ov, nv) -> {
-        if (ov && getSideShapes() != null) {
-            getSideShapes().bind(this);
-        }
-        if (nv && getSideShapes() == null) {
-            createDefaultSideShapes();
-        }
     };
 
     private final ChangeListener<SideShapes> sideShapesListener = (o, ov, nv) -> {
-        if (ov != null) {
-            System.err.println("sideShapesListener ov = " + ov);
-            ov.unbind();
+        if (ov != null && getParent() != null) {
+            ov.removeShapes();
         }
-        if (nv != null && isUseSideShapes()) {
+        if (nv != null && getParent() != null) {
             nv.bind(this);
         }
 
@@ -106,36 +89,21 @@ public class SelectPane extends Pane {
     private ChangeListener<Node> boundNodeListener;
 
 //    private ChangeListener<Boolean> visiblePropertyListener;
-
-    public SelectPane() {
+    public ShapeFraming() {
         setManaged(false);
-        getStyleClass().add("select-pane");
+        setMouseTransparent(true);
+        getStyleClass().add("shape-framing");
+
         init();
     }
 
     private void init() {
-        Shape s = getTuningShape();
-//        shapeClassProperty().addListener(this::shapeClassChanged);
-        s.getStyleClass().add("side-shape");
-        s.setStrokeType(StrokeType.OUTSIDE);
-        s.setStrokeWidth(1);
-        s.setStyle("-fx-offset: 0");
-
-        useSideShapes.addListener(useSideShapesListener);
-
-/*        visiblePropertyListener = (o, ov, nv) -> {
-            if (getSideShapes() != null) {
-                //getSideShapes().setVisible(nv);
-            }
-        };
-        visibleProperty().addListener(visiblePropertyListener);
-*/        
+        sideShapes.addListener(sideShapesListener);
         initBoundNode();
         initRect();
-        //createSideShapes();
     }
 
-    @Override
+    /*    @Override
     protected void layoutChildren() {
 
         super.layoutChildren();
@@ -144,13 +112,28 @@ public class SelectPane extends Pane {
             return;
         }
     }
+     */
+ /*    public Rectangle getIndicator() {
+        return indicator;
+    }
+     */
+    public void setDefaultStyles() {
+        setStyle("-fx-stroke-type: inside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 2; -fx-fill: transparent");
+    }
 
     private void initBoundNode() {
         boundNodeListener = (v, ov, nv) -> {
             if (ov != null) {
-                removeBoundInParentListener(nv);
+                removeBoundInParentListener(ov);
+                if (getSideShapes() != null) {
+                    getSideShapes().unbind(); // to remove mouseEventListeners
+                }
             }
             if (nv != null) {
+                if (getSideShapes() != null) {
+                    getSideShapes().bind(); // to remove mouseEventListeners
+                }
+
                 nv.boundsInParentProperty().addListener(boundsInParentListener);
 
                 if (getBoundNode().getScene() != null && getBoundNode().getScene().getWindow() != null) {
@@ -163,26 +146,17 @@ public class SelectPane extends Pane {
             } else {
                 setVisible(true);
             }
-            updateSideShapes(ov, nv);
         };
         boundNodeProperty().addListener(boundNodeListener);
-    }
-
-    protected void updateSideShapes(Node oldValue, Node newValue) {
-        if (getSideShapes() == null && newValue != null) {
-            System.err.println("updateSideShapes");
-            createDefaultSideShapes();
-        }
-
     }
 
     protected void adjustBoundsToNode(Bounds boundsInParent) {
         Bounds sb = getBoundNode().localToScene(getBoundNode().getLayoutBounds());
 
-        rect.setY(sb.getMinY());
-        rect.setX(sb.getMinX());
-        rect.setWidth(boundsInParent.getWidth());
-        rect.setHeight(boundsInParent.getHeight());
+        setY(sb.getMinY());
+        setX(sb.getMinX());
+        setWidth(boundsInParent.getWidth());
+        setHeight(boundsInParent.getHeight());
     }
 
     private void removeBoundInParentListener(Node node) {
@@ -190,24 +164,9 @@ public class SelectPane extends Pane {
     }
 
     private void initRect() {
-        rect = new Rectangle(10, 10, 70, 30);
-        rect.setId(ID);
-        rect.setFill(rectFill);
-        rect.setStroke(rectStroke);
-        rect.setStrokeType(StrokeType.INSIDE);
-        rect.setStrokeWidth(rectStrokeWidth);
-        getChildren().add(rect);
-    }
-
-    private void createDefaultSideShapes() {
-        if (getSideShapes() != null) {
-            sideShapes.removeListener(sideShapesListener);
-        }
-        if (isUseSideShapes()) {
-            setSideShapes(new SideCircles());
-            getSideShapes().bind(this);
-            sideShapes.addListener(sideShapesListener);
-        }
+        setManaged(false);
+        getStyleClass().add(ID);
+        setStrokeType(StrokeType.INSIDE);
     }
 
     public ReadOnlyObjectProperty<Node> boundNodeProperty() {
@@ -233,10 +192,14 @@ public class SelectPane extends Pane {
         boundNodeWrapper.setValue(node);
     }
 
-    /*    public ObjectProperty<Class<? extends Shape>> shapeClassProperty() {
-        return shapeClass;
+    public Point2D getStartMousePos() {
+        return startMousePos;
     }
-     */
+
+    public void setStartMousePos(Point2D startMousePos) {
+        this.startMousePos = startMousePos;
+    }
+
     public ObjectProperty<SideShapes> sideShapeProperty() {
         return sideShapes;
     }
@@ -249,147 +212,84 @@ public class SelectPane extends Pane {
         this.sideShapes.set(sideShapes);
     }
 
-    public BooleanProperty useSideShapes() {
-        return useSideShapes;
-    }
-
-    public boolean isUseSideShapes() {
-        return useSideShapes.get();
-    }
-
-    public void setUseSideShapes(boolean useSideShapes) {
-        this.useSideShapes.set(useSideShapes);
-    }
-
-    public ObjectProperty<Shape> tuningShapeProperty() {
-        return tuningShape;
-    }
-
-    public Shape getTuningShape() {
-        return tuningShape.get();
-    }
-
-    public void setTuningShape(Shape shape) {
-        this.tuningShape.set(shape);
-    }
-
-    public void handle(MouseEvent ev) {
-        /*        if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-            System.err.println("MOUSE MOVE ShapeNodeFraming");
-            Point2D pt = indicator.screenToLocal(ev.getScreenX(), ev.getScreenY());
-            Bounds ib = indicator.getBoundsInLocal();
-            Cursor c = ShapeNodeResizeExecutor.cursorBy(ev.getX() - ib.getMinX(), ev.getY() - ib.getMinY(), indicator);
-            if (!isCursorSupported(c)) {
-                indicator.getScene().setCursor(Cursor.DEFAULT);
-            } else {
-                indicator.getScene().setCursor(c);
-            }
-            if (!c.equals(Cursor.DEFAULT)) {
-                ev.consume();
-            }
-
-        } else 
-         */
-        if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-
-            if (!getScene().getRoot().contains(ev.getX(), ev.getY())) {
-                //removeWindowListeners();
-                //hide();
-//                System.err.println("indicator.getScene().getRoot().contains(ev.getX(), ev.getY()) = " + indicator.getScene().getRoot().contains(ev.getX(), ev.getY()));
-                //return;
-            }
-            /*            Bounds ib = rect.getBoundsInLocal();
-            saveCursor = ShapeNodeResizeExecutor.cursorBy(ev.getX() - ib.getMinX(), ev.getY() - ib.getMinY(), indicator);
-
-            cursorSupported = isCursorSupported(saveCursor);
-            if (!cursorSupported) {
-                indicator.getScene().setCursor(Cursor.DEFAULT);
-                return;
-            }
-             */
-            startMousePos = new Point2D(ev.getScreenX(), ev.getScreenY());
-            //resizeExecutor.start(ev, this, indicator.getScene().getCursor(), getSupportedCursors());
-        } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
-
-            //hide();
-            wnf.show(getBoundNode());
-            //wnf.redirectMouseEvents(ev, startMousePos, this);
-        }
-    }
-
     public abstract class SideShapes implements EventHandler<MouseEvent> {
 
-        private SelectPane selectPane;
+        private ShapeFraming shapeFraming;
 
         private Rectangle indicator;
 
+        protected Shape nShape;    //north indicator
+        protected Shape neShape;   //north-east indicator
+        protected Shape eShape;    //east indicator
+        protected Shape seShape;   //south-east indicator
+        protected Shape sShape;    //south indicator
 
-        protected Shape nShape;    //north shape
-        protected Shape neShape;   //north-east shape
-        protected Shape eShape;    //east shape
-        protected Shape seShape;   //south-east shape
-        protected Shape sShape;    //south shape
+        protected Shape swShape;   // south-west indicator
+        protected Shape wShape;    // west indicator
+        protected Shape nwShape;   // north-west indicator
 
-        protected Shape swShape;   // south-west shape
-        protected Shape wShape;    // west shape
-        protected Shape nwShape;   // north-west shape
+        private String defaultStyles;
 
-        private boolean cssApplied;// = true;
-        
-        private ObservableMap<String,String> defaultStyles = FXCollections.observableHashMap();
+        /*        private final ObservableMap<String, String> defaultStyles = FXCollections.observableHashMap();
+
         {
             defaultStyles.put("-fx-stroke-type", "outside");
             defaultStyles.put("-fx-stroke", "rgb(255, 148, 40)");
             defaultStyles.put("-fx-stroke-width", "1");
-            defaultStyles.put("-fx-fill", "WHITE");
+            defaultStyles.put("-fx-fill", "white");
         }
-        
-        
+         */
         public SideShapes() {
+            createShapes();
         }
 
-    
-        public void applyCss() {
-            cssApplied = true;
-            rebind();
+        public void setDefaultStyles() {
+            defaultStyles = "-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 1; -fx-fill: white";
         }
 
-        public boolean isCssApplied() {
-            return cssApplied;
+        public void addStyleClass(String styleClass) {
+            for (Shape s : getShapes()) {
+                s.getStyleClass().add(styleClass);
+            }
         }
 
-        public void setCssApplied(boolean cssApplied) {
-            this.cssApplied = cssApplied;
-            rebind();
+        public Shape[] getShapes() {
+            if (nShape == null) {
+                return new Shape[0];
+            }
+            return new Shape[]{nShape, neShape, eShape, seShape, sShape, swShape, wShape, nwShape};
         }
 
-        public final void bind(SelectPane selPane) {
-            if (selPane == null && this.selectPane != null) {
-                unbind();
+        public final void bind(ShapeFraming selPane) {
+            if (selPane == null && this.shapeFraming != null) {
                 removeShapes();
-                selectPane = null;
+                shapeFraming = null;
                 return;
             } else if (selPane == null) {
                 return;
             }
 
-            this.selectPane = selPane;
+            this.shapeFraming = selPane;
 
-            indicator = (Rectangle) selectPane.lookup("#" + ID);
+            indicator = shapeFraming;
 
-            createShapes();
+            addToPane((Pane) indicator.getParent());
+            if (defaultStyles != null) {
+                for (Shape s : getShapes()) {
+                    s.setStyle(defaultStyles);
+                }
+            }
             bind();
-            //setVisible(selectPane.isVisible());
         }
-        
-        protected void rebind() {
-            if ( selectPane != null ) {
+
+        /*        protected void rebind() {
+            if (shapeFraming != null) {
                 System.err.println("REBIND");
-                bind(selectPane);
+                show(shapeFraming);
             }
         }
-        protected void removeShapes() {
+         */
+        public void removeShapes() {
             remove(nShape);
             remove(neShape);
             remove(eShape);
@@ -400,12 +300,12 @@ public class SelectPane extends Pane {
             remove(nwShape);
         }
 
-        public SelectPane getSelectPane() {
-            return selectPane;
+        public ShapeFraming getShapeFraming() {
+            return shapeFraming;
         }
 
         public boolean isBound() {
-            return selectPane != null;
+            return shapeFraming != null;
         }
 
         public Shape getShape(Cursor c) {
@@ -452,12 +352,14 @@ public class SelectPane extends Pane {
         }
 
         protected void removeShapeMouseEventHandlers(Shape shape) {
+            //System.err.println("removeShapeMouseEventHandlers " + shapeFraming.getBoundNode());            
             shape.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);
             shape.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
-//            shape.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+//            System.err.println("---------------------------------------------------------------------");            
+//            indicator.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
 
         }
 
@@ -473,108 +375,108 @@ public class SelectPane extends Pane {
             if (shape == null) {
                 return;
             }
-            ((Pane) indicator.getParent()).getChildren().remove(shape);
+            unbind(shape);
+            if (shape.getParent() != null) {
+                ((Pane) shape.getParent()).getChildren().remove(shape);
+            }
         }
 
         protected void createShapes(Class<?> shapeClass) {
             try {
-                
-                System.err.println("   --- 1 size = " + getSelectPane().getChildren().size() );
-                if ( nShape != null) {
-                    unbind(nShape);
-                    remove(nShape);
-                    nShape = null;
-                }
-                System.err.println("   --- 2 size = " + getSelectPane().getChildren().size() );
-                nShape = (Shape) shapeClass.newInstance(); //north shape
-                //nShape.getStyleClass().clear();
-                if ( isCssApplied() ) {
-                    //nShape.setFill(Color.GREEN);
-                    nShape.getStyleClass().add("side-shape");
-                }
-                nShape.applyCss();
-                if ( ! isCssApplied()) {
-                    System.err.println("createShapes !!!");
-                    initStroke(nShape);
-                }
+
+                remove(nShape);
+                nShape = (Shape) shapeClass.newInstance(); //north indicator
 
                 remove(neShape);
-                neShape = (Shape) shapeClass.newInstance(); //north-east shape
-                initStroke(neShape);
+                neShape = (Shape) shapeClass.newInstance(); //north-east indicator
 
                 remove(eShape);
-                eShape = (Shape) shapeClass.newInstance(); //east shape
-                initStroke(eShape);
+                eShape = (Shape) shapeClass.newInstance(); //east indicator
 
                 remove(seShape);
-                seShape = (Shape) shapeClass.newInstance(); //south-east shape
-                initStroke(seShape);
+                seShape = (Shape) shapeClass.newInstance(); //south-east indicator
 
                 remove(sShape);
-                sShape = (Shape) shapeClass.newInstance(); //south shape
-                initStroke(sShape);
+                sShape = (Shape) shapeClass.newInstance(); //south indicator
 
                 remove(swShape);
-                swShape = (Shape) shapeClass.newInstance(); // south-west shape
-                initStroke(swShape);
+                swShape = (Shape) shapeClass.newInstance(); // south-west indicator
 
                 remove(wShape);
-                wShape = (Shape) shapeClass.newInstance(); // west shape
-                initStroke(wShape);
+                wShape = (Shape) shapeClass.newInstance(); // west indicator
 
                 remove(nwShape);
-                nwShape = (Shape) shapeClass.newInstance();   // north-west shape            
-                initStroke(nwShape);
+                nwShape = (Shape) shapeClass.newInstance();   // north-west indicator            
+
+                initialize();
 
             } catch (InstantiationException | IllegalAccessException ex) {
                 System.err.println("EXCEPTION !!!!");
-                Logger.getLogger(ShapeNodeFraming.class
+                Logger.getLogger(SideShapes.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
-        }
-
-        private void initStroke(Shape shape) {
-
-            
-            if ( ! isCssApplied()) {
-                System.err.println("! isCssApplyed");
-/*                shape.setStrokeType(getConfig().getShape().getStrokeType());
-
-                shape.setStroke(getConfig().getShape().getStroke());
-                shape.setStrokeWidth(getConfig().getShape().getStrokeWidth());
-                shape.setFill(getConfig().getShape().getFill());
-*/                
-            }
-            shape.setManaged(false);
-            shape.toFront();
         }
 
         protected void initialize() {
 
             initialize(nShape);
+            nShape.setManaged(false);
             nShape.toFront();
+
             initialize(neShape);
+
             neShape.toFront();
+            neShape.setManaged(false);
+
             initialize(eShape);
             eShape.toFront();
+            eShape.setManaged(false);
+
             initialize(seShape);
             seShape.toFront();
+            seShape.setManaged(false);
+
             initialize(sShape);
             sShape.toFront();
+            sShape.setManaged(false);
+
             initialize(swShape);
             swShape.toFront();
+            swShape.setManaged(false);
+
             initialize(wShape);
             wShape.toFront();
+            wShape.setManaged(false);
+
             initialize(nwShape);
             nwShape.toFront();
+            nwShape.setManaged(false);
         }
 
-        protected void setVisible(Shape shape, boolean visible) {
-            if (visible) {
-                addShapeMouseEventHandlers(shape);
-            } else {
-                removeShapeMouseEventHandlers(shape);
-            }
+        protected void addShapeMouseEventHandlers() {
+            addShapeMouseEventHandlers(nShape);
+            addShapeMouseEventHandlers(neShape);
+            addShapeMouseEventHandlers(eShape);
+            addShapeMouseEventHandlers(seShape);
+            addShapeMouseEventHandlers(sShape);
+            addShapeMouseEventHandlers(swShape);
+            addShapeMouseEventHandlers(wShape);
+            addShapeMouseEventHandlers(nwShape);
+        }
+
+        protected void removeShapeMouseEventHandlers() {
+            removeShapeMouseEventHandlers(nShape);
+            removeShapeMouseEventHandlers(neShape);
+            removeShapeMouseEventHandlers(eShape);
+            removeShapeMouseEventHandlers(seShape);
+            removeShapeMouseEventHandlers(sShape);
+            removeShapeMouseEventHandlers(swShape);
+            removeShapeMouseEventHandlers(wShape);
+            removeShapeMouseEventHandlers(nwShape);
+
+        }
+
+        private void setVisible(Shape shape, boolean visible) {
             shape.setVisible(visible);
         }
 
@@ -589,7 +491,7 @@ public class SelectPane extends Pane {
 
         }
 
-        public void setVisible(boolean visible) {
+        private void setVisible(boolean visible) {
             setVisible(nShape, visible);
             setVisible(neShape, visible);
             setVisible(eShape, visible);
@@ -610,10 +512,13 @@ public class SelectPane extends Pane {
             unbind(wShape);
             unbind(nwShape);
             setVisible(false);
-            
+            removeShapeMouseEventHandlers();
+
         }
 
         private void bind() {
+            //System.err.println("BIND");
+            //System.err.println("   --- REMOVE LISTENERS");
             unbind(nShape);
             unbind(neShape);
             unbind(eShape);
@@ -622,6 +527,7 @@ public class SelectPane extends Pane {
             unbind(swShape);
             unbind(wShape);
             unbind(nwShape);
+            removeShapeMouseEventHandlers();
 
             initialize();
 
@@ -633,7 +539,8 @@ public class SelectPane extends Pane {
             bind(swShape);
             bind(wShape);
             bind(nwShape);
-//            setVisible(selectPane.getIndicator().isVisible());
+
+            addShapeMouseEventHandlers();
         }
 
         protected abstract void createShapes();
@@ -642,15 +549,15 @@ public class SelectPane extends Pane {
 
         protected abstract void bind(Shape shape);
 
-//        public abstract Config getConfig();
-
         protected abstract void unbind(Shape shape);
 
         protected void addToPane(Pane pane) {
+            System.err.println("@@@ addToPane ");
+            removeShapes();
             pane.getChildren().add(nShape);
-            if ( ! nShape.getStyleClass().isEmpty()  )
-                System.err.println("   --- addToPane css class = " + nShape.getStyleClass().get(0));
-            nShape.applyCss();
+//            if (!nShape.getStyleClass().isEmpty()) {
+//                System.err.println("   --- addToPane css class = " + nShape.getStyleClass().get(0));
+//            }
             nShape.toFront();
             pane.getChildren().add(neShape);
             neShape.toFront();
@@ -666,99 +573,98 @@ public class SelectPane extends Pane {
             wShape.toFront();
             pane.getChildren().add(nwShape);
             nwShape.toFront();
-//            setVisible(true);
-            nShape.applyCss();            
         }
 
-        /*        protected void removeShapeListeners() {
-            removeShapeMouseEventHandlers(nShape);
-            removeShapeMouseEventHandlers(neShape);
-            removeShapeMouseEventHandlers(eShape);
-            removeShapeMouseEventHandlers(seShape);
-            removeShapeMouseEventHandlers(sShape);
-            removeShapeMouseEventHandlers(swShape);
-            removeShapeMouseEventHandlers(wShape);
-            removeShapeMouseEventHandlers(nwShape);
-        }
-         */
-
- /*        public void handle(MouseEvent ev, Shape shape, Cursor c) {
-            if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-                Point2D pt = shape.screenToLocal(ev.getScreenX(), ev.getScreenY());
-
-                if (!selectPane.isCursorSupported(c)) {
-                    shape.getScene().setCursor(Cursor.DEFAULT);
-                } else {
-                    shape.getScene().setCursor(c);
-                }
-                if (!c.equals(Cursor.DEFAULT)) {
-                    ev.consume();
-                }
-
-            } else if (ev.getEventType() == MouseEvent.MOUSE_EXITED) {
-                shape.getScene().setCursor(Cursor.DEFAULT);
-            } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                removeMouseExitedListener(shape);
-                selectPane.setSaveCursor(c);
-                selectPane.setCursorSupported(selectPane.isCursorSupported(selectPane.getSaveCursor()));
-                if (!selectPane.isCursorSupported()) {
-                    shape.getScene().setCursor(Cursor.DEFAULT);
-                    return;
-                }
-                selectPane.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
-
-            } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-                WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class
-                );
-                selectPane.hide();
-                wnf.addShapeMouseEventHandlers(selectPane.getNode());
-                wnf.redirectMouseEvents(ev, selectPane.startMousePos, selectPane);
-            } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                shape.getScene().setCursor(Cursor.DEFAULT);
-            }
-        }
-         */
         protected Rectangle getIndicator() {
             return indicator;
         }
 
+        public void handle(MouseEvent ev, Shape shape, Cursor c) {
+            if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
+                Point2D pt = shape.screenToLocal(ev.getScreenX(), ev.getScreenY());
+
+                shape.getScene().setCursor(c);
+            } else if (ev.getEventType() == MouseEvent.MOUSE_EXITED) {
+                shape.getScene().setCursor(Cursor.DEFAULT);
+            } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                //System.err.println("MOUSE PRESSED");
+                removeMouseExitedListener(shape);
+                shapeFraming.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
+
+            } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
+                WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
+                shapeFraming.setVisible(false);
+                wnf.show(shapeFraming.getBoundNode());
+                wnf.redirectMouseEvents(ev, shapeFraming.getStartMousePos(), shapeFraming);
+            } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                //System.err.println("MOUSE RELEASED");
+                shape.getScene().setCursor(Cursor.DEFAULT);
+                addMouseExitedListener(shape);
+            }
+        }
+
         @Override
         public void handle(MouseEvent ev) {
+            //System.err.println("HANDLE");
+            if (ev.getSource() == nShape) {
+                handle(ev, nShape, Cursor.N_RESIZE);
+
+            } else if (ev.getSource() == neShape) {
+                handle(ev, neShape, Cursor.NE_RESIZE);
+            } else if (ev.getSource() == eShape) {
+                handle(ev, eShape, Cursor.E_RESIZE);
+            } else if (ev.getSource() == seShape) {
+                handle(ev, seShape, Cursor.SE_RESIZE);
+            } else if (ev.getSource() == sShape) {
+                handle(ev, sShape, Cursor.S_RESIZE);
+            } else if (ev.getSource() == swShape) {
+                handle(ev, swShape, Cursor.SW_RESIZE);
+            } else if (ev.getSource() == wShape) {
+                handle(ev, wShape, Cursor.W_RESIZE);
+            } else if (ev.getSource() == nwShape) {
+                handle(ev, nwShape, Cursor.NW_RESIZE);
+            }
         }
 
     }//class SidePanes
 
     public static class SideCircles extends SideShapes {
 
-//        private final CircleConfig config;
+        private DoubleProperty radius = new SimpleDoubleProperty(0);
 
         public SideCircles() {
-//            config = new CircleConfig(this);
             init();
         }
 
         private void init() {
-
+            radius.addListener((v, ov, nv) -> {
+                for (Shape s : getShapes()) {
+                    Circle c = (Circle) s;
+                    if (c.getRadius() <= 0) {
+                        System.err.println("RADIUS: " + nv);
+                        c.setRadius((double) nv);
+                    }
+                }
+            });
         }
 
-/*        @Override
-        public CircleConfig getConfig() {
-            return config;
-        }
-*/
         @Override
         protected void initialize(Shape shape) {
-            ((Circle) shape).setCenterX(20);
-            ((Circle) shape).setCenterY(50);
-//            ((Circle) shape).setRadius(getConfig().getShape().getRadius());
-/*            if ( isCssApplied() ) {
-                shape.setStroke(null);
-                shape.setStrokeType(StrokeType.CENTERED);
-                shape.setStrokeWidth(-1);
-                shape.setFill(null);
-                shape.applyCss();
-            }
-*/
+            Circle c = (Circle) shape;
+            c.setCenterX(20);
+            c.setCenterY(50);
+        }
+
+        public DoubleProperty radiusPropert() {
+            return radius;
+        }
+
+        public Double getRadius() {
+            return radius.get();
+        }
+
+        public void setRadius(double radius) {
+            this.radius.set(radius);
         }
 
         @Override
@@ -774,7 +680,7 @@ public class SelectPane extends Pane {
             } else if (ind.getStrokeType() == StrokeType.CENTERED) {
                 indDeltaWidth = indDeltaWidth / 2;
             }
-            
+
             if (shape == nShape) {
                 ((Circle) nShape).centerXProperty().bind(ind.xProperty().add(ind.widthProperty().add(indDeltaWidth).divide(2)));
                 ((Circle) nShape).centerYProperty().bind(ind.yProperty().subtract(indDeltaWidth + offset));
@@ -788,7 +694,7 @@ public class SelectPane extends Pane {
                 ((Circle) eShape).centerXProperty().bind(ind.xProperty().add(ind.widthProperty().add(indDeltaWidth + offset - 1)));
                 ((Circle) eShape).centerYProperty().bind(ind.yProperty().add(ind.heightProperty().add(indDeltaWidth).divide(2)));
                 eShape.visibleProperty().bind(ind.visibleProperty());
-                
+
             } else if (shape == seShape) {
                 ((Circle) seShape).centerXProperty().bind(ind.xProperty().add(ind.widthProperty().add(indDeltaWidth + offset - 1)));
                 ((Circle) seShape).centerYProperty().bind(ind.yProperty().add(ind.heightProperty().add(indDeltaWidth + offset + 1)));
@@ -835,7 +741,7 @@ public class SelectPane extends Pane {
         protected void createShapes() {
             System.err.println("   --- createShapes()");
             createShapes(Circle.class);
-            addToPane((Pane) getIndicator().getParent());
+            //addToPane((Pane) getIndicator().getParent());
         }
 
     }//class Circle
@@ -865,50 +771,121 @@ public class SelectPane extends Pane {
         }
 
         public void apply() {
-            sideShapes.bind();
+            sideShapes.show();
             //sideShapes.get
         }
     }
 
     public static class CircleConfig extends Config {
 
-        private final Shape shape;
+        private final Shape indicator;
 
         public CircleConfig(SideShapes sideShapes) {
             super(sideShapes);
-            this.shape = new Circle();
+            this.indicator = new Circle();
             init();
         }
 
         private void init() {
-            shape.setStrokeType(StrokeType.OUTSIDE);
-            shape.setStroke(Color.rgb(255, 148, 40));
-            shape.setStrokeWidth(1);
-            shape.setFill(Color.WHITE);
+            indicator.setStrokeType(StrokeType.OUTSIDE);
+            indicator.setStroke(Color.rgb(255, 148, 40));
+            indicator.setStrokeWidth(1);
+            indicator.setFill(Color.WHITE);
 
             getShape().setRadius(3);
         }
 
         @Override
         public Circle getShape() {
-            return (Circle) shape;
+            return (Circle) indicator;
         }
     }
 
     public static class RectangleConfig extends Config {
 
-        private final Shape shape;
+        private final Shape indicator;
 
         public RectangleConfig(SideShapes sideShapes) {
             super(sideShapes);
-            this.shape = new Rectangle(3, 3);
+            this.indicator = new Rectangle(3, 3);
         }
 
         @Override
         public Rectangle getShape() {
-            return (Rectangle) shape;
+            return (Rectangle) indicator;
         }
 
     }
-*/
+     */
+    public static class MouseEventDispatcher implements EventDispatcher {
+
+        private EventDispatcher initial;
+        private Node node;
+        private Predicate<Node> preventCondition;
+
+        public MouseEventDispatcher() {
+            this(null);
+        }
+
+        public MouseEventDispatcher(Predicate<Node> cond) {
+            preventCondition = cond;
+            init();
+        }
+
+        private void init() {
+        }
+
+        public void start(Node node) {
+            this.node = node;
+            initial = node.getEventDispatcher();
+            node.setEventDispatcher(this);
+        }
+
+        @Override
+        public Event dispatchEvent(Event event, EventDispatchChain tail) {
+            if (event instanceof MouseEvent) {
+
+                MouseEvent mouseEvent = (MouseEvent) event;
+
+                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
+//                    return null;
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                    return null;
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
+                    return null;
+                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
+                    return null;
+                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                    return null;
+                }
+            }
+
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event pressed(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event released(Event event, EventDispatchChain tail) {
+            if (preventCondition == null || preventCondition.test(node)) {
+                return null;
+            }
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event clicked(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event dragDetected(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+        protected Event dragged(Event event, EventDispatchChain tail) {
+            return initial.dispatchEvent(event, tail);
+        }
+
+    }
+
 }//class

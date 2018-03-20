@@ -62,7 +62,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
     private final DockableContext dockableContext;
 
-    private WindowResizeExecutor resizer;
+    private Resizer resizer;
 
     private final MouseResizeHandler mouseResizeHanler;
 
@@ -104,7 +104,7 @@ public class FloatPopupControlView implements FloatWindowView {
     }
 
     @Override
-    public WindowResizeExecutor getResizer() {
+    public Resizer getResizer() {
         return resizer;
     }
 
@@ -488,7 +488,7 @@ public class FloatPopupControlView implements FloatWindowView {
 
     }
 
-    protected void setResizer(WindowResizeExecutor resizer) {
+    protected void setResizer(Resizer resizer) {
         this.resizer = resizer;
     }
 

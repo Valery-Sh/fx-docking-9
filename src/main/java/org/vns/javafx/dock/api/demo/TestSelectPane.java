@@ -26,6 +26,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -38,9 +39,8 @@ import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.SelectPane;
-import org.vns.javafx.dock.api.SelectPane.SideCircles;
-import org.vns.javafx.dock.api.dragging.view.ShapeNodeFraming;
+import org.vns.javafx.dock.api.dragging.view.DefaultFraming;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
@@ -49,14 +49,13 @@ import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
  * @author Valery
  */
 public class TestSelectPane extends Application {
+    
+    NodeFraming framing = new DefaultFraming();
 
-    SelectPane selPane;
-
-    ShapeNodeFraming resizer = ShapeNodeFraming.getInstance();
     int counter = 0;
     int click = 0;
     Node last;
-    Label lastLabel;
+    Node lastLabel;
     Rectangle rect = new Rectangle(50, 20);
 
     VBox rightPane = new VBox();
@@ -117,13 +116,17 @@ public class TestSelectPane extends Application {
         rightStage.setScene(rightScene);
 
         ObjectProperty<Bounds> oBounds = new SimpleObjectProperty();
-        //oBounds.bind(last.boundsInParentProperty());
+        //oBounds.show(last.boundsInParentProperty());
         BorderPane bp = new BorderPane();
         createLabelButton.setOnAction(a -> {
-            lastLabel = new Label("Label to Bind");
+            if ( lastLabel == null) {
+                lastLabel = new Label("Label to Bind");
+            } else {
+                lastLabel = new ComboBox();
+            }
 
         });
-        addLabelButton.setOnAction(a -> {
+/*        addLabelButton.setOnAction(a -> {
             //rightPane.getChildren().add(lastLabel);
             if (selPane == null) {
                 selPane = new SelectPane();
@@ -134,35 +137,44 @@ public class TestSelectPane extends Application {
                 //selPane.setLayoutY(-1);
                 // selPane.setBoundNode(last);
                 rightPane.getChildren().add(lastLabel);
-                selPane.bind(lastLabel);
-                //selPane.getSideShapes().applyCss();
+                selPane.show(lastLabel);
+                selPane.setDefaultStyles();                
+                selPane.getIndicator().getStyleClass().add("indicator");
+                SideCircles sc = new SideCircles();
+                selPane.setSideShapes(sc);
 
+                sc.setRadius(1.5);
+                sc.setDefaultStyles();
+
+                
             } else {
                 leftPane.getChildren().add(lastLabel);
             }
-            
-//            selPane.getSideShapes().applyCss();
-            //selPane.setVisible(true);
-            //
-
         });
-        applyCssButton.setOnAction(a -> {
-            if ( selPane.getSideShapes().isCssApplied() ) {
-                selPane.getSideShapes().setCssApplied(false);
-            } else {
-                selPane.getSideShapes().applyCss();
+*/        
+        addLabelButton.setOnAction(a -> {
+            
+            rightPane.getChildren().add(lastLabel);
+            if ( ! rightPaneRoot.getChildren().contains(framing) ) {
+                //rightPaneRoot.getChildren().add((Node)framing);
             }
-
+            framing.show(lastLabel);
+              //leftPane.getChildren().add(lastLabel);
+        });
+        
+        
+        applyCssButton.setOnAction(a -> {
         });        
         
         nullShapeClassButton.setOnAction(a -> {
-            if ( selPane.getSideShapes() != null ) {
+/*            if ( selPane.getSideShapes() != null ) {
                 selPane.setSideShapes(null);
             } else {
                 selPane.setSideShapes(new SideCircles());
                 selPane.getSideShapes().bind(selPane);
                 
             }
+*/            
         });
         
         configShapeClassButton.setOnAction(a -> {
@@ -205,7 +217,7 @@ public class TestSelectPane extends Application {
         });
 
         addSelectPaneButton.setOnAction(e -> {
-            if (selPane == null) {
+/*            if (selPane == null) {
                 selPane = new SelectPane();
                 leftPane.getChildren().add(selPane);
                 //selPane.setPrefWidth(-1);
@@ -217,7 +229,7 @@ public class TestSelectPane extends Application {
             }
             selPane.bind(last);
             selPane.setVisible(true);
-
+*/
             //selPane.setMinWidth(80);
         });
 
@@ -333,9 +345,9 @@ public class TestSelectPane extends Application {
                 }
                 //last.setTranslateY(60);
                 if ( list.get(0) == last ) {
-                    resizer.show(last);
+                    //resizer.show(last);
                 } else if ( list.get(0) == lastLabel ) {
-                    resizer.show(lastLabel);
+                    //resizer.show(lastLabel);
                 }
 
                 //last.setTranslateY(60);

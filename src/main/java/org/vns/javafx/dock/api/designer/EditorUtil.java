@@ -1,7 +1,9 @@
 package org.vns.javafx.dock.api.designer;
 
 import com.sun.javafx.stage.StageHelper;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -225,6 +227,40 @@ public class EditorUtil {
             }
         }
 
+        return retval;
+    }
+    
+    public static String changeNodeStyle(String oldStyle, String newStyle) {
+        String retval = "";
+        if ( oldStyle == null || oldStyle.trim().isEmpty() || newStyle == null || newStyle.trim().isEmpty() ) {
+            retval = newStyle;
+        } else {
+            String[] oldStyles = oldStyle.split(";");            
+            String[] newStyles = newStyle.split(";");
+            Map<String,String> oldMap = new HashMap<>(); 
+            Map<String,String> newMap = new HashMap<>(); 
+            
+            for ( String s : oldStyles ) {
+                String[] kv = s.split(":");
+                String key = kv[0].trim();
+                String val = kv[1].trim();
+                oldMap.put(key,val);
+            }
+            for ( String s : newStyles ) {
+                String[] kv = s.split(":");
+                String key = kv[0].trim();
+                String val = kv[1].trim();
+                newMap.put(key,val);
+            }
+            newMap.forEach((k,v) -> {
+                oldMap.put(k, v);
+            });
+            StringBuilder sb = new StringBuilder(retval);
+            oldMap.forEach((k,v) -> {
+                sb.append(k + ":" + v + ";");
+            });
+            retval = sb.toString();
+        }
         return retval;
     }
 }

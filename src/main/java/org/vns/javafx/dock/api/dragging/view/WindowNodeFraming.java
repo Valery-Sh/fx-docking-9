@@ -27,7 +27,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -38,21 +37,18 @@ import org.vns.javafx.dock.api.DockRegistry;
  *
  * @author Valery
  */
-public class WindowNodeFraming extends AbstractNodeFraming implements EventHandler<MouseEvent> {
+public abstract class WindowNodeFraming extends AbstractNodeFraming implements EventHandler<MouseEvent> {
 
-    //private LBListener layoutBoundsListener;
+
     private ChangeListener<Bounds> boundsInParentListener;
 
-//    private ChangeListener<Bounds> layoutBoundsListener;
-//    private ChangeListener layoutXListener;
-//    private ChangeListener layoutYListener;
     private Window window;
 
-    private WindowResizeExecutor windowResizer;
+    private Resizer resizer;
 
     private StackPane root;
 
-//    private final ObjectProperty<Node> node = new SimpleObjectProperty<>();
+
     private Window nodeWindow;
     private Insets nodeInsets;
     protected double borderWidth = 0;
@@ -67,9 +63,7 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
     private final DoubleProperty workWidth = new SimpleDoubleProperty(-1);
     private final DoubleProperty workHeight = new SimpleDoubleProperty(-1);
-    /*    private final DoubleProperty workX = new SimpleDoubleProperty(-1);
-    private final DoubleProperty workY = new SimpleDoubleProperty(-1);
-     */
+    
     private final Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
@@ -77,10 +71,17 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
     private boolean cursorSupported = false;
 
+    private Point2D startMousePos;
+    
+//    private NodeFraming redirectSource;
+    
+    private ShapeFraming shapeFraming;
+    
+    
+    
     private double translateX;
     private double translateY;
     private Cursor saveCursor;
-    private boolean applyTranslateXY;
 
     protected WindowNodeFraming() {
         super();
@@ -108,16 +109,12 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
         initScene();
     }
 
-    protected void setWindowSize(Bounds bounds, double borderWidth, double borderHeight) {
+    protected abstract void setWindowSize(Bounds bounds, double borderWidth, double borderHeight);
 
-    }
+    protected abstract void initScene();
 
-    protected void initScene() {
 
-    }
-
-    protected void createWindow() {
-    }
+    protected abstract void createWindow();
 
     protected void doShow(Window owner) {
     }
@@ -169,7 +166,7 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
         
         boundsInParentListener = (o, ov, nv) -> {
-            //System.err.println("boundsInParentListener");
+
             borderWidth = root.getInsets().getLeft() + root.getInsets().getRight();
             borderHeight = root.getInsets().getTop() + root.getInsets().getBottom();
 
@@ -199,9 +196,9 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
         getNode().boundsInParentProperty().addListener(boundsInParentListener);
 
         //
-        //  bind to widthProperty and heightProperty
+        //  show to widthProperty and heightProperty
         //
-        screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
+        //screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
 
         setWorkWidth(getNode().getLayoutBounds().getWidth());
         setWorkHeight(getNode().getLayoutBounds().getHeight());
@@ -296,7 +293,7 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
             window.hide();
         }
 
-        windowResizer = new NodeResizeExecutor(window, (Region) getNode());
+        resizer = new NodeResizer(window, (Region) getNode());
 
         window.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
         window.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
@@ -316,9 +313,7 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
     @Override
     public void handle(MouseEvent ev) {
         if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-
-//            Cursor c = NodeResizeExecutor.cursorBy(ev, (Region) window.getScene().getRoot());
-            Cursor c = NodeResizeExecutor.cursorBy(new Point2D(ev.getX(), ev.getY()), (Region) window.getScene().getRoot());
+            Cursor c = NodeResizer.cursorBy(new Point2D(ev.getX(), ev.getY()), (Region) window.getScene().getRoot());
 
             if (!isCursorSupported(c)) {
                 window.getScene().setCursor(Cursor.DEFAULT);
@@ -336,32 +331,27 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
                 return;
             }
-            saveCursor = NodeResizeExecutor.cursorBy(new Point2D(ev.getX(), ev.getY()), root);
-            if (!applyTranslateXY) {
-                translateX = getNode().getTranslateX();
-                translateY = getNode().getTranslateY();
-            }
-
+            saveCursor = NodeResizer.cursorBy(new Point2D(ev.getX(), ev.getY()), root);
             cursorSupported = isCursorSupported(saveCursor);
             if (!cursorSupported) {
                 window.getScene().setCursor(Cursor.DEFAULT);
                 return;
             }
-            windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
+            resizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
         } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             if (!cursorSupported) {
                 return;
             }
 
-            if (!windowResizer.isStarted()) {
-                windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
+            if (!resizer.isStarted()) {
+                resizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
             } else {
                 Platform.runLater(() -> {
-                    windowResizer.resize(ev.getScreenX(), ev.getScreenY());
+                    resizer.resize(ev.getScreenX(), ev.getScreenY());
                 });
             }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            if (isApplyTranslateXY()) {
+            if (false) {
                 double tX = getNode().getTranslateX();
                 double tY = getNode().getTranslateY();
 
@@ -385,14 +375,13 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
         }
     }
-    private Point2D startMousePos;
-    private NodeFraming redirectSource;
+    
 
     private EventHandler<MouseEvent> redirectMouseReleasedHandler = ev -> {
         redirectMouseReleased(ev);
     };
 
-    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, NodeFraming redirectSource) {
+/*    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, NodeFraming redirectSource) {
         this.startMousePos = startMousePos;
         this.redirectSource = redirectSource;
 
@@ -403,14 +392,25 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
         getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
         redirectMousePressed(ev);
        //windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
-        windowResizer.start(ev, this, saveCursor, getSupportedCursors());
+        resizer.start(ev, this, saveCursor, getSupportedCursors());
+    }
+*/    
+    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, ShapeFraming redirectSource) {
+        this.startMousePos = startMousePos;
+        this.shapeFraming = redirectSource;
+
+        removeWindowListeners();
+
+        saveCursor = getNode().getScene().getCursor();
+        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, redirectMouseReleasedHandler);
+        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+        redirectMousePressed(ev);
+       //windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
+        resizer.start(ev, this, saveCursor, getSupportedCursors());
     }
 
+    
     protected void redirectMousePressed(MouseEvent ev) {
-        if (!applyTranslateXY) {
-            translateX = getNode().getTranslateX();
-            translateY = getNode().getTranslateY();
-        }
         cursorSupported = isCursorSupported(saveCursor);
         if (!cursorSupported) {
             window.getScene().setCursor(Cursor.DEFAULT);
@@ -424,10 +424,17 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
         hide();
 
-        if (redirectSource != null) {
+/*        if (redirectSource != null) {
             Platform.runLater(() -> {
                 redirectSource.show(getNode());
             });
+        }
+*/        
+        if ( shapeFraming != null ) {
+            Platform.runLater(() -> {
+                shapeFraming.setVisible(true);
+            });
+            
         }
     }
 
@@ -451,16 +458,8 @@ public class WindowNodeFraming extends AbstractNodeFraming implements EventHandl
 
     }
 
-    public boolean isApplyTranslateXY() {
-        return applyTranslateXY;
-    }
-
-    public void setApplyFtranslateXY(boolean useTranslateXY) {
-        this.applyTranslateXY = useTranslateXY;
-    }
-
-    public WindowResizeExecutor getResizer() {
-        return windowResizer;
+    public Resizer getResizer() {
+        return resizer;
     }
 
     public Cursor[] getSupportedCursors() {

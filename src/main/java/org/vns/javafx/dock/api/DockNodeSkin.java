@@ -22,7 +22,6 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.DockNode;
-import static org.vns.javafx.dock.api.SelectPane.*;
 
 /**
  *

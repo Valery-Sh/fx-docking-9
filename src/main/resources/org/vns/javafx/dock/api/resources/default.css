@@ -17,14 +17,19 @@
 }
 */
 .side-shape {
-    -fx-fill: red;
+    -fx-fill: white;
+    -fx-stroke-width: 1;
+    -fx-stroke: rgb(255, 148, 40);
+    -fx-stroke-type: outside;
     
 }
-/*.select-pane {
-    -fx-fill: blue;
-    
+.shape-framing{
+    -fx-fill: transparent;
+    -fx-stroke-width: 1;
+    -fx-stroke: rgb(255, 148, 40);
+    -fx-stroke-type: inside;
 }
-*/
+
 
 /*.select-pane1 .circle {
     -fx-fill: blue;

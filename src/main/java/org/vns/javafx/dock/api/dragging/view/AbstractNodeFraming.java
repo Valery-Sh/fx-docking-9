@@ -56,8 +56,7 @@ public abstract class AbstractNodeFraming implements NodeFraming {
         }
         initializeOnShow(node);
     }
-    
-    private void initializeNode() {
+        private void initializeNode() {
         nodeParentListener = (ov, oldValue, newvalue) -> {
             hide();
         };
@@ -73,6 +72,7 @@ public abstract class AbstractNodeFraming implements NodeFraming {
         getNode().getScene().windowProperty().addListener(nodeWindowListener);
         
     }
+
     protected abstract void initializeOnShow(Node node);
     protected abstract void finalizeOnHide(Node node);
     
@@ -86,7 +86,6 @@ public abstract class AbstractNodeFraming implements NodeFraming {
     }
 
     
-    @Override
     public final void hide() {
         if ( getNode() == null ) {
             return;
@@ -97,11 +96,11 @@ public abstract class AbstractNodeFraming implements NodeFraming {
         //setNode(null);        
     }
     
-    @Override
+//    @Override
     public boolean isShowing(Node node) {
         return isShowing() && (getNode() == node );
     }
-    @Override
+//    @Override
     public boolean isShowing() {
         return getNode() != null; 
     }

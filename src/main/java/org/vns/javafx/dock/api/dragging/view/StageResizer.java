@@ -34,7 +34,7 @@ import javafx.stage.Window;
  *
  * @author Valery
  */
-public class StageResizer implements WindowResizeExecutor {
+public class StageResizer implements Resizer {
 
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();

@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.control.PopupControl;
 import javafx.stage.Window;
@@ -47,6 +48,10 @@ public class PopupNodeFraming extends WindowNodeFraming {
     @Override
     protected void doShow(Window owner) {
         ((PopupControl) getWindow()).show(owner);
+    }
+
+    @Override
+    protected void setWindowSize(Bounds bounds, double borderWidth, double borderHeight) {
     }
     
     private static class SingletonInstance {

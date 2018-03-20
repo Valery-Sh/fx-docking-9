@@ -105,8 +105,10 @@ public abstract class Selection {
 
         @Override
         public void handle(MouseEvent ev) {
+            System.err.println("++ SelectionHandler");
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
+                
             }
             if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 mouseRelesed(ev);
@@ -119,7 +121,7 @@ public abstract class Selection {
 //            sel.notifySelected(ev.getSource());
 //            sel.setSelected(ev.getSource());
         
-            System.err.println("selection handler mousepressed");
+            System.err.println("******* selection handler mousepressed");
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             if ( nf != null && (ev.getSource() instanceof Node )) {
                 nf.show((Node) ev.getSource());

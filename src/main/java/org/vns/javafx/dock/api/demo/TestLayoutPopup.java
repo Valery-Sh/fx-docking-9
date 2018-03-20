@@ -85,7 +85,7 @@ public class TestLayoutPopup extends Application {
         rightStage.setScene(rightScene);
 
         ObjectProperty<Bounds> oBounds = new SimpleObjectProperty();
-        //oBounds.bind(last.boundsInParentProperty());
+        //oBounds.show(last.boundsInParentProperty());
         BorderPane bp = new BorderPane();
 
         addButton.setOnAction(a -> {
@@ -131,7 +131,7 @@ public class TestLayoutPopup extends Application {
         
 /*        leftPane.addEventHandler(MouseEvent.MOUSE_RELEASED, a -> {
             //last = new Button("Button" + counter++);
-            //oBounds.bind(last.boundsInParentProperty());
+            //oBounds.show(last.boundsInParentProperty());
             leftPopup.show(leftStage, 200, 100);
             leftPopup.setX(100);
             leftPopup.setX(300);
