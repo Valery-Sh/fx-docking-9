@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.designer.bean;
 
-import javafx.geometry.Point2D;
+import javafx.scene.control.Control;
 
 /**
  *
- * @author Valery Shyshkin
+ * @author Olga
  */
-public interface ObjectReceiver {
-    void dockObject(Point2D mousePos, Dockable carrier);
-    void undockObject(Dockable carrier);
+public class PropertiesPane extends Control {
+    
+    private BeanGraphDescriptor graphDescriptor;
+    
+    public PropertiesPane() {
+    }
+    private void init() {
+        
+    }
+    
 }

@@ -1,10 +1,30 @@
+.text-field-editor:readonly {
+    -fx-border-width: 1;
+    -fx-border-color: lightgrey;
+    -fx-background-color: -fx-background;
+}
+.enum-field-editor:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .label:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .arrow:disabled {
+    -fx-opacity: 0.4;
+}
 
+.check-box-field-editor:readonly {
+    /*-fx-border-width: 2;
+    -fx-border-color: lightgrey;
+    -fx-background-color: -fx-background;
+    */
+}
 /*.titled-pane > .title > .arrow-button .arrow 
 {
 -fx-background-color: transparent, transparent;
 -fx-shape: null;
 }
-
+ 
 .titled-pane > .title > .arrow-button
 {
 -fx-background-color: transparent, transparent;
@@ -16,6 +36,9 @@
 -fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
 }
 */
+.trash-tray .image-view {
+   /* -fx-image: url("trash-full.png");*/
+}
 .side-shape {
     -fx-fill: white;
     -fx-stroke-width: 1;
@@ -50,7 +73,7 @@
  *                                                                             *
  ******************************************************************************/
 .tab-content-area {
-    -fx-background-color: green;
+    /*-fx-background-color: green;*/
 }
 /*.tab-header-area {
     -fx-background-color: blue;
@@ -60,14 +83,16 @@
 }
 */
 .headers-region  {
-    -fx-background-color: blue;
+    /*-fx-background-color: blue;*/
+    
 }
 .tab-header-background {
-    -fx-background-color: yellow;
+/*    -fx-background-color: yellow;
     -fx-fill: yellow;
+*/
 }
 .tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: yellow;
+  /*  -fx-background-color: yellow;*/
 }
 
 /*.split-pane *.split-pane-divider {
@@ -137,6 +162,22 @@
     -fx-graphic: url(button-16x16.png);
 }
 
+.tree-item-node-docknode {
+    -fx-graphic: url(docknode-16x16.png);
+}
+.tree-item-node-dockpane {
+    -fx-graphic: url(dockpane-16x16.png);
+}
+.tree-item-node-docktitlebar {
+    -fx-graphic: url(title-bar-16x16.png);
+}
+.tree-item-node-hpane {
+    -fx-graphic: url(hpane-16x16.png);
+}
+.tree-item-node-vpane {
+    -fx-graphic: url(vpane-16x16.png);
+}
+
 .tree-item-node-hbox {
     -fx-graphic: url(hbox-16x16.png);
 }
@@ -175,6 +216,15 @@
     -fx-opacity: 0.3; 
     -fx-background-color: lightgray; 
     -fx-text-fill: black
+}
+.docktitlebar-insert-pinbutton {
+    -fx-graphic: url(pin-black-8x8.png);
+}
+.docktitlebar-insert-statebutton {
+    -fx-graphic: url(restore.png);
+}
+.docktitlebar-insert-closebutton {
+    -fx-graphic: url(close.png);
 }
 
 /*
@@ -239,6 +289,8 @@
 
 .tree-item-node-label {
     -fx-graphic: url(label-16x16.png);
+    -fx-image: url(label-16x16.png);
+
 }
 .tree-item-node-listview {
     -fx-graphic: url(listview-16x16.png);
@@ -532,7 +584,9 @@
     -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
 
 }
-
+.test-css {
+    -fx-background-color: transparent; 
+}
 .my-test-pane-css {
     -fx-padding: 50;
     -fx-background-color: transparent; 
@@ -563,7 +617,7 @@
 }
 
 .dock-title-bar:choosed {
-    -fx-background-color: #0093ff;
+    -fx-background-color:  #0093ff;
     -fx-font-color: white;
 }
 
@@ -757,6 +811,8 @@
 
 .dock-title-pin-button {
     -fx-graphic: url(pin-black-8x8.png);
+    -fx-graphic: url(restore.png);
+    -fx-graphic: url(close.png);
 }
 
 .dock-title-bar:choosed .dock-title-pin-button {

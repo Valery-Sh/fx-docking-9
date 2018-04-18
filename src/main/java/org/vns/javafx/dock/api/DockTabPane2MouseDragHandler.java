@@ -38,7 +38,7 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
 
     @Override
     public void mousePressed(MouseEvent ev) {
-        System.err.println("DockTabPane2MouseDragHandler mousePressed");
+        //System.err.println("DockTabPane2MouseDragHandler mousePressed");
 
         setStartMousePos(null);
         Point2D pos = new Point2D(ev.getX(), ev.getY());
@@ -48,7 +48,7 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
         }
 
         if (getHeadersRegion(ev) != null) {
-            System.err.println("DockTabPane2MouseDragHandler: headersRegion != null");
+//            System.err.println("DockTabPane2MouseDragHandler: headersRegion != null");
             Tab tab = getTab(ev);
             Node tabNode = tab.getTabPane().lookup("." + getUUIDStyle(tab));
 
@@ -70,7 +70,7 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
         if ( getStartMousePos() == null && headerArea != null ) {
             setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         }
-        System.err.println("DockTabPane2MouseDragHandler: startMousePos=" + getStartMousePos());
+//        System.err.println("DockTabPane2MouseDragHandler: startMousePos=" + getStartMousePos());
     }
 
     @Override
@@ -145,13 +145,5 @@ public class DockTabPane2MouseDragHandler extends DefaultMouseDragHandler {
         }
         return retval;
     }
-    /*    public void mouseReleased(MouseEvent ev) {
-        System.err.println("TabpaneMouseHandler: ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
-        if (!ev.isPrimaryButtonDown()) {
-            return;
-        }
-        System.err.println("!!! mouseReleased");
-        ev.consume();
-    }
-     */
+  
 }

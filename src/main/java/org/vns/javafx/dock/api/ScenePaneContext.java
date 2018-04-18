@@ -4,6 +4,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import static org.vns.javafx.dock.api.LayoutContext.getValue;
 
 /**
  *
@@ -12,24 +15,17 @@ import javafx.scene.Parent;
 public class ScenePaneContext extends LayoutContext {
 
     private final Dockable dockable;
-    private LayoutContext restoreContext;
-    
-    //private ChangeListener<? super Parent> parentListener;
-
+   
     public ScenePaneContext(Dockable dockable) {
         super();
         this.dockable = dockable;
         init();
-
     }
 
     private void init() {
-        //parentListener = this::parentChanged;
-        //if (isDocked(dockable.node())) {
-        //if (dockable.node().getParent() != null ) {
-            //setTargetNode(dockable.node().getParent());
-        //}
         dockable.node().parentProperty().addListener(this::parentChanged);
+        System.err.println("==========================================");
+        System.err.println("&&&& ScenePaneContext");
     }
 
     @Override
@@ -37,59 +33,71 @@ public class ScenePaneContext extends LayoutContext {
     }
 
     protected void parentChanged(ObservableValue<? extends Parent> value, Parent oldValue, Parent newValue) {
-        //if (newValue != null && !(newValue instanceof Pane)) {
         if (oldValue != null) {
             oldValue.parentProperty().removeListener(this::parentChanged);
         }
-        
-/*        if (newValue != null) {
-            return;
-        }
-*/
         setLayoutNode(newValue);
-
     }
 
     @Override
-    protected boolean isDocked(Node node) {
-        return Dockable.of(node) != null && Dockable.of(node).getContext().getLayoutContext() == this && node.getParent() != null;
-//        return node.getParent() != null;
-/*        boolean retval = false;
-        if (DockRegistry.isDockable(node)) {
-            retval = DockUtil.getOwnerWindow(node) != null;
+    public boolean contains(Object obj) {
+        if (obj == null || !(obj instanceof Node)) {
+            return false;
         }
-        return retval;
-*/        
+        return Dockable.of(obj) != null && Dockable.of(obj).getContext().getLayoutContext() == this && ((Node) obj).getParent() != null;
     }
 
-
     @Override
-    public void remove(Node dockNode) {
-        if ( ! isDocked(dockNode) ) {
+    public void remove(Object obj) {
+        if (!(obj instanceof Node)) {
             return;
         }
-        if ( DockRegistry.getInstance().getBeanRemover() != null ) {
+        Node dockNode = (Node) obj;
+        if (!contains(dockNode)) {
+            //return;
+        }
+        if (DockRegistry.getInstance().getBeanRemover() != null) {
             DockRegistry.getInstance().getBeanRemover().remove(dockNode);
-        } 
+        }
     }
 
-    public LayoutContext getRestoreContext() {
+    /*    public LayoutContext getRestoreContext() {
         return restoreContext;
     }
 
     public void setRestoreContext(LayoutContext restoreContext) {
         this.restoreContext = restoreContext;
     }
-
+     */
     @Override
-    protected boolean doDock(Point2D mousePos, Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void dock(Point2D mousePos, Dockable dockable) {
+        Object o = getValue(dockable);
+        if (o == null || Dockable.of(o) == null) {
+            return;
+        }
+
+        Dockable d = Dockable.of(o);
+
+        Node node = d.node();
+        Window stage = null;
+        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+            stage = node.getScene().getWindow();
+        }
+
+        if (stage != null) {
+            if ((stage instanceof Stage)) {
+                ((Stage) stage).close();
+            } else {
+                stage.hide();
+            }
+            d.getContext().setLayoutContext(this);
+        }
     }
-
-    @Override
-    public boolean restore(Dockable dockable) {
-        return false;
-
+    
+    public static class ScenePaneContextFactory {
+        public ScenePaneContext getContext(Dockable dockable) {
+            return new ScenePaneContext(dockable);
+        }
     }
-
+  
 }

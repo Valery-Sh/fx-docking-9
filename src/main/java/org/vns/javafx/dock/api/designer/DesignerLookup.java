@@ -22,10 +22,14 @@ import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.PalettePane;
+import org.vns.javafx.dock.api.SaveRestore;
+import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
 import org.vns.javafx.dock.api.Selection.SelectionHandler;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
-import org.vns.javafx.dock.api.dragging.view.DefaultFraming;
+import org.vns.javafx.dock.api.designer.DesignerScenePaneContext.DesignerScenePaneContextFactory;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
+import org.vns.javafx.dock.api.dragging.view.RectangularFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
@@ -42,29 +46,24 @@ public class DesignerLookup { // implements ContextLookup {
         init();
     }
     private void init() {
+        DockRegistry.getInstance().getLookup().putUnique(TrashTray.class, new TrashTray() );        
+        DockRegistry.getInstance().getLookup().putUnique(SaveRestore.class, new AutoSaveRestore() );        
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
-        WindowNodeFraming f = StageNodeFraming.getInstance();
-        //f.getStyleClass().add("window-node-framing");
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance() );        
-        //DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, f );        
-
-/*        ShapeFraming ns = new ShapeFraming();
-        ns.setDefaultStyles();
-        SideCircles ss = new ShapeFraming.SideCircles();
-        ss.setRadius(1.5);
-        ss.setDefaultStyles();
-        ns.setSideShapes(ss);
-*/
-        
-        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DefaultFraming() );                
+        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DesignerFraming() );  
+        //String css = "-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 0; -fx-fill: transparent; -fx-opacity: 0.8";
+        //RectangularFraming rnf = new RectangularFraming("DOCK-LAYOUT-" + RectangleFrame.ID );
+        //rnf.setStyle(css);
+        //DockRegistry.getInstance().getLookup().putUnique(RectangularFraming.class, rnf );                        
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler() );
         DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
+        DockRegistry.getInstance().getLookup().putUnique(ScenePaneContextFactory.class, new DesignerScenePaneContextFactory());
         
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
         lookup.putUnique(SceneGraphView.class, new SceneGraphView() );
     }
     private static DesignerLookup getInstance() {
-        return SingletonInstance.instance;
+        return SingletonInstance.INSTANCE;
     }
     public static <T> T lookup(Class<T> clazz) {
         return getInstance().lookup.lookup(clazz);
@@ -94,12 +93,17 @@ public class DesignerLookup { // implements ContextLookup {
     public static <T> void remove(Class key, T obj) {
         getInstance().lookup.remove(key, obj);
     }
-    private static class SingletonInstance {
-
-        private static final DesignerLookup instance = new DesignerLookup();
-    }
     
     public static class DesignerApplicationContext implements ApplicationContext {
+
+        @Override
+        public boolean isDesignerContext() {
+            return true;
+        }
         
     }
+    private static class SingletonInstance {
+        private static final DesignerLookup INSTANCE = new DesignerLookup();
+    }
+    
 }

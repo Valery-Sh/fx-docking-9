@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManagerFactory;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -31,18 +32,13 @@ import org.vns.javafx.dock.api.properties.TitleBarProperty;
  * {@link Dockable} interface provides {@link Dockable#getContext() }
  * method that returns an object of this type.
  * <p>
- * To describe the state of an object using multiple properties and methods. An
- * object of type {@code Dockable} is in a <i>docked</i> state, if the method
- * {@link DockableContext#isDocked() } returns the true.
- * </p>
- * <p>
  * The {@literal dockable} node may have a title bar. The title bar may be an
  * object of any type that extends {@code javafx.scene.layout.Region }. The
  * class provides the method {@link DockableContext#createDefaultTitleBar(java.lang.String)
  * }
  * which create a default title bar of type {@link org.vns.javafx.dock.DockTitleBar
  * }. You can replace it at any time by applying the method 
- * {@link DockableContext#setTitleBar(javafx.scene.layout.Region) }. If the
+ * {@link DockableContext#setTitleBar(javafx.scene.Node) }. If the
  * parameter of the method equals to {@code null} then the title bar will be
  * removed.
  * </p>
@@ -59,7 +55,7 @@ public class DockableContext {
 
     private ContextLookup lookup;
 
-    private final TitleBarProperty<Region> titleBar;
+    private final TitleBarProperty titleBar;
             
     private final StringProperty title = new SimpleStringProperty("");
     private final Dockable dockable;
@@ -68,6 +64,7 @@ public class DockableContext {
 
     private final BooleanProperty floating = new SimpleBooleanProperty(false);
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
+    private final BooleanProperty acceptable = new SimpleBooleanProperty(true);
 
     private boolean usedAsDockLayout = true;
 
@@ -108,7 +105,12 @@ public class DockableContext {
 
         getLookup().add(new FloatViewFactory());
         getLookup().putUnique(DragManagerFactory.class, new DragManagerFactory());
-        scenePaneContext = new ScenePaneContext(dockable);
+        ScenePaneContextFactory f = DockRegistry.lookup(ScenePaneContextFactory.class);
+        if (f == null ) {
+            scenePaneContext = new ScenePaneContext(dockable);
+        } else {
+            scenePaneContext = f.getContext(dockable);
+        }
         layoutContext.set(scenePaneContext);
 
         layoutContext.addListener(this::layoutContextChanged);        
@@ -245,7 +247,7 @@ public class DockableContext {
      * @return the property type {@link TitleBarProperty}
      * 
      */
-    public TitleBarProperty<Region> titleBarProperty() {
+    public TitleBarProperty titleBarProperty() {
         return titleBar;
     }
     
@@ -325,25 +327,30 @@ public class DockableContext {
     /**
      * Returns the value of {@code titleBar}.
      *
-     * @return Returns the value of {@code titleBar}. May be null.
+     * @return the value of {@code titleBar}. May be null.
      */
-    public Region getTitleBar() {
+    public Node getTitleBar() {
         return titleBar.get();
     }
 
-    /*    public MouseDragHandler getMouseDragHandler() {
-        return dragDetector.getDragHandler();
-    }
-     */
     /**
      * Assigns the specified value of property {@code titleBar}.
      *
      * @param node the new value to be set
      */
-    public void setTitleBar(Region node) {
+    public void setTitleBar(Node node) {
         titleBar.set(node);
     }
-
+    public BooleanProperty acceptableProperty() {
+        return acceptable;
+    }
+    public boolean isAcceptable() {
+        return acceptable.get();
+    }
+    public void setAcceptable(boolean acceptable) {
+        this.acceptable.set(acceptable);
+    }    
+    
     /**
      * Getter method of the floating property.
      *
@@ -406,7 +413,7 @@ public class DockableContext {
      *
      * @return true if the node is in docked state
      */
-    public boolean isDocked() {
+/*    public boolean isDocked() {
         if (getLayoutContext() == null) {
             return false;
         }
@@ -421,9 +428,10 @@ public class DockableContext {
             }
             d = Dockable.of(getDragContainer().getValue());
         }
-        return getLayoutContext().isDocked(d.node());
+        //28.03return getLayoutContext().isDocked(d.node());
+        return getLayoutContext().contains(d.node());
     }
-
+*/
     /**
      * Creates and returns a new instance of type
      * {@link  org.vns.javafx.dock.DockTitleBar} with the specified title.
@@ -434,7 +442,7 @@ public class DockableContext {
     public Region createDefaultTitleBar(String title) {
         DockTitleBar tb = new DockTitleBar(dockable());
         tb.setId("titleBar");
-        tb.getLabel().textProperty().bind(this.title);
+        tb.getLabel().textProperty().bind(this.title);   
         this.title.set(title);
         titleBarProperty().set(tb);
         return tb;
@@ -443,6 +451,12 @@ public class DockableContext {
     protected void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         getProperties().remove("nodeController-titlebar-minheight");
         getProperties().remove("nodeController-titlebar-minwidth");
+       // System.err.println("titleBarChanged newValue = " + newValue);
+        //System.err.println("1 titleBarChanged Dockable.of(newValue) = "  + Dockable.of(newValue) );
+        DockRegistry.unregisterDockable(newValue);
+        //System.err.println("2 titleBarChanged Dockable.of(newValue) = "  + Dockable.of(newValue) );
+
+        
     }
 
     /**
@@ -476,14 +490,10 @@ public class DockableContext {
 
         if (tc != null) {
             dmf = tc.getLookup().lookup(DragManagerFactory.class);
-            dmf = null;
-            if (dmf == null) {
-                dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
-            }
-        } else {
+        }    //dmf = null;
+        if (dmf == null) {
             dmf = dockable.getContext().getLookup().lookup(DragManagerFactory.class);
         }
-
         dragManager = dmf.getDragManager(dockable);
     }
 
@@ -512,7 +522,7 @@ public class DockableContext {
         if (dc != null) {
             retval = dc.getValue();
         } else {
-            retval = dockable;
+            retval = dockable.node();
         }
         return retval;
     }
@@ -560,19 +570,12 @@ public class DockableContext {
                     newValue.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
                     newValue.addEventHandler(MouseEvent.DRAG_DETECTED, this);
                     newValue.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
-//                    newValue.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
-//                    newValue.addEventFilter(MouseEvent.DRAG_DETECTED, this);
-                    
                 }
             });
         }
         @Override
         public void handle(MouseEvent event) {
             dragHandler = getLookup().lookup(MouseDragHandler.class);
-//            System.err.println("DragDetector HANDLE = " + dragHandler);
-//            System.err.println("   --- ev.type = " + event.getEventType());
-//            System.err.println("DragDetector ev.isPrimaryButtonDown()=" + event.isPrimaryButtonDown());
-
             if (dragHandler == null) {
                 dragHandler = new DefaultMouseDragHandler(dockableContext);
             }

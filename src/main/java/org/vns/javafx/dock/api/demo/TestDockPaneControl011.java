@@ -71,7 +71,7 @@ public class TestDockPaneControl011 extends Application {
         b1_1.setOnAction(a -> {
             HBox h = new HBox(new Button("Title Bar"));
             h.setMaxHeight(Region.USE_PREF_SIZE);
-            dockPane2.setTitleBar(h);
+            //dockPane2.setTitleBar(h);
         });
         Button b1_2 = new Button("b1_2");
         dnc1_1.setContent(b1_1);

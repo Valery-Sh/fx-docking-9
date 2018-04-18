@@ -59,7 +59,8 @@ public class DockTabPane extends TabPane {
         }
 
         if (dockable.getContext().getLayoutContext() != null) {
-            dockable.getContext().getLayoutContext().undock(dockable.node());
+            //03.04dockable.getContext().getLayoutContext().undock(dockable.node());
+            dockable.getContext().getLayoutContext().undock(dockable);
         }
         ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(idx, dockable.node());
     }
@@ -75,7 +76,8 @@ public class DockTabPane extends TabPane {
         }
 
         if (dockable.getContext().getLayoutContext() != null) {
-            dockable.getContext().getLayoutContext().undock(dockable.node());
+            //03.04dockable.getContext().getLayoutContext().undock(dockable.node());
+            dockable.getContext().getLayoutContext().undock(dockable);
         }
         ((DockTabPaneContext) DockLayout.of(this).getLayoutContext()).doDock(idx, dockable.node());
     }

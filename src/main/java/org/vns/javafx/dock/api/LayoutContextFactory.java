@@ -44,9 +44,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.HPane;
-import org.vns.javafx.dock.VPane;
 import static org.vns.javafx.dock.api.LayoutContext.getValue;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
@@ -70,11 +70,11 @@ public class LayoutContextFactory {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof BorderPane) {
             retval = new DockBorderPaneContext(targetNode);
-        } else if (targetNode instanceof VPane) {
-            retval = new ListBasedTargetContext(targetNode);
-        } else if (targetNode instanceof HPane) {
-            retval = new ListBasedTargetContext(targetNode);
-        } else if (targetNode instanceof SplitPane) {
+            //} else if (targetNode instanceof VPane) {
+            //   retval = new ListBasedTargetContext(targetNode);
+            //} else if (targetNode instanceof HPane) {
+            //    retval = new ListBasedTargetContext(targetNode);
+        } else if ((targetNode instanceof SplitPane && !(targetNode instanceof DockSplitPane))) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof FlowPane) {
             retval = new ListBasedTargetContext(targetNode);
@@ -137,6 +137,44 @@ public class LayoutContextFactory {
         }
 
         @Override
+        public void dock(Point2D mousePos, Dockable dockable) {
+            Object o = getValue(dockable);
+            if (o == null || Dockable.of(o) == null) {
+                return;
+            }
+
+            Dockable d = Dockable.of(o);
+            //
+            // Test is we drag dockable or the value of a dragContainer 
+            //
+/*03.04            if (contains(d.node()) && d == dockable) {
+                return;
+            } else if (contains(d.node())) {
+                LayoutContext tc = d.getContext().getLayoutContext();
+                if (tc != null && isDocked(tc, d)) {
+                    tc.undock(d.node());
+                }
+            }
+             */
+            dockable.getContext().getLayoutContext().undock(dockable);
+
+            Node node = d.node();
+            Window stage = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+                stage = node.getScene().getWindow();
+            }
+
+            if (doDock(mousePos, d.node()) && stage != null) {
+                //d.getContext().setFloating(false);
+                if ((stage instanceof Stage)) {
+                    ((Stage) stage).close();
+                } else {
+                    stage.hide();
+                }
+                d.getContext().setLayoutContext(this);
+            }
+        }
+
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
             StackPane target = (StackPane) getLayoutNode();
@@ -166,8 +204,17 @@ public class LayoutContextFactory {
         }
 
         @Override
-        public void remove(Node dockNode) {
+        public void remove(Object obj) {
+            if (!(obj instanceof Node)) {
+                return;
+            }
+            Node dockNode = (Node) obj;
             ((StackPane) getLayoutNode()).getChildren().remove(dockNode);
+        }
+
+        @Override
+        public boolean contains(Object obj) {
+            return ((StackPane) getLayoutNode()).getChildren().contains(obj);
         }
 
         /**
@@ -187,12 +234,12 @@ public class LayoutContextFactory {
             return list;
         }
 
-        @Override
+        /*        @Override
         public boolean restore(Dockable dockable) {
             return false;
 
         }
-
+         */
     }
 
     public static class StackPositionIndicator extends PositionIndicator {
@@ -339,6 +386,44 @@ public class LayoutContextFactory {
         }
 
         @Override
+        public void dock(Point2D mousePos, Dockable dockable) {
+            Object o = getValue(dockable);
+            if (o == null || Dockable.of(o) == null) {
+                return;
+            }
+
+            Dockable d = Dockable.of(o);
+            //
+            // Test is we drag dockable or the value of a dragContainer 
+            //
+/*03.04            if (contains(d.node()) && d == dockable) {
+                return;
+            } else if (contains(d.node())) {
+                LayoutContext tc = d.getContext().getLayoutContext();
+                if (tc != null && isDocked(tc, d)) {
+                    tc.undock(d.node());
+                }
+            }
+             */
+            dockable.getContext().getLayoutContext().undock(dockable);
+
+            Node node = d.node();
+            Window stage = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+                stage = node.getScene().getWindow();
+            }
+
+            if (doDock(mousePos, d.node()) && stage != null) {
+                //d.getContext().setFloating(false);
+                if ((stage instanceof Stage)) {
+                    ((Stage) stage).close();
+                } else {
+                    stage.hide();
+                }
+                d.getContext().setLayoutContext(this);
+            }
+        }
+
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
             Pane pane = (Pane) getLayoutNode();
@@ -357,8 +442,17 @@ public class LayoutContextFactory {
         }
 
         @Override
-        public void remove(Node dockNode) {
+        public void remove(Object obj) {
+            if (!(obj instanceof Node)) {
+                return;
+            }
+            Node dockNode = (Node) obj;
             ((Pane) getLayoutNode()).getChildren().remove(dockNode);
+        }
+
+        @Override
+        public boolean contains(Object obj) {
+            return ((Pane) getLayoutNode()).getChildren().contains(obj);
         }
 
         /**
@@ -378,11 +472,12 @@ public class LayoutContextFactory {
             return list;
         }
 
-        @Override
+        /*        @Override
         public boolean restore(Dockable dockable) {
             return false;
 
         }
+         */
     }
 
     public static class PanePositionIndicator extends PositionIndicator {
@@ -490,12 +585,14 @@ public class LayoutContextFactory {
                 return null;
             }
             String value = a.value();
+
             String methodName = "get" + value.substring(0, 1).toUpperCase() + value.substring(1);
+
             try {
                 Method method = clazz.getMethod(methodName, new Class[0]);
-                if (method.getReturnType().isInstance(retval)) {
-                    retval = (ObservableList<T>) method.invoke(node);
-                }
+                //if (method.getReturnType().isInstance(retval)) {
+                retval = (ObservableList<T>) method.invoke(node);
+                //}
             } catch (NoSuchMethodException | SecurityException ex) {
                 return null;
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -511,6 +608,43 @@ public class LayoutContextFactory {
         }
 
         @Override
+        public void dock(Point2D mousePos, Dockable dockable) {
+            Object o = getValue(dockable);
+            if (o == null || Dockable.of(o) == null) {
+                return;
+            }
+
+            Dockable d = Dockable.of(o);
+            //
+            // Test is we drag dockable or the value of a dragContainer 
+            //
+/*            if (contains(d.node()) && d == dockable) {
+                return;
+            } else if (contains(d.node())) {
+                LayoutContext tc = d.getContext().getLayoutContext();
+                if (tc != null && isDocked(tc, d)) {
+                    tc.undock(d.node());
+                }
+            }
+             */
+            //dockable.getContext().getLayoutContext().undock(dockable);
+
+            Node node = d.node();
+            Window stage = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+                stage = node.getScene().getWindow();
+            }
+
+            if (doDock(mousePos, d.node()) && stage != null) {
+                if ((stage instanceof Stage)) {
+                    ((Stage) stage).close();
+                } else {
+                    stage.hide();
+                }
+                d.getContext().setLayoutContext(this);
+            }
+        }
+
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
             Node targetNode = getLayoutNode();
@@ -556,16 +690,25 @@ public class LayoutContextFactory {
         }
 
         @Override
-        public void remove(Node dockNode) {
+        public void remove(Object obj) {
+            if (!(obj instanceof Node)) {
+                return;
+            }
+            Node dockNode = (Node) obj;
             items.remove((T) dockNode);
+        }
+
+        @Override
+        public boolean contains(Object obj) {
+            return items.contains((T) obj);
         }
 
         /**
          * For test purpose
          *
-         * @return th elis of dockables
+         * @return the list of dockable objects
          */
-        public List<Dockable> getDockables() {
+        /*        public List<Dockable> getDockables() {
             BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
@@ -576,12 +719,13 @@ public class LayoutContextFactory {
             });
             return list;
         }
-
-        @Override
+         */
+ /*        @Override
         public boolean restore(Dockable dockable) {
             return false;
 
         }
+         */
     }
 
     public static class ListBasedPositionIndicator extends PositionIndicator {
@@ -619,17 +763,6 @@ public class LayoutContextFactory {
                 visible = false;
             }
             getDockPlace().setVisible(visible);
-
-            /*            Window w = getIndicatorPopup().getDraggedNode().getScene().getWindow();
-            Platform.runLater(() -> {
-                if (w instanceof Stage) {
-                    System.err.println("getIndpane.size()=" + p.getChildren().size());
-                    ((Stage) w).setAlwaysOnTop(true);
-                    ((Stage) w).toFront();
-                }
-
-            });
-             */
         }
 
         protected void adjustPlace(Node node) {
@@ -706,17 +839,17 @@ public class LayoutContextFactory {
                     List<? extends Node> list = change.getRemoved();
                     for (Node d : list) {
                         if (DockRegistry.isDockable(d)) {
-                            context.undock(d);
+                            context.undock(Dockable.of(d));
                         }
                     }
 
                 }
                 if (change.wasAdded()) {
                     for (int i = change.getFrom(); i < change.getTo(); i++) {
-                        if (DockRegistry.isDockable(change.getList().get(i))) {
-//                            System.err.println("LayoutContextFactory: NodeListChangeListener " + context.getLayoutNode());
+                        //if (DockRegistry.isDockable(change.getList().get(i))) {
+                        System.err.println("LayoutContextFactory wasAdded = " + change.getList().get(i));
                             context.commitDock(change.getList().get(i));
-                        }
+                        //}
                     }
                 }
             }//while

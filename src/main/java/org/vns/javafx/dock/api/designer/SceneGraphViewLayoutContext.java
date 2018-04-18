@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
@@ -23,33 +24,49 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.ContextLookup;
+import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class SceneGraphViewTargetContext extends LayoutContext {
+public class SceneGraphViewLayoutContext extends LayoutContext {
 
-    private ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty<>();
+    private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty<>();
+    private final ObjectProperty acceptedValue = new SimpleObjectProperty<>();
 
-    public SceneGraphViewTargetContext(Node targetNode) {
+    public SceneGraphViewLayoutContext(Node targetNode) {
         super(targetNode);
     }
 
-/*    public SceneGraphViewTargetContext(Dockable dockable) {
+    /*    public SceneGraphViewTargetContext(Dockable dockable) {
         super(dockable);
     }
-*/
+     */
     @Override
     protected void initLookup(ContextLookup lookup) {
         //lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
-        lookup.putUnique(FloatViewFactory.class, new TreeItemFloatViewFactory());
+        //lookup.putUnique(FloatViewFactory.class, new TreeItemFloatViewFactory());
 
+    }
+
+    public ObjectProperty acceptedValue() {
+        return acceptedValue;
+    }
+
+    public Object getAcceptedValue() {
+        return acceptedValue.get();
+    }
+
+    public void setAcceptedValue(Object obj) {
+        acceptedValue.set(obj);
     }
 
     public ObjectProperty<Point2D> mousePositionProperty() {
@@ -63,18 +80,23 @@ public class SceneGraphViewTargetContext extends LayoutContext {
     public void setMousePosition(Point2D pos) {
         this.mousePosition.set(pos);
     }
-
+  
     @Override
-    public boolean isDocked(Node node) {
-        return false;
+    public void remove(Object obj) {
+     
+        TreeItemEx item = EditorUtil.findTreeItemByObject(getTreeView(), obj);
+        if (item != null) {
+            new TreeItemBuilder().updateOnMove(item);
+        }
     }
-
+    /**
+     * To prevent setting of this LayoutContext to object dockable context.
+     * @param obj the docked object
+     */
     @Override
-    public void removeValue(Dockable dockable) {
-        Object value = dockable.getContext().getDragContainer().getValue();
-        new TreeItemBuilder().removeByItemValue(getTreeView(), value);
+    public void commitDock(Object obj) {
+        
     }
-
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
 //        System.err.println("DOCK: dockable.node() = " + dockable.node());
@@ -107,11 +129,10 @@ public class SceneGraphViewTargetContext extends LayoutContext {
         }
         boolean accepted = acceptValue(mousePos, toAccept);
 
-        if (accepted && d != null) {
-            if (d.node().getScene() != null && d.node().getScene().getWindow() != null) {
+        SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
 
-            }
-            //d.getContext().setLayoutContext(this);
+        if (accepted && sr != null) {
+            //sr.restoreExpanded(toAccept);
         }
         if (accepted && window != null) {
             if ((window instanceof Stage)) {
@@ -120,10 +141,23 @@ public class SceneGraphViewTargetContext extends LayoutContext {
                 window.hide();
             }
         }
-        if (Dockable.of(toAccept) == null) {
-            return;
-        }
+        NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+        if (nf != null) {
 
+            //
+            // We apply Platform.runLater because a list do not 
+            // has to be a children but for instance for SplitPane it
+            // is an items and an added node may be not set into scene graph
+            // immeduately
+            //
+            if (!(toAccept instanceof Node)) {
+                return;
+            }
+            final Node av = (Node) toAccept;
+            Platform.runLater(() -> {
+                //nf.show(av);
+            });
+        }
     }
 
     /**
@@ -142,8 +176,9 @@ public class SceneGraphViewTargetContext extends LayoutContext {
     }
 
     /**
-     * Checks whether the given {@code dockable}  can be accepted by this context.
-     * 
+     * Checks whether the given {@code dockable} can be accepted by this
+     * context.
+     *
      * @param dockable the object to be checked
      * @param mousePos the current mouse position
      * @return true if the {@code dockable} can be accepted
@@ -152,13 +187,13 @@ public class SceneGraphViewTargetContext extends LayoutContext {
     public boolean isAdmissiblePosition(Dockable dockable, Point2D mousePos) {
 
         SceneGraphView gv = (SceneGraphView) getLayoutNode();
-        if ( gv.getTreeView( mousePos.getX(), mousePos.getY()) != null )  {
-            if ( gv.getTreeView().getRoot() == null ) {
+        if (gv.getTreeView(mousePos.getX(), mousePos.getY()) != null) {
+            if (gv.getTreeView().getRoot() == null) {
                 return true;
             }
         }
         TreeItemEx place = gv.getTreeItem(mousePos);
-        
+
         if (place == null) {
             return false;
         }
@@ -178,6 +213,7 @@ public class SceneGraphViewTargetContext extends LayoutContext {
         if (value instanceof Dockable) {
             value = ((Dockable) value).node();
         }
+//        System.err.println("SceneGraphViewTargetContext target = " + target + "; value = " + value);
         return new TreeItemBuilder().isAdmissiblePosition(gv.getTreeView(), target, place, value);
 
     }
@@ -201,47 +237,21 @@ public class SceneGraphViewTargetContext extends LayoutContext {
 
     protected boolean acceptValue(Point2D mousePos, Object value) {
         SceneGraphView gv = (SceneGraphView) getLayoutNode();
-//        System.err.println("DO DOCK");
         boolean retval = false;
-        if ( gv.getTreeView().getRoot() == null ) {
-//            System.err.println("SceneGVcontext: acceptValue value=" + value);
-            gv.setRoot((Node)value);
+        if (gv.getTreeView().getRoot() == null) {
+            gv.setRoot((Node) value);
             return true;
         }
         TreeItemEx place = gv.getTreeItem(mousePos);
-//        System.err.println("doDock node = " + node);
-//        System.err.println("doDock place = " + place);
-//        System.err.println("doDock place.value = " + place.getValue());
-
         if (place != null) {
             TreeItemEx target = getDragIndicator().getTargetTreeItem(mousePos.getX(), mousePos.getY(), place);
             if (target != null) {
-//                System.err.println("doDock layoutNode = " + layoutNode);
                 new TreeItemBuilder().accept(gv.getTreeView(), target, place, value);
-
-//                System.err.println("accept layoutNode = " + layoutNode.getValue());
-//                System.err.println("accept place = " + place.getValue());
                 retval = true;
             }
         }
         return retval;
     }
-    @Override
-    public boolean restore(Dockable dockable) {
-        return false;
-    }
 
-    @Override
-    public void remove(Node dockNode) {
-        TreeItemEx item = EditorUtil.findTreeItemByObject(getTreeView(), dockNode);
-        if (item != null) {
-            new TreeItemBuilder().updateOnMove(item);
-        }
 
-    }
-
-    @Override
-    protected boolean doDock(Point2D mousePos, Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

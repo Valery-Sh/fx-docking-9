@@ -28,11 +28,11 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
 
 /**
  *
@@ -56,10 +56,18 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
         TreeViewEx treeView = (TreeViewEx) getContext().dockable().node();
         SceneGraphView sgv = treeView.getSceneGraphView();
         TreeItemEx item = sgv.getTreeItem(screenPos);
-        if (item != null && item.getValue() != null) {
-            //Node tabNode = item.getValue();
-            System.err.println("item.getValue = " + item.getValue());
-            System.err.println("isDockable = " + Dockable.of(item.getValue()));
+        //
+        // We don't drag the root item (item.getParent cannot be null )
+        //
+        if (item != null && item.getParent() != null && item.getValue() != null) {
+            if ( item.getPropertyName() != null ) {
+                //NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(item.getParent().getValue());
+                BeanAdapter ba = new BeanAdapter(item.getParent().getValue());
+                if ( ba.isReadOnly(item.getPropertyName())) {
+                    return;
+                }
+            }
+            
             Label lb = new Label(item.getValue().getClass().getSimpleName());
             lb.getStyleClass().add("tree-item-node-" + item.getValue().getClass().getSimpleName().toLowerCase());            
             BorderStroke stroke = new BorderStroke(Color.BLACK, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.DEFAULT);
@@ -68,22 +76,18 @@ public class TreeViewExMouseDragHandler extends DefaultMouseDragHandler {
             lb.setPadding(new Insets(4,4,4,4));
             new Scene(lb); // to be able create snapshot
             
-            WritableImage wi = null;
+            WritableImage wi;// = null;
             
-            System.err.println("item.getGraphic = " + item.getCellGraphic());
-            //Label lb = new Label
             wi = lb.snapshot(null, null);
             ImageView node = new ImageView(wi);
             node.setOpacity(0.75);
             
-//                getContext().getDragContainer().setPlaceholder(node);
             DragContainer dc = new DragContainer(node, item.getValue());
             dc.setDragAsObject(true);
             dc.setDragSource(DockLayout.of(sgv).getLayoutContext());
             getContext().setDragContainer(dc);
             getContext().setResizable(false);
             setStartMousePos(pos);
-            //pos = tabNode.screenToLocal(ev.getScreenX(), ev.getScreenY());
         } 
     }
 

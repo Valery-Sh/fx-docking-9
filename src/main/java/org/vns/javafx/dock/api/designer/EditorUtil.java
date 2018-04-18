@@ -156,7 +156,7 @@ public class EditorUtil {
 
     protected static TreeItemEx findChildTreeItem(TreeItemEx item, Object sourceGesture) {
         TreeItemEx retval = null;
-        if ( item.getChildren() == null ) {
+        if ( item == null || item.getChildren().isEmpty() ) {
             return null;
         }
         for (TreeItem it : item.getChildren()) {

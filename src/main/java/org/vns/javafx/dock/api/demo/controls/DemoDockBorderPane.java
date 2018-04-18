@@ -16,6 +16,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.Dockable;
@@ -54,7 +56,42 @@ public class DemoDockBorderPane implements DockLayout {
             super(dockPane);
         }
 
-        @Override
+        public void dock(Point2D mousePos, Dockable dockable) {
+            Object o = getValue(dockable);
+            if (o == null || Dockable.of(o) == null) {
+                return;
+            }
+
+            Dockable d = Dockable.of(o);
+            //
+            // Test is we drag dockable or the value of a dragContainer 
+            //
+/*            if (contains(d.node()) && d == dockable) {
+                return;
+            } else if (contains(d.node())) {
+                LayoutContext tc = d.getContext().getLayoutContext();
+                if (tc != null && isDocked(tc, d)) {
+                    tc.undock(d.node());
+                }
+            }
+*/
+            dockable.getContext().getLayoutContext().undock(dockable);
+            Node node = d.node();
+            Window stage = null;
+            if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+                stage = node.getScene().getWindow();
+            }
+
+            if (doDock(mousePos, d.node()) && stage != null) {
+                if ((stage instanceof Stage)) {
+                    ((Stage) stage).close();
+                } else {
+                    stage.hide();
+                }
+                d.getContext().setLayoutContext(this);
+            }
+        }
+
         protected boolean doDock(Point2D mousePos, Node node) {
             boolean retval = true;
             BorderPane target = (BorderPane) getLayoutNode();
@@ -80,14 +117,13 @@ public class DemoDockBorderPane implements DockLayout {
         DockUtil.contains(node, mousePos.getX(), mousePos.getY());
     }
          */
-
         @Override
-        public void remove(Node dockNode) {
+        public void remove(Object obj) {
             System.err.println("REMOVE ____________________");
             //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-/*        @Override
+        /*        @Override
         public List<Dockable> getDockables() {
             BorderPane bp = (BorderPane) getTargetNode();
             List<Dockable> list = FXCollections.observableArrayList();
@@ -98,12 +134,12 @@ public class DemoDockBorderPane implements DockLayout {
             });
             return list;
         }
-*/
-/*        @Override
+         */
+ /*        @Override
         public boolean restore(Dockable dockable) {
             return false;
         }
-*/
+         */
     }
 
     public static class BorderPanePositionIndicator extends PositionIndicator {

@@ -129,7 +129,8 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
             targetDockPane.addEventFilter(DragEvent.DRAG_EXITED, this);
 
             //docablePositionSave = dockable.getContext().getLayoutContext().getRestorePosition(dockable);
-            dockable.getContext().getLayoutContext().undock(dockable.node());
+            //03.04dockable.getContext().getLayoutContext().undock(dockable.node());
+            dockable.getContext().getLayoutContext().undock(dockable);                
             //dockable.getContext().setFloating(true);
         }
 
@@ -182,16 +183,16 @@ public class DragAndDropManager implements DragManager, EventHandler<DragEvent> 
         }
 
         Node root = resultStage.getScene().getRoot();
-        if (root == null || !(root instanceof Pane) && !(DockRegistry.instanceOfDockLayout(root))) {
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockLayout(root))) {
             return;
         }
 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return DockRegistry.instanceOfDockLayout(n);
+            return DockRegistry.isDockLayout(n);
         });
         if (topPane != null) {
             root = topPane;
-        } else if (!DockRegistry.instanceOfDockLayout(root)) {
+        } else if (!DockRegistry.isDockLayout(root)) {
             return;
         }
         if (!DockRegistry.dockLayout(root).getLayoutContext().isAcceptable(dockable)) {

@@ -68,6 +68,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import org.vns.javafx.dock.DockNode;
+import org.vns.javafx.dock.DockPane;
+import org.vns.javafx.dock.DockTitleBar;
+import org.vns.javafx.dock.HPane;
+import org.vns.javafx.dock.VPane;
 import static org.vns.javafx.dock.api.PalettePane.NodePolicy.BOTH;
 import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKABLE;
 import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKLAYOUT;
@@ -274,8 +279,43 @@ public class PalettePane extends Control {
     protected PaletteModel createDefaultPaleteModel() {
         PaletteModel paletteModel = new PaletteModel(this);
 
-        Label lb = new Label("Containers");
-        PaletteCategory pc = paletteModel.addCategory("containers", lb);
+        Label lb = new Label("Docking");
+        PaletteCategory pc = paletteModel.addCategory("docking", lb);
+        lb.getStyleClass().add("tree-item-font-bold");        
+        
+        lb = new Label("DockPane");
+        pc.addItem(lb, DockPane.class);
+        lb.getStyleClass().add("tree-item-node-dockpane");
+        lb.applyCss();     
+        
+        lb = new Label("HPane");
+        PaletteItem item = pc.addItem(lb, HPane.class);
+        item.setProducedNodePolicy(NodePolicy.NONE);
+        lb.getStyleClass().add("tree-item-node-hpane");
+        lb.applyCss();     
+        
+        lb = new Label("VPane");
+        item = pc.addItem(lb, VPane.class);
+        item.setProducedNodePolicy(NodePolicy.NONE);
+        lb.getStyleClass().add("tree-item-node-vpane");
+        lb.applyCss();     
+        
+        lb = new Label("DockNode");
+        item = pc.addItem(lb, DockNode.class);
+        lb.getStyleClass().add("tree-item-node-docknode");
+        lb.applyCss();     
+        
+        lb = new Label("DockTitleBar");
+        item = pc.addItem(lb, DockTitleBar.class);
+        item.setProducedNodePolicy(NodePolicy.NONE);
+        lb.getStyleClass().add("tree-item-node-docktitlebar");
+        lb.applyCss();            
+        //
+        // Containers Category
+        //
+        
+        lb = new Label("Containers");
+        pc = paletteModel.addCategory("containers", lb);
         lb.getStyleClass().add("tree-item-font-bold");
 
         lb = new Label("Accordion");
@@ -289,7 +329,7 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("BorderPane");
-        pc.addItem(lb, BorderPane.class, node -> { ((Pane)node).setPrefSize(100, 100); ((Pane)node).setMinHeight(100);System.err.println("BORDERPANE +++++++++++++");});
+        pc.addItem(lb, BorderPane.class, node -> { ((Pane)node).setPrefSize(100, 100); ((Pane)node).setMinHeight(100);});
         lb.getStyleClass().add("tree-item-node-borderpane");
         lb.applyCss();
 
@@ -367,7 +407,7 @@ public class PalettePane extends Control {
         lb.getStyleClass().add("tree-item-node-button");
 
         lb = new Label("CheckBox");
-        PaletteItem item = pc.addItem(lb, CheckBox.class, v -> {
+        item = pc.addItem(lb, CheckBox.class, v -> {
             ((CheckBox) v).setText("CheckBox");
         });
         //
@@ -382,7 +422,7 @@ public class PalettePane extends Control {
         lb.getStyleClass().add("tree-item-node-choicebox");
 
         lb = new Label("ComboBox");
-        item = pc.addItem(lb, ComboBox.class);
+        item = pc.addItem(lb, ComboBox.class);//, n -> { ( (ComboBox)n).setVisibleRowCount(0);( (ComboBox)n).armedProperty().set(false);});
         lb.getStyleClass().add("tree-item-node-combobox");
         item.setEventDispatcher(new MouseEventDispatcher( n -> { return ((ComboBox) n).getItems().isEmpty();} ));
         
@@ -961,7 +1001,10 @@ public class PalettePane extends Control {
                 }
 
                 if ((value instanceof Node) && item.getEventDispatcher() != null) {
-                    item.getEventDispatcher().start((Node) value);
+                    //item.getEventDispatcher().start((Node) value);
+                    PaletteEventDispatcher ped = item.getEventDispatcher().getClass().newInstance();
+                    ped.setPreventCondition( item.getEventDispatcher().getPreventCondition());
+                    ped.start((Node) value);
                 }
 
                 String tx = "";
@@ -1044,6 +1087,9 @@ public class PalettePane extends Control {
     public static interface PaletteEventDispatcher extends EventDispatcher {
 
         void start(Node node);
+        Predicate<Node> getPreventCondition(); 
+        void  setPreventCondition(Predicate<Node> preventCondition);   
+        void finish(Node node);
 
     }
 
@@ -1065,10 +1111,21 @@ public class PalettePane extends Control {
         private void init() {
         }
 
+        @Override
         public void start(Node node) {
             this.node = node;
             initial = node.getEventDispatcher();
             node.setEventDispatcher(this);
+        }
+
+        @Override
+        public Predicate<Node> getPreventCondition() {
+            return preventCondition;
+        }
+
+        @Override
+        public void setPreventCondition(Predicate<Node> preventCondition) {
+            this.preventCondition = preventCondition;
         }
 
         @Override
@@ -1115,6 +1172,12 @@ public class PalettePane extends Control {
         protected Event dragged(Event event, EventDispatchChain tail) {
             return initial.dispatchEvent(event, tail);
         }
+
+        @Override
+        public void finish(Node node) {
+            node.setEventDispatcher(initial);
+        }
+
 
     }
 

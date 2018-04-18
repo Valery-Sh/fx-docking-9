@@ -15,11 +15,16 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
@@ -36,71 +41,144 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         this.propertyName = propertyName;
     }
 
-    @Override
-    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-        
-        Property prop = treeItem.getProperty(propertyName);
-        TreeItemEx propTreeItem = treeItem.getTreeItem(propertyName);
-        int insertPos = propTreeItem == null ? 0 : treeItem.getInsertPos(propertyName);
+    private List<Boolean> downUpExpandedValues(TreeItemEx downItem) {
+        List<Boolean> list = FXCollections.observableArrayList();
+        TreeItemEx p = downItem;
+        while (p != null) {
+            list.add(p.isExpanded());
+            p = (TreeItemEx) p.getParent();
+        }
+        return list;
+    }
 
-        NodeFraming nf = DockRegistry.lookup(NodeFraming.class);        
-        
-        if (propTreeItem == null) {
-            if (oldValue == null && newValue != null) {
-                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                treeItem.getChildren().add(insertPos, item);
-                //Selection sel = DockRegistry.lookup(Selection.class);
-                //sel.setSelected(newValue);                
-                if (nf != null && (newValue instanceof Node))  {
-                    nf.show((Node) newValue);
-                }
-            }
-        } else {
-            
-            TreeItem p = propTreeItem.getParent();
-            
-            if (oldValue != null && newValue == null) {
-                if ( ( (prop instanceof NodeContent) && ((NodeContent)prop).isHideWhenNull()) ) {
-                    p.getChildren().remove(propTreeItem);
-                    
-                } else {
-                    TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                    p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-                }
-            }  else if (oldValue == null && newValue != null) {
-                // May be is NodeContent and not hidden when null
-                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-                //Selection sel = DockRegistry.lookup(Selection.class);
-                //sel.setSelected(newValue);                
-                if (nf != null && (newValue instanceof Node))  {
-                    nf.show((Node) newValue);
-                }
-                
-            } else if (oldValue != null && newValue != null) {
-                TreeItemEx item = new TreeItemBuilder().build(newValue,prop);
-                p.getChildren().set(p.getChildren().indexOf(propTreeItem), item);
-                //Selection sel = DockRegistry.lookup(Selection.class);
-//                sel.setSelected(newValue);                
-                if (nf != null && (newValue instanceof Node))  {
-                    nf.show((Node) newValue);
-                }
-                
-                
-            }
+    private void restoreExpandedValues(TreeItemEx downItem, List<Boolean> expValues) {
+        TreeItemEx p = downItem;
+
+        int idx = 0;
+
+        while (p != null) {
+            p.setExpanded(expValues.get(idx));
+            p = (TreeItemEx) p.getParent();
+            idx++;
         }
     }
 
-    
+    @Override
+    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+        //System.err.println("------- oldValue = " + oldValue + "; newValue = " + newValue);
+        //System.err.println("TreeItemObjectChangeListener changed owner treeItem = " + treeItem);
+//        System.err.println("!!! propertyName=" + propertyName + "; treeItem.getValue() = " + treeItem.getValue());
+        if ("graphic".equals(propertyName)) {
+//            System.err.println("0 graphic oldValue = " + oldValue + "; newValue=" + newValue);
+        }
+        Property prop = treeItem.getProperty(propertyName);
+        TreeItemEx propItem = treeItem.getTreeItem(propertyName);
+        int insertPos = propItem == null ? 0 : treeItem.getInsertPos(propertyName);
+        //System.err.println("TreeItemObjectChangeListener changed propertyName = " + propertyName +"; propItem = " + propItem);
+        SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+        NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+
+        if (propItem == null) {
+            if (oldValue == null && newValue != null) {
+                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
+                if (sr != null && !sr.contains(newValue)) {
+                    //
+                    //changed outside and not by dragging 
+                    //
+                    List<Boolean> expValues = downUpExpandedValues(treeItem);
+                    treeItem.getChildren().add(insertPos, item);
+//                    System.err.println("treeItem is expanded = " + treeItem.isExpanded());
+                    item.setExpanded(false);
+                    //restoreExpandedValues(treeItem, expValues);
+
+                } else {
+                    treeItem.getChildren().add(insertPos, item);
+                    if (nf != null && (newValue instanceof Node)) {
+                        Platform.runLater(() -> {
+                            nf.show((Node) newValue);
+                        });
+                    }
+
+                }
+
+            }
+        } else {
+
+            TreeItemEx propItemParent = (TreeItemEx) propItem.getParent();
+
+            if (oldValue != null && newValue == null) {
+                if (((prop instanceof NodeContent) && ((NodeContent) prop).isHideWhenNull())) {
+                    if (sr != null) {
+                        sr.save(oldValue);
+                    }
+                    propItemParent.getChildren().remove(propItem);
+
+                } else {
+                    if (sr != null) {
+                        sr.save(oldValue);
+                    }
+
+                    TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
+                    if (sr != null && !sr.contains(newValue)) {
+                        //
+                        //changed outside and not by dragging 
+                        //
+                        List<Boolean> expValues = downUpExpandedValues(propItemParent);
+                        propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
+                        item.setExpanded(false);
+                        //restoreExpandedValues(propItemParent, expValues);
+                    } else {
+                        item.setExpanded(false);
+                        propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
+                    }
+                }
+            } else if ( newValue != null ) {
+                // May be is NodeContent and not hidden when null
+                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
+
+                if (sr != null && !sr.contains(newValue)) {
+                    //
+                    //changed outside and not by dragging 
+                    //
+                    List<Boolean> expValues = downUpExpandedValues(propItemParent);
+                    propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
+                    item.setExpanded(false);
+                    //restoreExpandedValues(propItemParent, expValues);
+                } else {
+                    item.setExpanded(false);
+                    propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
+                    if (nf != null && (newValue instanceof Node)) {
+                        Platform.runLater(() -> {
+                            nf.show((Node) newValue);
+                        });
+                    }
+                }
+
+            }/* else if (oldValue != null && newValue != null) {
+                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
+                item.setExpanded(false);
+                propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
+          
+                if (nf != null && (newValue instanceof Node) && !(newValue instanceof ImageView)) {
+                    Platform.runLater(() -> {
+                        nf.show((Node) newValue);
+                    });
+                }
+
+            }
+            */
+        }
+    }
+
     protected Object getPropertyValue() {
         Object retval = null;
         return retval;
     }
 
-/*    protected TreeItemEx getPropertyTreeItem() {
+    /*    protected TreeItemEx getPropertyTreeItem() {
         TreeItemEx retval = null;
 //        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(treeItem.getValue());
         return retval;
     }
-*/
+     */
 }

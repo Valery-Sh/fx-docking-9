@@ -15,23 +15,13 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Window;
 
 /**
  *
  * @author Valery
  */
 public interface NodeFraming {
-
     void show(Node node);
-
     void hide();
-
-
 }

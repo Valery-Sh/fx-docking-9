@@ -1,5 +1,9 @@
 package org.vns.javafx.dock.api.designer;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -8,17 +12,21 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
 
 /**
  *
@@ -27,7 +35,7 @@ import org.vns.javafx.dock.api.DockLayout;
 @DefaultProperty(value = "root")
 public class SceneGraphView extends Control implements DockLayout {
 
-    private SceneGraphViewTargetContext targetContext;
+    private SceneGraphViewLayoutContext targetContext;
 
     private DragType dragType = DragType.SIMPLE;
 
@@ -38,9 +46,9 @@ public class SceneGraphView extends Control implements DockLayout {
 
     private final TreeViewEx treeView;
 
-    private ObjectProperty<Node> root = new SimpleObjectProperty<>();
+    private final ObjectProperty<Node> root = new SimpleObjectProperty<>();
 
-    private ObjectProperty<Node> statusBar = new SimpleObjectProperty<>();
+    private final ObjectProperty<Node> statusBar = new SimpleObjectProperty<>();
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
 
@@ -56,12 +64,63 @@ public class SceneGraphView extends Control implements DockLayout {
     }
 
     private void init() {
-        getStyleClass().add("scene-graph-view");
-        treeView.getStyleClass().add("tree-view");
+        //getStyleClass().add("scene-graph-view");
+        //treeView.getStyleClass().add("tree-view");
 
         customizeCell();
     }
-
+    private Map<Class<?>,Map<String,Object> > saved = new HashMap<>(); 
+    public void save() {
+        TreeViewEx tv = getTreeView();
+        TreeItemEx root = (TreeItemEx) tv.getRoot();
+        saveItem(root);
+        long start0 = System.currentTimeMillis();
+        for ( TreeItem it : root.getChildren()) {
+            save((TreeItemEx) it);
+        }
+            
+        long start1 = System.currentTimeMillis();
+        //System.err.println("SAVE (start1-start0) = " + (start1-start0) );  
+        
+        saved.forEach((k,v) -> {
+          //  System.err.println("BEAN = " + k.getName() + "; size = " + v.size());
+            v.forEach((k1,v1) -> {
+            //    System.err.println("   --- name = " + k1 + "; obj = " + v1);
+            });
+        });
+        
+    }
+    private void save(TreeItemEx item) {
+        saveItem(item);
+        for ( TreeItem it : item.getChildren() ) {
+            save((TreeItemEx) it);
+        }
+    }
+    private void saveItem(TreeItemEx item) {
+        Object o = item.getValue();
+        if ( o == null ) {
+            return;
+        }
+        BeanAdapter ba = new BeanAdapter(o);
+        Set<String> set = BeanAdapter.getPropertyNames(o.getClass());
+        Map<String, Object> map = new HashMap<>();
+        set.forEach(name -> {
+            Object obj = ba.get(name);
+     ChoiceBox bb = null;
+     
+     //bb.setContentBias
+            Method fxPropMethod = ba.fxPropertyMethod(name);
+            if( fxPropMethod == null ) {
+                System.err.println("NULL fxProp = " + name);
+            }
+            if ( ! name.equals("class") &&  ! ba.isReadOnly(name)  && fxPropMethod != null ) {
+                map.put(name, ba.get(name));
+            }
+            //System.err.println("name = " + name + "; obj=" + obj);
+        });
+        saved.put(item.getValue().getClass(), map);
+        
+    }
     public ObservableList<TreeCell> getVisibleCells() {
         return visibleCells;
     }
@@ -165,7 +224,7 @@ public class SceneGraphView extends Control implements DockLayout {
     @Override
     public LayoutContext getLayoutContext() {
         if (targetContext == null) {
-            targetContext = new SceneGraphViewTargetContext(this);
+            targetContext = new SceneGraphViewLayoutContext(this);
         }
         return targetContext;
     }
@@ -180,33 +239,25 @@ public class SceneGraphView extends Control implements DockLayout {
 
     public void addTreeItemEventHandlers(TreeItemEx item) {
         valueChangedHandler = ev -> {
-            System.err.println("SceneGraphView: TreeItem: (value...) EventType = " + ev.getEventType() + "; item = " + ev.getSource());
-            System.err.println("   --- value = " +  ev.getTreeItem().getValue() + "; newValue = " + ev.getNewValue());
-            
         };
         childrenModificationEvent = ev -> {
-            System.err.println("SceneGraphView: TreeItem: (childremM...) EventType = " + ev.getEventType() + "; item = " + ev.getTreeItem());
             if (ev.wasAdded()) {
                 for (TreeItem it : ev.getAddedChildren()) {
-                    System.err.println("   --- added it = " +  it);
                     if (it.getValue() instanceof Node) {
                     }
-                    
                 }
-                int row = getTreeView().getRow(ev.getAddedChildren().get(ev.getAddedSize()-1) );
-                System.err.println("   --- SceneGraphView: TreeItem: row = " + row);
-                System.err.println("   --- SceneGraphView: TreeItem: item = " + ev.getAddedChildren().get(ev.getAddedSize()-1));
-                getTreeView().getSelectionModel().select(ev.getAddedChildren().get(ev.getAddedSize()-1));
+                //int row = getTreeView().getRow(ev.getAddedChildren().get(ev.getAddedSize()-1) );
+                //getTreeView().getSelectionModel().select(ev.getAddedChildren().get(ev.getAddedSize()-1));
             }
             if (ev.wasRemoved()) {
                 
                 for (TreeItem it : ev.getRemovedChildren()) {
-                    System.err.println("   --- removed it = " +  it);                    
+//                    System.err.println("   --- removed it = " +  it);                    
                 }
             }
             if (ev.wasPermutated()) {
                 for (TreeItem it : ev.getRemovedChildren()) {
-                    System.err.println("   --- permutated it = " +  it);                    
+//                    System.err.println("   --- permutated it = " +  it);                    
                 }
             }
             
@@ -214,7 +265,7 @@ public class SceneGraphView extends Control implements DockLayout {
         };
 
         treeItemEventHandler = ev -> {
-            System.err.println("TreeItem: (ALL)  EventType = " + ev.getEventType() + "; item = " + ev.getSource());
+//            System.err.println("TreeItem: (ALL)  EventType = " + ev.getEventType() + "; item = " + ev.getSource());
         };
 
         item.addEventHandler(TreeItem.valueChangedEvent(), valueChangedHandler);

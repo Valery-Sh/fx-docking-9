@@ -91,9 +91,9 @@ public class PopupControlResizer extends StageResizer {
 
             Region child = (Region) ((Pane) root).getChildren().get(0);
             double childMin = child.minWidth(-1);
-            System.err.println("childMin = " + childMin);         
-            System.err.println("childWidth = " + child.getWidth());         
-            System.err.println("wDelta = " + wDelta);         
+//            System.err.println("childMin = " + childMin);         
+//            System.err.println("childWidth = " + child.getWidth());         
+//            System.err.println("wDelta = " + wDelta);         
             
             if (child.getWidth() > childMin || wDelta > 0 && child.getWidth() == childMin) {
                 pc.setAnchorX(xDelta + pc.getAnchorX());

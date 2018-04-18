@@ -41,11 +41,11 @@ public class DockTabPaneMouseDragHandler extends DefaultMouseDragHandler {
     public void mousePressed(MouseEvent ev) {
         setStartMousePos(null);
         Point2D pos = new Point2D(ev.getX(), ev.getY());
-        System.err.println("1 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
+//        System.err.println("1 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
         if (!ev.isPrimaryButtonDown() || getHeaderArea(ev) == null) {
             return;
         }
-        System.err.println("2 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
+//        System.err.println("2 ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
 
         if (getHeadersRegion(ev) != null) {
             Tab tab = getTab(ev);
@@ -148,13 +148,5 @@ public class DockTabPaneMouseDragHandler extends DefaultMouseDragHandler {
         }
         return retval;
     }
-    /*    public void mouseReleased(MouseEvent ev) {
-        System.err.println("TabpaneMouseHandler: ev.isPrimaryButtonDown()=" + ev.isPrimaryButtonDown());
-        if (!ev.isPrimaryButtonDown()) {
-            return;
-        }
-        System.err.println("!!! mouseReleased");
-        ev.consume();
-    }
-     */
+    
 }

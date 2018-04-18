@@ -6,11 +6,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.DockNodeSkin;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.properties.TitleBarProperty;
 
 /**
  *
@@ -68,12 +68,14 @@ public class DockNode extends Control { //implements Dockable {
     public void setTitle(String title) {
         context.setTitle(title);
     }
-
-    public Region getTitleBar() {
+    public TitleBarProperty titleBarProperty() {
+        return context.titleBarProperty();
+    }
+    public Node getTitleBar() {
         return context.getTitleBar();
     }
 
-    public void setTitleBar(Region node) {
+    public void setTitleBar(Node node) {
         context.setTitleBar(node);
     }
 

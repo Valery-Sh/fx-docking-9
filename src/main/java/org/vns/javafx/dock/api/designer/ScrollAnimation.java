@@ -68,7 +68,6 @@ public class ScrollAnimation {
     }
 
     public void start(double x, double y) {
-        System.err.println("START");
         if ( isRunning() ) {
             return;
         }

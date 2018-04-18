@@ -1,7 +1,9 @@
 package org.vns.javafx.dock;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -52,7 +54,6 @@ public class DockTitleBar extends HBox {
                 case LABEL:
                     retval = "dock-title-label";
                     break;
-
             }
             return retval;
         }
@@ -60,10 +61,11 @@ public class DockTitleBar extends HBox {
     private Dockable dockNode;
     //private DockDragboard dragboard;
 
-    private Label label;
-    private Button closeButton;
-    private Button stateButton;
-    private Button pinButton;
+    private final ObjectProperty<Label> label = new SimpleObjectProperty<>();
+    private final  ObjectProperty<Button> closeButton = new SimpleObjectProperty<>();
+    private final  ObjectProperty<Button> stateButton = new SimpleObjectProperty<>();
+    private  final ObjectProperty<Button> pinButton = new SimpleObjectProperty<>();
+    
     private String title;
     
     private BooleanProperty selectedPseudoClass = new SimpleBooleanProperty();
@@ -91,35 +93,36 @@ public class DockTitleBar extends HBox {
 
     private void init() {
 
-        label = new Label(title);
+        setLabel(new Label(title));
         if ( dockNode != null ) {
-            label.textProperty().bind(dockNode.getContext().titleProperty());
+            getLabel().textProperty().bind(dockNode.getContext().titleProperty());
         }
 
-        stateButton = new Button();
-        closeButton = new Button();
-        pinButton = new Button();
+        setStateButton(new Button());
+        setCloseButton(new Button());
+        setPinButton(new Button());
+        
+        
 
         Pane fillPane = new Pane();
         HBox.setHgrow(fillPane, Priority.ALWAYS);
 
-        getChildren().addAll(label, fillPane, pinButton, stateButton, closeButton);
+        getChildren().addAll(getLabel(), fillPane, getPinButton(), getStateButton(), getCloseButton());
 
-        label.getStyleClass().add(StyleClasses.LABEL.cssClass());
-        label.getStyleClass().add("title-bar-label");
+        getLabel().getStyleClass().add(StyleClasses.LABEL.cssClass());
+        getLabel().getStyleClass().add("title-bar-label");
         
-        closeButton.getStyleClass().add(StyleClasses.CLOSE_BUTTON.cssClass());
-        stateButton.getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
-        pinButton.getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
+        getCloseButton().getStyleClass().add(StyleClasses.CLOSE_BUTTON.cssClass());
+        getStateButton().getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
+        getPinButton().getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
         this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
         setOnMouseClicked(ev -> {
-            closeButton.requestFocus();
-            //03.09 dockNode.getContext().dockable().node().toFront();
+            getCloseButton().requestFocus();
         });
-        closeButton.addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
-        stateButton.setTooltip(new Tooltip("Undock pane"));
-        closeButton.setTooltip(new Tooltip("Close pane"));
-        pinButton.setTooltip(new Tooltip("Pin pane"));
+        getCloseButton().addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
+        getStateButton().setTooltip(new Tooltip("Undock pane"));
+        getCloseButton().setTooltip(new Tooltip("Close pane"));
+        getPinButton().setTooltip(new Tooltip("Pin pane"));
     }
     
     @Override
@@ -133,6 +136,9 @@ public class DockTitleBar extends HBox {
         }
     }
     protected void closeButtonClicked(MouseEvent ev) {
+        if ( dockNode == null ) {
+            return;
+        }
         DockableContext sp = dockNode.getContext();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
@@ -147,37 +153,48 @@ public class DockTitleBar extends HBox {
         }
         return dockNode;
     }
-
-    public Label getLabel() {
+    public ObjectProperty<Label> labelProperty() {
         return label;
+    }
+    public Label getLabel() {
+        return label.get();
     }
 
     public void setLabel(Label label) {
-        this.label = label;
+        this.label.set(label);
+    }
+    public ObjectProperty<Button> closeButtonProperty() {
+        return closeButton;
+    }
+    public ObjectProperty<Button> stateButtonProperty() {
+        return stateButton;
+    }
+    public ObjectProperty<Button> pinButtonProperty() {
+        return pinButton;
     }
 
     public void setCloseButton(Button closeButton) {
-        this.closeButton = closeButton;
+        this.closeButton.set(closeButton);
     }
 
     public void setStateButton(Button stateButton) {
-        this.stateButton = stateButton;
+        this.stateButton.set(stateButton);
     }
 
     public void setPinButton(Button pinButton) {
-        this.pinButton = pinButton;
+        this.pinButton.set(pinButton);
     }
 
     public Button getCloseButton() {
-        return closeButton;
+        return closeButton.get();
     }
 
     public Button getStateButton() {
-        return stateButton;
+        return stateButton.get();
     }
 
     public Button getPinButton() {
-        return pinButton;
+        return pinButton.get();
     }
     public boolean isSelectedPseudoClass() {
         return selectedPseudoClass.get();

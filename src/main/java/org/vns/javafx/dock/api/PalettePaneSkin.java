@@ -119,7 +119,7 @@ public class PalettePaneSkin extends SkinBase<PalettePane> {
         }
         double width = tx.getLayoutBounds().getWidth()
                 + label.getInsets().getLeft()
-                + label.getInsets().getLeft()
+                + label.getInsets().getRight()
                 + label.getGraphicTextGap()
                 + graphicWidth;
         return width;

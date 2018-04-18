@@ -12,6 +12,7 @@
     <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text"  defaultProperty="graphic">
         <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"  replaceable="true"/>
     </NodeDescriptor>
+    
     <NodeDescriptor type="javafx.scene.layout.Pane">
         <NodeList name="children" />
     </NodeDescriptor>
@@ -25,14 +26,6 @@
         <NodeList name="panes" />
     </NodeDescriptor>
     
-    <!--
-    <NodeDescriptor type="javafx.scene.control.TabPane" defaultProperty="tabs" >
-        <NodeList name="tabs" title="List of Tab" />
-    </NodeDescriptor>
-    <NodeDescriptor type="javafx.scene.control.Tab" defaultProperty="content" >
-        <NodeContent name="content" title="insert content" styleClass="node-insert-content"/>
-    </NodeDescriptor>
-    -->
     <NodeDescriptor type="javafx.scene.control.Tab" titleProperty="text" defaultProperty="content" >
         <NodeContent name="content" title="insert content" styleClass="node-insert-content"/>
     </NodeDescriptor>
@@ -41,6 +34,22 @@
         <NodeContent name="graphic" title="insert graphic"  styleClass="labeled-insert-graphic" />
         <NodeContent name="content"  />
     </NodeDescriptor>
+    
+     <NodeDescriptor type="org.vns.javafx.dock.DockPane" >
+        <NodeContent name="root" styleClass="" />
+    </NodeDescriptor>     
+    
+    <NodeDescriptor type="org.vns.javafx.dock.DockNode" >
+        <NodeContent name="titleBar" title="insert title bar" styleClass="dockpane-insert-titlebar"/>
+        <NodeContent name="content" />
+    </NodeDescriptor>     
+
+    <NodeDescriptor type="org.vns.javafx.dock.DockTitleBar" >
+        <!--NodeContent name="label" title="insert title Label" styleClass="docktitlebar-insert-label" /-->
+        <NodeContent name="pinButton" title="insert pin Button" styleClass="docktitlebar-insert-pinbutton" />
+        <NodeContent name="stateButton" title="insert state Button" styleClass="docktitlebar-insert-statebutton" />
+        <NodeContent name="closeButton" title="insert close Button" styleClass="docktitlebar-insert-closebutton" />
+    </NodeDescriptor>     
     
     <NodeDescriptor type="javafx.scene.layout.BorderPane" defaultProperty="center">
         <NodeContent name="top" title="insert TOP" styleClass="borderpane-insert-top"/>

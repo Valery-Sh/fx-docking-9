@@ -12,9 +12,11 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -43,8 +45,15 @@ public class TestChoiceBox1 extends Application {
                 1111111,2222222,3333333,4444444,
                 1111111,2222222,3333333,4444444,
                 1111111,2222222,3333333,4444444);
-        
-        Pane root = new Pane(cb);
+        ComboBox cb1 = new ComboBox<>();  
+        Button cb1Btn = new Button("cb1Btn");
+        Button btn1 = new Button("Remove");
+        cb1.getItems().add(cb1Btn);
+        Pane root = new VBox(cb,cb1,btn1);
+        btn1.setOnAction(e -> {
+            //cb1.getItems().remove(cb1Btn);
+            System.err.println("PARENT = " + cb1Btn.getParent());
+        });
         
         root.setPrefSize(500, 70);
         Scene scene = new Scene(root);

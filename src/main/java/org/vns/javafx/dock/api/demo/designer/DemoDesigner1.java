@@ -1,7 +1,7 @@
 
 /*
  * Copyright 2018 Your Organisation.
- *
+ *g
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,11 +20,11 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
@@ -38,8 +38,8 @@ import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
+import org.vns.javafx.dock.api.designer.TrashTray;
 import org.vns.javafx.dock.api.designer.TreeItemEx;
-
 
 /**
  *
@@ -50,7 +50,10 @@ public class DemoDesigner1 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-
+     Node n;
+     
+     Button b;
+     
         stage.setAlwaysOnTop(true);
         DockPane rootDockPane = new DockPane();
         rootDockPane.setUsedAsDockLayout(false);
@@ -83,14 +86,16 @@ public class DemoDesigner1 extends Application {
         //sceneGraphView.getRootLayout().getChildren().add(root1);
         //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
         formButton.setOnAction(a -> {
-            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
+            SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+            sgv.save();
+/*            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
             System.err.println("SELECTED = " + it);
             if (it != null) {
                 System.err.println("SELECTED value = " + it.getValue());
                 DockRegistry.lookup(Selection.class).removeSelected(it.getValue());
                 DockRegistry.lookup(Selection.class).setSelected(it.getValue());
             }
-
+*/
 //            ((Region)sceneGraphView.getRoot()).requestLayout();
 //            DockRegistry.getWindows().forEach(w -> {
 /*                System.err.println("******************** w = " + w.getScene().getRoot().getId());
@@ -135,12 +140,7 @@ public class DemoDesigner1 extends Application {
 
         PalettePane palettePane = DesignerLookup.lookup(PalettePane.class);
         DockSideBar paletteDockSideBar = new DockSideBar();
-        /*        sgvDockSideBar.getLookup().putUnique(FloatViewFactory.class, new FloatViewFactory() {
-            public FloatView getFloatView(Dockable d) {
-                return new FloatPopupControlView2(d);
-            }
-        });
-         */
+    
         paletteDockSideBar.setOrientation(Orientation.VERTICAL);
         paletteDockSideBar.setRotation(DockSideBar.Rotation.UP_DOWN);
         paletteDockSideBar.setSide(Side.LEFT);
@@ -156,11 +156,20 @@ public class DemoDesigner1 extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
-        stage.setHeight(400);
+
+        stage.setHeight(400);    
         stage.setWidth(500);
 
         stage.show();
         stage1.show();
+        
+        TrashTray tray = DockRegistry.lookup(TrashTray.class);
+        if ( tray != null ) {
+            Stage trashStage = tray.show(stage);
+            trashStage.toFront();
+        }
+        
+        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

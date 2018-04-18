@@ -311,6 +311,7 @@ public abstract class SideIndicator extends PositionIndicator {
         @Override
         protected Pane createIndicatorPane() {
             GridPane indicatorPane = new GridPane();
+            
             indicatorPane.getStyleClass().add("dock-pos-node-indicator");
             indicatorPane.getStyleClass().add(getStylePrefix());
             indicatorPane.setMouseTransparent(true);

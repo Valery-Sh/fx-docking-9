@@ -92,11 +92,26 @@ public class DockSideBarContext extends LayoutContext {
         return toolBar;
     }
 
-    @Override
+    /*   @Override
     protected boolean isDocked(Node node) {
         boolean retval = false;
         for (Container c : itemMap.values()) {
             if (c.getDockable().node() == node) {
+                retval = true;
+                break;
+            }
+        }
+        return retval;
+    }
+     */
+    @Override
+    public boolean contains(Object obj) {
+        if ((obj == null) || !(obj instanceof Node)) {
+            return false;
+        }
+        boolean retval = false;
+        for (Container c : itemMap.values()) {
+            if (c.getDockable().node() == obj) {
                 retval = true;
                 break;
             }
@@ -124,10 +139,10 @@ public class DockSideBarContext extends LayoutContext {
         } else if (txt == null && d.getContext().getProperties().getProperty("short-title") != null) {
             txt = d.getContext().getProperties().getProperty("short-title");
         }
-        if ( txt == null && d.node() instanceof Labeled) {
-            txt = ((Labeled)d.node()).getText();
+        if (txt == null && d.node() instanceof Labeled) {
+            txt = ((Labeled) d.node()).getText();
         }
-        if ( txt == null && d.node().getId() != null ) {
+        if (txt == null && d.node().getId() != null) {
             txt = d.node().getId();
         }
         if (txt == null || txt.trim().isEmpty()) {
@@ -145,6 +160,44 @@ public class DockSideBarContext extends LayoutContext {
     }
 
     @Override
+    public void dock(Point2D mousePos, Dockable dockable) {
+        Object o = getValue(dockable);
+        if (o == null || Dockable.of(o) == null) {
+            return;
+        }
+
+        Dockable d = Dockable.of(o);
+        //
+        // Test is we drag dockable or the value of a dragContainer 
+        //
+/*        if (contains(d.node()) && d == dockable) {
+            return;
+        } else if (contains(d.node())) {
+            LayoutContext tc = d.getContext().getLayoutContext();
+            if (tc != null && isDocked(tc, d)) {
+                tc.undock(d.node());
+            }
+        }
+         */
+        undock(dockable);
+
+        Node node = d.node();
+        Window stage = null;
+        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
+            stage = node.getScene().getWindow();
+        }
+
+        if (doDock(mousePos, d.node()) && stage != null) {
+            //d.getContext().setFloating(false);
+            if ((stage instanceof Stage)) {
+                ((Stage) stage).close();
+            } else {
+                stage.hide();
+            }
+            d.getContext().setLayoutContext(this);
+        }
+    }
+
     protected boolean doDock(Point2D mousePos, Node node) {
         Dockable dockable = Dockable.of(node);
 
@@ -185,7 +238,7 @@ public class DockSideBarContext extends LayoutContext {
                 container.setPopup(window);
                 show(itemButton);
             } else if (!window.isShowing()) {
-                    show(itemButton);
+                show(itemButton);
             } else {
                 window.hide();
             }
@@ -272,7 +325,11 @@ public class DockSideBarContext extends LayoutContext {
     }
 
     @Override
-    public void remove(Node dockNode) {
+    public void remove(Object obj) {
+        if (!(obj instanceof Node)) {
+            return;
+        }
+        Node dockNode = (Node) obj;
         Group r = null;
         for (Map.Entry<Group, Container> en : itemMap.entrySet()) {
             if (en.getValue().getDockable().node() == dockNode) {
@@ -299,23 +356,18 @@ public class DockSideBarContext extends LayoutContext {
         DockSideBar sb = (DockSideBar) getLayoutNode();
 
         if (container.getPopup() != null && !container.getPopup().isShowing()) {
-            if ( container.getPopup() instanceof PopupControl ) {
-                ((PopupControl)container.getPopup()).show(toolBar.getScene().getWindow());
+            if (container.getPopup() instanceof PopupControl) {
+                ((PopupControl) container.getPopup()).show(toolBar.getScene().getWindow());
             } else {
-                if ( ! container.getPopup().isShowing() && ((Stage)container.getPopup()).getOwner() == null ) {
-                    ((Stage)container.getPopup()).initOwner(toolBar.getScene().getWindow());                    
+                if (!container.getPopup().isShowing() && ((Stage) container.getPopup()).getOwner() == null) {
+                    ((Stage) container.getPopup()).initOwner(toolBar.getScene().getWindow());
                 }
-                
-                ((Stage)container.getPopup()).show();
-                
+
+                ((Stage) container.getPopup()).show();
+
             }
         }
         container.changeSize();
-    }
-
-    @Override
-    public boolean restore(Dockable dockable) {
-        return false;
     }
 
     public static class Container implements ChangeListener<Number> {
@@ -334,7 +386,7 @@ public class DockSideBarContext extends LayoutContext {
             this.dockable = dockable;
             LayoutContext lc = dockable.getContext().getLayoutContext();
 //            System.err.println("Container: layouContext= " + lc);
-            if ( sideBar.getLookup().lookup(FloatViewFactory.class) == null ) {
+            if (sideBar.getLookup().lookup(FloatViewFactory.class) == null) {
                 windowBuilder = new FloatStageView2(dockable);
             } else {
                 windowBuilder = sideBar.getLookup().lookup(FloatViewFactory.class).getFloatView(dockable);
@@ -477,7 +529,7 @@ public class DockSideBarContext extends LayoutContext {
                         window.setHeight(sb.getHeight());
                         break;
                 }
-                
+
             }
         }
 

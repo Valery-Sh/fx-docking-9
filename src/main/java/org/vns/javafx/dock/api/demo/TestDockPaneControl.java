@@ -78,7 +78,7 @@ public class TestDockPaneControl extends Application {
         b1_1.setOnAction(a -> {
             HBox h = new HBox(new Button("Title Bar"));
             h.setMaxHeight(Region.USE_PREF_SIZE);
-            dockPane2.setTitleBar(h);
+            //dockPane2.setTitleBar(h);
         });
         Button b1_2 = new Button("b1_2");
         //dnc1_1.setContent(b1_1);
@@ -181,7 +181,7 @@ public class TestDockPaneControl extends Application {
         Label contentLabel = new Label("CONTENT LABEL");
         dnc2.setContent(contentLabel);
         contentLabel.setOnMouseClicked(e -> {
-            ((DockPaneContext) ((ScenePaneContext) dnc2.getContext().getLayoutContext()).getRestoreContext()).restore(Dockable.of(dnc2));
+        //    ((DockPaneContext) ((ScenePaneContext) dnc2.getContext().getLayoutContext()).getRestoreContext()).restore(Dockable.of(dnc2));
         });
         Label childLabel = new Label("dnc3 label");
         dnc3.setContent(new StackPane());

@@ -43,29 +43,19 @@ public class TreeItemEx extends TreeItem<Object> {
         init();
     }
 
-    public TreeItemEx(Object value) {
+/*    public TreeItemEx(Object value) {
         super(value);
     }
 
     public TreeItemEx(Object value, Node graphic) {
         super(value, graphic);
     }
-
+*/
     private void init() {
         SceneGraphView gv = DesignerLookup.lookup(SceneGraphView.class);
         if ( gv != null ) {
             gv.addTreeItemEventHandlers(this);
         }
-        
-        //addEventHandler(TreeItem.valueChangedEvent(), 
-//        addEventHandler(TreeItem.valueChangedEvent(), ev -> {
-            
-           // TreeItem it = ev.getSource();
-            //if ( it.getValue() != null && (it.getValue() instanceof StackPane )) {
-           //     System.err.println("TreeItemEx: valueChangeEvent item = " + it);
-            //}
-//        });
-
     }
 
     public Node getCellGraphic() {
@@ -173,17 +163,14 @@ public class TreeItemEx extends TreeItem<Object> {
         if (getValue() == null) {
             return;
         }
-//        System.err.println("registerChangeHandlers getValue() = " + getValue());
         if ((getValue() instanceof Node)) {
-
-            if (Dockable.of(getValue()) != null) {
-                SelectionListener l = DockRegistry.getInstance().lookup(SelectionListener.class);
+            //if (Dockable.of(getValue()) != null) {
+                SelectionListener l = DockRegistry.lookup(SelectionListener.class);
                 ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_PRESSED, l);
                 ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_RELEASED, l);
-            }
+            //}
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
-
         Object changeListener;
         if (this.getItemType() == ItemType.LIST) {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
@@ -194,28 +181,26 @@ public class TreeItemEx extends TreeItem<Object> {
         }
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
+            
             Property p = nd.getProperties().get(i);
             Object v = new BeanAdapter(getValue()).get(p.getName());
+            
             if (v != null && (v instanceof List)) {
-                TreeItemEx item = this;
                 if ((p instanceof NodeList) && ((NodeList) p).isAlwaysVisible()) {
                     continue;
                 }
+                TreeItemEx item = this;
                 changeListener = new TreeItemListObjectChangeListener(item, p.getName());
                 Object propValue = new BeanAdapter(getValue()).get(p.getName());
-                //Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName(), new Class[0]);
-                //Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
                 Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
                 ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
                 changeListeners.put(p.getName(), changeListener);
-
             } else {
                 changeListener = new TreeItemObjectChangeListener(this, p.getName());
                 Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
                 Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
                 Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
                 ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
-                //System.err.println("registerChangeHandlers: p.getName() = " + p.getName());
                 changeListeners.put(p.getName(), changeListener);
             }
         }

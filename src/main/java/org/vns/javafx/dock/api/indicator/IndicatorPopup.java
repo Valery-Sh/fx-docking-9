@@ -292,6 +292,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
      * still inside the pane indicator then return true. Otherwise hides the pop
      * up and returns false
      */
+    @Override
     public boolean hideWhenOut(double x, double y) {
         if (!isShowing()) {
             return true;

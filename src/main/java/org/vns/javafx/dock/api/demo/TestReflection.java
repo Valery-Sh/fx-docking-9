@@ -2,21 +2,14 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
-import org.vns.javafx.dock.api.event.DockEvent;
 
 /**
  *

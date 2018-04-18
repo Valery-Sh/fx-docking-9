@@ -127,7 +127,14 @@ public class NodeResizer implements Resizer {
         root.setMaxWidth(Double.MAX_VALUE);
 //        System.err.println("RESIZE === ");
         //Window win = getWindow();
+//            System.err.println("wDelta = " + wDelta);
+//            System.err.println("   --- win.getWidth = " + getWindow().getWidth() );
+//            System.err.println("   --- getMinWidth() = " + getMinWidth() );
+        
         if (wDelta + getWindow().getWidth() > getMinWidth()) {
+//            System.err.println("xDelta = " + xDelta);
+//            System.err.println("   --- getWidth = " + node.getWidth() );
+//            System.err.println("   --- minWidth(-1) = " + node.minWidth(-1) );
             if ((node.getWidth() > node.minWidth(-1) || xDelta <= 0)) {
 //                win.setWorkWidth(wDelta + win.getWorkWidth());
                 
@@ -187,7 +194,6 @@ public class NodeResizer implements Resizer {
         setCursorTypes(supportedCursors);
         this.mouseX.set(ev.getScreenX());
         this.mouseY.set(ev.getScreenY());
-        System.err.println("NodeResizer: start: cursor = " + cursor);
         this.cursor = cursor;
                 //this.window = window;
         Region r = (Region) window.getScene().getRoot();

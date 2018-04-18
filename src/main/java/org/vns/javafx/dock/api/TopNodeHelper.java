@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -152,11 +153,15 @@ public class TopNodeHelper {
     }
 
     public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
-//System.err.println("TopNodeHelper 3");        
+        String skipWithSyleClass = RectangleFrame.ID;
+        
         Node retval = null;
-        Node node = getTopNode(getNodes(stage, screenX, screenY));
+        Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {return ! n.getStyleClass().contains(skipWithSyleClass); } ));
+        
         while (node != null) {
-            if (predicate.test(node)) {
+//              System.err.println("   ---  while node = " + node);
+            
+            if (node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
                 retval = node;
                 break;
             }
@@ -169,11 +174,11 @@ public class TopNodeHelper {
      * Returns a list of nodes for a given stage, screen position.
      *
      * @param stage the stage where nodes are searched
-     * @param pos a position of a point on the screen
+     * @param screenPos a position of a point on the screen
      * @return a list of nodes
      */
-    public static List<Node> getNodes(Window stage, Point2D pos) {
-        return getNodes(stage, pos.getX(), pos.getY(), (node) -> {
+    public static List<Node> getNodes(Window stage, Point2D screenPos) {
+        return getNodes(stage, screenPos.getX(), screenPos.getY(), (node) -> {
             return true;
         });
     }

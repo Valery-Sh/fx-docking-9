@@ -130,7 +130,7 @@ public class NodeDescriptorRegistry {
         descriptors.put(clazz, value);
     }
 
-    public void uregister(Object key) {
+    public void unregister(Object key) {
         descriptors.remove(key.getClass());
     }
 

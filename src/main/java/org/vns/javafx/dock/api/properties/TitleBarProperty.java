@@ -3,13 +3,11 @@ package org.vns.javafx.dock.api.properties;
 import javafx.beans.property.BooleanProperty;
 import org.vns.javafx.dock.DockTitleBar;
 import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -17,19 +15,14 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
+
+public class TitleBarProperty extends ObjectPropertyBase<Node> {
 
     public static final PseudoClass CHOOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("choosed");
 
-    //private final BooleanProperty choosedProperty = new SimpleBooleanProperty(false);// {
-
     private final ReadOnlyObjectWrapper<Dockable> ownerWrapper = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectProperty<Dockable> ownerProperty = ownerWrapper.getReadOnlyProperty();
-
-    //private boolean activeChoosedPseudoClass;
-    
-    private final BooleanProperty activeChoosedPseudoClassProperty = new SimpleBooleanProperty();
+    private final BooleanProperty activeChoosedPseudoClass = new SimpleBooleanProperty();
             
     public TitleBarProperty(Dockable owner) {
         super();
@@ -38,22 +31,24 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     }
     public TitleBarProperty(Node owner) {
         super();
-        //ownerWrapper.set(owner);
         init();
     }
 
-    public Region getTitleBar() {
+    public Node getTitleBar() {
         return get();
     }
 
     private void init() {
         addListener(this::titlebarChanged);
-        //choosedProperty.addListener(this::choosedPropertyInvalidated);
-        activeChoosedPseudoClassProperty.set(false);
+        activeChoosedPseudoClass.set(false);
     }
-
+    
+    public BooleanProperty activeChoosedPseudoClassProperty() {
+        return activeChoosedPseudoClass;
+    }
+    
     public boolean isActiveChoosedPseudoClass() {
-        return activeChoosedPseudoClassProperty.get();
+        return activeChoosedPseudoClass.get();
     }
 
     public void setActiveChoosedPseudoClass(boolean newValue) {
@@ -65,19 +60,16 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         } else {
             turnOffChoosedPseudoClass();
         }
-        this.activeChoosedPseudoClassProperty.set(newValue);
+        this.activeChoosedPseudoClass.set(newValue);
             
     }
 
-    public BooleanProperty activeChoosedPseudoClassProperty() {
-        return activeChoosedPseudoClassProperty;
-    }
     protected void turnOffChoosedPseudoClass() {
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
     }
 
     protected void turnOnChoosedPseudoClass() {
-        if ( activeChoosedPseudoClassProperty.get() ) {
+        if ( activeChoosedPseudoClass.get() ) {
             return;
         }
         get().pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                
@@ -101,7 +93,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
     public void titlebarChanged(ObservableValue ov, Node oldValue, Node newValue) {
         if ( oldValue != null ) {
             Node f = DockUtil.getImmediateParent(oldValue, nd -> {
-                return (nd instanceof Dockable);
+                return (Dockable.of(nd) != null);
             });
             
             if ( f != null ) {
@@ -110,7 +102,7 @@ public class TitleBarProperty<T extends Region> extends ObjectPropertyBase<T> {
         }
         if (newValue != null ) {
             Node f = DockUtil.getImmediateParent(newValue, nd -> {
-                return (nd instanceof Dockable);
+                return (Dockable.of(nd) != null);
             });
             
             if ( f != null ) {

@@ -57,7 +57,7 @@ public class DockPaneSkin extends SkinBase<DockPane> {
             
         }
 
-        getSkinnable().titleBarProperty().addListener((v, oldValue, newValue) -> {
+/*        getSkinnable().titleBarProperty().addListener((v, oldValue, newValue) -> {
             LayoutContext tc = DockLayout.of(getSkinnable()).getLayoutContext();
             if (oldValue != null) {
                 tc.undock(oldValue);
@@ -72,6 +72,7 @@ public class DockPaneSkin extends SkinBase<DockPane> {
                 getSkinnable().dock(newValue, Side.TOP);
             }
         });
+*/
         getChildren().add(layout);
     }
 

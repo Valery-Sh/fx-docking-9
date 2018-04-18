@@ -78,7 +78,7 @@ public class Property extends NodeElement {
                 retval = dp[0].value();
             }
         } catch (ClassNotFoundException ex) {
-            System.err.println("EXCEPTION");
+            System.err.println("EXCEPTION " + ex.getMessage());
             Logger.getLogger(NodeDescriptor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retval;

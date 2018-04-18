@@ -47,7 +47,7 @@ public class DragContainer { //extends Control implements Dockable{
     public DragContainer(Node placeholder, Object value) {
         this.value.set(value);
         this.placeholder = placeholder;
-        
+        this.dragAsObject = true;
         makePlaceholderDockable();
         makePlaceholderContainer();
     }
@@ -61,7 +61,8 @@ public class DragContainer { //extends Control implements Dockable{
     }
 
     public void setDragAsObject(boolean dragAsObject) {
-        this.dragAsObject = dragAsObject;
+        //this.dragAsObject = dragAsObject;
+        this.dragAsObject = true;
     }
 
     public ObjectProperty valueProperty() {

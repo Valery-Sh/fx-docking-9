@@ -26,16 +26,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.ALL;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIER;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIERED;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.NONE;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
+import org.vns.javafx.dock.api.dragging.view.RectangularFraming;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 /**
@@ -125,49 +129,48 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     @Override
     public void mouseDragDetected(MouseEvent ev, Point2D startMousePos) {
-/*        SelectionListener sel = DockRegistry.lookup(SelectionListener.class);
-        if (sel != null) {
-            final Object o = LayoutContext.getValue(dockable);
-            //Platform.runLater(() -> {
-                if (Dockable.of(o) != null) {
-                    System.err.println("SimpleDragmanager: mouseDragDetected toSelect = " + Dockable.of(o).node());
-                    //sel.resume(Dockable.of(o).node());
-                    sel.setSource(Dockable.of(o).node());
-                }
-            //});
-        }
-*/          
         setStartMousePos(startMousePos);
         this.dragSource = (Node) ev.getSource();
-        if (!dockable.getContext().isFloating()) {
+
+        if (!getDockable().getContext().isFloating()) {
+/*            Object toSave = LayoutContext.getValue(getDockable());
+            if (Dockable.of(toSave) != null) {
+                toSave = Dockable.of(toSave).node();
+            }
+            
+            SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+            if (sr != null) {
+                sr.add(toSave);
+            }
+*/
+            SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+            if (sr != null) {
+                //System.err.println("D ragDetected getDockable() = " + getDockable());                
+                sr.add(getDockable());
+            }
             targetDockPane = ((Node) ev.getSource()).getScene().getRoot();
+
             FloatViewFactory f = null;
             if (getTargetContext(getDockable()) != null) {
                 f = getTargetContext(getDockable()).getLookup().lookup(FloatViewFactory.class);
             }
-//            System.err.println("0 NOT FLOATING SimpleDragmanager: view factory  = " + f);              
             if (f == null) {
                 f = getDockable().getContext().getLookup().lookup(FloatViewFactory.class);
             }
             FloatView view = f.getFloatView(this);
-            
-            floatingWindow = (Window) view.make(dockable);
-//            System.err.println("NOT FLOATING SimpleDragmanager: view factory  = " + f);  
-//            System.err.println("NOT FLOATING SimpleDragmanager: view = " + view);            
-//            System.err.println("NOT FLOATING SimpleDragmanager: " + dockable.node());            
-//            System.err.println("NOT FLOATING SimpleDragmanager: DockRegistry.getInstance().getLookup().putUnique(FloatView.class, view);");
+
+            floatingWindow = (Window) view.make(getDockable());
 
             DockRegistry.getInstance().getLookup().putUnique(FloatView.class, view);
-            
+
             targetDockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             targetDockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         } else {
-//System.err.println("FLOATING SimpleDragmanager: DockRegistry.getInstance().getLookup().putUnique(FloatView.class, view);");            
             if (floatingWindow == null) {
                 //
                 // floatingWindow is null if the dragMaager changed
                 //
-                floatingWindow = dockable.node().getScene().getWindow();
+                floatingWindow = getDockable().node().getScene().getWindow();
             }
             //
             // If floating window contains snapshot and not the dockable then
@@ -202,6 +205,11 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events
      */
     protected void mouseDragged(MouseEvent ev) {
+      
+        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
+        if (rnf != null) {
+            rnf.hide();
+        }
 
         if (indicatorManager != null && !(indicatorManager instanceof Window)) {
             indicatorManager.hide();
@@ -210,7 +218,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             ev.consume();
             return;
         }
-        if (!dockable.getContext().isFloating()) {
+        if (!getDockable().getContext().isFloating()) {
             return;
         }
         //
@@ -233,73 +241,56 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             floatingWindow.setY(ev.getScreenY() - topDelta - getStartMousePos().getY());
         }
 
+        if ( ! getDockable().getContext().isAcceptable()) {
+            return;
+        }
+        
         if (indicatorManager != null && indicatorManager.isShowing()) {
             indicatorManager.hideWhenOut(ev.getScreenX(), ev.getScreenY());
         }
-//        Node ttt = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-//            return DockRegistry.instanceOfDockLayout(n);
-//        });
 
-//        System.err.println("Before newWindow resultStage=" + resultStage);
-//        System.err.println("   --- floatingWindow=" + floatingWindow);
         Window newWindow = DockRegistry.getInstance().getTopWindow(ev.getScreenX(), ev.getScreenY(), floatingWindow);
-//        System.err.println("SimpleDragmanager: newWindow=" + newWindow);                        
 
-//        System.err.println("After  newWindow = " + newWindow);
-        //System.err.println("SimpleDragmanager: resultStage=" + resultStage);
-        //System.err.println("SimpleDragmanager: newWindow=" + newWindow);        
-        //if ( newWindow != null && (newWindow instanceof PopupControl) ) {
-        //  System.err.println("SimpleDragmanager: newWindow.id=" + ((PopupControl)newWindow).getId());        
-        //}
         if (newWindow == null) {
             return;
         }
 
-        if (newWindow == null && resultStage == null) {
-//            return;
-        }
-
         if (newWindow != resultStage) {
-//            System.err.println("After  newWindow = " + newWindow);
 
-            //System.err.println("NEW WINDOW");
             if (indicatorManager != null) {
                 indicatorManager.hide();
                 indicatorManager = null;
             }
-            //indicatorManager.hide();
         }
-        //System.err.println("SimpleDragmanager: indicatorManager = " + indicatorManager);
         if ((indicatorManager == null || !indicatorManager.isShowing())) {
-//            System.err.println("1 SimpleDragmanager: resultStage=" + resultStage);
+
             resultStage = DockRegistry.getInstance().getTarget(ev.getScreenX(), ev.getScreenY(), floatingWindow);
-//            System.err.println("2 SimpleDragmanager: resultStage=" + resultStage);  
             if (indicatorManager != null) {
                 indicatorManager.hide();
             }
         }
-//        System.err.println("SimpleDragmanager: resultStage=" + resultStage);                        
+
         if (resultStage == null) {
             return;
         }
-
         Node root = resultStage.getScene().getRoot();
-//        System.err.println("SimpleDragmanager: root.id=" + root.getId());
-        if (root == null || !(root instanceof Pane) && !(DockRegistry.instanceOfDockLayout(root))) {
+
+        if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockLayout(root))) {
             return;
         }
-        Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
-            return DockRegistry.instanceOfDockLayout(n);
-        });
+        RectangleFrame.hideAll(resultStage);
 
+        Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+            return DockRegistry.isDockLayout(n);
+        });
         if (topPane != null) {
             root = topPane;
-        } else if (!DockRegistry.instanceOfDockLayout(root)) {
+        } else if (!DockRegistry.isDockLayout(root)) {
             return;
         }
         LayoutContext tc = DockRegistry.dockLayout(root).getLayoutContext();
 
-        tc.mouseDragged(dockable, ev);
+        tc.mouseDragged(getDockable(), ev);
 
         Object o = getDockable().getContext().getDragValue();
         Node node = null;
@@ -307,24 +298,23 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             node = Dockable.of(o).node();
         }
         boolean accept = node != tc.getLayoutNode();
-        if (accept && !DockRegistry.dockLayout(root).getLayoutContext().isAcceptable(getDockable())) {
+
+        if (!accept || ! DockLayout.of(root).getLayoutContext().isAcceptable(getDockable())) {
             return;
         }
 
-        if (!DockRegistry.dockLayout(root).getLayoutContext().isAdmissiblePosition(dockable, new Point2D(ev.getScreenX(), ev.getScreenY()))) {
+        if (!DockLayout.of(root).getLayoutContext().isAdmissiblePosition(getDockable(), new Point2D(ev.getScreenX(), ev.getScreenY()))) {
             return;
         }
-
         if (!DockRegistry.dockLayout(root).getLayoutContext().isUsedAsDockLayout()) {
             return;
         }
-
         //
         // Start use of IndicatorPopup
         //
         IndicatorManager newPopup = DockRegistry.dockLayout(root).getLayoutContext().getLookup().lookup(IndicatorManager.class);
         if (newPopup == null) {
-            DockRegistry.dockLayout(root).getLayoutContext().getLookup().lookup(IndicatorManager.class);
+            newPopup = DockRegistry.dockLayout(root).getLayoutContext().getLookup().lookup(IndicatorManager.class);
         }
         if (newPopup == null) {
             return;
@@ -340,10 +330,9 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (!indicatorManager.isShowing()) {
             indicatorManager.showIndicator();
         }
-        if (indicatorManager == null) {
-            return;
+        if (rnf != null) {
+            rnf.show(root);
         }
-
         indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
     }
 
@@ -356,12 +345,11 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      * @param ev the event that describes the mouse events.
      */
     protected void mouseReleased(MouseEvent ev) {
-        System.err.println("SimpleDragmanager: MOUSE RELEASED");
-/*        System.err.println("   --- source = " + ev.getSource());
-        System.err.println("   --- target = " + ev.getTarget());
-        System.err.println("   --- targetDockPane = " + targetDockPane);
-        System.err.println("   --- dragSource = " + dragSource);
-*/        
+        
+        if ( ! getDockable().getContext().isAcceptable()) {
+            return;
+        }
+
         if (indicatorManager != null && indicatorManager.isShowing()) {
             indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
         }
@@ -379,22 +367,28 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             dragSource.removeEventHandler(MouseEvent.MOUSE_DRAGGED, this);
             dragSource.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
         }
+        if (floatingWindow != null) {
+            floatingWindow.getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+            floatingWindow.getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
+        }
+        boolean isDocked = false;
+        Object dragValue = getDockable().getContext().getDragValue();
+
         if (indicatorManager != null) {
             Point2D pt = new Point2D(ev.getScreenX(), ev.getScreenY());
             LayoutContext tc = indicatorManager.getTargetContext();
 
             //
-            // NEW!!! Dragged value cannot be the same as targetNode 
+            // Dragged value cannot be the same as targetNode 
             //
-            Object o = dockable.getContext().getDragValue();
             Node node = null;
-            if (DockRegistry.isDockable(o)) {
-                node = Dockable.of(o).node();
+            if (DockRegistry.isDockable(dragValue)) {
+                node = Dockable.of(dragValue).node();
             }
             boolean accept = node != tc.getLayoutNode() && tc.isAdmissiblePosition(getDockable(), pt);
             if (accept && (indicatorManager.isShowing() || indicatorManager.getPositionIndicator() == null)) {
-                tc.dock(pt, dockable);
-                boolean isDocked = LayoutContext.isDocked(tc, dockable);
+                tc.executeDock(pt, getDockable());
+                isDocked = LayoutContext.isDocked(tc, getDockable());
                 if (isDocked && floatingWindow != null && floatingWindow.isShowing()) {
                     hideFloatingWindow();
                 }
@@ -417,6 +411,25 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         }
         DockRegistry.getInstance().getLookup().clear(FloatView.class);
 
+        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
+        if (rnf != null) {
+            rnf.hide();
+        }
+        if (!ev.isAltDown() ) {
+            SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+            if (sr != null) {
+                Object o = dragValue;
+                if (Dockable.of(o) != null) {
+                    o = Dockable.of(o).node();
+                }
+                //System.err.println("mouseRelease object =  " + o);
+                sr.restore(o);
+                sr.remove(o);
+                if (floatingWindow != null) {
+                    hideFloatingWindow();
+                }
+            }
+        }
     }
 
     protected void hideFloatingWindow() {
@@ -429,7 +442,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
 
     protected Dockable getContainerDockable() {
         Dockable retval = null;
-        DragContainer dc = dockable.getContext().getDragContainer();
+        DragContainer dc = getDockable().getContext().getDragContainer();
         Object v = dc.getValue();
 
         if (v != null && (dc.isValueDockable())) {
@@ -439,9 +452,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
     }
 
     protected Object getContainerValue() {
-        DragContainer dc = dockable.getContext().getDragContainer();
-        Object retval = dc == null ? null : dc.getValue();
-        return retval;
+        DragContainer dc = getDockable().getContext().getDragContainer();
+        return dc == null ? null : dc.getValue();
     }
 
     @Override

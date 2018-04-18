@@ -61,7 +61,9 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                 if (newValue != null) {
                     commitDock(newValue);
                 }
-                DockLayout.of(pane).getLayoutContext().undock(oldValue);
+                if (Dockable.of(oldValue) != null) {
+                    DockLayout.of(pane).getLayoutContext().undock(Dockable.of(oldValue));
+                }
                 if (newValue != null) {
                     DockLayout.of(pane).getLayoutContext().commitDock(newValue);
                 }
@@ -101,7 +103,8 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             }
             d = Dockable.of(dc.getValue());
         }
-        if (isDocked(d.node())) {
+        //28.03if (isDocked(d.node())) {
+        if (contains(d.node())) {
             return;
         }
         Node node = d.node();
@@ -110,7 +113,7 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             stage = node.getScene().getWindow();
         }
 
-        if (doDock(mousePos, d.node()) && stage != null) {
+        if (stage != null) {
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {
@@ -120,9 +123,14 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
         }
     }
 
+    @Override
+    public boolean contains(Object obj) {
+        return ((TabPane) getLayoutNode()).getTabs().contains(obj);
+    }
+
     protected void dock(Point2D mousePos, Tab tab, Dockable dockable) {
         Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
-        Window window = null;
+        Window window;// = null;
         if (placeholder != null) {
             window = placeholder.getScene().getWindow();
         } else {
@@ -166,20 +174,11 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
     }
 
     @Override
-    protected boolean doDock(Point2D mousePos, Node node) {
-        boolean retval = true;
-
-        return retval;
-    }
-
-    @Override
-    public boolean restore(Dockable dockable) {
-        return false;
-
-    }
-
-    @Override
-    public void remove(Node dockNode) {
+    public void remove(Object obj) {
+        if (!(obj instanceof Node)) {
+            return;
+        }
+        Node dockNode = (Node) obj;
         TabPane tp = (TabPane) getLayoutNode();
         for (Tab tab : tp.getTabs()) {
             if (tab.getContent() == dockNode) {
@@ -187,9 +186,11 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             }
         }
     }
+
     public static class TabsChangeListener implements ListChangeListener<Tab> {
+
         private final DockTabPane2Context tabPaneContext;
-        
+
         public TabsChangeListener(DockTabPane2Context tabPaneContext) {
             this.tabPaneContext = tabPaneContext;
         }
@@ -211,7 +212,10 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                         if (uuidStyle != null) {
                             tab.getStyleClass().remove(uuidStyle);
                         }
-                        tabPaneContext.undock(tab.getContent());
+                        if (Dockable.of(tab.getContent()) != null) {
+                            tabPaneContext.undock(Dockable.of(tab.getContent()));
+                        }
+                        //03.04//tabPaneContext.undock(tab.getContent());
                     }
 
                 }
@@ -221,7 +225,10 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
                         tab.getStyleClass().add("tab-uuid-" + UUID.randomUUID());
                         tabPaneContext.commitDock(tab.getContent());
                         tab.contentProperty().addListener((o, oldValue, newValue) -> {
-                            tabPaneContext.undock(oldValue);
+                            //03.04tabPaneContext.undock(oldValue);
+                            if (Dockable.of(oldValue) != null) {
+                                tabPaneContext.undock(Dockable.of(oldValue));
+                            }
                             if (newValue != null) {
                                 tabPaneContext.commitDock(newValue);
                             }

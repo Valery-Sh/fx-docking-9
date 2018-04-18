@@ -39,8 +39,9 @@ import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.dragging.view.DefaultFraming;
+
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
+import org.vns.javafx.dock.api.dragging.view.ResizeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
@@ -50,7 +51,7 @@ import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
  */
 public class TestSelectPane extends Application {
     
-    NodeFraming framing = new DefaultFraming();
+    NodeFraming framing = new ResizeNodeFraming();
 
     int counter = 0;
     int click = 0;

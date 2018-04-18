@@ -26,6 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DragContainer;
 
 /**
  *
@@ -36,19 +37,19 @@ public interface FloatWindowView extends FloatView {
     Dockable getDockable();
 
     Region getWindowRoot();
-    
+
     Resizer getResizer();
-    
+
     void addResizer();
 
     ObjectProperty<Window> floatingWindowProperty();
 
     Window getFloatingWindow();
-    
+
     public Cursor[] getSupportedCursors();
-    
+
     void initialize();
-    
+
     @Override
     public void setSupportedCursors(Cursor[] supportedCursors);
 
@@ -69,7 +70,27 @@ public interface FloatWindowView extends FloatView {
         };
         return bp;
     }
-    
+
+    default boolean isDocked(Dockable dockable) {
+        if (dockable.getContext().getLayoutContext() == null) {
+            return false;
+        }
+        if (dockable instanceof DragContainer) {
+            return false;
+        }
+        Object obj = dockable.node();
+        if (dockable.getContext().getDragContainer() != null && dockable.getContext().getDragContainer().getValue() != null) {
+            if (!dockable.getContext().getDragContainer().isValueDockable()) {
+                obj = dockable.getContext().getDragContainer().getValue();
+            } else {
+                obj = Dockable.of(dockable.getContext().getDragContainer().getValue());
+                obj = Dockable.of(obj).node();
+            }
+        }
+
+        return dockable.getContext().getLayoutContext().contains(obj);
+    }
+
     public static class MouseResizeHandler implements EventHandler<MouseEvent> {
 
         private boolean cursorSupported = false;
@@ -78,13 +99,13 @@ public interface FloatWindowView extends FloatView {
         public MouseResizeHandler(FloatWindowView windowView) {
             this.windowView = windowView;
         }
-        
+
         @Override
         public void handle(MouseEvent ev) {
             Region root = (Region) windowView.getFloatingWindow().getScene().getRoot();
             double minWidth = root.getMinWidth();
             double minHeight = root.getMinHeight();
-            
+
             if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
                 Cursor c = StageResizer.cursorBy(ev, windowView.getWindowRoot());
                 if (!isCursorSupported(c)) {
@@ -103,18 +124,18 @@ public interface FloatWindowView extends FloatView {
                     windowView.getFloatingWindow().getScene().setCursor(Cursor.DEFAULT);
                     return;
                 }
-                windowView.getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
+                windowView.getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors());
             } else if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                 if (!cursorSupported) {
                     return;
                 }
-                if ( ! windowView.getResizer().isStarted()) {
-                   windowView. getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors() );
+                if (!windowView.getResizer().isStarted()) {
+                    windowView.getResizer().start(ev, windowView.getFloatingWindow(), windowView.getFloatingWindow().getScene().getCursor(), windowView.getSupportedCursors());
                 } else {
                     Platform.runLater(() -> {
                         windowView.getResizer().resize(ev.getScreenX(), ev.getScreenY());
                     });
-                    
+
                 }
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 root.setMinWidth(minWidth);
@@ -127,17 +148,17 @@ public interface FloatWindowView extends FloatView {
                 return false;
             }
             boolean retval = false;
-            
+
             for (Cursor c : windowView.getSupportedCursors()) {
                 if (c == cursor) {
                     retval = true;
                     break;
                 }
             }
-            
+
             return retval;
         }
 
     }//class MouseResizeHandler
-    
+
 }

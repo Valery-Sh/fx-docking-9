@@ -88,7 +88,7 @@ public class DefaultContextLookup implements ContextLookup {
         });
     }
 
-    protected <T> void put(Class key, T obj) {
+    public <T> void put(Class key, T obj) {
         if (lookup.containsKey(key)) {
             if (!lookup.get(key).contains(obj)) {
                 lookup.get(key).add(obj);

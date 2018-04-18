@@ -1,15 +1,12 @@
 package org.vns.javafx.dock.api.designer;
 
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 
 /**
@@ -17,7 +14,7 @@ import javafx.scene.layout.Pane;
  * @author Valery
  * @param <T> ??
  */
-public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEvent> {
+public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDragEvent> {
 
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
     private final SceneGraphView sceneGraphView;
@@ -36,13 +33,11 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
     public TreeViewEx(SceneGraphView editor, TreeItem<T> root) {
         super(root);
         this.sceneGraphView = editor;
-        
-                                 
         init();
     }
 
     private void init() {
-        addEventFilter(NodeDragEvent.NODE_DRAG, this);
+        //27addEventFilter(NodeDragEvent.NODE_DRAG, this);
         getStyleClass().add(LOOKUP_SELECTOR);
         this.getStyleClass().add("designer");
         
@@ -105,7 +100,7 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         return retval;
     }
 
-    private DragEvent createDragEvent(MouseEvent ev, EventType eventType, Object gestureSource, Object gestureTarget) {
+/*    private DragEvent createDragEvent(MouseEvent ev, EventType eventType, Object gestureSource, Object gestureTarget) {
         DragEvent retval = new DragEvent(
                 eventType,
                 null,
@@ -120,9 +115,9 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
         return retval;
 
     }
-
-    @Override
-    public void handle(NodeDragEvent ev) {
+*/
+   // @Override
+/*    public void handle(NodeDragEvent ev) {
         TreeItemEx item = EditorUtil.findTreeItem(this, ev.getMouseEvent().getScreenX(), ev.getMouseEvent().getScreenY());
 
         DragEvent dragEvent;
@@ -151,4 +146,5 @@ public class TreeViewEx<T> extends TreeView implements EventHandler<NodeDragEven
             fireEvent(dragEvent);
         }
     }
+*/
 }

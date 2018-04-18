@@ -37,7 +37,6 @@ public abstract class Selection {
     }
 
     public void setSelected(Object toSelect) {
-//        System.err.println("Selection: setLelected = " + toSelect);
         this.selected.set(toSelect);
     }
 
@@ -51,12 +50,10 @@ public abstract class Selection {
     }
 
     public void removeSelected() {
-//        System.err.println("removeSelected() old = " + getSelected());
         setSelected(null);
     }
 
     public void removeSelected(Object obj) {
-//         System.err.println("removeSelected(Object ) old = " + getSelected() + "; obj = " + obj);
         if (getSelected() == obj) {
             setSelected(null);
         }
@@ -64,10 +61,6 @@ public abstract class Selection {
 
     public static void removeListeners(Dockable dockable) {
         Selection sel = DockRegistry.lookup(Selection.class);
-        if (sel != null) {
-//            System.err.println("Selection: removeListeners selected=" + sel.getSelected());
-            //sel.removeSelected();
-        }
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
         if (l != null) {
             dockable.node().removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
@@ -105,7 +98,6 @@ public abstract class Selection {
 
         @Override
         public void handle(MouseEvent ev) {
-            System.err.println("++ SelectionHandler");
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
 
@@ -116,20 +108,11 @@ public abstract class Selection {
         }
 
         protected void mousePressed(MouseEvent ev) {
-//          Selection sel = DockRegistry.lookup(Selection.class);
-//            setSource(ev.getSource());
-//            sel.notifySelected(ev.getSource());
-//            sel.setSelected(ev.getSource());
-
-            System.err.println("******* selection handler mousepressed");
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+//            System.err.println("SelectionHandler: framing = " + nf.getClass().getName());
             if (nf != null && (ev.getSource() instanceof Node)) {
+//                System.err.println("   --- show node=" + ev.getSource());
                 nf.show((Node) ev.getSource());
-/*                Selection sel = DockRegistry.lookup(Selection.class);
-                if (sel != null) {
-                    sel.notifySelected(ev.getSource());
-                }
-*/
             }
             ev.consume();
 

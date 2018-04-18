@@ -1,5 +1,9 @@
 package org.vns.javafx.dock.api.bean;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,11 +17,16 @@ import java.util.*;
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.Property;
 
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import org.vns.javafx.dock.api.bean.ReflectHelper.MethodUtil;
 import static org.vns.javafx.dock.api.bean.ReflectHelper.checkPackageAccess;
 import static org.vns.javafx.dock.api.bean.ReflectHelper.getField;
+import org.vns.javafx.dock.api.demo.TestTrashTray1;
 
 /**
  * Exposes Java Bean properties of an object via the {@link Map} interface. A
@@ -80,6 +89,44 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         localCache = getClassMethodCache(bean.getClass());
     }
 
+    public BeanAdapter(Class<?> beanClass) {
+        bean = null;
+        localCache = getClassMethodCache(beanClass);
+    }
+
+    public Method fxPropertyMethod(String propName) {
+        Method retval = null;
+        try {
+            if (propName == null) {
+                return null;
+            }
+            String fxPropName = propName + "Property";
+//            System.err.println("BeanAdapter fxPropName = " + fxPropName);
+            retval = ReflectHelper.MethodUtil.getMethod(bean.getClass(), fxPropName, new Class[0]);
+
+        } catch (NoSuchMethodException ex) {
+//            System.err.println("RRRRRRRRRRRRRRRRRRRRRRRRRRR");
+            //Logger.getLogger(BeanAdapter.class.getName()).log(Level.INFO, "");
+        }
+        return retval;
+
+    }
+   
+    public Property fxObjectProperty(String propName) {
+        Property retval = null;
+        try {
+            if (propName == null) {
+                return null;
+            }
+            String fxPropName = propName + "Property";
+            Method m = ReflectHelper.MethodUtil.getMethod(bean.getClass(), fxPropName, new Class[0]);
+            retval = (Property) m.invoke(bean);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(BeanAdapter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retval;
+    }
+
     private static MethodCache getClassMethodCache(final Class<?> type) {
         if (type == Object.class) {
             return null;
@@ -140,13 +187,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private Method getSetterMethod(String key) {
         Class<?> type = getType(key);
-
         if (type == null) {
             throw new UnsupportedOperationException("Cannot determine type for property.");
         }
 
         return localCache.getMethod(getMethodName(SET_PREFIX, key), type);
     }
+    
+     private Method getFxSetterMethod(String key) {
+        Class<?> type = getType(key);
+        if (type == null) {
+            return null;
+        }
+
+        return localCache.getMethod(getMethodName(SET_PREFIX, key), type);
+    }
+
 
     private static String getMethodName(String prefix, String key) {
         return prefix + Character.toUpperCase(key.charAt(0)) + key.substring(1);
@@ -240,6 +296,39 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         throw new UnsupportedOperationException();
     }
 
+    public static Set<String> getPropertyNames(Class<?> beanClass) {
+        BeanInfo info;
+        Set<String> nameSet = new HashSet<>();
+        try {
+            info = Introspector.getBeanInfo(beanClass);
+            //System.err.println("info.getBeanDescriptor().getName()=" + info.getBeanDescriptor().getName());
+            PropertyDescriptor[] pds = info.getPropertyDescriptors();
+            for (PropertyDescriptor pd : pds) {
+                nameSet.add(pd.getName());
+            }
+        } catch (IntrospectionException | IllegalArgumentException ex) {
+            Logger.getLogger(TestTrashTray1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //System.err.println("BeanAdapter() getPropertiesNames size() =  " + nameSet.size());
+        return nameSet;
+    }
+    public static Set<String> getPropertyNames(Class<?> beanClass, Class<?> superClass) {
+        BeanInfo info;
+        Set<String> nameSet = new HashSet<>();
+        try {
+            info = Introspector.getBeanInfo(beanClass, superClass);
+            //System.err.println("info.getBeanDescriptor().getName()=" + info.getBeanDescriptor().getName());
+            PropertyDescriptor[] pds = info.getPropertyDescriptors();
+            for (PropertyDescriptor pd : pds) {
+                nameSet.add(pd.getName());
+            }
+        } catch (IntrospectionException | IllegalArgumentException ex) {
+            Logger.getLogger(TestTrashTray1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //System.err.println("BeanAdapter() getPropertiesNames size() =  " + nameSet.size());
+        return nameSet;
+    }
+
     /**
      * Tests the mutability of a property.
      *
@@ -255,11 +344,25 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         return getSetterMethod(key) == null;
     }
+ /**
+     * Tests the mutability of a property.
+     *
+     * @param key The property name.
+     *
+     * @return
+     * <tt>true</tt> if the property is read-only; <tt>false</tt>, otherwise.
+     */
+    public boolean isFxReadOnly(String key) {
+        if (key == null) {
+            throw new NullPointerException();
+        }
 
+        return getFxSetterMethod(key) == null;
+    }
     /**
      * Returns the property model for the given property.
      *
-     * @param <T>  specifies
+     * @param <T> specifies
      * @param key The property name.
      *
      * @return The named property model, or <tt>null</tt> if no such property
@@ -294,8 +397,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Returns the generic type of a property.
      *
      * @param key The property name.
-     * @return the object 
-     * 
+     * @return the object
+     *
      */
     public Type getGenericType(String key) {
         if (key == null) {
@@ -503,9 +606,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <tt>null</tt> or there is no explicit setter for a given type, the
      * {@link #coerce(Object, Class)} method is used to attempt to convert the
      * value to the actual property type (defined by the return value of the
-     * getter method).
-     * throws PropertyNotFoundException If the given static property does not
-     * exist or is read-only.     * 
+     * getter method). throws PropertyNotFoundException If the given static
+     * property does not exist or is read-only.
+     *
+     *
      * @param target The object to which the property is or will be attached.
      *
      * @param sourceType The class that defines the property.
@@ -514,7 +618,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * @param value The new property value.
      *
-     * 
+     *
      */
     public static void put(Object target, Class<?> sourceType, String key, Object value) {
         Class<?> targetType = target.getClass();
@@ -600,7 +704,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     public static Class<?> getListItemType(Type listType) {
         Type itemType = getGenericListItemType(listType);
-        
+
         if (itemType instanceof ParameterizedType) {
             itemType = ((ParameterizedType) itemType).getRawType();
         }

@@ -20,8 +20,12 @@ package org.vns.javafx.dock.api;
  * @author Valery
  */
 public interface ApplicationContext {
-    
+    boolean isDesignerContext();
     public static class DockingContext implements ApplicationContext {
+        @Override
+        public boolean isDesignerContext() {
+            return false;
+        }
         
     }
 }

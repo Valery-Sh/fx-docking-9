@@ -17,11 +17,14 @@ package org.vns.javafx.dock.api.designer;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
+import org.vns.javafx.dock.api.designer.bean.BeanDescriptorRegistry;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
@@ -41,9 +44,18 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
     @Override
     public void onChanged(Change change) {
         while (change.next()) {
+
             if (change.wasRemoved()) {
                 List list = change.getRemoved();
                 if (!list.isEmpty()) {
+                    SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+                    if (sr != null) {
+//                        System.err.println("TreeItemListChangelistener. onChanged removed size = " + list.size());
+//                        System.err.println("TreeItemListChangelistener. onChanged removed = " + list.get(list.size() - 1));
+//                        System.err.println("TreeItemListChangelistener. onChanged removed idx = " + change.getTo());
+                        sr.save(list.get(list.size() - 1), change.getTo());
+
+                    }
                 }
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
@@ -52,6 +64,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             for (TreeItem ith : ((TreeItemEx) it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
+                                   //System.err.println("TreeItemListChangelistener. onChanged removed toRemove 1 = " + toRemove);
                                     it.getChildren().remove(toRemove);
                                     return;
                                 }
@@ -62,7 +75,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             break;
                         }
                     }
-
+//                    System.err.println("TreeItemListChangelistener. onChanged removed toRemove 2 = " + toRemove);
                     treeItem.getChildren().remove(toRemove);
                     //13.03DockRegistry.lookup(Selection.class).removeSelected(toRemove.getValue());
                 }
@@ -71,19 +84,43 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
             if (change.wasAdded()) {
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
+//                System.err.println("TreeItemListChangelistener. onChanged added size = " + list.size());
 
-                list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
+                list.forEach(elem -> {
+//                    System.err.println("TreeItemListChangelistener. onChanged added = " + elem);
+                    TreeItemEx it = new TreeItemBuilder().build(elem);
+                    it.setExpanded(false);
                     itemList.add(it);
+                    BeanDescriptorRegistry.getGraphDescriptor().register(elem);
                 });
-//                System.err.println("TreeItemListChangeListe: onChanged: itemList.size() = " + itemList.size() + "; list.size()=" + list.size());
+//                System.err.println("    --- itemList.size = " + itemList.size());
+//                System.err.println("itemList.get(0) = " + itemList.get(0));                      
+//                list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
+//                    itemList.add(it);
+//                });
+//                 System.err.println("----- AFTER BUILD");
+//                 System.err.println("TreeItemListChangelistener. onChanged itemList size = " + itemList.size());
+
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
-                //Selection sel = DockRegistry.lookup(Selection.class);
-                //DockRegistry.lookup(Selection.class).removeSelected();  
-//                System.err.println("TreeItemListChangeListe: onChanged: setSelected = " + list.get(list.size() - 1));
-                //sel.setSelected(list.get(list.size() - 1));
+
                 NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-                if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
+                //if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
+                if (nf != null && (list.get(0)) instanceof Node) {
+                    //
+                    // We apply Platform.runLater because a list do not 
+                    // has to be a children but for instance for SplitPane it
+                    // is an items and an added node may be not set into scene graph
+                    // immeduately
+                    //
                     nf.show((Node) list.get(list.size() - 1));
+                    Platform.runLater(() -> {
+                        nf.show((Node) list.get(list.size() - 1));
+//                        System.err.println("nf.show((Node) list.get(0) = " + list.get(0));
+//                        System.err.println("    --- itemList.size = " + itemList.size());
+                        //nf.show((Node) list.get(0));
+                        //                      System.err.println("itemList.get(0) = " + itemList.get(0));                        
+
+                    });
                 }
             }
         }//while

@@ -15,9 +15,10 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -27,9 +28,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventDispatchChain;
-import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -37,20 +35,21 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
+import javafx.scene.transform.Transform;
+import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 
 /**
  *
  * @author Valery
  */
-public class ShapeFraming extends Rectangle { //implements NodeFraming{
+public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
-    public static String ID = "STYLE-AS-ID-89528991-bd7a-4792-911b-21bf56660bfb";
+    public static String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
     //private Rectangle indicator;
 
     public static final int CENTER = 0;
@@ -75,6 +74,9 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
     private final ChangeListener<Bounds> boundsInParentListener = (o, ov, nv) -> {
         adjustBoundsToNode(nv);
     };
+    private final ChangeListener<Transform> localToSceneTransformListener = (o, ov, nv) -> {
+        adjustBoundsToNode(getBoundNode().getBoundsInParent());
+    };
 
     private final ChangeListener<SideShapes> sideShapesListener = (o, ov, nv) -> {
         if (ov != null && getParent() != null) {
@@ -89,11 +91,10 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
     private ChangeListener<Node> boundNodeListener;
 
 //    private ChangeListener<Boolean> visiblePropertyListener;
-    public ShapeFraming() {
+    public RectangleFrame() {
         setManaged(false);
         setMouseTransparent(true);
-        getStyleClass().add("shape-framing");
-
+        getStyleClass().add("rectangle-frame");
         init();
     }
 
@@ -103,28 +104,28 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         initRect();
     }
 
-    /*    @Override
-    protected void layoutChildren() {
-
-        super.layoutChildren();
-
-        if (getBoundNode() == null) {
-            return;
+    public static void hideAll(Window win) {
+        Set<Node> set = win.getScene().getRoot().lookupAll("." + ID);
+        //System.err.println("Rectangleframe set.size() = " + set.size());
+        for (Node node : set) {
+            if ((node instanceof RectangleFrame) && node.getParent() == win.getScene().getRoot()) {
+                node.setVisible(false);
+            }
         }
     }
-     */
- /*    public Rectangle getIndicator() {
-        return indicator;
-    }
-     */
+
     public void setDefaultStyles() {
         setStyle("-fx-stroke-type: inside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 2; -fx-fill: transparent");
     }
 
     private void initBoundNode() {
+        
         boundNodeListener = (v, ov, nv) -> {
             if (ov != null) {
-                removeBoundInParentListener(ov);
+                ov.boundsInParentProperty().removeListener(boundsInParentListener);
+//                ov.parentProperty().removeListener(parentNodeListener);
+                ov.localToSceneTransformProperty().removeListener(localToSceneTransformListener);
+                
                 if (getSideShapes() != null) {
                     getSideShapes().unbind(); // to remove mouseEventListeners
                 }
@@ -133,14 +134,18 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 if (getSideShapes() != null) {
                     getSideShapes().bind(); // to remove mouseEventListeners
                 }
+                //System.err.println("initBoundNode ov=" + ov + "; nv=" + nv);
+                //nv.parentProperty().addListener(parentNodeListener);
 
                 nv.boundsInParentProperty().addListener(boundsInParentListener);
+                nv.localToSceneTransformProperty().addListener(localToSceneTransformListener);
 
                 if (getBoundNode().getScene() != null && getBoundNode().getScene().getWindow() != null) {
                     Bounds curPb = getBoundNode().getBoundsInParent();
                     adjustBoundsToNode(curPb);
                 }
             }
+
             if (nv == null) {
                 setVisible(false);
             } else {
@@ -150,18 +155,29 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         boundNodeProperty().addListener(boundNodeListener);
     }
 
+
     protected void adjustBoundsToNode(Bounds boundsInParent) {
-        Bounds sb = getBoundNode().localToScene(getBoundNode().getLayoutBounds());
+        Platform.runLater(() -> {
+            Bounds sb = getBoundNode().localToScene(getBoundNode().getLayoutBounds());
+            Bounds pb = getBoundNode().localToScene(getBoundNode().parentToLocal(boundsInParent));
+/*            System.err.println("11 adjustBoundsToNode boundNode=" + getBoundNode());
+            System.err.println("11 adjustBoundsToNode boundNode.getParent=" + getBoundNode().getParent());
+            System.err.println("   --- adjustBoundsToNode min.y=" + sb.getMinY());
+            System.err.println("   --- adjustBoundsToNode pmin.y=" + pb.getMinY());
+            System.err.println("   --- adjustBoundsToNode y=" + getY());
+            System.err.println("   --- adjustBoundsToNode (boundsInParent.Width=" + boundsInParent.getWidth());
+            System.err.println("   --- adjustBoundsToNode (boundsInParent.Height=" + boundsInParent.getHeight());            
 
-        setY(sb.getMinY());
-        setX(sb.getMinX());
-        setWidth(boundsInParent.getWidth());
-        setHeight(boundsInParent.getHeight());
+            System.err.println("-----------------------------------------");
+*/
+            setY(sb.getMinY());
+            setX(sb.getMinX());
+            setWidth(boundsInParent.getWidth());
+            setHeight(boundsInParent.getHeight());
+        });
     }
 
-    private void removeBoundInParentListener(Node node) {
-        node.boundsInParentProperty().removeListener(boundsInParentListener);
-    }
+
 
     private void initRect() {
         setManaged(false);
@@ -172,14 +188,14 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
     public ReadOnlyObjectProperty<Node> boundNodeProperty() {
         return boundNodeWrapper.getReadOnlyProperty();
     }
-
+ 
     public void bind(Node node) {
         setBoundNode(node);
     }
 
     public void unbind() {
         if (getBoundNode() != null) {
-            removeBoundInParentListener(getBoundNode());
+            getBoundNode().boundsInParentProperty().removeListener(boundsInParentListener);
         }
         setBoundNode(null);
     }
@@ -214,7 +230,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
 
     public abstract static class SideShapes implements EventHandler<MouseEvent> {
 
-        private ShapeFraming shapeFraming;
+        private RectangleFrame shapeFraming;
 
         private Rectangle indicator;
 
@@ -240,7 +256,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 1; -fx-fill: white");
         }
 
-
         public ObservableList<String> getStyleClass() {
             return styleClass;
         }
@@ -264,7 +279,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             return new Shape[]{nShape, neShape, eShape, seShape, sShape, swShape, wShape, nwShape};
         }
 
-        public final void bind(ShapeFraming selPane) {
+        public final void bind(RectangleFrame selPane) {
             if (selPane == null && this.shapeFraming != null) {
                 removeShapes();
                 shapeFraming = null;
@@ -278,7 +293,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             indicator = shapeFraming;
 
             addToPane((Pane) indicator.getParent());
-            
+
             if (getStyle() == null && getStyleClass().isEmpty()) {
                 setDefaultStyle();
                 for (Shape s : getShapes()) {
@@ -311,7 +326,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             remove(nwShape);
         }
 
-        public ShapeFraming getShapeFraming() {
+        public RectangleFrame getShapeFraming() {
             return shapeFraming;
         }
 
@@ -422,7 +437,7 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 initialize();
 
             } catch (InstantiationException | IllegalAccessException ex) {
-                System.err.println("EXCEPTION !!!!");
+                System.err.println("EXCEPTION. " + ex.getMessage());
                 Logger.getLogger(SideShapes.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
@@ -528,8 +543,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
         }
 
         private void bind() {
-            //System.err.println("BIND");
-            //System.err.println("   --- REMOVE LISTENERS");
             unbind(nShape);
             unbind(neShape);
             unbind(eShape);
@@ -601,7 +614,6 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
                 WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
                 shapeFraming.setVisible(false);
                 wnf.show(shapeFraming.getBoundNode());
-                System.err.println("ShapeFraming CURSOR = " + shape.getScene().getCursor());
                 wnf.redirectMouseEvents(ev, shapeFraming.getStartMousePos(), shapeFraming);
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 shape.getScene().setCursor(Cursor.DEFAULT);
@@ -631,10 +643,9 @@ public class ShapeFraming extends Rectangle { //implements NodeFraming{
             }
         }
 
-        
     }//class SideShapes
 
-    public static class SideCircles extends ShapeFraming.SideShapes {
+    public static class SideCircles extends RectangleFrame.SideShapes {
 
         private final DoubleProperty radius = new SimpleDoubleProperty(0);
 

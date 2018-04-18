@@ -151,7 +151,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
                 list.forEach((d) -> {
-                    getLayoutContext().undock(d.node());
+                    //03.04getLayoutContext().undock(d.node());
+                    getLayoutContext().undock(d);
                 });
 
             }
@@ -166,7 +167,8 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     private void changeItems() {
         getSkinnable().getItems().forEach(d -> {
-            if (!getLayoutContext().isDocked(d.node())) {
+            //28.03if (!getLayoutContext().isDocked(d.node())) {
+            if (!getLayoutContext().contains(d.node())) {
                 getLayoutContext().dock(d);
             }
         });

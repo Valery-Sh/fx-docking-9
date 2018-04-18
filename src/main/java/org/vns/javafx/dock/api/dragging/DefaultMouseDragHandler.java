@@ -34,8 +34,6 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
-//        System.err.println("DefaultMouseDragHandler mousePressed");
-        
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         ev.consume();
     }
@@ -50,8 +48,6 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
             ev.consume();
             return;
         }
-        System.err.println("DefaultMouseDragHandler mouseDragDetected = " + getStartMousePos());
-        
         if ( getStartMousePos() == null ) {
             return;
         }
