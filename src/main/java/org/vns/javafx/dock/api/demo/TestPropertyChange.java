@@ -7,19 +7,14 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
-import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PopupControl;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
@@ -28,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.EnumChoiceBox;
+import org.vns.javafx.dock.api.designer.bean.EnumPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.InsetsPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.SliderEditor;
 
@@ -108,7 +103,7 @@ public class TestPropertyChange extends Application {
         
        
         NodeOrientation no = NodeOrientation.INHERIT;
-        EnumChoiceBox<NodeOrientation> cbox = new EnumChoiceBox<>(NodeOrientation.class); 
+        EnumPropertyEditor<NodeOrientation> cbox = new EnumPropertyEditor<>(NodeOrientation.class); 
         CheckBox ckBox = new CheckBox("Valery");
         //cbox.bindBidirectional(ckBox.nodeOrientationProperty());
         cbox.bind(ckBox.nodeOrientationProperty());
@@ -130,11 +125,25 @@ public class TestPropertyChange extends Application {
        
         SliderEditor slider = new SliderEditor(0,1,1);
         InsetsPropertyEditor insetsEditor = new InsetsPropertyEditor(1,2,3,4);
-        insetsEditor.setGraphics(null,null,null,null);
-        insetsEditor.bindBidirectional(cbox.paddingProperty());
-        root.getChildren().addAll(insetsEditor,cbox,ckBox, slider);        
+        insetsEditor.setDecorated(false);
+        final BooleanProperty bound = new SimpleBooleanProperty(true);
+        //insetsEditor.setGraphics(null,null,null,null);
+        
+        Button insBtn = new Button("change decorated");
+        insBtn.setOnAction(e -> {
+            if ( bound.get() ) {
+                insetsEditor.bindBidirectional(cbox.paddingProperty());
+                bound.set(false);
+            } else {
+                insetsEditor.bind(cbox.paddingProperty());
+                bound.set(true);
+            }
+            insetsEditor.setDecorated(!insetsEditor.isDecorated());
+        });
+        root.getChildren().addAll(insBtn,insetsEditor,cbox,ckBox, slider);        
         cbox.setPadding(new Insets(1.9,2,3,4));
-//        insetsEditor.bind(cbox.paddingProperty());
+        //insetsEditor.bindBidirectional(cbox.paddingProperty());
+        insetsEditor.bind(cbox.paddingProperty());
 /*        slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
         slider.setMajorTickUnit(0.25f);

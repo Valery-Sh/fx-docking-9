@@ -401,20 +401,20 @@ public class TestDockPaneControl011 extends Application {
         Button dragButton1 = new Button();
         dragButton1.getStyleClass().add("drag-icon");
         Button dragButton2 = new Button();
-        ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-hand-2-16x16.png");
+//        ImageView iv = new ImageView("/org/vns/javafx/dock/api/designerresources/drag-hand-2-16x16.png");
         //ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-12x12.png");
-        dragButton2.setGraphic(iv);
+//        dragButton2.setGraphic(iv);
         //dragButton2.setStyle("-fx-padding: 0");
 
         b04.setOnAction(a -> {
-            if (sideBar01.getDragNode() == null || sideBar01.getDragNode() == dragButton2 || sideBar01.getDragNode() == iv) {
+/*            if (sideBar01.getDragNode() == null || sideBar01.getDragNode() == dragButton2 || sideBar01.getDragNode() == iv) {
                 sideBar01.setDragNode(dragButton1);
             } else {
                 //sideBar01.setDragNode(dragButton2);
                 sideBar01.setDragNode(iv);
                 //iv.setMouseTransparent(true);
             }
-
+*/
         });
         Button b05 = new Button("Info");
         b05.setOnAction(new EventHandler<ActionEvent>() {

@@ -55,7 +55,7 @@ public class PropertyEditorFactory {
             }
             
             if ( propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)  ) {
-                return new BooleanCheckBox();
+                return new BooleanPropertyEditor();
             } else if ( propertyType.equals(Character.class) || propertyType.equals(char.class)  ) {
                  return new CharacterTextField();
             } else if ( propertyType.equals(Byte.class) || propertyType.equals(byte.class)  ) {
@@ -76,7 +76,7 @@ public class PropertyEditorFactory {
             } else if ( propertyType.equals(String.class)) {
                 return new StringTextField();
             } else if ( propertyType.isEnum()) {
-                return new EnumChoiceBox(propertyType);
+                return new EnumPropertyEditor(propertyType);
             }
             return retval;
         }

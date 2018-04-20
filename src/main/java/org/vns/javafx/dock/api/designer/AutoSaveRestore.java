@@ -21,7 +21,6 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;

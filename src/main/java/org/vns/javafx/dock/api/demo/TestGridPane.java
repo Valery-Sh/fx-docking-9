@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.BooleanCheckBox;
+import org.vns.javafx.dock.api.designer.bean.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.ByteTextField;
 import org.vns.javafx.dock.api.designer.bean.DecimalTextField;
 import org.vns.javafx.dock.api.designer.bean.DoubleTextField;
@@ -173,7 +173,7 @@ public class TestGridPane extends Application {
         grid.add(lb2, 0, 1);
         grid.add(tf2, 1, 1);
         //TextField tf3 = new TextField();
-        BooleanCheckBox tf3 = new BooleanCheckBox();
+        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        
         tf3.setOnAction(e -> {
             tf3.getPseudoClassStates().forEach(s -> {

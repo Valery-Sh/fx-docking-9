@@ -19,6 +19,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -69,6 +70,11 @@ public class IntegerTextField extends PrimitivesTextField.NumberTextField<Intege
         setTextFormatter(formatter);
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     protected String getPattern() {
         return "0|-?([1-9][0-9]*)?";
     }

@@ -19,6 +19,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.FloatStringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.bean.PrimitivesTextField.NumberTextField;
 
 /**
@@ -50,6 +51,11 @@ public class FloatTextField extends NumberTextField<Float> {
         init();
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     @Override
     protected boolean isAcceptable(String txt) {
         if (txt == null) {

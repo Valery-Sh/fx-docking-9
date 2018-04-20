@@ -17,10 +17,12 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -76,7 +78,20 @@ public class TestCanvas extends Application {
         //gc.strokeLine(sw+1, sw+1, cw - 2*sw, sw+1);
         //gc.setStroke(Color.BLACK);
         //gc.strokeLine(sw+1, sw+2, cw-2*sw, sw+2);
-        root.getChildren().addAll(b1,canvas);
+        Canvas canvas1 = new Canvas();
+        ImageView iv = new ImageView();
+        
+        iv.getStyleClass().add("test-canvas");
+       
+        
+        GraphicsContext gc1 = canvas.getGraphicsContext2D();
+        
+        Platform.runLater(() -> {
+            gc1.drawImage(iv.getImage(), 0, 0,16,16);
+        }); 
+        
+        root.getChildren().addAll(b1,canvas, canvas1);
+        
         primaryStage.setTitle("JavaFX TestCanvas");
         primaryStage.setScene(primaryScene);
 
@@ -85,7 +100,7 @@ public class TestCanvas extends Application {
         });
         primaryStage.setAlwaysOnTop(true);
         primaryStage.show();
-
+       
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);

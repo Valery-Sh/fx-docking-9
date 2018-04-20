@@ -15,9 +15,9 @@
  */
 package org.vns.javafx.dock.api.designer;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javafx.application.Platform;
+import java.util.Map;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -44,7 +44,6 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -52,7 +51,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -63,7 +61,6 @@ import org.vns.javafx.dock.api.dragging.view.FloatStageView;
 import static org.vns.javafx.dock.api.dragging.view.FloatView.DEFAULT_CURSORS;
 import static org.vns.javafx.dock.api.dragging.view.FloatView.FLOATVIEW;
 import static org.vns.javafx.dock.api.dragging.view.FloatView.FLOAT_WINDOW;
-import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
  *
@@ -108,12 +105,17 @@ public class TrashTray extends Control {
     }
 
     private void init() {
-        setImage(new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/resources/trash-empty.png")));
+        setImage(new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/images/trash-empty.png")));
         getStyleClass().add("trash-tray");
         DockRegistry.makeDockLayout(this, new TrashTrayLayoutContext(this));
 
         setTableView(createTableView());
         getItems().addListener(itemsChangeListener);
+    }
+    
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
 
     public ObjectProperty<Bounds> windowBoundsProperty() {

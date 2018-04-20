@@ -19,6 +19,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.bean.PrimitivesTextField.NumberTextField;
 
 /**
@@ -52,6 +53,11 @@ public class DoubleTextField extends NumberTextField<Double> {
         init();
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     @Override
     protected boolean isAcceptable(String txt) {
         if (txt == null) {

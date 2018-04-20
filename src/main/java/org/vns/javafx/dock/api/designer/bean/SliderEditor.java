@@ -15,14 +15,9 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
@@ -31,7 +26,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
-import javafx.util.StringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -73,26 +68,12 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
         textField.disableProperty().addListener((v, ov, nv) -> {
             slider.setDisable(!nv);
         });
-        /*      slider.setLabelFormatter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double object) {
-                BigDecimal bd = new BigDecimal(object);
-                return bd.setScale(2, RoundingMode.HALF_UP).toString();
-            }
-
-            @Override
-            public Double fromString(String string) {
-                return Double.parseDouble(string);
-            }
-        });
-         */
- /*        slider.valueProperty().addListener((v,ov,nv) -> {
-            slider.adjustValue((Double)nv);
-            System.err.println("Slider: ov = " + ov + "; adjust.nv = " + nv);
-        } );
-         */
     }
-
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     protected DecimalTextField getTextField() {
         return textField;
     }

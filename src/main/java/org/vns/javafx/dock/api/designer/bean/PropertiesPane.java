@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api.designer.bean;
 
 import javafx.scene.control.Control;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -30,5 +31,9 @@ public class PropertiesPane extends Control {
     private void init() {
         
     }
-    
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+        
 }

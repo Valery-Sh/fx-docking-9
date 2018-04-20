@@ -37,11 +37,15 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     }
 
     private void init() {
-        //27addEventFilter(NodeDragEvent.NODE_DRAG, this);
         getStyleClass().add(LOOKUP_SELECTOR);
         this.getStyleClass().add("designer");
-        
     }
+    
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     public Pane getParentPane() {
         return (Pane) getParent();
     }

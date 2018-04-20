@@ -25,12 +25,13 @@ import javafx.css.PseudoClass;
 import javafx.scene.control.ChoiceBox;
 import org.vns.javafx.dock.api.ConditionalEventDispatcher;
 import org.vns.javafx.dock.api.ConditionalEventDispatcher.RejectMouseReleasedDispatcher;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Olga
  */
-public class EnumChoiceBox<T extends Enum<T>> extends ChoiceBox<String> implements PropertyEditor<T> {
+public class EnumPropertyEditor<T extends Enum<T>> extends ChoiceBox<String> implements PropertyEditor<T> {
     
     private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("readonly");
 
@@ -54,12 +55,9 @@ public class EnumChoiceBox<T extends Enum<T>> extends ChoiceBox<String> implemen
         }
     });
 
-    public EnumChoiceBox(Class<T> enumType) {
+    public EnumPropertyEditor(Class<T> enumType) {
         objects = enumType.getEnumConstants();
-        //eventDispatcher = getEventDispatcher();
-        //this.enumObj = T.valueOf(enumType, name);
-
-        init();
+           init();
     }
 
     ConditionalEventDispatcher preventEdit = new RejectMouseReleasedDispatcher(n -> {
@@ -78,21 +76,16 @@ public class EnumChoiceBox<T extends Enum<T>> extends ChoiceBox<String> implemen
              setDisable( !newValue);
         });
 
- /*       editable.addListener((v, ov, nv) -> {
-            if (!nv) {
-                preventEdit.start(this);
-                setEventDispatcher(preventEdit);
-            } else {
-                //setEventDispatcher(eventDispatcher);
-                preventEdit.finish(this);
-            }
-        });
-*/
         for (Object o : objects) {
             getItems().add(o.toString());
         }
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }    
+    
     @Override
     public void bind(Property<T> property) {
 

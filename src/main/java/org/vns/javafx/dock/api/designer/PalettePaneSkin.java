@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.designer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.vns.javafx.dock.api.PalettePane.PaletteModel;
+import org.vns.javafx.dock.api.designer.PalettePane.PaletteModel;
 
 /**
  *

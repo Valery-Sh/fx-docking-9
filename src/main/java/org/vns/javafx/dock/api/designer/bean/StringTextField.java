@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.designer.bean;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -51,7 +52,11 @@ public class StringTextField extends PrimitivesTextField<String>  {
         });
         setText(defaultValue == null ? "" : defaultValue);
     }
-
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     public String getDefaultValue() {
         return defaultValue;
     }

@@ -30,7 +30,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
 
-import org.vns.javafx.dock.api.PalettePane;
+import org.vns.javafx.dock.api.designer.PalettePane;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.SceneGraphView;
 

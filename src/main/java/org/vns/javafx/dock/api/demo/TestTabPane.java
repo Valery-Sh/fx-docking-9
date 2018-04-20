@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.PalettePane;
+import org.vns.javafx.dock.api.designer.PalettePane;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
 import org.vns.javafx.dock.api.DockTabPane2Context;
 import org.vns.javafx.dock.api.DockTabPane2MouseDragHandler;

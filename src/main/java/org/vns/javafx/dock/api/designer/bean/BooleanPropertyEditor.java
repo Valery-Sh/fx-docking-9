@@ -18,12 +18,13 @@ package org.vns.javafx.dock.api.designer.bean;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
 import javafx.scene.control.CheckBox;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Olga
  */
-public class BooleanCheckBox extends CheckBox implements PropertyEditor<Boolean> {
+public class BooleanPropertyEditor extends CheckBox implements PropertyEditor<Boolean> {
 
     private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("readonly");
 
@@ -38,7 +39,7 @@ public class BooleanCheckBox extends CheckBox implements PropertyEditor<Boolean>
     private final Boolean defaultValue;
 
     //private BooleanProperty value = new SimpleBooleanProperty();
-    public BooleanCheckBox() {
+    public BooleanPropertyEditor() {
         this((Boolean) null);
     }
 
@@ -46,7 +47,7 @@ public class BooleanCheckBox extends CheckBox implements PropertyEditor<Boolean>
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public BooleanCheckBox(Boolean defaultValue) {
+    public BooleanPropertyEditor(Boolean defaultValue) {
         this.defaultValue = defaultValue;
         init();
     }
@@ -60,22 +61,11 @@ public class BooleanCheckBox extends CheckBox implements PropertyEditor<Boolean>
 
     }
 
-    /*    protected boolean isModifiable(Property<Boolean> property) {
-        boolean retval = true;
-        if ( property.getBean() != null && property.getName() != null ) {
-            BeanDescriptor bd = BeanDescriptorRegistry.getGraphDescriptor().getBeanDescriptor(property.getBean());
-            if ( bd != null ) {
-                PropertyDescriptor pd = bd.getPropertyDescriptor(property.getName());
-                //System.err.println("PropertyDescriptor pd bean = " + );
-                if ( pd != null && ( ! pd.isModifiable() || pd.isReadOnly(property.getBean()))  ) {
-                    retval = false;
-                }
-                
-            }
-        }
-        return retval;
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
-     */
+
     @Override
     public void bind(Property<Boolean> property) {
 

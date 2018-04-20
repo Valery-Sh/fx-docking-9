@@ -21,20 +21,22 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.css.PseudoClass;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -49,11 +51,9 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     private final DoubleTextField bottom;
     private final DoubleTextField left;
 
-    private boolean createDefaultGraphics;
-    
-    private Node[] graphics;
+    private final BooleanProperty decorated = new SimpleBooleanProperty(true);
 
-    private final BooleanProperty editable = new SimpleBooleanProperty();
+    private final BooleanProperty editable = new SimpleBooleanProperty(true);
 
     private ChangeListener<Insets> editorInsetslistener;
 
@@ -77,14 +77,18 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     public InsetsPropertyEditor(double top, double right, double bottom, double left) {
         this.editorInsets.set(new Insets(top, right, bottom, left));
         this.top = new DoubleTextField();
+        this.top.getStyleClass().add("top-inset");
         this.right = new DoubleTextField();
+        this.right.getStyleClass().add("right-inset");
         this.bottom = new DoubleTextField();
+        this.bottom.getStyleClass().add("bottom-inset");
         this.left = new DoubleTextField();
+        this.left.getStyleClass().add("left-inset");
         init();
     }
 
     private void init() {
-        createDefaultGraphics = true;
+        getStyleClass().add("insets-property-editor");
         editorInsetslistener = (v, ov, nv) -> {
             if (nv != null) {
                 top.setText(String.valueOf(nv.getTop()));
@@ -94,28 +98,6 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
             }
         };
         editorInsetsProperty().addListener(editorInsetslistener);
-
-    }
-
-    public Node[] getGraphics() {
-        return graphics;
-    }
-
-    /*    public void setGraphics(Node... node) {
-    topGraphic = node[0];
-    if (node.length > 1) {
-    rightGraphic = node[1];
-    }
-    if (node.length > 2) {
-    bottomGraphic = node[2];
-    }
-    if (node.length > 3) {
-    bottomGraphic = node[3];
-    }
-    }
-     */
-    public void setGraphics(Node... graphics) {
-        this.graphics = graphics;
     }
 
     public BooleanProperty editableProperty() {
@@ -144,12 +126,16 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
         return editorInsets;
     }
 
-    public boolean isCreateDefaultGraphics() {
-        return createDefaultGraphics;
+    public BooleanProperty decoratedProperty() {
+        return decorated;
     }
 
-    public void setCreateDefaultGraphics(boolean createDefaultGraphics) {
-        this.createDefaultGraphics = createDefaultGraphics;
+    public boolean isDecorated() {
+        return decorated.get();
+    }
+
+    public void setDecorated(boolean decorated) {
+        this.decorated.set(decorated);
     }
 
     @Override
@@ -158,7 +144,14 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     }
 
     @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
+    @Override
     public void bind(Property<Insets> property) {
+        unbind();
+        setEditable(false);
         editorInsetsProperty().removeListener(editorInsetslistener);
         removeTopRightBottopTopListeners();
         editorInsetsProperty().addListener(editorInsetslistener);
@@ -168,6 +161,8 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     @Override
     public void bindBidirectional(Property<Insets> property) {
+        unbind();
+        setEditable(true);
         editorInsetsProperty().removeListener(editorInsetslistener);
         removeTopRightBottopTopListeners();
         editorInsetsProperty().addListener(editorInsetslistener);
@@ -189,17 +184,17 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
         right.valueProperty().addListener(rightValueInsetslistener);
         bottom.valueProperty().addListener(bottomValueInsetslistener);
         left.valueProperty().addListener(leftValueInsetslistener);
-
     }
 
     @Override
     public void unbind() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        editorInsets.unbind();
+        removeTopRightBottopTopListeners();
     }
 
     @Override
     public boolean isBound() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       return editorInsets.isBound();
     }
 
     public static class InsetsPropertyEditorSkin extends SkinBase<InsetsPropertyEditor> {
@@ -207,55 +202,39 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
         private Node[] graphics;
 
         private final GridPane grid;
-      
 
         public InsetsPropertyEditorSkin(InsetsPropertyEditor control) {
             super(control);
-            graphics = getSkinnable().getGraphics();
 
+            graphics = new Node[]{new StackPane(), new StackPane(), new StackPane(), new StackPane()};
             grid = new GridPane();
 
-            int row = 0;
-
-            if (graphics != null) {
-                row = 1;
-                for (int i = 0; i < graphics.length; i++) {
-                    StackPane sp = new StackPane();
-                    sp.setPadding(new Insets(0,0,2,0));
-                    if (graphics[i] == null) {
-                        Side side = null;
-                        switch (i) {
-                            case 0:
-                                side = Side.TOP;
-                                break;
-                            case 1:
-                                side = Side.RIGHT;
-                                break;
-                            case 2:
-                                side = Side.BOTTOM;
-                                break;
-                            case 3:
-                                side = Side.LEFT;
-                                break;
-                            default:
-                                break;
-                        }
-                        System.err.println("CREATE DEFAULT GRAPHIC");
-                        graphics[i] = createDefaultGraphic(side);
-                        sp.getChildren().add(graphics[i]);
-                        sp.setAlignment(Pos.CENTER);
-                        
-                    }
-                    grid.add(sp, i, 0);
+            getSkinnable().decoratedProperty().addListener((v, ov, nv) -> {
+                if (nv) {
+                    decorateDefault();
+                } else {
+                    decorateImage();
                 }
+            });
+            adustEditable(getSkinnable().isEditable());
+            getSkinnable().editableProperty().addListener((v, ov, nv) -> {
+                adustEditable(nv);
+            });
+
+            for (int i = 0; i < graphics.length; i++) {
+                grid.add(graphics[i], i, 0);
             }
 
-            //grid = new HBox(getSkinnable().getTextField(),getSkinnable().getSlider());
-            grid.add(getSkinnable().top, 0, row);
-            grid.add(getSkinnable().right, 1, row);
-            grid.add(getSkinnable().bottom, 2, row);
-            grid.add(getSkinnable().left, 3, row);
+            if (getSkinnable().isDecorated()) {
+                decorateDefault();
+            } else {
+                decorateImage();
+            }
 
+            grid.add(getSkinnable().top, 0, 1);
+            grid.add(getSkinnable().right, 1, 1);
+            grid.add(getSkinnable().bottom, 2, 1);
+            grid.add(getSkinnable().left, 3, 1);
             ColumnConstraints column0 = new ColumnConstraints();
             column0.setPercentWidth(25);
             ColumnConstraints column1 = new ColumnConstraints();
@@ -270,6 +249,58 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
             grid.setHgap(10);
 
             getChildren().add(grid);
+        }
+
+        private Side getSide(int idx) {
+            Side side = null;
+
+            switch (idx) {
+                case 0:
+                    side = Side.TOP;
+                    break;
+                case 1:
+                    side = Side.RIGHT;
+                    break;
+                case 2:
+                    side = Side.BOTTOM;
+                    break;
+                case 3:
+                    side = Side.LEFT;
+                    break;
+                default:
+                    break;
+            }
+            return side;
+
+        }
+
+        protected void decorateDefault() {
+            for (int i = 0; i < graphics.length; i++) {
+                StackPane sp = (StackPane) graphics[i];
+                Side side = getSide(i);
+                sp.getChildren().clear();
+                sp.getChildren().add(createDefaultGraphic(side));
+                sp.setStyle("-fx-alignment: center; -fx-padding: 0 0 2 0");
+            }
+        }
+
+        protected void decorateImage() {
+            for (int i = 0; i < graphics.length; i++) {
+                StackPane sp = (StackPane) graphics[i];
+                sp.setStyle("");
+                Side side = getSide(i);
+                String css = side.name().toLowerCase() + "-inset-pane";
+
+                sp.getStyleClass().remove(css);
+                sp.getStyleClass().add(css);
+
+                css = side.name().toLowerCase() + "-inset-image";
+                sp.getChildren().clear();
+                ImageView iv = new ImageView();
+                iv.getStyleClass().add(css);
+                sp.getChildren().add(iv);
+            }
+
         }
 
         protected Node createDefaultGraphic(Side side) {
@@ -307,6 +338,13 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
             }
             return retval;
         }
+
+        protected void adustEditable(boolean editable) {
+            getSkinnable().top.setEditable(editable);
+            getSkinnable().right.setEditable(editable);
+            getSkinnable().bottom.setEditable(editable);
+            getSkinnable().left.setEditable(editable);
+        }
     }// Skin
 
-}
+}//InsetsPropertyEditor

@@ -22,6 +22,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.util.StringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -71,6 +72,10 @@ public class CharacterTextField extends TextField implements PropertyEditor<Stri
         setTextFormatter(new TextFormatter<String>(c,lv,filter));
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
     public StringProperty valueProperty() {
         return value;
     }

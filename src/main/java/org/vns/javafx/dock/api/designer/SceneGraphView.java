@@ -52,6 +52,8 @@ public class SceneGraphView extends Control implements DockLayout {
 
     private final ObservableList<TreeCell> visibleCells = FXCollections.observableArrayList();
 
+    private Map<Class<?>,Map<String,Object> > saved = new HashMap<>(); 
+
     public SceneGraphView() {
         this.treeView = new TreeViewEx<>(this);
         init();
@@ -69,7 +71,12 @@ public class SceneGraphView extends Control implements DockLayout {
 
         customizeCell();
     }
-    private Map<Class<?>,Map<String,Object> > saved = new HashMap<>(); 
+    
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+        
     public void save() {
         TreeViewEx tv = getTreeView();
         TreeItemEx root = (TreeItemEx) tv.getRoot();
@@ -155,11 +162,6 @@ public class SceneGraphView extends Control implements DockLayout {
 
     public void setStatusBar(Region statusBar) {
         this.statusBar.set(statusBar);
-    }
-
-    @Override
-    public String getUserAgentStylesheet() {
-        return Dockable.class.getResource("resources/default.css").toExternalForm();
     }
 
     public TreeViewEx getTreeView() {

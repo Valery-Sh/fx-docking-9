@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api;
+package org.vns.javafx.dock.api.designer;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -73,9 +73,16 @@ import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.HPane;
 import org.vns.javafx.dock.VPane;
-import static org.vns.javafx.dock.api.PalettePane.NodePolicy.BOTH;
-import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKABLE;
-import static org.vns.javafx.dock.api.PalettePane.NodePolicy.DOCKLAYOUT;
+import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.DockableContext;
+import org.vns.javafx.dock.api.DragContainer;
+import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.LayoutContextFactory;
+import static org.vns.javafx.dock.api.designer.PalettePane.NodePolicy.BOTH;
+import static org.vns.javafx.dock.api.designer.PalettePane.NodePolicy.DOCKABLE;
+import static org.vns.javafx.dock.api.designer.PalettePane.NodePolicy.DOCKLAYOUT;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -151,6 +158,11 @@ public class PalettePane extends Control {
         }
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
     }
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     /**
      * Sets the custom customizer of the palette paletteModel.
      *

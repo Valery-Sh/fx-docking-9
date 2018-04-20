@@ -1,0 +1,221 @@
+.content-combo-box .display-node {
+    -fx-padding: 2 0 2 10;
+}
+
+.bounds-property-editor {
+  
+}
+
+.bounds-property-editor-grid {
+    -fx-opacity: 1; 
+    -fx-background-color: white; 
+    -fx-border-color: lightgrey; 
+    -fx-border-width: 1; 
+    -fx-padding: 10 10 10 10;
+}
+.insets-property-editor .top-inset:readonly, .right-inset:readonly, .bottom-inset:readonly, .left-inset:readonly{
+    -fx-background-color: -fx-background;
+    -fx-border-color: black;
+    -fx-border-width: 0.5;
+}
+
+.enum-field-editor:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .label:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .arrow:disabled {
+    -fx-opacity: 0.4;
+}
+
+.check-box-field-editor:readonly {
+}
+
+.trash-tray .image-view {
+}
+
+.palette-pane .titled-pane .tile-pane {
+    -fx-border-width: 3;
+    -fx-border-color: lightgray;
+}
+
+/* ============================================== */
+
+.tree-item-node-button {
+    /*-fx-graphic: url("/org/vns/javafx/dock/api/designer/resources/images/button-16x16.png");*/
+    -fx-graphic: url("../images/button-16x16.png");
+}
+
+
+.tree-item-node-docknode {
+    -fx-graphic: url(../images/docknode-16x16.png);
+}
+.tree-item-node-dockpane {
+    -fx-graphic: url(../images/dockpane-16x16.png);
+}
+.tree-item-node-docktitlebar {
+    -fx-graphic: url(../images/title-bar-16x16.png);
+}
+.tree-item-node-hpane {
+    -fx-graphic: url(../images/hpane-16x16.png);
+}
+.tree-item-node-vpane {
+    -fx-graphic: url(../images/vpane-16x16.png);
+}
+
+.tree-item-node-hbox {
+    -fx-graphic: url(../images/hbox-16x16.png);
+}
+.tree-item-node-vbox {
+    -fx-graphic: url(../images/vbox-16x16.png);
+
+}
+.tree-item-node-stackpane {
+    -fx-graphic: url(../images/stackpane-16x16.png);
+
+}
+.tree-item-node-pane {
+    -fx-graphic: url(../images/pane-16x16.png);
+
+}
+.tree-item-node-gridpane {
+    -fx-graphic: url(../images/gridpane-16x16.png);
+}
+.tree-item-node-borderpane {
+    -fx-graphic: url(../images/borderpane-16x16.png);
+}
+
+.tree-item-node-unknownnode {
+    -fx-graphic: url(../images/question-16x16.png);
+}
+
+.tree-item-list-header {
+    -fx-graphic: url(../images/list-16x16.png);
+}
+
+.tree-item-node-anchorpane {
+    -fx-graphic: url(../images/anchorpane-16x16.png);
+}
+.tree-item-node-flowpane {
+    -fx-graphic: url(../images/flowpane-16x16.png);
+}
+.tree-item-node-scrollpane {
+    -fx-graphic: url(../images/scrollpane-16x16.png);
+}
+.tree-item-node-splitpane {
+    -fx-graphic: url(../images/splitpane-16x16.png);
+}
+.tree-item-node-titledpane {
+    -fx-graphic: url(../images/titledpane-16x16.png);
+}
+.tree-item-node-tilepane {
+    -fx-graphic: url(../images/tilepane-16x16.png);
+}
+.tree-item-node-tabpane {
+    -fx-graphic: url(../images/tabpane-16x16.png);
+}
+.tree-item-node-tab {
+    -fx-graphic: url(../images/tab-16x16.png);
+}
+.tree-item-node-rectangle {
+    -fx-graphic: url(../images/rectangle-16x16.png);
+}
+
+
+.tree-item-node-accordion {
+    -fx-graphic: url(../images/accordion-16x16.png);
+}
+
+.tree-item-node-label {
+    -fx-graphic: url(../images/label-16x16.png);
+    -fx-image: url(../images/label-16x16.png);
+
+}
+.tree-item-node-listview {
+    -fx-graphic: url(../images/listview-16x16.png);
+}
+
+.tree-item-node-textfield {
+    -fx-graphic: url(../images/text-field-16x16.png);
+}
+.tree-item-node-textarea {
+    -fx-graphic: url(../images/text-area-16x16.png);
+}
+.tree-item-node-text {
+    -fx-graphic: url(../images/text-area-16x16.png);
+}
+.tree-item-node-checkbox {
+    -fx-graphic: url(../images/check-box-16x16.png);
+}
+
+.tree-item-node-choicebox {
+    -fx-graphic: url(../images/choice-box-16x16.png);
+}
+.tree-item-node-combobox {
+    -fx-graphic: url(../images/combo-box-16x16.png);
+}
+.tree-item-font-bold {
+    -fx-font-weight: bold;    
+}
+
+.designer .tree-cell .tree-disclosure-node  .arrow {
+    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../images/plus-blue-16x16.png);
+}
+
+.designer .tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../images/minus-blue-16x16.png);
+    -fx-rotate: 0;
+}
+
+.labeled-insert-graphic {
+    -fx-graphic: url(../images/graphic-frame-16x16.png);
+}
+
+.node-insert-content {
+    -fx-graphic: url(../images/content-16x16.png);
+}
+.scene-graph-view .tree-view .tree-cell {
+    -fx-background-color: derive(-fx-base,26.4%);
+}
+.scene-graph-view .tree-view .tree-cell:selected {
+    -fx-font-weight: bold ;  
+    -fx-background-color: lightgrey;
+}
+
+
+.tree-view:focused {
+
+}
+
+.tree-view-indicator {
+    -fx-stroke: RGB(255,148,40);
+    -fx-stroke-width: 2;
+    -fx-background-color: transparent;
+    -fx-fill: transparent    
+        
+}
+
+/* -----------------------------------
+    BorderPane placeholders
+   -----------------------------------*/
+.borderpane-insert-top {
+    -fx-graphic: url(../images/insert-top-16x16.png);    
+}
+.borderpane-insert-right {
+    -fx-graphic: url(../images/insert-right-16x16.png);    
+}
+.borderpane-insert-bottom {
+    -fx-graphic: url(../images/insert-bottom-16x16.png);    
+}
+.borderpane-insert-left {
+    -fx-graphic: url(../images/insert-left-16x16.png);    
+}
+.borderpane-insert-center {
+    -fx-graphic: url(../images/insert-center-16x16.png);    
+}

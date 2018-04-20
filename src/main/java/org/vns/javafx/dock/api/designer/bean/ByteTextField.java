@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.dock.api.designer.DesignerLookup;
+
 /**
  *
  * @author Valery Shishkin
@@ -32,12 +34,19 @@ public class ByteTextField extends IntegerTextField {
     public ByteTextField(Byte defaultValue) {
         this(defaultValue, null, null);
     }
+
     public ByteTextField(Byte minValue, Byte maxValue) {
-        this((byte)0, minValue, maxValue);
+        this((byte) 0, minValue, maxValue);
     }
+
     public ByteTextField(Byte defaultValue, Byte minValue, Byte maxValue) {
         super(defaultValue == null ? null : defaultValue.intValue(),
                 minValue == null ? null : minValue.intValue(), maxValue == null ? null : maxValue.intValue());
+    }
+
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
 
     @Override

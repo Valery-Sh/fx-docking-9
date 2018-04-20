@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.dock.api.designer.DesignerLookup;
+
 /**
  *
  * @author Olga
@@ -39,7 +41,12 @@ public class ShortTextField  extends IntegerTextField {
     public ShortTextField(Short defaultValue,Short minValue, Short maxValue) {
        super(defaultValue == null ? null : defaultValue.intValue(),
                minValue == null ? null : minValue.intValue(),maxValue == null ? null : maxValue.intValue());
-    }   
+    }  
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+        
     @Override
     protected boolean isAcceptable(String txt) {
         if (txt == null) {

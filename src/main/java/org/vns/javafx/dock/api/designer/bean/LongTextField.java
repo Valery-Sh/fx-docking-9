@@ -19,6 +19,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.LongStringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -59,6 +60,11 @@ public class LongTextField extends PrimitivesTextField.NumberTextField<Long> {
         setTextFormatter(formatter);
     }
 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+    
     protected String getPattern() {
         return "0|-?([1-9][0-9]*)?";
     }

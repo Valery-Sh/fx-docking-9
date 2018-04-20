@@ -21,7 +21,6 @@ import org.vns.javafx.dock.api.ApplicationContext;
 import org.vns.javafx.dock.api.ContextLookup;
 import org.vns.javafx.dock.api.DefaultContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.PalettePane;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
 import org.vns.javafx.dock.api.Selection.SelectionHandler;

@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.designer.bean;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javafx.util.converter.DoubleStringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -46,6 +47,11 @@ public class DecimalTextField extends DoubleTextField {
 
     public DecimalTextField(Double defaultValue, Double minValue, Double maxValue) {
         super(defaultValue, minValue, maxValue);
+    }
+ 
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
     public void setScale(int scale, RoundingMode roundingMode) {

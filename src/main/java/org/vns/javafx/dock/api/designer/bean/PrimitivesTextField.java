@@ -113,7 +113,6 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
 
         @Override
         public void bind(Property property) {
-
             this.setEditable(false);
             this.setFocusTraversable(false);
             valueProperty().bind(property);

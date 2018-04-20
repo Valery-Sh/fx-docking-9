@@ -1,207 +1,10 @@
-.text-field-editor:readonly {
-    -fx-border-width: 1;
-    -fx-border-color: lightgrey;
-    -fx-background-color: -fx-background;
-}
-.enum-field-editor:disabled {
-    -fx-opacity: 1;
-}
-.enum-field-editor:disabled .label:disabled {
-    -fx-opacity: 1;
-}
-.enum-field-editor:disabled .arrow:disabled {
-    -fx-opacity: 0.4;
-}
 
-.check-box-field-editor:readonly {
-    /*-fx-border-width: 2;
-    -fx-border-color: lightgrey;
-    -fx-background-color: -fx-background;
-    */
-}
-/*.titled-pane > .title > .arrow-button .arrow 
-{
--fx-background-color: transparent, transparent;
--fx-shape: null;
-}
- 
-.titled-pane > .title > .arrow-button
-{
--fx-background-color: transparent, transparent;
--fx-background-insets: 1 -2 -1 0, 0;
--fx-border-width: 1 1 1 1;
--fx-padding: 2 -2 2 4;
--fx-border-color: red;
-
--fx-shape: "M 0 0 h 7 v 7 h -7 v -7 M 3.5 0 l 3.5 7 ";
-}
-*/
-.trash-tray .image-view {
-   /* -fx-image: url("trash-full.png");*/
-}
-.side-shape {
-    -fx-fill: white;
-    -fx-stroke-width: 1;
-    /*-fx-stroke: rgb(255, 148, 40);*/
-    -fx-stroke: red;
-    -fx-stroke-type: outside;
-    
-}
-.shape-framing{
-    -fx-fill: transparent;
-    -fx-stroke-width: 1;
-    -fx-stroke: rgb(255, 148, 40);
-    -fx-stroke-type: inside;
-}
-.window-node-framing {
-    -fx-background-color: yellow; 
-    -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed;    
-}
-
-/*.select-pane1 .circle {
-    -fx-fill: blue;
-}
-*/
-.palette-pane .titled-pane .tile-pane {
-    -fx-border-width: 3;
-    -fx-border-color: lightgray;
-}
 
 /*******************************************************************************
  *                                                                             *
  * DockPane                                                                    *
  *                                                                             *
  ******************************************************************************/
-.tab-content-area {
-    /*-fx-background-color: green;*/
-}
-/*.tab-header-area {
-    -fx-background-color: blue;
-}
-.tab-header-background {
-    -fx-background-color: blue;
-}
-*/
-.headers-region  {
-    /*-fx-background-color: blue;*/
-    
-}
-.tab-header-background {
-/*    -fx-background-color: yellow;
-    -fx-fill: yellow;
-*/
-}
-.tab-pane .tab-header-area .tab-header-background {
-  /*  -fx-background-color: yellow;*/
-}
-
-/*.split-pane *.split-pane-divider {
-    -fx-padding: 0 1 0 1;
-}
-
-.split-pane-divider {
-   -fx-background-color: transparent;
-}
-*/
-/* ---------------------------------
-    Original: -fx-padding: 4 6 4 8;
-  ----------------------------------*/
-/*.myTree .tree-cell {
-    -fx-background-color: rgb(240,240,240) ;
-    -fx-text-fill: rgb(240,240,240) ;
-}
-*/
-
-.labeled-insert-graphic {
-    /*-fx-graphic: url(grapfic-frame-black-16x16.png);*/
-    -fx-graphic: url(graphic-frame-16x16.png);
-}
-
-.node-insert-content {
-    -fx-graphic: url(content-16x16.png);
-}
-.scene-graph-view .tree-view .tree-cell {
-    -fx-background-color: derive(-fx-base,26.4%);
-    /*-fx-background-color: lightgrey;*/
-    
-}
-.scene-graph-view .tree-view .tree-cell:selected {
-    -fx-font-weight: bold ;  
-    -fx-background-color: lightgrey;
-}
-
-
-/*.scene-graph-view .tree-view:focused .tree-cell:selected {
-    -fx-font-weight: bold ;  
-    -fx-background-color: lightgrey;
-} 
-*/
-/*.scene-graph-view .tree-view .control .tree-cell:focused {
-    -fx-font-weight: bold ;  
-    -fx-background-color: lightgrey;
-}    
-*/
-.tree-view:focused {
-/*   -fx-background-insets: 0 0 0 0;*/
-}
-
-.tree-view-indicator {
-    -fx-stroke: RGB(255,148,40);
-    -fx-stroke-width: 2;
-    -fx-background-color: transparent;
-    -fx-fill: transparent    
-        
-}
-/*.tree-view-indicator {
-    -fx-background-color: transparent;
-    -fx-fill: transparent    
-}
-*/
-
-.tree-item-node-button {
-    -fx-graphic: url(button-16x16.png);
-}
-
-.tree-item-node-docknode {
-    -fx-graphic: url(docknode-16x16.png);
-}
-.tree-item-node-dockpane {
-    -fx-graphic: url(dockpane-16x16.png);
-}
-.tree-item-node-docktitlebar {
-    -fx-graphic: url(title-bar-16x16.png);
-}
-.tree-item-node-hpane {
-    -fx-graphic: url(hpane-16x16.png);
-}
-.tree-item-node-vpane {
-    -fx-graphic: url(vpane-16x16.png);
-}
-
-.tree-item-node-hbox {
-    -fx-graphic: url(hbox-16x16.png);
-}
-.tree-item-node-vbox {
-    -fx-graphic: url(vbox-16x16.png);
-
-}
-.tree-item-node-stackpane {
-    -fx-graphic: url(stackpane-16x16.png);
-
-}
-.tree-item-node-pane {
-    -fx-graphic: url(pane-16x16.png);
-
-}
-.tree-item-node-gridpane {
-    -fx-graphic: url(gridpane-16x16.png);
-}
-.tree-item-node-borderpane {
-    -fx-graphic: url(borderpane-16x16.png);
-}
-/*
-   BorderPane IndicatorPane
-*/
 .border-pane-indicator .center,.top,.right,.bottom,.left{
     -fx-border-color: black; 
     -fx-border-width:1.5; 
@@ -227,149 +30,8 @@
     -fx-graphic: url(close.png);
 }
 
-/*
-    BorderPane placeholders
-*/
-.borderpane-insert-top {
-    -fx-graphic: url(insert-top-16x16.png);    
-}
-.borderpane-insert-right {
-    -fx-graphic: url(insert-right-16x16.png);    
-}
-.borderpane-insert-bottom {
-    -fx-graphic: url(insert-bottom-16x16.png);    
-}
-.borderpane-insert-left {
-    -fx-graphic: url(insert-left-16x16.png);    
-}
-.borderpane-insert-center {
-    -fx-graphic: url(insert-center-16x16.png);    
-}
 
-.tree-item-node-unknownnode {
-    -fx-graphic: url(question-16x16.png);
-}
-
-.tree-item-list-header {
-    -fx-graphic: url(list-16x16.png);
-}
-
-.tree-item-node-anchorpane {
-    -fx-graphic: url(anchorpane-16x16.png);
-}
-.tree-item-node-flowpane {
-    -fx-graphic: url(flowpane-16x16.png);
-}
-.tree-item-node-scrollpane {
-    -fx-graphic: url(scrollpane-16x16.png);
-}
-.tree-item-node-splitpane {
-    -fx-graphic: url(splitpane-16x16.png);
-}
-.tree-item-node-titledpane {
-    -fx-graphic: url(titledpane-16x16.png);
-}
-.tree-item-node-tilepane {
-    -fx-graphic: url(tilepane-16x16.png);
-}
-.tree-item-node-tabpane {
-    -fx-graphic: url(tabpane-16x16.png);
-}
-.tree-item-node-tab {
-    -fx-graphic: url(tab-16x16.png);
-}
-.tree-item-node-rectangle {
-    -fx-graphic: url(rectangle-16x16.png);
-}
-
-
-.tree-item-node-accordion {
-    -fx-graphic: url(accordion-16x16.png);
-}
-
-.tree-item-node-label {
-    -fx-graphic: url(label-16x16.png);
-    -fx-image: url(label-16x16.png);
-
-}
-.tree-item-node-listview {
-    -fx-graphic: url(listview-16x16.png);
-}
-
-.tree-item-node-textfield {
-    -fx-graphic: url(text-field-16x16.png);
-}
-.tree-item-node-textarea {
-    -fx-graphic: url(text-area-16x16.png);
-}
-.tree-item-node-text {
-    -fx-graphic: url(text-area-16x16.png);
-}
-.tree-item-node-checkbox {
-    -fx-graphic: url(check-box-16x16.png);
-}
-
-.tree-item-node-choicebox {
-    -fx-graphic: url(choice-box-16x16.png);
-}
-.tree-item-node-combobox {
-    -fx-graphic: url(combo-box-16x16.png);
-}
-.tree-item-font-bold {
-    -fx-font-weight: bold;    
-}
-
-.designer .tree-cell .tree-disclosure-node  .arrow {
-    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
-    -fx-shape: null;
-    -fx-background-color: null;
-    -fx-background-image: url(plus-blue-16x16.png);
-}
-
-.designer .tree-cell:expanded .tree-disclosure-node .arrow {
-    -fx-shape: null;
-    -fx-background-color: null;
-    /*-fx-background-image: url(docknode-16x16.png);*/
-    -fx-background-image: url(minus-blue-16x16.png);
-    -fx-rotate: 0;
-}
-/*.palette .tree-cell .tree-disclosure-node  .arrow {
-    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
-    -fx-shape: null;
-    -fx-background-color: null;
-    -fx-background-image: url(plus-blue-16x16.png);
-}
-
-.palette .tree-cell:expanded .tree-disclosure-node .arrow {
-    -fx-shape: null;
-    -fx-background-color: null;
-    -fx-background-image: url(minus-blue-16x16.png);
-    -fx-rotate: 0;
-}
-*/
-/*.tree-cell .tree-disclosure-node .arrow {
--fx-padding: 0.6em 0.6em 0.6em 0.6em;     
--fx-shape: "M0 -0.5 h2 v2 h1 v-2 h2 v-1 h-2 v-2 h-1 v2 h-2 v1z";
-}
-
-.tree-cell:expanded .tree-disclosure-node .arrow {
--fx-shape: "M0 -0.5 h5 v-1 h-5 v1z";
--fx-padding: 4 0.25 4 0.25;
-}
-*/
-/*.custom-control {
-    -fx-skin: "org.vns.javafx.dock.api.controls.CustomControlSkin";
-}
-*/
-/*.dock-dock-indnode-title-label {   
-    -fx-padding: 0 0 3 0;
-    -fx-text-fill: blue;
-    -fx-background-color: rgba(50, 50, 100, 0.4);
-    -fx-effect: dropshadow( gaussian, rgba(255,254,254,0.2), 0,0,0,1 );
-}
-*/
 .dock-node:floating .dock-title-state-button {
-    /*-fx-graphic: url(maximize.png);*/
     -fx-graphic: url(restore.png);
 }
 
@@ -384,7 +46,6 @@
  *********************************************/
 .tab-place {
  
-    /*-fx-fill: -fx-selection-bar;*/
     -fx-fill: transparent;
     -fx-opacity: 0.5;
 
@@ -402,7 +63,6 @@
     -fx-opacity: 0.3;
 }
 .dock-place {
-    /*-fx-fill: -fx-selection-bar;*/
     -fx-fill: transparent;
     -fx-opacity: 0.3;
 
@@ -468,10 +128,6 @@
 .drag-pane-indicator {
     -fx-border-width: 1.0; 
     -fx-border-color: -fx-selection-bar;
-    /*-fx-border-color: red;
-    -fx-background-color: red;
-    -fx-opacity: 0.5;    
-    */
 }
 
 
@@ -511,32 +167,20 @@
     -fx-background-color: transparent;
 }
 .drag-redir-indicator-top-button {
-    /*-fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-
 }
 .drag-redir-indicator-right-button {
-    /*-fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-
 }
 .drag-redir-indicator-bottom-button {
-    /*-fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-
 }
 .drag-redir-indicator-left-button {
-    /*-fx-graphic: url(dock-popup-top-24x24.png);
-    -fx-padding: 0;*/
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-
 }
 
 /*******************************************************************************
@@ -544,58 +188,13 @@
  * DockNode                                                                    *
  *                                                                             *
  ******************************************************************************/
-/*.dock-node-border {
-    -fx-padding: 10;
-    -fx-background-color: transparent;
-    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );
-}
-*/
-/*.root.popup {
-    -fx-background-color: red;
-}
-*/
+
 
 .dock-node-border {
     -fx-background-color: lightgrey; 
     -fx-padding: 2,2,2,2;
     -fx-border-width: 2;
     -fx-border-color: lightgrey;;
-}
-/*.dock-node-border {
-    -fx-padding: 2;
-    -fx-background-color: lightgrey; 
-    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );
-}
-*/
-    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
-
-.my-test-css {
-    -fx-padding: 50 20 50 50;
-    -fx-background-color: transparent; 
-    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
-    /*  -fx-border-width: 0 0 0 1;
-      -fx-border-color: blue;
-    */
-
-}
-.my-test-popup-css {
-    -fx-padding: 50;
-    -fx-background-color: green; 
-    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
-
-}
-.test-css {
-    -fx-background-color: transparent; 
-}
-.my-test-pane-css {
-    -fx-padding: 50;
-    -fx-background-color: transparent; 
-    -fx-effect: dropshadow( three-pass-box, red, 30,1,0,0 );
-
-}
-
-.my-test-pane-mainroot-css {
-    -fx-background-color: transparent; 
 }
 .dock-node-border:maximized {
     -fx-padding: 0;
@@ -645,23 +244,17 @@
  *      ------  DockSideBar --------
  *******************************************/   
 .dock-side-bar {
-    /*-fx-padding: 0;*/
-    /*-fx-border-width: 0;*/
 }
 
 
 .dock-side-bar > .tool-bar {
-    /* -fx-spacing: 30; */
 }
 .dock-side-bar > .tool-bar:vertical {
-    /*-fx-spacing: 30;*/ 
 }
 .dock-side-bar > .tool-bar:horizontal {
-    /*-fx-spacing: 30; */
 }
 .dock-side-bar .button {
     -fx-background-insets: 0;
-    /*-fx-border-olor: red;*/
 }
 .dock-side-bar .button:hover  {
     -fx-text-fill: blue;
@@ -676,82 +269,12 @@
     -fx-background-color: lightgrey; 
     -fx-border-width: 1 2 1 2;
     -fx-border-color: lightgrey;;
-    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 10,0.2,0,0 );*/
-    /*-fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.4), 5,0.2,0,0 );*/
-
 }
 /* ***********************************************
  *   ------  DockTabPane2 --------
  * ***********************************************/   
-/*.dock-tab-pane2 .tab-area .dock-title-bar {
-    -fx-border-width: 0.5; 
 
-}
-.dock-tab-pane2 .tab-area .dock-title-bar .button {
-    -fx-border-width: 1; 
-    -fx-border-color: -fx-outer-border;
-    -fx-padding: 1 2 1 2;
-}
-
-.dock-tab-pane2 .tab-area .dock-title-bar .dock-title-label {
-    -fx-graphic: url(docknode-8x8.png);
-}
-.dock-tab-pane2 .tab-area .dock-title-bar:choosed .dock-title-label {
-    -fx-background-color: #0093ff;
-    -fx-text-fill: white;
-}
-
-.dock-tab-pane2 .tab-area .dock-title-bar:choosed .button {
-    -fx-border-width: 0; 
-}
-
-
-.dock-tab-pane2 .tab-area .drag-button {
-    -fx-graphic: url(drag-16x16-01.png);
-    -fx-min-width: 16;
-    -fx-max-width: 16;
-}
-
-.dock-tab-pane2 .tab-area .scroll-buttons-pane {
-}
-
-.dock-tab-pane2 .tab-area .hscroll-button {
-    -fx-background-color: transparent;  
-    -fx-min-width: 13;
-    -fx-max-width: 13;
-}
-
-.dock-tab-pane2 .tab-area .left-scroll {
-    -fx-graphic: url(left-arrow-7x7.png);
-
-}
-.dock-tab-pane2 .tab-area .right-scroll {
-    -fx-graphic: url(right-arrow-7x7.png);
-}
-
-.dock-tab-pane2 .tab-area .left-scroll:hover {
-    -fx-background-color: rgb(226,226,226);  
-}
-.dock-tab-pane2 .tab-area .right-scroll:hover {
-    -fx-background-color: rgb(226,226,226); 
-}
-
-.dock-tab-pane2 .tab-area .tab-menu-button {
-    -fx-graphic: url(title-menu-button-12x12.png);
-    -fx-background-color: transparent; 
-}
-.dock-tab-pane2 .tab-area .tab-menu-button:hover {
-    -fx-graphic: url(title-menu-button-12x12.png);
-    -fx-background-color: rgb(226,226,226);  
-}
-
-.dock-tab-pane2 .tab-area .separator:vertical .line {
-    -fx-background-color: transparent;
-    -fx-border-width:  0 1 0 0;
-}
-*/
 .scroll-pane > .viewport {
-    /*-fx-background-color: aqua;*/
 }
 
 .scroll-pane {
@@ -811,8 +334,9 @@
 
 .dock-title-pin-button {
     -fx-graphic: url(pin-black-8x8.png);
-    -fx-graphic: url(restore.png);
+/*    -fx-graphic: url(restore.png);
     -fx-graphic: url(close.png);
+*/
 }
 
 .dock-title-bar:choosed .dock-title-pin-button {
@@ -830,12 +354,8 @@
 .parent-chain-button {
     -fx-graphic: url(docknode-16x16.png);   
     -fx-padding: 4,4,4,2;
-    /*    -fx-border-width: 0;
-        -fx-spacing: 0;
-        -fx-background-insets: 0;
-    */    
-
 }
+
 .parent-chain-root {
     -fx-background-color: white;
 }
