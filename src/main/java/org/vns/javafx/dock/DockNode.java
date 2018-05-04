@@ -3,9 +3,15 @@ package org.vns.javafx.dock;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import org.vns.javafx.dock.api.DecorUtil;
 import org.vns.javafx.dock.api.DockNodeSkin;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.DockableContext;
@@ -41,6 +47,9 @@ public class DockNode extends Control { //implements Dockable {
         context.setDragNode(null);
         
         getStyleClass().add("dock-node");
+        setPadding(new Insets(2,2,2,2));
+        DecorUtil.setBackGround(this); // modena -fx-background
+        
         context.createDefaultTitleBar(title);
         
         if (id != null) {

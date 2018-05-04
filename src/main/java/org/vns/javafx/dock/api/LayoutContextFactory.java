@@ -144,18 +144,7 @@ public class LayoutContextFactory {
             }
 
             Dockable d = Dockable.of(o);
-            //
-            // Test is we drag dockable or the value of a dragContainer 
-            //
-/*03.04            if (contains(d.node()) && d == dockable) {
-                return;
-            } else if (contains(d.node())) {
-                LayoutContext tc = d.getContext().getLayoutContext();
-                if (tc != null && isDocked(tc, d)) {
-                    tc.undock(d.node());
-                }
-            }
-             */
+ 
             dockable.getContext().getLayoutContext().undock(dockable);
 
             Node node = d.node();
@@ -226,21 +215,13 @@ public class LayoutContextFactory {
             BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                //!!!08
                 if (DockRegistry.isDockable(node)) {
                     list.add(Dockable.of(node));
                 }
             });
             return list;
         }
-
-        /*        @Override
-        public boolean restore(Dockable dockable) {
-            return false;
-
-        }
-         */
-    }
+  }
 
     public static class StackPositionIndicator extends PositionIndicator {
 
@@ -283,7 +264,12 @@ public class LayoutContextFactory {
             centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
             //centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-            BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode);
+            BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode) {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
             indicator.getStyleClass().add("stack-pane-indicator");
             topNode.setAlignment(Pos.CENTER);
             rightNode.setAlignment(Pos.CENTER);
@@ -488,7 +474,12 @@ public class LayoutContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            Pane indicator = new Pane();
+            Pane indicator = new Pane() {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
             return indicator;
         }
 
@@ -744,7 +735,13 @@ public class LayoutContextFactory {
 
         @Override
         protected Pane createIndicatorPane() {
-            Pane indicator = new Pane();
+            Pane indicator = new Pane() {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
+            
             indicator.getStyleClass().add("list-based-indicator");
             //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
@@ -848,7 +845,7 @@ public class LayoutContextFactory {
                     for (int i = change.getFrom(); i < change.getTo(); i++) {
                         //if (DockRegistry.isDockable(change.getList().get(i))) {
                         System.err.println("LayoutContextFactory wasAdded = " + change.getList().get(i));
-                            context.commitDock(change.getList().get(i));
+                        context.commitDock(change.getList().get(i));
                         //}
                     }
                 }

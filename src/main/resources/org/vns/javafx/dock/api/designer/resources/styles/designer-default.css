@@ -33,8 +33,26 @@
 }
 
 .trash-tray .image-view {
+   -fx-image: url("../images/trash-empty.png");
+}    
+.trash-tray:full .image-view {
+   -fx-image: url("../images/trash-full.png");
+}    
+
+.trash-clear-menu-item:disabled >.label {
+    -fx-text-fill: black;
+    -fx-opacity: 1;
+}
+.trash-clear-menu-item:disabled {
+    -fx-opacity: 0.5;
 }
 
+/*
+  root node of the popup window of TrashTray
+*/
+.float-popup-root {
+    -fx-background-color: -fx-background;
+}
 .palette-pane .titled-pane .tile-pane {
     -fx-border-width: 3;
     -fx-border-color: lightgray;

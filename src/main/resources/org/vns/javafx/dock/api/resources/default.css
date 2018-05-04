@@ -1,5 +1,4 @@
 
-
 /*******************************************************************************
  *                                                                             *
  * DockPane                                                                    *
@@ -31,14 +30,14 @@
 }
 
 
-.dock-node:floating .dock-title-state-button {
+/*.dock-node:floating .dock-title-state-button {
     -fx-graphic: url(restore.png);
 }
 
 .dock-node:maximized .dock-title-state-button {
     -fx-graphic: url(restore.png);
 }
-
+*/
 /*********************************************
  *
  *  Drag Indicator's Styles
@@ -190,20 +189,29 @@
  ******************************************************************************/
 
 
-.dock-node-border {
+/*.dock-node-border {
     -fx-background-color: lightgrey; 
-    -fx-padding: 2,2,2,2;
     -fx-border-width: 2;
     -fx-border-color: lightgrey;;
 }
+
 .dock-node-border:maximized {
     -fx-padding: 0;
 }
-.float-popup-root {
-    -fx-background-color: -fx-background;
+*/
+ /***************************************************************************
+  *                                                                         *
+  * The styles of the floating window during the drag-and-drop process.     *
+  *                                                                         *
+  **************************************************************************/
+.float-window-root {
+/*    -fx-background-color: -fx-background;
+    -fx-border-width: 2;
+    -fx-border-color: lightgrey;
+*/
 }
 .dock-node {
-    -fx-background-color: -fx-background;
+    /*-fx-background-color: -fx-background;*/
 }
 
 .dock-title-bar {
@@ -266,15 +274,13 @@
    -fx-graphic: url(drag-hand-2-16x16.png); 
 }
 .dock-sidebar-popup-root {
-    -fx-background-color: lightgrey; 
+/*    -fx-background-color: lightgrey; */
     -fx-border-width: 1 2 1 2;
     -fx-border-color: lightgrey;;
-}
-/* ***********************************************
- *   ------  DockTabPane2 --------
- * ***********************************************/   
 
-.scroll-pane > .viewport {
+}
+
+/*.scroll-pane > .viewport {
 }
 
 .scroll-pane {
@@ -288,7 +294,7 @@
 .scroll-pane .corner {
     -fx-background-insets: 0;
 }
-
+*/
 /* ***********************************************
  *      ------  DockTitleBar  --------
  * ***********************************************/   
@@ -322,7 +328,6 @@
 .dock-title-close-button {
     -fx-graphic: url(close.png);
 }
-
 .dock-title-menu-button {
     -fx-background-color: transparent;  
     -fx-graphic: url(title-menu-button-12x12.png);
@@ -334,9 +339,6 @@
 
 .dock-title-pin-button {
     -fx-graphic: url(pin-black-8x8.png);
-/*    -fx-graphic: url(restore.png);
-    -fx-graphic: url(close.png);
-*/
 }
 
 .dock-title-bar:choosed .dock-title-pin-button {
@@ -348,15 +350,3 @@
 .dock-title-bar:choosed .dock-title-pin-button:hover {
     -fx-background-color: #1187ff;
 } 
-/* ***********************************************
- *      ------  ParentChainPopup  --------
- * ***********************************************/   
-.parent-chain-button {
-    -fx-graphic: url(docknode-16x16.png);   
-    -fx-padding: 4,4,4,2;
-}
-
-.parent-chain-root {
-    -fx-background-color: white;
-}
-

@@ -38,6 +38,7 @@ import javafx.stage.Window;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DecorUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -154,7 +155,7 @@ public class FloatStageView implements FloatWindowView {
     @Override
     public Window make(Dockable dockable, boolean show) {
 //        System.err.println("1 FloatStageView dockable.node=" + dockable.node());
-        
+
         DragContainer dc = dockable.getContext().getDragContainer();
         Object v;
         if (dc != null) {
@@ -215,9 +216,9 @@ public class FloatStageView implements FloatWindowView {
             getLayoutContext(dockable).undock(dockable);
 
             LayoutContext tc = dockable.getContext().getLayoutContext();
-          //  if (tc instanceof ScenePaneContext) {
-          //      ((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
-          //  }
+            //  if (tc instanceof ScenePaneContext) {
+            //      ((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
+            //  }
 
         }
 
@@ -249,7 +250,12 @@ public class FloatStageView implements FloatWindowView {
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
-        windowRoot = new StackPane();
+        windowRoot = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
 
@@ -263,7 +269,8 @@ public class FloatStageView implements FloatWindowView {
             }
         };
 
-        windowRoot.getStyleClass().add("dock-node-border");
+        windowRoot.getStyleClass().add("float-window-root");
+        DecorUtil.setFloatWindowRootDecor(windowRoot);
         windowRoot.getChildren().add(node);
 
         Scene scene = new Scene(windowRoot);
@@ -329,7 +336,7 @@ public class FloatStageView implements FloatWindowView {
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
-/*        Dockable d = Dockable.of(dragged);
+        /*        Dockable d = Dockable.of(dragged);
         if (d != null && d.getContext().isDocked()) {
             //04.04getLayoutContext(d).undock(d.node());
             getLayoutContext(d).undock(d);
@@ -341,13 +348,12 @@ public class FloatStageView implements FloatWindowView {
             
             getLayoutContext(d).undock(d);
         }
-*/
+         */
 //        System.err.println("FloatStageView make layoutContext = " + dockable.getContext().getLayoutContext());
 //        System.err.println("   --- dockable.node() = " + dockable.node());
 //       System.err.println("FloatStageView make layoutContext = " + dockable.getContext().getLayoutContext());
-        
         dockable.getContext().getLayoutContext().undock(dockable);
-        
+
         Stage window = new Stage();
 
         if (owner != null) {
@@ -367,7 +373,12 @@ public class FloatStageView implements FloatWindowView {
 
         window.initStyle(stageStyle);
 
-        windowRoot = new StackPane();
+        windowRoot = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
 
@@ -406,7 +417,7 @@ public class FloatStageView implements FloatWindowView {
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
 //        System.err.println("3 !!!! FloatStageView dockable.node=" + dockable.node() + "dockable.dragged = " + dragged.node());
-        
+
         setSupportedCursors(DEFAULT_CURSORS);
         Window owner = null;
         if (dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null) {
@@ -449,7 +460,7 @@ public class FloatStageView implements FloatWindowView {
 
             LayoutContext tc = dockable.getContext().getLayoutContext();
             //if (tc instanceof ScenePaneContext) {
-                //((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
+            //((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
             //}
 
         }
@@ -480,7 +491,12 @@ public class FloatStageView implements FloatWindowView {
         // offset the new floatingWindow to cover exactly the area the dock was local to the scene
         // this is useful for when the user presses the + sign and we have no information
         // on where the mouse was clicked
-        windowRoot = new StackPane();
+         windowRoot = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
 
@@ -494,8 +510,8 @@ public class FloatStageView implements FloatWindowView {
             }
         };
 
-        windowRoot.getStyleClass().add("dock-node-border");
-
+        windowRoot.getStyleClass().add("float-window-root");
+        DecorUtil.setFloatWindowRootDecor(windowRoot);
         //rootPane.setCenter(draggedNode);
         windowRoot.getChildren().add(draggedNode);
 
@@ -540,7 +556,6 @@ public class FloatStageView implements FloatWindowView {
         dragged.node().parentProperty().addListener(pcl);
         return window;
     }
-
 
     protected LayoutContext getLayoutContext(Dockable d) {
         return d.getContext().getLayoutContext();

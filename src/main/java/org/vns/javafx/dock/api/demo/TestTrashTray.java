@@ -75,45 +75,10 @@ public class TestTrashTray extends Application {
         stage.setTitle("Scrolling Text");
         stage.show();
         
-/*        PopupControl pc = new PopupControl();
-        StackPane pcRoot = new StackPane();
-        TrashTray tray = new TrashTray();
-        //Button b = new Button("A");
-        pcRoot.getChildren().add(tray);
-        pcRoot.setPrefSize(100,100);
-        //pcRoot.setStyle("-fx-background-color: green");
-        pcRoot.setStyle("-fx-background-color: transparent;-fx-border-width: 3; -fx-border-color: black; -fx-border-style: dashed");                
-        pc.getScene().setRoot(pcRoot);
-        //pc.getScene().setFill(Color.RED);
-  */
+
         TrashTray.showStage(stage);
         
-/*        pc.show(stage,50,50);
-        pc.setWidth(100);
-        pc.setHeight(100);
-*/        
-        /* Set up a Timeline animation */
-// Get the scene width and the text width
-/*        double sceneWidth = scene.getWidth();
-        double msgWidth = msg.getLayoutBounds().getWidth();
-// Create the initial and final key frames
-        KeyValue initKeyValue
-                = new KeyValue(msg.translateXProperty(), sceneWidth);
-        KeyFrame initFrame = new KeyFrame(Duration.ZERO, initKeyValue);
-        KeyValue endKeyValue
-                = new KeyValue(msg.translateXProperty(), -1.0 * msgWidth);
-        //= new KeyValue(msg.translateXProperty(), 0);
-        KeyFrame endFrame = new KeyFrame(Duration.seconds(3), endKeyValue);
-// Create a Timeline object
-        Timeline timeline = new Timeline(initFrame, endFrame);
-        timeline.setRate(0.5);
-// Let the animation run forever
-        timeline.setCycleCount(Timeline.INDEFINITE);
-// Start the animation
-        timeline.play();
-         */
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-
         Dockable.initDefaultStylesheet(null);
 
     }

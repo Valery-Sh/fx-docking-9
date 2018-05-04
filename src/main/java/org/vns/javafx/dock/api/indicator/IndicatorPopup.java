@@ -5,13 +5,16 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.PopupControl;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
@@ -79,6 +82,9 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     private Node draggedNode;
 
+   // public IndicatorPopup() {
+   // }
+
     @Override
     public Node getDraggedNode() {
         return draggedNode;
@@ -105,10 +111,10 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         initContent();
     }
 
-    public static IndicatorPopup getInstance(LayoutContext context) {
+/*    public static IndicatorPopup getInstance(LayoutContext context) {
         return context.getLookup().lookup(IndicatorPopup.class);
     }
-
+*/
     @Override
     public void show(Window ownerWindow) {
         if (!(ownerWindow instanceof IndicatorPopup)) {
@@ -130,7 +136,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         if (!(ownerWindow instanceof IndicatorPopup)) {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
-        
+
         super.show(ownerWindow, anchorX, anchorY);
 
         if (((IndicatorPopup) ownerWindow).getChildWindows().contains(this)) {
@@ -178,9 +184,30 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
     public Node getTargetNode() {
         return targetContext.getLayoutNode();
     }
-
+/*    private EventHandler<WindowEvent> windowShownHandler = e -> {
+         getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
+    }; 
+*/    
     protected void initContent() {
+        //System.err.println("INDICATORPOPUP INIT CONTENT");   
+        //getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
+        //removeEventFilter(WindowEvent.WINDOW_SHOWN, windowShownHandler);
+        //addEventFilter(WindowEvent.WINDOW_SHOWN, windowShownHandler);
+/*        addEventFilter(WindowEvent.WINDOW_HIDDEN, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        addEventFilter(WindowEvent.WINDOW_HIDDEN, f -> {
+            //getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
+            //getScene().getRoot().applyCss();
+            System.err.println("IndicatorPopup initContent HIDDEN addEventFilter");            
+        });
+*/        
         setOnShown(e -> {
+            //System.err.println("IndicatorPopup initContent setOnShown");            
+         
             if (targetContext.getPositionIndicator() == null || targetContext.getPositionIndicator().getIndicatorPane() == null) {
                 return;
             }
@@ -210,6 +237,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
                 getContent().add(indicatorPane);
             }
         });
+        
     }
 
     public ObservableList<IndicatorPopup> getAllChildIndicatorPopup() {
@@ -257,10 +285,10 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         }
         setAutoFix(false);
         Point2D pos = getTargetNode().localToScreen(0, 0);
-        getPositionIndicator().showIndicatorPopup(getDraggedNode(),pos.getX(), pos.getY());
+        getPositionIndicator().showIndicatorPopup(getDraggedNode(), pos.getX(), pos.getY());
     }
 
-/*    @Override
+    /*    @Override
     public void showIndicatorPopup(Node dragged) {
         if (getPositionIndicator() == null) {
             return;
@@ -269,8 +297,8 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         Point2D pos = getTargetNode().localToScreen(0, 0);
         getPositionIndicator().showIndicatorPopup(dragged,pos.getX(), pos.getY());
     }
-  */  
-/*    @Override
+     */
+ /*    @Override
     public void showSideIndicator(Node targetNode) {
         if (getPositionIndicator() == null) {
             return;
@@ -279,7 +307,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         Point2D pos = getTargetNode().localToScreen(0, 0);
         getPositionIndicator().showSideIndicator(pos.getX(), pos.getY(), targetNode);
     }
-*/
+     */
     /**
      * Hides the pop up window when some condition are satisfied. If this pop up
      * is hidden returns true. If the mouse cursor is still inside the pane
@@ -331,10 +359,10 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     /**
      * Returns a shape of type {@code  Rectangle} to be displayed to
- showSideIndicator a proposed dock place
+     * showSideIndicator a proposed dock place
      *
      * @return a shape of type {@code  Rectangle} to be displayed to
- showSideIndicator a proposed dock place
+     * showSideIndicator a proposed dock place
      */
     public Node getDockPlace() {
         return targetContext.getPositionIndicator().getDockPlace();

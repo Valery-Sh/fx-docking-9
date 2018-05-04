@@ -103,7 +103,7 @@ public class TestDockBorderPane extends Application {
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
-        Dockable.initDefaultStylesheet(null);
+        //Dockable.initDefaultStylesheet(null);
 
     }
 

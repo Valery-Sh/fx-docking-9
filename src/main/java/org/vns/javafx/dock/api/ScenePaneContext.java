@@ -24,8 +24,6 @@ public class ScenePaneContext extends LayoutContext {
 
     private void init() {
         dockable.node().parentProperty().addListener(this::parentChanged);
-        System.err.println("==========================================");
-        System.err.println("&&&& ScenePaneContext");
     }
 
     @Override

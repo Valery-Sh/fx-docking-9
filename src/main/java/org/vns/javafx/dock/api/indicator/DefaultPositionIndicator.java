@@ -15,17 +15,13 @@
  */
 package org.vns.javafx.dock.api.indicator;
 
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.LayoutContext;
-import org.vns.javafx.dock.api.LayoutContextFactory;
 
 /**
  *
@@ -47,9 +43,15 @@ public class DefaultPositionIndicator extends PositionIndicator {
 
     @Override
     protected Pane createIndicatorPane() {
-        Pane indicator = new Pane();
+        Pane indicator = new Pane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
+
         indicator.getStyleClass().add("default-position-indicator");
-        indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
+        //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
         return indicator;
     }
 

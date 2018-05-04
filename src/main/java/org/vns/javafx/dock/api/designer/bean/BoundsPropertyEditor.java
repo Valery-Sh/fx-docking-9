@@ -22,9 +22,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**

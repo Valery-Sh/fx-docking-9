@@ -16,8 +16,11 @@
  */
 package org.vns.javafx.dock.api.demo.designer;
 
+import com.sun.javafx.stage.StageHelper;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -49,11 +52,14 @@ public class DemoDesigner1 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        StageHelper.getStages().addListener((Observable c) -> {
+            System.err.println("stages.size() = " + StageHelper.getStages().size());
+        });
         
-     Node n;
-     
-     Button b;
-     
+        Node n;
+
+        Button b;
+
         stage.setAlwaysOnTop(true);
         DockPane rootDockPane = new DockPane();
         rootDockPane.setUsedAsDockLayout(false);
@@ -88,14 +94,14 @@ public class DemoDesigner1 extends Application {
         formButton.setOnAction(a -> {
             SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
             sgv.save();
-/*            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
+            /*            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
             System.err.println("SELECTED = " + it);
             if (it != null) {
                 System.err.println("SELECTED value = " + it.getValue());
                 DockRegistry.lookup(Selection.class).removeSelected(it.getValue());
                 DockRegistry.lookup(Selection.class).setSelected(it.getValue());
             }
-*/
+             */
 //            ((Region)sceneGraphView.getRoot()).requestLayout();
 //            DockRegistry.getWindows().forEach(w -> {
 /*                System.err.println("******************** w = " + w.getScene().getRoot().getId());
@@ -140,7 +146,7 @@ public class DemoDesigner1 extends Application {
 
         PalettePane palettePane = DesignerLookup.lookup(PalettePane.class);
         DockSideBar paletteDockSideBar = new DockSideBar();
-    
+
         paletteDockSideBar.setOrientation(Orientation.VERTICAL);
         paletteDockSideBar.setRotation(DockSideBar.Rotation.UP_DOWN);
         paletteDockSideBar.setSide(Side.LEFT);
@@ -156,24 +162,23 @@ public class DemoDesigner1 extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
-
-        stage.setHeight(400);    
+        stage.setHeight(400);
         stage.setWidth(500);
 
         stage.show();
         stage1.show();
-        
+
         TrashTray tray = DockRegistry.lookup(TrashTray.class);
-        if ( tray != null ) {
+        if (tray != null) {
             Stage trashStage = tray.show(stage);
             trashStage.toFront();
         }
-        
-        
+
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-
-        Dockable.initDefaultStylesheet(null);
-
+        System.err.println("getUserAgent = " + Application.getUserAgentStylesheet());
+        
+        //Dockable.initDefaultStylesheet(null);
     }
 
     /**

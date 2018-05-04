@@ -257,7 +257,12 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
          */
         @Override
         protected Pane createIndicatorPane() {
-            Pane p = new Pane();
+            Pane p = new Pane() {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
             p.getStyleClass().add("drag-pane-indicator");
             return p;
         }

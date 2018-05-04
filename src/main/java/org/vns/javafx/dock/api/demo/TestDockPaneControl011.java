@@ -284,7 +284,7 @@ public class TestDockPaneControl011 extends Application {
          */
         getDockTabPane2Stage().show();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-        Dockable.initDefaultStylesheet(null);
+        //Dockable.initDefaultStylesheet(null);
 
     }
 

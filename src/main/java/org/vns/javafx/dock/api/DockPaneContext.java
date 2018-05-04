@@ -37,7 +37,6 @@ public class DockPaneContext extends LayoutContext {
     @Override
     protected void initLookup(ContextLookup lookup) {
         lookup.putUnique(PositionIndicator.class, new PaneSideIndicator(this));
-
         lookup.putUnique(IndicatorManager.class, new DockPaneIndicatorPopup(this));
     }
 

@@ -35,6 +35,7 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 public class FloatStageView2 extends FloatStageView {
+
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
     public FloatStageView2(Dockable dockable) {
@@ -57,12 +58,17 @@ public class FloatStageView2 extends FloatStageView {
 
         final Stage window = new Stage();
         window.initStyle(stageStyle);
-        
+
         //floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
         setFloatingWindow(window);
         //setFloatingWindow(window);
 
-        windowRoot = new StackPane();
+        windowRoot = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
         Scene scene = new Scene(windowRoot);
         window.setScene(scene);
         //windowRoot = new StackPane();
@@ -71,7 +77,6 @@ public class FloatStageView2 extends FloatStageView {
         //
         //windowRoot.getStyleClass().add(FLOATVIEW);
         //windowRoot.getStyleClass().add(FLOAT_WINDOW);
-        
 
         setWindowRoot(windowRoot);
 
@@ -86,11 +91,8 @@ public class FloatStageView2 extends FloatStageView {
             }
         };
 
-        //windowRoot.getStyleClass().add("dock-node-border");
-        //windowRoot.getStyleClass().add("float-popup-root");
-        
         windowRoot.getStyleClass().add("dock-sidebar-popup-root");
-        
+
         windowRoot.getChildren().add(node);
 
         window.getScene().setRoot(windowRoot);
@@ -115,13 +117,13 @@ public class FloatStageView2 extends FloatStageView {
 
         windowRoot.setPrefWidth(prefWidth);
         windowRoot.setPrefHeight(prefHeight);
-*/        
+         */
         window.setOnShown(e -> {
-           DockRegistry.register(window);
+            DockRegistry.register(window);
         });
         //floatPopup.setId("floatPopup2 " + window.hashCode());
         window.setOnHidden(e -> {
-           DockRegistry.unregister(window);
+            DockRegistry.unregister(window);
         });
 
         dockable.node().parentProperty().addListener(pcl);
@@ -129,7 +131,7 @@ public class FloatStageView2 extends FloatStageView {
             window.getScene().setFill(null);
         }
         addResizer();
-        
+
         return window;
     }//make FloatingPopupControl
 /*    @Override
@@ -138,5 +140,5 @@ public class FloatStageView2 extends FloatStageView {
         addListeners(getFloatingWindow());
         setResizer(new PopupControlResizer(this));
     }
-*/
+     */
 }

@@ -15,12 +15,14 @@
  */
 package org.vns.javafx.dock.api.designer;
 
+import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -39,18 +41,7 @@ public class TrashTraySkin extends SkinBase<TrashTray> {
 
     public TrashTraySkin(TrashTray control) {
         super(control);
-//        Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
 
-        /*        TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
-
-        d.getContext().getLookup().putUnique(MouseDragHandler.class, dragHandler);
-        d.getContext().setLayoutContext(getSkinnable().getLayoutContext());
-        
-        treeViewPane = new StackPane();
-        if (!getChildren().isEmpty()) {
-            getChildren().clear();
-        }
-         */
         ImageView iv = new ImageView(getSkinnable().getImage());
         iv.getStyleClass().add("image-view");
         MenuItem openItem = new MenuItem("Open");
@@ -58,10 +49,24 @@ public class TrashTraySkin extends SkinBase<TrashTray> {
             showTableView();
         });
         MenuItem clearItem = new MenuItem("Clear");
+        clearItem.getStyleClass().add("trash-clear-menu-item");
+        clearItem.setOnAction(e -> {
+            clearTableView();
+        });        
         ContextMenu ctxMenu = new ContextMenu(openItem, clearItem);
+        
+        ctxMenu.setOnShowing( e -> {
+            ctxMenu.getScene().getStylesheets().add(DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm());
+        });
+        
         getSkinnable().setContextMenu(ctxMenu);
         ctxMenu.setAutoHide(true);
-
+        if ( getSkinnable().getTableView().getItems().isEmpty() ) {
+            clearItem.setDisable(true);
+        }
+        getSkinnable().getTableView().getItems().addListener( (Observable c) -> {
+            clearItem.setDisable(getSkinnable().getTableView().getItems().isEmpty());
+        });
         contentPane = new StackPane(iv) {
             @Override
             protected void layoutChildren() {
@@ -98,7 +103,15 @@ public class TrashTraySkin extends SkinBase<TrashTray> {
         stage.show();
 
     }
- 
+
+    protected void clearTableView() {
+        if (getSkinnable().getTableView() == null) {
+            return;
+        }
+        TableView tv = getSkinnable().getTableView();
+        tv.getItems().clear();
+
+    }    
 
 
 }

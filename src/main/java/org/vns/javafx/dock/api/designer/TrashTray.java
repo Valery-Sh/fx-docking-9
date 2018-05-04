@@ -15,9 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -32,6 +30,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -51,6 +50,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.dock.api.DecorUtil;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -68,12 +68,22 @@ import static org.vns.javafx.dock.api.dragging.view.FloatView.FLOAT_WINDOW;
  */
 @DefaultProperty("items")
 public class TrashTray extends Control {
+ private static final PseudoClass FULL_PSEUDO_CLASS = PseudoClass.getPseudoClass("full");
 
+    /*    public PrimitivesTextField() {
+        System.err.println("PrimitveTextField Constructor");
+        editableProperty().addListener((v, oldValue, newValue) -> {
+            System.err.println("editableProperty changed: " + newValue);
+            pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, ! newValue);
+        });
+    }
+     */
     private final ObservableList<TrayItem> items = FXCollections.observableArrayList();
     private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
     private final ObjectProperty<Bounds> windowBounds = new SimpleObjectProperty<>();
     private final ReadOnlyObjectWrapper<TableView<TrayItem>> tableViewWrapper = new ReadOnlyObjectWrapper<>();
     private final ObservableList<TableRow> visibleRows = FXCollections.observableArrayList();
+
 
     private ListChangeListener<TrayItem> itemsChangeListener = (change) -> {
         while (change.next()) {
@@ -97,7 +107,10 @@ public class TrashTray extends Control {
                     DockLayout.of(this).getLayoutContext().commitDock(item.getElement());
                 });
             }
-        }//while        
+        }//while      
+        
+        pseudoClassStateChanged(FULL_PSEUDO_CLASS, ! getItems().isEmpty());
+        
     };
 
     public TrashTray() {
@@ -105,7 +118,7 @@ public class TrashTray extends Control {
     }
 
     private void init() {
-        setImage(new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/images/trash-empty.png")));
+        //setImage(new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/images/trash-empty.png")));
         getStyleClass().add("trash-tray");
         DockRegistry.makeDockLayout(this, new TrashTrayLayoutContext(this));
 
@@ -253,18 +266,10 @@ public class TrashTray extends Control {
     public TrayItem getTrayItem(double x, double y) {
         TrayItem retval = null;
 
-//        System.err.println("getVisibleRows.size = " + getVisibleRows().size());
         for (TableRow<TrayItem> row : getVisibleRows()) {
-//            System.err.println("   --- row = " + row.getBoundsInLocal());
             Point2D p = row.screenToLocal(x, y);
-//            System.err.println("   --- p = " + p);
-//            System.err.println("   --- contains = " + row.getBoundsInLocal().contains(p));
-
             if (row.getBoundsInLocal().contains(p)) {
-                //if (DockUtil.contains(r, x, y)) {
-//                System.err.println("   --- row = " + row);
                 retval = row.getItem();
-//                System.err.println("   --- retval = " + retval);
                 break;
             }
         }
@@ -299,8 +304,6 @@ public class TrashTray extends Control {
     }
 
     public void hide() {
-        //DockRegistry.unregisterDockable(this);
-        //DockRegistry.unregisterDockLayout(this);
         getItems().clear();
         if (getScene() != null && getScene().getWindow() != null) {
             if (getScene().getWindow() instanceof Stage) {
@@ -342,7 +345,7 @@ public class TrashTray extends Control {
         private void init() {
             setClassName(getElement().getClass().getSimpleName());
             ImageView iv = new ImageView();
-            Image im = new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/resources/question-16x16.png"));
+            Image im = new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/images/question-16x16.png"));
             iv.setImage(im);
 
             iv.getStyleClass().add("tree-item-node-" + getClassName().toLowerCase());
@@ -498,8 +501,9 @@ public class TrashTray extends Control {
 
             windowRoot.getStyleClass().add(FLOAT_WINDOW);
             windowRoot.getStyleClass().add(FLOATVIEW);
-            windowRoot.getStyleClass().add("float-popup-root");
-
+            windowRoot.getStyleClass().add("float-window-root");
+            DecorUtil.setFloatWindowRootDecor(windowRoot);
+            
             window.getScene().setRoot(windowRoot);
             window.getScene().setCursor(Cursor.HAND);
             markFloating(window);

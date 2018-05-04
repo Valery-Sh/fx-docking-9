@@ -34,6 +34,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
@@ -152,8 +153,12 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
     private void init(Region region) {
 
-        root = new StackPane();
-
+        root = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
         //Border b = new NodeResizerBorder().getBorder();
         //root.setBorder(b);
 //        System.err.println("WindowNodeFraming: styles.size() = " + root.getStyleClass().size());

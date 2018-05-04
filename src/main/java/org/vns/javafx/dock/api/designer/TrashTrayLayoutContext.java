@@ -41,7 +41,7 @@ public class TrashTrayLayoutContext extends LayoutContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        System.err.println("DOCK dockable = " + dockable);
+     
         Dockable d = dockable;
         DragContainer dc = dockable.getContext().getDragContainer();
         Object obj = null;
@@ -65,7 +65,6 @@ public class TrashTrayLayoutContext extends LayoutContext {
 
     @Override
     public void remove(Object obj) {
-        System.err.println("TrashTraylauoutContext remove obj=" + obj);
         ((TrashTray) getLayoutNode()).remove(obj);
     }
 

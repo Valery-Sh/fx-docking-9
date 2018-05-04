@@ -15,6 +15,7 @@ import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
+//import org.vns.javafx.dock.api.indicator.SideIndicator.NodeSideIndicator;
 
 /**
  * An instance of the class is created for each object of type
@@ -121,12 +122,18 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
 
     @Override
     protected void initContent() {
+        System.err.println("DockPaneIndicatorPopup initContent");
         Pane paneIndicatorPane = getTargetContext().getPositionIndicator().getIndicatorPane();
         paneIndicatorPane.setMouseTransparent(true);
         //Pane nodeIndicatorPane = getLayoutContext().getNodeIndicator().getIndicatorPane();
         Pane nodeIndicatorPane = getNodeIndicator().getIndicatorPane();        
         nodeIndicatorPane.setMouseTransparent(true);
-
+/*        setOnShown(s -> {
+            getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
+//            System.err.println("DACKPANE DOCKPANE INDICATOR POPUP STYLESHEET");
+            
+        });
+*/        
         nodeIndicatorPopup = new IndicatorPopup(getTargetContext());
         nodeIndicatorPopup.getProperties().put("POPUP", "nodeIndicatorPopup");
         if (getTargetNode() instanceof Region) {
@@ -172,10 +179,10 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
      *
      * @return Returns an object of type {@code SideIndicator}
      */
-/*    public SideIndicator getNodeIndicator() {
-        return (SideIndicator) getLayoutContext().getNodeIndicator();
-    }
-*/    
+//    public SideIndicator getNodeIndicator() {
+//        return (SideIndicator) getLayoutContext().getNodeIndicator();
+//    }
+    
     //@Override
     public SideIndicator.NodeSideIndicator getNodeIndicator() {
         
@@ -184,6 +191,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
         }
         return nodeIndicator;
     }
+
     /**
      * Returns a pop up window which is used to display a doc node side
      * indicators.
@@ -192,6 +200,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
      * indicators.
      */
     public IndicatorPopup getNodeIndicatorPopup() {
+        //System.err.println("getNodeIndicatorPopup");
         return nodeIndicatorPopup;
     }
 
@@ -386,6 +395,7 @@ public class DockPaneIndicatorPopup extends IndicatorPopup {
 
         Button btn;
         if (nodeIndicatorPopup.isShowing()) {
+            //System.err.println("nodeIndicatorPopup.isShowing()");
             if ((btn = getSelectedButton(getNodeIndicator().getTopButtons(), screenX, screenY)) != null) {
                 showDockPlace(btn, targetNode, Side.TOP);
             } else if ((btn = getSelectedButton(getNodeIndicator().getLeftButtons(), screenX, screenY)) != null) {

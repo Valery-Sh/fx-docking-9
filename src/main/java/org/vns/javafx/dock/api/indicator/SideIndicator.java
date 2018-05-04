@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api.indicator;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -12,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
+import javafx.stage.WindowEvent;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -276,19 +278,19 @@ public abstract class SideIndicator extends PositionIndicator {
             }
             Point2D newPos;
             //resizeButtonPanes();
-            getIndicatorPopup().setOnShown(e -> resizeButtonPanes());
-            //getIndicatorPopup().setOnHidden(e -> notifyPopupHidden());
+            IndicatorPopup ip = getIndicatorPopup();
+
+         
+            getIndicatorPopup().setOnShown(e -> {
+                resizeButtonPanes();
+            });
 
             if (dockNode != null) {
                 newPos = getIndicatorPosition();
-                //Popup popup = (Popup)getLayoutContext().getLookup().lookup(IndicatorManager.class);
-                //((Popup) getIndicatorPopup()).show( popup, newPos.getX(), newPos.getY());                
-//                ((Popup) getIndicatorPopup()).show(getLayoutContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
                 ((Popup) getIndicatorPopup()).show((Popup) getLayoutContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
             } else {
                 newPos = getIndicatorPosition();
                 if (newPos != null) {
-                    //((Popup) getIndicatorPopup()).show(getLayoutContext().getIndicatorPopup(), newPos.getX(), newPos.getY());
                     ((Popup) getIndicatorPopup()).show((Popup) getLayoutContext().getLookup().lookup(IndicatorManager.class), newPos.getX(), newPos.getY());
                 } else {
                     getIndicatorPopup().hide();
@@ -296,22 +298,15 @@ public abstract class SideIndicator extends PositionIndicator {
             }
         }
 
-/*        public void notifyPopupShown() {
-            if (getLayoutContext() != null && getTargetNode() != null) {
-                resizeButtonPanes();
-            }
-        }
-
-        public void notifyPopupHidden() {
-            if (getLayoutContext() == null || getTargetNode() == null) {
-                //resizeButtonPanes();
-            }
-        }
-*/
         @Override
         protected Pane createIndicatorPane() {
-            GridPane indicatorPane = new GridPane();
-            
+            GridPane indicatorPane = new GridPane() {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
+
             indicatorPane.getStyleClass().add("dock-pos-node-indicator");
             indicatorPane.getStyleClass().add(getStylePrefix());
             indicatorPane.setMouseTransparent(true);
@@ -375,6 +370,7 @@ public abstract class SideIndicator extends PositionIndicator {
 
         protected void resizeButtonPanes() {
             //if (getLayoutContext() != null && getTargetNode() != null && intersects()) {
+
             if (!getIndicatorPane().getTransforms().contains(getSmallbuttonsScale())) {
                 getIndicatorPane().getTransforms().add(getSmallbuttonsScale());
 
@@ -439,15 +435,14 @@ public abstract class SideIndicator extends PositionIndicator {
             return (IndicatorPopup) getLayoutContext().getLookup().lookup(IndicatorManager.class);
         }
 
-        /*        @Override
-        public void showIndicatorPopup(double screenX, double screenY) {
-            super.showIndicatorPopup(screenX, screenY);
-            getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
-        }
-         */
         @Override
         protected Pane createIndicatorPane() {
-            BorderPane indicatorPane = new BorderPane();
+            BorderPane indicatorPane = new BorderPane() {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
             indicatorPane.getStyleClass().add(getStylePrefix());
             indicatorPane.setMouseTransparent(true);
             Pane buttons = createSideButtons(Side.TOP);

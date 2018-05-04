@@ -45,7 +45,7 @@ public class DockBorderPaneContext extends LayoutContext {
         BorderPane pane = (BorderPane) getLayoutNode();
         pane.topProperty().addListener((ov, oldValue, newValue) -> {
             if (oldValue != null) {
-                if ( Dockable.of(oldValue) != null ) {
+                if (Dockable.of(oldValue) != null) {
                     undock(Dockable.of(oldValue));
                 }
             }
@@ -55,7 +55,7 @@ public class DockBorderPaneContext extends LayoutContext {
         });
         pane.rightProperty().addListener((ov, oldValue, newValue) -> {
             if (oldValue != null) {
-                if ( Dockable.of(oldValue) != null ) {
+                if (Dockable.of(oldValue) != null) {
                     undock(Dockable.of(oldValue));
                 }
             }
@@ -65,7 +65,7 @@ public class DockBorderPaneContext extends LayoutContext {
         });
         pane.bottomProperty().addListener((ov, oldValue, newValue) -> {
             if (oldValue != null) {
-                if ( Dockable.of(oldValue) != null ) {
+                if (Dockable.of(oldValue) != null) {
                     undock(Dockable.of(oldValue));
                 }
             }
@@ -76,7 +76,7 @@ public class DockBorderPaneContext extends LayoutContext {
 
         pane.leftProperty().addListener((ov, oldValue, newValue) -> {
             if (oldValue != null) {
-                if ( Dockable.of(oldValue) != null ) {
+                if (Dockable.of(oldValue) != null) {
                     undock(Dockable.of(oldValue));
                 }
             }
@@ -141,7 +141,6 @@ public class DockBorderPaneContext extends LayoutContext {
         }
     }
 
-
     protected boolean doDock(Point2D mousePos, Node node) {
         boolean retval = true;
         BorderPane target = (BorderPane) getLayoutNode();
@@ -164,8 +163,8 @@ public class DockBorderPaneContext extends LayoutContext {
     }
 
     @Override
-    public void remove(Object  obj) {
-        if ( ! (obj instanceof Node)) {
+    public void remove(Object obj) {
+        if (!(obj instanceof Node)) {
             return;
         }
         Node dockNode = (Node) obj;
@@ -199,7 +198,6 @@ public class DockBorderPaneContext extends LayoutContext {
         });
         return list;
     }
-
 
     public static class BorderPanePositionIndicator extends PositionIndicator {
 
@@ -242,7 +240,13 @@ public class DockBorderPaneContext extends LayoutContext {
             centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
             //centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-            BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode);
+            BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode) {
+                @Override
+                public String getUserAgentStylesheet() {
+                    return Dockable.class.getResource("resources/default.css").toExternalForm();
+                }
+            };
+            
             indicator.getStyleClass().add("border-pane-indicator");
             topNode.setAlignment(Pos.CENTER);
             rightNode.setAlignment(Pos.CENTER);

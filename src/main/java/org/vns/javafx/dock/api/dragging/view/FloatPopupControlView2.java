@@ -56,7 +56,12 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
         setFloatingWindow(floatPopup);
 
-        windowRoot = new StackPane();
+       windowRoot = new StackPane() {
+            @Override
+            public String getUserAgentStylesheet() {
+                return Dockable.class.getResource("resources/default.css").toExternalForm();
+            }
+        };
 
         setWindowRoot(windowRoot);
 
