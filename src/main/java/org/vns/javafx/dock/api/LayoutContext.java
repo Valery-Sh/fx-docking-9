@@ -74,7 +74,7 @@ public abstract class LayoutContext {
         if (getLayoutNode() == null) {
             return;
         }
-        getLayoutNode().sceneProperty().addListener((v, ov, nv) -> {
+/*        getLayoutNode().sceneProperty().addListener((v, ov, nv) -> {
             if (getLayoutNode().getScene() != null) {
                 focusedDockNode.bind(getLayoutNode().getScene().focusOwnerProperty());
             }
@@ -97,7 +97,7 @@ public abstract class LayoutContext {
                 Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
-
+*/
     }
 
     /**

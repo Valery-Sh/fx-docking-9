@@ -38,7 +38,7 @@ import javafx.stage.Window;
 import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DecorUtil;
+import org.vns.javafx.dock.api.StyleUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -270,7 +270,7 @@ public class FloatStageView implements FloatWindowView {
         };
 
         windowRoot.getStyleClass().add("float-window-root");
-        DecorUtil.setFloatWindowRootDecor(windowRoot);
+        StyleUtil.styleFloatWindowRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         Scene scene = new Scene(windowRoot);
@@ -511,7 +511,7 @@ public class FloatStageView implements FloatWindowView {
         };
 
         windowRoot.getStyleClass().add("float-window-root");
-        DecorUtil.setFloatWindowRootDecor(windowRoot);
+        StyleUtil.styleFloatWindowRoot(windowRoot);
         //rootPane.setCenter(draggedNode);
         windowRoot.getChildren().add(draggedNode);
 

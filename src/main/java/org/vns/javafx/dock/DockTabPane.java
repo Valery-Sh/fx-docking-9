@@ -38,8 +38,6 @@ public class DockTabPane extends TabPane {
         DockTabPaneMouseDragHandler dragHandler = new DockTabPaneMouseDragHandler(context);
         context.getLookup().putUnique(MouseDragHandler.class, dragHandler);
         
-        //context.setTitleBar(new DockTitleBar(Dockable.of(this)));
-
         setRotateGraphic(true);
     }
 

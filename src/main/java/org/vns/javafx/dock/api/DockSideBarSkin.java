@@ -38,7 +38,6 @@ import org.vns.javafx.dock.DockSideBar.Rotation;
 public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     private final ToolBar toolBar;
-    //private final StackPane layout;
     private Group dragNodeGroup;
     private final ControlSkin controlSkin;
 
@@ -76,7 +75,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             Button btn = (Button) g.getChildren().get(0);
             btn.setRotate(getSkinnable().getRotation().getAngle());
         });
-//        layoutContext.getLookup().putUnique(FloatViewFactory.class, this);
 
         DockRegistry.makeDockLayout(control, layoutContext);
 
@@ -132,6 +130,7 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
         } else {
             Button dragButton = new Button();
             dragButton.getStyleClass().add("drag-button");
+            dragButton.getStyleClass().remove("button");
             getSkinnable().setDragNode(dragButton);
         }
 
@@ -151,7 +150,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
             if (change.wasRemoved()) {
                 List<? extends Dockable> list = change.getRemoved();
                 list.forEach((d) -> {
-                    //03.04getLayoutContext().undock(d.node());
                     getLayoutContext().undock(d);
                 });
 
@@ -167,7 +165,6 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     private void changeItems() {
         getSkinnable().getItems().forEach(d -> {
-            //28.03if (!getLayoutContext().isDocked(d.node())) {
             if (!getLayoutContext().contains(d.node())) {
                 getLayoutContext().dock(d);
             }
@@ -353,28 +350,4 @@ public class DockSideBarSkin extends SkinBase<DockSideBar> {
 
     }
 
-    /*    public static class FloatViewFactory  {
-
-        public FloatViewFactory() {
-
-        }
-
-        public FloatView getFloatView(DragManager dragManager) {
-            FloatView retval = null;
-            Node node = dragManager.getDockable().node();
-            Window w = null;
-            if (node.getScene() != null && node.getScene().getWindow() != null) {
-                w = node.getScene().getWindow();
-            }
-            if (w == null || !(w instanceof EmbeddedWindow)) {
-                //retval = new FloatPopupControlView(dragManager.getDockable());
-                retval = new FloatStageView2(dragManager.getDockable());
-            } else if (w instanceof EmbeddedWindow) {
-                retval = new FloatPopupControlView(dragManager.getDockable());
-            }
-            return retval;
-        }
-
-    }
-     */
 }

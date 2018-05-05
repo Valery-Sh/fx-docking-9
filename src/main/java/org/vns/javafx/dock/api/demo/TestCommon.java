@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Your Organisation.
+ * Copyright 2018 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,15 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -35,63 +38,43 @@ import org.vns.javafx.dock.api.Dockable;
  *
  * @author Valery
  */
-public class TestCanvas extends Application {
+public class TestCommon extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        VBox root = new VBox();
-        //root.setStyle("-fx-background-color: YELLOW");
         Button b1 = new Button("Button b1");
-        Button b2 = new Button("b2r");
-        //b1.setGraphic(b2);
-        Pane p1 = new HBox(b1);
-        //dockPane.dock(p1, Side.TOP).getContext().setTitle("Pane p1");
-        Scene primaryScene = new Scene(root);
-        double cw = 100;
-        double ch = 100;
-        double sw = 10; //stroke width
-        double swDelta = 10; //stroke width
+        Button b2 = new Button("Botton b2");        
+        Label lb1 = new Label("Label lb1");
+        lb1.setFocusTraversable(true);
         
-        Canvas canvas = new Canvas(cw, ch);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        HBox hbox = new HBox(b2,lb1);
+        hbox.setFocusTraversable(true);
+        hbox.setStyle("-fx-background-color: -fx-outer-border; -fx-border-width: 20; -fx-border-color: -fx-outer-border");     
+        
+        VBox root = new VBox(hbox, b1);
+        //root.setStyle("-fx-background-color: YELLOW");
 
-        gc.setFill(Color.LIGHTGRAY);
-        gc.setStroke(Color.BLACK);
-        gc.fillRect(0, 0, cw, ch);
+        hbox.setOnMouseClicked(e -> {
+            System.err.println("is hbox focused = " + hbox.isFocused());
+            System.err.println("is b1 focused = " + b1.isFocused());
+            Background bg = hbox.getBackground();
+            bg.getFills().forEach(f -> {
+                System.err.println("fx-background fill = " + f.getFill());
+                System.err.println("   --- Radii = " + f.getRadii());
+                System.err.println("   --- insets = " + f.getInsets());
+            });
+            
+            
+            
+        });
+        Scene primaryScene = new Scene(root);
+ 
         
-        gc.clearRect(sw, sw, cw-2*sw, ch-2*sw);
-        gc.setFill(Color.BLACK);
-        // Top line
-//        gc.fillRect(sw, sw, cw - 2*sw, sw + swDelta);
-        // Right line
-        //gc.fillRect(cw-2*sw - swDelta, sw, sw + swDelta,cw - 2*sw );
-        // Bottom line
-        //gc.fillRect(sw, ch-2*sw-swDelta, cw - 2*sw, sw + swDelta);
-        // Left line
-        gc.fillRect(sw,sw, sw + swDelta,ch - 2*sw );
-        //gc.strokeRect(sw, sw, cw-2*sw, ch-2*sw);
-        //gc.strokeLine(sw+1, sw+1, cw - 2*sw, sw+1);
-        //gc.setStroke(Color.BLACK);
-        //gc.strokeLine(sw+1, sw+2, cw-2*sw, sw+2);
-        Canvas canvas1 = new Canvas();
-        ImageView iv = new ImageView();
-        
-        iv.getStyleClass().add("test-canvas");
-       
-        
-        GraphicsContext gc1 = canvas.getGraphicsContext2D();
-        
-        Platform.runLater(() -> {
-            gc1.drawImage(iv.getImage(), 0, 0,16,16);
-        }); 
-        
-        root.getChildren().addAll(b1,canvas, canvas1);
-        
-        primaryStage.setTitle("JavaFX TestCanvas");
+        primaryStage.setTitle("JavaFX TestCommon");
         primaryStage.setScene(primaryScene);
 
         primaryStage.setOnShown(s -> {
-
+            
         });
         primaryStage.setAlwaysOnTop(true);
         primaryStage.show();

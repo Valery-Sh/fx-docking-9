@@ -27,7 +27,6 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -37,7 +36,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
 /**
@@ -104,25 +102,20 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
 
         });
 
-        //getLookup().putUnique(PositionIndicator.class,new TabPanePositonIndicator(this));
-        //getLookup().putUnique(IndicatorPopup.class,new IndicatorPopup(this));
     }
 
     @Override
     protected void initLookup(ContextLookup lookup) {
         super.initLookup(lookup);
-//        System.err.println("INIT LOOKUP !!!!!!!!!!!!!!!!!!!!!");
         lookup.putUnique(PositionIndicator.class, new TabPanePositonIndicator(this));
-        //lookup.add(new DockTreeItemBuilderFactory());
     }
 
     public TabPaneHelper getHelper() {
         return helper;
     }
 
+    @Override
     public boolean isAcceptable(Dockable dockable) {
-
-        boolean retval = false;
 
         DragContainer dc = dockable.getContext().getDragContainer();
 
@@ -131,40 +124,10 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
         }
 
         return super.isAcceptable(dockable);
-        /*        Dockable dragged = dockable;
-        Object v  = dockable.getContext().getDragValue();
-        if ( Dockable.of(v) != null ) {
-            dragged = Dockable.of(v);
-        } else {
-            return false;
-        }
-        return true;
-        //return retval;
-        //return (dockLoader != null && dockLoader.isRegistered(dragged.node())) || dockLoader == null;
-         */
     }
-
-    /*    @Override
-    public void dockObject(Point2D mousePos, Dockable carrier) {
-        DragContainer dc = carrier.getContext().getDragContainer();
-        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
-            ((TabPane) getTargetNode()).getTabs().add((Tab) dc.getValue());
-        }
-    }
-
-    @Override
-    public void undockObject(Dockable carrier) {
-        DragContainer dc = carrier.getContext().getDragContainer();
-        if (dc.getValue() != null && (dc.getValue() instanceof Tab)) {
-            ((TabPane) getTargetNode()).getTabs().clear(dc.getValue());
-        }
-    }
-     */
     public TabPane getTabPane() {
         return (TabPane) getLayoutNode();
     }
-
-    //////////////////////////////////////////////////////////
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
         Dockable d = dockable;
@@ -176,18 +139,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
             }
             d = Dockable.of(dc.getValue());
         }
-        //doDock(mousePos, dockable);
-/*        if (contains(d.node()) && d == dockable) {
-            return;
-        } else if (contains(d.node())) {
-            LayoutContext tc = d.getContext().getLayoutContext();
-            if (tc != null && isDocked(tc, d)) {
-                //03.04tc.undock(d.node());
-                tc.undock(d);
-            }
-        }
-         */
-        //dockable.getContext().getLayoutContext().undock(dockable);
 
         Node node = d.node();
         Window stage = null;
@@ -196,7 +147,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
         }
 
         if (doDock(mousePos, d.node()) && stage != null) {
-            //d.getContext().setFloating(false);
             if ((stage instanceof Stage)) {
                 ((Stage) stage).close();
             } else {
@@ -205,45 +155,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
             d.getContext().setLayoutContext(this);
         }
     }
-
-    /*    protected void doDock(Point2D mousePos, Dockable dockable) {
-        Object o = getValue(dockable);
-        if (o == null || Dockable.of(o) == null) {
-            return;
-        }
-
-        Dockable d = Dockable.of(o);
-        //
-        // Test is we drag dockable or the value of a dragContainer 
-        //
-//        if (isDocked(d.node()) && d == dockable) {/
-        if (contains(d.node()) && d == dockable) {
-            return;
-//        } else if (isDocked(d.node())) {
-        } else if (contains(d.node())) {
-            LayoutContext tc = d.getContext().getLayoutContext();
-            if (tc != null && isDocked(tc, d)) {
-                tc.undock(d.node());
-            }
-        }
-
-        Node node = d.node();
-        Window stage = null;
-        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
-            stage = node.getScene().getWindow();
-        }
-
-        if (doDock(mousePos, d.node()) && stage != null) {
-            //d.getContext().setFloating(false);
-            if ((stage instanceof Stage)) {
-                ((Stage) stage).close();
-            } else {
-                stage.hide();
-            }
-            d.getContext().setLayoutContext(this);
-        }
-    }
-     */
     protected void dock(Point2D mousePos, Tab tab, Dockable dockable) {
         Node placeholder = dockable.getContext().getDragContainer().getPlaceholder();
         Window window = null;
@@ -284,24 +195,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
         }
         return retval;
     }
-//////////////////////////////////////////////////////////
-
-    /**
-     * For test purpose
-     *
-     * @return th elis of dockables
-     */
-    /*    public ObservableList<Dockable> getDockables() {
-        List<Dockable> list = FXCollections.observableArrayList();
-        getTargetNode().getTabs().forEach(tab -> {
-            //!!!08
-            if (tab.getContent() != null && DockRegistry.isDockable(tab.getContent())) {
-                list.add(Dockable.of(tab.getContent()));
-            }
-        });
-        return (ObservableList<Dockable>) list;
-    }
-     */
     @Override
     public boolean contains(Object obj) {
         boolean retval = false;
@@ -313,20 +206,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
         }
         return retval;
     }
-
-    /*    @Override
-    protected boolean isDocked(Node node) {
-        boolean retval = false;
-        for (Tab tb : getTabPane().getTabs()) {
-            if (tb.getContent() == node) {
-                retval = true;
-                break;
-            }
-        }
-        return retval;
-    }
-     */
-    //@Override
     protected boolean doDock(Point2D mousePos, Node node) {
         Window stage = null;
         if (node.getScene() != null && node.getScene().getWindow() != null && (node.getScene().getWindow() instanceof Stage)) {
@@ -459,9 +338,7 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
 
         hideContentTitleBar(dockable);
         tabPane.getSelectionModel().select(tab);
-        //02.02((Region) node).prefHeightProperty().bind(pane.heightProperty());
-        //03.02((Region) node).prefWidthProperty().bind(pane.widthProperty());
-        //!!!08
+
         if (DockRegistry.isDockable(node)) {
             DockableContext nodeHandler = Dockable.of(node).getContext();
             nodeHandler.setDragNode(tab.getGraphic());
@@ -471,18 +348,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
         }
     }
 
-    /*    public void dock(Dockable dockable) {
-        if (doDock(null, dockable.node())) {
-            // dockable.getContext().setFloating(false);
-        }
-    }
-
-    public void dock(Node node) {
-        if (DockRegistry.isDockable(node)) {
-            dock(Dockable.of(node));
-        }
-    }
-     */
     protected String getButtonText(Dockable d) {
         String txt = d.getContext().getTitle();
         if (d.getContext().getProperties().getProperty("user-title") != null) {
@@ -558,11 +423,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
 
         }
 
-        /*        @Override
-        public void showIndicatorPopup(double screenX, double screenY) {
-            getLayoutContext().getLookup().lookup(IndicatorPopup.class).show(getLayoutContext().getTargetNode(), screenX, screenY);
-        }
-         */
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane() {
@@ -575,7 +435,6 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
             return p;
         }
 
-        //@Override
         protected String getStylePrefix() {
             return "dock-indicator";
         }
@@ -609,12 +468,9 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
 
             if (controlBounds != null && !pane.getTabs().isEmpty()) {
                 Bounds lastTabBounds = helper.tabBounds(pane.getTabs().get(pane.getTabs().size() - 1));
-                Bounds firstTabBounds = helper.tabBounds(pane.getTabs().get(0));
+                //Bounds firstTabBounds = helper.tabBounds(pane.getTabs().get(0));
                 double delta = 0;
                 tabBounds = controlBounds;
-                if (!tabBounds.intersects(firstTabBounds)) {
-                    //delta = firstTabBounds.getWidth() / 2;
-                }
 
                 tabBounds = new BoundingBox(tabBounds.getMinX() - delta, lastTabBounds.getMinY(), tabBounds.getWidth() + delta, lastTabBounds.getHeight());
 
@@ -646,13 +502,7 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
                 tabPlace.setWidth(tabBounds.getWidth());
                 tabPlace.setHeight(tabBounds.getHeight());
 
-                //tabPlace.setX(tabBounds.getMinX());
-                //tabPlace.setY(tabBounds.getMinY());
                 Bounds b = tabPlace.getParent().screenToLocal(tabBounds);
-                //tabPlace.setHeight(tabBounds.getHeight());
-                //
-                // idx may be equal to size => the mouse is after last tab
-                //
 
                 tabPlace.setX(b.getMinX());
 

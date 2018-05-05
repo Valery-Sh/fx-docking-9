@@ -5,6 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -12,10 +13,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -24,6 +27,7 @@ import org.vns.javafx.dock.api.Dockable;
 public class DockTitleBar extends HBox {
 
     public static final PseudoClass CHOOSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("choosed");
+    private BooleanProperty selectedPseudoClass = new SimpleBooleanProperty();
     
     public enum StyleClasses {
         TITLE_BAR,
@@ -40,36 +44,42 @@ public class DockTitleBar extends HBox {
                     retval = "dock-title-bar";
                     break;
                 case PIN_BUTTON:
-                    retval = "dock-title-pin-button";
+                    retval = "pin-button";
                     break;
                 case CLOSE_BUTTON:
-                    retval = "dock-title-close-button";
+                    retval = "close-button";
                     break;
                 case STATE_BUTTON:
-                    retval = "dock-title-state-button";
+                    retval = "state-button";
                     break;
-                case MENU_BUTTON:
+/*                case MENU_BUTTON:
                     retval = "dock-title-menu-button";
                     break;
+*/
                 case LABEL:
-                    retval = "dock-title-label";
+                    retval = "title-label";
                     break;
             }
             return retval;
         }
     }
     private Dockable dockNode;
-    //private DockDragboard dragboard;
 
     private final ObjectProperty<Label> label = new SimpleObjectProperty<>();
-    private final  ObjectProperty<Button> closeButton = new SimpleObjectProperty<>();
-    private final  ObjectProperty<Button> stateButton = new SimpleObjectProperty<>();
-    private  final ObjectProperty<Button> pinButton = new SimpleObjectProperty<>();
+    private final ObjectProperty<Button> closeButton = new SimpleObjectProperty<>();
+    private final ObjectProperty<Button> stateButton = new SimpleObjectProperty<>();
+    private final ObjectProperty<Button> pinButton = new SimpleObjectProperty<>();
     
     private String title;
     
-    private BooleanProperty selectedPseudoClass = new SimpleBooleanProperty();
-
+    private final EventHandler<MouseEvent> mouseEnteredExitedHandler = (ev) -> {
+        if ( ev.getEventType() == MouseEvent.MOUSE_ENTERED ) {
+            setSelectedPseudoClass(true);
+        } else if ( ev.getEventType() == MouseEvent.MOUSE_EXITED ) {
+            setSelectedPseudoClass(false);
+        }
+    };
+            
     public DockTitleBar() {
         this.title = "";
         init();
@@ -92,8 +102,9 @@ public class DockTitleBar extends HBox {
     }
 
     private void init() {
-
+        
         setLabel(new Label(title));
+        
         if ( dockNode != null ) {
             getLabel().textProperty().bind(dockNode.getContext().titleProperty());
         }
@@ -101,8 +112,6 @@ public class DockTitleBar extends HBox {
         setStateButton(new Button());
         setCloseButton(new Button());
         setPinButton(new Button());
-        
-        
 
         Pane fillPane = new Pane();
         HBox.setHgrow(fillPane, Priority.ALWAYS);
@@ -115,16 +124,27 @@ public class DockTitleBar extends HBox {
         getCloseButton().getStyleClass().add(StyleClasses.CLOSE_BUTTON.cssClass());
         getStateButton().getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
         getPinButton().getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
-        this.getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
-        setOnMouseClicked(ev -> {
-            getCloseButton().requestFocus();
-        });
-        getCloseButton().addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
+        getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
+        
+        
+//        setOnMouseClicked(ev -> {
+//            getCloseButton().requestFocus();
+//        });
+        
         getStateButton().setTooltip(new Tooltip("Undock pane"));
         getCloseButton().setTooltip(new Tooltip("Close pane"));
         getPinButton().setTooltip(new Tooltip("Pin pane"));
+        
+        initEventHandlers();
+      
+        
     }
     
+    protected void initEventHandlers() {
+        getCloseButton().addEventFilter(MouseEvent.MOUSE_CLICKED, this::closeButtonClicked);
+        addEventFilter(MouseEvent.MOUSE_ENTERED, mouseEnteredExitedHandler);
+        addEventFilter(MouseEvent.MOUSE_EXITED, mouseEnteredExitedHandler);  
+    }
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();
@@ -196,6 +216,7 @@ public class DockTitleBar extends HBox {
     public Button getPinButton() {
         return pinButton.get();
     }
+    
     public boolean isSelectedPseudoClass() {
         return selectedPseudoClass.get();
     }
@@ -214,14 +235,14 @@ public class DockTitleBar extends HBox {
         return selectedPseudoClass;
     }
     protected void turnOffSelectedPseudoClass() {
-        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);                
+        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, false);  
     }
 
     protected void turnOnSelectedPseudoClass() {
         if ( selectedPseudoClass.get() ) {
             return;
         }
-        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);                
+        pseudoClassStateChanged(CHOOSED_PSEUDO_CLASS, true);  
    }
 
 }

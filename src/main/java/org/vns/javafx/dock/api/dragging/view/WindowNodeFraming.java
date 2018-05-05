@@ -66,8 +66,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
     double insetsRootTop = 0;
     double insetsRootLeft = 0;
 
-    //private final DoubleProperty workWidth = new SimpleDoubleProperty(-1);
-    //private final DoubleProperty workHeight = new SimpleDoubleProperty(-1);
     private final Cursor[] supportedCursors = new Cursor[]{
         Cursor.S_RESIZE, Cursor.E_RESIZE, Cursor.N_RESIZE, Cursor.W_RESIZE,
         Cursor.SE_RESIZE, Cursor.NE_RESIZE, Cursor.SW_RESIZE, Cursor.NW_RESIZE
@@ -75,8 +73,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
     private boolean cursorSupported = false;
 
-    //private Point2D startMousePos;
-//    private NodeFraming ing;
     private RectangleFrame rectangleFrame;
 
     private double translateX;
@@ -109,17 +105,13 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
     public void setDefaultStyle() {
         setStyle("-fx-background-color: yellow; -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed");
-        //setStyle("-fx-background-color: transparent;-fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed");        
     }
 
     protected void setWindow(Window window) {
         this.window = window;
-//        init();
     }
 
     private void init() {
-        //workHeight.set(-1);
-        //workWidth.set(-1);
 
         window.setOnShown(e -> {
             DockRegistry.register(window, true); // true means exclude when searfor target window
@@ -159,10 +151,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
                 return Dockable.class.getResource("resources/default.css").toExternalForm();
             }
         };
-        //Border b = new NodeResizerBorder().getBorder();
-        //root.setBorder(b);
-//        System.err.println("WindowNodeFraming: styles.size() = " + root.getStyleClass().size());
-        //root.setStyle("-fx-background-color: yellow; -fx-opacity: 0.5; -fx-border-width: 1; -fx-border-color: black; -fx-border-style: dashed");
         if (getStyle() == null && getStyleClass().isEmpty()) {
             setDefaultStyle();
             root.setStyle(getStyle());
@@ -200,8 +188,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         ((Region) getNode()).setPrefWidth(((Region) getNode()).getWidth());
         ((Region) getNode()).setPrefHeight(((Region) getNode()).getHeight());
 
-        //setWorkWidth(getNode().getLayoutBounds().getWidth());
-        //setWorkHeight(getNode().getLayoutBounds().getHeight());
         root.setPrefWidth(getNode().getLayoutBounds().getWidth() + borderWidth);
         root.setPrefHeight(getNode().getLayoutBounds().getHeight() + borderHeight);
 
@@ -224,13 +210,8 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
             window.setX(sb.getMinX() - insetsRootLeft);
             window.setY(sb.getMinY() - insetsRootTop);
-
-            //setWorkWidth(sb.getWidth());
-            //setWorkHeight(sb.getHeight());
             root.setPrefWidth(sb.getWidth() + borderWidth);
             root.setPrefHeight(sb.getHeight() + borderHeight);
-            //System.err.println("+root.getWidth = " + root.getWidth());
-            //System.err.println("window.getWidth = " + window.getWidth());
             setWindowSize(sb, borderWidth, borderHeight);
         };
 
@@ -239,9 +220,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         //
         //  show to widthProperty and heightProperty
         //
-        //screenBounds = getNode().localToScreen(getNode().getLayoutBounds());
-        //setWorkWidth(getNode().getLayoutBounds().getWidth());
-        //setWorkHeight(getNode().getLayoutBounds().getHeight());
         nodeWindow = region.getScene().getWindow();
         setWindowSize(getNode().getLayoutBounds(), borderWidth, borderHeight);
 
@@ -285,36 +263,8 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         return b;
     }
 
-    /*    public DoubleProperty workWidthProperty() {
-        return workWidth;
-    }
-
-    public double getWorkWidth() {
-        return workWidth.get();
-    }
-
-    public void setWorkWidth(double width) {
-        workWidth.set(width);
-    }
-
-    public DoubleProperty workHeightProperty() {
-        return workHeight;
-    }
-
-    public double getWorkHeight() {
-        return workHeight.get();
-    }
-
-    public void setWorkHeight(double height) {
-        workHeight.set(height);
-    }
-     */
     @Override
     protected void initializeOnShow(Node node) {
-  /*      if (window != null) {
-            removeWindowListeners();
-        }
-*/
         createWindow();
         if (window == null) {
             return;
@@ -333,110 +283,31 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
         resizer = new NodeResizer(window, (Region) getNode());
 
-/*        window.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        window.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        window.addEventFilter(MouseEvent.MOUSE_MOVED, this);
-        window.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-*/
         doShow(newOwner);
     }
 
-/*    protected void removeWindowListeners() {
-        window.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
-        window.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-        window.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
-        window.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-    }
-*/
     @Override
     public void handle(MouseEvent ev) {
-        /*        if (ev.getEventType() == MouseEvent.MOUSE_MOVED) {
-             System.err.println("WindowNodeFraming mouse moved");
-            Cursor c = NodeResizer.cursorBy(new Point2D(ev.getX(), ev.getY()), (Region) window.getScene().getRoot());
-
-            if (!isCursorSupported(c)) {
-                window.getScene().setCursor(Cursor.DEFAULT);
-            } else {
-                window.getScene().setCursor(c);
-            }
-            if (!c.equals(Cursor.DEFAULT)) {
-                ev.consume();
-            }
-
-        } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-             System.err.println("WindowNodeFraming mouse pressed");
-            if (!window.getScene().getRoot().contains(ev.getX(), ev.getY())) {
-                removeWindowListeners();
-                hide();
-
-                return;
-            }
-            saveCursor = NodeResizer.cursorBy(new Point2D(ev.getX(), ev.getY()), root);
-            cursorSupported = isCursorSupported(saveCursor);
-            if (!cursorSupported) {
-                window.getScene().setCursor(Cursor.DEFAULT);
-                return;
-            }
-            resizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
-        } else         if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-             System.err.println("WindowNodeFraming mouse released");
-        } else 
-         */
         if (ev.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             if (!cursorSupported) {
                 return;
             }
-//            System.err.println("WindowNodeFraming mouse dragged");
-//            if (!resizer.isStarted()) {
-//                System.err.println("WindowNodeFraming resiser.start");
-//                resizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
-//            } else {
-//            Platform.runLater(() -> {
             resizer.resize(ev.getScreenX(), ev.getScreenY());
-//            });
-//            }
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            //getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, redirectMouseReleasedHandler);
             getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-//            System.err.println("WindowNodeFraming redirectMouseReleased");
             hide();
 
             if (rectangleFrame != null) {
- //               Platform.runLater(() -> {
-                    rectangleFrame.setVisible(true);
-//                });
-
+                rectangleFrame.setVisible(true);
             }
         }
     }
 
-    /*  private EventHandler<MouseEvent> redirectMouseReleasedHandler = ev -> {
-        redirectMouseReleased(ev);
-    };
-     */
- /*    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, NodeFraming redirectSource) {
-        this.startMousePos = startMousePos;
-        this.redirectSource = redirectSource;
-
-        removeWindowListeners();
-
-        saveCursor = getNode().getScene().getCursor();
-        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, redirectMouseReleasedHandler);
-        getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        redirectMousePressed(ev);
-       //windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
-        resizer.start(ev, this, saveCursor, getSupportedCursors());
-    }
-     */
     public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, RectangleFrame redirectSource) {
-        //this.startMousePos = startMousePos;
         this.rectangleFrame = redirectSource;
 
-        //removeWindowListeners();
-
         saveCursor = getNode().getScene().getCursor();
-        //getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, redirectMouseReleasedHandler);
         getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, this);
         getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
 
@@ -445,40 +316,12 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
             window.getScene().setCursor(Cursor.DEFAULT);
         }
 
-        //redirectMousePressed(ev);
-        //windowResizer.start(ev, this, window.getScene().getCursor(), getSupportedCursors());
         getWindow().getScene().setCursor(saveCursor);
         resizer.start(ev, this, saveCursor, getSupportedCursors());
     }
-
-    /*    protected void redirectMousePressed(MouseEvent ev) {
-        cursorSupported = isCursorSupported(saveCursor);
-        if (!cursorSupported) {
-            window.getScene().setCursor(Cursor.DEFAULT);
-            return;
-        }
-    }
-     */
- /*    protected void onMouseReleased(MouseEvent ev) {
-        //getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, redirectMouseReleasedHandler);
-        getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-        getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
-
-        hide();
-
-        if (rectangleFrame != null) {
-            Platform.runLater(() -> {
-                rectangleFrame.setVisible(true);
-            });
-
-        }
-    }
-     */
     @Override
     protected void finalizeOnHide(Node node) {
         if (root != null) {
-            //root.prefWidthProperty().unbind();
-            //root.prefHeightProperty().unbind();
             root.setPrefWidth(-1);
             root.setPrefHeight(-1);
             root = null;
@@ -487,7 +330,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
             node.boundsInParentProperty().removeListener(boundsInParentListener);
         }
         if (window != null) {
-            //removeWindowListeners();
             window.hide();
             window = null;
         }
@@ -516,30 +358,4 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         return retval;
     }
 
-    /*    public static class LBListener implements ChangeListener<Bounds> {
-
-        private WindowNodeFraming wnf;
-
-        public LBListener(WindowNodeFraming wnf) {
-            this.wnf = wnf;
-        }
-
-        @Override
-        public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-            if (newValue == null) {
-                return;
-            }
-
-            Bounds sb = wnf.getNode().localToScreen(wnf.getNode().getBoundsInLocal());
-            if (sb == null) {
-                return;
-            }
-            wnf.setWorkWidth(newValue.getWidth());
-            wnf.setWorkHeight(newValue.getHeight());
-            wnf.setWindowSize(newValue, wnf.borderWidth, wnf.borderHeight);
-
-        }
-
-    }
-     */
 }

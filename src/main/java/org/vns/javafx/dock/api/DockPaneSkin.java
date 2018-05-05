@@ -56,23 +56,6 @@ public class DockPaneSkin extends SkinBase<DockPane> {
             getSkinnable().dock(node, Side.TOP);
             
         }
-
-/*        getSkinnable().titleBarProperty().addListener((v, oldValue, newValue) -> {
-            LayoutContext tc = DockLayout.of(getSkinnable()).getLayoutContext();
-            if (oldValue != null) {
-                tc.undock(oldValue);
-            }
-            if (newValue != null) {
-                if (Dockable.of(newValue) == null) {
-                    Dockable d = DockRegistry.makeDockable(newValue);
-                    d.getContext().setDraggable(false);
-                }
-                Dockable.of(getSkinnable()).getContext().setDragNode(newValue);
-
-                getSkinnable().dock(newValue, Side.TOP);
-            }
-        });
-*/
         getChildren().add(layout);
     }
 

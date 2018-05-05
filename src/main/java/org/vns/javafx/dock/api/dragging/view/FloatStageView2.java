@@ -21,14 +21,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.PopupControl;
 import javafx.scene.layout.StackPane;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -59,9 +58,7 @@ public class FloatStageView2 extends FloatStageView {
         final Stage window = new Stage();
         window.initStyle(stageStyle);
 
-        //floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
         setFloatingWindow(window);
-        //setFloatingWindow(window);
 
         windowRoot = new StackPane() {
             @Override
@@ -71,16 +68,8 @@ public class FloatStageView2 extends FloatStageView {
         };
         Scene scene = new Scene(windowRoot);
         window.setScene(scene);
-        //windowRoot = new StackPane();
-        ///
-        // Mark as a popup created with FloatView instance/
-        //
-        //windowRoot.getStyleClass().add(FLOATVIEW);
-        //windowRoot.getStyleClass().add(FLOAT_WINDOW);
-
         setWindowRoot(windowRoot);
 
-        //DockPane dockPane = new DockPane();
         ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
             @Override
             public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
@@ -91,7 +80,8 @@ public class FloatStageView2 extends FloatStageView {
             }
         };
 
-        windowRoot.getStyleClass().add("dock-sidebar-popup-root");
+        windowRoot.getStyleClass().add("sidebar-popup-root");
+        StyleUtil.styleSideBarPopupRoot(windowRoot);
 
         windowRoot.getChildren().add(node);
 
@@ -99,29 +89,9 @@ public class FloatStageView2 extends FloatStageView {
         window.sizeToScene();
         node.applyCss();
         windowRoot.applyCss();
-        //floatPopup.setAutoFix(false);
-/*        Insets insetsDelta = windowRoot.getInsets();
-
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(node)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(node)) + insetsHeight);
-        //
-        // We must prevent the window to end up positioning off the screen
-        //
-        window.setAutoFix(false);
-
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(node)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(node)) + insetsHeight;
-
-        windowRoot.setPrefWidth(prefWidth);
-        windowRoot.setPrefHeight(prefHeight);
-         */
         window.setOnShown(e -> {
             DockRegistry.register(window);
         });
-        //floatPopup.setId("floatPopup2 " + window.hashCode());
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
         });
@@ -134,11 +104,4 @@ public class FloatStageView2 extends FloatStageView {
 
         return window;
     }//make FloatingPopupControl
-/*    @Override
-    public void addResizer() {
-        removeListeners(getDockable().getContext().dockable());
-        addListeners(getFloatingWindow());
-        setResizer(new PopupControlResizer(this));
-    }
-     */
 }

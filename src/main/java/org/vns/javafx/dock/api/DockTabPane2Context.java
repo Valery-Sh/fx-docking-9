@@ -250,11 +250,6 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             helper = new TabPaneHelper((DockTabPane2Context) context);
         }
 
-        /*        @Override
-        public void showIndicatorPopup(double screenX, double screenY) {
-            getLayoutContext().getLookup().lookup(IndicatorPopup.class).show(getLayoutContext().getTargetNode(), screenX, screenY);
-        }
-         */
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane() {
@@ -275,6 +270,7 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             if (tabDockPlace == null) {
                 tabDockPlace = new Rectangle();
                 tabDockPlace.getStyleClass().addAll("tab-place");
+                StyleUtil.styleTabPlace(tabDockPlace);
                 getIndicatorPane().getChildren().add(tabDockPlace);
             }
             return tabDockPlace;

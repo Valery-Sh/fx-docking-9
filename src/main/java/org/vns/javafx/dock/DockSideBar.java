@@ -68,16 +68,13 @@ public class DockSideBar extends Control { // ListChangeListener {
         
         setOrientation(Orientation.VERTICAL);
         getStyleClass().clear();
-        getStyleClass().add("dock-side-bar");
+        getStyleClass().add("sidebar");
 
         setSide(Side.TOP);
         setRotation(Rotation.DEFAULT);
         
         Dockable dc = DockRegistry.makeDockable(this);
         dc.getContext().setDragNode(null);
-        //DockSideBarContext layoutContext = new DockSideBarContext(this, toolBar);
-        //DockRegistry.makeDockLayout(control, layoutContext);
-        
         
     }
 

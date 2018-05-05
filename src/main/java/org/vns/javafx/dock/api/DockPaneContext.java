@@ -75,16 +75,6 @@ public class DockPaneContext extends LayoutContext {
         return dockExecutor;
     }
 
-    /*    @Override
-    protected boolean isDocked(Node node) {
-        boolean retval = false;
-        if (DockRegistry.isDockable(node)) {
-            //retval = DockUtil.getParentSplitPane(root, node) != null;
-            retval = getParentSplitPane(node) != null;
-        }
-        return retval;
-    }
-     */
     @Override
     public boolean contains(Object obj) {
         if ((obj == null) || !(obj instanceof Node)) {
@@ -161,7 +151,7 @@ public class DockPaneContext extends LayoutContext {
             return;
         }
         Dockable dragged = Dockable.of(o);
-        //28.03if (isDocked(dragged.node())) {
+
         if (contains(dragged.node())) {
             return;
         }
@@ -194,7 +184,6 @@ public class DockPaneContext extends LayoutContext {
             return;
         }
         Dockable dragged = Dockable.of(o);
-        //28.03if (isDocked(dragged.node())) {
         if (contains(dragged.node())) {
             return;
         }
@@ -224,18 +213,6 @@ public class DockPaneContext extends LayoutContext {
         }
     }
 
-    /*    @Override
-    public boolean restore(Dockable dockable) {
-        boolean retval = true;
-        if (restoreData != null && dockable.getContext().isFloating()) {
-            restoreData.parent.getItems().add(dockable.node());
-            commitDock(dockable.node());
-        }
-        restoreData = null;
-
-        return retval;
-    }
-     */
     @Override
     public void remove(Object obj) {
         if (!(obj instanceof Node)) {
@@ -243,15 +220,10 @@ public class DockPaneContext extends LayoutContext {
         }
         Node dockNode = (Node) obj;
         DockSplitPane parent = getParentSplitPane(dockNode);
-        //int idx = parent.getItems().indexOf(dockNode);
         if (parent != null) {
             LayoutContext ph = Dockable.of(dockNode).getContext().getLayoutContext();
             parent.getItems().remove(dockNode);
             Dockable.of(dockNode).getContext().setLayoutContext(ph);
-            //!!!!! restoreData = clearEmptySplitPanes(parent);
-//            if (restoreData == null) {
-            //restoreData = new RestoreData(parent, idx);
-//            }
         }
     }
 
@@ -269,11 +241,10 @@ public class DockPaneContext extends LayoutContext {
                 break;
             }
             list.add(dsp);
-//            topNotEmpty = dsp;
         }
 
         list.add(0, parent);
-        int idx = -1;
+        int idx;// = -1;
 
         for (int i = 0; i < list.size(); i++) {
             if (!list.get(i).getItems().isEmpty()) {
@@ -285,11 +256,6 @@ public class DockPaneContext extends LayoutContext {
                 list.get(i + 1).getItems().remove(list.get(i));
             }
         }
-        /*   if (topNotEmpty != null && idx >= 0) {
-            return new RestoreData(topNotEmpty, idx);
-        }
-        return null;
-         */
     }
 
     /**
@@ -311,7 +277,6 @@ public class DockPaneContext extends LayoutContext {
 
     private void getDockables(DockSplitPane pane, List<Dockable> list) {
         pane.getItems().forEach(node -> {
-            //!!!08
             if (DockRegistry.isDockable(node)) {
                 list.add(Dockable.of(node));
             } else if (node instanceof DockSplitPane) {
@@ -319,36 +284,7 @@ public class DockPaneContext extends LayoutContext {
             }
         });
     }
-
-    /*    @Override
-    public Object getRestorePosition(Dockable dockable) {
-        DockSplitPane dsp = null;
-        Parent p = dockable.node().getParent();
-        while (p != null) {
-            if (p instanceof DockSplitPane) {
-                dsp = (DockSplitPane) p;
-                break;
-            }
-            p = p.getParent();
-        }
-        Integer idx = 0;
-        if (dsp != null) {
-            idx = dsp.getItems().indexOf(dockable.node());
-        }
-        return new Object[]{dsp, idx};
-    }
     
-    @Override
-    public void restore(Dockable dockable, Object restoreposition) {
-        Object[] obj = (Object[]) restoreposition;;
-        DockSplitPane dsp = (DockSplitPane) obj[0];
-        int idx = (Integer) obj[1];
-        if (!dsp.getItems().contains(dockable.node())) {
-            dsp.getItems().add(idx, dockable.node());
-            commitDock(dockable.node());
-        }
-    }
-     */
     public static class DockExecutor {
 
         private final DockPaneContext paneController;

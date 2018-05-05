@@ -50,6 +50,7 @@ public class TestDockPaneControl011 extends Application {
 
         StackPane stackPane = new StackPane();
         HBox root = new HBox();
+        
         root.getChildren().add(stackPane);
         //StackPane root = new StackPane();
         //DockPane dockPane1 = new DockPane();

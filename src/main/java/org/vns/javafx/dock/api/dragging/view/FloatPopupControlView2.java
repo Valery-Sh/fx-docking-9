@@ -26,6 +26,7 @@ import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -77,8 +78,8 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         };
 
         
-        windowRoot.getStyleClass().add("dock-sidebar-popup-root");
-        
+        windowRoot.getStyleClass().add("sidebar-popup-root");
+        StyleUtil.styleSideBarPopupRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         floatPopup.getScene().setRoot(windowRoot);

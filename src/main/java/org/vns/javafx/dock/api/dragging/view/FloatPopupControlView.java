@@ -38,7 +38,7 @@ import org.vns.javafx.dock.DockNode;
 import org.vns.javafx.dock.DockPane;
 //import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.DockUtil;
-import org.vns.javafx.dock.api.DecorUtil;
+import org.vns.javafx.dock.api.StyleUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockableContext;
@@ -263,9 +263,8 @@ public class FloatPopupControlView implements FloatWindowView {
             }
         };
 
-        //windowRoot.getStyleClass().add("dock-node-border");
         windowRoot.getStyleClass().add("float-window-root");
-        DecorUtil.setFloatWindowRootDecor(windowRoot);
+        StyleUtil.styleFloatWindowRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         window.getScene().setRoot(windowRoot);
@@ -461,9 +460,8 @@ public class FloatPopupControlView implements FloatWindowView {
                 dragged.node().parentProperty().removeListener(this);
             }
         };
-        //windowRoot.getStyleClass().add("dock-node-border");
         windowRoot.getStyleClass().add("float-window-root");
-        DecorUtil.setFloatWindowRootDecor(windowRoot);
+        StyleUtil.styleFloatWindowRoot(windowRoot);
         node = dragged.node();
         windowRoot.getChildren().add(node);
         //rootPane.setCenter(node);

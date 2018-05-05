@@ -50,7 +50,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.DecorUtil;
+import org.vns.javafx.dock.api.StyleUtil;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -502,7 +502,7 @@ public class TrashTray extends Control {
             windowRoot.getStyleClass().add(FLOAT_WINDOW);
             windowRoot.getStyleClass().add(FLOATVIEW);
             windowRoot.getStyleClass().add("float-window-root");
-            DecorUtil.setFloatWindowRootDecor(windowRoot);
+            StyleUtil.styleFloatWindowRoot(windowRoot);
             
             window.getScene().setRoot(windowRoot);
             window.getScene().setCursor(Cursor.HAND);
