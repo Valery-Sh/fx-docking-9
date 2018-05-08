@@ -444,7 +444,7 @@ public class DockTabPaneContext extends LayoutContext { //implements ObjectRecei
                 tabDockPlace = new Rectangle();
                 tabDockPlace.setId("tabDockPlace");
                 tabDockPlace.getStyleClass().add("dock-place");
-
+                //StyleUtil.styleDockPlace(tabDockPlace);
                 getIndicatorPane().getChildren().add(0, tabDockPlace);
             }
             return tabDockPlace;

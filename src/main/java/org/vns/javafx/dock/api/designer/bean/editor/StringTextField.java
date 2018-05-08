@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -43,7 +43,7 @@ public class StringTextField extends PrimitivesTextField<String>  {
    private void init() {
        
         getStyleClass().add("string-text-field");
-        //String d = getDefaultValue() == null ? "" : getDefaultValue();
+
         valueProperty().addListener((v, ov, nv) -> {
             setText(nv);
         });
@@ -52,11 +52,7 @@ public class StringTextField extends PrimitivesTextField<String>  {
         });
         setText(defaultValue == null ? "" : defaultValue);
     }
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-    
+
     public String getDefaultValue() {
         return defaultValue;
     }

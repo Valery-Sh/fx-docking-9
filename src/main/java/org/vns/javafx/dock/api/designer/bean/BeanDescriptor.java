@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

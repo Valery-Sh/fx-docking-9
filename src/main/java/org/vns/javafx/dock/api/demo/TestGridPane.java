@@ -32,16 +32,16 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.ByteTextField;
-import org.vns.javafx.dock.api.designer.bean.DecimalTextField;
-import org.vns.javafx.dock.api.designer.bean.DoubleTextField;
-import org.vns.javafx.dock.api.designer.bean.FloatTextField;
-import org.vns.javafx.dock.api.designer.bean.IntegerTextField;
-import org.vns.javafx.dock.api.designer.bean.LongTextField;
-import org.vns.javafx.dock.api.designer.bean.ShortTextField;
-import org.vns.javafx.dock.api.designer.bean.SliderEditor;
-import org.vns.javafx.dock.api.designer.bean.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ByteTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.DecimalTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.DoubleTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.FloatTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.LongTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.ShortTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *

@@ -502,7 +502,7 @@ public class TrashTray extends Control {
             windowRoot.getStyleClass().add(FLOAT_WINDOW);
             windowRoot.getStyleClass().add(FLOATVIEW);
             windowRoot.getStyleClass().add("float-window-root");
-            StyleUtil.styleFloatWindowRoot(windowRoot);
+            //StyleUtil.styleFloatWindowRoot(windowRoot);
             
             window.getScene().setRoot(windowRoot);
             window.getScene().setCursor(Cursor.HAND);

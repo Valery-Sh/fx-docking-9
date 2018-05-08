@@ -270,7 +270,7 @@ public class FloatStageView implements FloatWindowView {
         };
 
         windowRoot.getStyleClass().add("float-window-root");
-        StyleUtil.styleFloatWindowRoot(windowRoot);
+        //StyleUtil.styleFloatWindowRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         Scene scene = new Scene(windowRoot);
@@ -511,7 +511,7 @@ public class FloatStageView implements FloatWindowView {
         };
 
         windowRoot.getStyleClass().add("float-window-root");
-        StyleUtil.styleFloatWindowRoot(windowRoot);
+        //StyleUtil.styleFloatWindowRoot(windowRoot);
         //rootPane.setCenter(draggedNode);
         windowRoot.getChildren().add(draggedNode);
 

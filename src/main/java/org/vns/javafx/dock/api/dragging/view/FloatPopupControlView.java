@@ -264,7 +264,7 @@ public class FloatPopupControlView implements FloatWindowView {
         };
 
         windowRoot.getStyleClass().add("float-window-root");
-        StyleUtil.styleFloatWindowRoot(windowRoot);
+        //StyleUtil.styleFloatWindowRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         window.getScene().setRoot(windowRoot);
@@ -461,7 +461,7 @@ public class FloatPopupControlView implements FloatWindowView {
             }
         };
         windowRoot.getStyleClass().add("float-window-root");
-        StyleUtil.styleFloatWindowRoot(windowRoot);
+        //StyleUtil.styleFloatWindowRoot(windowRoot);
         node = dragged.node();
         windowRoot.getChildren().add(node);
         //rootPane.setCenter(node);

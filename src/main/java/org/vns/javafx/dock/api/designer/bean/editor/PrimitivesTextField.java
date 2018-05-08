@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.Property;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.util.StringConverter;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -27,16 +28,7 @@ import javafx.util.StringConverter;
  */
 public abstract class PrimitivesTextField<E> extends TextField implements PropertyEditor {
 
-/*  private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("noteditable");
-
-    public PrimitivesTextField() {
-        System.err.println("PrimitveTextField Constructor");
-        editableProperty().addListener((v, oldValue, newValue) -> {
-            System.err.println("editableProperty changed: " + newValue);
-            pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, ! newValue);
-        });
-    }
-*/
+    private final Property<E> value = initValueProperty();
     
     public PrimitivesTextField() {
         getStyleClass().add("text-field-editor");
@@ -48,8 +40,6 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
             return null;
         }
     };
-
-    private final Property<E> value = initValueProperty();
 
     protected abstract boolean isAcceptable(String txt);
 
@@ -79,6 +69,10 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
         return value.isBound();
 
     }
+    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
 
     public abstract static class NumberTextField<T> extends PrimitivesTextField<Number> {
 
@@ -86,7 +80,6 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
         private T minValue;
         private T maxValue;
         
-//        protected abstract Converter<? extends Number> getConverter();
         protected T getDefaultValue() {
             return defaultValue;
         }
@@ -123,11 +116,10 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
             this.setEditable(true);
             this.setFocusTraversable(true);
             valueProperty().bindBidirectional(property);
-
         }
     }
 
-    public abstract static class Converter<S extends Number> extends StringConverter<S> {
+/*    public abstract static class Converter<S extends Number> extends StringConverter<S> {
 
         private final S defaultValue;
         private final NumberTextField textField;
@@ -147,5 +139,5 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
         }
 
     }
-
+*/
 }

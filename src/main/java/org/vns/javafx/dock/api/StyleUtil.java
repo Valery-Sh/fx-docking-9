@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api;
 
-import com.sun.javafx.sg.prism.NGCanvas;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -28,7 +27,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeType;
-import org.vns.javafx.dock.DockTitleBar;
 
 /**
  *
@@ -36,9 +34,11 @@ import org.vns.javafx.dock.DockTitleBar;
  */
 public class StyleUtil {
     
-    private static final String FX_BACKGROUND  = "#f4f4f4ff";
+    private static final String FX_BACKGROUND    = "#f4f4f4ff";
     private static final String FX_OUTER_BORDER  = "#b6b6b6ff";
-    private static final String DOCK_PLACE_COLOR  = "#0093ff";
+    private static final String FX_SELECTION_BAR = "#0096c9ff";
+    private static final String DOCK_PLACE_COLOR = "#0093ff";
+    
     
     /**
      *
@@ -51,7 +51,10 @@ public class StyleUtil {
     public static Color getFxOuterBorder() {
        return Color.valueOf(FX_OUTER_BORDER); 
     }
-     public static Color getDockPlaceColor() {
+    public static Color getFxSelectionBar() {
+       return Color.valueOf(FX_SELECTION_BAR); 
+    }    
+    public static Color getDockPlaceColor() {
        return Color.valueOf(DOCK_PLACE_COLOR); 
     }      
     public static void setFxBackground(Region node) {
@@ -114,15 +117,19 @@ public class StyleUtil {
         setFxBackground(node);
         node.setPadding(new Insets(2,2,2,2));
     }
-/**
-     * Sets background and border which correspond to the following
+    /**
+     * Sets styles for Tab drag indicator which correspond to the following
      * {@literal css}.
      * <pre>
-     * .sidebar-popup-root {
-     *   -fx-background-color: -fx-background;
-     *   -fx-border-width: 1 1 1 1;
-     *   -fx-border-color: -fx-outer-border;
-     *  }
+     * .tab-place {
+     *  -fx-fill: transparent;
+     *  -fx-opacity: 0.3;
+     *  -fx-stroke: -fx-selection-bar;
+     *  -fx-stroke-width: 3;
+     *  -fx-stroke-type: inside;
+     *  -fx-stroke-dash-array: 8 2;
+     *  -fx-stroke-line-cap: butt;
+     * }
      * </pre>
      *
      * @param node the node to be decorated
@@ -130,36 +137,40 @@ public class StyleUtil {
     public static void styleTabPlace(Rectangle node) {
         node.setFill(Color.TRANSPARENT);
         node.setOpacity(0.5);
-        node.setStroke(getDockPlaceColor());
+        node.setStroke(getFxSelectionBar());
         node.setStrokeWidth(3);
         node.setStrokeType(StrokeType.INSIDE);
         node.setStrokeLineCap(StrokeLineCap.BUTT);
         node.getStrokeDashArray().addAll(8d,2d);
+        
     }        
-   /**
-     * Sets properties which correspond to the following
+    /**
+     * Sets styles for drag indicator which correspond to the following
      * {@literal css}.
      * <pre>
-     * .dock-title-bar {
-     *      -fx-padding: 2;
-     *      -fx-spacing: 3;
-     *      -fx-border-width: 1;
-     *      -fx-border-color: -fx-outer-border;
+     * .dock-place {
+     *  -fx-fill: transparent;
+     *  -fx-opacity: 0.3;
+     *  -fx-stroke: -fx-selection-bar;
+     *  -fx-stroke-width: 3;
+     *  -fx-stroke-type: inside;
+     *  -fx-stroke-dash-array: 8 2;
+     *  -fx-stroke-line-cap: butt;
      * }
      * </pre>
      *
      * @param node the node to be decorated
      */
-/*    public static void styleDockTitleBar(DockTitleBar node) {
-        
-        node.setPadding(new Insets(2,2,2,2));
-        node.setSpacing(3);
-        
-        setFxBackground(node);
-        BorderStroke stroke = new BorderStroke(getFxOuterBorder(), BorderStrokeStyle.SOLID, null, new BorderWidths(1, 1, 1, 1));
-        Border border = new Border(stroke);
-        node.setBorder(border);
-    }    
-*/    
+    public static void styleDockPlace(Rectangle node) {
+        node.setFill(Color.TRANSPARENT);
+        node.setOpacity(0.3);
+        node.setStroke(getFxSelectionBar());
+        node.setStrokeWidth(3);
+        node.setStrokeType(StrokeType.INSIDE);
+        node.setStrokeLineCap(StrokeLineCap.BUTT);
+        node.getStrokeDashArray().addAll(8d,2d);
+       
+    }        
     
+
 }

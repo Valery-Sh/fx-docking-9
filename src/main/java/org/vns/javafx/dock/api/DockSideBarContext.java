@@ -561,11 +561,6 @@ public class DockSideBarContext extends LayoutContext {
             return indicatorPopup;
         }
 
-        /*        @Override
-        public void showIndicatorPopup(double screenX, double screenY) {
-            getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
-        }
-         */
         @Override
         protected Pane createIndicatorPane() {
             Pane p = new Pane() {
@@ -581,7 +576,8 @@ public class DockSideBarContext extends LayoutContext {
         protected Rectangle getTabDockPlace() {
             if (tabDockPlace == null) {
                 tabDockPlace = new Rectangle();
-                tabDockPlace.getStyleClass().add("dock-place");
+                tabDockPlace.getStyleClass().add("tab-place");
+                //StyleUtil.styleTabPlace(tabDockPlace);
                 getIndicatorPane().getChildren().add(tabDockPlace);
             }
             return tabDockPlace;

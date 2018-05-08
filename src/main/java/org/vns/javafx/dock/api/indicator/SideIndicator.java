@@ -47,14 +47,7 @@ public abstract class SideIndicator extends PositionIndicator {
         getDockPlace().setVisible(true);
     }
 
-    /*    public Window getIndicatorPopup() {
-        return null;
-    }
-     */
- /*    @Override
-    public void showSideIndicator(double screenX, double screenY, Node targetNode) {
-    }
-     */
+
     public Button getSelectedButton() {
         return selectedButton;
     }

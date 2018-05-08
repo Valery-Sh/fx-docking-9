@@ -270,7 +270,7 @@ public class DockTabPane2Context extends LayoutContext { //implements ObjectRece
             if (tabDockPlace == null) {
                 tabDockPlace = new Rectangle();
                 tabDockPlace.getStyleClass().addAll("tab-place");
-                StyleUtil.styleTabPlace(tabDockPlace);
+                //StyleUtil.styleTabPlace(tabDockPlace);
                 getIndicatorPane().getChildren().add(tabDockPlace);
             }
             return tabDockPlace;

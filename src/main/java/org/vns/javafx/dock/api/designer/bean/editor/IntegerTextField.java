@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -70,11 +70,6 @@ public class IntegerTextField extends PrimitivesTextField.NumberTextField<Intege
         setTextFormatter(formatter);
     }
 
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-    
     protected String getPattern() {
         return "0|-?([1-9][0-9]*)?";
     }

@@ -79,7 +79,7 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
 
         
         windowRoot.getStyleClass().add("sidebar-popup-root");
-        StyleUtil.styleSideBarPopupRoot(windowRoot);
+        //StyleUtil.styleSideBarPopupRoot(windowRoot);
         windowRoot.getChildren().add(node);
 
         floatPopup.getScene().setRoot(windowRoot);

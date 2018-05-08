@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
+import org.vns.javafx.dock.api.designer.bean.editor.DecimalTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import java.math.RoundingMode;
 import javafx.application.Platform;
 import javafx.beans.property.Property;

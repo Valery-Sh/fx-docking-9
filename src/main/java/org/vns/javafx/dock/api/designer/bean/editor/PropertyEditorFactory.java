@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.List;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
@@ -33,7 +33,7 @@ public class PropertyEditorFactory {
      * @param bean the bean the property belongs to
      * @return the new property editor instance for the specified parameters
      */
-    protected PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName ) {
+    public PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName ) {
         return null;
     }
     
@@ -70,8 +70,7 @@ public class PropertyEditorFactory {
                 return new FloatTextField();
             } else if ( "opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))  ) {
                 return new SliderEditor(0,1,1);
-            }
-            else if ( propertyType.equals(Double.class) || propertyType.equals(double.class)  ) {
+            } else if ( propertyType.equals(Double.class) || propertyType.equals(double.class)  ) {
                 return new DoubleTextField();
             } else if ( propertyType.equals(String.class)) {
                 return new StringTextField();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,11 +49,6 @@ public class DecimalTextField extends DoubleTextField {
         super(defaultValue, minValue, maxValue);
     }
  
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-    
     public void setScale(int scale, RoundingMode roundingMode) {
         this.scale = scale;
         this.roundingMode = roundingMode;
@@ -93,12 +88,6 @@ public class DecimalTextField extends DoubleTextField {
                 textField.setValue(0d);
                 return "0";
             } else {
- /*        if (dv.longValue() != dv.doubleValue()) {
-                    return super.toString(dv);
-                } else {
-                    return String.valueOf(dv.longValue());
-                }
-  */
                 if (dv.longValue() == dv.doubleValue()) {
                     return String.valueOf(dv.longValue());
                 } else {
@@ -123,15 +112,6 @@ public class DecimalTextField extends DoubleTextField {
                 }
             }
             return d;
-
-            /*            Double d = super.fromString(tx);
-            if ( d == null ) {
-                textField.setValue(0d);
-            } else {
-                textField.setValue(d);
-            }
-            return d;
-             */
         }
     }
 

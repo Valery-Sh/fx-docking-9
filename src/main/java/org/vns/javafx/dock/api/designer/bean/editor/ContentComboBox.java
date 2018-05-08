@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -37,10 +37,13 @@ public class ContentComboBox extends ComboBoxBase {
     
     public ContentComboBox() {
         getStyleClass().addAll("content-combo-box");
+    }
+    
+    private void init() {
         setDisplayNode(new Label());
         getDisplayNode().getStyleClass().add("display-node");
     }
-  
+    
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();

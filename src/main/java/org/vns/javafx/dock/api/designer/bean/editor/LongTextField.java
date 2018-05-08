@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesTextField;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.control.TextFormatter;
@@ -60,10 +61,6 @@ public class LongTextField extends PrimitivesTextField.NumberTextField<Long> {
         setTextFormatter(formatter);
     }
 
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
     
     protected String getPattern() {
         return "0|-?([1-9][0-9]*)?";

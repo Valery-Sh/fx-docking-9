@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
-import org.vns.javafx.dock.api.designer.bean.PrimitivesTextField.NumberTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesTextField.NumberTextField;
 
 /**
  *
@@ -51,11 +51,6 @@ public class DoubleTextField extends NumberTextField<Double> {
         setMinValue(minValue);
         setMaxValue(maxValue);
         init();
-    }
-
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
     @Override

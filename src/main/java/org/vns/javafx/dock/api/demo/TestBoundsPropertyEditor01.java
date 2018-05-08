@@ -40,7 +40,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.ContentComboBox;
+import org.vns.javafx.dock.api.designer.bean.editor.ContentComboBox;
 
 /**
  *

@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.StyleUtil;
 
 public abstract class PositionIndicator {
 
@@ -26,7 +27,11 @@ public abstract class PositionIndicator {
         indicatorPane = createIndicatorPane();
 //        indicatorPane.getStyleClass().add("indicator-pane");
         dockPlace = createDockPlace();
-        dockPlace.getStyleClass().add("dock-place");        
+        dockPlace.getStyleClass().add("dock-place");  
+/*        if ( dockPlace instanceof Rectangle ) {
+            StyleUtil.styleDockPlace((Rectangle) dockPlace);
+        }
+*/
         addDockPlace();
     }
     

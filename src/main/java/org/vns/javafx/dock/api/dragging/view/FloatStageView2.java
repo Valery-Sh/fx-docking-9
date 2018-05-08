@@ -81,7 +81,7 @@ public class FloatStageView2 extends FloatStageView {
         };
 
         windowRoot.getStyleClass().add("sidebar-popup-root");
-        StyleUtil.styleSideBarPopupRoot(windowRoot);
+        //StyleUtil.styleSideBarPopupRoot(windowRoot);
 
         windowRoot.getChildren().add(node);
 

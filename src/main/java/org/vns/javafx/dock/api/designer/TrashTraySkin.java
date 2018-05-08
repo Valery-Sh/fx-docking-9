@@ -19,6 +19,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SkinBase;
@@ -56,7 +57,9 @@ public class TrashTraySkin extends SkinBase<TrashTray> {
         ContextMenu ctxMenu = new ContextMenu(openItem, clearItem);
         
         ctxMenu.setOnShowing( e -> {
-            ctxMenu.getScene().getStylesheets().add(DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm());
+            String url = DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+            ctxMenu.getScene().getStylesheets().remove(url);
+            ctxMenu.getScene().getStylesheets().add(url);
         });
         
         getSkinnable().setContextMenu(ctxMenu);

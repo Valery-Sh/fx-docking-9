@@ -17,20 +17,13 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
-import javafx.event.EventType;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -48,8 +41,9 @@ public class TestCommon extends Application {
         lb1.setFocusTraversable(true);
         
         HBox hbox = new HBox(b2,lb1);
+        hbox.getStyleClass().add("test-hbox");
         hbox.setFocusTraversable(true);
-        hbox.setStyle("-fx-background-color: -fx-outer-border; -fx-border-width: 20; -fx-border-color: -fx-outer-border");     
+        hbox.setStyle("-fx-background-color: -fx-selection-bar; -fx-border-width: 20; -fx-border-color: -fx-outer-border");     
         
         VBox root = new VBox(hbox, b1);
         //root.setStyle("-fx-background-color: YELLOW");
@@ -63,8 +57,10 @@ public class TestCommon extends Application {
                 System.err.println("   --- Radii = " + f.getRadii());
                 System.err.println("   --- insets = " + f.getInsets());
             });
-            
-            
+            hbox.getCssMetaData().forEach(s -> {
+                System.err.println("Stylable = " + s);
+            });
+            //hbox.setStyle("-fx-min-height: 600");
             
         });
         Scene primaryScene = new Scene(root);
@@ -80,6 +76,7 @@ public class TestCommon extends Application {
         primaryStage.show();
        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+        primaryScene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
         Dockable.initDefaultStylesheet(null);
     }

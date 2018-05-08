@@ -1,8 +1,8 @@
-
+.root {
+    -my-own-color: yellow;
+}
 /*******************************************************************************
- *                                                                             *
- * DockPane                                                                    *
- *                                                                             *
+ * BorderPane                                                                  *
  ******************************************************************************/
 .border-pane-indicator .center,.top,.right,.bottom,.left{
     -fx-border-color: black; 
@@ -11,12 +11,14 @@
     -fx-background-color: lightgray; 
     -fx-text-fill: black
 }
-
+/*******************************************************************************
+ * StackPane indicator                                                         *
+ ******************************************************************************/
 .stack-pane-indicator .center,.top,.right,.bottom,.left{
     -fx-border-color: black; 
     -fx-border-width:1.5; 
     -fx-opacity: 0.3; 
-    -fx-background-color: lightgray; 
+    -fx-background-color: -fx-outer-border; 
     -fx-text-fill: black
 }
 .docktitlebar-insert-pinbutton {
@@ -29,35 +31,29 @@
     -fx-graphic: url(close.png);
 }
 
-
-/*.dock-node:floating .dock-title-state-button {
-    -fx-graphic: url(restore.png);
-}
-
-.dock-node:maximized .dock-title-state-button {
-    -fx-graphic: url(restore.png);
-}
-*/
 /*********************************************
- *
- *  Drag Indicator's Styles
- *
+ *  Drag Indicator's Styles                  *
  *********************************************/
 .tab-place {
-/*    -fx-fill: transparent;
-    -fx-opacity: 0.5;
-    -fx-stroke: #0093ff;
+    -fx-fill: transparent;
+    -fx-opacity: 0.3;
+    -fx-stroke: -fx-selection-bar;
     -fx-stroke-width: 3;
     -fx-stroke-type: inside;
     -fx-stroke-dash-array: 8 2;
     -fx-stroke-line-cap: butt;
-*/
-}
 
-.list-based-indicator .dock-place {
+}
+.list-based-indicator > .dock-place {
+
     -fx-fill: -fx-selection-bar;
     -fx-opacity: 0.3;
+    -fx-stroke: -fx-selection-bar;;
+    -fx-stroke-width: 3;
+    -fx-stroke-type: inside;
+    -fx-stroke-line-cap: butt;
 }
+
 .dock-place {
     -fx-fill: transparent;
     -fx-opacity: 0.3;
@@ -68,22 +64,6 @@
     -fx-stroke-dash-array: 8 2;
     -fx-stroke-line-cap: butt;
 
-}
-
-/*.dock-place-hide {
-    -fx-fill: -fx-selection-bar;
-    -fx-opacity: 0.5;
-}
-*/
-/*.dock-place2 {
-    -fx-fill: gray;
-    -fx-opacity: 0.2;
-    -fx-stroke: -fx-selection-bar;
-    -fx-stroke-width: 1;
-    -fx-stroke-type: inside;
-}
-*/
-.drag-node-indicator {
 }
 /*================================================
  *    Used by SideIndicator of the DockNode      *
@@ -99,7 +79,7 @@
 }
 
 /*========================================================
- *  Buttons th display dock position relative to a node  *
+ *  Buttons to display dock position relative to a node  *
  *=======================================================*/   
 .drag-node-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
@@ -133,17 +113,16 @@
     -fx-border-color: -fx-selection-bar;
 }
 
-
 .drag-pane-indicator-top-button {
     -fx-graphic: url(dock-popup-top-24x24.png);
     -fx-padding: 4;
 }
 
-.drag-pane-indicator-top-button:tabover {
+/*.drag-pane-indicator-top-button:tabover {
     -fx-graphic: url(uparrow-blue-16x16.png);
     -fx-padding: 0;
 }
-
+*/
 .drag-pane-indicator-right-button {
     -fx-graphic: url(dock-popup-right-24x24.png);
     -fx-padding: 4;
@@ -167,35 +146,15 @@
     visibility: hidden;
 }
 
-/*.drag-redir-indicator {
-    -fx-background-color: transparent;
-}
-.drag-redir-indicator-top-button {
-    -fx-graphic: url(docknode-16x16.png);   
-    -fx-padding: 4,4,4,2;
-}
-.drag-redir-indicator-right-button {
-    -fx-graphic: url(docknode-16x16.png);   
-    -fx-padding: 4,4,4,2;
-}
-.drag-redir-indicator-bottom-button {
-    -fx-graphic: url(docknode-16x16.png);   
-    -fx-padding: 4,4,4,2;
-}
-.drag-redir-indicator-left-button {
-    -fx-graphic: url(docknode-16x16.png);   
-    -fx-padding: 4,4,4,2;
-}
-*/
+
 /*******************************************************************************
  *                                                                             *
  * DockNode                                                                    *
  *                                                                             *
  ******************************************************************************/
 .dock-node {
-    /*    -fx-background-color: -fx-background;
-        -fx-padding: 2 2 2 2;
-    */
+      -fx-background-color: -fx-background;
+      -fx-padding: 2 2 2 2;
 }
 
 
@@ -205,12 +164,10 @@
  *                                                                         *
  **************************************************************************/
 .float-window-root {
-    /*    -fx-background-color: -fx-background;
-        -fx-border-width: 2;
-        -fx-border-color: lightgrey;
-    */
+      -fx-background-color: -fx-background;
+      -fx-border-width: 1;
+      -fx-border-color: -fx-outer-border;
 }
-
 
 /*******************************************
  *          DockSideBar
@@ -245,9 +202,8 @@
 }
 
 .sidebar-popup-root {
-/*    -fx-border-width: 1 1 1 1;
+    -fx-border-width: 1;
     -fx-border-color: -fx-outer-border;
-*/
 }
 
 /* ***********************************************
@@ -257,10 +213,8 @@
 .dock-title-bar {
     -fx-padding: 2;
     -fx-spacing: 3;
-
     -fx-border-width: 1;
     -fx-border-color: -fx-outer-border;
-
 }
 
 
@@ -284,17 +238,17 @@
 }
 
 .dock-title-bar:choosed {
-    -fx-background-color:  #0093ff;
+    -fx-background-color:  -fx-selection-bar;
     -fx-text-fill: white;
 }
 
 .dock-title-bar:choosed .title-label{
-    -fx-background-color: #0093ff;
+    -fx-background-color: -fx-selection-bar;
     -fx-text-fill: white;
 }
 
 .dock-title-bar:choosed .button {
-    -fx-background-color: #0093ff;
+    -fx-background-color: -fx-selection-bar;
 } 
 
 .dock-title-bar:choosed .pin-button {

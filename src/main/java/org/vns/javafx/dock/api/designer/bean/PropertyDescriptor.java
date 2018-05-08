@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;

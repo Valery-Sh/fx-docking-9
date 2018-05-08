@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditorFactory;
 import java.util.Set;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;

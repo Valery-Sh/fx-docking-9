@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 Your Organisation.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Verion 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -743,7 +743,6 @@ public class LayoutContextFactory {
             };
             
             indicator.getStyleClass().add("list-based-indicator");
-            //indicator.setStyle("-fx-border-width: 1px; -fx-border-color: red");
             return indicator;
         }
 
@@ -772,7 +771,6 @@ public class LayoutContextFactory {
 
         protected void adjustPlace(Node pane, double x, double y) {
             Rectangle r = (Rectangle) getDockPlace();
-            //Point2D pt = pane.screenToLocal(x, y);
             ListBasedTargetContext ctx = (ListBasedTargetContext) getLayoutContext();
             Region targetPane = (Region) ctx.getLayoutNode();
             Node innerNode = null;

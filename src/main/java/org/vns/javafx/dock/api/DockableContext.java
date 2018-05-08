@@ -242,7 +242,7 @@ public class DockableContext {
     /**
      * Return an object property which represents a title bar as a node.
      *
-     * @return the property type {@link TitleBarProperty}
+     * @return the property 
      *
      */
     public ObjectProperty<Node> titleBarProperty() {
