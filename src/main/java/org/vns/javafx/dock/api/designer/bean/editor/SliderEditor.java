@@ -36,7 +36,6 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  */
 public class SliderEditor extends Control implements PropertyEditor<Number> {
 
-    //private final DoubleProperty value = new SimpleDoubleProperty();
     private DecimalTextField textField;
     private Slider slider;
 
@@ -48,22 +47,12 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
         textField.setScale(2, RoundingMode.HALF_UP);
         slider = new Slider(min, max, value);
 
-        /*        slider.setBlockIncrement(0.01d);
-        slider.setMajorTickUnit(0.01d);
-        slider.setSnapToTicks(true);
-        slider.setMinorTickCount(1);
-         */
         init();
 
     }
 
     private void init() {
         getStyleClass().add("slider-editor");
-        slider.valueChangingProperty().addListener(changing -> {
-            // if ( changing &&  slider.getValue() ) {
-
-            // }
-        });
         slider.disableProperty().addListener((v, ov, nv) -> {
             textField.setEditable(!nv);
         });
@@ -144,12 +133,10 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
     public static class SliderEditorSkin extends SkinBase<SliderEditor> {
 
         private GridPane grid;
-        //private HBox grid;
 
         public SliderEditorSkin(SliderEditor control) {
             super(control);
             grid = new GridPane();
-            //grid = new HBox(getSkinnable().getTextField(),getSkinnable().getSlider());
             grid.add(getSkinnable().getTextField(), 0, 0);
             grid.add(getSkinnable().getSlider(), 1, 0);
             Platform.runLater(() -> {
@@ -172,4 +159,4 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
         }
     }// Skin
 
-}
+}//SliderEditor

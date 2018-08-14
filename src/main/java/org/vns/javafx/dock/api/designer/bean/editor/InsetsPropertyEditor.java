@@ -22,8 +22,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.css.PseudoClass;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -70,6 +68,9 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     private final ChangeListener<Number> leftValueInsetslistener = ((v, ov, nv) -> {
         setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), getEditorInsets().getBottom(), (double) nv));
     });
+    public InsetsPropertyEditor() {
+        this(0d);
+    }
 
     public InsetsPropertyEditor(double topRightBottomLeft) {
         this(topRightBottomLeft, topRightBottomLeft, topRightBottomLeft, topRightBottomLeft);

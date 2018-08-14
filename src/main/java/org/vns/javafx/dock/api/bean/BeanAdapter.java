@@ -112,7 +112,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     }
    
-    public Property fxObjectProperty(String propName) {
+    public Property getJavaFxObjectProperty(String propName) {
         Property retval = null;
         try {
             if (propName == null) {
@@ -126,7 +126,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
         return retval;
     }
-
+   public static Method getJavaFxPropertyMethod(Class<?> beanClass,String propName) {
+        Method retval = null;
+        try {
+            if (propName == null) {
+                return null;
+            }
+            String fxPropName = propName + "Property";
+            retval = ReflectHelper.MethodUtil.getMethod(beanClass, fxPropName, new Class[0]);
+        } catch (NoSuchMethodException | IllegalArgumentException ex) {
+            //Logger.getLogger(BeanAdapter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retval;
+    }
     private static MethodCache getClassMethodCache(final Class<?> type) {
         if (type == Object.class) {
             return null;
@@ -194,7 +206,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return localCache.getMethod(getMethodName(SET_PREFIX, key), type);
     }
     
-     private Method getFxSetterMethod(String key) {
+     private Method getJavaFxSetterMethod(String key) {
         Class<?> type = getType(key);
         if (type == null) {
             return null;
@@ -357,7 +369,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new NullPointerException();
         }
 
-        return getFxSetterMethod(key) == null;
+        return getJavaFxSetterMethod(key) == null;
     }
     /**
      * Returns the property model for the given property.

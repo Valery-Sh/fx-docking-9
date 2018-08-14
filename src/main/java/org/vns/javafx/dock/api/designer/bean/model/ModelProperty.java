@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.model;
 
-import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -23,52 +22,59 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
+import org.vns.javafx.dock.api.designer.bean.BeanDescriptor;
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 
 /**
  *
- * @author Olga
+ * @author Valery
  */
-public class PropertyDescriptor {
-    
+public class ModelProperty {
+
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty displayName = new SimpleStringProperty();
+    private final BooleanProperty javaFxKind = new SimpleBooleanProperty(true);
+    private final BooleanProperty readOnly = new SimpleBooleanProperty(false);
     private final BooleanProperty modifiable = new SimpleBooleanProperty(true);
-    private final StringProperty  editorClass = new SimpleStringProperty();
-    private ReadOnlyObjectWrapper<Section> sectionWrapper = new ReadOnlyObjectWrapper<>();
-    
+    private final StringProperty editorClass = new SimpleStringProperty();
+    private final ReadOnlyObjectWrapper<PropertyGroup> propertyGroupWrapper = new ReadOnlyObjectWrapper<>();
+
     protected Class<? extends PropertyEditor> editorType;
-    
-    public PropertyDescriptor() {
+
+    public ModelProperty() {
         init();
     }
+
     private void init() {
-        name.addListener((v,ov,nv) -> {
-            if ( getDisplayName() == null && nv != null ) {
-                setDisplayName(nv.substring(0,1).toUpperCase() + nv.substring(1));
-            }
-        });
     }
-
-
-    public ReadOnlyObjectProperty<Section> categoryProperty() {
-        return sectionWrapper.getReadOnlyProperty();
+    public ModelProperty getCopy() {
+        ModelProperty retval = new ModelProperty();
+        retval.setName(getName());
+        retval.setDisplayName(getDisplayName());
+        retval.setModifiable(isModifiable());
+        retval.setReadOnly(isReadOnly());
+        retval.setEditorClass(getEditorClass());
+        retval.setJavaFxKind(isJavaFxKind());
+        return retval;
     }
-
-    public Section getSection() {
-        return sectionWrapper.getValue();
-    }
-    
-    protected void setSection(Section section) {
-        sectionWrapper.setValue(section);
-    }    
     public StringProperty nameProperty() {
         return name;
+    }
+    
+    public BooleanProperty javaFxKindProperty() {
+        return javaFxKind;
+    }
+    public boolean isJavaFxKind() {
+        return javaFxKind.get();
+    }
+    public void setJavaFxKind(boolean kind) {
+        javaFxKind.set(kind);
     }
     
     public String getName() {
         return name.get();
     }
-    
+
     public void setName(String name) {
         this.name.set(name);
     }
@@ -76,29 +82,44 @@ public class PropertyDescriptor {
     public StringProperty displayNameProperty() {
         return displayName;
     }
-    
+
     public String getDisplayName() {
         return displayName.get();
     }
+
     public void setDisplayName(String displayName) {
         this.displayName.set(displayName);
     }
+    
+    public BooleanProperty readOnlyProperty() {
+        return readOnly;
+    }
+    
+    public boolean isReadOnly() {
+        return readOnly.get();
+    }    
+    public void setReadOnly(boolean ro) {
+        readOnly.set(ro);
+    }    
+    
     public boolean isReadOnly(Class<?> beanClass) {
         BeanAdapter ba = new BeanAdapter(beanClass);
         return ba.isReadOnly(getName());
     }
+
     public boolean isReadOnly(Object bean) {
         BeanAdapter ba = new BeanAdapter(bean);
         return ba.isReadOnly(getName());
     }
-    
+
     public BooleanProperty modifiableProperty() {
         return modifiable;
     }
-    
+
     public boolean isModifiable() {
         return modifiable.get();
     }
+
     public void setModifiable(boolean modifiable) {
         this.modifiable.set(modifiable);
     }
@@ -106,15 +127,32 @@ public class PropertyDescriptor {
     public StringProperty editorClassProperty() {
         return editorClass;
     }
+
     public String getEditorClass() {
         return editorClass.get();
     }
+
     public void setEditorClass(String clazz) {
         editorClass.set(clazz);
     }
-    public BeanDescriptor getBeanDescriptor() {
-        return getSection().getCategory().getBeanDescriptor();
+
+    public ReadOnlyObjectProperty<PropertyGroup> propertyGroupProperty() {
+        return propertyGroupWrapper.getReadOnlyProperty();
     }
 
-    
+    public PropertyGroup getPropertyGroup() {
+        return propertyGroupWrapper.getValue();
+    }
+
+    protected void setPropertyGroup(PropertyGroup group) {
+        propertyGroupWrapper.setValue(group);
+    }
+
+    public PropertyPaneModel getPropertyPaneModel() {
+        if (getPropertyGroup() == null) {
+            return null;
+        }
+        return getPropertyGroup().getPropertyPaneModel();
+    }
+
 }

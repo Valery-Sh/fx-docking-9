@@ -16,76 +16,192 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Olga
  */
-public class PropertyEditorFactory {
+public abstract class PropertyEditorFactory {
 
     public static PropertyEditorFactory getDefault() {
         return DefaultEditorFactory.getInstance();
     }
+
     /**
-     * 
+     *
      * @param propertyType the type of the property
      * @param bean the bean the property belongs to
      * @return the new property editor instance for the specified parameters
      */
-    public PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName ) {
-        return null;
-    }
-    
-    
+    public abstract PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName);// {
+//        return null;
+//    }
+
+    /**
+     *
+     * @param propertyType the type of the property
+     */
+    public abstract PropertyEditor getEditor(Class<?> propertyType, String propertyName);// {
+
+    public abstract PropertyEditor getEditor(String propertyType, String propertyName);// {    
+//        return null;
+//    }  
+
     public static class DefaultEditorFactory extends PropertyEditorFactory {
-        
+
         @Override
-        public PropertyEditor getEditor(Class<?> propertyType,Object bean,String propertyName ) {
+        public PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName) {
             List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
             PropertyEditor retval = null;
-            for ( PropertyEditorFactory f : list) {
+            for (PropertyEditorFactory f : list) {
                 retval = f.getEditor(propertyType, bean, propertyName);
-                if ( retval != null) {
+                if (retval != null) {
                     break;
                 }
             }
-            if ( retval != null) {
+            if (retval != null) {
                 return retval;
             }
-            
-            if ( propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)  ) {
+
+            if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
                 return new BooleanPropertyEditor();
-            } else if ( propertyType.equals(Character.class) || propertyType.equals(char.class)  ) {
-                 return new CharacterTextField();
-            } else if ( propertyType.equals(Byte.class) || propertyType.equals(byte.class)  ) {
+            } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
+                return new CharacterTextField();
+            } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
                 return new ByteTextField();
-            } else if ( propertyType.equals(Short.class) || propertyType.equals(short.class)  ) {
+            } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
                 return new ShortTextField();
-            } else if ( propertyType.equals(Integer.class) || propertyType.equals(int.class)  ) {
+            } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
                 return new IntegerTextField();
-            } else if ( propertyType.equals(Long.class) || propertyType.equals(long.class)  ) {
+            } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
                 return new LongTextField();
-            } else if ( propertyType.equals(Float.class) || propertyType.equals(float.class)  ) {
+            } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
                 return new FloatTextField();
-            } else if ( "opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))  ) {
-                return new SliderEditor(0,1,1);
-            } else if ( propertyType.equals(Double.class) || propertyType.equals(double.class)  ) {
+            } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
+                return new SliderEditor(0, 1, 1);
+            } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
                 return new DoubleTextField();
-            } else if ( propertyType.equals(String.class)) {
+            } else if (propertyType.equals(String.class)) {
                 return new StringTextField();
-            } else if ( propertyType.isEnum()) {
+            } else if (propertyType.isEnum()) {
                 return new EnumPropertyEditor(propertyType);
+            } else if (propertyType.equals(Insets.class)) {
+                return new InsetsPropertyEditor();
+            } else if (propertyType.equals(Bounds.class)) {
+                return new BoundsPropertyEditor();
             }
             return retval;
         }
-        
+
+        @Override
+        public PropertyEditor getEditor(Class<?> propertyType, String propertyName) {
+            List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
+            PropertyEditor retval = null;
+            for (PropertyEditorFactory f : list) {
+                retval = f.getEditor(propertyType, propertyName);
+                if (retval != null) {
+                    break;
+                }
+            }
+            if (retval != null) {
+                return retval;
+            }
+
+            if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
+                return new BooleanPropertyEditor();
+            } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
+                return new CharacterTextField();
+            } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
+                return new ByteTextField();
+            } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
+                return new ShortTextField();
+            } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
+                return new IntegerTextField();
+            } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
+                return new LongTextField();
+            } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
+                return new FloatTextField();
+            } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
+                return new SliderEditor(0, 1, 1);
+            } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
+                return new DoubleTextField();
+            } else if (propertyType.equals(String.class)) {
+                return new StringTextField();
+            } else if (propertyType.isEnum()) {
+                return new EnumPropertyEditor(propertyType);
+            } else if (propertyType.equals(Insets.class)) {
+                return new InsetsPropertyEditor();
+            } else if (propertyType.equals(Bounds.class)) {
+                return new BoundsPropertyEditor();
+            }
+            return retval;
+        }
+
         public static final PropertyEditorFactory getInstance() {
             return SingletonInstance.INSTANCE;
         }
 
+        @Override
+        public PropertyEditor getEditor(String propertyType, String propertyName) {
+            List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
+            PropertyEditor editor = null;
+            for (PropertyEditorFactory f : list) {
+                editor = f.getEditor(propertyType, propertyName);
+                if (editor != null) {
+                    break;
+                }
+            }
+            if (editor != null) {
+                return editor;
+            }
+
+            if (propertyType.equals(Boolean.class.getName()) || propertyType.equals(boolean.class.getName())) {
+                return new BooleanPropertyEditor();
+            } else if (propertyType.equals(Character.class.getName()) || propertyType.equals(char.class.getName())) {
+                return new CharacterTextField();
+            } else if (propertyType.equals(Byte.class.getName()) || propertyType.equals(byte.class.getName())) {
+                return new ByteTextField();
+            } else if (propertyType.equals(Short.class.getName()) || propertyType.equals(short.class.getName())) {
+                return new ShortTextField();
+            } else if (propertyType.equals(Integer.class.getName()) || propertyType.equals(int.class.getName())) {
+                return new IntegerTextField();
+            } else if (propertyType.equals(Long.class.getName()) || propertyType.equals(long.class.getName())) {
+                return new LongTextField();
+            } else if (propertyType.equals(Float.class.getName()) || propertyType.equals(float.class.getName())) {
+                return new FloatTextField();
+            } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())))) {
+                return new SliderEditor(0, 1, 1);
+            } else if (propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())) {
+                return new DoubleTextField();
+            } else if (propertyType.equals(String.class.getName())) {
+                return new StringTextField();
+            } else if (propertyType.equals(Insets.class.getName())) {
+                return new InsetsPropertyEditor();
+            } else if (propertyType.equals(Bounds.class.getName())) {
+                return new BoundsPropertyEditor();
+            } else {
+                try {
+                    Class clazz = Class.forName(propertyType);
+                    if (clazz.isEnum()) {
+                        return new EnumPropertyEditor(clazz);
+                    }
+                } catch (ClassNotFoundException ex) {
+                    //Logger.getLogger(PropertyEditorFactory.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return editor;
+        }
+        
+
+        
 
         private static class SingletonInstance {
+
             private static final PropertyEditorFactory INSTANCE = new DefaultEditorFactory();
         }
     }

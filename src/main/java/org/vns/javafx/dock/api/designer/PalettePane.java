@@ -913,7 +913,7 @@ public class PalettePane extends Control {
         }
 
         /**
-         * Creates a new instance of type {@link PaletteCategory} and ads it to
+         * Creates a new instance of type {@link PaletteCategory} and adds it to
          * the end of the categories list.
          *
          * @param id the identifier for the new category/ Must be unique

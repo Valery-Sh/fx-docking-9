@@ -180,12 +180,11 @@ public class BeanGraphDescriptor extends Control {
 
     public static ObservableList<PropertyDescriptor> getPropertyDescriptors(BeanDescriptor bd) {
         ObservableList<PropertyDescriptor> retval = FXCollections.observableArrayList();
-        for (Category c : bd.getCategories()) {
-            for (Section s : c.getSections()) {
+        bd.getCategories().forEach((c) -> {
+            c.getSections().forEach((s) -> {
                 retval.addAll(s.getPropertyDescriptors());
-            }
-
-        }
+            });
+        });
         return retval;
     }
 
