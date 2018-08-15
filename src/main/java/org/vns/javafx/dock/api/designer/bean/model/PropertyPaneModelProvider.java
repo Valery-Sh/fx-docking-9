@@ -104,7 +104,7 @@ public class PropertyPaneModelProvider {
         try {
             PropertyDescriptor[] pds
                     = Introspector.getBeanInfo(beanClass).getPropertyDescriptors();
-            //BeanAdapter ba = 
+            
             for (PropertyDescriptor pd : pds) {
                 if (names.contains(pd.getName())) {
                     continue;

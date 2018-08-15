@@ -19,7 +19,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
@@ -55,11 +54,13 @@ public class IntegerTextField extends PrimitivesTextField.NumberTextField<Intege
         int d = getDefaultValue() == null ? 0 : getDefaultValue();
         Converter c = new Converter(this, getDefaultValue());
         valueProperty().addListener((v, ov, nv) -> {
+            System.err.println("value chanleListener");
             if (!((Integer) nv == 0 && ("-".equals(getText()) || getText().isEmpty()))) {
                 setText(c.toString((Integer) nv));
             }
         });
         textProperty().addListener((v, ov, nv) -> {
+            System.err.println("text chanleListener");
             if (!"-".equals(nv) && !"".equals(nv)) {
                 setValue(c.fromString(nv));
             } else if ("".equals(nv) || "-".equals(nv)) {

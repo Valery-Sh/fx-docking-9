@@ -1,3 +1,7 @@
 .test-hbox {
     -fx-min-height: 400;
 }
+.str {
+    -fx-text-fill: red;
+    -fx-font-wieght: bold;
+}

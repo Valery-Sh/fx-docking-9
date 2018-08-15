@@ -36,6 +36,7 @@ public abstract class PropertyEditorFactory {
      *
      * @param propertyType the type of the property
      * @param bean the bean the property belongs to
+     * @param propertyName the name of the property 
      * @return the new property editor instance for the specified parameters
      */
     public abstract PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName);// {
@@ -45,6 +46,8 @@ public abstract class PropertyEditorFactory {
     /**
      *
      * @param propertyType the type of the property
+     * @param propertyName the name of the property 
+     * @return the object of type {@code PropertyEditor }
      */
     public abstract PropertyEditor getEditor(Class<?> propertyType, String propertyName);// {
 

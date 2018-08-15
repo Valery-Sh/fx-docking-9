@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
 import javafx.scene.control.CheckBox;
