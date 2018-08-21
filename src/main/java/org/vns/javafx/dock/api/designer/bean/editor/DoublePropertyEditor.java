@@ -20,21 +20,21 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesTextField.NumberTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesPropertyEditor.NumberTextField;
 
 /**
  *
  * @author Olga
  */
-public class DoubleTextField extends NumberTextField<Double> {
+public class DoublePropertyEditor extends NumberTextField<Double> {
 
     private DoubleStringConverter converter;
     
-    public DoubleTextField() {
+    public DoublePropertyEditor() {
         this(null, null);
     }
 
-    public DoubleTextField(Double minValue, Double maxValue) {
+    public DoublePropertyEditor(Double minValue, Double maxValue) {
         this(0d, minValue, maxValue);
     }
 
@@ -42,11 +42,11 @@ public class DoubleTextField extends NumberTextField<Double> {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public DoubleTextField(Double defaultValue) {
+    public DoublePropertyEditor(Double defaultValue) {
         this(defaultValue, null, null);
     }
 
-    public DoubleTextField(Double defaultValue, Double minValue, Double maxValue) {
+    public DoublePropertyEditor(Double defaultValue, Double minValue, Double maxValue) {
         setDefaultValue(defaultValue);
         setMinValue(minValue);
         setMaxValue(maxValue);
@@ -121,9 +121,9 @@ public class DoubleTextField extends NumberTextField<Double> {
     public static class Converter extends DoubleStringConverter {
 
         private final Double defaultValue;
-        private final DoubleTextField textField;
+        private final DoublePropertyEditor textField;
 
-        public Converter(DoubleTextField textField, Double defaultValue) {
+        public Converter(DoublePropertyEditor textField, Double defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

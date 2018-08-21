@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.DecimalTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import java.math.RoundingMode;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -32,18 +30,18 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
- * @author Olga
+ * @author Valery Shyshkin
  */
-public class SliderEditor extends Control implements PropertyEditor<Number> {
+public class SliderPropertyEditor extends Control implements PropertyEditor<Number> {
 
-    private DecimalTextField textField;
+    private DecimalPropertyEditor textField;
     private Slider slider;
 
-    public SliderEditor() {
+    public SliderPropertyEditor() {
     }
 
-    public SliderEditor(double min, double max, double value) {
-        textField = new DecimalTextField(min, max);
+    public SliderPropertyEditor(double min, double max, double value) {
+        textField = new DecimalPropertyEditor(min, max);
         textField.setScale(2, RoundingMode.HALF_UP);
         slider = new Slider(min, max, value);
 
@@ -65,7 +63,7 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
-    protected DecimalTextField getTextField() {
+    protected DecimalPropertyEditor getTextField() {
         return textField;
     }
 
@@ -130,11 +128,11 @@ public class SliderEditor extends Control implements PropertyEditor<Number> {
         return slider.valueProperty().isBound() || textField.valueProperty().isBound();
     }
 
-    public static class SliderEditorSkin extends SkinBase<SliderEditor> {
+    public static class SliderEditorSkin extends SkinBase<SliderPropertyEditor> {
 
         private GridPane grid;
 
-        public SliderEditorSkin(SliderEditor control) {
+        public SliderEditorSkin(SliderPropertyEditor control) {
             super(control);
             grid = new GridPane();
             grid.add(getSkinnable().getTextField(), 0, 0);

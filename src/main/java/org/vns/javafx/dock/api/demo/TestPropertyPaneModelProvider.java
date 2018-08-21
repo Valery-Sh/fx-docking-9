@@ -40,7 +40,7 @@ import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.EnumPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.InsetsPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.model.ModelProperty;
 import org.vns.javafx.dock.api.designer.bean.model.PropertyPaneModel;
 import org.vns.javafx.dock.api.designer.bean.model.PropertyPaneModelProvider;

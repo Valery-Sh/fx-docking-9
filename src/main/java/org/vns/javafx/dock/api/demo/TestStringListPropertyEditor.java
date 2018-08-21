@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.collections.FXCollections;
@@ -27,18 +29,22 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerListTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.StringListTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
+import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
 
 /**
  *
@@ -46,18 +52,11 @@ import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
  */
 public class TestStringListPropertyEditor extends Application {
 
-   
-
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-        String str = "";
-        String[] a = str.split(",");
-        for (int i=0; i < a.length; i++) {
-            System.err.println(i + "). " + a[i]);
-        }   
-        
+
         ObservableList<Integer> plist = FXCollections.observableArrayList();
-   
+
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -84,23 +83,80 @@ public class TestStringListPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
+
+        StringListPropertyEditor tf1 = new StringListPropertyEditor();
+        //tf1.setSeparator(",", "\\s* \\\\s*");
+        tf1.setSeparator(",", "\\s*,\\s*");
+        tf1.setValueIfBlank("blank");
+        //tf1.setSeparator(" ", "\\s* \\s*");
+        String[] s1 = ("a ,   b, c").split(tf1.getSeparatorRegExp());
+        for ( String s : s1) {
+            System.err.println("s = " + s);
+        }
         
-        
-        StringListTextField tf1 = new StringListTextField();
-        tf1.setValueIfBlank("");
+        //tf1.getStyleClass().remove("label");
+        //tf1.setValueIfBlank("");
+        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
         //tf1.setKeepItemTrimmed(false);
+        //tf1.setSeparator(",");
+        String[] sss = "a b c".split("\\s+,");
+        //System.err.println("0 " + sss[0] + "; 1 " + sss[1] + "; 2 " + sss[2]);
+        //Pattern pattern = Pattern.compile("\\w+");
+        //System.err.println("quote = " + Pattern.quote("\\s+,"));        
+        String tx = ",a1,b ,c";
+        Pattern ptn = Pattern.compile(",");
+        //Matcher m = ptn.matcher(tx);        
+        //System.err.println("m0 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
+        //System.err.println("m0.1 = " + "; start=" + m.start() );
+        //System.err.println("m1 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
+        String[] its = ptn.split(tx);
+        System.err.println("itx.length=" + its.length);
+        Integer[][] itemPos = new Integer[its.length][2];
+        Matcher m = ptn.matcher(tx);        
+        int start = 0;
+        for ( int i=0; i < its.length; i++) {
+            
+            boolean found = m.find();
+            if ( ! found && i == its.length -1 ) {
+                itemPos[i][0] = start + 1;
+                itemPos[i][1] = start + 1 + its[its.length -1].length();
+                break;
+            }
+            start = m.start();
+            itemPos[i][0] = start - its[i].length();
+            itemPos[i][1] = start;
+            if ( itemPos[i][0] == -1 ) {
+                //itemPos[i][0] = 0;
+                //itemPos[i][1] = 0;
+            }
+        }
+        for ( int i= 0; i < its.length; i ++ ) {
+            System.err.println("item[" + i + "] = " + its[i] );
+            System.err.println("[" + i + ",0] = " + itemPos[i][0]);
+            System.err.println("[" + i + ",1] = " + itemPos[i][1]);
+            System.err.println("----------------------------------");
+            
+        }
+        System.err.println("last = " + tx.substring(7, 8));
+        // in case you would like to ignore case sensitivity,
+        // you could use this statement:
+        // Pattern pattern = Pattern.compile("\\s+", Pattern.CASE_INSENSITIVE);
+        //Matcher matcher = pattern.matcher("");
         
-        tf1.setValidator( item -> {
+        tf1.getValidators().add(item -> {
+            //  if ( true) return true;
             boolean v = true;
-            System.err.println("V ITEM = " + item);
-            if ( !item.trim().isEmpty() ) {
-                if ( ! item.trim().startsWith("label") ) {
+            //System.err.println("V ITEM = " + item);
+            if (!item.trim().isEmpty()) {
+                if (!(item.trim().startsWith("tx1") || item.trim().startsWith("-fx") || item.trim().startsWith("label"))) {
+                    System.err.println("VALIDATOR false item = " + item);
                     v = false;
                 }
             }
-            
+
             return v;
         });
+
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
         /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
@@ -108,14 +164,73 @@ public class TestStringListPropertyEditor extends Application {
         //tf1.bindBidirectional(btn1.textProperty());
         //tf1.bindBidirectional(btn1.prefWidthProperty());
         //tf1.bindBidirectional(btn1.opacityProperty());
+        //lb1.getStyleClass().remove("label");
         tf1.bindContentBidirectional(lb1.getStyleClass());
         //plist.addAll(25, 26);
-        
+
         //tf1.setEditable(false);
         //tf1.bind(btn1.prefWidthProperty());
+        /*        value.bindBidirectional(tf1.valueProperty());
+        value.addListener((v,ov,nv) -> {
+            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
+        });
+        tf1.textProperty().addListener((v,ov,nv) -> {
+            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
+
+        });
+         */
+        //anchor.setMinWidth(10);
+        //grid.setMinWidth(10);
+        //tf1.setMinWidth(10);
+        //lb1.setMinWidth(10);
+        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
+        Label lb2 = new Label("111111lable 1");
+        lb2.setFont(new Font(13));
+        //TextField tf2 = new TextField();
+        //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
+        //IntegerTextField tf2 = new IntegerTextField();
+        //ShortTextField tf2 = new ShortTextField();
+        //LongTextField tf2 = new LongTextField();
+        //DoubleTextField tf2 = new DoubleTextField(24.5);
+        //ByteTextField tf2 = new ByteTextField(null);
+        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
+
+        tf2.setFont(new Font(13));
+        btn2.setOnAction(e -> {
+            btn2.setPrefWidth(200.56);
+        });
+        //tf2.bind(btn2.prefWidthProperty());
+        //tf2.bindBidirectional(btn2.prefWidthProperty());
+        //tf2.bindBidirectional(btn2.textProperty());
+        //tf2.bind(btn2.textProperty());
+        //tf2.unbind();
+        Label lb3 = new Label("lable 3");
+        lb3.setFont(new Font(13));
+
+        //tf1.setPrefWidth(200);
+        Label elb = new Label("errors");
+        HBox ehb = new HBox();
+        ehb.setStyle("-fx-background-color: aqua");
+        Circle shape = new Circle(2, Color.RED);
+        shape.setManaged(false);
+        ehb.getChildren().add(shape);
+
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
+        grid.add(elb, 0, 1);
+        grid.add(ehb, 1, 1);
+        grid.add(lb2, 0, 2);
+        grid.add(tf2, 1, 2);
+        //TextField tf3 = new TextField();
+
         btn1.setOnAction(e -> {
-            
-            ObservableList<Integer> nol = FXCollections.observableArrayList();
+            //tf1.getValue().addAll("STR11","STR12","STR13");
+            tf1.getValue().addAll("STR10", "STR11");
+            //tf1.getValue().add("");
+            System.err.println("INSETS = " + tf1.getInsets());
+
+            //ObservableList<Integer> nol = FXCollections.observableArrayList();
+            //lb1.getStyleClass().add("str");
             //tf1.getValue().add("a67");
             System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
             //nol.addAll(tf1.getValue());
@@ -133,50 +248,8 @@ public class TestStringListPropertyEditor extends Application {
             //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
         });
 
-        /*        value.bindBidirectional(tf1.valueProperty());
-        value.addListener((v,ov,nv) -> {
-            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-        });
-        tf1.textProperty().addListener((v,ov,nv) -> {
-            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-
-        });
-         */
-        //anchor.setMinWidth(10);
-        //grid.setMinWidth(10);
-        //tf1.setMinWidth(10);
-        //lb1.setMinWidth(10);
-        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        Label lb2 = new Label("111111lable 1");
-        lb2.setFont(new Font(13));
-        //TextField tf2 = new TextField();
-        //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerTextField();
-        //ShortTextField tf2 = new ShortTextField();
-        //LongTextField tf2 = new LongTextField();
-        //DoubleTextField tf2 = new DoubleTextField(24.5);
-        //ByteTextField tf2 = new ByteTextField(null);
-        StringTextField tf2 = new StringTextField("1234");
-        
-        tf2.setFont(new Font(13));
-        btn2.setOnAction(e -> {
-            btn2.setPrefWidth(200.56);
-        });
-        //tf2.bind(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.textProperty());
-        tf2.bind(btn2.textProperty());
-        Label lb3 = new Label("lable 3");
-        lb3.setFont(new Font(13));
-
-        //tf1.setPrefWidth(200);
-        grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
-        //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-       
+
         tf3.setOnAction(e -> {
             tf3.getPseudoClassStates().forEach(s -> {
                 //System.err.println("PSEUDO = " + s);
@@ -184,10 +257,11 @@ public class TestStringListPropertyEditor extends Application {
             tf3.getStyleClass().forEach(s -> {
                 //System.err.println("STYLE = " + s);
             });
-       });
+        });
         tf3.setFont(new Font(13));
-        grid.add(lb3, 0, 2);
-        grid.add(tf3, 1, 2);
+
+        grid.add(lb3, 0, 3);
+        grid.add(tf3, 1, 3);
         //tf3.bindBidirectional(btn1.disableProperty());
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
@@ -301,15 +375,11 @@ public class TestStringListPropertyEditor extends Application {
         PopupControl pc = new PopupControl();
         pc.getScene().setRoot(vbox2);
         pc.show(stage, 20, 2);
-        
-        
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-        pc.getScene().getStylesheets().add("/resources/demo-styles.css");
         Dockable.initDefaultStylesheet(null);
         System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
-        
-        
 
     }
 

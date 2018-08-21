@@ -33,15 +33,15 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ByteTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.DecimalTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.DoubleTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.FloatTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.LongTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.ShortTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.BytePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.DoublePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.FloatPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.LongPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ShortPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
 
 /**
  *
@@ -104,11 +104,11 @@ public class TestGridPane extends Application {
 
         lb1.setFont(new Font(13));
         System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        SliderEditor tf1 = new SliderEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
+        SliderPropertyEditor tf1 = new SliderPropertyEditor(0,1,1);
+        //DecimalTextField tf1 = new DecimalPropertyEditor();
         
         
-        //IntegerTextField tf1 = new IntegerTextField();
+        //IntegerTextField tf1 = new IntegerPropertyEditor();
 
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
@@ -151,12 +151,12 @@ public class TestGridPane extends Application {
         lb2.setFont(new Font(13));
         //TextField tf2 = new TextField();
         //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerTextField();
-        //ShortTextField tf2 = new ShortTextField();
-        //LongTextField tf2 = new LongTextField();
-        //DoubleTextField tf2 = new DoubleTextField(24.5);
-        //ByteTextField tf2 = new ByteTextField(null);
-        StringTextField tf2 = new StringTextField("1234");
+        //IntegerTextField tf2 = new IntegerPropertyEditor();
+        //ShortTextField tf2 = new ShortPropertyEditor();
+        //LongTextField tf2 = new LongPropertyEditor();
+        //DoubleTextField tf2 = new DoublePropertyEditor(24.5);
+        //ByteTextField tf2 = new BytePropertyEditor(null);
+        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {

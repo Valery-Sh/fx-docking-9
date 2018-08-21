@@ -45,10 +45,10 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     private final ObjectProperty<Insets> editorInsets = new SimpleObjectProperty<>();
 
-    private final DoubleTextField top;
-    private final DoubleTextField right;
-    private final DoubleTextField bottom;
-    private final DoubleTextField left;
+    private final DoublePropertyEditor top;
+    private final DoublePropertyEditor right;
+    private final DoublePropertyEditor bottom;
+    private final DoublePropertyEditor left;
 
     private final BooleanProperty decorated = new SimpleBooleanProperty(true);
 
@@ -78,13 +78,13 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     public InsetsPropertyEditor(double top, double right, double bottom, double left) {
         this.editorInsets.set(new Insets(top, right, bottom, left));
-        this.top = new DoubleTextField();
+        this.top = new DoublePropertyEditor();
         this.top.getStyleClass().add("top-inset");
-        this.right = new DoubleTextField();
+        this.right = new DoublePropertyEditor();
         this.right.getStyleClass().add("right-inset");
-        this.bottom = new DoubleTextField();
+        this.bottom = new DoublePropertyEditor();
         this.bottom.getStyleClass().add("bottom-inset");
-        this.left = new DoubleTextField();
+        this.left = new DoublePropertyEditor();
         this.left.getStyleClass().add("left-inset");
         init();
     }

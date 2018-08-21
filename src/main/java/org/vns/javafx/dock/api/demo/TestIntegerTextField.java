@@ -29,9 +29,9 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
 
 /**
  *
@@ -99,11 +99,11 @@ public class TestIntegerTextField extends Application {
 
         lb1.setFont(new Font(13));
         System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
+        //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
         
         
-        IntegerTextField tf1 = new IntegerTextField();
+        IntegerPropertyEditor tf1 = new IntegerPropertyEditor();
 
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
@@ -147,12 +147,12 @@ public class TestIntegerTextField extends Application {
         lb2.setFont(new Font(13));
         //TextField tf2 = new TextField();
         //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerTextField();
+        //IntegerTextField tf2 = new IntegerPropertyEditor();
         //ShortTextField tf2 = new ShortTextField();
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        StringTextField tf2 = new StringTextField("1234");
+        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {

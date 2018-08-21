@@ -15,7 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesPropertyEditor;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.control.TextFormatter;
@@ -26,9 +26,9 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Olga
  */
-public class LongTextField extends PrimitivesTextField.NumberTextField<Long> {
+public class LongPropertyEditor extends PrimitivesPropertyEditor.NumberTextField<Long> {
 
-    public LongTextField() {
+    public LongPropertyEditor() {
         this(0L);
     }
 
@@ -36,7 +36,7 @@ public class LongTextField extends PrimitivesTextField.NumberTextField<Long> {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public LongTextField(Long defaultValue) {
+    public LongPropertyEditor(Long defaultValue) {
         setDefaultValue(defaultValue);
         init();
     }
@@ -90,9 +90,9 @@ public class LongTextField extends PrimitivesTextField.NumberTextField<Long> {
     public static class Converter extends LongStringConverter {
 
         private final Long defaultValue;
-        private final LongTextField textField;
+        private final LongPropertyEditor textField;
 
-        public Converter(LongTextField textField, Long defaultValue) {
+        public Converter(LongPropertyEditor textField, Long defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

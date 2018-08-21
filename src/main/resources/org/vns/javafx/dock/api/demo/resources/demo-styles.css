@@ -3,5 +3,10 @@
 }
 .str {
     -fx-text-fill: red;
-    -fx-font-wieght: bold;
+    -fx-font-weight: bold;
+}
+
+.tx1 {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
 }

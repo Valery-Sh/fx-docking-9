@@ -25,7 +25,7 @@ import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.EnumPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.InsetsPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 
 /**
  *
@@ -123,7 +123,7 @@ public class TestPropertyChange extends Application {
            }
         });
        
-        SliderEditor slider = new SliderEditor(0,1,1);
+        SliderPropertyEditor slider = new SliderPropertyEditor(0,1,1);
         InsetsPropertyEditor insetsEditor = new InsetsPropertyEditor(1,2,3,4);
         insetsEditor.setDecorated(false);
         final BooleanProperty bound = new SimpleBooleanProperty(true);

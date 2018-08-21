@@ -15,35 +15,40 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerTextField;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
- * @author Olga
+ * @author Valery Shishkin
  */
-public class ShortTextField  extends IntegerTextField {
-    
-    public ShortTextField() {
-        this(null, null);
-    }
+public class BytePropertyEditor extends IntegerPropertyEditor {
 
-    public ShortTextField(Short minValue, Short maxValue) {
-        this((short)0, minValue, maxValue);
+    public BytePropertyEditor() {
+        this((byte) 0, null, null);
     }
 
     /**
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public ShortTextField(Short defaultValue) {
-        this(defaultValue,null, null);
+    public BytePropertyEditor(Byte defaultValue) {
+        this(defaultValue, null, null);
     }
-    public ShortTextField(Short defaultValue,Short minValue, Short maxValue) {
-       super(defaultValue == null ? null : defaultValue.intValue(),
-               minValue == null ? null : minValue.intValue(),maxValue == null ? null : maxValue.intValue());
-    }  
-        
+
+    public BytePropertyEditor(Byte minValue, Byte maxValue) {
+        this((byte) 0, minValue, maxValue);
+    }
+
+    public BytePropertyEditor(Byte defaultValue, Byte minValue, Byte maxValue) {
+        super(defaultValue == null ? null : defaultValue.intValue(),
+                minValue == null ? null : minValue.intValue(), maxValue == null ? null : maxValue.intValue());
+    }
+
+/*    @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+*/
     @Override
     protected boolean isAcceptable(String txt) {
         if (txt == null) {
@@ -53,7 +58,11 @@ public class ShortTextField  extends IntegerTextField {
             return true;
         }
 
-        if (txt.matches(getPattern()) && Long.parseLong(txt) <= Short.MAX_VALUE && Long.parseLong(txt) >= Short.MIN_VALUE) {
+        if (txt.matches(getPattern()) && Long.parseLong(txt) <= Byte.MAX_VALUE && Long.parseLong(txt) >= Byte.MIN_VALUE) {
+            System.err.println("Byte: txt = " + txt);
+            System.err.println("Byte: Long.parseLong(txt) = " + Long.parseLong(txt));
+            System.err.println("Byte: getMinValue = " + getMinValue());
+            System.err.println("Byte: getMaxValue = " + getMaxValue());
             if (getMinValue() == null && getMaxValue() == null) {
                 return true;
             }
@@ -66,9 +75,5 @@ public class ShortTextField  extends IntegerTextField {
             return true;
         }
         return false;
-
     }
-
-
-
 }

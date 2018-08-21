@@ -15,9 +15,9 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
@@ -26,11 +26,11 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Olga
  */
-public abstract class PrimitivesTextField<E> extends TextField implements PropertyEditor {
+public abstract class PrimitivesPropertyEditor<E> extends TextField implements PropertyEditor {
 
     private final Property<E> value = initValueProperty();
     
-    public PrimitivesTextField() {
+    public PrimitivesPropertyEditor() {
         getStyleClass().add("text-field-editor");
     }    
     protected final UnaryOperator<TextFormatter.Change> filter = change -> {
@@ -74,7 +74,15 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
 
-    public abstract static class NumberTextField<T> extends PrimitivesTextField<Number> {
+    String toString(ObservableList list) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    ObservableList fromString(String txt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public abstract static class NumberTextField<T> extends PrimitivesPropertyEditor<Number> {
 
         private T defaultValue;
         private T minValue;
@@ -119,25 +127,4 @@ public abstract class PrimitivesTextField<E> extends TextField implements Proper
         }
     }
 
-/*    public abstract static class Converter<S extends Number> extends StringConverter<S> {
-
-        private final S defaultValue;
-        private final NumberTextField textField;
-
-        public Converter(NumberTextField textField, S defaultValue) {
-            this.textField = textField;
-            this.defaultValue = defaultValue;
-
-        }
-
-        protected S getDefaultValue() {
-            return defaultValue;
-        }
-
-        protected TextField gettextField() {
-            return textField;
-        }
-
-    }
-*/
 }

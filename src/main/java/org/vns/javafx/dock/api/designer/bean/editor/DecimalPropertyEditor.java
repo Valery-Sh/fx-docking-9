@@ -24,16 +24,16 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Olga
  */
-public class DecimalTextField extends DoubleTextField {
+public class DecimalPropertyEditor extends DoublePropertyEditor {
 
     private int scale = 1;
     private RoundingMode roundingMode = RoundingMode.HALF_UP;
     
-    public DecimalTextField() {
+    public DecimalPropertyEditor() {
         this(null, null);
     }
 
-    public DecimalTextField(Double minValue, Double maxValue) {
+    public DecimalPropertyEditor(Double minValue, Double maxValue) {
         this(0d, minValue, maxValue);
     }
 
@@ -41,11 +41,11 @@ public class DecimalTextField extends DoubleTextField {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public DecimalTextField(Double defaultValue) {
+    public DecimalPropertyEditor(Double defaultValue) {
         this(defaultValue, null, null);
     }
 
-    public DecimalTextField(Double defaultValue, Double minValue, Double maxValue) {
+    public DecimalPropertyEditor(Double defaultValue, Double minValue, Double maxValue) {
         super(defaultValue, minValue, maxValue);
     }
  
@@ -69,9 +69,9 @@ public class DecimalTextField extends DoubleTextField {
     public static class Converter extends DoubleStringConverter {
 
         private final Double defaultValue;
-        private final DecimalTextField textField;
+        private final DecimalPropertyEditor textField;
 
-        public Converter(DecimalTextField textField, Double defaultValue) {
+        public Converter(DecimalPropertyEditor textField, Double defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

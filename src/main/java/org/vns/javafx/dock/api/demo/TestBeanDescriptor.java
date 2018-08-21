@@ -31,7 +31,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.bean.BeanDescriptor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.DoubleTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.DoublePropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.PropertyDescriptor;
 
 /**
@@ -74,7 +74,7 @@ public class TestBeanDescriptor extends Application {
         beanDescr.setType(HBox.class.getName());
         PropertyDescriptor pd = new PropertyDescriptor();
         pd.setName("prefHeight");
-        pd.setEditorClass(DoubleTextField.class.getName());
+        pd.setEditorClass(DoublePropertyEditor.class.getName());
         //beanDescr.getExposedProperties().add(pd);
         
         
@@ -88,7 +88,7 @@ public class TestBeanDescriptor extends Application {
         Label lb1 = new Label("Text Alignment");
         lb1.setFont(new Font(13));
         System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        DoubleTextField tf1 = new DoubleTextField();
+        DoublePropertyEditor tf1 = new DoublePropertyEditor();
         tf1.setFont(new Font(13));
         value.bindBidirectional(tf1.valueProperty());
         value.addListener((v,ov,nv) -> {

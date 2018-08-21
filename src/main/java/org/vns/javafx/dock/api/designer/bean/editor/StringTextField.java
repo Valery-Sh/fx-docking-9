@@ -15,72 +15,199 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.scene.Node;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.util.StringConverter;
 
 /**
  *
- * @author Olga
+ * @author Valery
  */
-public class StringTextField extends PrimitivesTextField<String>  {
-    
-    private String defaultValue;
-    
-    public StringTextField() {
-        this("");
-    }
+public class StringTextField extends TextField {
 
-    /**
-     *
-     * @param defaultValue if null then an empty String value will be shown
-     */
-    public StringTextField(String defaultValue) {
-        this.defaultValue = defaultValue;
+    private final ObservableMap<Integer, String> errorItems = FXCollections.observableHashMap();
+    private final ObservableList<Predicate<String>> validators = FXCollections.observableArrayList();
+    private String valueIfBlank;
+
+    private String separator = null;
+    private String separatorRegExp = null;
+
+    protected TextFormatter formatter;
+    private ErrorMarkerBuilder errorMarkerBuilder;
+
+    //private UnaryOperator<TextFormatter.Change> filter;
+    private ObjectProperty<UnaryOperator<TextFormatter.Change>> filter = new SimpleObjectProperty<>();
+
+    private final ChangeListener<UnaryOperator<TextFormatter.Change>> filterChangeListener = (v, ov, nv) -> {
+        if (nv != null) {
+            formatter = new TextFormatter<>(new Converter(this), getText(), nv);
+            this.setTextFormatter(formatter);
+        } else {
+            formatter = new TextFormatter<>(new Converter(this),getText());
+            this.setTextFormatter(formatter);
+        }
+    };
+
+    public StringTextField() {
         init();
     }
 
-   private void init() {
-       
-        getStyleClass().add("string-text-field");
-
-        valueProperty().addListener((v, ov, nv) -> {
-            setText(nv);
-        });
-        textProperty().addListener((v, ov, nv) -> {
-            setValue(nv);
-        });
-        setText(defaultValue == null ? "" : defaultValue);
+    private void init() {
+        formatter = new TextFormatter(new Converter(this),getText());
+        this.setTextFormatter(formatter);        
     }
 
-    public String getDefaultValue() {
-        return defaultValue;
-    }
 
     @Override
-    public void bind(Property property) {
-        setEditable(false);
-        setFocusTraversable(false);
-        valueProperty().bind(property);
-    }
- 
-    @Override
-    public void bindBidirectional(Property property) {
-        setEditable(true);
-        setFocusTraversable(true);
-        valueProperty().bindBidirectional(property);
+    public ObservableList<Node> getChildren() {
+        return super.getChildren();
     }
 
-    @Override
-    protected boolean isAcceptable(String txt) {
-        return true;
+    protected List<Integer> getErrorIndexes(String[] items) {
+        List<Integer> errorItemIndexes = FXCollections.observableArrayList();
+        errorItems.clear();
+        int d = 0;
+        for (int i = 0; i < items.length; i++) {
+            String item = items[i];
+            if (item.trim().isEmpty() && getValueIfBlank() != null) {
+                continue;
+            }
+            if (getValueIfBlank() != null && getValueIfBlank().equals(item)) {
+                continue;
+            }
+            if (item.trim().isEmpty()) {
+                //
+                // We skip empty items and must take into account the actual index
+                // of the converted value in the result ObservableList
+                //
+                d++;
+                continue;
+            }
+            if (validateStringListItem(item)) {
+                continue;
+            } else {
+                errorItemIndexes.add(i - d);
+                errorItems.put(i - d, item);
+            }
+        }
+        return errorItemIndexes;
     }
 
-    @Override
-    protected Property<String> initValueProperty() {
-        return new SimpleStringProperty();
+    public ObservableMap<Integer, String> getErrorItems() {
+        return errorItems;
     }
 
+    public String getSeparator() {
+        return separator;
+    }
 
-        
+    public String getSeparatorRegExp() {
+        return separatorRegExp;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
+        this.separatorRegExp = separator;
+    }
+
+    public void setSeparator(String delimiter, String delimiterRegExp) {
+        this.separator = delimiter;
+        this.separatorRegExp = delimiterRegExp;
+    }
+
+    /**
+     * Returns the default value to replace empty items.
+     *
+     * @return the default value to replace empty items
+     * @see #setValueIfBlank(java.lang.String)
+     */
+    public String getValueIfBlank() {
+        return valueIfBlank;
+    }
+
+    /**
+     * The method is used to set the default value of an empty item. For
+     * example, when we enter the following text into this control
+     * <pre>
+     *   21,,55
+     * </pre> then if the property {@code valueIfBlank } is null then the bound
+     * observable list will contain two integer items 21 and 55. If we set the
+     * not null value, for example "77", then the bound list will contain three
+     * items 21, 77 and 55.
+     *
+     * @param valueIfBlank the value used to replace empty items
+     */
+    public void setValueIfBlank(String valueIfBlank) {
+        this.valueIfBlank = valueIfBlank;
+    }
+
+    public ObservableList<Predicate<String>> getValidators() {
+        return validators;
+    }
+
+    public ErrorMarkerBuilder getErrorMarkerBuilder() {
+        return errorMarkerBuilder;
+    }
+
+    public void setErrorMarkerBuilder(ErrorMarkerBuilder errorMarkerBuilder) {
+        this.errorMarkerBuilder = errorMarkerBuilder;
+    }
+
+    public boolean validateStringListItem(String item) {
+        boolean retval = true;
+        for (Predicate<String> v : getValidators()) {
+            if (!v.test(item)) {
+                retval = false;
+                break;
+            }
+        }
+        return retval;
+    }
+
+    public TextFormatter getFormatter() {
+        return formatter;
+    }
+
+    public UnaryOperator<TextFormatter.Change> getFilter() {
+        return filter.get();
+    }
+
+    public void setFilter(UnaryOperator<TextFormatter.Change> filter) {
+        this.filter.set(filter);
+    }
+
+    public static class Converter extends StringConverter<String> {
+
+        private final StringTextField textField;
+
+        public Converter(StringTextField textField) {
+            this.textField = textField;
+        }
+
+        @Override
+        public String toString(String list) {
+            return list;
+            //return textField.toString(list);
+        }
+
+        @Override
+        public String fromString(String txt) {
+            //return textField.fromString(txt);
+            return txt;
+
+        }
+
+    }//class Converter
+
 }

@@ -36,8 +36,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerListTextField;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
 
 /**
  *
@@ -56,7 +57,8 @@ public class TestIntegerListPropertyEditor extends Application {
         }   
         
         ObservableList<Integer> plist = FXCollections.observableArrayList();
-   
+        plist.add(5);
+        System.err.println("CONTAINS = "+ plist.contains(5));
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -85,16 +87,18 @@ public class TestIntegerListPropertyEditor extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
         
         
-        IntegerListTextField tf1 = new IntegerListTextField();
-        tf1.setValueIfBlank(0);
-        tf1.setValidator( item -> {
+        IntegerListPropertyEditor tf1 = new IntegerListPropertyEditor();
+        //tf1.setValueIfBlank("0");
+        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
+
+        tf1.getValidators().add( item -> {
             boolean v = true;
             System.err.println("V ITEM = " + item);
-            if ( !item.trim().isEmpty() && ! item.trim().equals("-") ) {
+//            if ( !item.trim().isEmpty() && ! item.trim().equals("-") ) {
                 int n = Integer.parseInt(item.trim());
                 if ( n < 0 || n > 100 ) {
                     v = false;
-                }
+//                }
             }
             return v;
         });
@@ -155,7 +159,7 @@ public class TestIntegerListPropertyEditor extends Application {
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        StringTextField tf2 = new StringTextField("1234");
+        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {

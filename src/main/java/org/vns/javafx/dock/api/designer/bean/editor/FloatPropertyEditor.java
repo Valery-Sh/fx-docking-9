@@ -20,19 +20,19 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.FloatStringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesTextField.NumberTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesPropertyEditor.NumberTextField;
 
 /**
  *
  * @author Olga
  */
-public class FloatTextField extends NumberTextField<Float> {
+public class FloatPropertyEditor extends NumberTextField<Float> {
 
-    public FloatTextField() {
+    public FloatPropertyEditor() {
         this(null, null);
     }
 
-    public FloatTextField(Float minValue, Float maxValue) {
+    public FloatPropertyEditor(Float minValue, Float maxValue) {
         this(0f, minValue, maxValue);
     }
 
@@ -40,11 +40,11 @@ public class FloatTextField extends NumberTextField<Float> {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public FloatTextField(Float defaultValue) {
+    public FloatPropertyEditor(Float defaultValue) {
         this(defaultValue, null, null);
     }
 
-    public FloatTextField(Float defaultValue, Float minValue, Float maxValue) {
+    public FloatPropertyEditor(Float defaultValue, Float minValue, Float maxValue) {
         setDefaultValue(defaultValue);
         setMinValue(minValue);
         setMaxValue(maxValue);
@@ -127,9 +127,9 @@ public class FloatTextField extends NumberTextField<Float> {
     public static class Converter extends FloatStringConverter {
 
         private final Float defaultValue;
-        private final FloatTextField textField;
+        private final FloatPropertyEditor textField;
 
-        public Converter(FloatTextField textField, Float defaultValue) {
+        public Converter(FloatPropertyEditor textField, Float defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }
