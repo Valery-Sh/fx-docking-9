@@ -69,7 +69,7 @@ public class ErrorDialog {
         cc0.setPercentWidth(100);
         ((GridPane)textFieldPane).getColumnConstraints().addAll(cc0);    
         
-        itemTextField = new StringPropertyEditor();
+        itemTextField = new SimpleStringPropertyEditor();
         ((GridPane)textFieldPane).add(itemTextField, 0, 0);
         okButton = new Button("Ok");
         cancelButton = new Button("cancel");

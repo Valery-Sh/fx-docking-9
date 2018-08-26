@@ -22,11 +22,11 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author Olga
  */
-public class StringPropertyEditor extends PrimitivesPropertyEditor<String>  {
+public class SimpleStringPropertyEditor extends PrimitivesPropertyEditor<String>  {
     
     private String defaultValue;
     
-    public StringPropertyEditor() {
+    public SimpleStringPropertyEditor() {
         this("");
     }
 
@@ -34,7 +34,7 @@ public class StringPropertyEditor extends PrimitivesPropertyEditor<String>  {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public StringPropertyEditor(String defaultValue) {
+    public SimpleStringPropertyEditor(String defaultValue) {
         this.defaultValue = defaultValue;
         init();
     }

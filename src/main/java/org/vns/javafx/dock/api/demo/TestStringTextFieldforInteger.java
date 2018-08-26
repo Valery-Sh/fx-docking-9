@@ -15,11 +15,9 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,38 +25,31 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *
  * @author Valery
  */
-public class TestIntegerListPropertyEditor extends Application {
-
-   
+public class TestStringTextFieldforInteger extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-        String str = "";
-        String[] a = str.split(",");
-        for (int i=0; i < a.length; i++) {
-            System.err.println(i + "). " + a[i]);
-        }   
-        
-        ObservableList<Integer> plist = FXCollections.observableArrayList();
-        plist.add(5);
-        System.err.println("CONTAINS = "+ plist.contains(5));
+
+
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -67,10 +58,6 @@ public class TestIntegerListPropertyEditor extends Application {
         long end1 = System.currentTimeMillis();
         //System.err.println("DIF0 = " + (end1 - start1));
 
-        Text msg = new Text("JavaFX animation is cool!");
-        msg.setTextOrigin(VPos.TOP);
-        msg.setFont(Font.font(24));
-        //Pane root = new Pane(msg);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -80,116 +67,92 @@ public class TestIntegerListPropertyEditor extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-
-        lb1.setFont(new Font(13));
+        //lb1.getStyleClass().add("str");
+        //lb1.setFont(new Font(13));
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        
-        
-        IntegerListPropertyEditor tf1 = new IntegerListPropertyEditor();
-        //tf1.setValueIfBlank("0");
-        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
 
-        tf1.getValidators().add( item -> {
-            boolean v = true;
-            System.err.println("V ITEM = " + item);
-//            if ( !item.trim().isEmpty() && ! item.trim().equals("-") ) {
-                int n = Integer.parseInt(item.trim());
-                if ( n < 0 || n > 100 ) {
-                    v = false;
-//                }
-            }
-            return v;
-        });
-        //CharacterTextField tf1 = new CharacterTextField();
-        // System.err.println("ShortMax = " + Short.MAX_VALUE);
-        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
-        //tf1.setFont(new Font(13));
-        //tf1.bindBidirectional(btn1.textProperty());
-        //tf1.bindBidirectional(btn1.prefWidthProperty());
-        //tf1.bindBidirectional(btn1.opacityProperty());
-        tf1.bindContentBidirectional(plist);
-        //plist.addAll(25, 26);
+        StringTextField tf1 = new StringTextField();
+        tf1.setValueIfBlank("0");
         
-        //tf1.setEditable(false);
-        //tf1.bind(btn1.prefWidthProperty());
+        //tf1.setSeparator(",", "\\s*,\\s*");
+        //tf1.setSeparator(";");
+        String sss = "t,   ,m, , ";
+        String[] ssItems = sss.split("\\s*,\\s*");
+
+        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
+        
+         tf1.getValidators().add(item -> {
+            boolean retval = Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
+
+            System.err.println("validator ITEM = " + item + "; matches=" + retval);
+            return retval;
+        });
+        tf1.getFilterValidators().add(item -> {
+
+            String regExp = "0|-?([1-9][0-9]*)?";
+            boolean retval = item.trim().isEmpty();
+            if ( ! retval) {
+                retval = Pattern.matches(regExp, item.trim());
+            }
+            
+            return retval;
+        });
+
         btn1.setOnAction(e -> {
-            
-            ObservableList<Integer> nol = FXCollections.observableArrayList();
-            tf1.getValue().add(67);
-            
-            //nol.addAll(tf1.getValue());
-            //plist.add(67);
-//            tf1.setValue(nol);
-//            tf1.formatter.setValue(nol);
-            //tf1.getSlider().setValue(-1);
-            //btn1.setOpacity(btn1.getOpacity() + 0.1);
+            lb1.getStyleClass().forEach(s -> {
+                System.err.println("Label class = " + s);
+            });
+//            tf1.getValue().addAll("STR10", "STR11");
+            System.err.println("INSETS = " + tf1.getInsets());
+            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
             btn1.setPrefWidth(-1);
-            //tf1.setText("200");
-            //tf1.setEditable(true);
             tf1.getPseudoClassStates().forEach(s -> {
                 //System.err.println("PSEUDO = " + s);
             });
             //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
         });
 
-        /*        value.bindBidirectional(tf1.valueProperty());
-        value.addListener((v,ov,nv) -> {
-            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-        });
-        tf1.textProperty().addListener((v,ov,nv) -> {
-            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-
-        });
-         */
-        //anchor.setMinWidth(10);
-        //grid.setMinWidth(10);
-        //tf1.setMinWidth(10);
-        //lb1.setMinWidth(10);
-        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        //TextField tf2 = new TextField();
-        //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerTextField();
-        //ShortTextField tf2 = new ShortTextField();
-        //LongTextField tf2 = new LongTextField();
-        //DoubleTextField tf2 = new DoubleTextField(24.5);
-        //ByteTextField tf2 = new ByteTextField(null);
         SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-        
+
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
-        //tf2.bind(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.textProperty());
-        tf2.bind(btn2.textProperty());
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
 
-        //tf1.setPrefWidth(200);
-        grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
-        //TextField tf3 = new TextField();
+        Label elb = new Label("errors");
+        HBox ehb = new HBox();
+        ehb.setStyle("-fx-background-color: aqua");
+        Circle shape = new Circle(2, Color.RED);
+        shape.setManaged(false);
+        ehb.getChildren().add(shape);
+
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
+        grid.add(elb, 0, 1);
+        grid.add(ehb, 1, 1);
+        grid.add(lb2, 0, 2);
+        grid.add(tf2, 1, 2);
+
+        btn1.setOnAction(e -> {
+            System.err.println("INSETS = " + tf1.getInsets());
+            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
+            btn1.setPrefWidth(-1);
+        });
+
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-       
+
         tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                //System.err.println("STYLE = " + s);
-            });
-       });
+        });
         tf3.setFont(new Font(13));
-        grid.add(lb3, 0, 2);
-        grid.add(tf3, 1, 2);
-        //tf3.bindBidirectional(btn1.disableProperty());
+
+        grid.add(lb3, 0, 3);
+        grid.add(tf3, 1, 3);
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -197,13 +160,8 @@ public class TestIntegerListPropertyEditor extends Application {
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
-        //cc20.setPercentWidth(100);
 
-        //grid.getColumnConstraints().addAll(cc0,cc1, cc20);        
         grid.getColumnConstraints().addAll(cc0, cc1);
-        //GridPane.setHalignment(tf1, HPos.RIGHT);
-        //GridPane.setHalignment(tf1, HPos.LEFT);
-        //GridPane.setFillWidth(tf1, true);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -220,18 +178,6 @@ public class TestIntegerListPropertyEditor extends Application {
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
 
-        /*        TabPane tabPane = new TabPane();
-        //propPane.getChildren().add(tabPane);
-        Tab propTab = new Tab();
-        Tab layoutTab = new Tab();
-        Tab codeTab = new Tab();
-        tabPane.getTabs().addAll(propTab,layoutTab,codeTab);
-        
-        tabPane.setTabMaxHeight(0);
-        propTab.setContent(new Label("P111"));
-        layoutTab.setContent(new Label("L111"));
-        codeTab.setContent(new Label("C111"));
-         */
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -304,8 +250,9 @@ public class TestIntegerListPropertyEditor extends Application {
         pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-
         Dockable.initDefaultStylesheet(null);
+        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
 

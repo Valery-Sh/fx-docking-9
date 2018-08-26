@@ -22,18 +22,16 @@ import javafx.util.StringConverter;
  * {@code ObservableList&lt;String&gt;}. Suppose some node or any other object
  * has a property of type {@code ObservableList&lt;String&gt;}. Recap that the
  * object of type {@code Node} have the property named {@code styleClass} which
- * is of type  {@code ObservableList&lt;String&gt; }.
- * We want to edit the content of the list. As this class is a sub class of
- * the {@code TextField} we assume that we can put a text as a comma-separated
- * list of items and each item represents a text item.
- * For example we can put the following text
+ * is of type {@code ObservableList&lt;String&gt; }. We want to edit the content
+ * of the list. As this class is a sub class of the {@code TextField} we assume
+ * that we can put a text as a comma-separated list of items and each item
+ * represents a text item. For example we can put the following text
  * <pre>
  *  s1,s34,s99
- * </pre> 
- * and we expect that our observable list will contain three items such
- * as "s1" and "s34" and "s99". If the text property of the text field is an empty
- * string then the our list will be empty too.
- * 
+ * </pre> and we expect that our observable list will contain three items such
+ * as "s1" and "s34" and "s99". If the text property of the text field is an
+ * empty string then the our list will be empty too.
+ *
  * The example below shows how to accomplish the task
  * <pre>
  * Label label = new Label("Demo");
@@ -45,13 +43,13 @@ import javafx.util.StringConverter;
  * label, label1,,  label2
  * </pre> the bound list will contain three items such as label, label1 and
  * label2. Therefore, all empty items are ignored. The class has a property
- * named  {@code valueIfBlank} which is of type {@code String}. By default it is set to null.
- * We can set it'item value to any string value. In this case every empty item
- * will be replaced with that value. For instance let'item set the value of the
- * property {@code valueIfBlank} by applying the method
+ * named {@code valueIfBlank} which is of type {@code String}. By default it is
+ * set to null. We can set it'item value to any string value. In this case every
+ * empty item will be replaced with that value. For instance let'item set the
+ * value of the property {@code valueIfBlank} by applying the method
  * <pre>
  * editor.setValueIfBlank("blank");
-   StringListPropertyEditor editor = new StringListPropertyEditor();
+ * StringListPropertyEditor editor = new StringListPropertyEditor();
  * editor.bindContentBidirectional(label.getStyleClass());
  * editor.setValueIfBlank("blank);
  * editor.setValidator( item -&gt; {
@@ -71,39 +69,40 @@ import javafx.util.StringConverter;
  * blank
  * label2
  * </pre> We can impose restrictions on the items that can be entered. To
- * achieve this goal we must add one or more objects of type Predicate&lt;String&gt;
- * to the list of validators. 
- * The field {@code validators } is defined as follows
+ * achieve this goal we must add one or more objects of type
+ * Predicate&lt;String&gt; to the list of validators. The field {@code validators
+ * } is defined as follows
  * <pre>
  * private ObservableList&lt;Predicate&lt;String&gt;&gt; validators
  * </pre> Let us extend the code which now will look like the text below
- 
+ *
  * <pre>
  * Label label = new Label("Demo");
  * </pre>
  *
- * Now we cannot enter any string value which doesn't start with the
- * symbols {@code "label"}.
+ * Now we cannot enter any string value which doesn't start with the symbols
+ * {@code "label"}.
  * <p>
- * It is not necessary to use a comma as the separator of string elements. 
- * For this purpose, any sequence of characters can be applied. Use the 
- * {@link ObservableListPropertyEditor#setSeparator(java.lang.String) } 
- * or {@link ObservableListPropertyEditor#setSeparator(java.lang.String, java.lang.String) } 
- * methods to change the default separator. In the case of using a method with 
- * one parameter, the string elements will be placed in the List object as is, 
- * that is, without trimming the spaces. When you use a method with two parameters, 
- * you can specify a regular expression for the separator. For example, 
- * if trimming is required, you can use one of the following expressions
+ * It is not necessary to use a comma as the separator of string elements. For
+ * this purpose, any sequence of characters can be applied. Use the 
+ * {@link ObservableListPropertyEditor#setSeparator(java.lang.String) }
+ * or {@link ObservableListPropertyEditor#setSeparator(java.lang.String, java.lang.String)
+ * }
+ * methods to change the default separator. In the case of using a method with
+ * one parameter, the string elements will be placed in the List object as is,
+ * that is, without trimming the spaces. When you use a method with two
+ * parameters, you can specify a regular expression for the separator. For
+ * example, if trimming is required, you can use one of the following
+ * expressions
  * </p>
  * <pre>
  *   \s*;
  *   ;\s+
  *   \s*;\s*
- * </pre>
- * The first expression causes the left trimming of the string element, the 
- * second right trimming and the third both left and right trimming.
- * 
- * 
+ * </pre> The first expression causes the left trimming of the string element,
+ * the second right trimming and the third both left and right trimming.
+ *
+ *
  * @author Valery Shyshkin
  */
 public class StringListPropertyEditor extends ObservableListPropertyEditor<String> {
@@ -111,42 +110,15 @@ public class StringListPropertyEditor extends ObservableListPropertyEditor<Strin
     public StringListPropertyEditor() {
         init();
     }
+
     private void init() {
         getStyleClass().add("string-list-text-field");
     }
 
     @Override
-    protected boolean isAcceptable(String txt) {
-        if (txt == null) {
-            return false;
-        }
-        return true;
-
-    }
-
-    @Override
     public String toListItem(String item) {
-       return item;
+        return item;
     }
 
-/*    public static class Converter1 extends StringConverter<ObservableList<String>> {
 
-        private final StringListPropertyEditor textField;
-
-        public Converter1(StringListPropertyEditor textField) {
-            this.textField = textField;
-        }
-
-        @Override
-        public String toString(ObservableList<String> v) {
-            return textField.toString();
-        }
-
-        @Override
-        public ObservableList<String> fromString(String tx) {
-            return textField.fromString(tx);
-        }
-
-    }//class Converter
-*/
 }//class IntegerListTextField

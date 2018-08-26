@@ -33,9 +33,9 @@ import javafx.util.StringConverter;
  * The example below shows how to accomplish the task
  * <pre>
  *    ObservableList &lt;Integer &gt; sourceList = FXCollections.observableArrayList();
-    IntegerListPropertyEditor editor = new IntegerListPropertyEditor();
-    editor.bindContentBidirectional(sourceList);
- </pre> There are a number of features that must be taken into account when
+ * IntegerListPropertyEditor editor = new IntegerListPropertyEditor();
+ * editor.bindContentBidirectional(sourceList);
+ * </pre> There are a number of features that must be taken into account when
  * working with this control. First? when we put the folloing text
  * <pre>
  *   1,23,,8
@@ -63,10 +63,10 @@ import javafx.util.StringConverter;
  * </pre> Let us extend the code which now will look like the text below
  * <pre>
  *    ObservableList&lt;Integer&gt; sourceList = FXCollections.observableArrayList();
-    IntegerListPropertyEditor editor = new IntegerListPropertyEditor();
-    editor.bindContentBidirectional(sourceList);
-    editor.setValueIfBlank(0);
-    editor.setValidator( item -&gt; {
+ * IntegerListPropertyEditor editor = new IntegerListPropertyEditor();
+ * editor.bindContentBidirectional(sourceList);
+ * editor.setValueIfBlank(0);
+ * editor.setValidator( item -&gt; {
  *           boolean v = true;
  *           if ( !item.trim().isEmpty() &amp;&amp; ! item.trim().equals("-") ) {
  *               int n = Integer.parseInt(item.trim());
@@ -98,52 +98,47 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
         });
     }
 
-/*    @Override
+    /*    @Override
     protected boolean isItemAcceptable(String item) {
         return true;
     }
-*/
+     */
     @Override
     protected boolean isAcceptable(String txt) {
+
         if (txt == null) {
             return false;
         }
         if (txt.isEmpty() || "-".equals(txt)) {
             return true;
         }
-        String[] items = split(txt);
+
+        String[] items = txt.split(getSeparator(), txt.length());
         boolean retval = true;
 
         for (String item : items) {
-            if (!(item.matches(getPattern()) && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item) <= Integer.MAX_VALUE && Long.parseLong(item) >= Integer.MIN_VALUE))) {
+            if (!(item.matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item) <= Integer.MAX_VALUE && Long.parseLong(item) >= Integer.MIN_VALUE))) {
                 retval = false;
                 break;
-
             }
-            /*            if (item.matches(getPattern()) && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item) <= Integer.MAX_VALUE && Long.parseLong(item) >= Integer.MIN_VALUE)) {
-                if (!(getValidator() == null || getValidator() != null && getValidator().test(item))) {
+        }
+        if (retval) {
+            for (String item : items) {
+                if (!testFilterValidators(item)) {
                     retval = false;
                     break;
                 }
-            } else {
-                retval = false;
-                break;
             }
-             */
         }
         return retval;
 
-    }
-
-    protected String getPattern() {
-        return "0|-?([1-9][0-9]*)?";
     }
 
     @Override
     public Integer toListItem(String item) {
         if (item.trim().equals("-")) {
             return Integer.MIN_VALUE;
-        }                                                                                                                                                             
+        }
         return Integer.parseInt(item.trim());
     }
 

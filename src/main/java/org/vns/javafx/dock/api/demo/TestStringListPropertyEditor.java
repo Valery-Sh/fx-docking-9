@@ -44,7 +44,7 @@ import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
 import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -78,6 +78,7 @@ public class TestStringListPropertyEditor extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
+        //lb1.textProperty().bindBidirectional(other, converter);
         //lb1.getStyleClass().add("str");
         //lb1.setFont(new Font(13));
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
@@ -85,15 +86,19 @@ public class TestStringListPropertyEditor extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
 
         StringListPropertyEditor tf1 = new StringListPropertyEditor();
-        //tf1.setSeparator(",", "\\s* \\\\s*");
-        tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.setValueIfBlank("blank");
-        //tf1.setSeparator(" ", "\\s* \\s*");
-        String[] s1 = ("a ,   b, c").split(tf1.getSeparatorRegExp());
-        for ( String s : s1) {
-            System.err.println("s = " + s);
-        }
+        tf1.setSeparator(",");
+        //tf1.setSeparator(",", "\\s*,\\s*");
+        //tf1.setValueIfBlank("blank");
+        //tf1.setSeparator(" ", "\\s* \\s*");'
         
+        //"a,,b, c,".
+        String src = "a,,b,    , c,   ";
+        String[] s1 = (src).split(tf1.getSeparator(),src.length());
+        for ( String s : s1) {
+            System.err.println("s = '" + s + "'");
+        }
+        String q = java.util.regex.Matcher.quoteReplacement("\\s*,\\s*");
+        System.err.println("Q = '" + q + "'");
         //tf1.getStyleClass().remove("label");
         //tf1.setValueIfBlank("");
         tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
@@ -109,7 +114,7 @@ public class TestStringListPropertyEditor extends Application {
         //System.err.println("m0 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
         //System.err.println("m0.1 = " + "; start=" + m.start() );
         //System.err.println("m1 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
-        String[] its = ptn.split(tx);
+/*        String[] its = ptn.split(tx);
         System.err.println("itx.length=" + its.length);
         Integer[][] itemPos = new Integer[its.length][2];
         Matcher m = ptn.matcher(tx);        
@@ -138,21 +143,25 @@ public class TestStringListPropertyEditor extends Application {
             
         }
         System.err.println("last = " + tx.substring(7, 8));
+*/        
         // in case you would like to ignore case sensitivity,
         // you could use this statement:
         // Pattern pattern = Pattern.compile("\\s+", Pattern.CASE_INSENSITIVE);
         //Matcher matcher = pattern.matcher("");
+        tf1.setFromStringTransformer(srcStr -> {
+            return srcStr.trim();
+        });
         
         tf1.getValidators().add(item -> {
             //  if ( true) return true;
             boolean v = true;
             //System.err.println("V ITEM = " + item);
-            if (!item.trim().isEmpty()) {
+            //if (!item.trim().isEmpty()) {
                 if (!(item.trim().startsWith("tx1") || item.trim().startsWith("-fx") || item.trim().startsWith("label"))) {
                     System.err.println("VALIDATOR false item = " + item);
                     v = false;
                 }
-            }
+            //}
 
             return v;
         });
@@ -165,6 +174,7 @@ public class TestStringListPropertyEditor extends Application {
         //tf1.bindBidirectional(btn1.prefWidthProperty());
         //tf1.bindBidirectional(btn1.opacityProperty());
         //lb1.getStyleClass().remove("label");
+        lb1.getStyleClass().add("str-0    ");
         tf1.bindContentBidirectional(lb1.getStyleClass());
         //plist.addAll(25, 26);
 
@@ -193,7 +203,7 @@ public class TestStringListPropertyEditor extends Application {
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
+        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
@@ -225,6 +235,9 @@ public class TestStringListPropertyEditor extends Application {
 
         btn1.setOnAction(e -> {
             //tf1.getValue().addAll("STR11","STR12","STR13");
+            lb1.getStyleClass().forEach(s -> {
+                System.err.println("Label class = " + s);
+            });
             tf1.getValue().addAll("STR10", "STR11");
             //tf1.getValue().add("");
             System.err.println("INSETS = " + tf1.getInsets());

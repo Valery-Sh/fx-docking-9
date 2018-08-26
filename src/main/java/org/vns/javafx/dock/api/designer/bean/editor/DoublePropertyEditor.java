@@ -19,7 +19,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesPropertyEditor.NumberTextField;
 
 /**

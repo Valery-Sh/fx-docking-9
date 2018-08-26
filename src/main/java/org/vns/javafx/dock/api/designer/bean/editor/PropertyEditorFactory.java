@@ -90,7 +90,7 @@ public abstract class PropertyEditorFactory {
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
                 return new DoublePropertyEditor();
             } else if (propertyType.equals(String.class)) {
-                return new StringPropertyEditor();
+                return new SimpleStringPropertyEditor();
             } else if (propertyType.isEnum()) {
                 return new EnumPropertyEditor(propertyType);
             } else if (propertyType.equals(Insets.class)) {
@@ -134,7 +134,7 @@ public abstract class PropertyEditorFactory {
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
                 return new DoublePropertyEditor();
             } else if (propertyType.equals(String.class)) {
-                return new StringPropertyEditor();
+                return new SimpleStringPropertyEditor();
             } else if (propertyType.isEnum()) {
                 return new EnumPropertyEditor(propertyType);
             } else if (propertyType.equals(Insets.class)) {
@@ -182,7 +182,7 @@ public abstract class PropertyEditorFactory {
             } else if (propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())) {
                 return new DoublePropertyEditor();
             } else if (propertyType.equals(String.class.getName())) {
-                return new StringPropertyEditor();
+                return new SimpleStringPropertyEditor();
             } else if (propertyType.equals(Insets.class.getName())) {
                 return new InsetsPropertyEditor();
             } else if (propertyType.equals(Bounds.class.getName())) {

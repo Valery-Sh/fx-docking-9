@@ -31,7 +31,7 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.IntegerPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -152,7 +152,7 @@ public class TestIntegerTextField extends Application {
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
+        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {

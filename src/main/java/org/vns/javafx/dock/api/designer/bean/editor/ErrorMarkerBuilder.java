@@ -61,10 +61,6 @@ public class ErrorMarkerBuilder {
         this.errorMarkers = errorMarkers;
     }
 
-    private String getSeparator() {
-        return textField.getSeparator();
-    }
-
     protected void showErrorMarkers(String[] items, Integer[][] itemPos, Integer... errorIndexes) {
 
         if (errorMarkers != null && errorMarkers.length > 0) {
@@ -78,56 +74,81 @@ public class ErrorMarkerBuilder {
             int start = itemPos[itemIndex][0];
             int end = itemPos[itemIndex][1];
             int charPos = start + (end - start) / 2;
-            double pos = getWidth(textField.getText(0,charPos));
-            if ( (end - start) % 2 != 0 ) {
+            double pos = getWidth(textField.getText(0, charPos));
+            if ((end - start) % 2 != 0) {
                 //
                 // An odd integer value. 
                 // We add delta whick equals to half length of a character
                 //
-                pos += getWidth(textField.getText(charPos,charPos+1)) / 2;
+                pos += getWidth(textField.getText(charPos, charPos + 1)) / 2;
             }
             errorMarkers[i].setLayoutX(textField.getInsets().getLeft() + pos);
             errorMarkers[i].setLayoutY(textField.getInsets().getTop() - 2);
         }
 
     }
-    protected void showErrorMarker() { 
+
+    protected void showErrorMarker() {
+      if (errorMarkers != null && errorMarkers.length > 0) {
+            textField.getChildren().removeAll(errorMarkers);
+        }
+        errorMarkers = getDefaultErrorMarkers(1);
+        textField.getChildren().addAll(errorMarkers);
         
+        int ln = textField.getText().length();
+        int charPos = ln/2;
+        double pos = getWidth(textField.getText(0, charPos));
+        if ((ln) % 2 != 0) {
+            //
+            // An odd integer value. 
+            // We add delta whick equals to half length of a character
+            //
+            pos += getWidth(textField.getText(charPos, charPos + 1)) / 2;
+        }
+        errorMarkers[0].setLayoutX(textField.getInsets().getLeft() + pos);
+        errorMarkers[0].setLayoutY(textField.getInsets().getTop() - 2);
     }
+
     public void showErrorMarkers(Integer... errorIndexes) {
         if (textField.getText().trim().isEmpty()) {
             return;
         }
-        if ( textField.getSeparator() == null ) {
+        if (textField.getSeparator() == null) {
             showErrorMarker();
             return;
         }
         //String[] items = ((ObservableListPropertyEditor) textField).split(textField.getText());
-        String[] items = textField.getText().split(textField.getSeparatorRegExp());
+        String[] items = textField.getText().split(textField.getSeparator(),textField.getText().length() );
 
-        String regExp = textField.getSeparatorRegExp();
-        
+        String regExp = textField.getSeparator();
+
         Pattern ptn = Pattern.compile(regExp);
         Matcher m = ptn.matcher(textField.getText());
-        
+
         Integer[][] itemPos = new Integer[items.length][2];
         int start = 0;
+        int end = 0;
         for (int i = 0; i < items.length; i++) {
 
             boolean found = m.find();
-            if (!found && i == items.length - 1) {
+            if (!found && i == items.length - 1 && items.length > 1 ) {
                 itemPos[i][0] = start + 1;
                 itemPos[i][1] = start + 1 + items[items.length - 1].length();
                 break;
+            } else if ( items.length == 1 ) {
+                itemPos[i][0] = 0;
+                itemPos[i][1] = items[0].length();
+                break;
             }
             start = m.start();
+            end = m.end();
+            System.err.println("START = " + start + " ;end = " + end + " ; items[i].length()=" + items[i].length());
             itemPos[i][0] = start - items[i].length();
             itemPos[i][1] = start;
         }
 
-        showErrorMarkers(items, itemPos,errorIndexes);
+        showErrorMarkers(items, itemPos, errorIndexes);
     }
-
 
     protected double getWidth(String text) {
         Text t = new Text(text);

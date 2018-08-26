@@ -41,7 +41,7 @@ import org.vns.javafx.dock.api.designer.bean.editor.IntegerPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.LongPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ShortPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -156,7 +156,7 @@ public class TestGridPane extends Application {
         //LongTextField tf2 = new LongPropertyEditor();
         //DoubleTextField tf2 = new DoublePropertyEditor(24.5);
         //ByteTextField tf2 = new BytePropertyEditor(null);
-        StringPropertyEditor tf2 = new StringPropertyEditor("1234");
+        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {

@@ -18,10 +18,12 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -36,25 +38,41 @@ import javafx.util.StringConverter;
  */
 public class StringTextField extends TextField {
 
+    private StringProperty rightValue = new SimpleStringProperty();
+
     private final ObservableMap<Integer, String> errorItems = FXCollections.observableHashMap();
     private final ObservableList<Predicate<String>> validators = FXCollections.observableArrayList();
+    private final ObservableList<Predicate<String>> filterValidators = FXCollections.observableArrayList();
+
+    public ObservableList<Predicate<String>> getFilterValidators() {
+        return filterValidators;
+    }
+    private StringTransformer fromStringTransformer;
+    private StringTransformer toStringTransformer;
+
     private String valueIfBlank;
 
     private String separator = null;
-    private String separatorRegExp = null;
+//    private String separatorRegExp = null;
 
     protected TextFormatter formatter;
-    private ErrorMarkerBuilder errorMarkerBuilder;
 
-    //private UnaryOperator<TextFormatter.Change> filter;
-    private ObjectProperty<UnaryOperator<TextFormatter.Change>> filter = new SimpleObjectProperty<>();
+    private ErrorMarkerBuilder errorMarkerBuilder;
+    private final ObjectProperty<UnaryOperator<TextFormatter.Change>> filter = new SimpleObjectProperty<>(change -> {
+        if (isAcceptable(change.getControlNewText())) {
+            return change;
+        } else {
+            return null;
+        }
+    }
+    );
 
     private final ChangeListener<UnaryOperator<TextFormatter.Change>> filterChangeListener = (v, ov, nv) -> {
         if (nv != null) {
             formatter = new TextFormatter<>(new Converter(this), getText(), nv);
             this.setTextFormatter(formatter);
         } else {
-            formatter = new TextFormatter<>(new Converter(this),getText());
+            formatter = new TextFormatter<>(new Converter(this), getText());
             this.setTextFormatter(formatter);
         }
     };
@@ -64,11 +82,77 @@ public class StringTextField extends TextField {
     }
 
     private void init() {
-        formatter = new TextFormatter(new Converter(this),getText());
-        this.setTextFormatter(formatter);        
+        formatter = new TextFormatter(new Converter(this), getText(), getFilter());
+        this.setTextFormatter(formatter);
+        filter.addListener(filterChangeListener);
     }
 
+    public StringProperty rightValueProperty() {
+        return rightValue;
+    }
 
+    public String getRightValue() {
+        return rightValue.get();
+    }
+
+    public void setRightValue(String value) {
+        this.rightValue.set(value);
+    }
+
+    protected boolean isAcceptable(String txt) {
+//        System.err.println("isAcceptable text = " + txt);
+
+        if (getSeparator() == null || getSeparator().isEmpty()) {
+            return testFilterValidators(txt);
+        }
+        if (getFilterValidators().isEmpty()) {
+            return true;
+        }
+        String[] items = txt.split(getSeparator(), txt.length());
+
+        boolean retval = true;
+        for (String item : items) {
+//            System.err.println("isAcceptable item = " + item);
+            if (!testFilterValidators(item)) {
+                retval = false;
+                break;
+            }
+        }
+        return retval;
+
+    }
+
+    protected boolean testFilterValidators(String txt) {
+        boolean retval = true;
+        for (Predicate<String> p : getFilterValidators()) {
+            if (!p.test(txt)) {
+                retval = false;
+                break;
+            }
+        }
+        return retval;
+    }
+
+    public StringTransformer getFromStringTransformer() {
+        return fromStringTransformer;
+    }
+
+    public void setFromStringTransformer(StringTransformer fromStringTransformer) {
+        this.fromStringTransformer = fromStringTransformer;
+    }
+
+    public StringTransformer getToStringTransformer() {
+        return toStringTransformer;
+    }
+
+    public void setToStringTransformer(StringTransformer toStringTransformer) {
+        this.toStringTransformer = toStringTransformer;
+    }
+
+    /*    protected ChangeListener<UnaryOperator<TextFormatter.Change>> getFilterChangeListener() {
+        return filterChangeListener;
+    }
+     */
     @Override
     public ObservableList<Node> getChildren() {
         return super.getChildren();
@@ -86,14 +170,14 @@ public class StringTextField extends TextField {
             if (getValueIfBlank() != null && getValueIfBlank().equals(item)) {
                 continue;
             }
-            if (item.trim().isEmpty()) {
-                //
-                // We skip empty items and must take into account the actual index
-                // of the converted value in the result ObservableList
-                //
-                d++;
-                continue;
-            }
+            //if (item.trim().isEmpty()) {
+            //
+            // We skip empty items and must take into account the actual index
+            // of the converted rightValue in the result ObservableList
+            //
+            //    d++;
+            //    continue;
+            //}
             if (validateStringListItem(item)) {
                 continue;
             } else {
@@ -112,24 +196,24 @@ public class StringTextField extends TextField {
         return separator;
     }
 
-    public String getSeparatorRegExp() {
+    /*    public String getSeparatorRegExp() {
         return separatorRegExp;
     }
-
+     */
     public void setSeparator(String separator) {
         this.separator = separator;
-        this.separatorRegExp = separator;
+//        this.separatorRegExp = separator;
     }
 
-    public void setSeparator(String delimiter, String delimiterRegExp) {
+    /*    public void setSeparator(String delimiter, String delimiterRegExp) {
         this.separator = delimiter;
         this.separatorRegExp = delimiterRegExp;
     }
-
+     */
     /**
-     * Returns the default value to replace empty items.
+     * Returns the default rightValue to replace empty items.
      *
-     * @return the default value to replace empty items
+     * @return the default rightValue to replace empty items
      * @see #setValueIfBlank(java.lang.String)
      */
     public String getValueIfBlank() {
@@ -137,16 +221,16 @@ public class StringTextField extends TextField {
     }
 
     /**
-     * The method is used to set the default value of an empty item. For
+     * The method is used to set the default rightValue of an empty item. For
      * example, when we enter the following text into this control
      * <pre>
      *   21,,55
      * </pre> then if the property {@code valueIfBlank } is null then the bound
-     * observable list will contain two integer items 21 and 55. If we set the
-     * not null value, for example "77", then the bound list will contain three
-     * items 21, 77 and 55.
+ observable list will contain two integer items 21 and 55. If we set the
+ not null rightValue, for example "77", then the bound list will contain
+ three items 21, 77 and 55.
      *
-     * @param valueIfBlank the value used to replace empty items
+     * @param valueIfBlank the rightValue used to replace empty items
      */
     public void setValueIfBlank(String valueIfBlank) {
         this.valueIfBlank = valueIfBlank;
@@ -164,7 +248,7 @@ public class StringTextField extends TextField {
         this.errorMarkerBuilder = errorMarkerBuilder;
     }
 
-    public boolean validateStringListItem(String item) {
+    protected boolean validateStringListItem(String item) {
         boolean retval = true;
         for (Predicate<String> v : getValidators()) {
             if (!v.test(item)) {
@@ -183,7 +267,7 @@ public class StringTextField extends TextField {
         return filter.get();
     }
 
-    public void setFilter(UnaryOperator<TextFormatter.Change> filter) {
+    protected void setFilter(UnaryOperator<TextFormatter.Change> filter) {
         this.filter.set(filter);
     }
 
@@ -197,17 +281,91 @@ public class StringTextField extends TextField {
 
         @Override
         public String toString(String list) {
+            System.err.println("toString = " + list);
             return list;
             //return textField.toString(list);
         }
 
         @Override
         public String fromString(String txt) {
-            //return textField.fromString(txt);
-            return txt;
+            System.err.println("!!! fromString txt = " + txt);
+            String[] items;
 
+            if (textField.getSeparator() != null) {
+                items = txt.split(textField.getSeparator(), txt.length());
+            } else {
+                items = new String[]{txt};
+            }
+            for (int i = 0; i < items.length; i++) {
+                System.err.println("it = '" + items[i] + "'");
+                if (textField.getFromStringTransformer() != null) {
+                    items[i] = textField.getFromStringTransformer().transform(items[i]);
+                }
+            }
+            List<Integer> errorItemIndexes = textField.getErrorIndexes(items);
+
+            if (errorItemIndexes.isEmpty()) {
+                if (textField.getErrorMarkerBuilder().getErrorMarkers() != null && textField.getErrorMarkerBuilder().getErrorMarkers().length > 0) {
+                    textField.getChildren().removeAll(textField.getErrorMarkerBuilder().getErrorMarkers());
+                }
+            }
+            if (textField.getErrorMarkerBuilder() != null) {
+                Platform.runLater(() -> {
+
+                    if (!errorItemIndexes.isEmpty()) {
+                        Integer[] e = errorItemIndexes.toArray(new Integer[errorItemIndexes.size()]);
+                        textField.getErrorMarkerBuilder().showErrorMarkers(e);
+                    }
+
+                });
+            }
+            String retval = "";
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbValue = new StringBuilder();
+
+            //textField.rightValueProperty().removeListener(textField.getValueChangeListener());
+            for (int i = 0; i < items.length; i++) {
+                String item = items[i];
+                System.err.println("item = '" + item + "'");
+                //if (item.trim().isEmpty() && textField.getValueIfBlank() != null && !txt.trim().isEmpty()) {
+                if (item.trim().isEmpty() && textField.getValueIfBlank() != null ) {                    
+                    sb.append(textField.getValueIfBlank());
+                    sbValue.append(textField.getValueIfBlank());
+                    continue;
+                }
+
+                sb.append(item);
+                if (!errorItemIndexes.contains(i)) {
+                    sbValue.append(item);
+                    if (textField.getSeparator() != null) {
+                        sbValue.append(textField.getSeparator());
+                    }
+
+                    if (textField.getSeparator() != null && !textField.getSeparator().isEmpty() && i != items.length - 1) {
+                        sb.append(textField.getSeparator());
+                    }
+                }
+            }
+            System.err.println("333");            
+            retval = sb.toString();
+            System.err.println("444");
+            if (textField.getSeparator() != null && !textField.getSeparator().isEmpty() ) {
+                System.err.println("555 sbValue = " + sbValue + "; sbValue.length() = " + sbValue.length());
+                if ( sbValue.length() > 0 && sbValue.lastIndexOf(textField.getSeparator()) == sbValue.length() - 1 ) {
+                    System.err.println("666");
+                    sbValue.deleteCharAt(sbValue.length() - 1);
+                }
+            }
+            System.err.println("777");            
+            textField.setRightValue(sbValue.toString());
+
+            //textField.rightValueProperty().addListener(textField.getValueChangeListener());
+            System.err.println("   fromString retval=" + retval);
+            System.err.println("   fromString right value=" + textField.getRightValue());
+            System.err.println("end fromString------------------------------------------");
+
+            return retval;
         }
-
     }//class Converter
 
 }
