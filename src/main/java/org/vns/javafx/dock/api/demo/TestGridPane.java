@@ -33,13 +33,13 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.BytePropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.DoublePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Byte2PropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Decimal2PropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Double2PropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.FloatPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.LongPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ShortPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Integer2PropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Long2PropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.Short2PropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
@@ -105,10 +105,10 @@ public class TestGridPane extends Application {
         lb1.setFont(new Font(13));
         System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         SliderPropertyEditor tf1 = new SliderPropertyEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalPropertyEditor();
+        //DecimalTextField tf1 = new Decimal2PropertyEditor();
         
         
-        //IntegerTextField tf1 = new IntegerPropertyEditor();
+        //IntegerTextField tf1 = new Integer2PropertyEditor();
 
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
@@ -150,12 +150,12 @@ public class TestGridPane extends Application {
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
         //TextField tf2 = new TextField();
-        //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerPropertyEditor();
-        //ShortTextField tf2 = new ShortPropertyEditor();
-        //LongTextField tf2 = new LongPropertyEditor();
-        //DoubleTextField tf2 = new DoublePropertyEditor(24.5);
-        //ByteTextField tf2 = new BytePropertyEditor(null);
+        //IntegerPropertyEditor tf2 = new Integer2PropertyEditor();
+        //IntegerTextField tf2 = new Integer2PropertyEditor();
+        //ShortTextField tf2 = new Short2PropertyEditor();
+        //LongTextField tf2 = new Long2PropertyEditor();
+        //DoubleTextField tf2 = new Double2PropertyEditor(24.5);
+        //ByteTextField tf2 = new Byte2PropertyEditor(null);
         SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
         tf2.setFont(new Font(13));

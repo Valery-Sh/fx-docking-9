@@ -27,6 +27,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -53,7 +54,6 @@ public class StringTextField extends TextField {
     private String valueIfBlank;
 
     private String separator = null;
-//    private String separatorRegExp = null;
 
     protected TextFormatter formatter;
 
@@ -76,17 +76,69 @@ public class StringTextField extends TextField {
             this.setTextFormatter(formatter);
         }
     };
-
+    
+    private final ChangeListener<? super String> rightValueChangeListener = (v,ov,nv) -> {
+        invalidateFormatterValue();
+    };
+    
     public StringTextField() {
         init();
     }
 
     private void init() {
+        setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
         formatter = new TextFormatter(new Converter(this), getText(), getFilter());
         this.setTextFormatter(formatter);
         filter.addListener(filterChangeListener);
+        rightValue.addListener(rightValueChangeListener);
     }
+    public ChangeListener<? super String> getRightValueChangeListener() {
+        return rightValueChangeListener;
+    }
+    /**
+     * The method is called when the content of the observable list is changed.
+     * We must raise Invalidation event for {@link #valueProperty() }
+     * in the formatter in order to make the formatter to execute the method {@link Converter#toString(javafx.collections.ObservableList)
+     * }. First set the {@code value} property of the {@code TextFormatter} to
+     * {@code null} and then assign again the {@link #valueProperty() } of this
+     * control.
+     * <p>
+     * We must enforce the {@code TextFormatter} to invoke the method
+     * </p>
+     *
+     */
+    protected void invalidateFormatterValue() {
+        //
+        // We must raise Invalidation event for valueProperty() in the formatter 
+        // in order to make the formatter to execute the converter method toString().
+        // First set formatter'item property to null and then assign again
+        // the value from this control
+        //
 
+        //System.err.println("invalidateFormatterValue  formatter.getValue() " + (getValue() == formatter.getValue()));
+        //ObservableList list = FXCollections.observableArrayList();
+
+        //list.addAll(formatter.getValue());
+        formatter.setValue(null);
+
+        //formatter.setValue(getRightValue());
+        formatter.setValue(getRightValue());
+        System.err.println("formatter getValue()=" + formatter.getValue());
+        //formatter.setValue(list);
+
+        //
+        // We need the TextFormatter to execute the StriringConverter's method
+        // fromString in order to validate items in the observable list and
+        // mark errors. 
+        //
+        Platform.runLater(() -> {
+            commitValue();
+        });
+    }
+/*    protected String convertRightValue(String value) {
+        return value;
+    }
+*/    
     public StringProperty rightValueProperty() {
         return rightValue;
     }
@@ -187,7 +239,11 @@ public class StringTextField extends TextField {
         }
         return errorItemIndexes;
     }
-
+    
+    public boolean hasErrorItems() {
+        return ! getErrorItems().isEmpty();
+    }
+    
     public ObservableMap<Integer, String> getErrorItems() {
         return errorItems;
     }
@@ -280,14 +336,20 @@ public class StringTextField extends TextField {
         }
 
         @Override
-        public String toString(String list) {
-            System.err.println("toString = " + list);
-            return list;
+        public String toString(String txt) {
+            System.err.println("toString = " + txt);
+            if ( txt == null) {
+                return "";
+            }
+            return txt;
             //return textField.toString(list);
         }
 
         @Override
         public String fromString(String txt) {
+            if ( !  textField.isEditable() ) {
+                return txt;
+            }
             System.err.println("!!! fromString txt = " + txt);
             String[] items;
 
@@ -302,16 +364,18 @@ public class StringTextField extends TextField {
                     items[i] = textField.getFromStringTransformer().transform(items[i]);
                 }
             }
+            System.err.println("ERROR 1");
             List<Integer> errorItemIndexes = textField.getErrorIndexes(items);
-
+System.err.println("ERROR 2");
             if (errorItemIndexes.isEmpty()) {
                 if (textField.getErrorMarkerBuilder().getErrorMarkers() != null && textField.getErrorMarkerBuilder().getErrorMarkers().length > 0) {
                     textField.getChildren().removeAll(textField.getErrorMarkerBuilder().getErrorMarkers());
                 }
             }
+System.err.println("ERROR 2.1");            
             if (textField.getErrorMarkerBuilder() != null) {
                 Platform.runLater(() -> {
-
+                    System.err.println("ERROR 2.2 hasErrors = " + !errorItemIndexes.isEmpty());            
                     if (!errorItemIndexes.isEmpty()) {
                         Integer[] e = errorItemIndexes.toArray(new Integer[errorItemIndexes.size()]);
                         textField.getErrorMarkerBuilder().showErrorMarkers(e);
@@ -319,11 +383,13 @@ public class StringTextField extends TextField {
 
                 });
             }
+System.err.println("ERROR 3");            
             String retval = "";
             StringBuilder sb = new StringBuilder();
             StringBuilder sbValue = new StringBuilder();
 
-            //textField.rightValueProperty().removeListener(textField.getValueChangeListener());
+            textField.rightValueProperty().removeListener(textField.getRightValueChangeListener());
+System.err.println("ERROR 4");            
             for (int i = 0; i < items.length; i++) {
                 String item = items[i];
                 System.err.println("item = '" + item + "'");
@@ -346,7 +412,7 @@ public class StringTextField extends TextField {
                     }
                 }
             }
-            System.err.println("333");            
+            System.err.println("ERROR 5");
             retval = sb.toString();
             System.err.println("444");
             if (textField.getSeparator() != null && !textField.getSeparator().isEmpty() ) {
@@ -356,10 +422,10 @@ public class StringTextField extends TextField {
                     sbValue.deleteCharAt(sbValue.length() - 1);
                 }
             }
-            System.err.println("777");            
+            System.err.println("777 == " + sbValue.toString());            
             textField.setRightValue(sbValue.toString());
 
-            //textField.rightValueProperty().addListener(textField.getValueChangeListener());
+            textField.rightValueProperty().addListener(textField.getRightValueChangeListener());
             System.err.println("   fromString retval=" + retval);
             System.err.println("   fromString right value=" + textField.getRightValue());
             System.err.println("end fromString------------------------------------------");

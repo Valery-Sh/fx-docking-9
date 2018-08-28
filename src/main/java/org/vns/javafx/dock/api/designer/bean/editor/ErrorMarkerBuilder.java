@@ -110,9 +110,9 @@ public class ErrorMarkerBuilder {
     }
 
     public void showErrorMarkers(Integer... errorIndexes) {
-        if (textField.getText().trim().isEmpty()) {
-            return;
-        }
+        //if (textField.getText().trim().isEmpty()) {
+        //    return;
+        //}
         if (textField.getSeparator() == null) {
             showErrorMarker();
             return;

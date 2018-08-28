@@ -1,21 +1,28 @@
-
+/*
+ * Copyright 2018 Your Organisation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -24,60 +31,35 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.bean.BeanDescriptor;
-
-import org.vns.javafx.dock.api.designer.bean.editor.Double2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.PropertyDescriptor;
+import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor_OLD;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.DoublePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestBeanDescriptor extends Application {
+public class TestDecimalStringPropertyEditor extends Application {
 
-    Stage stage;
-    Scene scene;
-    DoubleProperty value = new SimpleDoubleProperty();
-    private ObjectProperty<PropertyDescriptor> propertyDescriptor = new SimpleObjectProperty<>();
-    private ObservableList<ObjectProperty<PropertyDescriptor>> list = FXCollections.observableArrayList();
-    
-    public ObjectProperty<PropertyDescriptor> propertyDescriptorProperty(){
-        return propertyDescriptor;
-    }
-
-    public PropertyDescriptor getPropertyDescriptor() {
-        return propertyDescriptor.get();
-    }
-
-    public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
-        this.propertyDescriptor.set(propertyDescriptor);
-    }
-            
     @Override
-    public void start(Stage stage) {
-        MyBean mb = new MyBean();
-        Button btn1 = new Button("Stage Button");        
-        PropertyDescriptor ppd = new PropertyDescriptor();
-        
-        //propertyDescriptor.set(ppd);
-        ppd.setName("myProp");
-        mb.setPropertyDescriptor(ppd);
-        print(mb);
-        //list.add(propertyDescriptor);
-        
-        BeanDescriptor beanDescr = new BeanDescriptor();
-        beanDescr.setType(HBox.class.getName());
-        PropertyDescriptor pd = new PropertyDescriptor();
-        pd.setName("prefHeight");
-        pd.setEditorClass(Double2PropertyEditor.class.getName());
-        //beanDescr.getExposedProperties().add(pd);
-        
-        
+    public void start(Stage stage) throws ClassNotFoundException {
+        System.err.println("Double.valueOf = " + Double.valueOf("1"));
+        System.err.println("Integer.valueOf = " + Integer.parseInt("-003"));
+        Button btn1 = new Button("Button btn1");
+        Button btn2 = new Button("Button btn2");
+
+        long start1 = System.currentTimeMillis();
+        Pane p = new Pane();
+        long end1 = System.currentTimeMillis();
+        //System.err.println("DIF0 = " + (end1 - start1));
+
+
         GridPane grid = new GridPane();
         grid.setHgap(10);
         //AnchorPane anchor = new AnchorPane(grid);
@@ -86,50 +68,74 @@ public class TestBeanDescriptor extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        lb1.setFont(new Font(13));
-        System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        Double2PropertyEditor tf1 = new Double2PropertyEditor();
-        tf1.setFont(new Font(13));
-        value.bindBidirectional(tf1.valueProperty());
-        value.addListener((v,ov,nv) -> {
-            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
+        //lb1.getStyleClass().add("str");
+        //lb1.setFont(new Font(13));
+        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
+        //SliderEditor tf1 = new SliderEditor(0,1,1);
+        //DecimalTextField tf1 = new DecimalTextField();
+        DoubleProperty ip = new SimpleDoubleProperty(27);
+        
+        DecimalPropertyEditor_OLD tf1 = new DecimalPropertyEditor_OLD(-1d,150d,2);
+        System.err.println("1 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+        tf1.bindBidirectional(btn2.prefWidthProperty());
+        System.err.println("2 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+        System.err.println("DoublePropertyEditor value=" + tf1.getRightValue());
+        btn1.setOnAction(e -> {
+            //tf1.setText("-210");
+            
+            btn2.setPrefWidth(50);
+            System.err.println("3 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+            System.err.println("DoublePropertyEditor value=" + tf1.getRightValue());
+            
         });
-        tf1.textProperty().addListener((v,ov,nv) -> {
-            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
 
-        });
-        //anchor.setMinWidth(10);
-        //grid.setMinWidth(10);
-        //tf1.setMinWidth(10);
-        //lb1.setMinWidth(10);
-        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        TextField tf2 = new TextField();
-        lb2.setFont(new Font(13));
-        //tf1.setPrefWidth(200);
-        grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
-        TextField tf3 = new TextField();
-        tf3.setFont(new Font(13));
-        //grid.add(tf3, 20, 2); 
+        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
+        tf2.setFont(new Font(13));
+        btn2.setOnAction(e -> {
+            btn2.setPrefWidth(-20);
+            System.err.println("btn2.prefWidth = " + btn2.getPrefWidth());
+            //tf1.setText("500");
+            //btn2.setPrefWidth(200.56);
+        });
+        Label lb3 = new Label("lable 3");
+        lb3.setFont(new Font(13));
+
+        Label elb = new Label("errors");
+        HBox ehb = new HBox();
+        ehb.setStyle("-fx-background-color: aqua");
+        Circle shape = new Circle(2, Color.RED);
+        shape.setManaged(false);
+        ehb.getChildren().add(shape);
+
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
+        grid.add(elb, 0, 1);
+        grid.add(ehb, 1, 1);
+        grid.add(lb2, 0, 2);
+        grid.add(tf2, 1, 2);
+
+
+        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
+
+        tf3.setOnAction(e -> {
+        });
+        tf3.setFont(new Font(13));
+
+        grid.add(lb3, 0, 3);
+        grid.add(tf3, 1, 3);
+        tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
-        //cc20.setPercentWidth(100);
 
-        //grid.getColumnConstraints().addAll(cc0,cc1, cc20);        
         grid.getColumnConstraints().addAll(cc0, cc1);
-        //GridPane.setHalignment(tf1, HPos.RIGHT);
-        //GridPane.setHalignment(tf1, HPos.LEFT);
-        //GridPane.setFillWidth(tf1, true);
-        root.setPrefSize(500, 70);
+        root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Scrolling Text");
@@ -138,30 +144,13 @@ public class TestBeanDescriptor extends Application {
         Stage stage1 = new Stage();
         stage1.initOwner(stage);
 
-        
-        System.err.println("BUTTON bean = " + btn1.graphicProperty().getBean());
         VBox vbox = new VBox(btn1);
-        vbox.setId("idVbox");
-        
-        
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
 
-        /*        TabPane tabPane = new TabPane();
-        //propPane.getChildren().add(tabPane);
-        Tab propTab = new Tab();
-        Tab layoutTab = new Tab();
-        Tab codeTab = new Tab();
-        tabPane.getTabs().addAll(propTab,layoutTab,codeTab);
-        
-        tabPane.setTabMaxHeight(0);
-        propTab.setContent(new Label("P111"));
-        layoutTab.setContent(new Label("L111"));
-        codeTab.setContent(new Label("C111"));
-         */
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -228,27 +217,18 @@ public class TestBeanDescriptor extends Application {
 
         stage1.show();
 
-        Button btn2 = new Button("Stage1 Button2");
         VBox vbox2 = new VBox(btn2);
         PopupControl pc = new PopupControl();
         pc.getScene().setRoot(vbox2);
         pc.show(stage, 20, 2);
-        print(propertyDescriptorProperty());
-        //System.err.println("MyProp bean = " + propertyDescriptorProperty().getBean());
-        
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-
         Dockable.initDefaultStylesheet(null);
+        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
-    public void print(Property<PropertyDescriptor> p) {
-         System.err.println("Print MyProp bean = " + propertyDescriptorProperty().getBean()); 
-    }
-    public void print(MyBean mb) {
-        print(mb.propertyDescriptorProperty());
-         //System.err.println("MyBean Print bean = " + propertyDescriptorProperty().getBean()); 
-    }
-    
+
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be

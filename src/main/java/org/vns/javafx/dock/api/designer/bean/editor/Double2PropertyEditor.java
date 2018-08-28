@@ -25,15 +25,15 @@ import org.vns.javafx.dock.api.designer.bean.editor.PrimitivesPropertyEditor.Num
  *
  * @author Olga
  */
-public class DoublePropertyEditor extends NumberTextField<Double> {
+public class Double2PropertyEditor extends NumberTextField<Double> {
 
     private DoubleStringConverter converter;
     
-    public DoublePropertyEditor() {
+    public Double2PropertyEditor() {
         this(null, null);
     }
 
-    public DoublePropertyEditor(Double minValue, Double maxValue) {
+    public Double2PropertyEditor(Double minValue, Double maxValue) {
         this(0d, minValue, maxValue);
     }
 
@@ -41,11 +41,11 @@ public class DoublePropertyEditor extends NumberTextField<Double> {
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public DoublePropertyEditor(Double defaultValue) {
+    public Double2PropertyEditor(Double defaultValue) {
         this(defaultValue, null, null);
     }
 
-    public DoublePropertyEditor(Double defaultValue, Double minValue, Double maxValue) {
+    public Double2PropertyEditor(Double defaultValue, Double minValue, Double maxValue) {
         setDefaultValue(defaultValue);
         setMinValue(minValue);
         setMaxValue(maxValue);
@@ -120,9 +120,9 @@ public class DoublePropertyEditor extends NumberTextField<Double> {
     public static class Converter extends DoubleStringConverter {
 
         private final Double defaultValue;
-        private final DoublePropertyEditor textField;
+        private final Double2PropertyEditor textField;
 
-        public Converter(DoublePropertyEditor textField, Double defaultValue) {
+        public Converter(Double2PropertyEditor textField, Double defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

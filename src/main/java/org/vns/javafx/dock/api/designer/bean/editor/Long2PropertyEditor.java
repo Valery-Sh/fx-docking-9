@@ -26,9 +26,9 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Olga
  */
-public class LongPropertyEditor extends PrimitivesPropertyEditor.NumberTextField<Long> {
+public class Long2PropertyEditor extends PrimitivesPropertyEditor.NumberTextField<Long> {
 
-    public LongPropertyEditor() {
+    public Long2PropertyEditor() {
         this(0L);
     }
 
@@ -36,7 +36,7 @@ public class LongPropertyEditor extends PrimitivesPropertyEditor.NumberTextField
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public LongPropertyEditor(Long defaultValue) {
+    public Long2PropertyEditor(Long defaultValue) {
         setDefaultValue(defaultValue);
         init();
     }
@@ -90,9 +90,9 @@ public class LongPropertyEditor extends PrimitivesPropertyEditor.NumberTextField
     public static class Converter extends LongStringConverter {
 
         private final Long defaultValue;
-        private final LongPropertyEditor textField;
+        private final Long2PropertyEditor textField;
 
-        public Converter(LongPropertyEditor textField, Long defaultValue) {
+        public Converter(Long2PropertyEditor textField, Long defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

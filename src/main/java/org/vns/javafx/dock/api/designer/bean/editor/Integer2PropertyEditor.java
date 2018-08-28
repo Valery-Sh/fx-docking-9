@@ -24,13 +24,13 @@ import javafx.util.converter.IntegerStringConverter;
  *
  * @author Olga
  */
-public class IntegerPropertyEditor extends PrimitivesPropertyEditor.NumberTextField<Integer> {
+public class Integer2PropertyEditor extends PrimitivesPropertyEditor.NumberTextField<Integer> {
 
-    public IntegerPropertyEditor() {
+    public Integer2PropertyEditor() {
         this(null, null);
     }
 
-    public IntegerPropertyEditor(Integer minValue, Integer maxValue) {
+    public Integer2PropertyEditor(Integer minValue, Integer maxValue) {
         this(0, minValue, maxValue);
     }
 
@@ -38,11 +38,11 @@ public class IntegerPropertyEditor extends PrimitivesPropertyEditor.NumberTextFi
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public IntegerPropertyEditor(Integer defaultValue) {
+    public Integer2PropertyEditor(Integer defaultValue) {
         this(defaultValue, null, null);
     }
 
-    public IntegerPropertyEditor(Integer defaultValue, Integer minValue, Integer maxValue) {
+    public Integer2PropertyEditor(Integer defaultValue, Integer minValue, Integer maxValue) {
         setDefaultValue(defaultValue);
         setMinValue(minValue);
         setMaxValue(maxValue);
@@ -108,9 +108,9 @@ public class IntegerPropertyEditor extends PrimitivesPropertyEditor.NumberTextFi
     public static class Converter extends IntegerStringConverter {
 
         private final Integer defaultValue;
-        private final IntegerPropertyEditor textField;
+        private final Integer2PropertyEditor textField;
 
-        public Converter(IntegerPropertyEditor textField, Integer defaultValue) {
+        public Converter(Integer2PropertyEditor textField, Integer defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

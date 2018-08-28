@@ -34,19 +34,18 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  */
 public class SliderPropertyEditor extends Control implements PropertyEditor<Number> {
 
-    private DecimalPropertyEditor textField;
+    private Decimal2PropertyEditor textField;
     private Slider slider;
 
     public SliderPropertyEditor() {
+        this(0,1,1);
     }
 
     public SliderPropertyEditor(double min, double max, double value) {
-        textField = new DecimalPropertyEditor(min, max);
+        textField = new Decimal2PropertyEditor(min, max);
         textField.setScale(2, RoundingMode.HALF_UP);
         slider = new Slider(min, max, value);
-
         init();
-
     }
 
     private void init() {
@@ -63,7 +62,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
-    protected DecimalPropertyEditor getTextField() {
+    protected Decimal2PropertyEditor getTextField() {
         return textField;
     }
 

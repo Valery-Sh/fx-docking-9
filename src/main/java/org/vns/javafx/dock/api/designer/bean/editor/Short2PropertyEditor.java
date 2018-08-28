@@ -15,40 +15,35 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import org.vns.javafx.dock.api.designer.bean.editor.Integer2PropertyEditor;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
- * @author Valery Shishkin
+ * @author Olga
  */
-public class BytePropertyEditor extends IntegerPropertyEditor {
+public class Short2PropertyEditor  extends Integer2PropertyEditor {
+    
+    public Short2PropertyEditor() {
+        this(null, null);
+    }
 
-    public BytePropertyEditor() {
-        this((byte) 0, null, null);
+    public Short2PropertyEditor(Short minValue, Short maxValue) {
+        this((short)0, minValue, maxValue);
     }
 
     /**
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public BytePropertyEditor(Byte defaultValue) {
-        this(defaultValue, null, null);
+    public Short2PropertyEditor(Short defaultValue) {
+        this(defaultValue,null, null);
     }
-
-    public BytePropertyEditor(Byte minValue, Byte maxValue) {
-        this((byte) 0, minValue, maxValue);
-    }
-
-    public BytePropertyEditor(Byte defaultValue, Byte minValue, Byte maxValue) {
-        super(defaultValue == null ? null : defaultValue.intValue(),
-                minValue == null ? null : minValue.intValue(), maxValue == null ? null : maxValue.intValue());
-    }
-
-/*    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-*/
+    public Short2PropertyEditor(Short defaultValue,Short minValue, Short maxValue) {
+       super(defaultValue == null ? null : defaultValue.intValue(),
+               minValue == null ? null : minValue.intValue(),maxValue == null ? null : maxValue.intValue());
+    }  
+        
     @Override
     protected boolean isAcceptable(String txt) {
         if (txt == null) {
@@ -58,11 +53,7 @@ public class BytePropertyEditor extends IntegerPropertyEditor {
             return true;
         }
 
-        if (txt.matches(getPattern()) && Long.parseLong(txt) <= Byte.MAX_VALUE && Long.parseLong(txt) >= Byte.MIN_VALUE) {
-            System.err.println("Byte: txt = " + txt);
-            System.err.println("Byte: Long.parseLong(txt) = " + Long.parseLong(txt));
-            System.err.println("Byte: getMinValue = " + getMinValue());
-            System.err.println("Byte: getMaxValue = " + getMaxValue());
+        if (txt.matches(getPattern()) && Long.parseLong(txt) <= Short.MAX_VALUE && Long.parseLong(txt) >= Short.MIN_VALUE) {
             if (getMinValue() == null && getMaxValue() == null) {
                 return true;
             }
@@ -75,5 +66,9 @@ public class BytePropertyEditor extends IntegerPropertyEditor {
             return true;
         }
         return false;
+
     }
+
+
+
 }

@@ -29,7 +29,7 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Olga
  */
-public class CharacterPropertyEditor extends TextField implements PropertyEditor<String> {
+public class Character2PropertyEditor extends TextField implements PropertyEditor<String> {
 
     private final Character defaultValue;
     private StringProperty value = new SimpleStringProperty();
@@ -44,7 +44,7 @@ public class CharacterPropertyEditor extends TextField implements PropertyEditor
         return null;
     };
 
-    public CharacterPropertyEditor() {
+    public Character2PropertyEditor() {
         this(null);
     }
 
@@ -52,7 +52,7 @@ public class CharacterPropertyEditor extends TextField implements PropertyEditor
      *
      * @param defaultValue if null then an empty String value will be shown
      */
-    public CharacterPropertyEditor(Character defaultValue) {
+    public Character2PropertyEditor(Character defaultValue) {
         this.defaultValue = defaultValue;
         init();
     }
@@ -123,9 +123,9 @@ public class CharacterPropertyEditor extends TextField implements PropertyEditor
     }
  public static class Converter extends StringConverter {
         private final Character defaultValue;
-        private final CharacterPropertyEditor textField;
+        private final Character2PropertyEditor textField;
         
-        public Converter(CharacterPropertyEditor textField,Character defaultValue) {
+        public Converter(Character2PropertyEditor textField,Character defaultValue) {
             this.textField = textField;
             this.defaultValue = defaultValue;
         }

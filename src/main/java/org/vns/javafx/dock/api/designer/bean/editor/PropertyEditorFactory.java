@@ -74,21 +74,21 @@ public abstract class PropertyEditorFactory {
             if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
                 return new BooleanPropertyEditor();
             } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
-                return new CharacterPropertyEditor();
+                return new Character2PropertyEditor();
             } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
-                return new BytePropertyEditor();
+                return new Byte2PropertyEditor();
             } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
-                return new ShortPropertyEditor();
+                return new Short2PropertyEditor();
             } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
-                return new IntegerPropertyEditor();
+                return new Integer2PropertyEditor();
             } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
-                return new LongPropertyEditor();
+                return new Long2PropertyEditor();
             } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
                 return new FloatPropertyEditor();
             } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
                 return new SliderPropertyEditor(0, 1, 1);
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
-                return new DoublePropertyEditor();
+                return new Double2PropertyEditor();
             } else if (propertyType.equals(String.class)) {
                 return new SimpleStringPropertyEditor();
             } else if (propertyType.isEnum()) {
@@ -118,21 +118,21 @@ public abstract class PropertyEditorFactory {
             if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
                 return new BooleanPropertyEditor();
             } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
-                return new CharacterPropertyEditor();
+                return new Character2PropertyEditor();
             } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
-                return new BytePropertyEditor();
+                return new Byte2PropertyEditor();
             } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
-                return new ShortPropertyEditor();
+                return new Short2PropertyEditor();
             } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
-                return new IntegerPropertyEditor();
+                return new Integer2PropertyEditor();
             } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
-                return new LongPropertyEditor();
+                return new Long2PropertyEditor();
             } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
                 return new FloatPropertyEditor();
             } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
                 return new SliderPropertyEditor(0, 1, 1);
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
-                return new DoublePropertyEditor();
+                return new Double2PropertyEditor();
             } else if (propertyType.equals(String.class)) {
                 return new SimpleStringPropertyEditor();
             } else if (propertyType.isEnum()) {
@@ -166,21 +166,21 @@ public abstract class PropertyEditorFactory {
             if (propertyType.equals(Boolean.class.getName()) || propertyType.equals(boolean.class.getName())) {
                 return new BooleanPropertyEditor();
             } else if (propertyType.equals(Character.class.getName()) || propertyType.equals(char.class.getName())) {
-                return new CharacterPropertyEditor();
+                return new Character2PropertyEditor();
             } else if (propertyType.equals(Byte.class.getName()) || propertyType.equals(byte.class.getName())) {
-                return new BytePropertyEditor();
+                return new Byte2PropertyEditor();
             } else if (propertyType.equals(Short.class.getName()) || propertyType.equals(short.class.getName())) {
-                return new ShortPropertyEditor();
+                return new Short2PropertyEditor();
             } else if (propertyType.equals(Integer.class.getName()) || propertyType.equals(int.class.getName())) {
-                return new IntegerPropertyEditor();
+                return new Integer2PropertyEditor();
             } else if (propertyType.equals(Long.class.getName()) || propertyType.equals(long.class.getName())) {
-                return new LongPropertyEditor();
+                return new Long2PropertyEditor();
             } else if (propertyType.equals(Float.class.getName()) || propertyType.equals(float.class.getName())) {
                 return new FloatPropertyEditor();
             } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())))) {
                 return new SliderPropertyEditor(0, 1, 1);
             } else if (propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())) {
-                return new DoublePropertyEditor();
+                return new Double2PropertyEditor();
             } else if (propertyType.equals(String.class.getName())) {
                 return new SimpleStringPropertyEditor();
             } else if (propertyType.equals(Insets.class.getName())) {

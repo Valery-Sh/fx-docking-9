@@ -138,7 +138,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
      * </p>
      *
      */
-    private void invalidateFormatterValue() {
+    protected void invalidateFormatterValue() {
         //
         // We must raise Invalidation event for valueProperty() in the formatter 
         // in order to make the formatter to execute the converter method toString().

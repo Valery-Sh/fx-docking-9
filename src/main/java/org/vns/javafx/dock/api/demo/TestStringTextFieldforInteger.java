@@ -18,6 +18,10 @@ package org.vns.javafx.dock.api.demo;
 import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -48,8 +52,10 @@ public class TestStringTextFieldforInteger extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-
-
+        ObjectProperty<Byte> byteProp = new SimpleObjectProperty<>((byte)124);
+        StringProperty stringProp = new SimpleStringProperty();
+        stringProp.bind(byteProp.asString());
+        System.err.println("BYTE as String = " + stringProp.get());
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -76,10 +82,6 @@ public class TestStringTextFieldforInteger extends Application {
         StringTextField tf1 = new StringTextField();
         tf1.setValueIfBlank("0");
         
-        //tf1.setSeparator(",", "\\s*,\\s*");
-        //tf1.setSeparator(";");
-        String sss = "t,   ,m, , ";
-        String[] ssItems = sss.split("\\s*,\\s*");
 
         tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
         
@@ -99,19 +101,9 @@ public class TestStringTextFieldforInteger extends Application {
             
             return retval;
         });
-
+        tf1.rightValueProperty().bind(btn1.prefWidthProperty().asString());
         btn1.setOnAction(e -> {
-            lb1.getStyleClass().forEach(s -> {
-                System.err.println("Label class = " + s);
-            });
-//            tf1.getValue().addAll("STR10", "STR11");
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-            tf1.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
+            tf1.setRightValue("21");
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -140,9 +132,7 @@ public class TestStringTextFieldforInteger extends Application {
         grid.add(tf2, 1, 2);
 
         btn1.setOnAction(e -> {
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
+            tf1.setRightValue("21");
         });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
