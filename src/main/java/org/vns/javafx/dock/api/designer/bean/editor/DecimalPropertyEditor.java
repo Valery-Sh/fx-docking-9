@@ -18,14 +18,13 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.regex.Pattern;
-import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.StringConverter;
-import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
@@ -45,22 +44,28 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
     }
 
     public DecimalPropertyEditor(Double minValue, Double maxValue, Integer scale) {
-        this.minValue.set(minValue);
+        System.err.println("DecimalPropertyEditor constr min = " + minValue + "; max=" + maxValue);
+        if ( minValue.equals(Double.MIN_VALUE) ) {
+            this.minValue.set(-Double.MAX_VALUE);
+        } else {
+            this.minValue.set(minValue);
+        }
         this.maxValue.set(maxValue);
         this.scale.set(scale);
         init();
     }
 
     private void init() {
-        setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
 
         setFromStringTransformer(src -> {
             String retval = src;
             src = src.trim();
+            Double dv;
             if (src.isEmpty() || src.equals(".")) {
-                return getStringConverter().toString(getMinValue());
+                dv = getMinValue();
+            } else {
+                dv = Double.valueOf(src);
             }
-            Double dv = Double.valueOf(src);
             if (dv.longValue() == dv.doubleValue()) {
                 return String.valueOf(dv.longValue());
             }
@@ -72,8 +77,12 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
     @Override
     protected void addValidators() {
         getValidators().add(item -> {
+            
             Double dv = Double.valueOf(item);
+            System.err.println("min()=" + Double.min(Double.MIN_VALUE,dv));
             boolean retval = dv >= getMinValue() && dv <= getMaxValue();
+            System.err.println("MIN = " + getMinValue() + "; MAX=" + getMaxValue());
+            System.err.println("validator item=" + dv + "; retval = " + retval);            
             return retval;
 
         });
@@ -113,11 +122,6 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
         return bd.toString();
     }
 
-    @Override
-    public void bind(Property property) {
-        super.bind(property);
-        rightValueProperty().bind(((DoubleProperty)property).asString());
-    }
 
     @Override
     public void setBoundValue(Double boundValue) {
@@ -166,65 +170,25 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     @Override
     public StringConverter<Double> createStringConverter() {
-        return new Converter(this);
+        return new DoubleConverter(this);
     }
 
-    public static class Converter extends DoubleStringConverter {
+    @Override
+    protected StringBinding asString(Property property) {
+       return ((DoubleProperty)property).asString();
+    }
 
-        private final DecimalPropertyEditor textField;
+    public static class DoubleConverter extends AbstractPropertyEditor.Converter<Double> {
 
-        public Converter(DecimalPropertyEditor textField) {
-            this.textField = textField;
+
+        public DoubleConverter(DecimalPropertyEditor textField) {
+            super(textField);
         }
 
         @Override
-        public String toString(Double dv) {
-//            System.err.println("Convertor toString dv = " + dv);
-            String retval;
-/*            if (dv < textField.getMinValue() || dv > textField.getMaxValue()) {
-//                System.err.println("Convertor toString 2 " + stringOf(textField.getMinValue()));
-                retval = stringOf(textField.getMinValue());
-            } else {
-//                System.err.println("Convertor toString 3 " + stringOf(dv));
-                retval = stringOf(dv);
-            }
-            //retval = stringOf(dv);
-//            System.err.println("   --- getRightValue() = " + textField.getRightValue());
-//            System.err.println("   --- valueOf(retval) = " + Double.valueOf(retval));
-            //if (textField.getRightValue() != null && dv != Double.valueOf(retval)) {
-            Platform.runLater(() -> {
-//                System.err.println("RUNLATER dv.toString() = " + dv.toString() + "; retval=" + retval);
-                textField.setRightValue(dv.toString());
-                textField.setRightValue(retval);
-                textField.commitValue();
-
-            });
-            //}
-*/
-            retval = stringOf(dv);
-            System.err.println("Convertor RETURN toString retval = " + retval);
-            return retval;
+        protected Double valueOf(String txt) {
+            return Double.valueOf(getTextField().stringOf(Double.valueOf(txt)));            
         }
-
-        public String stringOf(Double dv) {
-            return textField.stringOf(dv);
-        }
-
-        @Override
-        public Double fromString(String tx) {
-            System.err.println("Convertor fromString tx = " + tx);
-
-            Double retval = 0d;
-            if (textField.hasErrorItems() ) {
-//                System.err.println("Convertor fromString hasErrors ");
-                retval = textField.getBoundValue();
-            } else {
-//                System.err.println("Convertor fromString double " + Double.valueOf(tx));
-                retval = super.fromString(stringOf(Double.valueOf(tx)));
-            }
-            System.err.println("Convertor fromString retval " + retval);
-            return retval;
-        }
-    }//class Converter
+    }//class DoubleConverter
 
 }//class DecimalPropertyEditor

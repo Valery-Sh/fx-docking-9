@@ -38,7 +38,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
 import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -159,22 +158,21 @@ public class TestIntegerListPropertyEditor extends Application {
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         //tf2.bind(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.textProperty());
-        tf2.bind(btn2.textProperty());
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
 
         //tf1.setPrefWidth(200);
         grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
+//        grid.add(tf2, 1, 1);
         //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        

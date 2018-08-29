@@ -123,7 +123,7 @@ public class TestPropertyChange extends Application {
            }
         });
        
-        SliderPropertyEditor slider = new SliderPropertyEditor(0,1,1);
+        //SliderPropertyEditor slider = new SliderPropertyEditor(0,1,1);
         InsetsPropertyEditor insetsEditor = new InsetsPropertyEditor(1,2,3,4);
         insetsEditor.setDecorated(false);
         final BooleanProperty bound = new SimpleBooleanProperty(true);
@@ -140,10 +140,11 @@ public class TestPropertyChange extends Application {
             }
             insetsEditor.setDecorated(!insetsEditor.isDecorated());
         });
-        root.getChildren().addAll(insBtn,insetsEditor,cbox,ckBox, slider);        
+        //root.getChildren().addAll(insBtn,insetsEditor,cbox,ckBox, slider);        
+        root.getChildren().addAll(insBtn,insetsEditor,cbox,ckBox);        
         cbox.setPadding(new Insets(1.9,2,3,4));
         //insetsEditor.bindBidirectional(cbox.paddingProperty());
-        insetsEditor.bind(cbox.paddingProperty());
+        insetsEditor.bindBidirectional(cbox.paddingProperty());
 /*        slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
         slider.setMajorTickUnit(0.25f);

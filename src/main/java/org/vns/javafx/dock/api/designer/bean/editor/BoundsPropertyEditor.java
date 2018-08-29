@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.ContentComboBox;
-import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;

@@ -15,20 +15,10 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,27 +37,20 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.BytePropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestCharStringPropertyEditor extends Application {
+public class TestByteAndBooleanPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
+        
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
-        Integer i = Integer.valueOf("+1");
-        System.err.println("Integer i = " + i);
-        System.err.println("  --- Integer i = " + Integer.parseInt("+1"));
-        
+
         long start1 = System.currentTimeMillis();
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
@@ -87,20 +70,20 @@ public class TestCharStringPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        ObjectProperty<Character> ip = new SimpleObjectProperty<>(' ');
-        PrimitivePropertyEditor.CharPropertyEditor tf1 = new PrimitivePropertyEditor.CharPropertyEditor();
+        ObjectProperty<Byte> ip = new SimpleObjectProperty<>((byte)9);
+        BytePropertyEditor tf1 = new BytePropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getRightValue());
+        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
+            tf1.setLastValidText("21");
             System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
@@ -119,10 +102,10 @@ public class TestCharStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
+            tf1.setLastValidText("21");
         });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
@@ -133,7 +116,7 @@ public class TestCharStringPropertyEditor extends Application {
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);
-        tf3.bind(btn1.disableProperty());
+        tf3.bindBidirectional(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();

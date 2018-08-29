@@ -17,9 +17,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
-import javafx.util.StringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**

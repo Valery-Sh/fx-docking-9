@@ -41,7 +41,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -76,17 +75,17 @@ public class TestShortStringPropertyEditor extends Application {
         ObjectProperty<Short> ip = new SimpleObjectProperty<>((short)0);
         ShortPropertyEditor tf1 = new ShortPropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getRightValue());
+        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
+            tf1.setLastValidText("21");
             System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
@@ -105,10 +104,10 @@ public class TestShortStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
+            tf1.setLastValidText("21");
         });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();

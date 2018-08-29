@@ -15,20 +15,10 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,11 +37,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *
@@ -86,17 +72,17 @@ public class TestLongStringPropertyEditor extends Application {
         LongProperty ip = new SimpleLongProperty(99999999999999999L);
         LongPropertyEditor tf1 = new LongPropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getRightValue());
+        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
+            tf1.setLastValidText("21");
             System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
@@ -115,11 +101,7 @@ public class TestLongStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
 
-        btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
-        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 

@@ -1,7 +1,10 @@
 .content-combo-box .display-node {
     -fx-padding: 2 0 2 10;
 }
-
+.string-textfield:errorfound {
+    -fx-text-fill: red;
+    -fx-border-color: red;
+}
 .bounds-property-editor {
   
 }

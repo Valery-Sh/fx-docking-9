@@ -15,13 +15,21 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
+import com.sun.javafx.css.converters.SizeConverter;
+import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.geometry.BoundingBox;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -36,20 +44,18 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.StylePropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestStringTextField extends Application {
+public class TestStylePropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
 
-
+        
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -73,44 +79,8 @@ public class TestStringTextField extends Application {
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
 
-        StringTextField tf1 = new StringTextField();
+        StylePropertyEditor tf1 = new StylePropertyEditor();
         //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.setSeparator(";");
-        String sss = "t,   ,m, , ";
-        String[] ssItems = sss.split("\\s*,\\s*");
-
-        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
-        
-         tf1.getValidators().add(item -> {
-            boolean retval = Pattern.matches("^(([-]+)([f]+)([x]+)([-]+))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$", item.trim());
-
-            System.err.println("validator ITEM = " + item + "; matches=" + retval);
-            return retval;
-        });
-        tf1.getFilterValidators().add(item -> {
-
-            String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
-            String orCond0 = "|^((-))";
-            String orCond1 = "|^((-)(f))";
-            String orCond2 = "|^((-)(f)(x))";
-            String orCond3 = "|^((-)(f)(x)(-))([a-z])?$";
-            String orCond4 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(-)$";
-            
-            String orCond5 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*)$";
-            String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
-            String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
-            String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
-            
-            
-            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
-//            System.err.println("REG EXP = " + regExp);
-            boolean retval = item.trim().isEmpty();
-            if ( ! retval) {
-                retval = Pattern.matches(regExp, item.trim());
-            }
-            
-            return retval;
-        });
 
         btn1.setOnAction(e -> {
             lb1.getStyleClass().forEach(s -> {
@@ -128,9 +98,9 @@ public class TestStringTextField extends Application {
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
@@ -149,7 +119,7 @@ public class TestStringTextField extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
         btn1.setOnAction(e -> {
             System.err.println("INSETS = " + tf1.getInsets());
@@ -266,6 +236,33 @@ public class TestStringTextField extends Application {
         System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
+        ContextMenu cm = new ContextMenu();
+        cm.setHeight(100);
+        List<CssMetaData<? extends Styleable, ?>> cssList = btn2.getCssMetaData();
+        //SizeConverter.getInstance()
+       for ( CssMetaData<? extends Styleable, ?> md : cssList) {
+            System.err.println("md = " + md);
+            System.err.println("   --- property name = " + md.getProperty());
+            cm.getItems().add(new MenuItem(md.getProperty()));
+        }
+     
+        tf1.setContextMenu(cm);
+        System.err.println("0 cm.getRoot=" + cm.getScene().getRoot());
+        for ( Node n : ((Pane)cm.getScene().getRoot()).getChildren()) {
+            System.err.println("Pane node = " + n);
+        }
+        VBox cmRoot = new VBox();
+        ScrollPane sp = new ScrollPane(cmRoot);
+        sp.setViewportBounds(new BoundingBox(100,100, 100, 200));
+        cm.setHeight(100);
+        cmRoot.getChildren().addAll(((Pane)cm.getScene().getRoot()).getChildren());
+        cm.getScene().setRoot(sp);        
+       // ((Pane)cm.getScene().getRoot()).setMaxHeight(100);
+        //((Pane)cm.getScene().getRoot()).setPrefHeight(100);
+        cm.setOnShowing(e -> {
+            System.err.println("cm.getRoot=" + cm.getScene().getRoot());
+        });
+        
     }
 
     /**

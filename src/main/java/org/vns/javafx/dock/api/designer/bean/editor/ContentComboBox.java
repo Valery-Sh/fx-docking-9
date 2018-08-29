@@ -37,6 +37,7 @@ public class ContentComboBox extends ComboBoxBase {
     
     public ContentComboBox() {
         getStyleClass().addAll("content-combo-box");
+        init();
     }
     
     private void init() {

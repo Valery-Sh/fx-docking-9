@@ -29,15 +29,14 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Integer2PropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestIntegerTextField extends Application {
+public class TestIntegerPropertyEditor extends Application {
 
     Stage stage;
     Scene scene;
@@ -101,9 +100,9 @@ public class TestIntegerTextField extends Application {
         System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
+        IntegerProperty ip = new SimpleIntegerProperty();
         
-        
-        Integer2PropertyEditor tf1 = new Integer2PropertyEditor();
+        IntegerPropertyEditor tf1 = new IntegerPropertyEditor();
 
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
@@ -112,13 +111,14 @@ public class TestIntegerTextField extends Application {
         //tf1.bindBidirectional(btn1.textProperty());
         //tf1.bindBidirectional(btn1.prefWidthProperty());
         //tf1.bindBidirectional(btn1.opacityProperty());
-        tf1.bindBidirectional(btn1.prefWidthProperty());
+        tf1.bindBidirectional(ip);
         //tf1.setEditable(false);
         //tf1.bind(btn1.prefWidthProperty());
         btn1.setOnAction(e -> {
+            System.err.println("IntegerProperty ip = " + ip.get());
             //tf1.getSlider().setValue(-1);
             //btn1.setOpacity(btn1.getOpacity() + 0.1);
-            btn1.setPrefWidth(-1);
+            //btn1.setPrefWidth(-1);
             //tf1.setText("200");
             //tf1.setEditable(true);
             tf1.getPseudoClassStates().forEach(s -> {
@@ -152,22 +152,22 @@ public class TestIntegerTextField extends Application {
         //LongTextField tf2 = new LongTextField();
         //DoubleTextField tf2 = new DoubleTextField(24.5);
         //ByteTextField tf2 = new ByteTextField(null);
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         //tf2.bind(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.textProperty());
-        tf2.bind(btn2.textProperty());
+//        tf2.bind(btn2.textProperty());
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
 
         //tf1.setPrefWidth(200);
         grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
+//        grid.add(tf2, 1, 1);
         //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        

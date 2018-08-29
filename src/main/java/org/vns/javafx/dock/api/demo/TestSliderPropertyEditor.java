@@ -17,8 +17,6 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,8 +35,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 
 /**
@@ -77,17 +73,19 @@ public class TestSliderPropertyEditor extends Application {
         tf1.bindBidirectional(btn2.opacityProperty());
         //System.err.println("IntegerPropertyEditor value=" + tf1.getRightValue());
         btn1.setOnAction(e -> {
-            //tf1.setRightValue("21");
+            //tf1.getTextField().setText("0");
+            btn2.setOpacity(-12);
             //System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+        //SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+        //tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
-            btn2.setPrefWidth(200.56);
+            //btn2.setPrefWidth(200.56);
+            System.err.println("btn2.getOpacity=" + btn2.getOpacity());
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
@@ -104,11 +102,8 @@ public class TestSliderPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
-        btn1.setOnAction(e -> {
-            //tf1.setRightValue("21");
-        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 

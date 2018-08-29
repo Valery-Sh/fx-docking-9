@@ -33,15 +33,7 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Byte2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Decimal2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Double2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.FloatPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Integer2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Long2PropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.Short2PropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 
 /**
  *
@@ -156,22 +148,21 @@ public class TestGridPane extends Application {
         //LongTextField tf2 = new Long2PropertyEditor();
         //DoubleTextField tf2 = new Double2PropertyEditor(24.5);
         //ByteTextField tf2 = new Byte2PropertyEditor(null);
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
         
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         //tf2.bind(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.prefWidthProperty());
         //tf2.bindBidirectional(btn2.textProperty());
-        tf2.bind(btn2.textProperty());
+//        tf2.bind(btn2.textProperty());
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
 
         //tf1.setPrefWidth(200);
         grid.add(lb2, 0, 1);
-        grid.add(tf2, 1, 1);
         //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        

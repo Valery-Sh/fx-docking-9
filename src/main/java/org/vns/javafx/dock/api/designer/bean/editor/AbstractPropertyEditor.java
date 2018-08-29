@@ -15,19 +15,12 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.util.StringConverter;
-import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
@@ -36,7 +29,8 @@ import javafx.util.converter.DoubleStringConverter;
 public abstract class AbstractPropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
 
     private ObservableValue boundValue;
-    
+    //private E oldBoundValue;
+
     private StringConverter<E> stringConverter;
 
     public AbstractPropertyEditor() {
@@ -47,22 +41,22 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         stringConverter = createStringConverter();
         setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
 
-        //setValueIfBlank("0");
-    
         addValidators();
         addFilterValidators();
     }
+
     protected void addValidators() {
-        
+
     }
+
     protected void addFilterValidators() {
-        
+
     }
 
     public StringConverter<E> getStringConverter() {
         return stringConverter;
     }
-    
+
     private boolean checkValidators(E dv) {
         boolean retval = true;
         String sv = stringOf(dv);
@@ -75,7 +69,6 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         return retval;
     }
 
-
     @Override
     public void bind(Property property) {
         unbind();
@@ -83,47 +76,79 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         setEditable(false);
 
         this.boundValue = (ObservableValue<E>) property;
-//        rightValueProperty().bind(boundValue.asString());
+        lastValidTextProperty().bind(asString(property));
     }
+
     @Override
     public void bindBidirectional(Property property) {
+        System.err.println("AbstractPropertyEditor bindBidirectional");
         unbind();
         setEditable(true);
         boundValue = (ObservableValue<E>) property;
+/*        boundValue.addListener((v, ov, nv) -> {
+        System.err.println("CHANGE LISTENER: ov = " + ov+ "; nv = " + nv + "; bondValue=" + boundValue.getValue());
+            oldBoundValue = (E)nv;
+        });        
+*/        
         boundValue.addListener((v, ov, nv) -> {
-            if (!checkValidators((E)nv)) {
+            System.err.println("CHANGE LISTENER: ov = " + ov+ "; nv = " + nv + "; bondValue=" + boundValue.getValue());
+            if (!checkValidators((E) nv)) {
                 Platform.runLater(() -> {
+                    System.err.println("CHANGE LISTENER: RUN LATER before set old bound valueov = " + ov);
                     setBoundValue((E) ov);
+                    System.err.println("CHANGE LISTENER: RUN LATER after set old bound valueov = " + ov);
                 });
             }
         });
-        this.boundValue = (ObservableValue<E>) property;
-        rightValueProperty().bindBidirectional(property, stringConverter);
+      
+/*        boundValue.addListener((Observable v) -> {
+            E saveOldValue = oldBoundValue;
+            if (!checkValidators((E) boundValue.getValue())) {
+                Platform.runLater(() ->{
+                    System.err.println("RUN LATER INV LISTENER: oldBoundValue = " + oldBoundValue+ "; saveOldValue = " + saveOldValue);
+                    setBoundValue(saveOldValue);
+                });
+                
+            }
+            System.err.println("INV LISTENER: v = " + v+ "; boundValue = " + boundValue.getValue());
+        });
+*/
+        boundValue = (ObservableValue<E>) property;
+//        oldBoundValue = (E)boundValue.getValue();
+        lastValidTextProperty().bindBidirectional(property, stringConverter);
     }
 
     public ObservableValue boundValueProperty() {
         return boundValue;
     }
-    public  E getBoundValue() {
-        return (E)boundValue.getValue();
+
+    public E getBoundValue() {
+        return (E) boundValue.getValue();
     }
+
     public abstract void setBoundValue(E boundValue);
-    
+
     public abstract StringConverter<E> createStringConverter();
-    public abstract String stringOf(E dv);
+
+    public String stringOf(E value) {
+        return value.toString();
+    }
+    
+    protected abstract StringBinding  asString(Property property);
+    
 
     @Override
     public void unbind() {
-        rightValueProperty().unbind();
+        lastValidTextProperty().unbind();
     }
 
     @Override
     public boolean isBound() {
-        return rightValueProperty().isBound();
+        return lastValidTextProperty().isBound();
 
     }
 
-/*    public static class Converter extends DoubleStringConverter {
+    public abstract static class Converter<T> extends StringConverter<T> {
 
         private final AbstractPropertyEditor textField;
 
@@ -131,57 +156,31 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
             this.textField = textField;
         }
 
-        @Override
-        public String toString(Double dv) {
-            System.err.println("Convertor toString dv = " + dv);
-            String retval;
-            if (dv < textField.getMinValue() || dv > textField.getMaxValue()) {
-                System.err.println("Convertor toString 2 " + stringOf(textField.getMinValue()));
-                retval = stringOf(textField.getMinValue());
-            } else {
-                System.err.println("Convertor toString 3 " + stringOf(dv));
-                retval = stringOf(dv);
-            }
-            //retval = stringOf(dv);
-            System.err.println("   --- getRightValue() = " + textField.getRightValue());
-            System.err.println("   --- valueOf(retval) = " + Double.valueOf(retval));
-            //if (textField.getRightValue() != null && dv != Double.valueOf(retval)) {
-            Platform.runLater(() -> {
-                System.err.println("RUNLATER dv.toString() = " + dv.toString() + "; retval=" + retval);
-                textField.setRightValue(dv.toString());
-                textField.setRightValue(retval);
-                textField.commitValue();
-
-            });
-            //}
-            System.err.println("Convertor RETURN to String retval = " + retval);
-            return retval;
+        protected T getBoundValue() {
+            return (T)getTextField().getBoundValue();
         }
+        protected abstract T valueOf(String txt);
 
-        public String stringOf(Double dv) {
-            BigDecimal bd = new BigDecimal(dv);
-            bd = bd.setScale(textField.getScale(), textField.getRoundingMode());
-            return bd.toString();
-
+        public AbstractPropertyEditor getTextField() {
+            return textField;
         }
 
         @Override
-        public Double fromString(String tx) {
-            System.err.println("Convertor fromString 1 tx = " + tx);
+        public String toString(T dv) {
+            return textField.stringOf(dv);
+        }
 
-            Double retval = 0d;
-            //if (tx.trim().isEmpty()) {
-            if (textField.hasErrorItems() ) {
-                System.err.println("Convertor fromString hasErrors ");
-                retval = textField.getBoundValue();
+        @Override
+        public T fromString(String tx) {
+            T retval;
+            if (getTextField().hasErrorItems()) {
+                System.err.println("getTextField().hasErrorItems() = " + getTextField().hasErrorItems());
+                retval = getBoundValue();
             } else {
-
-                System.err.println("Convertor fromString double " + Double.valueOf(tx));
-                retval = super.fromString(stringOf(Double.valueOf(tx)));
+                retval = valueOf(tx);
             }
-            System.err.println("Convertor fromString 2 " + retval);
             return retval;
         }
     }//class Converter
-*/
+
 }//class AbstractPropertyEditor

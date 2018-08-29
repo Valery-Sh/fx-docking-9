@@ -30,10 +30,10 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 /**
  * The base class is used as an editor for properties of type
  * {@code ObservableList&lt;E&gt;}. The class is a sub class of the
- * {@code TextField} and we assume that by we can put a sb as a
- comma-separated list of items and each item represents a sb item. The class
- has a property named {@code valueIfBlank} which is of type {@code String}. By
- * default it is set to null.
+ * {@code TextField} and we assume that by we can put a sb as a comma-separated
+ * list of items and each item represents a sb item. The class has a property
+ * named {@code valueIfBlank} which is of type {@code String}. By default it is
+ * set to null.
  * <p>
  * We can set the value to any string value. In this case every empty item will
  * be replaced with that value. We can impose restrictions on the items that can
@@ -44,9 +44,9 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  * <pre>
  * private ObservableList&lt;Predicate&lt;String&gt;&gt; validators
  * </pre> Let us extend the code which now will look like the sb below
-
- It is not necessary to use a comma as the separator of string elements. For
- this purpose, any sequence of characters can be applied. Use the 
+ *
+ * It is not necessary to use a comma as the separator of string elements. For
+ * this purpose, any sequence of characters can be applied. Use the 
  {@link ObservableListPropertyEditor#setSeparator(java.lang.String) }
  * or {@link ObservableListPropertyEditor#setSeparator(java.lang.String, java.lang.String)
  * }
@@ -80,7 +80,6 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     private final ListProperty<E> value = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-
     public ObservableListPropertyEditor() {
         init();
 
@@ -89,7 +88,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
     private void init() {
         //setSeparator(",", ",\\s*,\\s*");
         setSeparator(",");
-/*        UnaryOperator<TextFormatter.Change> filter = change -> {
+        /*        UnaryOperator<TextFormatter.Change> filter = change -> {
             if (isAcceptable(change.getControlNewText())) {
                 return change;
             } else {
@@ -97,9 +96,9 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
             }
         };
         setFilter(filter);
-*/        
+         */
     }
-/*    protected boolean testFilterValidators(String txt) {
+    /*    protected boolean testFilterValidators(String txt) {
         boolean retval = true;
         for ( Predicate<String> p : getFilterValidators() ) {
             if ( ! p.test(txt) ) {
@@ -109,11 +108,11 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         }
         return retval;
     }
-*/    
-/*    protected boolean isAcceptable(String txt) {
+     */
+ /*    protected boolean isAcceptable(String txt) {
         return testFilterValidators(txt);
     }
-*/
+     */
     private final ListChangeListener<? super E> valueChangeListener = (c) -> {
         invalidateFormatterValue();
     };
@@ -164,7 +163,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
             commitValue();
         });
     }
-    
+
     protected StringConverter createConverter() {
         return new Converter(this);
     }
@@ -221,17 +220,17 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         valueProperty().unbindContentBidirectional(list);
         valueProperty().bindContentBidirectional(list);
         initFormatter();
-  //
+        //
         // We need the TextFormatter to execute the StriringConverter's method
         // fromString in order to validate items in the observable list and
         // mark errors. 
         //
         Platform.runLater(() -> {
             commitValue();
-        });        
+        });
     }
 
-/*    public boolean validateListItem(E listItem) {
+    /*    public boolean validateListItem(E listItem) {
         String tx = fromListItem(listItem);
         //if (isAcceptable(tx) && validateStringListItem(tx)) {
         if (validateStringListItem(tx)) {            
@@ -239,7 +238,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         }
         return false;
     }
-*/
+     */
     public ListProperty<E> valueProperty() {
         return value;
     }
@@ -320,26 +319,29 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         return retval;
     }
 
-
     public ObservableList fromString(String tx) {
         System.err.println("*---- FROM STRING text = " + tx);
 
         String[] items = tx.split(getSeparator(), tx.length());
         System.err.println("TX = " + tx);
-        for ( int i=0; i < items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             System.err.println("it = '" + items[i] + "'");
-            if ( getFromStringTransformer() != null ) {
+            if (getFromStringTransformer() != null) {
                 items[i] = getFromStringTransformer().transform(items[i]);
             }
         }
-        
+
         List<Integer> errorItemIndexes = getErrorIndexes(items);
 
         if (errorItemIndexes.isEmpty()) {
             if (getErrorMarkerBuilder().getErrorMarkers() != null && getErrorMarkerBuilder().getErrorMarkers().length > 0) {
                 getChildren().removeAll(getErrorMarkerBuilder().getErrorMarkers());
             }
+            setErrorFound(Boolean.FALSE);
+        } else if (getSeparator() == null || !getSeparator().isEmpty()) {
+            setErrorFound(Boolean.TRUE);
         }
+        
         if (getErrorMarkerBuilder() != null) {
             Platform.runLater(() -> {
                 System.err.println("SHOW ERROR MARKER");
@@ -360,11 +362,11 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
             if (item.trim().isEmpty() && getValueIfBlank() != null && !tx.trim().isEmpty()) {
                 retval.add(toListItem(getValueIfBlank()));
                 continue;
-            } 
+            }
             if (item.trim().isEmpty()) {
                 //continue;
             }
-            System.err.println(" --- fromString cycle toListItem='" + toListItem(item) + "' ;item='" + item +  "'" );
+            System.err.println(" --- fromString cycle toListItem='" + toListItem(item) + "' ;item='" + item + "'");
             retval.add(toListItem(item));
         }
         getValue().removeListener(getValueChangeListener());
@@ -378,9 +380,9 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         }
 
         getValue().addListener(getValueChangeListener());
-        for ( String it : (ObservableList<String>)retval) {
-            System.err.println("fromString it = '" +it + "'" );
-        }        
+        for (String it : (ObservableList<String>) retval) {
+            System.err.println("fromString it = '" + it + "'");
+        }
         System.err.println("   fromString retval=" + retval);
         System.err.println("   fromString value=" + getValue());
         System.err.println("end fromString------------------------------------------");

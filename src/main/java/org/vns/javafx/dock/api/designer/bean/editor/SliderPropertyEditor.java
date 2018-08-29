@@ -15,9 +15,12 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.math.RoundingMode;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
@@ -34,16 +37,38 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  */
 public class SliderPropertyEditor extends Control implements PropertyEditor<Number> {
 
-    private Decimal2PropertyEditor textField;
+    private DecimalPropertyEditor textField;
     private Slider slider;
-
+    private Property<Number> boundValue;
+    
+    private final DoubleProperty sliderBoundValue = new SimpleDoubleProperty();
+    private final ChangeListener<? super Number>  sliderBoundValueListener  = (v,ov,nv) -> {
+         boundValue.setValue(nv);
+    };      
     public SliderPropertyEditor() {
         this(0,1,1);
     }
 
-    public SliderPropertyEditor(double min, double max, double value) {
-        textField = new Decimal2PropertyEditor(min, max);
-        textField.setScale(2, RoundingMode.HALF_UP);
+    public SliderPropertyEditor(double min, double max, int value) {
+        //textField = new DecimalPropertyEditor(min, max,2);
+        textField = new DecimalPropertyEditor(Double.MIN_VALUE, Double.MAX_VALUE,value);
+        textField.setFromStringTransformer(src -> {
+            String retval = src;
+            src = src.trim();
+            Double dv;
+            if (src.isEmpty() || src.equals(".")) {
+                dv = min;
+            } else {
+                dv = Double.valueOf(src);
+            }
+            if (dv.longValue() == dv.doubleValue()) {
+                return String.valueOf(dv.longValue());
+            }
+            return textField.stringOf(dv);
+        });       
+        //textField.setScale(2, RoundingMode.HALF_UP);
+        //textField.setR(2, RoundingMode.HALF_UP);
+        sliderBoundValue.set(value);
         slider = new Slider(min, max, value);
         init();
     }
@@ -62,7 +87,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
-    protected Decimal2PropertyEditor getTextField() {
+    public DecimalPropertyEditor getTextField() {
         return textField;
     }
 
@@ -77,7 +102,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
 
     @Override
     public void bind(Property<Number> property) {
-        textField.setEditable(true);
+        textField.setEditable(false);
         setEditable(false);
 
         property.addListener((v, ov, nv) -> {
@@ -87,28 +112,39 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
                 property.setValue(slider.getMax());
             }
         });
-
-        textField.valueProperty().bind(property);
+        
+        textField.bind(property);
         slider.valueProperty().bind(property);
     }
 
     @Override
     public void bindBidirectional(Property<Number> property) {
+        
+        boundValue = property;
         textField.setEditable(true);
-        textField.valueProperty().bindBidirectional(property);
+        
         property.addListener((v, ov, nv) -> {
+            double dv = (double)nv;
             if (property.getValue().doubleValue() < slider.getMin()) {
-                property.setValue(slider.getMin());
+                dv = slider.getMin();
             } else if (property.getValue().doubleValue() > slider.getMax()) {
-                property.setValue(slider.getMax());
+                dv = slider.getMax();
             }
+            sliderBoundValue.removeListener(sliderBoundValueListener);
+            sliderBoundValue.set(dv);
+            sliderBoundValue.addListener(sliderBoundValueListener);
+            
         });
-        property.bindBidirectional(slider.valueProperty());
+        sliderBoundValue.addListener(sliderBoundValueListener);
+        textField.bindBidirectional(property);
+        //property.bindBidirectional(slider.valueProperty());
+        sliderBoundValue.bindBidirectional(slider.valueProperty());
+        
     }
 
     @Override
     public void unbind() {
-        textField.valueProperty().unbind();
+        textField.unbind();
         slider.valueProperty().unbind();
     }
 
@@ -124,7 +160,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
 
     @Override
     public boolean isBound() {
-        return slider.valueProperty().isBound() || textField.valueProperty().isBound();
+        return slider.valueProperty().isBound() || textField.isBound();
     }
 
     public static class SliderEditorSkin extends SkinBase<SliderPropertyEditor> {

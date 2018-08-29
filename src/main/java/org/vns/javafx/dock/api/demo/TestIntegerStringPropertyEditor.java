@@ -47,7 +47,6 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
@@ -85,18 +84,18 @@ public class TestIntegerStringPropertyEditor extends Application {
         IntegerProperty ip = new SimpleIntegerProperty(27);
         IntegerPropertyEditor tf1 = new IntegerPropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getRightValue());
+        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            //tf1.setRightValue("21");
+            //tf1.setLastValidValue("21");
             System.err.println("btn2.getOpacity = " + btn2.getOpacity());
             //System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
@@ -115,7 +114,6 @@ public class TestIntegerStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
 
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();

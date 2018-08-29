@@ -28,14 +28,7 @@ public class BooleanPropertyEditor extends CheckBox implements PropertyEditor<Bo
 
     private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("readonly");
 
-    /*    public PrimitivesTextField() {
-        System.err.println("PrimitveTextField Constructor");
-        editableProperty().addListener((v, oldValue, newValue) -> {
-            System.err.println("editableProperty changed: " + newValue);
-            pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, ! newValue);
-        });
-    }
-     */
+
     private final Boolean defaultValue;
 
     //private BooleanProperty value = new SimpleBooleanProperty();
@@ -81,7 +74,6 @@ public class BooleanPropertyEditor extends CheckBox implements PropertyEditor<Bo
     public void bindBidirectional(Property<Boolean> property) {
         boolean d = (defaultValue == null) ? property.getValue() : defaultValue;
         setEditable(true);
-        //this.setDisabled(! isModifiable(property));
         property.setValue(d);
 
         this.setFocusTraversable(true);

@@ -36,6 +36,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.DoublePropertyEditor;
 
 /**
  *
@@ -45,10 +46,10 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     private final ObjectProperty<Insets> editorInsets = new SimpleObjectProperty<>();
 
-    private final Double2PropertyEditor top;
-    private final Double2PropertyEditor right;
-    private final Double2PropertyEditor bottom;
-    private final Double2PropertyEditor left;
+    private final DoublePropertyEditor top;
+    private final DoublePropertyEditor right;
+    private final DoublePropertyEditor bottom;
+    private final DoublePropertyEditor left;
 
     private final BooleanProperty decorated = new SimpleBooleanProperty(true);
 
@@ -56,17 +57,17 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     private ChangeListener<Insets> editorInsetslistener;
 
-    private final ChangeListener<Number> topValueInsetslistener = ((v, ov, nv) -> {
-        setEditorInsets(new Insets((double) nv, getEditorInsets().getRight(), getEditorInsets().getBottom(), getEditorInsets().getLeft()));
+    private final ChangeListener<String> topValueInsetslistener = ((v, ov, nv) -> {
+        setEditorInsets(new Insets(Double.valueOf(nv), getEditorInsets().getRight(), getEditorInsets().getBottom(), getEditorInsets().getLeft()));
     });
-    private final ChangeListener<Number> rightValueInsetslistener = ((v, ov, nv) -> {
-        setEditorInsets(new Insets(getEditorInsets().getTop(), (double) nv, getEditorInsets().getBottom(), getEditorInsets().getLeft()));
+    private final ChangeListener<String> rightValueInsetslistener = ((v, ov, nv) -> {
+        setEditorInsets(new Insets(getEditorInsets().getTop(), Double.valueOf(nv), getEditorInsets().getBottom(), getEditorInsets().getLeft()));
     });
-    private final ChangeListener<Number> bottomValueInsetslistener = ((v, ov, nv) -> {
-        setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), (double) nv, getEditorInsets().getLeft()));
+    private final ChangeListener<String> bottomValueInsetslistener = ((v, ov, nv) -> {
+        setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), Double.valueOf(nv), getEditorInsets().getLeft()));
     });
-    private final ChangeListener<Number> leftValueInsetslistener = ((v, ov, nv) -> {
-        setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), getEditorInsets().getBottom(), (double) nv));
+    private final ChangeListener<String> leftValueInsetslistener = ((v, ov, nv) -> {
+        setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), getEditorInsets().getBottom(), Double.valueOf(nv)));
     });
     public InsetsPropertyEditor() {
         this(0d);
@@ -78,13 +79,13 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     public InsetsPropertyEditor(double top, double right, double bottom, double left) {
         this.editorInsets.set(new Insets(top, right, bottom, left));
-        this.top = new Double2PropertyEditor();
+        this.top = new DoublePropertyEditor();
         this.top.getStyleClass().add("top-inset");
-        this.right = new Double2PropertyEditor();
+        this.right = new DoublePropertyEditor();
         this.right.getStyleClass().add("right-inset");
-        this.bottom = new Double2PropertyEditor();
+        this.bottom = new DoublePropertyEditor();
         this.bottom.getStyleClass().add("bottom-inset");
-        this.left = new Double2PropertyEditor();
+        this.left = new DoublePropertyEditor();
         this.left.getStyleClass().add("left-inset");
         init();
     }
@@ -175,17 +176,17 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     }
 
     protected void removeTopRightBottopTopListeners() {
-        top.valueProperty().removeListener(topValueInsetslistener);
-        right.valueProperty().removeListener(rightValueInsetslistener);
-        bottom.valueProperty().removeListener(bottomValueInsetslistener);
-        left.valueProperty().removeListener(leftValueInsetslistener);
+        top.lastValidTextProperty().removeListener(topValueInsetslistener);
+        right.lastValidTextProperty().removeListener(rightValueInsetslistener);
+        bottom.lastValidTextProperty().removeListener(bottomValueInsetslistener);
+        left.lastValidTextProperty().removeListener(leftValueInsetslistener);
     }
 
     protected void addTopRightBottopTopListeners() {
-        top.valueProperty().addListener(topValueInsetslistener);
-        right.valueProperty().addListener(rightValueInsetslistener);
-        bottom.valueProperty().addListener(bottomValueInsetslistener);
-        left.valueProperty().addListener(leftValueInsetslistener);
+        top.lastValidTextProperty().addListener(topValueInsetslistener);
+        right.lastValidTextProperty().addListener(rightValueInsetslistener);
+        bottom.lastValidTextProperty().addListener(bottomValueInsetslistener);
+        left.lastValidTextProperty().addListener(leftValueInsetslistener);
     }
 
     @Override

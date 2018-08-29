@@ -15,10 +15,9 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,20 +36,19 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor_OLD;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.DoublePropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *
  * @author Valery
  */
-public class TestDecimalStringPropertyEditor extends Application {
+public class TestStyleStringTextField extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-        System.err.println("Double.valueOf = " + Double.valueOf("1"));
-        System.err.println("Integer.valueOf = " + Integer.parseInt("-003"));
+
+
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -73,32 +71,67 @@ public class TestDecimalStringPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        DoubleProperty ip = new SimpleDoubleProperty(27);
+
+        StringTextField tf1 = new StringTextField();
+        //tf1.setSeparator(",", "\\s*,\\s*");
+        tf1.setSeparator(";");
+        String sss = "t,   ,m, , ";
+        String[] ssItems = sss.split("\\s*,\\s*");
+
+        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
         
-        DecimalPropertyEditor_OLD tf1 = new DecimalPropertyEditor_OLD(-1d,150d,2);
-        System.err.println("1 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-        tf1.bindBidirectional(btn2.prefWidthProperty());
-        System.err.println("2 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-        System.err.println("DoublePropertyEditor value=" + tf1.getRightValue());
+         tf1.getValidators().add(item -> {
+            boolean retval = Pattern.matches("^(([-]+)([f]+)([x]+)([-]+))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$", item.trim());
+
+            System.err.println("validator ITEM = " + item + "; matches=" + retval);
+            return retval;
+        });
+        tf1.getFilterValidators().add(item -> {
+
+            String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
+            String orCond0 = "|^((-))";
+            String orCond1 = "|^((-)(f))";
+            String orCond2 = "|^((-)(f)(x))";
+            String orCond3 = "|^((-)(f)(x)(-))([a-z])?$";
+            String orCond4 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(-)$";
+            
+            String orCond5 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*)$";
+            String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
+            String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
+            String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
+            
+            
+            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
+//            System.err.println("REG EXP = " + regExp);
+            boolean retval = item.trim().isEmpty();
+            if ( ! retval) {
+                retval = Pattern.matches(regExp, item.trim());
+            }
+            
+            return retval;
+        });
+
         btn1.setOnAction(e -> {
-            //tf1.setText("-210");
-            
-            btn2.setPrefWidth(50);
-            System.err.println("3 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-            System.err.println("DoublePropertyEditor value=" + tf1.getRightValue());
-            
+            lb1.getStyleClass().forEach(s -> {
+                System.err.println("Label class = " + s);
+            });
+//            tf1.getValue().addAll("STR10", "STR11");
+            System.err.println("INSETS = " + tf1.getInsets());
+            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
+            btn1.setPrefWidth(-1);
+            tf1.getPseudoClassStates().forEach(s -> {
+                //System.err.println("PSEUDO = " + s);
+            });
+            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
-            btn2.setPrefWidth(-20);
-            System.err.println("btn2.prefWidth = " + btn2.getPrefWidth());
-            //tf1.setText("500");
-            //btn2.setPrefWidth(200.56);
+            btn2.setPrefWidth(200.56);
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
@@ -115,8 +148,13 @@ public class TestDecimalStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
+        btn1.setOnAction(e -> {
+            System.err.println("INSETS = " + tf1.getInsets());
+            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
+            btn1.setPrefWidth(-1);
+        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
@@ -144,7 +182,7 @@ public class TestDecimalStringPropertyEditor extends Application {
         Stage stage1 = new Stage();
         stage1.initOwner(stage);
 
-        VBox vbox = new VBox(btn1);
+        VBox vbox = new VBox(btn1, btn2);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");

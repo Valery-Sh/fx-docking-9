@@ -18,9 +18,7 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -39,19 +37,18 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.DoublePropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SimpleStringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestDoubleStringPropertyEditor extends Application {
+public class TestDecimalPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-        System.err.println("Double.valueOf = " + Double.valueOf("-003."));
+
+        System.err.println("Double.valueOf = " + Double.valueOf("1"));
         System.err.println("Integer.valueOf = " + Integer.parseInt("-003"));
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
@@ -75,23 +72,31 @@ public class TestDoubleStringPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        System.err.println("11111 " + Double.valueOf("-1."));
         DoubleProperty ip = new SimpleDoubleProperty(27);
-        DoublePropertyEditor tf1 = new DoublePropertyEditor();
+        
+        DecimalPropertyEditor tf1 = new DecimalPropertyEditor(-1d,150d,2);
+        System.err.println("1 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
         tf1.bindBidirectional(btn2.prefWidthProperty());
-        System.err.println("DoublePropertyEditor value=" + tf1.getRightValue());
+        System.err.println("2 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
-            System.err.println("DoublePropertyEditor ip=" + ip.get());
+            //tf1.setText("-210");
+            btn2.setPrefWidth(btn2.getPrefWidth() + 20);
+                
+            System.err.println("3 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+            System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+            
         });
 
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
+        //SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-        tf2.setFont(new Font(13));
+        //tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
-            System.err.println("btn2 Action");
+            btn2.setPrefWidth(-20);
+            System.err.println("btn2.prefWidth = " + btn2.getPrefWidth());
+            //tf1.setText("50");
             //btn2.setPrefWidth(200.56);
         });
         Label lb3 = new Label("lable 3");
@@ -109,11 +114,8 @@ public class TestDoubleStringPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-        grid.add(tf2, 1, 2);
+//        grid.add(tf2, 1, 2);
 
-        btn1.setOnAction(e -> {
-            tf1.setRightValue("21");
-        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
@@ -141,7 +143,7 @@ public class TestDoubleStringPropertyEditor extends Application {
         Stage stage1 = new Stage();
         stage1.initOwner(stage);
 
-        VBox vbox = new VBox(btn1, btn2);
+        VBox vbox = new VBox(btn1);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");

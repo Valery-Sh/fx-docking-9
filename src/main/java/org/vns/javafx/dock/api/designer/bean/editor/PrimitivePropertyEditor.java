@@ -16,138 +16,57 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.regex.Pattern;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.NumberExpression;
-import javafx.beans.binding.ObjectExpression;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.util.StringConverter;
-import javafx.util.converter.ByteStringConverter;
-import javafx.util.converter.CharacterStringConverter;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.IntegerStringConverter;
-import javafx.util.converter.LongStringConverter;
-import javafx.util.converter.ShortStringConverter;
 
 /**
  *
  * @author Valery
  */
-public class PrimitivePropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
+public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<T> {
 
-    protected StringConverter<E> stringConverter;
-    protected boolean isPropertyReadOnly;
-            
     public PrimitivePropertyEditor() {
         init();
     }
+
     private void init() {
-        setToStringTransformer((source) -> {return source.trim();});
-        setFromStringTransformer((source) -> {return source.trim();});
-    }
-    @Override
-    public void bind(Property property) {
-        rightValueProperty().removeListener(getRightValueChangeListener());
-        this.setEditable(false);
-        this.setFocusTraversable(false);
-        if (property instanceof NumberExpression) {
-            rightValueProperty().bind(((NumberExpression) property).asString());
-        } else if (property instanceof BooleanExpression) {
-            rightValueProperty().bind(((BooleanExpression) property).asString());
-        } else if (property instanceof ObjectExpression) {
-            rightValueProperty().bind(((ObjectExpression<E>) property).asString());
-        }
-    }
-
-    public void bind(Property property, String formatter) {
-        rightValueProperty().removeListener(getRightValueChangeListener());
-        this.setEditable(false);
-        this.setFocusTraversable(false);
-        if (property instanceof NumberExpression) {
-            rightValueProperty().bind(((NumberExpression) property).asString(formatter));
-        } else if (property instanceof BooleanExpression) {
-            rightValueProperty().bind(((BooleanExpression) property).asString());
-        } else if (property instanceof ObjectExpression) {
-            rightValueProperty().bind(((ObjectExpression<E>) property).asString(formatter));
-        }
+        setValueIfBlank("0");
     }
 
     @Override
-    public void bindBidirectional(Property property) {
-        this.setEditable(true);
-        this.setFocusTraversable(true);
-        rightValueProperty().removeListener(getRightValueChangeListener());
-        rightValueProperty().addListener(getRightValueChangeListener());
-        
-        rightValueProperty().bindBidirectional(property, stringConverter);
+    public StringConverter<T> createStringConverter() {
+        return new PrimitiveStringConverter<>(this);
     }
 
     @Override
-    public void unbind() {
-        rightValueProperty().unbind();
-    }
-
-    @Override
-    public boolean isBound() {
-        return rightValueProperty().isBound();
-
-    }
-
-    public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
-
-        public IntegerPropertyEditor() {
-            init();
-        }
-
-        private void init() {
-            stringConverter = new IntegerStringConverter();
-            setValueIfBlank("0");
-
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
-            getValidators().add(item -> {
-                boolean retval = Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
-
-                System.err.println("validator ITEM = " + item + "; matches=" + retval);
-                return retval;
-            });
-            getFilterValidators().add(item -> {
-                item = item.trim();
-                String regExp = "0|-?([1-9][0-9]*)?";
-                boolean retval = item.isEmpty();
-                if (!retval) {
-                    retval = Pattern.matches(regExp, item);
-                    if (retval && ! item.equals("-")) {
-                        long l = Long.valueOf(item.trim());
-                        retval = (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE);
-                    }
-                }
-
-                return retval;
-            });
-        }
+    protected StringBinding asString(Property property) {
+        return ((NumberExpression) property).asString();
     }
 
     public static class ShortPropertyEditor extends PrimitivePropertyEditor<Short> {
 
-        public ShortPropertyEditor() {
-            init();
-        }
-
-        private void init() {
-            stringConverter = new ShortStringConverter();
-            setValueIfBlank("0");
-
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
+        @Override
+        protected void addValidators() {
             getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
             });
+        }
+
+        @Override
+        protected void addFilterValidators() {
             getFilterValidators().add(item -> {
 
                 String regExp = "0|-?([1-9][0-9]*)?";
-                boolean retval = item.trim().isEmpty();
+                boolean retval = item.isEmpty();
                 if (!retval) {
-                    retval = Pattern.matches(regExp, item.trim());
+                    retval = Pattern.matches(regExp, item);
                     if (retval && !item.equals("-")) {
                         long l = Long.valueOf(item.trim());
                         retval = (l >= Short.MIN_VALUE && l <= Short.MAX_VALUE);
@@ -157,25 +76,175 @@ public class PrimitivePropertyEditor<E> extends StringTextField implements Prope
                 return retval;
             });
         }
-    }
+
+        @Override
+        public void setBoundValue(Short boundValue) {
+            ((ObjectProperty) boundValueProperty()).set(boundValue);
+        }
+
+    }//class ShortPropertyEditor
+
+
+    public static class LongPropertyEditor extends PrimitivePropertyEditor<Long> {
+        @Override
+        protected void addValidators() {
+            getValidators().add(item -> {
+                return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
+            });
+        }
+
+        @Override
+        protected void addFilterValidators() {
+            getFilterValidators().add(item -> {
+                //item = item.trim();
+                String regExp = "0|-?([1-9][0-9]*)?";
+                boolean retval = item.isEmpty();
+                if (!retval) {
+                    retval = Pattern.matches(regExp, item);
+                    if (retval && !item.equals("-")) {
+                        String min = String.valueOf(Long.MIN_VALUE);
+                        String max = String.valueOf(Long.MAX_VALUE);
+                        if (item.startsWith("-")) {
+                            if (item.length() > min.length()) {
+                                retval = false;
+                            } else if (item.length() == min.length() && item.compareTo(min) > 0) {
+                                retval = false;
+                            }
+                        } else {
+                            if (item.length() > max.length()) {
+                                retval = false;
+                            } else if (item.length() == max.length() && item.compareTo(max) > 0) {
+                                retval = false;
+                            }
+
+                        }
+                    }
+                }
+
+                return retval;
+            });
+        }
+
+        @Override
+        public void setBoundValue(Long boundValue) {
+            ((LongProperty) boundValueProperty()).set(boundValue);
+        }
+
+    }//class LongPropertyEditor
+
+
+    public static class DoublePropertyEditor extends PrimitivePropertyEditor<Double> {
+
+        @Override
+        protected void addValidators() {
+            System.err.println("Add Validators");
+            getValidators().add(item -> {
+                return Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
+            });
+        }
+
+        @Override
+        protected void addFilterValidators() {
+            getFilterValidators().add(item -> {
+                item = item.trim();
+                String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
+                boolean retval = item.isEmpty();
+                if (!retval) {
+                    retval = Pattern.matches(regExp, item);
+                }
+
+                return retval;
+            });
+
+        }
+
+        @Override
+        public void setBoundValue(Double boundValue) {
+            ((DoubleProperty) boundValueProperty()).set(boundValue);
+        }
+
+    }//class DoublePropertyEditor
+
+    public static class FloatPropertyEditor extends PrimitivePropertyEditor<Float> {
+
+        @Override
+        protected void addValidators() {
+            System.err.println("Add Validators");
+            getValidators().add(item -> {
+                boolean retval =  Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
+                Double dv = Double.valueOf(item);
+                retval = dv >= -Float.MAX_VALUE && dv <= Float.MAX_VALUE;
+                return retval;
+            });
+        }
+
+        @Override
+        protected void addFilterValidators() {
+            getFilterValidators().add(item -> {
+                item = item.trim();
+                String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
+                boolean retval = item.isEmpty();
+                if (!retval) {
+                    retval = Pattern.matches(regExp, item);
+                }
+
+                return retval;
+            });
+
+        }
+
+        @Override
+        public void setBoundValue(Float boundValue) {
+            ((FloatProperty) boundValueProperty()).set(boundValue);
+        }
+    }//class FloatPropertyEditor
+
+    public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
+
+        @Override
+        protected void addValidators() {
+            getValidators().add(item -> {
+                return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
+            });
+        }
+
+        @Override
+        protected void addFilterValidators() {
+            getFilterValidators().add(item -> {
+                //item = item.trim();
+                String regExp = "0|-?([1-9][0-9]*)?";
+                boolean retval = item.isEmpty();
+                if (!retval) {
+                    retval = Pattern.matches(regExp, item);
+                    if (retval && !item.equals("-")) {
+                        long l = Long.valueOf(item.trim());
+                        retval = (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE);
+                    }
+                }
+                return retval;
+            });
+        }
+
+        @Override
+        public void setBoundValue(Integer boundValue) {
+            ((IntegerProperty) boundValueProperty()).set(boundValue);
+        }
+
+    }//class IntegerPropertyEditor
 
     public static class BytePropertyEditor extends PrimitivePropertyEditor<Byte> {
 
-        public BytePropertyEditor() {
-            init();
-        }
-
-        private void init() {
-            stringConverter = new ByteStringConverter();
-            setValueIfBlank("0");
-
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
+        @Override
+        protected void addValidators() {
             getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]{0,3})+", item.trim());
             });
+        }
+
+        @Override
+        protected void addFilterValidators() {
             getFilterValidators().add(item -> {
-                item = item.trim();
+                //item = item.trim();
                 String regExp = "0|-?([1-9][0-9]{0,3})?";
                 boolean retval = item.isEmpty();
                 if (!retval) {
@@ -189,56 +258,14 @@ public class PrimitivePropertyEditor<E> extends StringTextField implements Prope
                 return retval;
             });
         }
-    }
 
-    public static class LongPropertyEditor extends PrimitivePropertyEditor<Long> {
-
-        public LongPropertyEditor() {
-            init();
+        @Override
+        public void setBoundValue(Byte boundValue) {
+            ((ObjectProperty) boundValueProperty()).set(boundValue);
         }
 
-        private void init() {
-            stringConverter = new LongStringConverter();
-            setValueIfBlank("0");
+    }//class IntegerPropertyEditor
 
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
-            getValidators().add(item -> {
-                return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
-            });
-
-            getFilterValidators().add(item -> {
-                item = item.trim();
-                String regExp = "0|-?([1-9][0-9]*)?";
-                boolean retval = item.isEmpty();
-                if (!retval) {
-                    retval = Pattern.matches(regExp, item);
-                    if (retval && ! item.equals("-")) {
-                        String min = String.valueOf(Long.MIN_VALUE);
-                        String max = String.valueOf(Long.MAX_VALUE);
-                        if (item.startsWith("-")) {
-                            if (item.length() > min.length()) {
-                                retval = false;
-                            } else if (item.length() == min.length() && item.compareTo(min) > 0) {
-                                retval = false;
-                            }
-                        } else {
-                            System.err.println("MIN = " + min + "item.trim().compareTo(min) = " + item.trim().compareTo(min));
-                            System.err.println("MAX = " + max + "item.trim().compareTo(max) = " + item.trim().compareTo(max));
-                            if (item.length() > max.length()) {
-                                retval = false;
-                            } else if (item.length() == max.length() && item.compareTo(max) > 0) {
-                                retval = false;
-                            }
-
-                        }
-                    }
-                }
-
-                return retval;
-            });
-        }
-    }
     public static class CharPropertyEditor extends PrimitivePropertyEditor<Character> {
 
         public CharPropertyEditor() {
@@ -246,84 +273,66 @@ public class PrimitivePropertyEditor<E> extends StringTextField implements Prope
         }
 
         private void init() {
-            stringConverter = new CharacterStringConverter();
             setValueIfBlank(" ");
+        }
 
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
+        @Override
+        protected void addValidators() {
             getValidators().add(item -> {
-                return Pattern.matches(".{1}", item.trim());
+                return Pattern.matches(".{1}", item);
             });
+        }
 
+        @Override
+        protected void addFilterValidators() {
             getFilterValidators().add(item -> {
                 item = item.trim();
                 String regExp = ".{1}";
                 boolean retval = item.isEmpty();
                 if (!retval) {
                     retval = Pattern.matches(regExp, item);
-/*                    if (retval && ! item.equals("-")) {
-                        String min = String.valueOf(Long.MIN_VALUE);
-                        String max = String.valueOf(Long.MAX_VALUE);
-                        if (item.startsWith("-")) {
-                            if (item.length() > min.length()) {
-                                retval = false;
-                            } else if (item.length() == min.length() && item.compareTo(min) > 0) {
-                                retval = false;
-                            }
-                        } else {
-                            System.err.println("MIN = " + min + "item.trim().compareTo(min) = " + item.trim().compareTo(min));
-                            System.err.println("MAX = " + max + "item.trim().compareTo(max) = " + item.trim().compareTo(max));
-                            if (item.length() > max.length()) {
-                                retval = false;
-                            } else if (item.length() == max.length() && item.compareTo(max) > 0) {
-                                retval = false;
-                            }
-
-                        }
-
-                    }
-*/
                 }
 
                 return retval;
             });
         }
-    }
 
-    public static class DoublePropertyEditor extends PrimitivePropertyEditor<Double> {
-
-        public DoublePropertyEditor() {
-            init();
+        @Override
+        public void setBoundValue(Character boundValue) {
+            ((ObjectProperty) boundValueProperty()).set(boundValue);
         }
 
-        private void init() {
-            stringConverter = new DoubleStringConverter();
-            setValueIfBlank("0.0");
-            setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
+    }//class CharPropertyEditor
+    
+    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
 
-            getValidators().add(item -> {
-                boolean retval = Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
-                return retval;
-            });
-            getFilterValidators().add(item -> {
-                item = item.trim();
-                String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
-                boolean retval = item.isEmpty();
-                if (!retval) {
-                    retval = Pattern.matches(regExp, item);
-
-                    if (retval) {
-                        try {
-                            stringConverter.fromString(item);
-                        } catch (Exception ex) {
-                            
-                        }
-                    }
-                }
-
-                return retval;
-            });
+        public PrimitiveStringConverter(AbstractPropertyEditor textField) {
+            super(textField);
         }
-    }
+
+        @Override
+        protected T valueOf(String txt) {
+
+            T retval = null;
+
+            T o = (T) getTextField().getBoundValue();
+            if (o instanceof Double) {
+                retval = (T) Double.valueOf(getTextField().stringOf(Double.valueOf(txt)));
+            } else if (o instanceof Float) {
+                retval = (T) Float.valueOf(getTextField().stringOf(Float.valueOf(txt)));
+            } else if (o instanceof Integer) {
+                retval = (T) Integer.valueOf(getTextField().stringOf(Integer.valueOf(txt)));
+            } else if (o instanceof Short) {
+                retval = (T) Short.valueOf(getTextField().stringOf(Short.valueOf(txt)));
+            } else if (o instanceof Byte) {
+                retval = (T) Byte.valueOf(getTextField().stringOf(Byte.valueOf(txt)));
+            } else if (o instanceof Character) {
+                retval = (T) new Character(txt.charAt(0));
+            }
+
+            return retval;
+        }
+    }//class PrimitiveStringConverter
+
 
 }
