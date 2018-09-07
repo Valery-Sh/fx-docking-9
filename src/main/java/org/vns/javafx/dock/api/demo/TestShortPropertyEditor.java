@@ -46,36 +46,6 @@ public class TestShortPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) {
-        String str = "1, 2,";
-        String[] a = str.split(",");
-        for (int i=0; i < a.length; i++) {
-            System.err.println(i + "). " + a[i]);
-        }
-        BigDecimal bd = new BigDecimal(12.126456789d);
-        //BigDecimal bd1 = bd.round(new MathContext(3, RoundingMode.HALF_UP));
-        BigDecimal bd1 = bd.setScale(2, RoundingMode.HALF_UP);
-
-        System.err.println("bd1 = " + bd1 + "; bd = " + bd);
-        DoubleStringConverter dsc = new DoubleStringConverter();
-        System.err.println("dsc.fromString(\"\") = " + dsc.fromString(""));
-        System.err.println("dsc.fromString(null) = " + dsc.fromString(null));
-        System.err.println("dsc.fromString(\"0\") = " + dsc.fromString("0"));
-        System.err.println("dsc.fromString(\"0.\") = " + dsc.fromString("0."));
-        System.err.println("dsc.fromString(\"0.0\") = " + dsc.fromString("0.0"));
-        System.err.println("dsc.fromString(\"0.1\") = " + dsc.fromString("0.1"));
-
-        System.err.println("dsc.fromString(\"-0.\") = " + dsc.fromString("-0."));
-        System.err.println("dsc.fromString(\"-0.0\") = " + dsc.fromString("-0.0"));
-        System.err.println("dsc.fromString(\"-0.1\") = " + dsc.fromString("-0.1"));
-
-        System.err.println("dsc.fromString(\"-0\") = " + dsc.fromString("-0"));
-
-        System.err.println("dsc.fromString(\"-0\") = " + dsc.fromString("-0"));
-
-        System.err.println("dsc.toString(null) = " + dsc.toString(null));
-        System.err.println("dsc.toString(0) = " + dsc.toString(0d));
-        System.err.println("dsc.toString(-0) = " + dsc.toString(-0d));
-
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -114,63 +84,24 @@ public class TestShortPropertyEditor extends Application {
         //tf1.bindBidirectional(btn1.prefWidthProperty());
         //tf1.bindBidirectional(btn1.opacityProperty());
         tf1.bindBidirectional(ip);
-        //tf1.setEditable(false);
-        //tf1.bind(btn1.prefWidthProperty());
+        //tf1.bind(ip);
+   
         btn1.setOnAction(e -> {
-            System.err.println("IntegerProperty ip = " + ip.get());
-            //tf1.getSlider().setValue(-1);
-            //btn1.setOpacity(btn1.getOpacity() + 0.1);
-            //btn1.setPrefWidth(-1);
-            //tf1.setText("200");
-            //tf1.setEditable(true);
-            tf1.getPseudoClassStates().forEach(s -> {
-                System.err.println("PSEUDO = " + s);
-            });
-            System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
+            System.err.println("ShortPropertyEditor: ip = " + ip + "; tf1.text = " + tf1.getText());
+            ip.set((short)20);
+        
         });
 
-        /*        value.bindBidirectional(tf1.valueProperty());
-        value.addListener((v,ov,nv) -> {
-            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-        });
-        tf1.textProperty().addListener((v,ov,nv) -> {
-            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-
-        });
-         */
-        //anchor.setMinWidth(10);
-        //grid.setMinWidth(10);
-        //tf1.setMinWidth(10);
-        //lb1.setMinWidth(10);
-        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
         grid.add(lb1, 0, 0);
         grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        //TextField tf2 = new TextField();
-        //IntegerPropertyEditor tf2 = new Integer2PropertyEditor();
-        //IntegerTextField tf2 = new Integer2PropertyEditor();
-        //ShortTextField tf2 = new ShortTextField();
-        //LongTextField tf2 = new LongTextField();
-        //DoubleTextField tf2 = new DoubleTextField(24.5);
-        //ByteTextField tf2 = new ByteTextField(null);
-//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-        
-//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
-        //tf2.bind(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.textProperty());
-//        tf2.bind(btn2.textProperty());
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
-
-        //tf1.setPrefWidth(200);
         grid.add(lb2, 0, 1);
-//        grid.add(tf2, 1, 1);
-        //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        
         tf3.setOnAction(e -> {
@@ -214,19 +145,6 @@ public class TestShortPropertyEditor extends Application {
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
-
-        /*        TabPane tabPane = new TabPane();
-        //propPane.getChildren().add(tabPane);
-        Tab propTab = new Tab();
-        Tab layoutTab = new Tab();
-        Tab codeTab = new Tab();
-        tabPane.getTabs().addAll(propTab,layoutTab,codeTab);
-        
-        tabPane.setTabMaxHeight(0);
-        propTab.setContent(new Label("P111"));
-        layoutTab.setContent(new Label("L111"));
-        codeTab.setContent(new Label("C111"));
-         */
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");

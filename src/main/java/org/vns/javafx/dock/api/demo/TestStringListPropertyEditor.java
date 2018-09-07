@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -41,8 +40,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
 import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
 
 /**

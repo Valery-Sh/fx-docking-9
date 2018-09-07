@@ -1,24 +1,19 @@
 /*
- * Copyright 2018 Your Organisation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,35 +21,41 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.StringPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestLongStringPropertyEditor extends Application {
+public class TestStringPropertyEditor extends Application {
+
+    Stage stage;
+    Scene scene;
+    IntegerProperty value = new SimpleIntegerProperty();
 
     @Override
-    public void start(Stage stage) throws ClassNotFoundException {
+    public void start(Stage stage) {
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
         long start1 = System.currentTimeMillis();
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
+        System.err.println("DIF0 = " + (end1 - start1));
 
+        Text msg = new Text("JavaFX animation is cool!");
+        msg.setTextOrigin(VPos.TOP);
+        msg.setFont(Font.font(24));
+        //Pane root = new Pane(msg);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -64,53 +65,60 @@ public class TestLongStringPropertyEditor extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
+
+        lb1.setFont(new Font(13));
+        System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
+        //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        LongProperty ip = new SimpleLongProperty(99999999999999999L);
-        LongPropertyEditor tf1 = new LongPropertyEditor();
-        tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+        ObjectProperty<Short> ip = new SimpleObjectProperty(0);
+        StringProperty boundStr = new SimpleStringProperty(null);
+        StringPropertyEditor tf1 = new StringPropertyEditor();
+        tf1.setNullString("<NULL>");
+        btn2.styleProperty().set(null);
+        System.err.println("btn2.styleProperty() = " + btn2.styleProperty().get());
+        //tf1.bindBidirectional(btn2.styleProperty());
+        tf1.bindBidirectional(boundStr);
+        //CharacterTextField tf1 = new CharacterTextField();
+        // System.err.println("ShortMax = " + Short.MAX_VALUE);
+        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
+        //tf1.setFont(new Font(13));
+        //tf1.bindBidirectional(btn1.textProperty());
+        //tf1.bindBidirectional(btn1.prefWidthProperty());
+        //tf1.bindBidirectional(btn1.opacityProperty());
+        //tf1.bindBidirectional(ip);
+        //tf1.bind(ip);
+   
         btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-            System.err.println("IntegerPropertyEditor ip=" + ip.get());
+            System.err.println("StringPropertyEditor: boundStr = " + boundStr + "; tf1.text = " + tf1.getText());
+            boundStr.set("VISIBILITY: VISIBLE");
+            //ip.set((short)20);
+        
         });
 
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-
-//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
-
-        Label elb = new Label("errors");
-        HBox ehb = new HBox();
-        ehb.setStyle("-fx-background-color: aqua");
-        Circle shape = new Circle(2, Color.RED);
-        shape.setManaged(false);
-        ehb.getChildren().add(shape);
-
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        grid.add(elb, 0, 1);
-        grid.add(ehb, 1, 1);
-        grid.add(lb2, 0, 2);
-
-
+        grid.add(lb2, 0, 1);
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
+       
         tf3.setOnAction(e -> {
-        });
+            tf3.getPseudoClassStates().forEach(s -> {
+                System.err.println("PSEUDO = " + s);
+            });
+            tf3.getStyleClass().forEach(s -> {
+                System.err.println("STYLE = " + s);
+            });
+       });
         tf3.setFont(new Font(13));
-
-        grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
+        grid.add(lb3, 0, 2);
+        grid.add(tf3, 1, 2);
+        //tf3.bindBidirectional(btn1.disableProperty());
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -118,8 +126,13 @@ public class TestLongStringPropertyEditor extends Application {
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
+        //cc20.setPercentWidth(100);
 
+        //grid.getColumnConstraints().addAll(cc0,cc1, cc20);        
         grid.getColumnConstraints().addAll(cc0, cc1);
+        //GridPane.setHalignment(tf1, HPos.RIGHT);
+        //GridPane.setHalignment(tf1, HPos.LEFT);
+        //GridPane.setFillWidth(tf1, true);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -135,7 +148,6 @@ public class TestLongStringPropertyEditor extends Application {
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
-
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -208,9 +220,8 @@ public class TestLongStringPropertyEditor extends Application {
         pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+
         Dockable.initDefaultStylesheet(null);
-        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
 

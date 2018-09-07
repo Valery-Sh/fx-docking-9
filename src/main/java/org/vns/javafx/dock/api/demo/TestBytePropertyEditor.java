@@ -1,23 +1,19 @@
 /*
- * Copyright 2018 Your Organisation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,38 +21,44 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.BytePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestStringTextField1 extends Application {
+public class TestBytePropertyEditor extends Application {
+
+    Stage stage;
+    Scene scene;
+    IntegerProperty value = new SimpleIntegerProperty();
 
     @Override
-    public void start(Stage stage) throws ClassNotFoundException {
-
-
+    public void start(Stage stage) {
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
         long start1 = System.currentTimeMillis();
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
+        System.err.println("DIF0 = " + (end1 - start1));
 
+        Text msg = new Text("JavaFX animation is cool!");
+        msg.setTextOrigin(VPos.TOP);
+        msg.setFont(Font.font(24));
+        //Pane root = new Pane(msg);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -66,100 +68,55 @@ public class TestStringTextField1 extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
+
+        lb1.setFont(new Font(13));
+        System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
+        //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-
-        StringTextField tf1 = new StringTextField();
-        //tf1.setText("100");
-        //tf1.setSeparator(",", "\\s*,\\s*");
-        //tf1.setSeparator(";");
-        //tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
+        ObjectProperty<Byte> ip = new SimpleObjectProperty(0);
         
-         tf1.getValidators().add(item -> {
-             
-            return ! item.trim().isEmpty();
-        });
-/*        tf1.getFilterValidators().add(item -> {
+        BytePropertyEditor tf1 = new BytePropertyEditor();
 
-            String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
-            String orCond0 = "|^((-))";
-            String orCond1 = "|^((-)(f))";
-            String orCond2 = "|^((-)(f)(x))";
-            String orCond3 = "|^((-)(f)(x)(-))([a-z])?$";
-            String orCond4 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(-)$";
-            
-            String orCond5 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*)$";
-            String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
-            String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
-            String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
-            
-            
-            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
-//            System.err.println("REG EXP = " + regExp);
-            boolean retval = item.trim().isEmpty();
-            if ( ! retval) {
-                retval = Pattern.matches(regExp, item.trim());
-            }
-            
-            return retval;
-        });
-*/
+        //CharacterTextField tf1 = new CharacterTextField();
+        // System.err.println("ShortMax = " + Short.MAX_VALUE);
+        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
+        //tf1.setFont(new Font(13));
+        //tf1.bindBidirectional(btn1.textProperty());
+        //tf1.bindBidirectional(btn1.prefWidthProperty());
+        //tf1.bindBidirectional(btn1.opacityProperty());
+        //tf1.bindBidirectional(ip);
+        tf1.bind(ip);
+   
         btn1.setOnAction(e -> {
-            lb1.getStyleClass().forEach(s -> {
-                System.err.println("Label class = " + s);
-            });
-//            tf1.getValue().addAll("STR10", "STR11");
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-            tf1.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
+            System.err.println("BytePropertyEditor: ip = " + ip + "; tf1.text = " + tf1.getText());
+            ip.set((byte)20);
+        
         });
 
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-
-//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
-
-        Label elb = new Label("errors");
-        HBox ehb = new HBox();
-        ehb.setStyle("-fx-background-color: aqua");
-        Circle shape = new Circle(2, Color.RED);
-        shape.setManaged(false);
-        ehb.getChildren().add(shape);
-
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        grid.add(elb, 0, 1);
-        grid.add(ehb, 1, 1);
-        grid.add(lb2, 0, 2);
-//        grid.add(tf2, 1, 2);
-
-        btn1.setOnAction(e -> {
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-        });
-
+        grid.add(lb2, 0, 1);
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
+       
         tf3.setOnAction(e -> {
-        });
+            tf3.getPseudoClassStates().forEach(s -> {
+                System.err.println("PSEUDO = " + s);
+            });
+            tf3.getStyleClass().forEach(s -> {
+                System.err.println("STYLE = " + s);
+            });
+       });
         tf3.setFont(new Font(13));
-
-        grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
+        grid.add(lb3, 0, 2);
+        grid.add(tf3, 1, 2);
+        //tf3.bindBidirectional(btn1.disableProperty());
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -167,8 +124,13 @@ public class TestStringTextField1 extends Application {
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
+        //cc20.setPercentWidth(100);
 
+        //grid.getColumnConstraints().addAll(cc0,cc1, cc20);        
         grid.getColumnConstraints().addAll(cc0, cc1);
+        //GridPane.setHalignment(tf1, HPos.RIGHT);
+        //GridPane.setHalignment(tf1, HPos.LEFT);
+        //GridPane.setFillWidth(tf1, true);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -184,7 +146,6 @@ public class TestStringTextField1 extends Application {
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
-
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -257,9 +218,8 @@ public class TestStringTextField1 extends Application {
         pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+
         Dockable.initDefaultStylesheet(null);
-        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
 

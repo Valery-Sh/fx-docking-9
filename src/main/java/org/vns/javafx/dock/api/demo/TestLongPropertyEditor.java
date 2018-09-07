@@ -15,9 +15,10 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,111 +26,99 @@ import javafx.scene.control.PopupControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestStyleClassStringListPropertyEditor extends Application {
+public class TestLongPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-        String exp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
-        
         Button btn1 = new Button("Button btn1");
+        Button btn2 = new Button("Button btn2");
 
+        long start1 = System.currentTimeMillis();
         Pane p = new Pane();
+        long end1 = System.currentTimeMillis();
         //System.err.println("DIF0 = " + (end1 - start1));
+
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
+        //AnchorPane anchor = new AnchorPane(grid);
+        //anchor.setStyle("-fx-border-color: red; -fx-border-width: 4 ");
+        //grid.setStyle("-fx-border-color: green; -fx-border-width: 2 ");
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-
-        StringListPropertyEditor tf1 = new StringListPropertyEditor();
-        tf1.setSeparator(";");
-        //tf1.setSeparator(",", "\\s*,\\s*");
-        //tf1.setValueIfBlank("blank");
-        //tf1.setSeparator(" ", "\\s* \\s*");'
-
-        //"a,,b, c,".
-        String src = "a,,b,    , c,   ";
-        String[] s1 = (src).split(tf1.getSeparator(), src.length());
-        for (String s : s1) {
-            System.err.println("s = '" + s + "'");
-        }
-
-        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
-        tf1.setFromStringTransformer(srcItem -> {
-            return srcItem.trim();
-            //return srcItem;
+        //lb1.getStyleClass().add("str");
+        //lb1.setFont(new Font(13));
+        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
+        //SliderEditor tf1 = new SliderEditor(0,1,1);
+        //DecimalTextField tf1 = new DecimalTextField();
+        LongProperty ip = new SimpleLongProperty(99999999999999999L);
+        LongPropertyEditor tf1 = new LongPropertyEditor();
+        tf1.bindBidirectional(ip);
+        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+        btn1.setOnAction(e -> {
+            tf1.setLastValidText("21");
+            System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
-        tf1.getValidators().add(item -> {
-            boolean retval = Pattern.matches("^(([-]+)([f]+)([x]+)([-]+))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$", item.trim());
+        Label lb2 = new Label("111111lable 1");
+        lb2.setFont(new Font(13));
+//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
-            System.err.println("validator ITEM = " + item + "; matches=" + retval);
-            return retval;
+//        tf2.setFont(new Font(13));
+        btn2.setOnAction(e -> {
+            btn2.setPrefWidth(200.56);
         });
-        tf1.getFilterValidators().add(item -> {
-            //  if ( true) return true;
+        Label lb3 = new Label("lable 3");
+        lb3.setFont(new Font(13));
 
-            String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
-            String orCond0 = "|^((-))";
-            String orCond1 = "|^((-)(f))";
-            String orCond2 = "|^((-)(f)(x))";
-            String orCond3 = "|^((-)(f)(x)(-))([a-z])?$";
-            String orCond4 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(-)$";
-            
-            String orCond5 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*)$";
-            String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
-            String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
-            String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
-            
-            
-            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
-            System.err.println("REG EXP = " + regExp);
-            boolean retval = item.trim().isEmpty();
-            if ( ! retval) {
-                retval = Pattern.matches(regExp, item.trim());
-            }
-            
-            return retval;
-        });
-        lb1.getStyleClass().remove("label");
-        //lb1.getStyleClass().add(0, "-fx-str0-    ");
-        tf1.bindContentBidirectional(lb1.getStyleClass());
+        Label elb = new Label("errors");
+        HBox ehb = new HBox();
+        ehb.setStyle("-fx-background-color: aqua");
+        Circle shape = new Circle(2, Color.RED);
+        shape.setManaged(false);
+        ehb.getChildren().add(shape);
 
         grid.add(lb1, 0, 0);
         grid.add(tf1, 1, 0);
-        btn1.setOnAction(e -> {
-            lb1.getStyleClass().forEach(s -> {
-                System.err.println("Label class = " + s);
-            });
-            tf1.getValue().addAll("STR10", "STR11");
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-            tf1.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
-        });
+        grid.add(elb, 0, 1);
+        grid.add(ehb, 1, 1);
+        grid.add(lb2, 0, 2);
 
+
+        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
+
+        tf3.setOnAction(e -> {
+        });
+        tf3.setFont(new Font(13));
+
+        grid.add(lb3, 0, 3);
+        grid.add(tf3, 1, 3);
+        tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
+        ColumnConstraints cc20 = new ColumnConstraints();
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
+
         grid.getColumnConstraints().addAll(cc0, cc1);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
@@ -140,12 +129,13 @@ public class TestStyleClassStringListPropertyEditor extends Application {
         Stage stage1 = new Stage();
         stage1.initOwner(stage);
 
-        VBox vbox = new VBox(btn1);
+        VBox vbox = new VBox(btn1, btn2);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
+
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -212,7 +202,7 @@ public class TestStyleClassStringListPropertyEditor extends Application {
 
         stage1.show();
 
-        VBox vbox2 = new VBox();
+        VBox vbox2 = new VBox(btn2);
         PopupControl pc = new PopupControl();
         pc.getScene().setRoot(vbox2);
         pc.show(stage, 20, 2);

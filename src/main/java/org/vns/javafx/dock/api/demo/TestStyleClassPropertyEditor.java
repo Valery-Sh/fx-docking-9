@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -36,18 +35,16 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.StyleClassPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestStyleStringTextField extends Application {
+public class TestStyleClassPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-
 
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
@@ -56,7 +53,6 @@ public class TestStyleStringTextField extends Application {
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
         //System.err.println("DIF0 = " + (end1 - start1));
-
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -72,45 +68,10 @@ public class TestStyleStringTextField extends Application {
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
 
-        StringTextField tf1 = new StringTextField();
+        StyleClassPropertyEditor tf1 = new StyleClassPropertyEditor();
         //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.setSeparator(";");
-        String sss = "t,   ,m, , ";
-        String[] ssItems = sss.split("\\s*,\\s*");
-
-        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
+        tf1.bindBidirectional(btn2.styleProperty());
         
-         tf1.getValidators().add(item -> {
-            boolean retval = Pattern.matches("^(([-]+)([f]+)([x]+)([-]+))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$", item.trim());
-
-            System.err.println("validator ITEM = " + item + "; matches=" + retval);
-            return retval;
-        });
-        tf1.getFilterValidators().add(item -> {
-
-            String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
-            String orCond0 = "|^((-))";
-            String orCond1 = "|^((-)(f))";
-            String orCond2 = "|^((-)(f)(x))";
-            String orCond3 = "|^((-)(f)(x)(-))([a-z])?$";
-            String orCond4 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(-)$";
-            
-            String orCond5 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*)$";
-            String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
-            String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
-            String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
-            
-            
-            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
-//            System.err.println("REG EXP = " + regExp);
-            boolean retval = item.trim().isEmpty();
-            if ( ! retval) {
-                retval = Pattern.matches(regExp, item.trim());
-            }
-            
-            return retval;
-        });
-
         btn1.setOnAction(e -> {
             lb1.getStyleClass().forEach(s -> {
                 System.err.println("Label class = " + s);

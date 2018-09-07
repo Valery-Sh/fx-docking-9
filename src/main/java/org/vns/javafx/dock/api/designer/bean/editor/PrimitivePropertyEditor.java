@@ -16,14 +16,19 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.beans.binding.NumberExpression;
+import javafx.beans.binding.ObjectExpression;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.binding.StringExpression;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.util.StringConverter;
 
 /**
@@ -48,6 +53,41 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
     @Override
     protected StringBinding asString(Property property) {
         return ((NumberExpression) property).asString();
+    }
+
+    @Override
+    public T valueOf(String txt) {
+        System.err.println("VALUE OF txt = '" + txt + "'");
+        T retval = null;
+        if (isNullString(txt)) {
+            return null;
+        }
+
+        T o = (T) getBoundProperty().getValue();
+
+        if (o instanceof Double) {
+            retval = (T) Double.valueOf(txt);
+        } else if (o instanceof Float) {
+            retval = (T) Float.valueOf(txt);
+        } else if (o instanceof Integer) {
+            retval = (T) Integer.valueOf(txt);
+        }
+/*        else if (o instanceof Short) {
+            retval = (T) Short.valueOf(stringOf(Short.valueOf(txt)));
+        } else if (o instanceof Byte) {
+            retval = (T) Byte.valueOf(getEditor().stringOf(Byte.valueOf(txt)));
+        } else if (o instanceof String) {
+            System.err.println("1 VALUE OF txt = " + txt);
+            retval = (T) txt;
+            if (getEditor().getNullString() != null && getEditor().getNullString().equals(txt)) {
+                retval = null;
+            }
+        }
+*/
+        System.err.println("VALUE OF  retval = '" + retval + "'");
+        System.err.println("===============================================");
+        return retval;
+
     }
 
     public static class ShortPropertyEditor extends PrimitivePropertyEditor<Short> {
@@ -79,13 +119,23 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Short boundValue) {
-            ((ObjectProperty) boundValueProperty()).set(boundValue);
+            ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
+        }
+
+        @Override
+        protected StringBinding asString(Property property) {
+            return ((ObjectExpression) property).asString();
+        }
+
+        @Override
+        public Short valueOf(String txt) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }//class ShortPropertyEditor
 
-
     public static class LongPropertyEditor extends PrimitivePropertyEditor<Long> {
+
         @Override
         protected void addValidators() {
             getValidators().add(item -> {
@@ -127,11 +177,15 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Long boundValue) {
-            ((LongProperty) boundValueProperty()).set(boundValue);
+            ((LongProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
+        }
+
+        @Override
+        public Long valueOf(String txt) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }//class LongPropertyEditor
-
 
     public static class DoublePropertyEditor extends PrimitivePropertyEditor<Double> {
 
@@ -160,7 +214,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Double boundValue) {
-            ((DoubleProperty) boundValueProperty()).set(boundValue);
+            ((DoubleProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
 
     }//class DoublePropertyEditor
@@ -171,7 +225,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         protected void addValidators() {
             System.err.println("Add Validators");
             getValidators().add(item -> {
-                boolean retval =  Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
+                boolean retval = Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
                 Double dv = Double.valueOf(item);
                 retval = dv >= -Float.MAX_VALUE && dv <= Float.MAX_VALUE;
                 return retval;
@@ -195,8 +249,9 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Float boundValue) {
-            ((FloatProperty) boundValueProperty()).set(boundValue);
+            ((FloatProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
+
     }//class FloatPropertyEditor
 
     public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
@@ -227,7 +282,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Integer boundValue) {
-            ((IntegerProperty) boundValueProperty()).set(boundValue);
+            ((IntegerProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
 
     }//class IntegerPropertyEditor
@@ -261,32 +316,71 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public void setBoundValue(Byte boundValue) {
-            ((ObjectProperty) boundValueProperty()).set(boundValue);
+            ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
+        }
+
+        @Override
+        protected StringBinding asString(Property property) {
+            return ((ObjectExpression) property).asString();
+        }
+
+        @Override
+        public Byte valueOf(String txt) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
     }//class IntegerPropertyEditor
 
-    public static class CharPropertyEditor extends PrimitivePropertyEditor<Character> {
+    public static class CharacterPropertyEditor extends PrimitivePropertyEditor<Character> {
 
-        public CharPropertyEditor() {
+        public CharacterPropertyEditor() {
             init();
         }
 
         private void init() {
-            setValueIfBlank(" ");
+            setValueIfBlank(null);
+            //setNullString("<NULL>");
+            setNullString("");
         }
 
         @Override
         protected void addValidators() {
             getValidators().add(item -> {
-                return Pattern.matches(".{1}", item);
+
+                if (getNullString() != null) {
+                    String it = item;
+                    if (!getNullString().isEmpty()) {
+                        it = it.trim();
+                    }
+                    if (it.equals((getNullString()))) {
+                        return true;
+                    }
+                }
+                return Pattern.matches(".{0,1}", item);
             });
+
         }
 
         @Override
         protected void addFilterValidators() {
             getFilterValidators().add(item -> {
-                item = item.trim();
+                if (getNullString() != null) {
+                    String it = item;
+                    if (!getNullString().isEmpty()) {
+                        it = it.trim();
+                    }
+                    //System.err.println("======= it = '" + it + "'; getNullString()='" + getNullString() + "'");
+                    if (it.equals(getNullString())) {
+                        if (!getNullString().isEmpty()) {
+                            System.err.println("======= it = '" + it + "'; getNullString()='" + getNullString() + "'");
+                            Platform.runLater(() -> {
+                                selectAll();
+                            });
+                        }
+                        return true;
+                    }
+                }
+                //item = item.trim();
                 String regExp = ".{1}";
                 boolean retval = item.isEmpty();
                 if (!retval) {
@@ -298,41 +392,80 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
 
         @Override
-        public void setBoundValue(Character boundValue) {
-            ((ObjectProperty) boundValueProperty()).set(boundValue);
+        public void setBoundValue(Character boundValue
+        ) {
+            ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
 
-    }//class CharPropertyEditor
-    
+        @Override
+        protected StringBinding asString(Property property) {
+            return ((ObjectExpression) property).asString();
+        }
+
+        @Override
+        public Character valueOf(String txt) {
+            System.err.println("VALUE OF txt = '" + txt + "'");
+            if (isNullString(txt)) {
+                return null;
+            }
+            Character retval;
+            if (txt.isEmpty()) {
+                retval = new Character(' ');
+            } else {
+                retval = new Character(txt.charAt(0));
+            }
+
+            System.err.println("VALUE OF  retval = '" + retval + "'");
+            System.err.println("===============================================");
+            return retval;
+        }
+
+    }//class CharacterPropertyEditor
+
     public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
 
         public PrimitiveStringConverter(AbstractPropertyEditor textField) {
             super(textField);
         }
 
-        @Override
+/*        @Override
         protected T valueOf(String txt) {
-
-            T retval = null;
-
-            T o = (T) getTextField().getBoundValue();
-            if (o instanceof Double) {
-                retval = (T) Double.valueOf(getTextField().stringOf(Double.valueOf(txt)));
-            } else if (o instanceof Float) {
-                retval = (T) Float.valueOf(getTextField().stringOf(Float.valueOf(txt)));
-            } else if (o instanceof Integer) {
-                retval = (T) Integer.valueOf(getTextField().stringOf(Integer.valueOf(txt)));
-            } else if (o instanceof Short) {
-                retval = (T) Short.valueOf(getTextField().stringOf(Short.valueOf(txt)));
-            } else if (o instanceof Byte) {
-                retval = (T) Byte.valueOf(getTextField().stringOf(Byte.valueOf(txt)));
-            } else if (o instanceof Character) {
-                retval = (T) new Character(txt.charAt(0));
-            }
-
-            return retval;
+            return (T) getEditor().valueOf(txt);
         }
+*/
     }//class PrimitiveStringConverter
 
+    public static class StringPropertyEditor extends PrimitivePropertyEditor<String> {
+
+        public StringPropertyEditor() {
+            init();
+        }
+
+        private void init() {
+            setValueIfBlank(null);
+        }
+
+        @Override
+        public void bind(Property property) {
+            unbind();
+            //setEditable(true);
+            setEditable(false);
+
+            this.boundPropertyProperty().set((ObservableValue<String>) property);
+            lastValidTextProperty().bind(property);
+            createContextMenu(property);
+        }
+
+        @Override
+        public void setBoundValue(String boundValue) {
+            ((StringProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
+        }
+
+        @Override
+        public String valueOf(String txt) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+    }//class StringPropertyEditor
 
 }

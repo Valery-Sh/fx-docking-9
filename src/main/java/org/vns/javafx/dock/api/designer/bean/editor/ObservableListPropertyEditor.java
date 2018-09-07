@@ -79,6 +79,7 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 public abstract class ObservableListPropertyEditor<E> extends StringTextField implements PropertyEditor<ObservableList> {//, ErrorPointerSupport {
 
     private final ListProperty<E> value = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ObservableList<E> boundValue = FXCollections.observableArrayList();
 
     public ObservableListPropertyEditor() {
         init();
@@ -86,45 +87,12 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
     }
 
     private void init() {
-        //setSeparator(",", ",\\s*,\\s*");
         setSeparator(",");
-        /*        UnaryOperator<TextFormatter.Change> filter = change -> {
-            if (isAcceptable(change.getControlNewText())) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-        setFilter(filter);
-         */
     }
-    /*    protected boolean testFilterValidators(String txt) {
-        boolean retval = true;
-        for ( Predicate<String> p : getFilterValidators() ) {
-            if ( ! p.test(txt) ) {
-                retval = false;
-                break;
-            }
-        }
-        return retval;
-    }
-     */
- /*    protected boolean isAcceptable(String txt) {
-        return testFilterValidators(txt);
-    }
-     */
     private final ListChangeListener<? super E> valueChangeListener = (c) -> {
         invalidateFormatterValue();
     };
 
-    /*    public ErrorMarkerBuilder getErrorMarkerBuilder() {
-        return errorMarkerBuilder;
-    }
-
-    public void setErrorMarkerBuilder(ErrorMarkerBuilder errorMarkerBuilder) {
-        this.errorMarkerBuilder = errorMarkerBuilder;
-    }
-     */
     /**
      * The method is called when the content of the observable list is changed.
      * We must raise Invalidation event for {@link #valueProperty() }
@@ -137,6 +105,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
      * </p>
      *
      */
+    @Override
     protected void invalidateFormatterValue() {
         //
         // We must raise Invalidation event for valueProperty() in the formatter 
@@ -145,14 +114,8 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         // the value from this control
         //
 
-        System.err.println("invalidateFormatterValue  formatter.getValue() " + (getValue() == formatter.getValue()));
-        //ObservableList list = FXCollections.observableArrayList();
-
-        //list.addAll(formatter.getValue());
         formatter.setValue(null);
-
         formatter.setValue(getValue());
-        //formatter.setValue(list);
 
         //
         // We need the TextFormatter to execute the StriringConverter's method
@@ -183,30 +146,10 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     }
 
-    /*    public ErrorDialog getErrorDialog() {
-        return errorDialog;
-    }
-
-    public void setErrorDialog(ErrorDialog errorDialog) {
-        this.errorDialog = errorDialog;
-    }
-     */
     public ListChangeListener<? super E> getValueChangeListener() {
         return valueChangeListener;
     }
 
-    /*    public TextFormatter<ObservableList<E>> getFormatter() {
-        return formatter;
-    }
-     */
- /*    public TextFormatter getFormatter() {
-        return formatter;
-    }
-
-    public UnaryOperator<TextFormatter.Change> getFilter() {
-        return filter;
-    }
-     */
     /**
      * Binds content of the list specified by the property
      * {@code valueProperty()} to the given list.
@@ -214,7 +157,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
      * @param list the list to be bound to
      */
     public void bindContentBidirectional(ObservableList<E> list) {
-
+        this.boundValue = list;
         this.setEditable(true);
         this.setFocusTraversable(true);
         valueProperty().unbindContentBidirectional(list);
@@ -230,15 +173,6 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
         });
     }
 
-    /*    public boolean validateListItem(E listItem) {
-        String tx = fromListItem(listItem);
-        //if (isAcceptable(tx) && validateStringListItem(tx)) {
-        if (validateStringListItem(tx)) {            
-            return true;
-        }
-        return false;
-    }
-     */
     public ListProperty<E> valueProperty() {
         return value;
     }
@@ -263,7 +197,9 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     @Override
     public void unbind() {
-        value.unbind();
+        if ( boundValue != null ) {
+            value.unbindContentBidirectional(boundValue);
+        }
     }
 
     @Override

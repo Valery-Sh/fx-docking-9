@@ -18,9 +18,7 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -78,12 +76,15 @@ public class TestDoublePropertyEditor extends Application {
         System.err.println("11111 " + Double.valueOf("-1."));
         DoubleProperty ip = new SimpleDoubleProperty(27);
         DoublePropertyEditor tf1 = new DoublePropertyEditor();
+        tf1.getValidators().add( it -> {
+            return ! it.equals("-2.0");
+        } );
         tf1.bindBidirectional(btn2.prefWidthProperty());
         System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         Number num;
         btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-            System.err.println("DoublePropertyEditor ip=" + ip.get());
+            //tf1.setLastValidText("21");
+            System.err.println("DoublePropertyEditor btn2.getPrefWidth=" + btn2.getPrefWidth());
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -93,7 +94,7 @@ public class TestDoublePropertyEditor extends Application {
 //        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             System.err.println("btn2 Action");
-            //btn2.setPrefWidth(200.56);
+            btn2.setPrefWidth(-2);
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
@@ -112,9 +113,6 @@ public class TestDoublePropertyEditor extends Application {
         grid.add(lb2, 0, 2);
 //        grid.add(tf2, 1, 2);
 
-        btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 

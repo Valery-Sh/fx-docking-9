@@ -1,63 +1,68 @@
 /*
- * Copyright 2018 Your Organisation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.LongProperty;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.CharacterPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestShortStringPropertyEditor extends Application {
+public class TestCharacterPropertyEditor extends Application {
+
+    Stage stage;
+    Scene scene;
+    IntegerProperty value = new SimpleIntegerProperty();
 
     @Override
-    public void start(Stage stage) throws ClassNotFoundException {
+    public void start(Stage stage) {
+        String ss = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(ss);
+        System.err.println("LENGTH = " + sb.toString().length());
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
         long start1 = System.currentTimeMillis();
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
+        System.err.println("DIF0 = " + (end1 - start1));
 
+        Text msg = new Text("JavaFX animation is cool!");
+        msg.setTextOrigin(VPos.TOP);
+        msg.setFont(Font.font(24));
+        //Pane root = new Pane(msg);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -67,57 +72,67 @@ public class TestShortStringPropertyEditor extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
+
+        lb1.setFont(new Font(13));
+        System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
+        //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        ObjectProperty<Short> ip = new SimpleObjectProperty<>((short)0);
-        ShortPropertyEditor tf1 = new ShortPropertyEditor();
+        DoubleProperty dp = new SimpleDoubleProperty();
+        System.err.println("DoubleProperty dp =" + dp.get());
+        ObjectProperty<Character> ip = new SimpleObjectProperty();
+        
+        CharacterPropertyEditor tf1 = new CharacterPropertyEditor();
+        System.err.println("CharacterPropertyEditor: ip = '" + ip.get() + "' ; tf1.text = '" + tf1.getText() +"'");
+        //CharacterTextField tf1 = new CharacterTextField();
+        // System.err.println("ShortMax = " + Short.MAX_VALUE);
+        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
+        //tf1.setFont(new Font(13));
+        //tf1.bindBidirectional(btn1.textProperty());
+        //tf1.bindBidirectional(btn1.prefWidthProperty());
+        //tf1.bindBidirectional(btn1.opacityProperty());
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+        //tf1.bind(ip);
+   
         btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-            System.err.println("IntegerPropertyEditor ip=" + ip.get());
+            System.err.println("act CharacterPropertyEditor: ip = '" + ip.get() + "' ; tf1.text = '" + tf1.getText() +"'");
+            //ip.set('H');
+            Platform.runLater(() -> {tf1.selectAll();});
+            
+        
         });
 
+        grid.add(lb1, 0, 0);
+        grid.add(tf1, 1, 0);
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-
-//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
-
-        Label elb = new Label("errors");
-        HBox ehb = new HBox();
-        ehb.setStyle("-fx-background-color: aqua");
-        Circle shape = new Circle(2, Color.RED);
-        shape.setManaged(false);
-        ehb.getChildren().add(shape);
-
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        grid.add(elb, 0, 1);
-        grid.add(ehb, 1, 1);
-        grid.add(lb2, 0, 2);
-//        grid.add(tf2, 1, 2);
-
-        btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-        });
-
+        grid.add(lb2, 0, 1);
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
+       
         tf3.setOnAction(e -> {
-        });
+            tf3.getPseudoClassStates().forEach(s -> {
+                System.err.println("PSEUDO = " + s);
+            });
+            tf3.getStyleClass().forEach(s -> {
+                System.err.println("STYLE = " + s);
+            });
+       });
+        TextField txField = new TextField();
         tf3.setFont(new Font(13));
-
-        grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
+        grid.add(lb3, 0, 2);
+        grid.add(tf3, 1, 2);
+        grid.add(txField, 0, 3);      
+        txField.setText("NULL");
+        txField.selectAll();
+           btn2.setOnAction(e -> {
+            btn2.setPrefWidth(200.56);
+            txField.selectAll();
+        });
+        //tf3.bindBidirectional(btn1.disableProperty());
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -125,8 +140,13 @@ public class TestShortStringPropertyEditor extends Application {
 
         cc0.setPercentWidth(35);
         cc1.setPercentWidth(65);
+        //cc20.setPercentWidth(100);
 
+        //grid.getColumnConstraints().addAll(cc0,cc1, cc20);        
         grid.getColumnConstraints().addAll(cc0, cc1);
+        //GridPane.setHalignment(tf1, HPos.RIGHT);
+        //GridPane.setHalignment(tf1, HPos.LEFT);
+        //GridPane.setFillWidth(tf1, true);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -142,7 +162,6 @@ public class TestShortStringPropertyEditor extends Application {
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
-
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
@@ -215,9 +234,8 @@ public class TestShortStringPropertyEditor extends Application {
         pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+
         Dockable.initDefaultStylesheet(null);
-        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
 

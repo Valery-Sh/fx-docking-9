@@ -56,6 +56,7 @@ public class StringTextField extends TextField {
     private StringTransformer toStringTransformer;
 
     private String valueIfBlank;
+    private String nullString;
 
     private String separator = null;
 
@@ -83,13 +84,13 @@ public class StringTextField extends TextField {
 
     private final ChangeListener<? super String> rightValueChangeListener = (v, ov, nv) -> {
         System.err.println("rightValueChangeListener (calls invalidateFormatterValue) ov=" + ov + "; nv=" + nv);
-        invalidateFormatterValue();
+        //invalidateFormatterValue();
     };
     private final BooleanProperty errorFound = new BooleanPropertyBase(false) {
 
         @Override
         protected void invalidated() {
-            pseudoClassStateChanged(ERRORFOUND_PSEUDO_CLASS,get());
+            pseudoClassStateChanged(ERRORFOUND_PSEUDO_CLASS, get());
         }
 
         @Override
@@ -110,7 +111,7 @@ public class StringTextField extends TextField {
     }
 
     private void init() {
-        
+
         getStyleClass().add("string-textfield");
         setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
         formatter = new TextFormatter(new Converter(this), getText(), getFilter());
@@ -118,15 +119,16 @@ public class StringTextField extends TextField {
         filter.addListener(filterChangeListener);
         lastValidText.addListener(rightValueChangeListener);
     }
-    
+
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }    
+    }
 
     public void setErrorFound(Boolean found) {
         this.errorFound.set(found);
     }
+
     public ChangeListener<? super String> getRightValueChangeListener() {
         return rightValueChangeListener;
     }
@@ -154,9 +156,11 @@ public class StringTextField extends TextField {
         //System.err.println("invalidateFormatterValue  formatter.getValue() " + (getValue() == formatter.getValue()));
         //ObservableList list = FXCollections.observableArrayList();
         //list.addAll(formatter.getValue());
+        System.err.println("1 invalidateFormatterValue formatter getLastValitText()=" + getLastValidText());
         formatter.setValue(null);
 
         //formatter.setValue(getLastValidValue());
+        System.err.println("2 invalidateFormatterValue formatter getLastValitText()=" + getLastValidText());
         formatter.setValue(getLastValidText());
         System.err.println("invalidateFormatterValue formatter getValue()=" + formatter.getValue());
         //formatter.setValue(list);
@@ -296,14 +300,30 @@ public class StringTextField extends TextField {
      */
     public void setSeparator(String separator) {
         this.separator = separator;
-//        this.separatorRegExp = separator;
     }
 
-    /*    public void setSeparator(String delimiter, String delimiterRegExp) {
-        this.separator = delimiter;
-        this.separatorRegExp = delimiterRegExp;
+    public boolean isNullString(String txt) {
+        boolean retval = false;
+        if (getNullString() != null) {
+            String t = txt;
+            if (!getNullString().isEmpty()) {
+                t = t.trim();
+            }
+            if (t.equals(getNullString())) {
+                retval = true;
+            }
+        }
+        return retval;
     }
-     */
+
+    public String getNullString() {
+        return nullString;
+    }
+
+    public void setNullString(String nullString) {
+        this.nullString = nullString;
+    }
+
     /**
      * Returns the default lastValidValue to replace empty items.
      *
@@ -315,14 +335,14 @@ public class StringTextField extends TextField {
     }
 
     /**
-     * The method is used to set the default lastValidValue of an empty item. For
-     * example, when we enter the following text into this control
+     * The method is used to set the default lastValidValue of an empty item.
+     * For example, when we enter the following text into this control
      * <pre>
      *   21,,55
      * </pre> then if the property {@code valueIfBlank } is null then the bound
- observable list will contain two integer items 21 and 55. If we set the
- not null lastValidValue, for example "77", then the bound list will contain
- three items 21, 77 and 55.
+     * observable list will contain two integer items 21 and 55. If we set the
+     * not null lastValidValue, for example "77", then the bound list will
+     * contain three items 21, 77 and 55.
      *
      * @param valueIfBlank the lastValidValue used to replace empty items
      */
@@ -375,8 +395,11 @@ public class StringTextField extends TextField {
 
         @Override
         public String toString(String txt) {
-//            System.err.println("toString = " + txt);
-            if (txt == null) {
+            System.err.println("StringTextField: toString = '" + txt + "'" + "; textField.text = " + textField.getText());
+
+            if (txt == null && textField.getNullString() != null) {
+                return textField.getNullString();
+            } else if (txt == null) {
                 return "";
             }
             return txt;
@@ -388,7 +411,7 @@ public class StringTextField extends TextField {
             if (!textField.isEditable()) {
                 return txt;
             }
-            System.err.println("!!! fromString txt = " + txt);
+            System.err.println("!!! StringTextField: fromString txt = '" + txt + "'");
             String[] items;
 
             if (textField.getSeparator() != null) {
@@ -399,8 +422,14 @@ public class StringTextField extends TextField {
             for (int i = 0; i < items.length; i++) {
                 System.err.println("it = '" + items[i] + "'");
                 if (textField.getFromStringTransformer() != null) {
+                    System.err.println("!!! StringTextField: fromString getFromStringTransformer != null");
                     items[i] = textField.getFromStringTransformer().transform(items[i]);
                 }
+                if (txt == null && textField.getNullString() != null) {
+                    System.err.println("!!! StringTextField: fromString getFromStringTransformer != null");
+                    items[i] = textField.getNullString();
+                }
+
             }
             //System.err.println("ERROR 1");
             List<Integer> errorItemIndexes = textField.getErrorIndexes(items);
@@ -435,7 +464,7 @@ public class StringTextField extends TextField {
 //System.err.println("ERROR 4");            
             for (int i = 0; i < items.length; i++) {
                 String item = items[i];
-//                System.err.println("item = '" + item + "'");
+                System.err.println("StringTextField: fromString item = '" + item + "'" + "; valueIfBlank=" + textField.getValueIfBlank());
                 //if (item.trim().isEmpty() && textField.getValueIfBlank() != null && !txt.trim().isEmpty()) {
                 if (item.trim().isEmpty() && textField.getValueIfBlank() != null) {
                     sb.append(textField.getValueIfBlank());
@@ -456,23 +485,24 @@ public class StringTextField extends TextField {
                 }
             }
 //            System.err.println("ERROR 5");
+            System.err.println(" 444 StringTextField: fromString sb.len = " + sb.length());
             retval = sb.toString();
 //            System.err.println("444");
             if (textField.getSeparator() != null && !textField.getSeparator().isEmpty()) {
-//                System.err.println("555 sbValue = " + sbValue + "; sbValue.length() = " + sbValue.length());
+                System.err.println("555 sbValue = " + sbValue + "; sbValue.length() = " + sbValue.length());
                 if (sbValue.length() > 0 && sbValue.lastIndexOf(textField.getSeparator()) == sbValue.length() - 1) {
 //                    System.err.println("666");
                     sbValue.deleteCharAt(sbValue.length() - 1);
                 }
             }
-            System.err.println("777 == " + sbValue.toString());
+            System.err.println("777 == '" + sbValue.toString() + "'");
             if (errorItemIndexes.isEmpty()) {
                 textField.setLastValidText(sbValue.toString());
             }
 
             textField.lastValidTextProperty().addListener(textField.getRightValueChangeListener());
-            System.err.println("StringTextField: fromString retval=" + retval);
-            System.err.println("StringTextField: fromString rightValue=" + textField.getLastValidText());
+            System.err.println("StringTextField: fromString retval='" + retval + "'");
+            System.err.println("StringTextField: fromString rightValue='" + textField.getLastValidText() + "'");
             System.err.println("end fromString------------------------------------------");
             return retval;
         }

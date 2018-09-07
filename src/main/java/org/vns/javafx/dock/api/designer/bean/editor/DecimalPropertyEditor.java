@@ -18,6 +18,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.regex.Pattern;
+import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -125,7 +126,7 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     @Override
     public void setBoundValue(Double boundValue) {
-        ((DoubleProperty)boundValueProperty()).set(boundValue);
+        ((DoubleProperty)(Observable)getBoundProperty()).set(boundValue);
     }
 
     public DoubleProperty minValueProperty() {
@@ -170,7 +171,8 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     @Override
     public StringConverter<Double> createStringConverter() {
-        return new DoubleConverter(this);
+        //return new DoubleConverter(this);
+        return new AbstractPropertyEditor.Converter<>(this);
     }
 
     @Override
@@ -178,17 +180,21 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
        return ((DoubleProperty)property).asString();
     }
 
-    public static class DoubleConverter extends AbstractPropertyEditor.Converter<Double> {
+    @Override
+    public Double valueOf(String txt) {
+        return Double.valueOf(stringOf(Double.valueOf(txt)));            
+    }
 
-
+/*    public static class DoubleConverter extends AbstractPropertyEditor.Converter<Double> {
         public DoubleConverter(DecimalPropertyEditor textField) {
             super(textField);
         }
-
         @Override
         protected Double valueOf(String txt) {
-            return Double.valueOf(getTextField().stringOf(Double.valueOf(txt)));            
+            return (Double) getEditor().valueOf(txt);
+            //return Double.valueOf(getEditor().stringOf(Double.valueOf(txt)));            
         }
-    }//class DoubleConverter
 
+    }//class DoubleConverter
+*/
 }//class DecimalPropertyEditor

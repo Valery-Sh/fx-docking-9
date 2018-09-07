@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -35,17 +36,18 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StyleClassPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StylePropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *
  * @author Valery
  */
-public class TestStylePropertyEditor extends Application {
+public class TestStringTextField extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
+
 
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
@@ -54,6 +56,7 @@ public class TestStylePropertyEditor extends Application {
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
         //System.err.println("DIF0 = " + (end1 - start1));
+
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -69,12 +72,14 @@ public class TestStylePropertyEditor extends Application {
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
 
-        StylePropertyEditor tf1 = new StylePropertyEditor();
-        //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.bindBidirectional(btn2.styleProperty());
-
+        StringTextField tf1 = new StringTextField();
+        tf1.setNullString("<NULL>");
+        tf1.setText(null);
         btn1.setOnAction(e -> {
-            tf1.setText("visibility");
+            System.err.println("--------------");
+            System.err.println("text = " + tf1.getText());
+            System.err.println("value = " + tf1.getFormatter().getValue());
+            System.err.println("--------------");
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -101,6 +106,7 @@ public class TestStylePropertyEditor extends Application {
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
 //        grid.add(tf2, 1, 2);
+
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 

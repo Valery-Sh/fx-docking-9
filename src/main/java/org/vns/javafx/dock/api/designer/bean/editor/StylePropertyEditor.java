@@ -15,29 +15,38 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Pattern;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.StringPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class StylePropertyEditor extends PrimitivePropertyEditor<String> {
-
+public class StylePropertyEditor extends StringPropertyEditor {
+    
     public StylePropertyEditor() {
         init();
     }
+
     private void init() {
+        getStyleClass().add("style-class-text-field");
         setSeparator(";");
     }
     @Override
     protected void addValidators() {
         getValidators().add(item -> {
-            return Pattern.matches("^(([-]+)([f]+)([x]+)([-]+))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$", item.trim());
+            return true;
+            //return Pattern.matches("", item.trim());
         });
+        
     }
-
     @Override
     protected void addFilterValidators() {
         getFilterValidators().add(item -> {
@@ -53,8 +62,13 @@ public class StylePropertyEditor extends PrimitivePropertyEditor<String> {
             String orCond6 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):$";
             String orCond7 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*)$";
             String orCond8 = "|^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*(\\s*):(\\s*).+$";
-
-            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8;
+            String orCond9 = "|^((v))|((v)(i))|((v)(i)(s))|((v)(i)(s)(i))|((v)(i)(s)(i)(b))|((v)(i)(s)(i)(b)(i))|((v)(i)(s)(i)(b)(i)(l))|((v)(i)(s)(i)(b)(i)(l)(i))|((v)(i)(s)(i)(b)(i)(l)(i)(t))|((v)(i)(s)(i)(b)(i)(l)(i)(t)(y))";
+            String orCond10 = orCond9 + "(\\s*):$";
+            String orCond11 = orCond9 + "(\\s*):(\\s*).+$";
+            //String orCond11 = orCond10 + "|((:))";
+            //String orCond11 = "";
+            regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8 + orCond9 + orCond10 + orCond11;
+            //regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7;
 //            System.err.println("REG EXP = " + regExp);
             boolean retval = item.trim().isEmpty();
             if (!retval) {
@@ -63,11 +77,39 @@ public class StylePropertyEditor extends PrimitivePropertyEditor<String> {
 
             return retval;
         });
+        
     }
 
+    
     @Override
-    public void setBoundValue(String boundValue ) {
-        ((StringProperty) boundValueProperty()).set(boundValue);
+    protected void createContextMenu(Property property) {
+        if (property.getBean() instanceof Styleable) {
+            setContextMenu(createStyleMenu((Styleable) property.getBean()));
+        }
     }
 
-}//class DoublePropertyEditor
+    private ContextMenu createStyleMenu(Styleable bean) {
+
+        SmallContextMenu cm = new SmallContextMenu();
+        cm.setContentHeight(400d);
+
+        List<CssMetaData<? extends Styleable, ?>> cssList = bean.getCssMetaData();
+        
+        for (CssMetaData<? extends Styleable, ?> md : cssList) {
+            cm.getItems().add(new MenuItem(md.getProperty()));
+            cm.getItems().sort(new Comparator<MenuItem>() {
+                @Override
+                public int compare(MenuItem o1, MenuItem o2) {
+                    if ( o1.equals(o2) ) {
+                        return 0;
+                    }
+                    return ( o1.getText().compareTo(o2.getText()));
+                }
+            });
+        }
+        return cm;
+    }
+
+
+
+}
