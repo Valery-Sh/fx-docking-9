@@ -118,7 +118,8 @@ public class ErrorMarkerBuilder {
             return;
         }
         //String[] items = ((ObservableListPropertyEditor) textField).split(textField.getText());
-        String[] items = textField.getText().split(textField.getSeparator(),textField.getText().length() );
+        //!!!!String[] items = textField.getText().split(textField.getSeparator(),textField.getText().length() );
+        String[] items = textField.split(textField.getText(),false );
 
         String regExp = textField.getSeparator();
 

@@ -87,20 +87,21 @@ public class TestIntegerListPropertyEditor extends Application {
         
         
         IntegerListPropertyEditor tf1 = new IntegerListPropertyEditor();
+        System.err.println("tf1.getErrorMarkerBuilder()= " + tf1.getErrorMarkerBuilder()); 
+        tf1.setNullString("N");
+        
         //tf1.setValueIfBlank("0");
-        tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
+        //tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
 
-        tf1.getValidators().add( item -> {
+/*        tf1.getValidators().add( item -> {
             boolean v = true;
-            System.err.println("V ITEM = " + item);
-//            if ( !item.trim().isEmpty() && ! item.trim().equals("-") ) {
                 int n = Integer.parseInt(item.trim());
                 if ( n < 0 || n > 100 ) {
                     v = false;
-//                }
-            }
+                }
             return v;
         });
+*/        
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
         /// NumberPropertyEditor tf1 = new NumberPropertyEditor();

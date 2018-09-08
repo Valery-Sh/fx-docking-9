@@ -73,7 +73,7 @@ public class TestByteAndBooleanPropertyEditor extends Application {
         ObjectProperty<Byte> ip = new SimpleObjectProperty<>((byte)9);
         BytePropertyEditor tf1 = new BytePropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+//        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
             tf1.setLastValidText("21");
             System.err.println("IntegerPropertyEditor ip=" + ip.get());

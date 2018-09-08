@@ -15,14 +15,16 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -37,16 +39,19 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.LongPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
  *
  * @author Valery
  */
-public class TestLongPropertyEditor extends Application {
+public class TestStringTextFieldSplit extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
+
+
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -69,13 +74,29 @@ public class TestLongPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-        LongProperty ip = new SimpleLongProperty(99999999999999999L);
-        LongPropertyEditor tf1 = new LongPropertyEditor();
-        tf1.bindBidirectional(ip);
-//        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+        List<String> list = new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        String[] r = list.toArray(new String[0]);
+        System.err.println("LIST SIZE = " + r.length);
+        StringTextField tf1 = new StringTextField();
+        tf1.setNullString("<NULL>");
+        tf1.setText(",ab,,cde,<NULL>,NULL");
+        tf1.setSeparator(",");
+        String[] spl = tf1.split(tf1.getText());
+        for ( String it : spl) {
+            System.err.println("SPLIT: '" + it + "'");
+        }
+/*        tf1.setOnMouseClicked(me -> {
+            System.err.println("CARET POS: " + tf1.getCaretPosition() + "; itemPos = [" + tf1.getItemRange()[0] + "," + tf1.getItemRange()[1] + "]");
+            //tf1.selectAll();            
+        });
+*/        
         btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
-            System.err.println("IntegerPropertyEditor ip=" + ip.get());
+            System.err.println("--------------");
+            System.err.println("text = " + tf1.getText());
+            System.err.println("value = " + tf1.getFormatter().getValue());
+            System.err.println("--------------");
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -101,6 +122,9 @@ public class TestLongPropertyEditor extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
+     
+        
+//        grid.add(tf2, 1, 2);
 
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
@@ -111,6 +135,13 @@ public class TestLongPropertyEditor extends Application {
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);
+        TextField txField = new TextField();
+        txField.setOnMouseClicked(me -> {
+            System.err.println("CARET POS: " + txField.getCaretPosition());
+            txField.selectAll();
+        });
+        grid.add(txField, 0, 4);      
+        txField.setText("NULL");        
         tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();

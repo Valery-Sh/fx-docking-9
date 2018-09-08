@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
@@ -136,6 +135,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
             
         });
         sliderBoundValue.addListener(sliderBoundValueListener);
+        textField.setRealTimeBinding(true);
         textField.bindBidirectional(property);
         //property.bindBidirectional(slider.valueProperty());
         sliderBoundValue.bindBidirectional(slider.valueProperty());

@@ -80,7 +80,7 @@ public class TestFloatPropertyEditor extends Application {
         DoubleProperty ip = new SimpleDoubleProperty(27);
         FloatPropertyEditor tf1 = new FloatPropertyEditor();
         tf1.bindBidirectional(btn2.prefWidthProperty());
-        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+//        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         Number num;
         btn1.setOnAction(e -> {
             tf1.setLastValidText("21");

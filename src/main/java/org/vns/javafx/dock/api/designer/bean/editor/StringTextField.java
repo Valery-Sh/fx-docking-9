@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -30,10 +31,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.css.PseudoClass;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
@@ -84,7 +86,7 @@ public class StringTextField extends TextField {
 
     private final ChangeListener<? super String> rightValueChangeListener = (v, ov, nv) -> {
         System.err.println("rightValueChangeListener (calls invalidateFormatterValue) ov=" + ov + "; nv=" + nv);
-        //invalidateFormatterValue();
+        invalidateFormatterValue();
     };
     private final BooleanProperty errorFound = new BooleanPropertyBase(false) {
 
@@ -118,13 +120,35 @@ public class StringTextField extends TextField {
         this.setTextFormatter(formatter);
         filter.addListener(filterChangeListener);
         lastValidText.addListener(rightValueChangeListener);
+/*        setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        } );
+        }
+*/        
+        setOnMouseClicked(this::mouseClicked);
     }
-
+    
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
+    protected void mouseClicked(MouseEvent ev) {
+        
 
+        if ( getNullString() == null || getNullString().isEmpty() ) {
+            return;
+        }
+        IndexRange range = getItemRange();
+        if ( range == null ) {
+            return;
+        }
+        if ( getNullString().equals(getText().substring(range.getStart(), range.getEnd()))) {
+            selectRange(range.getStart(), range.getEnd());
+        }
+    }
     public void setErrorFound(Boolean found) {
         this.errorFound.set(found);
     }
@@ -132,13 +156,68 @@ public class StringTextField extends TextField {
     public ChangeListener<? super String> getRightValueChangeListener() {
         return rightValueChangeListener;
     }
+    public IndexRange getItemRange() {
+        IndexRange retval = null;
+        String[] items = split(getText(), false);
+        
+        int caretPos = getCaretPosition();
+        int itemPos = 0;
+        for ( int i=0; i < items.length; i++ ) {
+            if ( itemPos <= caretPos && itemPos + items[i].length() >= caretPos  ) {
+                retval = new IndexRange( itemPos,itemPos + items[i].length());
+                break;
+            }
+            itemPos += items[i].length() + getSeparator().length();
+        }
+        return retval;
+    }
+    public String[] split(String txt) {
+        return split(txt,true);
+    }
+    public String[] split(String txt, boolean ignoreQuotes) {
+        if ( getSeparator() == null || !txt.contains(getSeparator())) {
+            return new String[] {txt};
+        }
+        
+        String[] retval = null;
+        List<String> list = new ArrayList<>();
+       
+
+        StringBuilder sb = new StringBuilder(txt);
+        int n = 0;
+        
+        while (true) {
+            if ( n >=  sb.length() ) {
+                list.add(sb.toString());
+                break;
+            }
+            if (! ignoreQuotes && sb.charAt(n) == '"' && n < sb.length() && sb.lastIndexOf("\"", n + 1) >= 0) {
+                n = sb.lastIndexOf("\"", n + 1) + 1;
+                continue;
+            }
+            if (getSeparator().equals(sb.substring(n, n + getSeparator().length()))) {
+                if (n == 0) {
+                    list.add("");
+                } else {
+                    list.add(sb.substring(0, n));
+                }
+                sb = sb.delete(0, n + getSeparator().length());                
+                n = 0;
+                continue;
+            }
+            n++;
+
+        }
+        retval = list.toArray(new String[0]);
+        return retval;
+    }
 
     /**
      * The method is called when the content of the observable list is changed.
-     * We must raise Invalidation event for {@link #valueProperty() }
-     * in the formatter in order to make the formatter to execute the method {@link Converter#toString(javafx.collections.ObservableList)
+     * We must raise Invalidation event for {@link #lastValidText }
+     * in the formatter in order to make the formatter to execute the method {@link Converter#toString(java.lang.String)
      * }. First set the {@code value} property of the {@code TextFormatter} to
-     * {@code null} and then assign again the {@link #valueProperty() } of this
+     * {@code null} and then assign again the {@link #lastValidText } of this
      * control.
      * <p>
      * We must enforce the {@code TextFormatter} to invoke the method
@@ -156,12 +235,12 @@ public class StringTextField extends TextField {
         //System.err.println("invalidateFormatterValue  formatter.getValue() " + (getValue() == formatter.getValue()));
         //ObservableList list = FXCollections.observableArrayList();
         //list.addAll(formatter.getValue());
-        System.err.println("1 invalidateFormatterValue formatter getLastValitText()=" + getLastValidText());
+//        System.err.println("1 invalidateFormatterValue formatter getLastValitText()=" + getLastValidText());
         formatter.setValue(null);
 
         //formatter.setValue(getLastValidValue());
-        System.err.println("2 invalidateFormatterValue formatter getLastValitText()=" + getLastValidText());
-        formatter.setValue(getLastValidText());
+        //formatter.setValue(getLastValidText());
+        formatter.setValue(getText());
         System.err.println("invalidateFormatterValue formatter getValue()=" + formatter.getValue());
         //formatter.setValue(list);
 
@@ -185,7 +264,7 @@ public class StringTextField extends TextField {
         return lastValidText;
     }
 
-    public String getLastValidText() {
+    public String getLastValidText__() {
         return lastValidText.get();
     }
 
@@ -202,8 +281,8 @@ public class StringTextField extends TextField {
         if (getFilterValidators().isEmpty()) {
             return true;
         }
-        String[] items = txt.split(getSeparator(), txt.length());
-
+        //!!!!String[] items = txt.split(getSeparator(), txt.length());
+        String[] items = split(txt, false);
         boolean retval = true;
         for (String item : items) {
 //            System.err.println("isAcceptable item = " + item);
@@ -364,6 +443,9 @@ public class StringTextField extends TextField {
 
     protected boolean validateStringListItem(String item) {
         boolean retval = true;
+        if ( getNullString() != null && getNullString().equals(item) ) {
+            return true;
+        }
         for (Predicate<String> v : getValidators()) {
             if (!v.test(item)) {
                 retval = false;
@@ -415,7 +497,8 @@ public class StringTextField extends TextField {
             String[] items;
 
             if (textField.getSeparator() != null) {
-                items = txt.split(textField.getSeparator(), txt.length());
+                //!!!!items = txt.split(textField.getSeparator(), txt.length());
+                items = textField.split(txt,false);
             } else {
                 items = new String[]{txt};
             }
@@ -502,10 +585,28 @@ public class StringTextField extends TextField {
 
             textField.lastValidTextProperty().addListener(textField.getRightValueChangeListener());
             System.err.println("StringTextField: fromString retval='" + retval + "'");
-            System.err.println("StringTextField: fromString rightValue='" + textField.getLastValidText() + "'");
+//            System.err.println("StringTextField: fromString rightValue='" + textField.getLastValidText() + "'");
             System.err.println("end fromString------------------------------------------");
             return retval;
         }
     }//class Converter
+    
+    public static class Span {
+        private int start;
+        private int end;
 
+        public Span(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public int getStart() {
+            return start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+        
+    }
 }

@@ -32,6 +32,8 @@ import javafx.util.StringConverter;
 public abstract class AbstractPropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
 
     private final ObjectProperty<ObservableValue> boundProperty = new SimpleObjectProperty<>();
+    private boolean realTimeBinding; 
+            
     //private E oldBoundValue;
     protected ChangeListener<? super E> boubdValueChangeListener = (v, ov, nv) -> {
         System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundProperty.getValue());
@@ -45,6 +47,14 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
     };
 
     private StringConverter<E> stringConverter;
+
+    public boolean isRealTimeBinding() {
+        return realTimeBinding;
+    }
+
+    public void setRealTimeBinding(boolean realTimeBinding) {
+        this.realTimeBinding = realTimeBinding;
+    }
     
     private void restoreValue(E v) {
         System.err.println("1 sss getBoundValue = " + boundProperty.get().getValue() );
@@ -58,7 +68,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
     }
 
     private void init() {
-        stringConverter = createStringConverter();
+        stringConverter = createBindingStringConverter();
         setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
 
         addValidators();
@@ -96,7 +106,11 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         setEditable(false);
 
         this.boundProperty.set((ObservableValue<E>) property);
-        lastValidTextProperty().bind(asString(property));
+        if ( isRealTimeBinding() ) {
+            textProperty().bindBidirectional(property, stringConverter);
+        } else {
+            lastValidTextProperty().bind(asString(property));
+        }
         createContextMenu(property);
     }
 
@@ -118,11 +132,16 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
             }
         });
 */
+        
         //lastValidTextProperty().bindBidirectional(property, stringConverter);
-        textProperty().bindBidirectional(property, stringConverter);
+        if ( isRealTimeBinding() ) {
+            textProperty().bindBidirectional(property, stringConverter);
+        } else {
+            lastValidTextProperty().bindBidirectional(property, stringConverter);
+        }
         createContextMenu(property);
     }
-
+    
     public ObjectProperty<ObservableValue> boundPropertyProperty() {
         return boundProperty;
     }
@@ -136,9 +155,11 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
     }
 
     public abstract void setBoundValue(E boundValue);
-
-    public abstract StringConverter<E> createStringConverter();
     public abstract E valueOf(String txt);
+
+    public StringConverter<E> createBindingStringConverter() {
+        return new BindingStringConverter(this);
+    }
 
     protected void createContextMenu(Property property) {
     }
@@ -148,7 +169,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         if ( value == null && getNullString() != null ) {
             retval = getNullString();
         }
-        return value == null ? "" : value.toString();
+        return retval;
     }
 
     protected abstract StringBinding asString(Property property);
@@ -164,11 +185,11 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
 
     }
 
-    public static class Converter<T> extends StringConverter<T> {
+    public static class BindingStringConverter<T> extends StringConverter<T> {
 
         private final AbstractPropertyEditor editor;
 
-        public Converter(AbstractPropertyEditor textField) {
+        public BindingStringConverter(AbstractPropertyEditor textField) {
             this.editor = textField;
         }
 
@@ -176,17 +197,13 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
             return (T) getEditor().getBoundProperty().getValue();
         }
 
-//        protected abstract T valueOf(String txt);
-
         public AbstractPropertyEditor getEditor() {
             return editor;
         }
 
         @Override
         public String toString(T dv) {
-            System.err.println("TO STRING dv = " + dv);
             if ( dv == null && editor.getNullString() != null ) {
-                System.err.println("1 TO STRING dv = " + dv + "; getNullString() = " + editor.getNullString());
                 return editor.getNullString();
             }
             return editor.stringOf(dv);
@@ -196,13 +213,12 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         public T fromString(String tx) {
             T retval;
             if (getEditor().hasErrorItems()) {
-                System.err.println("getTextField().hasErrorItems() = " + getEditor().hasErrorItems());
                 retval = getBoundValue();
             } else {
                 retval = (T) editor.valueOf(tx);
             }
             return retval;
         }
-    }//class Converter
+    }//class BindingStringConverter
 
 }//class AbstractPropertyEditor

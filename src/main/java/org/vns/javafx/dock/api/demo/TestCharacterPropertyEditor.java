@@ -97,8 +97,6 @@ public class TestCharacterPropertyEditor extends Application {
             System.err.println("act CharacterPropertyEditor: ip = '" + ip.get() + "' ; tf1.text = '" + tf1.getText() +"'");
             //ip.set('H');
             Platform.runLater(() -> {tf1.selectAll();});
-            
-        
         });
 
         grid.add(lb1, 0, 0);
@@ -121,10 +119,11 @@ public class TestCharacterPropertyEditor extends Application {
                 System.err.println("STYLE = " + s);
             });
        });
-        TextField txField = new TextField();
+        
         tf3.setFont(new Font(13));
         grid.add(lb3, 0, 2);
         grid.add(tf3, 1, 2);
+        TextField txField = new TextField();
         grid.add(txField, 0, 3);      
         txField.setText("NULL");
         txField.selectAll();

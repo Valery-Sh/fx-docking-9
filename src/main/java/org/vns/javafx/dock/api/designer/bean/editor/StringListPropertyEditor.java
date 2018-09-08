@@ -86,14 +86,6 @@ import javafx.util.StringConverter;
  * It is not necessary to use a comma as the separator of string elements. For
  * this purpose, any sequence of characters can be applied. Use the 
  * {@link ObservableListPropertyEditor#setSeparator(java.lang.String) }
- * or {@link ObservableListPropertyEditor#setSeparator(java.lang.String, java.lang.String)
- * }
- * methods to change the default separator. In the case of using a method with
- * one parameter, the string elements will be placed in the List object as is,
- * that is, without trimming the spaces. When you use a method with two
- * parameters, you can specify a regular expression for the separator. For
- * example, if trimming is required, you can use one of the following
- * expressions
  * </p>
  * <pre>
  *   \s*;

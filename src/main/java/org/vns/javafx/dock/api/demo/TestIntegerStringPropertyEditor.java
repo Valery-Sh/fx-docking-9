@@ -84,7 +84,7 @@ public class TestIntegerStringPropertyEditor extends Application {
         IntegerProperty ip = new SimpleIntegerProperty(27);
         IntegerPropertyEditor tf1 = new IntegerPropertyEditor();
         tf1.bindBidirectional(ip);
-        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
+//        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
             //tf1.setLastValidValue("21");
             System.err.println("btn2.getOpacity = " + btn2.getOpacity());

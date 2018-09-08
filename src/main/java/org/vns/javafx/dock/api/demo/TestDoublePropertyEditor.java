@@ -80,7 +80,7 @@ public class TestDoublePropertyEditor extends Application {
             return ! it.equals("-2.0");
         } );
         tf1.bindBidirectional(btn2.prefWidthProperty());
-        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+        //System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         Number num;
         btn1.setOnAction(e -> {
             //tf1.setLastValidText("21");

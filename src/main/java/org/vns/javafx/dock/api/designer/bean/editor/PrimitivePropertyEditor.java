@@ -45,11 +45,12 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         setValueIfBlank("0");
     }
 
-    @Override
-    public StringConverter<T> createStringConverter() {
-        return new PrimitiveStringConverter<>(this);
+/*    @Override
+    public StringConverter<T> createBindingStringConverter() {
+        //return new PrimitiveStringConverter<>(this);
+        return new AbstractPropertyEditor.Converter(this);
     }
-
+*/
     @Override
     protected StringBinding asString(Property property) {
         return ((NumberExpression) property).asString();
@@ -57,7 +58,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     @Override
     public T valueOf(String txt) {
-        System.err.println("VALUE OF txt = '" + txt + "'");
+
         T retval = null;
         if (isNullString(txt)) {
             return null;
@@ -72,20 +73,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         } else if (o instanceof Integer) {
             retval = (T) Integer.valueOf(txt);
         }
-/*        else if (o instanceof Short) {
-            retval = (T) Short.valueOf(stringOf(Short.valueOf(txt)));
-        } else if (o instanceof Byte) {
-            retval = (T) Byte.valueOf(getEditor().stringOf(Byte.valueOf(txt)));
-        } else if (o instanceof String) {
-            System.err.println("1 VALUE OF txt = " + txt);
-            retval = (T) txt;
-            if (getEditor().getNullString() != null && getEditor().getNullString().equals(txt)) {
-                retval = null;
-            }
-        }
-*/
-        System.err.println("VALUE OF  retval = '" + retval + "'");
-        System.err.println("===============================================");
         return retval;
 
     }
@@ -129,7 +116,20 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public Short valueOf(String txt) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            System.err.println("VALUE OF txt = '" + txt + "'");
+            if (isNullString(txt)) {
+                return null;
+            }
+            Short retval;
+            if (txt.isEmpty()) {
+                retval = 0;
+            } else {
+                retval = Short.valueOf(txt);
+            }
+
+            System.err.println("VALUE OF  retval = '" + retval + "'");
+            System.err.println("===============================================");
+            return retval;
         }
 
     }//class ShortPropertyEditor
@@ -326,7 +326,20 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public Byte valueOf(String txt) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            System.err.println("VALUE OF txt = '" + txt + "'");
+            if (isNullString(txt)) {
+                return null;
+            }
+            Byte retval;
+            if (txt.isEmpty()) {
+                retval = 0;
+            } else {
+                retval = Byte.valueOf(txt);
+            }
+
+            System.err.println("VALUE OF  retval = '" + retval + "'");
+            System.err.println("===============================================");
+            return retval;
         }
 
     }//class IntegerPropertyEditor
@@ -422,19 +435,14 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     }//class CharacterPropertyEditor
 
-    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
+/*    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
 
         public PrimitiveStringConverter(AbstractPropertyEditor textField) {
             super(textField);
         }
 
-/*        @Override
-        protected T valueOf(String txt) {
-            return (T) getEditor().valueOf(txt);
-        }
-*/
     }//class PrimitiveStringConverter
-
+*/
     public static class StringPropertyEditor extends PrimitivePropertyEditor<String> {
 
         public StringPropertyEditor() {
@@ -452,7 +460,8 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             setEditable(false);
 
             this.boundPropertyProperty().set((ObservableValue<String>) property);
-            lastValidTextProperty().bind(property);
+            //lastValidTextProperty().bind(property);
+            textProperty().bind(property);
             createContextMenu(property);
         }
 
@@ -463,7 +472,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         public String valueOf(String txt) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            System.err.println("VALUE OF txt = '" + txt + "'");
+            if (isNullString(txt)) {
+                return null;
+            }
+            return txt;
         }
 
     }//class StringPropertyEditor

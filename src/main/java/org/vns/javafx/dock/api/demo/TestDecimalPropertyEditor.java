@@ -78,13 +78,13 @@ public class TestDecimalPropertyEditor extends Application {
         System.err.println("1 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
         tf1.bindBidirectional(btn2.prefWidthProperty());
         System.err.println("2 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+//        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
             //tf1.setText("-210");
             btn2.setPrefWidth(btn2.getPrefWidth() + 20);
                 
             System.err.println("3 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-            System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+//            System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
             
         });
 

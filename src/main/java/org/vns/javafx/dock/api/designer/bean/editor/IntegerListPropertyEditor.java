@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.util.StringConverter;
-
 /**
  * The class is used as an editor for properties of type
  * {@code ObservableList<Integer>}. Suppose some node or any other object has a
@@ -28,15 +26,17 @@ import javafx.util.StringConverter;
  *   1,34,99
  * </pre> and we expect that our observable list will contain three items such
  * as 1 and 34 and 99. If the text property of the text field is an empty
- * string? the our list will be empty too.
+ * string then our list will be empty too.
  *
  * The example below shows how to accomplish the task
  * <pre>
+ * <code>
  *    ObservableList &lt;Integer &gt; sourceList = FXCollections.observableArrayList();
  * IntegerListPropertyEditor editor = new IntegerListPropertyEditor();
  * editor.bindContentBidirectional(sourceList);
- * </pre> There are a number of features that must be taken into account when
- * working with this control. First? when we put the folloing text
+ * </code> 
+ * </pre>There are a number of features that must be taken into account when
+ * working with this control. First? when we put the following text
  * <pre>
  *   1,23,,8
  * </pre> the bound list will contain three items such as 1,23 and 8. Therefore,
@@ -91,20 +91,54 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
     private void init() {
         getStyleClass().add("integer-text-field");
         getValidators().add(item -> {
-            if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
+            /*            if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
                 return false;
             }
             return true;
+             */
+            boolean retval = true;
+            //retval = item.matches("0|-?([1-9][0-9]*)?");
+            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
+                retval = false;
+            }
+            return retval;
         });
     }
 
-    /*    @Override
-    protected boolean isItemAcceptable(String item) {
-        return true;
+    @Override
+    protected void addFilterValidators() {
+            getFilterValidators().add(item -> {
+            boolean retval = true;
+            //retval = item.matches("0|-?([1-9][0-9]*)?");
+            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
+                retval = false;
+            }
+            return retval;
+        });
     }
+    /**
+     * List of objects of type {@code integer} can't contain {@code null } values.
+     * The method is overridden to do nothing. 
+     * @param str the string used as a null value placeholder
      */
     @Override
-    protected boolean isAcceptable(String txt) {
+    public void setNullString(String str) {
+        
+    }
+    @Override
+    protected void addValidators() {
+        getValidators().add(item -> {
+            boolean retval = true;
+            if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
+                retval = false;
+            }
+            return retval;
+        });
+
+    }
+//    @Override
+
+/*    protected boolean isAcceptable____(String txt) {
 
         if (txt == null) {
             return false;
@@ -133,12 +167,13 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
         return retval;
 
     }
-
+*/
     @Override
     public Integer toListItem(String item) {
         if (item.trim().equals("-")) {
             return Integer.MIN_VALUE;
         }
+        System.err.println("toListItem = " + item);
         return Integer.parseInt(item.trim());
     }
 

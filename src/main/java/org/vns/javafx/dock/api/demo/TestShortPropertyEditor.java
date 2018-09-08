@@ -5,8 +5,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.IntegerProperty;
@@ -28,11 +26,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
 
 /**
  *
