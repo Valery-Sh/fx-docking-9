@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.regex.Pattern;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.NumberExpression;
 import javafx.beans.binding.ObjectExpression;
 import javafx.beans.binding.StringBinding;
@@ -45,15 +46,18 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         setValueIfBlank("0");
     }
 
-/*    @Override
-    public StringConverter<T> createBindingStringConverter() {
-        //return new PrimitiveStringConverter<>(this);
-        return new AbstractPropertyEditor.Converter(this);
-    }
-*/
+
     @Override
     protected StringBinding asString(Property property) {
-        return ((NumberExpression) property).asString();
+        StringBinding retval = null;
+        if ( property instanceof ObjectExpression) {
+            retval = ((ObjectExpression) property).asString();            
+        } else if ( property instanceof NumberExpression) {
+            retval = ((NumberExpression) property).asString();            
+        } else if ( property instanceof BooleanExpression) {
+            retval = ((BooleanExpression) property).asString();
+        }
+        return retval;
     }
 
     @Override
@@ -104,11 +108,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Short boundValue) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -175,15 +179,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Long boundValue) {
             ((LongProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
-        @Override
-        public Long valueOf(String txt) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+*/
 
     }//class LongPropertyEditor
 
@@ -212,11 +212,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Double boundValue) {
             ((DoubleProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
     }//class DoublePropertyEditor
 
     public static class FloatPropertyEditor extends PrimitivePropertyEditor<Float> {
@@ -247,11 +247,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Float boundValue) {
             ((FloatProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
     }//class FloatPropertyEditor
 
     public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
@@ -280,11 +280,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Integer boundValue) {
             ((IntegerProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
     }//class IntegerPropertyEditor
 
     public static class BytePropertyEditor extends PrimitivePropertyEditor<Byte> {
@@ -314,11 +314,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Byte boundValue) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -353,19 +353,19 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         private void init() {
             setValueIfBlank(null);
             //setNullString("<NULL>");
-            setNullString("");
+            setNullSubstitution("");
         }
 
         @Override
         protected void addValidators() {
             getValidators().add(item -> {
 
-                if (getNullString() != null) {
+                if (getNullSubstitution() != null) {
                     String it = item;
-                    if (!getNullString().isEmpty()) {
+                    if (!getNullSubstitution().isEmpty()) {
                         it = it.trim();
                     }
-                    if (it.equals((getNullString()))) {
+                    if (it.equals((getNullSubstitution()))) {
                         return true;
                     }
                 }
@@ -377,15 +377,15 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         @Override
         protected void addFilterValidators() {
             getFilterValidators().add(item -> {
-                if (getNullString() != null) {
+                if (getNullSubstitution() != null) {
                     String it = item;
-                    if (!getNullString().isEmpty()) {
+                    if (!getNullSubstitution().isEmpty()) {
                         it = it.trim();
                     }
                     //System.err.println("======= it = '" + it + "'; getNullString()='" + getNullString() + "'");
-                    if (it.equals(getNullString())) {
-                        if (!getNullString().isEmpty()) {
-                            System.err.println("======= it = '" + it + "'; getNullString()='" + getNullString() + "'");
+                    if (it.equals(getNullSubstitution())) {
+                        if (!getNullSubstitution().isEmpty()) {
+                            System.err.println("======= it = '" + it + "'; getNullString()='" + getNullSubstitution() + "'");
                             Platform.runLater(() -> {
                                 selectAll();
                             });
@@ -404,12 +404,12 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        @Override
+/*0909        @Override
         public void setBoundValue(Character boundValue
         ) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -453,23 +453,12 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             setValueIfBlank(null);
         }
 
-        @Override
-        public void bind(Property property) {
-            unbind();
-            //setEditable(true);
-            setEditable(false);
 
-            this.boundPropertyProperty().set((ObservableValue<String>) property);
-            //lastValidTextProperty().bind(property);
-            textProperty().bind(property);
-            createContextMenu(property);
-        }
-
-        @Override
+/*0909        @Override
         public void setBoundValue(String boundValue) {
             ((StringProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-
+*/
         @Override
         public String valueOf(String txt) {
             System.err.println("VALUE OF txt = '" + txt + "'");

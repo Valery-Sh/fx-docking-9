@@ -80,7 +80,7 @@ public class TestStringTextFieldSplit extends Application {
         String[] r = list.toArray(new String[0]);
         System.err.println("LIST SIZE = " + r.length);
         StringTextField tf1 = new StringTextField();
-        tf1.setNullString("<NULL>");
+        tf1.setNullSubstitution("<NULL>");
         tf1.setText(",ab,,cde,<NULL>,NULL");
         tf1.setSeparator(",");
         String[] spl = tf1.split(tf1.getText());

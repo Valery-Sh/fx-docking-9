@@ -122,7 +122,7 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
      * @param str the string used as a null value placeholder
      */
     @Override
-    public void setNullString(String str) {
+    public void setNullSubstitution(String str) {
         
     }
     @Override

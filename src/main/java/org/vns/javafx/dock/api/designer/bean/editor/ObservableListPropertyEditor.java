@@ -48,8 +48,8 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  * It is not necessary to use a comma as the separator of string elements. For
  * this purpose, any sequence of characters can be applied. Use the 
  {@link StringTextField#setSeparator(java.lang.String) }.
- 
- 
+ *
+ *
  * <pre>
  *   \s*;
  *   ;\s+
@@ -73,6 +73,8 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 public abstract class ObservableListPropertyEditor<E> extends StringTextField implements PropertyEditor<ObservableList> {//, ErrorPointerSupport {
 
     private final ListProperty<E> value = new SimpleListProperty<>(FXCollections.observableArrayList());
+    
+    
     private ObservableList<E> boundValue = FXCollections.observableArrayList();
 
     public ObservableListPropertyEditor() {
@@ -154,10 +156,13 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
      * @param list the list to be bound to
      */
     public void bindContentBidirectional(ObservableList<E> list) {
+        if ( boundValue != null ) {
+            valueProperty().unbindContentBidirectional(list);            
+        }
         this.boundValue = list;
         this.setEditable(true);
         this.setFocusTraversable(true);
-        valueProperty().unbindContentBidirectional(list);
+        
         valueProperty().bindContentBidirectional(list);
         initFormatter();
         //
@@ -190,6 +195,8 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     @Override
     public void bindBidirectional(Property property) {
+        //ObservableList l = (ListProperty)property;
+        //valueProperty().bindContentBidirectional(l);        
     }
 
     @Override
@@ -226,7 +233,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     public String toString(ObservableList v) {
         System.err.println("*---- TO STRING value = " + v + "; getErrorItems().isEmpty()=" + getErrorItems().isEmpty() + "; text = " + getText());
-        if ( hasErrorItems() ) {
+        if (hasErrorItems()) {
             return getText();
         }
         StringBuilder sb = new StringBuilder();
@@ -262,7 +269,6 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 
     public ObservableList fromString(String tx) {
         System.err.println("*---- FROM STRING text = " + tx);
-
 
         String[] items = split(tx);
 
@@ -310,7 +316,7 @@ public abstract class ObservableListPropertyEditor<E> extends StringTextField im
 //        System.err.println("   fromString retval=" + retval);
 //        System.err.println("   fromString value=" + getValue());
 //        System.err.println("end fromString------------------------------------------");
-        
+
         return retval;
     }
 

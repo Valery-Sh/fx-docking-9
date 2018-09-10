@@ -15,13 +15,12 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.util.function.Predicate;
-import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.util.StringConverter;
 
@@ -31,12 +30,14 @@ import javafx.util.StringConverter;
  */
 public abstract class AbstractPropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
 
-    private final ObjectProperty<ObservableValue> boundProperty = new SimpleObjectProperty<>();
-    private boolean realTimeBinding; 
-            
+//    private final ObjectProperty<ObservableValue> boundPropertyOld = new SimpleObjectProperty<>();
+    private Property<E> boundProperty;
+
+    private boolean realTimeBinding;
+
     //private E oldBoundValue;
-    protected ChangeListener<? super E> boubdValueChangeListener = (v, ov, nv) -> {
-        System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundProperty.getValue());
+/*    protected ChangeListener<? super E> boubdValueChangeListener = (v, ov, nv) -> {
+        System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundPropertyOld.getValue());
         if (!checkValidators((E) nv)) {
             Platform.runLater(() -> {
                 System.err.println("CHANGE LISTENER: RUN LATER before set old bound value ov = " + ov + " nv = " + nv);
@@ -45,7 +46,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
             });
         }
     };
-
+     */
     private StringConverter<E> stringConverter;
 
     public boolean isRealTimeBinding() {
@@ -55,14 +56,15 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
     public void setRealTimeBinding(boolean realTimeBinding) {
         this.realTimeBinding = realTimeBinding;
     }
-    
-    private void restoreValue(E v) {
-        System.err.println("1 sss getBoundValue = " + boundProperty.get().getValue() );
+
+    /*    private void restoreValue(E v) {
+        System.err.println("1 sss getBoundValue = " + boundPropertyOld.get().getValue() );
         //boundProperty.get().removeListener(boubdValueChangeListener);
         setBoundValue(v);
-        System.err.println("2 sss getBoundValue = " + boundProperty.get().getValue());
+        System.err.println("2 sss getBoundValue = " + boundPropertyOld.get().getValue());
         //boundProperty.get().addListener(boubdValueChangeListener);
     }
+     */
     public AbstractPropertyEditor() {
         init();
     }
@@ -87,7 +89,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         return stringConverter;
     }
 
-    private boolean checkValidators(E dv) {
+    /*    private boolean checkValidators(E dv) {
         boolean retval = true;
         String sv = stringOf(dv);
         for (Predicate<String> p : getValidators()) {
@@ -98,18 +100,19 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         }
         return retval;
     }
-
+     */
     @Override
     public void bind(Property property) {
         unbind();
         //setEditable(true);
         setEditable(false);
 
-        this.boundProperty.set((ObservableValue<E>) property);
-        if ( isRealTimeBinding() ) {
-            textProperty().bindBidirectional(property, stringConverter);
+        this.boundProperty = property;
+        StringProperty sp = isRealTimeBinding() ? textProperty() : lastValidTextProperty();
+        if (property instanceof StringExpression) {
+            sp.bind(property);
         } else {
-            lastValidTextProperty().bind(asString(property));
+            sp.bind(asString(property));
         }
         createContextMenu(property);
     }
@@ -119,43 +122,52 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         System.err.println("AbstractPropertyEditor bindBidirectional");
         unbind();
         setEditable(true);
-        boundProperty.set((ObservableValue<E>) property);
-/*        boundProperty.get().addListener((v, ov, nv) -> {
-            System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundProperty.getValue());
+        //0909boundPropertyOld.set((ObservableValue<E>) property);
+        this.boundProperty = property;
+        /*        boundPropertyOld.get().addListener((v, ov, nv) -> {
+            System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundPropertyOld.getValue());
             if (!checkValidators((E) nv)) {
                 Platform.runLater(() -> {
                     System.err.println("CHANGE LISTENER: RUN LATER before set old bound value ov = " + ov + " nv = " + nv);
-//                    boundProperty.get()
+//                    boundPropertyOld.get()
                     setBoundValue((E) ov);
                     System.err.println("CHANGE LISTENER: RUN LATER after set old bound value ov = " + ov + " nv = " + nv);
                 });
             }
         });
-*/
-        
+         */
+
         //lastValidTextProperty().bindBidirectional(property, stringConverter);
-        if ( isRealTimeBinding() ) {
+        if (isRealTimeBinding()) {
             textProperty().bindBidirectional(property, stringConverter);
         } else {
             lastValidTextProperty().bindBidirectional(property, stringConverter);
         }
         createContextMenu(property);
     }
-    
-    public ObjectProperty<ObservableValue> boundPropertyProperty() {
-        return boundProperty;
+
+    /*0909    public ObjectProperty<ObservableValue> boundPropertyProperty() {
+        return boundPropertyOld;
     }
 
     public ObservableValue<E> getBoundProperty() {
-        return boundProperty.get();
+        return boundPropertyOld.get();
     }
 
     public void setBoundProperty(ObservableValue<E> boundProperty) {
-        this.boundProperty.set(boundProperty);
+        this.boundPropertyOld.set(boundProperty);
+    }
+     */
+//    public abstract void setBoundValue(E boundValue);
+    public abstract E valueOf(String txt);
+
+    public Property<E> getBoundProperty() {
+        return boundProperty;
     }
 
-    public abstract void setBoundValue(E boundValue);
-    public abstract E valueOf(String txt);
+    protected void setBoundProperty(Property<E> boundProperty) {
+        this.boundProperty = boundProperty;
+    }
 
     public StringConverter<E> createBindingStringConverter() {
         return new BindingStringConverter(this);
@@ -166,8 +178,8 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
 
     public String stringOf(E value) {
         String retval = value == null ? "" : value.toString();
-        if ( value == null && getNullString() != null ) {
-            retval = getNullString();
+        if (value == null && getNullSubstitution() != null) {
+            retval = getNullSubstitution();
         }
         return retval;
     }
@@ -203,8 +215,8 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
 
         @Override
         public String toString(T dv) {
-            if ( dv == null && editor.getNullString() != null ) {
-                return editor.getNullString();
+            if (dv == null && editor.getNullSubstitution() != null) {
+                return editor.getNullSubstitution();
             }
             return editor.stringOf(dv);
         }

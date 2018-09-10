@@ -125,7 +125,8 @@ public class TestCharacterPropertyEditor extends Application {
         grid.add(tf3, 1, 2);
         TextField txField = new TextField();
         grid.add(txField, 0, 3);      
-        txField.setText("NULL");
+        txField.setText(null);
+        System.err.println("TX FIELD getText = " + txField.getText());
         txField.selectAll();
            btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);

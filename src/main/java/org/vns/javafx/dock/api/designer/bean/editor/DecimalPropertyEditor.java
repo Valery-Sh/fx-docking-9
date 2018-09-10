@@ -101,21 +101,12 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
             boolean retval = item.trim().isEmpty();
             if (!retval) {
                 retval = Pattern.matches(regExp, item);
-
-                if (retval) {
-                    try {
-                        //stringConverter.fromString(item);
-                    } catch (Exception ex) {
-
-                    }
-                }
             }
             if (retval ) {
                 Double dv = 0d;
-                if ( !item.trim().isEmpty() ) {
+                if ( !item.trim().isEmpty() && !item.trim().equals("-") && !item.trim().equals("+") ) {
                     dv = Double.valueOf(item);
                 }
-                System.err.println("min()=" + Double.min(Double.MIN_VALUE, dv));
                 retval = dv >= getMinValue() && dv <= getMaxValue();
             }
             return retval;
@@ -130,11 +121,11 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
         return bd.toString();
     }
 
-    @Override
+/*0909    @Override
     public void setBoundValue(Double boundValue) {
         ((DoubleProperty) (Observable) getBoundProperty()).set(boundValue);
     }
-
+*/
     public DoubleProperty minValueProperty() {
         return minValue;
     }

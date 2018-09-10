@@ -15,9 +15,9 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,7 +36,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
 import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 /**
@@ -48,7 +47,6 @@ public class TestStringTextField extends Application {
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
 
-
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
@@ -56,7 +54,6 @@ public class TestStringTextField extends Application {
         Pane p = new Pane();
         long end1 = System.currentTimeMillis();
         //System.err.println("DIF0 = " + (end1 - start1));
-
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -73,13 +70,53 @@ public class TestStringTextField extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
 
         StringTextField tf1 = new StringTextField();
-        tf1.setNullString("<NULL>");
+            System.err.println("1 START: getText() = " + tf1.getText());
+            System.err.println("1 START: formatter.getValue() = " + tf1.getFormatter().getValue());
         tf1.setText(null);
+            System.err.println("2 START: getText() = " + tf1.getText());
+            System.err.println("2 START: formatter.getValue() = " + tf1.getFormatter().getValue());
+        tf1.setText(null);
+            System.err.println("3 START: getText() = " + tf1.getText());
+            System.err.println("3 START: formatter.getValue() = " + tf1.getFormatter().getValue());        
+        tf1.getValidators().add(item -> {
+            return item != null && !item.equals("5");
+        });
+        tf1.setNullSubstitution("<NULL>");
+
+        tf1.getFilterValidators().add(item -> {
+            return  item != null && ! item.isEmpty();
+        });
+        //tf1.setText("6");
+        tf1.setText(null);
+        tf1.setText(null);
+        
+        Platform.runLater(() -> {
+            System.err.println("LATER: getText() = " + tf1.getText());
+            System.err.println("LATER: formatter.getValue() = " + tf1.getFormatter().getValue());
+        });
+        //tf1.setText(null);
+        /*         tf1.setText("1");
+        tf1.setText("1");
+        tf1.setText(null);
+        tf1.setText("2");
+         */
+
         btn1.setOnAction(e -> {
             System.err.println("--------------");
             System.err.println("text = " + tf1.getText());
             System.err.println("value = " + tf1.getFormatter().getValue());
             System.err.println("--------------");
+            tf1.setText(null);
+            //tf1.setText("321");
+            if (tf1.getNullSubstitution() == null) {
+                tf1.setNullSubstitution("<NULL>");
+            }
+            tf1.setText("444");
+            tf1.setText(tf1.getNullSubstitution());
+            tf1.setText(null);
+            //tf1.setText(null);
+            //tf1.setText("123");
+
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -106,7 +143,6 @@ public class TestStringTextField extends Application {
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
 //        grid.add(tf2, 1, 2);
-
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 

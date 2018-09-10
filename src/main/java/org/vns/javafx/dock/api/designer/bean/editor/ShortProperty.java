@@ -15,19 +15,23 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.property.Property;
-
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerPropertyBase;
 
 /**
  *
- * @author Valery Shyshkin
- * @param <T> the type of the propertyValue
+ * @author Valery
  */
-public interface PropertyEditor<T> {
-    void bind(Property<T> property);
-    void bindBidirectional(Property<T> property);
-    void unbind();
-    boolean isEditable();
-    void setEditable(boolean editable);
-    boolean isBound();
+public class ShortProperty extends IntegerPropertyBase {
+
+    @Override
+    public Object getBean() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

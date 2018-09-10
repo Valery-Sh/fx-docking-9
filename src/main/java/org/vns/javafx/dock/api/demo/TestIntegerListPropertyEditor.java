@@ -88,7 +88,7 @@ public class TestIntegerListPropertyEditor extends Application {
         
         IntegerListPropertyEditor tf1 = new IntegerListPropertyEditor();
         System.err.println("tf1.getErrorMarkerBuilder()= " + tf1.getErrorMarkerBuilder()); 
-        tf1.setNullString("N");
+        tf1.setNullSubstitution("N");
         
         //tf1.setValueIfBlank("0");
         //tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));

@@ -5,38 +5,38 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.function.UnaryOperator;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.StringPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.NewTextField;
+import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
+//It's a filter which throws an Exception when apply a method `c.getControlNewText()`.
+
+//You should implement the TestTextFormatter with a StringConverter.
 /**
  *
  * @author Valery
  */
-public class TestStringPropertyEditor extends Application {
+public class TestTextField extends Application {
 
     Stage stage;
     Scene scene;
@@ -47,89 +47,47 @@ public class TestStringPropertyEditor extends Application {
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
-        long start1 = System.currentTimeMillis();
-        Pane p = new Pane();
-        long end1 = System.currentTimeMillis();
-        System.err.println("DIF0 = " + (end1 - start1));
-
-        Text msg = new Text("JavaFX animation is cool!");
-        msg.setTextOrigin(VPos.TOP);
-        msg.setFont(Font.font(24));
-        //Pane root = new Pane(msg);
-
         GridPane grid = new GridPane();
         grid.setHgap(10);
-        //AnchorPane anchor = new AnchorPane(grid);
-        //anchor.setStyle("-fx-border-color: red; -fx-border-width: 4 ");
-        //grid.setStyle("-fx-border-color: green; -fx-border-width: 2 ");
-
         StackPane root = new StackPane(grid);
-        Label lb1 = new Label("Text Alignment");
-
-        lb1.setFont(new Font(13));
-        System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderPropertyEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
-        ObjectProperty<Short> ip = new SimpleObjectProperty(0);
-        StringProperty boundStr = new SimpleStringProperty(null);
-        StringPropertyEditor tf1 = new StringPropertyEditor();
-        //tf1.setNullSubstitution("<NULL>");
-        //btn2.styleProperty().set(null);
-        //System.err.println("btn2.styleProperty() = " + btn2.styleProperty().get());
-        //tf1.bindBidirectional(btn2.styleProperty());
-        //tf1.bindBidirectional(boundStr);
-        tf1.setText(null);
-        tf1.setText(null);
-        //boundStr.set(null);
-        //boundStr.set(null);
-        //CharacterTextField tf1 = new CharacterTextField();
-        // System.err.println("ShortMax = " + Short.MAX_VALUE);
-        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
-        //tf1.setFont(new Font(13));
-        //tf1.bindBidirectional(btn1.textProperty());
-        //tf1.bindBidirectional(btn1.prefWidthProperty());
-        //tf1.bindBidirectional(btn1.opacityProperty());
-        //tf1.bindBidirectional(ip);
-        //tf1.bind(ip);
-   
         btn1.setOnAction(e -> {
-            //System.err.println("StringPropertyEditor: boundStr = " + boundStr + "; tf1.text = " + tf1.getText());
-            
-            tf1.setText(null);
-            tf1.setText("23");
-             tf1.setText(null);
-            tf1.setNullSubstitution("<NULL>");
-            
-            
-            //ip.set((short)20);
-        
         });
+        MyTextField textField = new MyTextField();
+        textField.mark++;
+        System.err.println(" first NULL **************************");
+        textField.setText(null);
 
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        Label lb2 = new Label("111111lable 1");
-        lb2.setFont(new Font(13));
-        btn2.setOnAction(e -> {
-            btn2.setPrefWidth(200.56);
+        textField.mark++;
+        System.err.println(" second NULL **************************");
+        textField.setText(null);
+        textField.setText("ttt");
+        
+        textField.setText(null);
+        //textField.setText("");
+        //textField.setText(null);
+        btn1.setText("Test");
+        btn1.setOnAction(e -> {
+            textField.setText(null);
+            textField.setText("test");
+            textField.setText(null);
         });
-        Label lb3 = new Label("lable 3");
-        lb3.setFont(new Font(13));
-        grid.add(lb2, 0, 1);
-        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-       
-        tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                System.err.println("STYLE = " + s);
-            });
-       });
-        tf3.setFont(new Font(13));
-        grid.add(lb3, 0, 2);
-        grid.add(tf3, 1, 2);
-        //tf3.bindBidirectional(btn1.disableProperty());
-        tf3.bind(btn1.disableProperty());
+        grid.add(textField, 0, 0);
+        grid.add(btn1, 0, 1);
+        //System.err.println("textField.getText= " + textField.getText());
+        /*        StringTextField stextField = new StringTextField();
+        stextField.setNullString("<NULL>");
+        stextField.setText(null);
+        stextField.setText(null);
+        
+        grid.add(stextField, 0, 1);
+         */
+        //System.err.println("StextField.getText= " + stextField.getText());        
+
+        NewTextField newTextField = new NewTextField();
+        newTextField.setText("21");
+        newTextField.setText("22");
+        //grid.add(newTextField, 0, 2);
+
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();
@@ -149,10 +107,7 @@ public class TestStringPropertyEditor extends Application {
         stage.setTitle("Scrolling Text");
         stage.show();
 
-        Stage stage1 = new Stage();
-        stage1.initOwner(stage);
-
-        VBox vbox = new VBox(btn1, btn2);
+        VBox vbox = new VBox(btn2);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
@@ -220,14 +175,11 @@ public class TestStringPropertyEditor extends Application {
         });
 
         Scene scene1 = new Scene(vbox);
-        stage1.setScene(scene1);
-
-        stage1.show();
 
         VBox vbox2 = new VBox(btn2);
         PopupControl pc = new PopupControl();
         pc.getScene().setRoot(vbox2);
-        pc.show(stage, 20, 2);
+        //pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
@@ -247,4 +199,90 @@ public class TestStringPropertyEditor extends Application {
         launch(args);
     }
 
+    public static class MyTextField extends TextField {
+
+        public int mark = -1;
+
+        private final ObjectProperty<UnaryOperator<TextFormatter.Change>> filter = new SimpleObjectProperty<>(change -> {
+            mark++;
+            System.err.println("====================================");
+            System.err.println(mark + ". MyTextField !!! FILTER change = " + change.getClass().getName());
+            System.err.println("   --- MyTextField !!! FILTER change start = " + change.getRangeStart() + "; end = " + change.getRangeEnd());
+            //String newText = change.getControlNewText();
+            //String newText = change.getControlText();
+            System.err.println("   --- MyTextField !!! FILTER change controlText = " + change.getControlText());
+            System.err.println("   --- MyTextField !!! FILTER change change.getText = " + change.getText());
+            System.err.println("   --- MyTextField !!! FILTER change textField.getText = " + getText());
+            if ( ((TextField)change.getControl()).getText() == null ) {
+                return null;
+            }
+            System.err.println("   --- MyTextField !!! FILTER change controlNewText = " + change.getControlNewText());
+            
+            //if (isAcceptable(change.getControlNewText())) {
+            return change;
+
+        });
+        private TextFormatter formatter;
+
+        public MyTextField() {
+            init();
+        }
+
+        public MyTextField(String text) {
+            super(text);
+        }
+
+        private void init() {
+            formatter = new TextFormatter(new MyTextField.FormatterConverter(this), null, filter.get());
+            setTextFormatter(formatter);
+
+        }
+
+        public UnaryOperator<TextFormatter.Change> getFilter() {
+            return filter.get();
+        }
+
+        public TextFormatter getFormatter() {
+            return formatter;
+        }
+
+        public static class FormatterConverter extends StringConverter<String> {
+
+            private final MyTextField textField;
+
+            public FormatterConverter(MyTextField textField) {
+                this.textField = textField;
+            }
+
+            @Override
+            public String toString(String txt) {
+
+                System.err.println(textField.mark + ". MyTextField !!! TO STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");
+                if (txt == null) {
+                    return "<NULL>";
+                }
+                return txt;
+                //return textField.toString(list);
+            }
+
+            @Override
+            public String fromString(String txt) {
+                System.err.println(textField.mark + ". MyTextField  !!! fromString STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");
+                String retval = txt;
+                if (txt == null) {
+                    //textField.getFormatter().setValue(null);
+                    return null;
+                }
+                if ("<NULL>".equals(txt)) {
+                    return null;
+                }
+
+                /*                if ( "<NULL>".equals(txt) ) {
+                    return null;
+                }
+                 */
+                return retval;
+            }
+        }//class FormatterConverter
+    }
 }

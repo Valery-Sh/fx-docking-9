@@ -76,14 +76,16 @@ public class TestDoublePropertyEditor extends Application {
         System.err.println("11111 " + Double.valueOf("-1."));
         DoubleProperty ip = new SimpleDoubleProperty(27);
         DoublePropertyEditor tf1 = new DoublePropertyEditor();
-        tf1.getValidators().add( it -> {
-            return ! it.equals("-2.0");
+/*        tf1.getValidators().add( it -> {
+            return ! it.equals("-3.0");
         } );
+*/        
         tf1.bindBidirectional(btn2.prefWidthProperty());
         //System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
         Number num;
         btn1.setOnAction(e -> {
             //tf1.setLastValidText("21");
+            btn2.prefWidthProperty().set(400d);
             System.err.println("DoublePropertyEditor btn2.getPrefWidth=" + btn2.getPrefWidth());
         });
 
@@ -92,10 +94,6 @@ public class TestDoublePropertyEditor extends Application {
 //        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
 
 //        tf2.setFont(new Font(13));
-        btn2.setOnAction(e -> {
-            System.err.println("btn2 Action");
-            btn2.setPrefWidth(-2);
-        });
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
 
