@@ -72,8 +72,16 @@ public class TestStringPropertyEditor extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
         ObjectProperty<Short> ip = new SimpleObjectProperty(0);
         StringProperty boundStr = new SimpleStringProperty(null);
+        
         StringPropertyEditor tf1 = new StringPropertyEditor();
-        //tf1.setNullSubstitution("<NULL>");
+        tf1.getValidators().add( it -> {
+            if ( "5".equals(it) || tf1.isSameAsNull(it)) {
+                return false;
+            }
+            return true;
+        });
+        
+        tf1.setNullSubstitution("<NULL>");
         //btn2.styleProperty().set(null);
         //System.err.println("btn2.styleProperty() = " + btn2.styleProperty().get());
         //tf1.bindBidirectional(btn2.styleProperty());

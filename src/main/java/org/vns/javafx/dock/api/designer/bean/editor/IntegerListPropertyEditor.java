@@ -96,9 +96,12 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
             }
             return true;
              */
+            
             boolean retval = true;
+            System.err.println("item = " + item);
             //retval = item.matches("0|-?([1-9][0-9]*)?");
-            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
+            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
+                System.err.println("FALSE VALIDATOR item = " + item);                
                 retval = false;
             }
             return retval;
@@ -110,7 +113,9 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
             getFilterValidators().add(item -> {
             boolean retval = true;
             //retval = item.matches("0|-?([1-9][0-9]*)?");
+                System.err.println("FILTER VALIDATOR item = " + item);
             if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
+                System.err.println("FALSE FILTER VALIDATOR item = " + item);
                 retval = false;
             }
             return retval;
@@ -129,45 +134,15 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
     protected void addValidators() {
         getValidators().add(item -> {
             boolean retval = true;
-            if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
+            //11.09if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
+            if (item.trim().isEmpty()  || "-".equals(item.trim()) || "+".equals(item.trim())) {                
                 retval = false;
             }
             return retval;
         });
 
     }
-//    @Override
 
-/*    protected boolean isAcceptable____(String txt) {
-
-        if (txt == null) {
-            return false;
-        }
-        if (txt.isEmpty() || "-".equals(txt)) {
-            return true;
-        }
-
-        String[] items = txt.split(getSeparator(), txt.length());
-        boolean retval = true;
-
-        for (String item : items) {
-            if (!(item.matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item) <= Integer.MAX_VALUE && Long.parseLong(item) >= Integer.MIN_VALUE))) {
-                retval = false;
-                break;
-            }
-        }
-        if (retval) {
-            for (String item : items) {
-                if (!testFilterValidators(item)) {
-                    retval = false;
-                    break;
-                }
-            }
-        }
-        return retval;
-
-    }
-*/
     @Override
     public Integer toListItem(String item) {
         if (item.trim().equals("-")) {

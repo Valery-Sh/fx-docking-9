@@ -15,7 +15,12 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import java.util.List;
+import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.Property;
 import javafx.util.StringConverter;
+import javafx.util.converter.DefaultStringConverter;
 
 /**
  * The class is used as an editor for properties of type
@@ -104,13 +109,60 @@ public class StringListPropertyEditor extends ObservableListPropertyEditor<Strin
     }
 
     private void init() {
-        getStyleClass().add("string-list-text-field");
+        getStyleClass().add("string-list-property-editor");
     }
-
+     public StringConverter createBindingStringConverter() {
+        return new DefaultStringConverter();
+    }
     @Override
     public String toListItem(String item) {
         return item;
     }
 
+    @Override
+    public String valueOf(String txt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-}//class IntegerListTextField
+    @Override
+    protected StringBinding asString(Property property) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static class FormatterConverter extends StringConverter<String> {
+
+        private final StringTextField textField;
+
+        public FormatterConverter(StringTextField textField) {
+            this.textField = textField;
+        }
+
+        @Override
+        public String toString(String txt) {
+            if (txt == null && textField.getNullSubstitution() != null) {
+                return textField.getNullSubstitution();
+            } else if (txt == null) {
+                return "null";
+            }
+            return txt;
+        }
+
+        @Override
+        public String fromString(String txt) {
+
+            //System.err.println("!!! FROM STRING txt = '" + txt + "'; formatterValue = '" + textField.getTextFormatter().getValue() + "'");
+            System.err.println("   -- text =" + textField.getText());
+            if (txt == null && textField.getNullSubstitution() != null ) {
+                return textField.getNullSubstitution();
+            }
+            
+            if (txt == null || txt.equals(textField.getNullSubstitution())) {
+                return null;
+            }
+            return txt;
+        }
+
+
+    }//class FormatterConverter
+
+}//class StringListPropertyEditor

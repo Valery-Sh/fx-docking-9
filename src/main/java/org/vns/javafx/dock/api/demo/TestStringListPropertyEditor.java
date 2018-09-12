@@ -15,9 +15,10 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import java.util.regex.Pattern;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.VPos;
@@ -38,8 +39,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.converter.DefaultStringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
 
 /**
@@ -50,109 +51,43 @@ public class TestStringListPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
-
+        DefaultStringConverter sc = new DefaultStringConverter();
+        System.err.println("fromString null = '" + sc.fromString(null) + "'");
+        System.err.println("toString null  = '" + sc.toString(null) + "'");        
+        
+        System.err.println("fromString empty = '" + sc.fromString("") + "'");
+        System.err.println("toString empty = '" + sc.toString("") + "'");        
+        
         ObservableList<Integer> plist = FXCollections.observableArrayList();
+        plist.add(null);
+        System.err.println("ELEM = '" + plist.get(0) + "'");
 
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
-        long start1 = System.currentTimeMillis();
-        Pane p = new Pane();
-        long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
-
-        Text msg = new Text("JavaFX animation is cool!");
-        msg.setTextOrigin(VPos.TOP);
-        msg.setFont(Font.font(24));
-        //Pane root = new Pane(msg);
+     
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
-        //AnchorPane anchor = new AnchorPane(grid);
-        //anchor.setStyle("-fx-border-color: red; -fx-border-width: 4 ");
-        //grid.setStyle("-fx-border-color: green; -fx-border-width: 2 ");
-
+     
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.textProperty().bindBidirectional(other, converter);
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
-
+     
         StringListPropertyEditor tf1 = new StringListPropertyEditor();
         tf1.setSeparator(",");
-        //tf1.setSeparator(",", "\\s*,\\s*");
-        //tf1.setValueIfBlank("blank");
-        //tf1.setSeparator(" ", "\\s* \\s*");'
+        btn1.setOnAction(e -> {
+            System.err.println("btn1 onAction");
+            btn2.getStyleClass().forEach(s -> {
+                System.err.println("btn2 class = " + s);
+            });
+        });     
         
-        //"a,,b, c,".
-        String src = "a,,b,    , c,   ";
-        String[] s1 = (src).split(tf1.getSeparator(),src.length());
-        for ( String s : s1) {
-            System.err.println("s = '" + s + "'");
-        }
-        String q = java.util.regex.Matcher.quoteReplacement("\\s*,\\s*");
-        System.err.println("Q = '" + q + "'");
-        //tf1.getStyleClass().remove("label");
-        //tf1.setValueIfBlank("");
-        //tf1.setKeepItemTrimmed(false);
-        //tf1.setSeparator(",");
-        String[] sss = "a b c".split("\\s+,");
-        //System.err.println("0 " + sss[0] + "; 1 " + sss[1] + "; 2 " + sss[2]);
-        //Pattern pattern = Pattern.compile("\\w+");
-        //System.err.println("quote = " + Pattern.quote("\\s+,"));        
-        String tx = ",a1,b ,c";
-        Pattern ptn = Pattern.compile(",");
-        //Matcher m = ptn.matcher(tx);        
-        //System.err.println("m0 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
-        //System.err.println("m0.1 = " + "; start=" + m.start() );
-        //System.err.println("m1 = " + m.find() + "; start=" + m.start() + "; end=" + m.end() );
-/*        String[] its = ptn.split(tx);
-        System.err.println("itx.length=" + its.length);
-        Integer[][] itemPos = new Integer[its.length][2];
-        Matcher m = ptn.matcher(tx);        
-        int start = 0;
-        for ( int i=0; i < its.length; i++) {
-            
-            boolean found = m.find();
-            if ( ! found && i == its.length -1 ) {
-                itemPos[i][0] = start + 1;
-                itemPos[i][1] = start + 1 + its[its.length -1].length();
-                break;
-            }
-            start = m.start();
-            itemPos[i][0] = start - its[i].length();
-            itemPos[i][1] = start;
-            if ( itemPos[i][0] == -1 ) {
-                //itemPos[i][0] = 0;
-                //itemPos[i][1] = 0;
-            }
-        }
-        for ( int i= 0; i < its.length; i ++ ) {
-            System.err.println("item[" + i + "] = " + its[i] );
-            System.err.println("[" + i + ",0] = " + itemPos[i][0]);
-            System.err.println("[" + i + ",1] = " + itemPos[i][1]);
-            System.err.println("----------------------------------");
-            
-        }
-        System.err.println("last = " + tx.substring(7, 8));
-*/        
-        // in case you would like to ignore case sensitivity,
-        // you could use this statement:
-        // Pattern pattern = Pattern.compile("\\s+", Pattern.CASE_INSENSITIVE);
-        //Matcher matcher = pattern.matcher("");
-        tf1.setFromStringTransformer(srcStr -> {
-            return srcStr.trim();
-        });
-        
-        tf1.getValidators().add(item -> {
+/*        tf1.getValidators().add(item -> {
             //  if ( true) return true;
             boolean v = true;
             //System.err.println("V ITEM = " + item);
             //if (!item.trim().isEmpty()) {
-                if (!(item.trim().startsWith("tx1") || item.trim().startsWith("-fx") || item.trim().startsWith("label"))) {
+                if (!(item.trim().startsWith("tx1") || item.trim().startsWith("-fx") || item.trim().startsWith("button"))) {
                     System.err.println("VALIDATOR false item = " + item);
                     v = false;
                 }
@@ -160,59 +95,16 @@ public class TestStringListPropertyEditor extends Application {
 
             return v;
         });
-
-        //CharacterTextField tf1 = new CharacterTextField();
-        // System.err.println("ShortMax = " + Short.MAX_VALUE);
-        /// NumberPropertyEditor tf1 = new NumberPropertyEditor();
-        //tf1.setFont(new Font(13));
-        //tf1.bindBidirectional(btn1.textProperty());
-        //tf1.bindBidirectional(btn1.prefWidthProperty());
-        //tf1.bindBidirectional(btn1.opacityProperty());
-        //lb1.getStyleClass().remove("label");
+*/
         lb1.getStyleClass().add("str-0    ");
-        tf1.bindContentBidirectional(lb1.getStyleClass());
-        //plist.addAll(25, 26);
-
-        //tf1.setEditable(false);
-        //tf1.bind(btn1.prefWidthProperty());
-        /*        value.bindBidirectional(tf1.valueProperty());
-        value.addListener((v,ov,nv) -> {
-            System.err.println("1 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-        });
-        tf1.textProperty().addListener((v,ov,nv) -> {
-            System.err.println("2 VALUE " + value.get() + "; TEXT = " + tf1.getText());
-
-        });
-         */
-        //anchor.setMinWidth(10);
-        //grid.setMinWidth(10);
-        //tf1.setMinWidth(10);
-        //lb1.setMinWidth(10);
-        //tf1.prefWidthProperty().bind(grid.widthProperty().subtract(lb1.widthProperty()));
+        tf1.bindBidirectional(btn2.getStyleClass());
         Label lb2 = new Label("111111lable 1");
         lb2.setFont(new Font(13));
-        //TextField tf2 = new TextField();
-        //IntegerPropertyEditor tf2 = new IntegerPropertyEditor();
-        //IntegerTextField tf2 = new IntegerTextField();
-        //ShortTextField tf2 = new ShortTextField();
-        //LongTextField tf2 = new LongTextField();
-        //DoubleTextField tf2 = new DoubleTextField(24.5);
-        //ByteTextField tf2 = new ByteTextField(null);
-//        SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-
-//        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
             btn2.setPrefWidth(200.56);
         });
-        //tf2.bind(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.prefWidthProperty());
-        //tf2.bindBidirectional(btn2.textProperty());
-        //tf2.bind(btn2.textProperty());
-        //tf2.unbind();
         Label lb3 = new Label("lable 3");
         lb3.setFont(new Font(13));
-
-        //tf1.setPrefWidth(200);
         Label elb = new Label("errors");
         HBox ehb = new HBox();
         ehb.setStyle("-fx-background-color: aqua");
@@ -228,50 +120,8 @@ public class TestStringListPropertyEditor extends Application {
 //        grid.add(tf2, 1, 2);
         //TextField tf3 = new TextField();
 
-        btn1.setOnAction(e -> {
-            //tf1.getValue().addAll("STR11","STR12","STR13");
-            lb1.getStyleClass().forEach(s -> {
-                System.err.println("Label class = " + s);
-            });
-            tf1.getValue().addAll("STR10", "STR11");
-            //tf1.getValue().add("");
-            System.err.println("INSETS = " + tf1.getInsets());
-
-            //ObservableList<Integer> nol = FXCollections.observableArrayList();
-            //lb1.getStyleClass().add("str");
-            //tf1.getValue().add("a67");
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            //nol.addAll(tf1.getValue());
-            //plist.add(67);
-//            tf1.setValue(nol);
-//            tf1.formatter.setValue(nol);
-            //tf1.getSlider().setValue(-1);
-            //btn1.setOpacity(btn1.getOpacity() + 0.1);
-            btn1.setPrefWidth(-1);
-            //tf1.setText("200");
-            //tf1.setEditable(true);
-            tf1.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
-        });
-
-        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
-        tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                //System.err.println("STYLE = " + s);
-            });
-        });
-        tf3.setFont(new Font(13));
-
+      
         grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
-        //tf3.bindBidirectional(btn1.disableProperty());
-        tf3.bind(btn1.disableProperty());
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();
@@ -301,18 +151,6 @@ public class TestStringListPropertyEditor extends Application {
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
 
-        /*        TabPane tabPane = new TabPane();
-        //propPane.getChildren().add(tabPane);
-        Tab propTab = new Tab();
-        Tab layoutTab = new Tab();
-        Tab codeTab = new Tab();
-        tabPane.getTabs().addAll(propTab,layoutTab,codeTab);
-        
-        tabPane.setTabMaxHeight(0);
-        propTab.setContent(new Label("P111"));
-        layoutTab.setContent(new Label("L111"));
-        codeTab.setContent(new Label("C111"));
-         */
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");

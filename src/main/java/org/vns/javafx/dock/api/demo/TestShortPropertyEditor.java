@@ -28,6 +28,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.EmptyStringNumberTransformer;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
 
 /**
@@ -71,7 +72,8 @@ public class TestShortPropertyEditor extends Application {
         ObjectProperty<Short> ip = new SimpleObjectProperty(0);
         
         ShortPropertyEditor tf1 = new ShortPropertyEditor();
-
+        tf1.getStringTransformers().add(new EmptyStringNumberTransformer());
+        
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
         /// NumberPropertyEditor tf1 = new NumberPropertyEditor();

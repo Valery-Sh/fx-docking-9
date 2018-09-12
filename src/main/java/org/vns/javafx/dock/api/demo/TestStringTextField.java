@@ -70,29 +70,32 @@ public class TestStringTextField extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
 
         StringTextField tf1 = new StringTextField();
+        System.err.println("@@@@@ getText = " + tf1.getText());
+        tf1.setText("txt1");
             System.err.println("1 START: getText() = " + tf1.getText());
-            System.err.println("1 START: formatter.getValue() = " + tf1.getFormatter().getValue());
-        tf1.setText(null);
+            System.err.println("1 START: formatter.getValue() = " + tf1.getTextFormatter().getValue());
+        //tf1.setText(null);
             System.err.println("2 START: getText() = " + tf1.getText());
-            System.err.println("2 START: formatter.getValue() = " + tf1.getFormatter().getValue());
-        tf1.setText(null);
+            System.err.println("2 START: formatter.getValue() = " + tf1.getTextFormatter().getValue());
+        //tf1.setText(null);
             System.err.println("3 START: getText() = " + tf1.getText());
-            System.err.println("3 START: formatter.getValue() = " + tf1.getFormatter().getValue());        
-        tf1.getValidators().add(item -> {
+            System.err.println("3 START: formatter.getValue() = " + tf1.getTextFormatter().getValue());        
+/*        tf1.getValidators().add(item -> {
             return item != null && !item.equals("5");
         });
-        tf1.setNullSubstitution("<NULL>");
+        //tf1.setNullSubstitution("<NULL>");
 
         tf1.getFilterValidators().add(item -> {
             return  item != null && ! item.isEmpty();
         });
+*/            
         //tf1.setText("6");
-        tf1.setText(null);
-        tf1.setText(null);
+        //tf1.setText(null);
+        //tf1.setText(null);
         
         Platform.runLater(() -> {
             System.err.println("LATER: getText() = " + tf1.getText());
-            System.err.println("LATER: formatter.getValue() = " + tf1.getFormatter().getValue());
+            System.err.println("LATER: formatter.getValue() = " + tf1.getTextFormatter().getValue());
         });
         //tf1.setText(null);
         /*         tf1.setText("1");
@@ -104,7 +107,7 @@ public class TestStringTextField extends Application {
         btn1.setOnAction(e -> {
             System.err.println("--------------");
             System.err.println("text = " + tf1.getText());
-            System.err.println("value = " + tf1.getFormatter().getValue());
+            System.err.println("value = " + tf1.getTextFormatter().getValue());
             System.err.println("--------------");
             tf1.setText(null);
             //tf1.setText("321");

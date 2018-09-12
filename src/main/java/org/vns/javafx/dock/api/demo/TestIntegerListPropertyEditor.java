@@ -56,7 +56,7 @@ public class TestIntegerListPropertyEditor extends Application {
         }   
         
         ObservableList<Integer> plist = FXCollections.observableArrayList();
-        plist.add(5);
+        //plist.add(5);
         System.err.println("CONTAINS = "+ plist.contains(5));
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
@@ -109,7 +109,9 @@ public class TestIntegerListPropertyEditor extends Application {
         //tf1.bindBidirectional(btn1.textProperty());
         //tf1.bindBidirectional(btn1.prefWidthProperty());
         //tf1.bindBidirectional(btn1.opacityProperty());
+        System.err.println("1 SIZE = " + plist.size());
         tf1.bindContentBidirectional(plist);
+        System.err.println("2 SIZE = " + plist.size());
         //plist.addAll(25, 26);
         
         //tf1.setEditable(false);
@@ -117,7 +119,8 @@ public class TestIntegerListPropertyEditor extends Application {
         btn1.setOnAction(e -> {
             
             ObservableList<Integer> nol = FXCollections.observableArrayList();
-            tf1.getValue().add(67);
+            //tf1.getValue().add(67);
+            plist.add(67);
             
             //nol.addAll(tf1.getValue());
             //plist.add(67);

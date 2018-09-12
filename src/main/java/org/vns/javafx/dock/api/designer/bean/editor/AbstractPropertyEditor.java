@@ -30,23 +30,11 @@ import javafx.util.StringConverter;
  */
 public abstract class AbstractPropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
 
-//    private final ObjectProperty<ObservableValue> boundPropertyOld = new SimpleObjectProperty<>();
+
     private Property<E> boundProperty;
 
     private boolean realTimeBinding;
 
-    //private E oldBoundValue;
-/*    protected ChangeListener<? super E> boubdValueChangeListener = (v, ov, nv) -> {
-        System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundPropertyOld.getValue());
-        if (!checkValidators((E) nv)) {
-            Platform.runLater(() -> {
-                System.err.println("CHANGE LISTENER: RUN LATER before set old bound value ov = " + ov + " nv = " + nv);
-                restoreValue((E) ov);
-                System.err.println("CHANGE LISTENER: RUN LATER after set old bound value ov = " + ov + " nv = " + nv);
-            });
-        }
-    };
-     */
     private StringConverter<E> stringConverter;
 
     public boolean isRealTimeBinding() {
@@ -57,14 +45,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         this.realTimeBinding = realTimeBinding;
     }
 
-    /*    private void restoreValue(E v) {
-        System.err.println("1 sss getBoundValue = " + boundPropertyOld.get().getValue() );
-        //boundProperty.get().removeListener(boubdValueChangeListener);
-        setBoundValue(v);
-        System.err.println("2 sss getBoundValue = " + boundPropertyOld.get().getValue());
-        //boundProperty.get().addListener(boubdValueChangeListener);
-    }
-     */
+  
     public AbstractPropertyEditor() {
         init();
     }
@@ -89,18 +70,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         return stringConverter;
     }
 
-    /*    private boolean checkValidators(E dv) {
-        boolean retval = true;
-        String sv = stringOf(dv);
-        for (Predicate<String> p : getValidators()) {
-            if (!p.test(sv)) {
-                retval = false;
-                break;
-            }
-        }
-        return retval;
-    }
-     */
+  
     @Override
     public void bind(Property property) {
         unbind();
@@ -223,6 +193,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
 
         @Override
         public T fromString(String tx) {
+            System.err.println("fromString _______________________");
             T retval;
             if (getEditor().hasErrorItems()) {
                 retval = getBoundValue();

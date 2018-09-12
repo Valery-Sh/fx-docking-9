@@ -79,7 +79,7 @@ public class TestStringTextFieldforInteger extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
 
         StringTextField tf1 = new StringTextField();
-        tf1.setValueIfBlank("0");
+        //tf1.setValueIfBlank("0");
         
 
         tf1.setErrorMarkerBuilder(new ErrorMarkerBuilder(tf1));
@@ -100,7 +100,7 @@ public class TestStringTextFieldforInteger extends Application {
             
             return retval;
         });
-        tf1.lastValidTextProperty().bind(btn1.prefWidthProperty().asString());
+        //tf1.lastValidTextProperty().bind(btn1.prefWidthProperty().asString());
         btn1.setOnAction(e -> {
             tf1.setLastValidText("21");
         });

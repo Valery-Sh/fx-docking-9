@@ -16,8 +16,6 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.regex.Pattern;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 /**
  *
@@ -31,9 +29,7 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
 
     private void init() {
         setSeparator(",");
-        getValidators().add(item -> {
-            return Pattern.matches("^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$", item.trim());
-        });
+
         getFilterValidators().add(item -> {
             String regExp = "^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$";
             boolean retval = item.trim().isEmpty();
@@ -55,5 +51,24 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
          */
     }
 
+    @Override
+    protected void addValidators() {
+        getValidators().add(item -> {
+            return Pattern.matches("^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$", item.trim());
+        });
+    }
+
+    @Override
+    protected void addFilterValidators() {
+        getFilterValidators().add(item -> {
+            String regExp = "^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$";
+            boolean retval = item.trim().isEmpty();
+            if (!retval) {
+                retval = Pattern.matches(regExp, item.trim());
+            }
+
+            return retval;
+        });
+    }
 
 }//class DoublePropertyEditor

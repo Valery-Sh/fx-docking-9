@@ -67,23 +67,15 @@ public class TestStyleClassPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-
+      
         StyleClassPropertyEditor tf1 = new StyleClassPropertyEditor();
         //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.bindBidirectional(btn2.styleProperty());
+        tf1.bindContentBidirectional(btn2.getStyleClass());
         
         btn1.setOnAction(e -> {
-            lb1.getStyleClass().forEach(s -> {
-                System.err.println("Label class = " + s);
+            btn2.getStyleClass().forEach(s -> {
+                System.err.println("btn2 class = " + s);
             });
-//            tf1.getValue().addAll("STR10", "STR11");
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-            tf1.getPseudoClassStates().forEach(s -> {
-                //System.err.println("PSEUDO = " + s);
-            });
-            //System.err.println("btn1.prefWidth = " + btn1.getPrefWidth());
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -111,11 +103,6 @@ public class TestStyleClassPropertyEditor extends Application {
         grid.add(lb2, 0, 2);
 //        grid.add(tf2, 1, 2);
 
-        btn1.setOnAction(e -> {
-            System.err.println("INSETS = " + tf1.getInsets());
-            System.err.println("STYLE CLASSES: " + lb1.getStyleClass());
-            btn1.setPrefWidth(-1);
-        });
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
@@ -125,7 +112,7 @@ public class TestStyleClassPropertyEditor extends Application {
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);
-        tf3.bind(btn1.disableProperty());
+        
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();

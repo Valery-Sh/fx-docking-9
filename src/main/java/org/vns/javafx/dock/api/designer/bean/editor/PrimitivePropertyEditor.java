@@ -21,16 +21,7 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.NumberExpression;
 import javafx.beans.binding.ObjectExpression;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.binding.StringExpression;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.util.StringConverter;
 
 /**
  *
@@ -43,7 +34,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
     }
 
     private void init() {
-        setValueIfBlank("0");
+//        setValueIfBlank("0");
     }
 
 
@@ -76,6 +67,8 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             retval = (T) Float.valueOf(txt);
         } else if (o instanceof Integer) {
             retval = (T) Integer.valueOf(txt);
+        }  else if (o instanceof Boolean) {
+            retval = (T) Boolean.valueOf(txt);
         }
         return retval;
 
@@ -255,7 +248,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
     }//class FloatPropertyEditor
 
     public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
-
+        
         @Override
         protected void addValidators() {
             getValidators().add(item -> {
@@ -351,7 +344,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
 
         private void init() {
-            setValueIfBlank(null);
+//            setValueIfBlank(null);
             //setNullString("<NULL>");
             setNullSubstitution("");
         }
@@ -450,7 +443,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
 
         private void init() {
-            setValueIfBlank(null);
+//            setValueIfBlank(null);
         }
 
 

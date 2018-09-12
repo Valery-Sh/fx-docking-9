@@ -57,7 +57,7 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     private void init() {
 
-        setFromStringTransformer(src -> {
+        getStringTransformers().add(src -> {
             String retval = src;
             src = src.trim();
             Double dv;

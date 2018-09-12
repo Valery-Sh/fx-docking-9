@@ -95,7 +95,7 @@ public class TestStringTextFieldSplit extends Application {
         btn1.setOnAction(e -> {
             System.err.println("--------------");
             System.err.println("text = " + tf1.getText());
-            System.err.println("value = " + tf1.getFormatter().getValue());
+            System.err.println("value = " + tf1.getTextFormatter().getValue());
             System.err.println("--------------");
         });
 

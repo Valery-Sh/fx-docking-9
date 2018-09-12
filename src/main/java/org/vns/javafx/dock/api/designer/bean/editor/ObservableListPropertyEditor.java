@@ -15,15 +15,11 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.util.List;
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.IndexRange;
+import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
@@ -70,275 +66,144 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Valery Shyshkin
  */
-public abstract class ObservableListPropertyEditor<E> extends StringTextField implements PropertyEditor<ObservableList> {//, ErrorPointerSupport {
+public class ObservableListPropertyEditor<E> extends StringTextField implements ListPropertyEditor<E> {//, ErrorPointerSupport {
 
-    private final ListProperty<E> value = new SimpleListProperty<>(FXCollections.observableArrayList());
-    
-    
-    private ObservableList<E> boundValue = FXCollections.observableArrayList();
+    private ObservableList<E> boundList = FXCollections.observableArrayList();
+    private ListContentStringBinding<E> listContentBinding;
+    private StringConverter<E> stringConverter;
+    private String emptyListSubstitution;
+    private String singleEmptyItemSubstitution;
 
     public ObservableListPropertyEditor() {
         init();
-
     }
 
     private void init() {
-        setSeparator(",");
-        addValidators();
-        addFilterValidators();
-    }
-    private final ListChangeListener<? super E> valueChangeListener = (c) -> {
-        invalidateFormatterValue();
-    };
-
-    /**
-     * The method is called when the content of the observable list is changed.
-     * We must raise Invalidation event for {@link #valueProperty() }
-     * in the formatter in order to make the formatter to execute the method {@link FormatterConverter#toString(javafx.collections.ObservableList)
-     * }. First set the {@code value} property of the {@code TextFormatter} to
-     * {@code null} and then assign again the {@link #valueProperty() } of this
-     * control.
-     * <p>
-     * We must enforce the {@code TextFormatter} to invoke the method
-     * </p>
-     *
-     */
-    //@Override
-    protected void invalidateFormatterValue() {
-        //if ( true ) return;
-        //
-        // We must raise Invalidation event for valueProperty() in the formatter 
-        // in order to make the formatter to execute the converter method toString().
-        // First set formatter'item property to null and then assign again
-        // the value from this control
-        //
-
-        formatter.setValue(null);
-        formatter.setValue(getValue());
-
-        //
-        // We need the TextFormatter to execute the StriringConverter's method
-        // fromString in order to validate items in the observable list and
-        // mark errors. 
-        //
-        Platform.runLater(() -> {
-            commitValue();
-        });
     }
 
-    protected StringConverter createFormatterConverter() {
-        return new FormatterConverter(this);
+    @Override
+    protected String applySubstitutions(String txt) {
+        if ( true ) {
+            return super.applySubstitutions(txt);
+        }
+        System.err.println("applySubstitutions txt = '" + txt + "'");
+        String retval = getNullSubstitution();
+        if (txt == null && retval == null) {
+            retval = "";
+        } else if (retval != null) {
+
+        } else if (getEmptyListSubstitution() != null && txt != null && txt.equals(getEmptyListSubstitution())) {
+            retval = getEmptyListSubstitution();
+        }
+        System.err.println("applySubstitutions retval = '" + retval + "'");
+        return retval;
     }
 
-    protected void initFormatter() {
-        formatter = new TextFormatter<>(createFormatterConverter(), getValue(), getFilter());
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < getValue().size(); i++) {
-            sb.append(getValue().get(i));
-            if (i != getValue().size() - 1) {
-                sb.append(getSeparator());
+    public ObservableList<E> getBoundList() {
+        return boundList;
+    }
+
+    @Override
+    public void setNullSubstitution(String nullSubstitution) {
+        super.setNullSubstitution(nullSubstitution);
+    }
+
+    @Override
+    public String getEmptyListSubstitution() {
+        return super.getEmptyListSubstitution();
+    }
+
+    @Override
+    public void setEmptyListSubstitution(String emptyListSubstitution) {
+        super.setEmptyListSubstitution(emptyListSubstitution);
+    }
+
+    @Override
+    public String getSingleEmptyItemSubstitution() {
+        return super.getSingleEmptyItemSubstitution();
+    }
+
+    @Override
+    public void setSingleEmptyItemSubstitution(String singleEmptyItemSubstitution) {
+        super.setSingleEmptyItemSubstitution(singleEmptyItemSubstitution);
+    }
+
+    public ListContentStringBinding<E> getListContentBinding() {
+        return listContentBinding;
+    }
+
+    public StringConverter<E> getStringConverter() {
+        return stringConverter;
+    }
+
+    public void setStringConverter(StringConverter<E> converter) {
+        this.stringConverter = converter;
+    }
+
+    @Override
+    protected boolean testValidators(String item) {
+
+        if (getBoundList() != null && isBound()) {
+            String s = getEmptyListSubstitution();
+            if (s != null && s.equals(item) && getBoundList().isEmpty()) {
+                return true;
+            }
+            s = getSingleEmptyItemSubstitution();
+            if (s != null && s.equals(item) && getBoundList().size() == 1) {
+                return true;
             }
         }
-        setText(sb.toString());
-        setTextFormatter(formatter);
-        getValue().addListener(valueChangeListener);
-
+        return super.testValidators(item);
     }
 
-    public ListChangeListener<? super E> getValueChangeListener() {
-        return valueChangeListener;
+    public boolean isSubstitution(String item) {
+        return false;
     }
 
-    /**
-     * Binds content of the list specified by the property
-     * {@code valueProperty()} to the given list.
-     *
-     * @param list the list to be bound to
-     */
-    public void bindContentBidirectional(ObservableList<E> list) {
-        if ( boundValue != null ) {
-            valueProperty().unbindContentBidirectional(list);            
-        }
-        this.boundValue = list;
+    @Override
+    public void bind(ObservableList<E> property) {
+    }
+
+    @Override
+    public void bindBidirectional(ObservableList<E> property) {
+        boundList = (ObservableList) property;
+
         this.setEditable(true);
         this.setFocusTraversable(true);
-        
-        valueProperty().bindContentBidirectional(list);
-        initFormatter();
+        listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
+        listContentBinding.bind();
         //
         // We need the TextFormatter to execute the StriringConverter's method
         // fromString in order to validate items in the observable list and
         // mark errors. 
         //
         Platform.runLater(() -> {
-            commitValue();
+            //commitValue();
         });
-    }
 
-    public ListProperty<E> valueProperty() {
-        return value;
-    }
-
-    public ObservableList<E> getValue() {
-        return value.getValue();
-    }
-
-    public void setValue(ObservableList<E> value) {
-        if (!valueProperty().isBound()) {
-            this.value.setValue(value);
-        }
-    }
-
-    @Override
-    public void bind(Property property) {
-    }
-
-    @Override
-    public void bindBidirectional(Property property) {
-        //ObservableList l = (ListProperty)property;
-        //valueProperty().bindContentBidirectional(l);        
     }
 
     @Override
     public void unbind() {
-        if (boundValue != null) {
-            value.unbindContentBidirectional(boundValue);
+        if (listContentBinding != null) {
+            listContentBinding.unbind();
         }
     }
 
-    @Override
-    public boolean isBound() {
-        return value.isBound();
-
-    }
-
-    public abstract E toListItem(String item);
+    /*    public abstract E toListItem(String item);
 
     public String fromListItem(E obj) {
         return obj.toString();
-    }
-
+   }
+     */
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
 
-    protected void addValidators() {
-
+    @Override
+    public boolean isBound() {
+        return getListContentBinding() != null && getListContentBinding().isBound();
     }
-
-    protected void addFilterValidators() {
-
-    }
-
-    public String toString(ObservableList v) {
-        System.err.println("*---- TO STRING value = " + v + "; getErrorItems().isEmpty()=" + getErrorItems().isEmpty() + "; text = " + getText());
-        if (hasErrorItems()) {
-            return getText();
-        }
-        StringBuilder sb = new StringBuilder();
-        if (v != null && !v.isEmpty()) {
-            for (int i = 0; i < v.size(); i++) {
-                String errorItem = getErrorItems().get(i);
-//                System.err.println("toString errorItem='" + errorItem + "'");
-                if (errorItem != null) {
-                    sb.append(errorItem);
-                } else {
-                    sb.append(fromListItem((E) v.get(i)));
-                }
-                if (i != v.size() - 1) {
-                    sb.append(getSeparator());
-                }
-            }
-        }
-        String retval = sb.toString();
-//!!!        System.err.println("toString retval=" + retval);
-        Platform.runLater(() -> {
-            //
-            // We put the following two lines in order to fix a problem when 
-            // append sb programmatically and after pressing Enter key the 
-            // cursor moves one character backword. We see this behaivor when use 
-            // TextTransformer
-            //
-            this.backward();
-            this.end();
-        });
-
-        return retval;
-    }
-
-    public ObservableList fromString(String tx) {
-        System.err.println("*---- FROM STRING text = " + tx);
-
-        String[] items = split(tx);
-
-        for (int i = 0; i < items.length; i++) {
-            if (getFromStringTransformer() != null) {
-                items[i] = getFromStringTransformer().transform(items[i]);
-            }
-        }
-        List<Integer> errorItemIndexes = getErrorIndexes(items);
-        if (errorItemIndexes.isEmpty()) {
-            if (getErrorMarkerBuilder().getErrorMarkers() != null && getErrorMarkerBuilder().getErrorMarkers().length > 0) {
-                getChildren().removeAll(getErrorMarkerBuilder().getErrorMarkers());
-            }
-            setErrorFound(Boolean.FALSE);
-        } else if (getSeparator() == null || !getSeparator().isEmpty()) {
-            setErrorFound(Boolean.TRUE);
-        }
-
-        if (getErrorMarkerBuilder() != null) {
-            Platform.runLater(() -> {
-                if (!errorItemIndexes.isEmpty()) {
-                    Integer[] e = errorItemIndexes.toArray(new Integer[errorItemIndexes.size()]);
-                    getErrorMarkerBuilder().showErrorMarkers(e);
-                }
-            });
-        }
-        ObservableList<E> retval = FXCollections.observableArrayList();
-
-        for (int i = 0; i < items.length; i++) {
-            String item = items[i];
-            if (errorItemIndexes.contains(i)) {
-                continue;
-            }
-            if (item.trim().isEmpty() && getValueIfBlank() != null && !tx.trim().isEmpty()) {
-                retval.add(toListItem(getValueIfBlank()));
-                continue;
-            }
-            retval.add(toListItem(item));
-        }
-        getValue().removeListener(getValueChangeListener());
-        getValue().clear();
-        getValue().addAll(retval);
-
-        getValue().addListener(getValueChangeListener());
-//        System.err.println("   fromString retval=" + retval);
-//        System.err.println("   fromString value=" + getValue());
-//        System.err.println("end fromString------------------------------------------");
-
-        return retval;
-    }
-
-    public static class FormatterConverter extends StringConverter<ObservableList> {
-
-        private final ObservableListPropertyEditor textField;
-
-        public FormatterConverter(ObservableListPropertyEditor textField) {
-            this.textField = textField;
-        }
-
-        @Override
-        public String toString(ObservableList list) {
-            return textField.toString(list);
-        }
-
-        @Override
-        public ObservableList fromString(String txt) {
-            return textField.fromString(txt);
-
-        }
-
-    }//class FormatterConverter
 
 }

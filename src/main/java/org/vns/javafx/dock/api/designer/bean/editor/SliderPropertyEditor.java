@@ -51,7 +51,7 @@ public class SliderPropertyEditor extends Control implements PropertyEditor<Numb
     public SliderPropertyEditor(double min, double max, int value) {
         //textField = new DecimalPropertyEditor(min, max,2);
         textField = new DecimalPropertyEditor(Double.MIN_VALUE, Double.MAX_VALUE,value);
-        textField.setFromStringTransformer(src -> {
+        textField.getStringTransformers().add(src -> {
             String retval = src;
             src = src.trim();
             Double dv;
