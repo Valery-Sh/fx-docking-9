@@ -164,6 +164,14 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
 
     @Override
     public void bind(ObservableList<E> property) {
+        boundList = (ObservableList) property;
+
+        this.setEditable(false);
+        this.setFocusTraversable(false);
+        
+        listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
+        listContentBinding.bind();
+        
     }
 
     @Override
@@ -174,7 +182,7 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
         this.setFocusTraversable(true);
         
         listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
-        listContentBinding.bind();
+        listContentBinding.bindBidirectional();
     }
 
     @Override

@@ -34,7 +34,7 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
     private final WeakReference<StringProperty> stringRef;
 
     private final StringConverter<E> converter;
-    private String separator;
+    private final String separator;
 
     private boolean updating = false;
     private boolean bound = false;
@@ -65,7 +65,6 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
 
             try {
                 updating = true;
-                System.err.println("SEPARATOR = " + separator);
                 StringBuilder sb = new StringBuilder();
                 for (E obj : ls) {
                     sb.append(converter.toString(obj));
@@ -185,10 +184,25 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
         }
         stringRef.get().set(sb.toString());
         listRef.get().addListener(this);
-        stringRef.get().addListener(this);
+        //stringRef.get().addListener(this);
         bound = true;
     }
 
+    public void bindBidirectional() {
+        StringBuilder sb = new StringBuilder();
+        for (E obj : listRef.get()) {
+            sb.append(converter.toString(obj));
+            sb.append(separator);
+        }
+        if (!listRef.get().isEmpty()) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        stringRef.get().set(sb.toString());
+        listRef.get().addListener(this);
+        stringRef.get().addListener(this);
+        bound = true;
+    }
+    
     public void unbind() {
         listRef.get().removeListener(this);
         stringRef.get().removeListener(this);

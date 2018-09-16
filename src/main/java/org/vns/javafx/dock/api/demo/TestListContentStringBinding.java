@@ -32,7 +32,7 @@ public class TestListContentStringBinding extends Application {
         StringProperty strProp = new SimpleStringProperty();
         b01.getStyleClass().add("btn01");
         ListContentStringBinding<String> olb = new ListContentStringBinding<>(strProp,b01.getStyleClass(),",", new DefaultStringConverter());
-        olb.bind();
+        olb.bindBidirectional();
         VBox vbox = new VBox(b01, b02);
         stage.setTitle("Test DockSideBar");
         //b01.fireEvent();
