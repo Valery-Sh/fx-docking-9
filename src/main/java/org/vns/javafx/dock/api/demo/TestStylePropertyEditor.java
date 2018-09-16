@@ -72,7 +72,7 @@ public class TestStylePropertyEditor extends Application {
         StylePropertyEditor tf1 = new StylePropertyEditor();
         tf1.setNullSubstitution("<NULL>");
         tf1.getValidators().add(item -> {
-            if ( tf1.isSameAsNull(item)) {
+            if ( tf1.isNull(item)) {
                 return false;
             }
             return true;

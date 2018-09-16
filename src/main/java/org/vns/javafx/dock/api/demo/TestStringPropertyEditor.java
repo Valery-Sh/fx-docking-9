@@ -44,8 +44,12 @@ public class TestStringPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) {
-        Button btn1 = new Button("Button btn1");
-        Button btn2 = new Button("Button btn2");
+        Button btn1 = new Button("setText(null)");
+        Button btn2 = new Button("setText(Valery)");
+        Button btn3 = new Button("setText(\"\")");
+        Button btn4 = new Button("setLastValidText(Olga)");
+        
+        
 
         long start1 = System.currentTimeMillis();
         Pane p = new Pane();
@@ -74,20 +78,28 @@ public class TestStringPropertyEditor extends Application {
         StringProperty boundStr = new SimpleStringProperty(null);
         
         StringPropertyEditor tf1 = new StringPropertyEditor();
-        tf1.getValidators().add( it -> {
-            if ( "5".equals(it) || tf1.isSameAsNull(it)) {
+/*        tf1.getValidators().add( it -> {
+            if ( "5".equals(it) ) {
                 return false;
             }
             return true;
         });
-        
-        tf1.setNullSubstitution("<NULL>");
+*/        
+        //tf1.setNullSubstitution("<NULL>");
+        //tf1.setEmptySubstitution("<EMPTY>");
+        //tf1.setNullable(true);
+        System.err.println("1 settext(null) *****************************************************");        
         //btn2.styleProperty().set(null);
         //System.err.println("btn2.styleProperty() = " + btn2.styleProperty().get());
         //tf1.bindBidirectional(btn2.styleProperty());
         //tf1.bindBidirectional(boundStr);
+        //tf1.setText("876");
+        //tf1.setText(null);
+        System.err.println("2 setText(null) ****************************************************");        
+        
+        
         tf1.setText(null);
-        tf1.setText(null);
+        
         //boundStr.set(null);
         //boundStr.set(null);
         //CharacterTextField tf1 = new CharacterTextField();
@@ -101,43 +113,32 @@ public class TestStringPropertyEditor extends Application {
         //tf1.bind(ip);
    
         btn1.setOnAction(e -> {
-            //System.err.println("StringPropertyEditor: boundStr = " + boundStr + "; tf1.text = " + tf1.getText());
-            
             tf1.setText(null);
-            tf1.setText("23");
-             tf1.setText(null);
-            tf1.setNullSubstitution("<NULL>");
-            
-            
-            //ip.set((short)20);
-        
         });
 
         grid.add(lb1, 0, 0);
         grid.add(tf1, 1, 0);
-        Label lb2 = new Label("111111lable 1");
-        lb2.setFont(new Font(13));
+        grid.add(btn1, 0, 1);
+        grid.add(btn3, 0, 2);
+        grid.add(btn4, 0, 3);
+        
         btn2.setOnAction(e -> {
-            btn2.setPrefWidth(200.56);
+            System.err.println("#### setText(\"javaFX\")");
+            tf1.setText("javaFX");
+            //btn2.setPrefWidth(200.56);
         });
-        Label lb3 = new Label("lable 3");
-        lb3.setFont(new Font(13));
-        grid.add(lb2, 0, 1);
-        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-       
-        tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                System.err.println("STYLE = " + s);
-            });
-       });
-        tf3.setFont(new Font(13));
-        grid.add(lb3, 0, 2);
-        grid.add(tf3, 1, 2);
-        //tf3.bindBidirectional(btn1.disableProperty());
-        tf3.bind(btn1.disableProperty());
+        btn3.setOnAction(e -> {
+            System.err.println("#### setText('')");
+            tf1.setText("");
+            //btn2.setPrefWidth(200.56);
+        });
+        btn4.setOnAction(e -> {
+            System.err.println("#### setLastValidText(\"java script\");");
+            //tf1.setLastValidText("java script");
+            tf1.setText("java script");
+            //btn2.setPrefWidth(200.56);
+        });
+
         ColumnConstraints cc0 = new ColumnConstraints();
         ColumnConstraints cc1 = new ColumnConstraints();
         ColumnConstraints cc20 = new ColumnConstraints();

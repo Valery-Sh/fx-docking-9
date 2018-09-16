@@ -91,12 +91,7 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
     private void init() {
         getStyleClass().add("integer-text-field");
         getValidators().add(item -> {
-            /*            if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
-                return false;
-            }
-            return true;
-             */
-            
+  
             boolean retval = true;
             System.err.println("item = " + item);
             //retval = item.matches("0|-?([1-9][0-9]*)?");
@@ -108,8 +103,8 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
         });
     }
 
-    @Override
-    protected void addFilterValidators() {
+    //@Override
+/*    protected void addFilterValidators() {
             getFilterValidators().add(item -> {
             boolean retval = true;
             //retval = item.matches("0|-?([1-9][0-9]*)?");
@@ -121,6 +116,7 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
             return retval;
         });
     }
+    */
     /**
      * List of objects of type {@code integer} can't contain {@code null } values.
      * The method is overridden to do nothing. 
@@ -130,8 +126,8 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
     public void setNullSubstitution(String str) {
         
     }
-    @Override
-    protected void addValidators() {
+    //@Override
+/*    protected void addValidators() {
         getValidators().add(item -> {
             boolean retval = true;
             //11.09if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
@@ -142,14 +138,14 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
         });
 
     }
-
-    @Override
-    public Integer toListItem(String item) {
+*/
+   // @Override
+/*    public Integer toListItem(String item) {
         if (item.trim().equals("-")) {
             return Integer.MIN_VALUE;
         }
         System.err.println("toListItem = " + item);
         return Integer.parseInt(item.trim());
     }
-
+*/
 }//class IntegerListPropertyEditor

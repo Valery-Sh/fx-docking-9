@@ -71,14 +71,16 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     private ObservableList<E> boundList = FXCollections.observableArrayList();
     private ListContentStringBinding<E> listContentBinding;
     private StringConverter<E> stringConverter;
-    private String emptyListSubstitution;
-    private String singleEmptyItemSubstitution;
+    //private String emptyListSubstitution;
+    //private String singleEmptyItemSubstitution;
 
     public ObservableListPropertyEditor() {
         init();
     }
 
     private void init() {
+        addValidators();
+        addFilterValidators();
     }
 
     @Override
@@ -92,8 +94,8 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
             retval = "";
         } else if (retval != null) {
 
-        } else if (getEmptyListSubstitution() != null && txt != null && txt.equals(getEmptyListSubstitution())) {
-            retval = getEmptyListSubstitution();
+        } else if (getEmptySubstitution() != null && txt != null && txt.equals(getEmptySubstitution())) {
+            retval = getEmptySubstitution();
         }
         System.err.println("applySubstitutions retval = '" + retval + "'");
         return retval;
@@ -109,13 +111,13 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     }
 
     @Override
-    public String getEmptyListSubstitution() {
-        return super.getEmptyListSubstitution();
+    public String getEmptySubstitution() {
+        return super.getEmptySubstitution();
     }
 
     @Override
-    public void setEmptyListSubstitution(String emptyListSubstitution) {
-        super.setEmptyListSubstitution(emptyListSubstitution);
+    public void setEmptySubstitution(String emptyListSubstitution) {
+        super.setEmptySubstitution(emptyListSubstitution);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     protected boolean testValidators(String item) {
 
         if (getBoundList() != null && isBound()) {
-            String s = getEmptyListSubstitution();
+            String s = getEmptySubstitution();
             if (s != null && s.equals(item) && getBoundList().isEmpty()) {
                 return true;
             }
@@ -170,17 +172,9 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
 
         this.setEditable(true);
         this.setFocusTraversable(true);
+        
         listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
         listContentBinding.bind();
-        //
-        // We need the TextFormatter to execute the StriringConverter's method
-        // fromString in order to validate items in the observable list and
-        // mark errors. 
-        //
-        Platform.runLater(() -> {
-            //commitValue();
-        });
-
     }
 
     @Override
@@ -204,6 +198,12 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     @Override
     public boolean isBound() {
         return getListContentBinding() != null && getListContentBinding().isBound();
+    }
+    
+    protected void addValidators() {
+    }
+
+    protected void addFilterValidators() {
     }
 
 }

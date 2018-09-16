@@ -27,7 +27,7 @@ public abstract class ListContentPropertyEditors {
         if ( itemClass.equals(String.class)) {
             retval = new ObservableListPropertyEditor<String>();
             retval.setStringConverter(new ObservableListItemStringConverter(retval,itemClass));  
-            retval.setEmptyListSubstitution("<EMPTY>");
+            retval.setEmptySubstitution("<EMPTY>");
             retval.setNullSubstitution("<NULL>");
             
         } else  if ( itemClass.equals(Integer.class)) {

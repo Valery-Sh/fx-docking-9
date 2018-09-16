@@ -65,6 +65,7 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
 
             try {
                 updating = true;
+                System.err.println("SEPARATOR = " + separator);
                 StringBuilder sb = new StringBuilder();
                 for (E obj : ls) {
                     sb.append(converter.toString(obj));
@@ -144,15 +145,15 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
             try {
                 updating = true;
                 String[] items = StringTextField.split(newValue, separator);
-                if ( converter instanceof SubstitutionConvertor) {
-                    if ( ((SubstitutionConvertor)converter).isEmptyListSubstitution(newValue) ) {
+                if ( converter instanceof SubstitutionConverter) {
+                    if ( ((SubstitutionConverter)converter).isEmptyListSubstitution(newValue) ) {
                         ls.clear();
                         return;
-                    } else if ( ((SubstitutionConvertor)converter).isSingleEmptyItemSubstitution(newValue) ) {
+                    } else if ( ((SubstitutionConverter)converter).isSingleEmptyItemSubstitution(newValue) ) {
                         ls.clear();
                         ls.add(converter.fromString(""));
                         return;
-                    } else if ( ((SubstitutionConvertor)converter).isNullSubstitution(newValue) ) {
+                    } else if ( ((SubstitutionConverter)converter).isNullSubstitution(newValue) ) {
                         ls.clear();
                         ls.add(null);
                         return;

@@ -21,56 +21,58 @@ import org.vns.javafx.dock.api.designer.bean.editor.ObservableListPropertyEditor
  */
 public class TestObservableListPropertyEditor extends Application {
 
-
     @Override
     public void start(Stage stage) throws Exception {
         Button b01 = new Button("Change styleClass");
         Button b02 = new Button("Unbind");
         StringProperty strProp = new SimpleStringProperty();
         b01.getStyleClass().add("btn01");
-        
+
         ObservableListPropertyEditor<String> olb = ListContentPropertyEditors.getEditor(String.class);
-       olb.getValidators().add( item -> {
+        olb.setSeparator(",");
+        olb.getValidators().add(item -> {
             System.err.println("******** VALIDATOR item = '" + item + "'");
-            if ( olb.isSameAsNull(item) ) {
-                System.err.println("&&&&&&&&&&& IS SAME AS NULL &&&&&&&&&&&&&&& ");
+            if (olb.isNull(item) || "1".equals(item)) {
+                System.err.println("&&&&&&&&&&& IS SAME AS NULL &&&&&&&&&&&&&&& item = " + item);
                 return false;
             }
             return true;
         });
-        
+
         olb.bindBidirectional(b01.getStyleClass());
-        
-        VBox vbox = new VBox(olb,b01, b02);
-        
+
+        VBox vbox = new VBox(olb, b01, b02);
+
         stage.setTitle("Test DockSideBar");
         //b01.fireEvent();
         //((Region)borderPane.getRight()).setMaxWidth(0);
         Scene scene = new Scene(vbox);
         stage.setWidth(200);
-        b01.setOnAction(e->{
-            System.err.println("1 lastValid = '" + olb.getLastValidText() + "'" );
-            for ( String s : b01.getStyleClass()) {
-                System.err.println("1 b01.styleClass = '" + s + "'" );
+        b01.setOnAction(e -> {
+            System.err.println("1 lastValid = '" + olb.getLastValidText() + "'");
+            for (String s : b01.getStyleClass()) {
+                System.err.println("1 b01.styleClass = '" + s + "'");
             }
-            
-            if ( b01.getStyleClass().contains("button") ) {
+
+            if (b01.getStyleClass().contains("button")) {
                 b01.getStyleClass().remove("button");
             } else {
                 b01.getStyleClass().add("button");
             }
-            System.err.println("2 lastValid = '" + olb.getLastValidText() + "'" );
-            for ( String s : b01.getStyleClass()) {
-                System.err.println("2 b01.styleClass = '" + s + "'" );
+            System.err.println("2 lastValid = '" + olb.getLastValidText() + "'");
+            for (String s : b01.getStyleClass()) {
+                System.err.println("2 b01.styleClass = '" + s + "'");
             }
 
         });
-        b02.setOnAction(e->{
-            olb.setText(null);
-        });        
+        b02.setOnAction(e -> {
+            //olb.setText(null);
+            //olb.setLastValidText(olb.getLastValidText() + ",newText");
+            b01.getStyleClass().add("1");
+        });
         stage.setScene(scene);
         stage.show();
-        
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
@@ -115,4 +117,3 @@ public class TestObservableListPropertyEditor extends Application {
         });
     }
 }
-

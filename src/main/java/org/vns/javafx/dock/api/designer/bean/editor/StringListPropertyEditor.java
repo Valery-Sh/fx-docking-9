@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
 import javafx.util.StringConverter;
@@ -110,11 +108,13 @@ public class StringListPropertyEditor extends ObservableListPropertyEditor<Strin
 
     private void init() {
         getStyleClass().add("string-list-property-editor");
+        createBindingStringConverter();
     }
-     public StringConverter createBindingStringConverter() {
-        return new DefaultStringConverter();
+
+    public void createBindingStringConverter() {
+        setStringConverter(new ObservableListItemStringConverter(this,String.class));
     }
-    @Override
+    /*    @Override
     public String toListItem(String item) {
         return item;
     }
@@ -128,8 +128,8 @@ public class StringListPropertyEditor extends ObservableListPropertyEditor<Strin
     protected StringBinding asString(Property property) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    public static class FormatterConverter extends StringConverter<String> {
+     */
+ /*    public static class FormatterConverter extends StringConverter<String> {
 
         private final StringTextField textField;
 
@@ -164,5 +164,5 @@ public class StringListPropertyEditor extends ObservableListPropertyEditor<Strin
 
 
     }//class FormatterConverter
-
+     */
 }//class StringListPropertyEditor

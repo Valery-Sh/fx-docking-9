@@ -8,6 +8,7 @@ package org.vns.javafx.dock.api.demo;
 import java.util.function.UnaryOperator;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -30,7 +31,6 @@ import org.vns.javafx.dock.api.designer.bean.editor.NewTextField;
 import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
 
 //It's a filter which throws an Exception when apply a method `c.getControlNewText()`.
-
 //You should implement the TestTextFormatter with a StringConverter.
 /**
  *
@@ -55,24 +55,31 @@ public class TestTextField extends Application {
         MyTextField textField = new MyTextField();
         textField.mark++;
         System.err.println(" first NULL **************************");
-        textField.setText(null);
+        textField.setNullable(true);
+        textField.setText("9876");
+        //textField.setText("start text");
 
         textField.mark++;
         System.err.println(" second NULL **************************");
-        textField.setText(null);
-        textField.setText("ttt");
-        
-        textField.setText(null);
+        //textField.setText(null);
+        //textField.setText("ttt");
+
+        //textField.setText(null);
         //textField.setText("");
         //textField.setText(null);
-        btn1.setText("Test");
+        //btn1.setText("Test");
         btn1.setOnAction(e -> {
             textField.setText(null);
-            textField.setText("test");
-            textField.setText(null);
+            //textField.setText("test " + (textField.mark++));
+//            textField.setText(null);
+        });
+        btn2.setOnAction(e -> {
+            System.err.println("****** text = " + textField.getText());
+            System.err.println("****** formatter value = " + textField.getFormatter().getValue());
         });
         grid.add(textField, 0, 0);
         grid.add(btn1, 0, 1);
+        grid.add(btn2, 0, 2);
         //System.err.println("textField.getText= " + textField.getText());
         /*        StringTextField stextField = new StringTextField();
         stextField.setNullString("<NULL>");
@@ -107,80 +114,7 @@ public class TestTextField extends Application {
         stage.setTitle("Scrolling Text");
         stage.show();
 
-        VBox vbox = new VBox(btn2);
-        VBox propPane = new VBox();
-        TilePane tilePane = new TilePane();
-        propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
-        vbox.getChildren().add(propPane);
-        propPane.getChildren().add(tilePane);
-        StackPane contentPane = new StackPane();
-        propPane.getChildren().add(contentPane);
-        contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
-        Button propBtn = new Button("Properties");
-        Button layoutBtn = new Button("Layout");
-        Button codeBtn = new Button("Code");
-        tilePane.getChildren().addAll(propBtn, layoutBtn, codeBtn);
-        //
-        // Properties Category
-        //
-        TitledPane propTitledPane1 = new TitledPane();
-        propTitledPane1.setText("Node");
-
-        TitledPane propTitledPane2 = new TitledPane();
-        propTitledPane2.setText("JavaFx CSS");
-        TitledPane propTitledPane3 = new TitledPane();
-        propTitledPane3.setText("Extras");
-        VBox propSecBox = new VBox(propTitledPane1, propTitledPane2, propTitledPane3);
-        contentPane.getChildren().add(propSecBox);
-
-        TitledPane layoutTitledPane1 = new TitledPane();
-        layoutTitledPane1.setText("Content");
-        TitledPane layoutTitledPane2 = new TitledPane();
-        layoutTitledPane2.setText("Internals");
-        VBox layoutSecBox = new VBox(layoutTitledPane1, layoutTitledPane2);
-        contentPane.getChildren().add(layoutSecBox);
-        layoutSecBox.setVisible(false);
-
-        TitledPane codeTitledPane1 = new TitledPane();
-        codeTitledPane1.setText("onAction");
-        VBox codeSecBox = new VBox(codeTitledPane1);
-        contentPane.getChildren().add(codeSecBox);
-        codeSecBox.setVisible(false);
-
-        propBtn.setDisable(true);
-
-        propBtn.setOnAction(e -> {
-            propBtn.setDisable(true);
-            propSecBox.setVisible(true);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        layoutBtn.setOnAction(e -> {
-            layoutBtn.setDisable(true);
-            layoutSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        codeBtn.setOnAction(e -> {
-            codeBtn.setDisable(true);
-            codeSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-        });
-
-        Scene scene1 = new Scene(vbox);
-
-        VBox vbox2 = new VBox(btn2);
-        PopupControl pc = new PopupControl();
-        pc.getScene().setRoot(vbox2);
         //pc.show(stage, 20, 2);
-
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         Dockable.initDefaultStylesheet(null);
@@ -200,7 +134,10 @@ public class TestTextField extends Application {
     }
 
     public static class MyTextField extends TextField {
-
+        protected String lastText;
+        protected boolean nullable;
+        protected String nullSubstitution; 
+        
         public int mark = -1;
 
         private final ObjectProperty<UnaryOperator<TextFormatter.Change>> filter = new SimpleObjectProperty<>(change -> {
@@ -213,11 +150,31 @@ public class TestTextField extends Application {
             System.err.println("   --- MyTextField !!! FILTER change controlText = " + change.getControlText());
             System.err.println("   --- MyTextField !!! FILTER change change.getText = " + change.getText());
             System.err.println("   --- MyTextField !!! FILTER change textField.getText = " + getText());
-            if ( ((TextField)change.getControl()).getText() == null ) {
+            if (((TextField) change.getControl()).getText() == null) {
+                //Platform.runLater(() -> { setText("");});
+                //((TextFormatter<String>)((TextField) change.getControl()).getTextFormatter()).setValue("<NULL>");
+                if ( ! isNullable() ) {
+                    System.err.println("FILTER lastText = '" + lastText + "'");
+                    change.setText(lastText);     
+                    return change;
+                } else if (nullSubstitution != null ) {
+                    System.err.println("FILTER NULL SUBSTITUTION " + nullSubstitution);
+                    Platform.runLater ( () -> {
+                        //setText(nullSubstitution);     
+                    });
+                    //setText(nullSubstitution);     
+                    //((TextFormatter<String>)getTextFormatter()).setValue(nullSubstitution);
+                    System.err.println("FILTER NULL SUBSTITUTION getText() = " + getText());
+                    
+                    change.setText(nullSubstitution);
+                    return change;
+                }
+                System.err.println("FILTER returns null");
                 return null;
+                //return change;
             }
-            System.err.println("   --- MyTextField !!! FILTER change controlNewText = " + change.getControlNewText());
-            
+            //System.err.println("   --- MyTextField !!! FILTER change controlNewText = " + change.getControlNewText());
+
             //if (isAcceptable(change.getControlNewText())) {
             return change;
 
@@ -233,13 +190,32 @@ public class TestTextField extends Application {
         }
 
         private void init() {
-            formatter = new TextFormatter(new MyTextField.FormatterConverter(this), null, filter.get());
+            
+            formatter = new TextFormatter(new MyTextField.FormatterConverter(this), "", filter.get());
             setTextFormatter(formatter);
+            lastText = getText();
+            nullSubstitution = "<NULL>";
 
         }
 
         public UnaryOperator<TextFormatter.Change> getFilter() {
             return filter.get();
+        }
+
+        public String getLastText() {
+            return lastText;
+        }
+
+        public void setLastText(String lastText) {
+            this.lastText = lastText;
+        }
+
+        public boolean isNullable() {
+            return nullable;
+        }
+
+        public void setNullable(boolean nullable) {
+            this.nullable = nullable;
         }
 
         public TextFormatter getFormatter() {
@@ -249,6 +225,7 @@ public class TestTextField extends Application {
         public static class FormatterConverter extends StringConverter<String> {
 
             private final MyTextField textField;
+            private boolean updating = false;
 
             public FormatterConverter(MyTextField textField) {
                 this.textField = textField;
@@ -256,25 +233,43 @@ public class TestTextField extends Application {
 
             @Override
             public String toString(String txt) {
-
-                System.err.println(textField.mark + ". MyTextField !!! TO STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");
-                if (txt == null) {
-                    return "<NULL>";
+                System.err.println("1 " + textField.mark + ". MyTextField !!! TO STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");                
+                if (updating) {
+                    return txt;
                 }
-                return txt;
+               // System.err.println("2 " +textField.mark + ". MyTextField !!! TO STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");                
+                String retval = txt;
+                try {
+                    updating = true;
+                    if (txt == null) {
+                        //return "NULL";
+                        //return "NULL";
+                    }
+                } finally {
+                    textField.getFormatter().setValue(retval);
+                    textField.setLastText(retval);
+                    updating = false;
+                }
+
+                return retval;
                 //return textField.toString(list);
             }
 
             @Override
             public String fromString(String txt) {
-                System.err.println(textField.mark + ". MyTextField  !!! fromString STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");
+               
+                //System.err.println(textField.mark + ". MyTextField  !!! fromString STRING txt = '" + txt + "'; formatterValue = '" + textField.getFormatter().getValue() + "'");
+                if ( true ) {
+                    return txt;
+                }                
+                
                 String retval = txt;
                 if (txt == null) {
                     //textField.getFormatter().setValue(null);
                     return null;
                 }
                 if ("<NULL>".equals(txt)) {
-                    return null;
+                    //return null;
                 }
 
                 /*                if ( "<NULL>".equals(txt) ) {

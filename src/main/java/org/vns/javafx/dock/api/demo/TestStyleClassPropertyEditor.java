@@ -35,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ObservableListItemStringConverter;
 import org.vns.javafx.dock.api.designer.bean.editor.StyleClassPropertyEditor;
 
 /**
@@ -67,10 +68,16 @@ public class TestStyleClassPropertyEditor extends Application {
         //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
         //SliderEditor tf1 = new SliderEditor(0,1,1);
         //DecimalTextField tf1 = new DecimalTextField();
-      
+        System.err.println("Шишкин Валерий");
         StyleClassPropertyEditor tf1 = new StyleClassPropertyEditor();
+        
+//            retval = new ObservableListPropertyEditor<String>();
+        //tf1.setStringConverter(new ObservableListItemStringConverter(tf1,String.class));  
+        //tf1.setEmptySubstitution("");
+        //tf1.setNullSubstitution("<NULL>");
+        
         //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.bindContentBidirectional(btn2.getStyleClass());
+        tf1.bindBidirectional(btn2.getStyleClass());
         
         btn1.setOnAction(e -> {
             btn2.getStyleClass().forEach(s -> {

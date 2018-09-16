@@ -61,26 +61,38 @@ public class ErrorMarkerBuilder {
         this.errorMarkers = errorMarkers;
     }
 
-    protected void showErrorMarkers(String[] items, Integer[][] itemPos, Integer... errorIndexes) {
+    protected void showErrorMarkers(String txt, String[] items, Integer[][] itemPos, Integer... errorIndexes) {
 
         if (errorMarkers != null && errorMarkers.length > 0) {
             textField.getChildren().removeAll(errorMarkers);
         }
         errorMarkers = getDefaultErrorMarkers(errorIndexes.length);
         textField.getChildren().addAll(errorMarkers);
-
+        System.err.println("****************************************************************");
+        System.err.println("showErrorMarkers errorIndexes.length = " + errorIndexes.length);
+        for ( int i = 0;  i < errorIndexes.length; i ++  ) {
+            System.err.println("itemPos[i].length = " + itemPos[i].length);
+            for ( int j=0; j < 2; j++) {
+                System.err.println("itemPos[" + i + "," + j + "] = " + itemPos[i][j]);
+            }
+        }
+        System.err.println("****************************************************************");
         for (int i = 0; i < errorIndexes.length; i++) {
             int itemIndex = errorIndexes[i];
+            System.err.println("itemIndex = " + itemIndex);
             int start = itemPos[itemIndex][0];
+            
             int end = itemPos[itemIndex][1];
             int charPos = start + (end - start) / 2;
-            double pos = getWidth(textField.getText(0, charPos));
+            //double pos = getWidth(textField.getText(0, charPos));
+            double pos = getWidth(txt.substring(0, charPos));
             if ((end - start) % 2 != 0) {
                 //
                 // An odd integer value. 
                 // We add delta whick equals to half length of a character
                 //
-                pos += getWidth(textField.getText(charPos, charPos + 1)) / 2;
+                //pos += getWidth(textField.getText(charPos, charPos + 1)) / 2;
+                pos += getWidth(txt.substring(charPos, charPos + 1)) / 2;
             }
             errorMarkers[i].setLayoutX(textField.getInsets().getLeft() + pos);
             errorMarkers[i].setLayoutY(textField.getInsets().getTop() - 2);
@@ -109,22 +121,17 @@ public class ErrorMarkerBuilder {
         errorMarkers[0].setLayoutY(textField.getInsets().getTop() - 2);
     }
 
-    public void showErrorMarkers(Integer... errorIndexes) {
-        //if (textField.getText().trim().isEmpty()) {
-        //    return;
-        //}
+    public void showErrorMarkers(String txt,String[] items,Integer... errorIndexes) {
+
         if (textField.getSeparator() == null) {
-            showErrorMarker();
-            return;
+            //showErrorMarker();
+            //return;
         }
-        //String[] items = ((ObservableListPropertyEditor) textField).split(textField.getText());
-        //!!!!String[] items = textField.getText().split(textField.getSeparator(),textField.getText().length() );
-        String[] items = textField.split(textField.getText(),false );
 
         String regExp = textField.getSeparator();
-
+        
         Pattern ptn = Pattern.compile(regExp);
-        Matcher m = ptn.matcher(textField.getText());
+        Matcher m = ptn.matcher(txt);
 
         Integer[][] itemPos = new Integer[items.length][2];
         int start = 0;
@@ -143,12 +150,12 @@ public class ErrorMarkerBuilder {
             }
             start = m.start();
             end = m.end();
-            System.err.println("START = " + start + " ;end = " + end + " ; items[i].length()=" + items[i].length());
+
             itemPos[i][0] = start - items[i].length();
             itemPos[i][1] = start;
         }
 
-        showErrorMarkers(items, itemPos, errorIndexes);
+        showErrorMarkers(txt,items, itemPos, errorIndexes);
     }
 
     protected double getWidth(String text) {

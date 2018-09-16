@@ -41,7 +41,7 @@ import javafx.util.converter.ShortStringConverter;
  *
  * @author Valery
  */
-public class ObservableListItemStringConverter<T> extends StringConverter<T> implements SubstitutionConvertor<T> {
+public class ObservableListItemStringConverter<T> extends StringConverter<T> implements SubstitutionConverter<T> {
 
     private final ObservableListPropertyEditor<T> textField;
     private final Class<?> itemClass;

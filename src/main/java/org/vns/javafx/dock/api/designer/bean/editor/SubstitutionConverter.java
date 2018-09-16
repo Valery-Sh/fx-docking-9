@@ -15,13 +15,13 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import static org.vns.javafx.dock.api.designer.bean.editor.SubstitutionConvertor.Substitution.NULL;
+import static org.vns.javafx.dock.api.designer.bean.editor.SubstitutionConverter.Substitution.NULL;
 
 /**
  *
  * @author Valery
  */
-public interface SubstitutionConvertor<E> {
+public interface SubstitutionConverter<E> {
 
     static enum Substitution {
         NULL, EMPTY_LIST, EMPTY_SINGLE_ITEM
@@ -38,7 +38,7 @@ public interface SubstitutionConvertor<E> {
     }
 
     default boolean isEmptyListSubstitution(String item) {
-        if (getEditor().getBoundList().isEmpty() && getEditor().getEmptyListSubstitution() != null && getEditor().getEmptyListSubstitution().equals(item)) {
+        if (getEditor().getBoundList().isEmpty() && getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {
             return true;
         } else {
             return false;
@@ -61,7 +61,7 @@ public interface SubstitutionConvertor<E> {
 
     static <T> Substitution getSubstitution(ObservableListPropertyEditor<T> editor, String item) {
        
-        if (editor.getBoundList().isEmpty() && editor.getEmptyListSubstitution() != null && editor.getEmptyListSubstitution().equals(item)) {
+        if (editor.getBoundList().isEmpty() && editor.getEmptySubstitution() != null && editor.getEmptySubstitution().equals(item)) {
             return Substitution.EMPTY_LIST;
         }
         if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
@@ -74,8 +74,8 @@ public interface SubstitutionConvertor<E> {
     }
 
     static <T> String toSubstitution(ObservableListPropertyEditor<T> editor, T item) {
-        if (editor.getBoundList().isEmpty() && editor.getEmptyListSubstitution() != null && editor.getBoundList().isEmpty()) {
-            return editor.getEmptyListSubstitution();
+        if (editor.getBoundList().isEmpty() && editor.getEmptySubstitution() != null && editor.getBoundList().isEmpty()) {
+            return editor.getEmptySubstitution();
         }
 
         if (item == null && editor.getNullSubstitution() != null && !editor.getBoundList().isEmpty()) {

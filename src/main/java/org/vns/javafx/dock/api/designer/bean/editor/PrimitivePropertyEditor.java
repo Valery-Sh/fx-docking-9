@@ -273,11 +273,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-/*0909        @Override
-        public void setBoundValue(Integer boundValue) {
-            ((IntegerProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
-        }
-*/
     }//class IntegerPropertyEditor
 
     public static class BytePropertyEditor extends PrimitivePropertyEditor<Byte> {
