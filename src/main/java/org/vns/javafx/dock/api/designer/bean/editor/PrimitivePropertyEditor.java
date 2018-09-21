@@ -29,7 +29,13 @@ import javafx.beans.property.Property;
  */
 public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<T> {
 
+    public PrimitivePropertyEditor(T defaultValue) {
+        super(defaultValue);
+        init();
+    }
+
     public PrimitivePropertyEditor() {
+        super();
         init();
     }
 
@@ -37,15 +43,14 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 //        setValueIfBlank("0");
     }
 
-
     @Override
     protected StringBinding asString(Property property) {
         StringBinding retval = null;
-        if ( property instanceof ObjectExpression) {
-            retval = ((ObjectExpression) property).asString();            
-        } else if ( property instanceof NumberExpression) {
-            retval = ((NumberExpression) property).asString();            
-        } else if ( property instanceof BooleanExpression) {
+        if (property instanceof ObjectExpression) {
+            retval = ((ObjectExpression) property).asString();
+        } else if (property instanceof NumberExpression) {
+            retval = ((NumberExpression) property).asString();
+        } else if (property instanceof BooleanExpression) {
             retval = ((BooleanExpression) property).asString();
         }
         return retval;
@@ -67,7 +72,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             retval = (T) Float.valueOf(txt);
         } else if (o instanceof Integer) {
             retval = (T) Integer.valueOf(txt);
-        }  else if (o instanceof Boolean) {
+        } else if (o instanceof Boolean) {
             retval = (T) Boolean.valueOf(txt);
         }
         return retval;
@@ -101,11 +106,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Short boundValue) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -172,12 +177,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Long boundValue) {
             ((LongProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
-
+         */
     }//class LongPropertyEditor
 
     public static class DoublePropertyEditor extends PrimitivePropertyEditor<Double> {
@@ -205,11 +209,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Double boundValue) {
             ((DoubleProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
     }//class DoublePropertyEditor
 
     public static class FloatPropertyEditor extends PrimitivePropertyEditor<Float> {
@@ -240,15 +244,15 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Float boundValue) {
             ((FloatProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
     }//class FloatPropertyEditor
 
     public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
-        
+
         @Override
         protected void addValidators() {
             getValidators().add(item -> {
@@ -302,11 +306,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Byte boundValue) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -392,12 +396,12 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(Character boundValue
         ) {
             ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
         @Override
         protected StringBinding asString(Property property) {
             return ((ObjectExpression) property).asString();
@@ -423,18 +427,22 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     }//class CharacterPropertyEditor
 
-/*    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
+    /*    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
 
         public PrimitiveStringConverter(AbstractPropertyEditor textField) {
             super(textField);
         }
 
     }//class PrimitiveStringConverter
-*/
+     */
     public static class StringPropertyEditor extends PrimitivePropertyEditor<String> {
 
+        public StringPropertyEditor(String defaultValue) {
+            super(defaultValue);
+        }
+
         public StringPropertyEditor() {
-            init();
+            this("");
         }
 
         private void init() {
@@ -442,11 +450,11 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
 
 
-/*0909        @Override
+        /*0909        @Override
         public void setBoundValue(String boundValue) {
             ((StringProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
         }
-*/
+         */
         @Override
         public String valueOf(String txt) {
             System.err.println("VALUE OF txt = '" + txt + "'");

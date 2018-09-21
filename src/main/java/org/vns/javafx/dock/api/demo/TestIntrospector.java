@@ -20,7 +20,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +32,9 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
@@ -52,13 +55,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestIntegerListPropertyEditor extends Application {
+public class TestIntrospector extends Application {
 
     boolean updating;
 
@@ -66,6 +70,7 @@ public class TestIntegerListPropertyEditor extends Application {
     public void start(Stage stage) throws ClassNotFoundException {
 
         Button btn1 = new Button("Print ObservableList");
+        btn1.setId("olga");
         Button btn2 = new Button("Button btn2");
         Button btn3 = new Button("Empty List");
         Button btn4 = new Button("add Empty String");
@@ -85,20 +90,56 @@ public class TestIntegerListPropertyEditor extends Application {
 
         Map<String, MethodDescriptor> methodDescr = new HashMap<>();
         Map<String, PropertyDescriptor> propDescrs = new HashMap<>();
+        Map<String, FXPropertyDescriptor> fxPropertyDescriptors = new HashMap<>();
+        
+        MyBean mb = new MyBean();
         try {
             BeanInfo info = Introspector.getBeanInfo(btn1.getClass());
             MethodDescriptor[] mds = info.getMethodDescriptors();
             for (MethodDescriptor md : mds) {
-//                if ( ! md.getMethod().getName().startsWith("get") && ! md.getMethod().getName().startsWith("set")) {
-//                    System.err.println("not get not set" + md.getMethod().getName());
+//                if ( ! md.readMethod().getName().startsWith("get") && ! md.readMethod().getName().startsWith("set")) {
+//                    System.err.println("not get not set" + md.readMethod().getName());
 //                }
-
+/*                if ( md.getName().equals("getId")) {
+                    Method idGet = md.getMethod();
+                    String id = (String) idGet.invoke(btn1, new Object[0]);
+                    Type tp = idGet.getGenericReturnType();
+                    System.err.println("btn1.getId = " + id + "; getGenericName = " + tp.getTypeName());
+                }
+*/
+/*                if ( md.getName().equals("getStyleClass")) {
+                    Method idGet = md.getMethod();
+                    ObservableList<String> olist = (ObservableList<String>) idGet.invoke(btn1, new Object[0]);
+                    Type tp = idGet.getGenericReturnType();
+                    System.err.println("olist getGenericName = " + tp.getTypeName());
+                    Class c  = BeanAdapter.getListItemType(tp);
+                    System.err.println("olist generic class = " + c.getName());
+                }                
+*/
                 if (md.getName().endsWith("Property")) {
                     methodDescr.put(md.getName(), md);
                 }
             }
             PropertyDescriptor[] pds = info.getPropertyDescriptors();
             for (PropertyDescriptor pd : pds) {
+                if ( excludeProps.contains(pd.getName()) ) {
+                    continue;
+                }
+                
+                FXPropertyDescriptor fxDescr = new FXPropertyDescriptor(pd.getName());
+                fxPropertyDescriptors.put(pd.getName(), fxDescr);
+                if (methodDescr.containsKey(pd.getName() + "Property")) {
+                    fxDescr.setPropertyMethod(methodDescr.get(pd.getName() + "Property").getMethod());
+                }
+                if (pd.getReadMethod() != null) {
+                    fxDescr.setReadMethod(pd.getReadMethod());
+                }
+                if (pd.getWriteMethod() != null) {
+                    fxDescr.setWritetMethod(pd.getWriteMethod());
+                }
+                fxDescr.setPropertyType(pd.getPropertyType());
+                
+/* DO NOT DELETE !!!!
                 if (methodDescr.containsKey(pd.getName() + "Property")) {
                     propDescrs.put(pd.getName(), pd);
                 } else if (pd.getReadMethod() != null) {
@@ -108,14 +149,28 @@ public class TestIntegerListPropertyEditor extends Application {
                         propDescrs.put(pd.getName(), pd);
                     }
                 }
+*/                
             }
-            propDescrs.forEach((k,v) -> {
-                System.err.println("prop name = " + k);
+        long end = System.currentTimeMillis();
+        System.err.println("1) Interval = " + (end - start));
+        
+            System.err.println("=====================================================================");
+            fxPropertyDescriptors.forEach((k,v) -> {
+                System.err.println("name = " + k);
+                System.err.println("  --- getPropertyMethod = " + v.getPropertyMethod());
+                System.err.println("  --- getReadMethod = " + v.getReadMethod());
+                System.err.println("  --- getWriteMethod = " + v.getWritetMethod());
+                System.err.println("  --- getPropertyType = " + v.getPropertyType().getSimpleName());
+                System.err.println("----------------------------------------------------------------");
+                
             });
+            System.err.println("FXPropertyDescriptors size = " + fxPropertyDescriptors.size());
+            System.err.println("=====================================================================");
+            
             /*            for ( MethodDescriptor md : mds) {
-                System.err.println("MethodName = " + md.getMethod().getName());
-                System.err.println("returnType = " + md.getMethod().getReturnType().getSimpleName());
-                System.err.println("toGeneric = " + md.getMethod().toGenericString());
+                System.err.println("MethodName = " + md.readMethod().getName());
+                System.err.println("returnType = " + md.readMethod().getReturnType().getSimpleName());
+                System.err.println("toGeneric = " + md.readMethod().toGenericString());
             }
              */
             //PropertyDescriptor pd1 = new PropertyDescriptor("styleClass", btn1.getClass(),"getStyleClass", null);
@@ -125,7 +180,7 @@ public class TestIntegerListPropertyEditor extends Application {
             System.err.println("INROSPECTION Exception ex = " + ex.getMessage());
         }
         long end = System.currentTimeMillis();
-        System.err.println("Interval = " + (end - start));
+        System.err.println("2) Interval = " + (end - start));
         System.err.println("propDescr.size = " + propDescrs.size());
 
         //btn4.getStyleClass().add(null);
@@ -211,9 +266,6 @@ public class TestIntegerListPropertyEditor extends Application {
         stage.setTitle("Scrolling Text");
         stage.show();
 
-        Stage stage1 = new Stage();
-        stage1.initOwner(stage);
-
         VBox vbox = new VBox(btn1, btn2);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
@@ -282,15 +334,7 @@ public class TestIntegerListPropertyEditor extends Application {
             layoutSecBox.setVisible(false);
         });
 
-        Scene scene1 = new Scene(vbox);
-        stage1.setScene(scene1);
-
-        stage1.show();
-
         VBox vbox2 = new VBox(btn2);
-        PopupControl pc = new PopupControl();
-        pc.getScene().setRoot(vbox2);
-        pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
@@ -311,4 +355,75 @@ public class TestIntegerListPropertyEditor extends Application {
         launch(args);
     }
 
+    public static class MyBean {
+        private StringProperty id = new SimpleStringProperty("valery");
+        
+        public StringProperty idProperty() {
+            return id;
+        }
+        public String getId() {
+            return id.get();
+        }
+
+        public void setId(String id) {
+            this.id.set(id);
+        }
+        
+    }
+    
+    public static class FXPropertyDescriptor {
+        private String name;
+        private Method propertyMethod;
+        private Method readMethod;
+        private Method writetMethod;        
+        private Class<?> propertyType;
+
+        public FXPropertyDescriptor() {
+        }
+
+        public FXPropertyDescriptor(String name) {
+            this.name = name;
+        }
+        
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Method getPropertyMethod() {
+            return propertyMethod;
+        }
+
+        public void setPropertyMethod(Method propertyMethod) {
+            this.propertyMethod = propertyMethod;
+        }
+
+        public Method getReadMethod() {
+            return readMethod;
+        }
+
+        public void setReadMethod(Method readMethod) {
+            this.readMethod = readMethod;
+        }
+
+        public Method getWritetMethod() {
+            return writetMethod;
+        }
+
+        public void setWritetMethod(Method writetMethod) {
+            this.writetMethod = writetMethod;
+        }
+
+        public Class<?> getPropertyType() {
+            return propertyType;
+        }
+
+        public void setPropertyType(Class<?> propertyType) {
+            this.propertyType = propertyType;
+        }
+
+    }
 }

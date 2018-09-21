@@ -38,7 +38,12 @@ public interface SubstitutionConverter<E> {
     }
 
     default boolean isEmptyListSubstitution(String item) {
-        if (getEditor().getBoundList().isEmpty() && getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {
+        
+        System.err.println("getEditor().getBoundList().size() = " + getEditor().getBoundList().size());
+        System.err.println("   -- item = '" + item + "'");
+        System.err.println("getEditor().getEmptySubstitution() = " + getEditor().getEmptySubstitution());
+        //if (getEditor().getBoundList().isEmpty() && getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {
+        if (getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {        
             return true;
         } else {
             return false;
@@ -52,7 +57,8 @@ public interface SubstitutionConverter<E> {
         }       
     }    
     default boolean isSingleEmptyItemSubstitution(String item) {
-        if (getEditor().getBoundList().size() == 1 && getEditor().getSingleEmptyItemSubstitution() != null && getEditor().getSingleEmptyItemSubstitution().equals(item)) {
+        //if (getEditor().getBoundList().size() == 1 && getEditor().getSingleEmptyItemSubstitution() != null && getEditor().getSingleEmptyItemSubstitution().equals(item)) {
+        if (getEditor().getSingleEmptyItemSubstitution() != null && getEditor().getSingleEmptyItemSubstitution().equals(item)) {            
             return true;
         } else {
             return false;
@@ -74,6 +80,7 @@ public interface SubstitutionConverter<E> {
     }
 
     static <T> String toSubstitution(ObservableListPropertyEditor<T> editor, T item) {
+        System.err.println("1 toSubstitution = '" + item + "'");
         if (editor.getBoundList().isEmpty() && editor.getEmptySubstitution() != null && editor.getBoundList().isEmpty()) {
             return editor.getEmptySubstitution();
         }
@@ -81,7 +88,9 @@ public interface SubstitutionConverter<E> {
         if (item == null && editor.getNullSubstitution() != null && !editor.getBoundList().isEmpty()) {
             return editor.getNullSubstitution();
         }
-        if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
+        //if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
+        if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && "".equals(item)) {            
+            System.err.println("2 toSubstitution = '" + editor.getSingleEmptyItemSubstitution() + "'");
             return editor.getSingleEmptyItemSubstitution();
         }
         //

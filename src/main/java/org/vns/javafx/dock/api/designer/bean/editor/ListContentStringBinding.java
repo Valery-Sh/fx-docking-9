@@ -40,7 +40,7 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
     private boolean bound = false;
 
     public ListContentStringBinding(StringProperty string, ObservableList<E> list, String separator, StringConverter<E> converter) {
-        
+
         listRef = new WeakReference<>(list);
         stringRef = new WeakReference<>(string);
         this.separator = separator;
@@ -49,6 +49,8 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
 
     @Override
     public void onChanged(Change<? extends E> change) {
+        System.err.println("ListcontentStringBinding updating = " + updating);
+
         if (!updating) {
             final ObservableList<E> ls = listRef.get();
             final StringProperty sp = stringRef.get();
@@ -67,12 +69,21 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
                 updating = true;
                 StringBuilder sb = new StringBuilder();
                 for (E obj : ls) {
+                    if (obj == null && (converter instanceof SubstitutionConverter)) {
+                        String s = ((SubstitutionConverter) converter).toSubstitution(obj);
+                        if (s != null) {
+                            sb.append(s);
+                            sb.append(separator);
+                            continue;
+                        }
+                    }
                     sb.append(converter.toString(obj));
                     sb.append(separator);
                 }
                 if (!ls.isEmpty()) {
                     sb.deleteCharAt(sb.length() - 1);
                 }
+                System.err.println("ListcontentStringBinding retval = '" + sb + "'");
                 sp.set(sb.toString());
             } finally {
                 updating = false;
@@ -127,7 +138,7 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         if (!updating) {
-                    
+
             final ObservableList<E> ls = listRef.get();
             final StringProperty sp = stringRef.get();
 
@@ -143,28 +154,35 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
 
             try {
                 updating = true;
+                System.err.println("ListBinding: newValue = '" + newValue + "'");
                 String[] items = StringTextField.split(newValue, separator);
-                if ( converter instanceof SubstitutionConverter) {
-                    if ( ((SubstitutionConverter)converter).isEmptyListSubstitution(newValue) ) {
+                if (converter instanceof SubstitutionConverter) {
+                    if (((SubstitutionConverter) converter).isEmptyListSubstitution(newValue)) {
+                        System.err.println("isEmptyListSubstitution");
                         ls.clear();
                         return;
-                    } else if ( ((SubstitutionConverter)converter).isSingleEmptyItemSubstitution(newValue) ) {
+                    } else if (((SubstitutionConverter) converter).isSingleEmptyItemSubstitution(newValue)) {
                         ls.clear();
                         ls.add(converter.fromString(""));
                         return;
-                    } else if ( ((SubstitutionConverter)converter).isNullSubstitution(newValue) ) {
+                    } else if (((SubstitutionConverter) converter).isNullSubstitution(newValue)) {
                         ls.clear();
                         ls.add(null);
                         return;
                     }
                 }
-                
+
                 ls.clear();
-                if ( newValue != null && newValue.isEmpty() ) {
+                if (newValue != null && newValue.isEmpty()) {
                     return;
                 }
+                System.err.println("ListBinding: items.length = " + items.length);
                 for (String item : items) {
-                    ls.add(converter.fromString(item));
+                    if ((converter instanceof SubstitutionConverter) && ((SubstitutionConverter) converter).isNullSubstitution(item)) {
+                        ls.add(null);
+                    } else {
+                        ls.add(converter.fromString(item));
+                    }
                 }
             } finally {
                 updating = false;
@@ -202,7 +220,7 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
         stringRef.get().addListener(this);
         bound = true;
     }
-    
+
     public void unbind() {
         listRef.get().removeListener(this);
         stringRef.get().removeListener(this);
@@ -212,5 +230,5 @@ public class ListContentStringBinding<E> implements ListChangeListener<E>, Chang
     public boolean isBound() {
         return bound;
     }
-    
+
 }

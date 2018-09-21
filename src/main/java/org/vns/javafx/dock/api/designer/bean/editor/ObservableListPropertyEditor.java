@@ -15,11 +15,9 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.application.Platform;
+import java.util.function.Predicate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.IndexRange;
-import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
@@ -71,8 +69,8 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     private ObservableList<E> boundList = FXCollections.observableArrayList();
     private ListContentStringBinding<E> listContentBinding;
     private StringConverter<E> stringConverter;
-    //private String emptyListSubstitution;
-    //private String singleEmptyItemSubstitution;
+    
+    
 
     public ObservableListPropertyEditor() {
         init();
@@ -81,8 +79,10 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     private void init() {
         addValidators();
         addFilterValidators();
+        addSubstitutionsFilterValidators();
+        
     }
-
+   
     @Override
     protected String applySubstitutions(String txt) {
         if ( true ) {
@@ -105,11 +105,11 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
         return boundList;
     }
 
-    @Override
+/*    @Override
     public void setNullSubstitution(String nullSubstitution) {
         super.setNullSubstitution(nullSubstitution);
     }
-
+*/
     @Override
     public String getEmptySubstitution() {
         return super.getEmptySubstitution();
@@ -192,12 +192,7 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
         }
     }
 
-    /*    public abstract E toListItem(String item);
-
-    public String fromListItem(E obj) {
-        return obj.toString();
-   }
-     */
+  
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
@@ -212,6 +207,24 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
     }
 
     protected void addFilterValidators() {
+    }
+    protected void addSubstitutionsFilterValidators() {
+        getSubstitutionFilterValidators().add( it -> {
+            
+            if ( it == null  ) {
+                return false;
+            }
+            boolean retval = false;
+            if ( getNullSubstitution() != null ) {
+                for ( int i=0; i < it.length(); i++) {
+                    if ( getNullSubstitution().startsWith(it)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+            
+        });
     }
 
 }

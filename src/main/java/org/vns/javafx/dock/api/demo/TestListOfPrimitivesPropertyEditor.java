@@ -17,8 +17,8 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,57 +36,50 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
+import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.DoubleListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.ObservableListItemStringConverter;
 import org.vns.javafx.dock.api.designer.bean.editor.StyleClassPropertyEditor;
 
 /**
  *
  * @author Valery
  */
-public class TestStyleClassPropertyEditor extends Application {
+public class TestListOfPrimitivesPropertyEditor extends Application {
 
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
 
-        Button btn1 = new Button("Print styleClass");
+        Button btn1 = new Button("Print ObservableList");
         Button btn2 = new Button("Button btn2");
         Button btn3 = new Button("Empty List");
         Button btn4 = new Button("add Empty String");
-        StringProperty sp = new SimpleStringProperty();
-        
-        System.err.println("sp = " + sp.getBean());
-        System.err.println("sp = " + sp.getName());
-        long start1 = System.currentTimeMillis();
-        Pane p = new Pane();
-        long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
 
+     
         GridPane grid = new GridPane();
         grid.setHgap(10);
-        //AnchorPane anchor = new AnchorPane(grid);
-        //anchor.setStyle("-fx-border-color: red; -fx-border-width: 4 ");
-        //grid.setStyle("-fx-border-color: green; -fx-border-width: 2 ");
-
+     
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
-       //System.err.println("Шишкин Валерий");
-        StyleClassPropertyEditor tf1 = new StyleClassPropertyEditor();
+        ObservableList<Integer> list = FXCollections.observableArrayList();
         
+        list.add(null);
+        System.err.println("list.size=" + list.size());
+        
+        IntegerListPropertyEditor tf1 = new IntegerListPropertyEditor();
+        System.err.println("tf1.separator = " + tf1.getSeparator());
 //            retval = new ObservableListPropertyEditor<String>();
         //tf1.setStringConverter(new ObservableListItemStringConverter(tf1,String.class));  
         
         //tf1.setNullSubstitution("<NULL>");
         
         //tf1.setSeparator(",", "\\s*,\\s*");
-        tf1.bindBidirectional(btn2.getStyleClass());
+        tf1.bindBidirectional(list);
         
         btn1.setOnAction(e -> {
-            btn2.getStyleClass().forEach(s -> {
-                System.err.println("btn2 class = " + s);
+            list.forEach(s -> {
+                System.err.println("list item = " + s);
             });
         });
 
@@ -96,14 +89,14 @@ public class TestStyleClassPropertyEditor extends Application {
 
 //        tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
-           btn2.getStyleClass().add(null);
+            btn2.setPrefWidth(200.56);
         });
 
         btn3.setOnAction(e -> {
-            btn2.getStyleClass().clear();
+            list.clear();
         });
         btn4.setOnAction(e -> {
-            btn2.getStyleClass().add("");
+            list.add(15);
         });
         
 
@@ -139,7 +132,6 @@ public class TestStyleClassPropertyEditor extends Application {
         grid.getColumnConstraints().addAll(cc0, cc1);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
-        
         stage.setScene(scene);
         stage.setTitle("Scrolling Text");
         stage.show();

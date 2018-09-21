@@ -43,7 +43,12 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
     }
 
   
+    public AbstractPropertyEditor(E defaulValue) {
+        super(defaulValue.toString());
+        init();
+    }
     public AbstractPropertyEditor() {
+        super();
         init();
     }
 
@@ -70,6 +75,7 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
   
     @Override
     public void bind(Property property) {
+        
         unbind();
         //setEditable(true);
         setEditable(false);

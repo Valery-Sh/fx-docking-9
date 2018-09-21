@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.save;
 
 import java.util.Arrays;
 import javafx.beans.DefaultProperty;
@@ -29,12 +29,12 @@ import javafx.collections.ObservableList;
  *
  * @author Olga
  */
-@DefaultProperty("propertyDescriptors")
-public class Section  implements NamedDescriptor {
+@DefaultProperty("items")
+public class Section  extends Descriptor<FXProperty> {
 
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty displayName = new SimpleStringProperty();
-    private final ObservableList<FXProperty> properties = FXCollections.observableArrayList();
+    //private final ObservableList<FXProperty> properties = FXCollections.observableArrayList();
     private ReadOnlyObjectWrapper<Category> categoryWrapper = new ReadOnlyObjectWrapper<>();
 
     public Section() {
@@ -108,19 +108,16 @@ public class Section  implements NamedDescriptor {
         this.displayName.set(displayName);
     }
 
-    public ObservableList<FXProperty> getFXProperties() {
-        return properties;
-    }
 
     public Section getCopyFor(Class<?> clazz, PropertyPaneDescriptor ppd, Category cat) {
         Section sec = new Section();
         sec.setCategory(cat);
         sec.setDisplayName(getDisplayName());
         sec.setName(getName());
-        for (FXProperty pd : properties) {
-            sec.getFXProperties().add(pd.getCopyFor(clazz, ppd, cat, sec));
+        for (FXProperty pd : getItems()) {
+            sec.getItems().add(pd.getCopyFor(clazz, ppd, cat, sec));
         }
-        return sec;
+        return this;
     }
     public static int AFTER = 0;
     public static int BEFORE = 2;
@@ -164,11 +161,11 @@ public class Section  implements NamedDescriptor {
         }
         if ( idx >= 0 && pos == AFTER) {
             idx++;
-            getFXProperties().addAll(idx, Arrays.asList(retval));
+            getItems().addAll(idx, Arrays.asList(retval));
         } else if ( idx >= 0 && pos == BEFORE) {
-            getFXProperties().addAll(idx, Arrays.asList(retval));
+            getItems().addAll(idx, Arrays.asList(retval));
         } else {
-            getFXProperties().addAll(retval);
+            getItems().addAll(retval);
         }
             
         return retval;
@@ -176,7 +173,7 @@ public class Section  implements NamedDescriptor {
 
     public FXProperty getByName(String propertyName) {
         FXProperty retval = null;
-        for (FXProperty pd : properties) {
+        for (FXProperty pd : getItems()) {
             if (pd.getName().equals(propertyName)) {
                 retval = pd;
                 break;
@@ -188,7 +185,7 @@ public class Section  implements NamedDescriptor {
         int retval = -1;
         FXProperty p = getByName(propertyName);
         if ( p != null ) {
-            retval = properties.indexOf(p);
+            retval = getItems().indexOf(p);
         }
         return retval;
     }
@@ -205,7 +202,7 @@ public class Section  implements NamedDescriptor {
                 displayName = props[i].substring(props[i].indexOf(":") + 1);
 
             }
-            for (FXProperty pd : properties) {
+            for (FXProperty pd : getItems()) {
                 if (pd.getName().equals(name)) {
                     continue;
                 }
@@ -218,7 +215,7 @@ public class Section  implements NamedDescriptor {
             pd.setSection(this);
             retval[i] = pd;
             //System.err.println("PD name = " + name);
-            getFXProperties().add(pd);
+            getItems().add(pd);
         }
         return retval;
     }

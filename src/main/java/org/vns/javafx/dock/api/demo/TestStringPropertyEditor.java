@@ -78,6 +78,9 @@ public class TestStringPropertyEditor extends Application {
         StringProperty boundStr = new SimpleStringProperty(null);
         
         StringPropertyEditor tf1 = new StringPropertyEditor();
+        tf1.setSeparator(",");
+        //tf1.setEmptySubstitution("<EMPTY>");
+        tf1.setDefaultValue("0");
 /*        tf1.getValidators().add( it -> {
             if ( "5".equals(it) ) {
                 return false;
@@ -98,7 +101,7 @@ public class TestStringPropertyEditor extends Application {
         System.err.println("2 setText(null) ****************************************************");        
         
         
-        tf1.setText(null);
+        //tf1.setText(null);
         
         //boundStr.set(null);
         //boundStr.set(null);

@@ -29,9 +29,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.bean.BeanDescriptor;
-
-import org.vns.javafx.dock.api.designer.bean.PropertyDescriptor;
+import org.vns.javafx.dock.api.designer.bean.old.BeanDescriptor;
+import org.vns.javafx.dock.api.designer.bean.old.PropertyDescriptor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.DoublePropertyEditor;
 
 /**

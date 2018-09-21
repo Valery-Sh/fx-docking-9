@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 Your Organisation.
  *
@@ -13,39 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.save;
 
+import org.vns.javafx.dock.api.designer.bean.*;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditorFactory;
 import java.util.Set;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+
 import javafx.scene.control.Control;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 
-@DefaultProperty("beanDescriptors")
-public class BeanGraphDescriptor extends Control {
+@DefaultProperty("propertyPaneDescriptors")
+public class PropertyPaneCollection extends Control {
 
-    private final ObservableList<BeanDescriptor> descriptors = FXCollections.observableArrayList();
+    private final ObservableList<PropertyPaneDescriptor> propertyPaneDescriptors = FXCollections.observableArrayList();
+    
+    private Class<?> beanClass;
 
-    public BeanGraphDescriptor() {
+    public Class<?> getBeanClass() {
+        return beanClass;
+    }
+
+    public void setBeanClass(Class<?> beanClass) {
+        this.beanClass = beanClass;
+    }
+
+    public PropertyPaneCollection() {
         init();
     }
 
     private void init() {
-        descriptors.addListener(this::descriptorsChange);
+        propertyPaneDescriptors.addListener(this::descriptorsChange);
     }
 
-    public ObservableList<BeanDescriptor> getBeanDescriptors() {
-        return descriptors;
+    public ObservableList<PropertyPaneDescriptor> getPropertyPaneDescriptors() {
+        return propertyPaneDescriptors;
     }
 
-    private void descriptorsChange(Change<? extends BeanDescriptor> change) {
+    private void descriptorsChange(Change<? extends PropertyPaneDescriptor> change) {
         while (change.next()) {
             if (change.wasRemoved()) {
                 change.getRemoved().forEach(bd -> {
-                    bd.getCategories().clear();
                 });
             }
             if (change.wasAdded()) {
@@ -58,7 +70,7 @@ public class BeanGraphDescriptor extends Control {
     //
     //
     int size = 0;
-    public BeanDescriptor register(Object bean) {
+    public PropertyPaneDescriptor register(Object bean) {
         if (bean == null) {
             return null;
         }
@@ -67,17 +79,15 @@ public class BeanGraphDescriptor extends Control {
             return null;
         }
 
-        BeanGraphDescriptor gd = BeanDescriptorRegistry.getGraphDescriptor();
+        PropertyPaneCollection gd = PropertyPaneDescriptorRegistry.getPropertyPaneCollection();
         String className = beanClass.getName();
-        System.err.println("BEAN CLASS = " + className + "; beanDescr size()=" + gd.getBeanDescriptors().size());
+        System.err.println("BEAN CLASS = " + className + "; beanDescr size()=" + gd.getPropertyPaneDescriptors().size());
 
-        BeanDescriptor retval = null;
-        for (BeanDescriptor bd : gd.getBeanDescriptors()) {
+        PropertyPaneDescriptor retval = null;
+        for (PropertyPaneDescriptor bd : gd.getPropertyPaneDescriptors()) {
             // System.err.println("bd class = " + bd.getType());
-            if (className.equals(bd.getType())) {
+            if (className.equals(bd.getBeanType())) {
                 retval = bd;
-                //   System.err.println("   --- bd  = " + bd);
-
                 break;
             }
         }
@@ -86,14 +96,14 @@ public class BeanGraphDescriptor extends Control {
             return retval;
         }
         //
-        // Try getBeanDescriptor descriptor for one of the super claasses
+        // Try getPropertyDescriptor descriptor for one of the super claasses
         //
 
         Class superClass = beanClass.getSuperclass();
 
         while (superClass != null && !superClass.equals(Object.class)) {
             System.err.println("superClass = " + superClass.getName());
-            retval = getBeanDescriptor(superClass.getName());
+            retval = getPropertyPaneDescriptor(superClass.getName());
             if (retval != null) {
                 break;
             }
@@ -110,17 +120,17 @@ public class BeanGraphDescriptor extends Control {
             names = BeanAdapter.getPropertyNames(beanClass, superClass);
             //names = BeanAdapter.getPropertyNames(beanClass, Object.class);
             start5 = System.currentTimeMillis();
-            BeanDescriptor bd = new BeanDescriptor();
-            bd.setType(beanClass.getName());
+            PropertyPaneDescriptor bd = new PropertyPaneDescriptor();
+            //bd.setType(beanClass.getName());
             Category c = new Category();
-            c.setId("properties");
+            c.setName("properties");
             c.setDisplayName("Properties");
             Section s = new Section();
-            s.setId("extras");
+            s.setName("extras");
             s.setDisplayName("Extras");
             c.getSections().add(s);
-            bd.getCategories().add(c);
-            getBeanDescriptors().add(bd);
+//!!!!!!!!!            bd.getCategories().add(c);
+            getPropertyPaneDescriptors().add(bd);
             System.err.println("NAMES size = " + names.size());
             names.forEach(name -> {
                 if ( name.equals("nodeOrientation") ) {
@@ -128,9 +138,9 @@ public class BeanGraphDescriptor extends Control {
                 }
                 if (PropertyEditorFactory.getDefault().getEditor(ba.getType(name), bean, name) != null) {
                     System.err.println("   --- has editor prop = " + name + "; " + PropertyEditorFactory.getDefault().getEditor(ba.getType(name), bean,name));
-                    PropertyDescriptor pd = new PropertyDescriptor();
+                    FXProperty pd = new FXProperty();
                     pd.setName(name);
-                    s.getPropertyDescriptors().add(pd);
+                    s.getItems().add(pd);
                     size++;
                 }
             });
@@ -149,17 +159,21 @@ public class BeanGraphDescriptor extends Control {
         return retval;
     }
 
-    public BeanDescriptor getBeanDescriptor(Object bean) {
-        if (bean == null) {
-            return null;
-        }
-        return getBeanDescriptor(bean.getClass().getName());
-    }
 
-    public BeanDescriptor getBeanDescriptor(String className) {
-        BeanDescriptor retval = null;
-        for (BeanDescriptor bd : getBeanDescriptors()) {
-            if (className.equals(bd.getType())) {
+    public PropertyPaneDescriptor getPropertyPaneDescriptor(String className) {
+        PropertyPaneDescriptor retval = null;
+        for (PropertyPaneDescriptor bd : getPropertyPaneDescriptors()) {
+            if (className.equals(bd.getBeanType())) {
+                retval = bd;
+                break;
+            }
+        }
+        return retval;
+    }
+    public PropertyPaneDescriptor getPropertyPaneDescriptor(Class<?> beanClass) {
+        PropertyPaneDescriptor retval = null;
+        for (PropertyPaneDescriptor bd : getPropertyPaneDescriptors()) {
+            if (beanClass.equals(bd.getBeanType())) {
                 retval = bd;
                 break;
             }
@@ -167,9 +181,9 @@ public class BeanGraphDescriptor extends Control {
         return retval;
     }
 
-    public static boolean contains(String propertyName, ObservableList<PropertyDescriptor> pds) {
+    public static boolean contains(String propertyName, ObservableList<FXProperty> pds) {
         boolean retval = false;
-        for (PropertyDescriptor pd : pds) {
+        for (FXProperty pd : pds) {
             if (propertyName.equals(pd.getName())) {
                 retval = true;
                 break;
@@ -178,13 +192,14 @@ public class BeanGraphDescriptor extends Control {
         return retval;
     }
 
-    public static ObservableList<PropertyDescriptor> getPropertyDescriptors(BeanDescriptor bd) {
-        ObservableList<PropertyDescriptor> retval = FXCollections.observableArrayList();
-        bd.getCategories().forEach((c) -> {
+    public static ObservableList<FXProperty> getPropertyDescriptors(FXProperty bd) {
+        ObservableList<FXProperty> retval = FXCollections.observableArrayList();
+/*!!!!!!!!!!!!!!!        bd.getCategories().forEach((c) -> {
             c.getSections().forEach((s) -> {
-                retval.addAll(s.getPropertyDescriptors());
+                retval.addAll(s.getFXProperties());
             });
         });
+*/
         return retval;
     }
 

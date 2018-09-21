@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.save;
 
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
@@ -28,32 +27,28 @@ import javafx.collections.ObservableList;
  *
  * @author Olga
  */
-@DefaultProperty("sections")
-public class Category  implements NamedDescriptor {
+@DefaultProperty("items")
+public class Category  extends Descriptor<Section> {
 
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty displayName = new SimpleStringProperty();
-    private final ObservableList<Section> sections = FXCollections.observableArrayList();
-    private final ObservableList<NamedDescriptor> descriptors = FXCollections.observableArrayList();
+    //private final ObservableList<Section> sections = FXCollections.observableArrayList();
     
-    private ReadOnlyObjectWrapper<PropertyPaneDescriptor> propertyPaneDescriptorWrapper = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<PropertyPaneDescriptor> propertyPaneDescriptorWrapper = new ReadOnlyObjectWrapper<>();
 
     public Category() {
         init();
     }
 
     private void init() {
-        sections.addListener(this::sectionsChange);
-    }
-    public ObservableList<NamedDescriptor> getDescriptors() {
-        return descriptors;
+        //sections.addListener(this::sectionsChange);
     }
 
     private void sectionsChange(ListChangeListener.Change<? extends Section> change) {
         while (change.next()) {
             if (change.wasRemoved()) {
                 change.getRemoved().forEach(s -> {
-                    s.getFXProperties().clear();
+                    s.getItems().clear();
                 });
             }
             if (change.wasAdded()) {
@@ -120,7 +115,7 @@ public class Category  implements NamedDescriptor {
     }
 
     public ObservableList<Section> getSections() {
-        return sections;
+        return getItems();
     }
 
     public Category getCopyFor(Class<?> clazz, PropertyPaneDescriptor ppd) {
@@ -129,10 +124,10 @@ public class Category  implements NamedDescriptor {
         cat.setDisplayName(getDisplayName());
         cat.setName(getName());
 
-        for (Section sec : sections) {
-            cat.getSections().add(sec.getCopyFor(clazz, ppd, cat));
+        for (Section sec : getItems()) {
+            cat.getItems().add(sec.getCopyFor(clazz, ppd, cat));
         }
-        return cat;
+        return this;
     }
 
     @Override
@@ -154,13 +149,13 @@ public class Category  implements NamedDescriptor {
         int retval = -1;
         Section sec = getByName(sectionName);
         if ( sec != null ) {
-            retval = sections.indexOf(sec);
+            retval = getItems().indexOf(sec);
         }
         return retval;
     }
     public Section getByName(String sectionName) {
         Section retval = null;
-        for (Section sec : sections) {
+        for (Section sec : getItems()) {
             if (sec.getName().equals(sectionName)) {
                 retval = sec;
                 break;
@@ -168,9 +163,7 @@ public class Category  implements NamedDescriptor {
         }
         return retval;
     }
-    protected void merge(ObservableList<Section> secs ) {
-        
-    }
+
     protected Section addSectionAfter(String secPosName, String sec, String displayName) {
         return addSection(AFTER, secPosName, sec, displayName);
     }
@@ -180,15 +173,15 @@ public class Category  implements NamedDescriptor {
     }
 
     protected Section addSection(int pos, String secPosName, String sec, String displayName) {
-        int idx = sections.size();
-        for (int i = 0; i < sections.size(); i++) {
-            if (sections.get(i).getName().equals(secPosName)) {
+        int idx = getItems().size();
+        for (int i = 0; i < getItems().size(); i++) {
+            if (getItems().get(i).getName().equals(secPosName)) {
                 idx = i;
                 break;
             }
         }
         Section retval = null;
-        for (Section s : sections) {
+        for (Section s : getItems() ) {
             if (s.getName().equals(sec)) {
                 retval = s;
                 retval.setName(sec);
@@ -201,11 +194,11 @@ public class Category  implements NamedDescriptor {
             retval.setName(sec);
             retval.setDisplayName(displayName);
             if ( idx >= 0 && pos == BEFORE) {
-                sections.add(idx,retval);
+                getItems().add(idx,retval);
             } else if ( idx >= 0 && pos == AFTER)  {
-                sections.add(idx++,retval);
+                getItems().add(idx++,retval);
             } else {
-                sections.add(retval);
+                getItems().add(retval);
             }
             
         }
@@ -215,7 +208,7 @@ public class Category  implements NamedDescriptor {
 
     protected Section addSection(String sec, String displayName) {
         Section retval = null;
-        for (Section s : sections) {
+        for (Section s : getItems()) {
             if (s.getName().equals(sec)) {
                 retval = s;
                 break;
@@ -225,7 +218,7 @@ public class Category  implements NamedDescriptor {
             retval = new Section();
             retval.setName(sec);
             retval.setDisplayName(displayName);
-            sections.add(retval);
+            getItems().add(retval);
         }
         
         return retval;

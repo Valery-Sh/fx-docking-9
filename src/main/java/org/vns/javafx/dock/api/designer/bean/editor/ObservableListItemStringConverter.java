@@ -100,6 +100,7 @@ public class ObservableListItemStringConverter<T> extends StringConverter<T> imp
 
     @Override
     public T fromString(String txt) {
+        
         return (T) converter.fromString(txt);
     }
 

@@ -24,7 +24,6 @@ import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.designer.TreeItemEx.ItemType;
-import org.vns.javafx.dock.api.designer.bean.BeanDescriptorRegistry;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 
 /**
@@ -91,15 +90,8 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                     TreeItemEx it = new TreeItemBuilder().build(elem);
                     it.setExpanded(false);
                     itemList.add(it);
-                    BeanDescriptorRegistry.getGraphDescriptor().register(elem);
+                    //BeanDescriptorRegistry.getGraphDescriptor().register(elem);
                 });
-//                System.err.println("    --- itemList.size = " + itemList.size());
-//                System.err.println("itemList.get(0) = " + itemList.get(0));                      
-//                list.stream().map((elem) -> new TreeItemBuilder().build(elem)).forEachOrdered((it) -> {
-//                    itemList.add(it);
-//                });
-//                 System.err.println("----- AFTER BUILD");
-//                 System.err.println("TreeItemListChangelistener. onChanged itemList size = " + itemList.size());
 
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
 

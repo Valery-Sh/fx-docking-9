@@ -29,7 +29,11 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
 
     private void init() {
         setSeparator(",");
-        setEmptySubstitution("");
+        setEmptySubstitution("[]");
+        setNullSubstitution("<NULL>");
+        setSingleEmptyItemSubstitution("[\"\"]");
+        setNullable(true);
+        
         getFilterValidators().add(item -> {
             String regExp = "^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$";
             boolean retval = item.trim().isEmpty();
@@ -56,7 +60,7 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
     protected void addValidators() {
          getValidators().add(item -> {
             if ( item.trim().isEmpty() ) {
-                //return true;
+                return true;
             }
             return Pattern.matches("^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$", item.trim());
         });     

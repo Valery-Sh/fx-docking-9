@@ -13,27 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer.bean.save;
 
-import javafx.scene.control.Control;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.dock.api.designer.bean.*;
+import javafx.beans.DefaultProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
- * @author Olga
+ * @author Valery
  */
-public class PropertiesPane extends Control {
+@DefaultProperty("inserted")
+public class InsertPaneAfter extends PropertyPaneDescriptor{
+    private final ObservableList<PropertyPaneDescriptor> inserted = FXCollections.observableArrayList();
+
+    public ObservableList<PropertyPaneDescriptor> getInserted() {
+        return inserted;
+    }
+            
     
-    private BeanGraphDescriptor graphDescriptor;
-    
-    public PropertiesPane() {
-    }
-    private void init() {
-        
-    }
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-        
 }
