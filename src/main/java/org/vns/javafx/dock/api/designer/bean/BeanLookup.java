@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean1;
+package org.vns.javafx.dock.api.designer.bean;
 
 import java.util.List;
 import org.vns.javafx.dock.api.ApplicationContext;

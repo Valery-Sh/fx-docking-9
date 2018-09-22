@@ -6,17 +6,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 -->
-<?import org.vns.javafx.dock.api.designer.bean.*?>
+<?import org.vns.javafx.dock.api.designer.bean0.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 
-<PropertyPaneCollection fx:id="bgd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <PropertyPaneDescriptor name = "button">
+<PropertyPaneModel fx:id="bgd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <BeanModel name = "button">
         <bean>
             <Button/>
         </bean>
         <InsertCategoriesAfter name="properties" >
-           <Category name="custom" displayName="Custom" />
+           <Category name="custom" displayName="Custom" >
+               <Section name="customSection">
+                   <PropertyItem name="text0"  /> 
+                   
+                   <InsertAfter name="text">
+                       <PropertyItem name="text1"  /> 
+                       <PropertyItem name="text10"  /> 
+                   </InsertAfter>    
+                   <PropertyItem name="text2"  /> 
+
+               </Section> 
+               <InsertSectionsAfter name="properties" >
+               </InsertSectionsAfter>
+           </Category>    
+           
            <Category name="properties" displayName="Properties" />
         </InsertCategoriesAfter>    
         <Category name="code" displayName="Code" />
@@ -24,6 +38,21 @@
             <Category name="layout" displayName="Layout" />
         </InsertCategoriesBefore-->    
         <Category name="extras" displayName="Extras" />
+        
+        <Category name="custom01" displayName="Custom" >
+            <Section name="customSection01">
+                <PropertyItem name="text0"  /> 
+                   
+                <InsertAfter name="text">
+                    <PropertyItem name="text1"  /> 
+                    <PropertyItem name="text10"  /> 
+                </InsertAfter>    
+                <PropertyItem name="text2"  /> 
+
+            </Section> 
+            <InsertSectionsAfter name="properties" >
+            </InsertSectionsAfter>
+        </Category>    
         
         <!--Category id="properties" displayName="Properties" >
             <Section id="node" displayName="Node">
@@ -57,8 +86,8 @@
                 <PropertyDescriptor name="accessibleRoleDescription" displayName="Accessible Role Description" />
             </Section>
         </Category-->
-    </PropertyPaneDescriptor>
-    <PropertyPaneDescriptor name = "labeled">
+    </BeanModel>
+    <BeanModel name = "labeled">
         <beanClassName>
             javafx.scene.control.Labeled
         </beanClassName>
@@ -68,5 +97,5 @@
         </InsertCategoriesAfter>    
         <Category name="code" displayName="Code" />
         <Category name="extras" displayName="Extras" />
-    </PropertyPaneDescriptor>
-</PropertyPaneCollection >
+    </BeanModel>
+</PropertyPaneModel>

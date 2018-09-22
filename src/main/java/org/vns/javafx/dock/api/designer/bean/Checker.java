@@ -18,8 +18,7 @@ package org.vns.javafx.dock.api.designer.bean;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.vns.javafx.dock.api.designer.bean.PropertyPaneDescriptorRegistry.Introspection;
-import static org.vns.javafx.dock.api.designer.bean.PropertyPaneDescriptorRegistry.getPropertyPaneDescriptor;
+import org.vns.javafx.dock.api.designer.bean.PropertyPaneModelRegistry.Introspection;
 
 /**
  *
@@ -28,9 +27,9 @@ import static org.vns.javafx.dock.api.designer.bean.PropertyPaneDescriptorRegist
 public class Checker {
 
     private final Class<?> beanClass;
-    private final PropertyPaneDescriptorRegistry registry;
+    private final PropertyPaneModelRegistry registry;
 
-    public Checker(PropertyPaneDescriptorRegistry registry, Class<?> beanClass) {
+    public Checker(PropertyPaneModelRegistry registry, Class<?> beanClass) {
         this.registry = registry;
         this.beanClass = beanClass;
     }
@@ -74,13 +73,13 @@ public class Checker {
     }
 
     public List<String> getPropertyNames() {
-        PropertyPaneDescriptor ppd = registry.getPropertyPaneDescriptor(beanClass);
+        BeanModel ppd = registry.getBeanModel(beanClass);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
 
-        ppd.getCategories().forEach(cat -> {
-            cat.getSections().forEach(sec -> {
-                sec.getFXProperties().forEach(pd -> {
+        ppd.getItems().forEach(cat -> {
+            cat.getItems().forEach(sec -> {
+                sec.getItems().forEach(pd -> {
                     list.add(pd.getName());
                 });
             });
@@ -95,12 +94,12 @@ public class Checker {
     }
     public void printPropertyDisplayNames() {
         System.err.println("==================================================================");
-        PropertyPaneDescriptor ppd = registry.getPropertyPaneDescriptor(beanClass);
+        BeanModel ppd = registry.getBeanModel(beanClass);
         System.err.println("              --- display names  ---");
         System.err.println("==================================================================");
-        ppd.getCategories().forEach(cat -> {
-            cat.getSections().forEach(sec -> {
-                sec.getFXProperties().forEach(pd -> {
+        ppd.getItems().forEach(cat -> {
+            cat.getItems().forEach(sec -> {
+                sec.getItems().forEach(pd -> {
                     System.err.println(pd.getDisplayName());;
                 });
             });

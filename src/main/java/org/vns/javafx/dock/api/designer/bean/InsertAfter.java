@@ -23,13 +23,11 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("inserted")
-public class InsertAfter extends FXProperty{
-    private final ObservableList<FXProperty> inserted = FXCollections.observableArrayList();
+@DefaultProperty("properties")
+public class InsertAfter extends PropertyItem{
+    private final ObservableList<PropertyItem> properties = FXCollections.observableArrayList();
 
-    public ObservableList<FXProperty> getInserted() {
-        return inserted;
+    public ObservableList<PropertyItem> getProperties() {
+        return properties;
     }
-            
-    
 }

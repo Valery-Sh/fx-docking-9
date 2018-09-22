@@ -28,7 +28,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Valery Shyshkin
  */
-public class FXProperty  implements NamedDescriptor {
+public class PropertyItem  implements NamedItem {
 
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty displayName = new SimpleStringProperty();
@@ -44,7 +44,7 @@ public class FXProperty  implements NamedDescriptor {
 
     protected Class<? extends PropertyEditor> editorType;
 
-    public FXProperty() {
+    public PropertyItem() {
         init();
     }
 
@@ -193,8 +193,8 @@ public class FXProperty  implements NamedDescriptor {
         editorClass.set(clazz);
     }
      */
-    public PropertyPaneDescriptor getPropertyPaneDescriptor() {
-        return getSection().getCategory().getPropertyPaneDescriptor();
+    public BeanModel getBeanModel() {
+        return getSection().getCategory().getBeanModel();
     }
 
     public Method getPropertyMethod() {
@@ -229,8 +229,8 @@ public class FXProperty  implements NamedDescriptor {
         this.propertyType = propertyType;
     }
 
-    public FXProperty getCopyFor(Class<?> clazz, PropertyPaneDescriptor ppd, Category cat, Section sec) {
-        FXProperty pd = new FXProperty();
+    public PropertyItem getCopyFor(Class<?> clazz, BeanModel ppd, Category cat, Section sec) {
+        PropertyItem pd = new PropertyItem();
         pd.setName(getName());
         pd.setDisplayName(pd.getDisplayName());
         pd.setModifiable(isModifiable());

@@ -5,24 +5,16 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
@@ -50,7 +42,7 @@ public class Test01 extends Application {
         
         System.err.println("cat1 == cat2 = " + cat1.equals(cat2));
         //PropertyPaneDescriptorRegistry.getInstance().createInternalDescriptors(true);
-        //PropertyPaneDescriptorRegistry.getInstance().printPropertyPaneDescriptor(Node.class.getName(), true);
+        //PropertyPaneDescriptorRegistry.getInstance().printBeanModel(Node.class.getName(), true);
         
         //Checker checker = new Checker(PropertyPaneDescriptorRegistry.getInstance(),Region.class);
         //checker.printIntrospectionCheck();
@@ -71,7 +63,7 @@ public class Test01 extends Application {
         System.err.println("CODE = " + checker.createCodeCategory());
 */        
         
-        PropertyPaneDescriptorRegistry.printPropertyPaneDescriptor(Region.class.getName(), true);
+        PropertyPaneModelRegistry.printBeanModel(Region.class.getName(), true);
         //checker.printPropertyDisplayNames();
         //PropertyPaneDescriptorRegistry.getInstance().introspect(Node.class);
         VBox root = new VBox();

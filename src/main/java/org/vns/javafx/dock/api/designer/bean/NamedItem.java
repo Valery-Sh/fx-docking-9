@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean.save;
-
-import org.vns.javafx.dock.api.designer.bean.*;
-import javafx.beans.DefaultProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+package org.vns.javafx.dock.api.designer.bean;
 
 /**
  *
  * @author Valery
  */
-@DefaultProperty("inserted")
-public class InsertPaneAfter extends PropertyPaneDescriptor{
-    private final ObservableList<PropertyPaneDescriptor> inserted = FXCollections.observableArrayList();
-
-    public ObservableList<PropertyPaneDescriptor> getInserted() {
-        return inserted;
-    }
-            
+public interface NamedItem {
+    public static final int BEFORE = 0;
+    public static final int AFTER = 1;
+    public static final int NOT_INSERT = -1;
     
+    String getName();
+    void setName(String name);
+    String getDisplayName();
+    void setDisplayName(String displayName);
+    
+//    ObservableList<E> getDescriptors();
 }

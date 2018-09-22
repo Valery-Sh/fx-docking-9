@@ -23,12 +23,12 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("inserted")
+@DefaultProperty("sections")
 public class InsertSectionsBefore extends Section{
-    private final ObservableList<Section> inserted = FXCollections.observableArrayList();
+    private final ObservableList<Section> sections = FXCollections.observableArrayList();
 
-    public ObservableList<Section> getInserted() {
-        return inserted;
+    public ObservableList<Section> getSections() {
+        return sections;
     }
             
     

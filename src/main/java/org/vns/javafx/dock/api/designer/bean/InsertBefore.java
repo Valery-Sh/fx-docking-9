@@ -23,13 +23,12 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("inserted")
-public class InsertBefore extends FXProperty{
-    private final ObservableList<FXProperty> inserted = FXCollections.observableArrayList();
+@DefaultProperty("properties")
+public class InsertBefore extends PropertyItem{
+ private final ObservableList<PropertyItem> properties = FXCollections.observableArrayList();
 
-    public ObservableList<FXProperty> getInserted() {
-        return inserted;
+    public ObservableList<PropertyItem> getProperties() {
+        return properties;
     }
-            
     
 }

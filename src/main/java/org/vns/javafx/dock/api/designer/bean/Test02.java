@@ -12,7 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Labeled;
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
@@ -39,17 +39,20 @@ public class Test02 extends Application {
         
         
         System.err.println("cat1 == cat2 = " + cat1.equals(cat2));
-        PropertyPaneDescriptorRegistry.getInstance().createInternalDescriptors();
-        PropertyPaneCollection ppc = PropertyPaneDescriptorRegistry.getInstance().loadDefaultDescriptors();
-        PropertyPaneCollection oldppc = PropertyPaneDescriptorRegistry.getPropertyPaneCollection();
-        List<PropertyPaneDescriptor> descs = oldppc.getPropertyPaneDescriptors();
-        PropertyPaneDescriptorRegistry.getInstance().updateBy(ppc);
-        
-        Checker checker = new Checker(PropertyPaneDescriptorRegistry.getInstance(), Labeled.class);
-        checker.printPropertyDisplayNames();
+        long start = System.currentTimeMillis();
+        PropertyPaneModelRegistry.getInstance().createInternalDescriptors();
+        PropertyPaneModel ppc = PropertyPaneModelRegistry.getInstance().loadDefaultDescriptors();
+        PropertyPaneModel oldppc = PropertyPaneModelRegistry.getPropertyPaneModel();
+        List<BeanModel> descs = oldppc.getBeanModels();
+        PropertyPaneModelRegistry.getInstance().updateBy(ppc);
+        long end = System.currentTimeMillis();        
+        System.err.println("INTERVAL1 = " + (end-start));
+        PropertyPaneModelRegistry.printBeanModel(Button.class.getName(), true);
+        //Checker checker = new Checker(PropertyPaneModelRegistry.getInstance(), Button.class);
+        //checker.printPropertyDisplayNames();
         
         //PropertyPaneDescriptorRegistry.getInstance().createInternalDescriptors(true);
-        //PropertyPaneDescriptorRegistry.getInstance().printPropertyPaneDescriptor(Node.class.getName(), true);
+        //PropertyPaneDescriptorRegistry.getInstance().printBeanModel(Node.class.getName(), true);
         
         //Checker checker = new Checker(PropertyPaneDescriptorRegistry.getInstance(),Region.class);
         //checker.printIntrospectionCheck();
@@ -70,7 +73,7 @@ public class Test02 extends Application {
         System.err.println("CODE = " + checker.createCodeCategory());
 */        
         
-        //PropertyPaneDescriptorRegistry.printPropertyPaneDescriptor(Region.class.getName(), true);
+        //PropertyPaneDescriptorRegistry.printBeanModel(Region.class.getName(), true);
         //checker.printPropertyDisplayNames();
         //PropertyPaneDescriptorRegistry.getInstance().introspect(Node.class);
         VBox root = new VBox();
@@ -80,7 +83,7 @@ public class Test02 extends Application {
         EventHandler eh = root.getOnMouseClicked();
         System.err.println("EventHandler = " + eh);
         //PropertyPaneCollection ppc = PropertyPaneDescriptorRegistry.getInstance().loadDefaultDescriptors();
-        //Object bean = ppc.getPropertyPaneDescriptors().get(0).getBean();
+        //Object bean = ppc.getBeanModels().get(0).getBean();
         root.setPrefSize(500, 70);
         Scene scene = new Scene(root);
         stage.setScene(scene);

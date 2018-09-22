@@ -1,4 +1,4 @@
-package org.vns.javafx.dock.api.designer.bean.save;
+package org.vns.javafx.dock.api.designer.bean;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -27,20 +27,20 @@ import org.vns.javafx.dock.api.bean.BeanAdapter;
  *
  * @author Valery
  */
-public class PropertyPaneDescriptorRegistry {
+public class PropertyPaneModelRegistry {
 
-    private PropertyPaneCollection propertyPaneCollection;
+    private PropertyPaneModel propertyPaneModel;
     private final ObservableMap<Class<?>, Introspection> introspection = FXCollections.observableHashMap();
 
-    public static PropertyPaneDescriptorRegistry getInstance() {
+    public static PropertyPaneModelRegistry getInstance() {
         return SingletonInstance.INSTANCE;
     }
 
-    public static PropertyPaneCollection getPropertyPaneCollection() {
-        PropertyPaneCollection gd = getInstance().propertyPaneCollection;
+    public static PropertyPaneModel getPropertyPaneModel() {
+        PropertyPaneModel gd = getInstance().propertyPaneModel;
         if (gd == null) {
             gd = getInstance().loadDefaultDescriptors();
-            getInstance().propertyPaneCollection = gd;
+            getInstance().propertyPaneModel = gd;
         }
         return gd;
     }
@@ -48,19 +48,19 @@ public class PropertyPaneDescriptorRegistry {
     private final ObservableList<Class<?>> defaultClasses = FXCollections.observableArrayList();
 
     protected void createInternalDescriptors() {
-        propertyPaneCollection = new PropertyPaneCollection();
+        propertyPaneModel = new PropertyPaneModel();
         
-        addObjectPropertyPaneDescriptor(propertyPaneCollection);
-        addNodePropertyPaneDescriptor(propertyPaneCollection);
-        addRegionPropertyPaneDescriptor(propertyPaneCollection);
+        addObjectBeanModel(propertyPaneModel);
+        addNodeBeanModel(propertyPaneModel);
+        addRegionBeanModel(propertyPaneModel);
         
     }
 
-    protected PropertyPaneCollection createInternalDescriptors(boolean set) {
-        PropertyPaneCollection ppc = new PropertyPaneCollection();
-        addObjectPropertyPaneDescriptor(ppc);
-        addNodePropertyPaneDescriptor(ppc);
-        addRegionPropertyPaneDescriptor(ppc);
+    protected PropertyPaneModel createInternalDescriptors(boolean set) {
+        PropertyPaneModel ppc = new PropertyPaneModel();
+        addObjectBeanModel(ppc);
+        addNodeBeanModel(ppc);
+        addRegionBeanModel(ppc);
         return ppc;
     }
 
@@ -68,21 +68,21 @@ public class PropertyPaneDescriptorRegistry {
         return defaultClasses;
     }
 
-    protected void addObjectPropertyPaneDescriptor(PropertyPaneCollection ppc) {
-        PropertyPaneDescriptor ppd = new PropertyPaneDescriptor();
+    protected void addObjectBeanModel(PropertyPaneModel ppc) {
+        BeanModel ppd = new BeanModel();
         ppd.setBeanType(Object.class);
         ppd.setBeanClassName(Object.class.getName());
         Category cat = new Category();
         cat.setName("properties");
         cat.setDisplayName("Properties");
-        ppd.getCategories().add(cat);
-        ppc.getPropertyPaneDescriptors().add(ppd);
+        ppd.getItems().add(cat);
+        ppc.getBeanModels().add(ppd);
 
     }
 
-    protected void addNodePropertyPaneDescriptor(PropertyPaneCollection ppc) {
-        PropertyPaneDescriptor ppd = new PropertyPaneDescriptor();
-        ppc.getPropertyPaneDescriptors().add(ppd);
+    protected void addNodeBeanModel(PropertyPaneModel ppc) {
+        BeanModel ppd = new BeanModel();
+        ppc.getBeanModels().add(ppd);
         
         ppd.setBeanType(Node.class);
         ppd.setBeanClassName(Node.class.getName());
@@ -96,35 +96,35 @@ public class PropertyPaneDescriptorRegistry {
         //
 
         // --- "Node" Section
-        Section nodeSec = propCat.addSection("node", "Node");
-        nodeSec.add("disable", "disabled", "opacity", "nodeOrientation", "visible", "focusTraversable", "focused", "cursor", "effect", "pressed", "managed");
+        Section nodeSec = ModelUtil.addSection(propCat,"node", "Node");
+        ModelUtil.add(nodeSec,"disable", "disabled", "opacity", "nodeOrientation", "visible", "focusTraversable", "focused", "cursor", "effect", "pressed", "managed");
 
-        nodeSec = propCat.addSection("javafxcss", "JavaFX CSS");
-        nodeSec.add("style", "styleClass", "id");
+        nodeSec = ModelUtil.addSection(propCat,"javafxcss", "JavaFX CSS");
+        ModelUtil.add(nodeSec,"style", "styleClass", "id");
         // --- "Extras" Section 
-        Section propExtrasSec = propCat.addSection("extras", "Extras");
-        propExtrasSec.add("blendMode", "cache", "cacheHint", "depthTest", "mouseTransparent", "pickOnBounds");
+        Section propExtrasSec = ModelUtil.addSection(propCat,"extras", "Extras");
+        ModelUtil.add(propExtrasSec,"blendMode", "cache", "cacheHint", "depthTest", "mouseTransparent", "pickOnBounds");
 
         // --- "Accessibility" Section
-        Section accessSec = propCat.addSection("accessibility", "Accessibility");
-        accessSec.add("accessibleText", "accessibleHelp", "accessibleRole", "accessibleRoleDescription");
+        Section accessSec = ModelUtil.addSection(propCat,"accessibility", "Accessibility");
+        ModelUtil.add(accessSec,"accessibleText", "accessibleHelp", "accessibleRole", "accessibleRoleDescription");
 
         //
         // "Layout" category
         //
         // --- "Position" Section
-        Section positionSec = layoutCat.addSection("position", "Position");
-        positionSec.add("layoutX", "layoutY");
+        Section positionSec = ModelUtil.addSection(layoutCat,"position", "Position");
+        ModelUtil.add(positionSec,"layoutX", "layoutY");
         // --- "Transforms" Section
 
-        Section transformsSec = layoutCat.addSection("transforms", "Transforms");
-        transformsSec.add("rotate", "rotationAxis", "scaleX", "scaleY", "scaleZ", "translateX", "translateY", "translateZ");
+        Section transformsSec = ModelUtil.addSection(layoutCat,"transforms", "Transforms");
+        ModelUtil.add(transformsSec,"rotate", "rotationAxis", "scaleX", "scaleY", "scaleZ", "translateX", "translateY", "translateZ");
         // --- "Bounds" Section        
-        Section boundsSec = layoutCat.addSection("bounds", "Bounds");
-        boundsSec.add("layoutBounds", "boundsInLocal", "boundsInParent");
+        Section boundsSec = ModelUtil.addSection(layoutCat,"bounds", "Bounds");
+        ModelUtil.add(boundsSec,"layoutBounds", "boundsInLocal", "boundsInParent");
         // --- "Extras" Section        
-        Section extrasSec = layoutCat.addSection("extras", "extras");
-        extrasSec.add("effectiveNodeOrientation");
+        Section extrasSec = ModelUtil.addSection(layoutCat,"extras", "extras");
+        ModelUtil.add(extrasSec,"effectiveNodeOrientation");
 
         //
         // "Code" category
@@ -146,8 +146,8 @@ public class PropertyPaneDescriptorRegistry {
         List<String> list = Arrays.asList(str);
         List<String> excl = new ArrayList<>();
         if (list.contains("onAction")) {
-            Section sec = codeCat.addSection("main", "Main");
-            sec.add("onAction");
+            Section sec = ModelUtil.addSection(codeCat,"main", "Main");
+            ModelUtil.add(sec,"onAction");
             excl.add("onAction");
         }
 
@@ -159,9 +159,9 @@ public class PropertyPaneDescriptorRegistry {
             }
         });
         if (!list1.isEmpty()) {
-            Section sec = codeCat.addSection("dragdrop", "DragDrop");
+            Section sec = ModelUtil.addSection(codeCat,"dragdrop", "DragDrop");
             list1.forEach(s -> {
-                sec.add(s);
+                ModelUtil.add(sec,s);
             });
         }
 
@@ -176,9 +176,9 @@ public class PropertyPaneDescriptorRegistry {
             }
         });
         if (!list1.isEmpty()) {
-            Section sec = codeCat.addSection("mousedragdrop", "Mouse DragDrop");
+            Section sec = ModelUtil.addSection(codeCat,"mousedragdrop", "Mouse DragDrop");
             list1.forEach(s -> {
-                sec.add(s);
+                ModelUtil.add(sec,s);
             });
         }
         //
@@ -194,12 +194,12 @@ public class PropertyPaneDescriptorRegistry {
         
         if (!list1.isEmpty() || list.indexOf("onInputMethodTextChanged") >= 0 ) {
             
-            Section sec = codeCat.addSection("keyboard", "Keyboard");
+            Section sec = ModelUtil.addSection(codeCat,"keyboard", "Keyboard");
             if ( list.indexOf("onInputMethodTextChanged") >= 0 ) {
-                sec.add("onInputMethodTextChanged");
+                ModelUtil.add(sec,"onInputMethodTextChanged");
             }
             list1.forEach(s -> {
-                sec.add(s);
+                ModelUtil.add(sec,s);
             });
         }
         //
@@ -213,10 +213,10 @@ public class PropertyPaneDescriptorRegistry {
             }
         });
         if (!list1.isEmpty() || list.contains("onContextMenuRequested") ) {
-            Section sec = codeCat.addSection("mouse", "Mouse");
-            sec.add("onContextMenuRequested");
+            Section sec = ModelUtil.addSection(codeCat,"mouse", "Mouse");
+            ModelUtil.add(sec,"onContextMenuRequested");
             list1.forEach(s -> {
-                sec.add(s);
+                ModelUtil.add(sec,s);
             });
         }
 
@@ -231,9 +231,9 @@ public class PropertyPaneDescriptorRegistry {
             }
         });
         if (!list1.isEmpty()) {
-            Section sec = codeCat.addSection("scroll", "Scroll");
+            Section sec = ModelUtil.addSection(codeCat,"scroll", "Scroll");
             list1.forEach(s -> {
-                sec.add(s);
+                ModelUtil.add(sec,s);
             });
         }
         //
@@ -241,26 +241,26 @@ public class PropertyPaneDescriptorRegistry {
         //
         list1.clear();
         if (list.indexOf("onRotate") >= 0 || list.indexOf("onRotationStarted") >= 0 || list.indexOf("onRotationFinished") >= 0) {
-            Section sec = codeCat.addSection("rotation", "Rotation");
+            Section sec = ModelUtil.addSection(codeCat,"rotation", "Rotation");
 
             String s = "onRotate";
             int idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(s);
+                ModelUtil.add(sec,s);
                 excl.add(s);
             }
             s = "onRotationStarted";
 
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onRotationFinished";
 
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
         }
@@ -270,31 +270,31 @@ public class PropertyPaneDescriptorRegistry {
         //
         list1.clear();
         if (list.indexOf("onSwipeLeft") >= 0 || list.indexOf("onSwipeRight") >= 0 || list.indexOf("onSwipeUp") >= 0 || list.indexOf("onSwipeDown") >= 0) {
-            Section sec = codeCat.addSection("swipe", "Swipe");
+            Section sec = ModelUtil.addSection(codeCat,"swipe", "Swipe");
 
             String s = "onSwipeLeft";
             int idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
 
             s = "onSwipeRight";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onSwipeUp";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onSwipeDown";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
 
@@ -304,30 +304,30 @@ public class PropertyPaneDescriptorRegistry {
         //
         list1.clear();
         if (list.indexOf("onTouchMoved") >= 0 || list.indexOf("onTouchPressed") >= 0 || list.indexOf("onTouchReleased") >= 0 || list.indexOf("onTouchStationary") >= 0) {
-            Section sec = codeCat.addSection("touch", "Touch");
+            Section sec = ModelUtil.addSection(codeCat,"touch", "Touch");
 
             String s = "onTouchMoved";
             int idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onTouchPressed";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onTouchReleased";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onTouchStationary";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
         }
@@ -336,63 +336,62 @@ public class PropertyPaneDescriptorRegistry {
         //
         list1.clear();
         if (list.indexOf("onZoom") >= 0 || list.indexOf("onZoomStarted") >= 0 || list.indexOf("onZoomFinished") >= 0) {
-            Section sec = codeCat.addSection("zoom", "Zoom");
+            Section sec = ModelUtil.addSection(codeCat,"zoom", "Zoom");
 
             String s = "onZoom";
             int idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onZoomStarted";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
             s = "onZoomFinished";
             idx = list.indexOf(s);
             if (idx >= 0) {
-                sec.add(list.get(idx));
+                ModelUtil.add(sec,list.get(idx));
                 excl.add(s);
             }
         }
-
     }
-    protected void addRegionPropertyPaneDescriptor(PropertyPaneCollection ppc) {
+    protected void addRegionBeanModel(PropertyPaneModel ppc) {
 
-        PropertyPaneDescriptor ppd = ppc.getPropertyPaneDescriptor(Node.class).getCopyFor(Region.class);
-        System.err.println("addRegionPropertyPaneDescriptor categories.size() = " + ppd.getCategories().size());
-        ppc.getPropertyPaneDescriptors().add(ppd);
+        BeanModel ppd = ppc.getBeanModel(Node.class).getCopyFor(Region.class);
+        System.err.println("addRegionPropertyPaneDescriptor categories.size() = " + ppd.getItems().size());
+        ppc.getBeanModels().add(ppd);
         ppd.setBeanType(Region.class);
         ppd.setBeanClassName(Region.class.getName());
 
         Category propCat = ppd.addCategory("properties", "Properties");
-        Section sec = propCat.addSection("node","Node");
-        sec.addAfter("focusTraversable", "cacheShape","centerShape","scaleShape",
+        Section sec = ModelUtil.addSection(propCat,"node","Node");
+        ModelUtil.addAfter(sec,"focusTraversable", "cacheShape","centerShape","scaleShape",
                 "opaqueInsets");
       
-        sec = propCat.addSection("javafxcss","JavaFX CSS");        
-        sec.addAfter("styleClass","stylesheets");
-        sec = propCat.addSection("extras","Extras");
-        sec.addAfter("depthTest", "insets","padding","border","background");
+        sec = ModelUtil.addSection(propCat,"javafxcss","JavaFX CSS");        
+        ModelUtil.addAfter(sec,"styleClass","stylesheets");
+        sec = ModelUtil.addSection(propCat,"extras","Extras");
+        ModelUtil.addAfter(sec,"depthTest", "insets","padding","border","background");
         
         Category layoutCat = ppd.addCategory("layout", "Layout");
 //        sec = layoutCat.addSectionBefore("position","internal","Internal");
 //        sec.add("padding","border","background");
-        sec = layoutCat.addSectionBefore("position","size","Size");
-        sec.add("minWidth","minHeight","prefWidth","prefHeight","maxWidth","maxHeight","width","height");        
-        sec.add("snapToPixel");
+        sec = ModelUtil.addSectionBefore(layoutCat,"position","size","Size");
+        ModelUtil.add(sec,"minWidth","minHeight","prefWidth","prefHeight","maxWidth","maxHeight","width","height");        
+        ModelUtil.add(sec,"snapToPixel");
         
         Category codeCat = ppd.addCategory("code", "Code");
         
-        System.err.println("2) addRegionPropertyPaneDescriptor categories.size() = " + ppd.getCategories().size());
+        System.err.println("2) addRegionPropertyPaneDescriptor categories.size() = " + ppd.getItems().size());
         
     }
-    public static ObservableList<String> getPropertyNames(PropertyPaneDescriptor ppd) {
+    public static ObservableList<String> getPropertyNames(BeanModel ppd) {
         ObservableList<String> list = FXCollections.observableArrayList();
-        ppd.getCategories().forEach(cat -> {
-            cat.getSections().forEach(sec -> {
+        ppd.getItems().forEach(cat -> {
+            cat.getItems().forEach(sec -> {
                 sec.getItems().forEach(pd -> {
                     list.add(pd.getName());
                 });
@@ -401,9 +400,9 @@ public class PropertyPaneDescriptorRegistry {
         return list.sorted();
     }
 
-    protected static PropertyPaneDescriptor getPropertyPaneDescriptor(String beanClassName) {
-        PropertyPaneDescriptor ppd = null;
-        for (PropertyPaneDescriptor d : getPropertyPaneCollection().getPropertyPaneDescriptors()) {
+    protected static BeanModel getBeanModel(String beanClassName) {
+        BeanModel ppd = null;
+        for (BeanModel d : getPropertyPaneModel().getBeanModels()) {
             if (beanClassName.equals(d.getBeanClassName())) {
                 ppd = d;
                 break;
@@ -412,13 +411,13 @@ public class PropertyPaneDescriptorRegistry {
         return ppd;
     }
 
-    public static void printPropertyPaneDescriptor(String beanClassName) {
-        PropertyPaneDescriptor ppd = getPropertyPaneDescriptor(beanClassName);
+    public static void printBeanModel(String beanClassName) {
+        BeanModel ppd = PropertyPaneModelRegistry.getBeanModel(beanClassName);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
 
-        ppd.getCategories().forEach(cat -> {
-            cat.getSections().forEach(sec -> {
+        ppd.getItems().forEach(cat -> {
+            cat.getItems().forEach(sec -> {
                 sec.getItems().forEach(pd -> {
                     list.add(cat.getDisplayName() + ":" + sec.getDisplayName() + ":" + pd.getName());
                 });
@@ -432,16 +431,16 @@ public class PropertyPaneDescriptorRegistry {
 
     }
 
-    public static void printPropertyPaneDescriptor(String beanClassName, boolean byCategories) {
-        PropertyPaneDescriptor ppd = getPropertyPaneDescriptor(beanClassName);
+    public static void printBeanModel(String beanClassName, boolean byCategories) {
+        BeanModel ppd = PropertyPaneModelRegistry.getBeanModel(beanClassName);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
-        System.err.println("Bean Class Name: " + beanClassName + "; size = " + ppd.getCategories().size());
+        System.err.println("Bean Class Name: " + beanClassName + "; size = " + ppd.getItems().size());
         System.err.println("---------------------------------------------------");
 
-        for (Category cat : ppd.getCategories()) {
+        for (Category cat : ppd.getItems()) {
             System.err.println("Category id = " + cat.getName() + "; name = " + cat.getDisplayName());
-            for (Section sec : cat.getSections()) {
+            for (Section sec : cat.getItems()) {
                 System.err.println("   Section = " + sec.getName() + "; name = " + sec.getDisplayName());
                 sec.getItems().forEach(pd -> {
                     list.add(pd.getName());
@@ -453,9 +452,9 @@ public class PropertyPaneDescriptorRegistry {
 
     }
 
-    public static PropertyPaneDescriptor getPropertyPaneDescriptor(Class<?> beanClass) {
-        PropertyPaneDescriptor ppd = null;
-        for (PropertyPaneDescriptor d : getPropertyPaneCollection().getPropertyPaneDescriptors()) {
+    public static BeanModel getBeanModel(Class<?> beanClass) {
+        BeanModel ppd = null;
+        for (BeanModel d : getPropertyPaneModel().getBeanModels()) {
             if (beanClass.equals(d.getBeanType())) {
                 ppd = d;
                 break;
@@ -464,9 +463,9 @@ public class PropertyPaneDescriptorRegistry {
         return ppd;
     }
 
-    protected PropertyPaneCollection loadDefaultDescriptors() {
+    protected PropertyPaneModel loadDefaultDescriptors() {
         FXMLLoader loader = new FXMLLoader();
-        PropertyPaneCollection root = null;
+        PropertyPaneModel root = null;
         try {
             InputStream is = getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/DefaultPropertyPaneCollection.fxml");
             root = loader.load(is);
@@ -483,25 +482,26 @@ public class PropertyPaneDescriptorRegistry {
             });
              */
         } catch (IOException ex) {
-            Logger.getLogger(PropertyPaneDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PropertyPaneModelRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return root;
     }
     /**
-     * The method assumes that an instance of {@link PropertyPaneCollection} 
+     * The method assumes that an instance of {@link PropertyPaneModel} 
      * has already been created
-     * @param ppc the instance of class PropertyPaneCollection to be resolved 
-     * with the main instance
+     * @param update the instance of class PropertyPaneModel to be resolved 
+ with the main instance
      */
-    protected boolean resolve(PropertyPaneCollection ppc) {
+    protected boolean updateBy(PropertyPaneModel update) {
         //
-        // First convert the source ppc 
+        // First convert the source update 
         //
-        List<PropertyPaneDescriptor> errors = new ArrayList<>();
-        ObservableList<PropertyPaneDescriptor> ppdList = ppc.getPropertyPaneDescriptors();
+        List<BeanModel> errors = new ArrayList<>();
+        ObservableList<BeanModel> ppdList = FXCollections.observableArrayList();
+        ppdList.addAll(update.getBeanModels());
         for ( int i=0; i < ppdList.size(); i++ ) {
-            PropertyPaneDescriptor ppd = ppdList.get(i);
+            BeanModel ppd = ppdList.get(i);
             if ( ! resolveBeanClass(ppd)) {
                 errors.add(ppd);
             }
@@ -512,58 +512,66 @@ public class PropertyPaneDescriptorRegistry {
         //
         //Find the nearest class that already exists, in the sense of inheritance
         //
-        ObservableList<PropertyPaneDescriptor> copy = FXCollections.observableArrayList();
+        ObservableList<BeanModel> copy = FXCollections.observableArrayList();
         copy.addAll(ppdList);
-        ObservableList<PropertyPaneDescriptor> part = FXCollections.observableArrayList();
+        ObservableList<BeanModel> part = FXCollections.observableArrayList();
         while ( ! copy.isEmpty() ) {
             
             fillPart(copy.get(0), part,copy);
             copy.removeAll(part);
             
             for ( int i=0; i < part.size(); i++) {
-                
+                System.err.println("part " + part.get(i).getBeanClassName());
+                updateBy(part.get(i));
             }
         }
         
         return true;
         
     }
-    protected PropertyPaneDescriptor resolve(PropertyPaneDescriptor source) {
-        PropertyPaneDescriptor retval = null;
+    protected BeanModel updateBy(BeanModel update) {
         //
-        // Try to find a PropertyPaneDescriptor in the propertyPaneDescriptors 
-        // collection of this class such which is assignable from the source.
+        // Try to find a BeanModel in the propertyPaneDescriptors 
+        // collection of this class such which is assignable from the update.
         //
         //
-        PropertyPaneDescriptor found = null;
-        for ( PropertyPaneDescriptor ppd : propertyPaneCollection.getPropertyPaneDescriptors()) {
-            if ( ! ppd.getBeanType().isAssignableFrom(source.getBeanType())) {
+        BeanModel retval = null;
+        for ( BeanModel mod : propertyPaneModel.getBeanModels()) {
+            if ( ! mod.getBeanType().isAssignableFrom(update.getBeanType())) {
                 continue;
             }
-            if ( found == null || found.getBeanType().isAssignableFrom(ppd.getBeanType())) {
-                found = ppd;
+            if ( retval == null || retval.getBeanType().isAssignableFrom(mod.getBeanType())) {
+                retval = mod;
             }
         }
-        if ( found == null ) {
-            addObjectPropertyPaneDescriptor(getPropertyPaneCollection());
+        if ( retval == null ) {
+            addObjectBeanModel(getPropertyPaneModel());
         }
-        found = found.getCopyFor(source.getBeanType());
-        found.setName(source.getName());
-        found.merge(source);
-/*        for ( Category cat : source.getCategories()) {
-            int idx = found.indexByName(source.getName() );
-            if ( cat instanceof InsertCategoriesBefore ) {
-                //idx = found.indexByName(source.getName());
-                
-            }
+        retval = retval.getCopyFor(update.getBeanType());
+        retval.setName(update.getName());
+        retval.setBeanType(update.getBeanType());
+        retval.setBeanClassName(update.getBeanType().getName());
+        retval.setBean(update.getBean());
+        retval.merge(update.getItems());
+//        System.err.println("Class     = " + retval.getBeanType());
+//        System.err.println("ClassName = " + retval.getBeanClassName());
+/*        for ( Category c : retval.getCategories()) {
+            System.err.println("Category name        = " + c.getName());
+            System.err.println("Category displayName = " + c.getDisplayName());
         }
 */        
+//        System.err.println("================================");
+//        System.err.println("ClassName = " + retval.getBeanClassName());
+        propertyPaneModel.getBeanModels().add(retval);        
         return retval;
     }
-    private void fillPart(PropertyPaneDescriptor ppd, ObservableList<PropertyPaneDescriptor> part, ObservableList<PropertyPaneDescriptor> copy) {
+    private void fillPart(BeanModel ppd, ObservableList<BeanModel> part, ObservableList<BeanModel> copy) {
         part.clear();
         part.add(ppd);
-        for ( PropertyPaneDescriptor p : copy) {
+        for ( BeanModel p : copy) {
+            if ( p == ppd ) {
+                continue;
+            }
             if ( p.getBeanType().isAssignableFrom(ppd.getBeanType()) || ppd.getBeanType().isAssignableFrom(p.getBeanType()) ) {
                 part.add(p);
             }
@@ -593,16 +601,21 @@ public class PropertyPaneDescriptorRegistry {
             });
         }
     }
-    protected boolean resolveBeanClass(PropertyPaneDescriptor ppd) {
+    protected boolean resolveBeanClass(BeanModel ppd) {
         boolean retval = false;
+        if ( ppd.getBean() != null ) {
+            ppd.setBeanType(ppd.getBean().getClass());
+            ppd.setBeanClassName(ppd.getBean().getClass().getName());
+        }
         if ( ppd.getBeanType() != null ) {
             retval = true;
         } else if (ppd.getBeanClassName() != null) {
             try {
                 Class<?> clazz = Class.forName(ppd.getBeanClassName());
                 ppd.setBeanType(clazz);
+                retval = true;
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(PropertyPaneDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PropertyPaneModelRegistry.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return retval;
@@ -610,7 +623,7 @@ public class PropertyPaneDescriptorRegistry {
     
     private static class SingletonInstance {
 
-        private static final PropertyPaneDescriptorRegistry INSTANCE = new PropertyPaneDescriptorRegistry();
+        private static final PropertyPaneModelRegistry INSTANCE = new PropertyPaneModelRegistry();
     }
 
     public Introspection introspect(Class<?> clazz) {

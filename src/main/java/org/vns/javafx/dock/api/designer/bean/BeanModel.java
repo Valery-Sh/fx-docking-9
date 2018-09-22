@@ -18,29 +18,23 @@ package org.vns.javafx.dock.api.designer.bean;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.DefaultProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 
 /**
  *
  * @author Valery
  */
-@DefaultProperty("categories")
-public class PropertyPaneDescriptor implements NamedDescriptor {
+@DefaultProperty("items")
+public class BeanModel implements NamedItemList<Category> {
 
     private Class<?> beanType;
     private String beanClassName;
     private Object bean;
     private String name;
+    private String displayName;    
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
-    //private final ObservableList<NamedDescriptor> descriptors = FXCollections.observableArrayList();
 
-    /*    public ObservableList<NamedDescriptor> getDescriptors() {
-        return descriptors;
-    }
-     */
     public int indexByName(String categoryName) {
         int retval = -1;
         Category p = getByName(categoryName);
@@ -66,6 +60,7 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -94,21 +89,22 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         this.bean = bean;
     }
 
-    public ObservableList<Category> getCategories() {
+    @Override
+    public ObservableList<Category> getItems() {
         return categories;
     }
 
-    public PropertyPaneDescriptor getCopyFor(Class<?> clazz) {
-        PropertyPaneDescriptor ppd = new PropertyPaneDescriptor();
+    public BeanModel getCopyFor(Class<?> clazz) {
+        BeanModel ppd = new BeanModel();
         for (Category c : categories) {
-            ppd.getCategories().add(c.getCopyFor(clazz, ppd));
+            ppd.getItems().add(c.getCopyFor(clazz, ppd));
         }
         return ppd;
     }
 
     protected void merge(ObservableList<Category> cts) {
-        for ( Category c : cts) {
-            InsertCategories(c);
+        for (Category c : cts) {
+            updateBy(c);
         }
     }
 
@@ -130,27 +126,30 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         return retval;
     }
 
-    /*    private Category addCategory(Category cat) {
+/*    private void addCategories(int idx, Category... cts) {
         Category retval = null;
-        for (Category c : categories) {
-            if (c.getName().equals(cat.getName())) {
-                retval = c;
-                break;
+        for (Category cat : cts) {
+
+            for (Category c : categories) {
+                if (c.getName().equals(cat.getName())) {
+                    retval = c;
+                    break;
+                }
+            }
+            if (retval == null) {
+                categories.add(idx, cat);
+                retval = cat;
+                ObservableList<Section> scs = FXCollections.observableArrayList();
+                scs.addAll(cat.getItems());
+                cat.getItems().clear();
+                cat.merge(scs);
+            } else {
+                retval.setDisplayName(cat.getDisplayName());
             }
         }
-        if (retval == null) {
-            categories.add(cat);
-            ObservableList<Section> scs = FXCollections.observableArrayList();
-            scs.addAll(cat.getSections());
-            cat.getSections().clear();
-            cat.merge(scs);
-        } else {
-            retval.setDisplayName(cat.getDisplayName());
-            retval.merge(retval.getSections());
-        }
-        return retval;
+        
     }
-     */
+
     private Category addCategory(int idx, Category cat) {
         Category retval = null;
         for (Category c : categories) {
@@ -163,15 +162,15 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
             categories.add(idx, cat);
             retval = cat;
             ObservableList<Section> scs = FXCollections.observableArrayList();
-            scs.addAll(cat.getSections());
-            cat.getSections().clear();
+            scs.addAll(cat.getItems());
+            cat.getItems().clear();
             cat.merge(scs);
         } else {
             retval.setDisplayName(cat.getDisplayName());
         }
         return retval;
     }
-
+*/
     /*    protected Category addCategoryBefore(String beforeName, Category cat) {
         int idx = indexByName(beforeName);
         Category retval = null;
@@ -216,12 +215,8 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         return retval;
     }
      */
-    private int BEFORE = 0;
-    private int AFTER = 1;
-    private int NOT_INSERT = -11;
-
-    protected void InsertCategories(Category cat) {
-        int idx = idx = indexByName(cat.getName());
+    protected void updateBy(Category cat) {
+        int idx = indexByName(cat.getName());
         int pos = NOT_INSERT;
         List<Category> list = new ArrayList<>();
         if (cat instanceof InsertCategoriesBefore) {
@@ -233,16 +228,16 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         } else {
             list.add(cat);
         }
-        
+
         if (idx < 0 || pos == NOT_INSERT) {
             for (Category c : list) {
-                addCategory(categories.size() - 1, cat);
+                addItem(categories.size() - 1, cat);
             }
         } else if (pos == BEFORE) {
             int size = categories.size();
             for (Category c : list) {
-                addCategory(idx, c);
-                if ( categories.size() > size) {
+                addItems(idx, c);
+                if (categories.size() > size) {
                     idx++;
                 }
                 size = categories.size();
@@ -250,14 +245,29 @@ public class PropertyPaneDescriptor implements NamedDescriptor {
         } else if (pos == AFTER) {
             int size = categories.size();
             for (Category c : list) {
-                addCategory(idx, c);
-                if ( categories.size() > size) {
+                addItem(idx, c);
+                if (categories.size() > size) {
                     ++idx;
                 }
                 size = categories.size();
             }
         }
 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Override
+    public void mergeChilds(Category category) {
+        
     }
 
 }
