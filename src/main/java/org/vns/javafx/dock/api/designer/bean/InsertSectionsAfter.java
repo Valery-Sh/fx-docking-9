@@ -23,11 +23,22 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("sections")
-public class InsertSectionsAfter extends Section{
-    private final ObservableList<Section> sections = FXCollections.observableArrayList();
+@DefaultProperty("insertList")
+public class InsertSectionsAfter extends Section  implements InsertAfterItem<Section> {
+    private final ObservableList<Section> insertList = FXCollections.observableArrayList();
 
-    public ObservableList<Section> getSections() {
-        return sections;
+    public InsertSectionsAfter() {
     }
+
+    public InsertSectionsAfter(String name) {
+        super(name, null);
+
+    }
+
+    @Override
+    public ObservableList<Section> getInsertList() {
+        return insertList;
+    }
+
+ 
 }

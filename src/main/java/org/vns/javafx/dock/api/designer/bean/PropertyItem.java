@@ -18,8 +18,6 @@ package org.vns.javafx.dock.api.designer.bean;
 import java.lang.reflect.Method;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -28,10 +26,10 @@ import javafx.beans.property.StringProperty;
  *
  * @author Valery Shyshkin
  */
-public class PropertyItem  implements NamedItem {
+public class PropertyItem  extends AbstractNamedItem {
 
-    private final StringProperty name = new SimpleStringProperty();
-    private final StringProperty displayName = new SimpleStringProperty();
+//    private final StringProperty name = new SimpleStringProperty();
+//    private final StringProperty displayName = new SimpleStringProperty();
     private final BooleanProperty modifiable = new SimpleBooleanProperty(true);
     private BooleanProperty rejected = new SimpleBooleanProperty(false);
 
@@ -40,26 +38,23 @@ public class PropertyItem  implements NamedItem {
     private Method writetMethod;
     private Class<?> propertyType;
 //    private final StringProperty  editorClass = new SimpleStringProperty();
-    private final ReadOnlyObjectWrapper<Section> sectionWrapper = new ReadOnlyObjectWrapper<>();
+//    private final ReadOnlyObjectWrapper<Section> sectionWrapper = new ReadOnlyObjectWrapper<>();
 
     protected Class<? extends PropertyEditor> editorType;
 
     public PropertyItem() {
-        init();
     }
 
-    private void init() {
-        name.addListener((v, ov, nv) -> {
-            if ( nv != null && nv.equals("focusTraversable")) {
-                System.err.println(""); 
-            }
-            if (getDisplayName() == null && nv != null || nv != null && nv.equals(getDisplayName())) {
-                setDisplayName(toDisplayName(nv));
-            }
-        });
+    public PropertyItem(String name, String displayName) {
+        super(name, displayName);
     }
 
-    public ReadOnlyObjectProperty<Section> categoryProperty() {
+    public PropertyItem(String name) {
+        super(name);
+    }
+
+
+/*    public ReadOnlyObjectProperty<Section> categoryProperty() {
         return sectionWrapper.getReadOnlyProperty();
     }
 
@@ -70,8 +65,8 @@ public class PropertyItem  implements NamedItem {
     protected void setSection(Section section) {
         sectionWrapper.setValue(section);
     }
-
-    public StringProperty nameProperty() {
+*/
+/*    public StringProperty nameProperty() {
         return name;
     }
 
@@ -87,66 +82,16 @@ public class PropertyItem  implements NamedItem {
         return displayName;
     }
 
+    @Override
     public String getDisplayName() {
         return displayName.get();
     }
 
+    @Override
     public void setDisplayName(String displayName) {
         this.displayName.set(displayName);
     }
-
-    public static String toDisplayName(String propName) {
-        char[] str = propName.toCharArray();
-        StringBuilder sb = new StringBuilder();
-        int startPos = 0;
-        
-        while ( true ) {
-            int endPos = getFirstWordPos(str, startPos);
-            str[startPos] = Character.toUpperCase(str[startPos]);
-            for ( int i = startPos; i <= endPos; i++  )  {
-                sb.append(str[i]);
-            }                  
-            if ( endPos == str.length - 1 ) {
-                break;
-            }
-            sb.append(' ');
-            startPos = endPos + 1;
-        }
-        return sb.toString().trim();
-    }
-
-    public static int getFirstWordPos(char[] str, int startPos) {
-        int lastPos = startPos;
-        //str[startPos] = Character.toUpperCase(str[startPos]);
-        if (startPos == str.length - 1) {
-            return lastPos;
-        }
-        //
-        // Check whether first and cecond char are in upper case
-        //
-        
-        if (Character.isUpperCase(str[startPos])&& Character.isUpperCase(str[startPos + 1]) ) {
-
-            // try search lower case char
-            for (int i = startPos + 1; i < str.length; i++) {
-                if ( ! Character.isUpperCase(str[i]) ) {
-                    lastPos = i - 1;
-                    break;
-                }
-                lastPos = i;
-            }
-            return lastPos;
-        }
-
-        for (int i = startPos + 1; i < str.length; i++) {
-            if (Character.isUpperCase(str[i])) {
-                lastPos = i - 1;
-                break;
-            }
-            lastPos = i;
-        }
-        return lastPos;
-    }
+*/
 
     public boolean isReadOnly() {
         //BeanAdapter ba = new BeanAdapter(beanClass);
@@ -193,10 +138,10 @@ public class PropertyItem  implements NamedItem {
         editorClass.set(clazz);
     }
      */
-    public BeanModel getBeanModel() {
+/*    public BeanModel getBeanModel() {
         return getSection().getCategory().getBeanModel();
     }
-
+*/
     public Method getPropertyMethod() {
         return propertyMethod;
     }
@@ -235,7 +180,7 @@ public class PropertyItem  implements NamedItem {
         pd.setDisplayName(pd.getDisplayName());
         pd.setModifiable(isModifiable());
         //pd.setModifiable(isModifiable());
-        pd.setSection(sec);
+        //pd.setSection(sec);
         return pd;
     }
 

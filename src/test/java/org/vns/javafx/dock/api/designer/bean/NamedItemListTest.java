@@ -197,19 +197,19 @@ public class NamedItemListTest {
      * Test of addItem method, of class NamedItemList.
      */
     @Test
-    public void testAddItem() {
+    public void testAddOrUpdateItem() {
         System.out.println("addItem(int idx,NamedItemImpl)");
         int idx = 0;
         NamedItemImpl sec = new NamedItemImpl("secName01", "dispalyName01");
         NamedItemListImpl instance = new NamedItemListImpl();
         NamedItemImpl expResult = sec;
-        NamedItemImpl result = instance.addItem(idx, sec);
+        NamedItemImpl result = instance.addOrUpdateItem(idx, sec);
         assertEquals(expResult, result);
         //
         // Try add the same item with the same name and another displayName
         //
         expResult = sec;
-        result = instance.addItem(idx, sec);
+        result = instance.addOrUpdateItem(idx, sec);
         assertEquals(expResult, result);
         //
         // We expect that we cannot add the same object of type NamedItemImpl
@@ -222,7 +222,7 @@ public class NamedItemListTest {
         //
         NamedItemImpl sec01 = new NamedItemImpl("secName01", "secDispalyName01");
         expResult = sec01;
-        result = instance.addItem(idx, sec01);
+        result = instance.addOrUpdateItem(idx, sec01);
         assertNotEquals(expResult, result);
         assertEquals(1, instance.getItems().size());
 
@@ -233,7 +233,7 @@ public class NamedItemListTest {
         //
         NamedItemImpl sec02 = new NamedItemImpl("secName01", "secDispalyName02");
         expResult = sec02;
-        result = instance.addItem(idx, sec02);
+        result = instance.addOrUpdateItem(idx, sec02);
         assertNotEquals(expResult, result);
         assertEquals(1, instance.getItems().size());
         assertEquals("secDispalyName02", sec.getDisplayName());
@@ -244,7 +244,7 @@ public class NamedItemListTest {
         //
         NamedItemImpl sec03 = new NamedItemImpl("secName03", "secDispalyName03");
         expResult = sec03;
-        result = instance.addItem(idx, sec03);
+        result = instance.addOrUpdateItem(idx, sec03);
         assertEquals(expResult, result);
         assertEquals(2, instance.getItems().size());
         assertEquals("secDispalyName03", sec03.getDisplayName());
@@ -257,20 +257,20 @@ public class NamedItemListTest {
      * Test of addItems method, of class NamedItemList.
      */
     @Test
-    public void testAddItems_GenericType() {
+    public void testAddOrUpdateItems_GenericType() {
         System.out.println("addItems(NamedItemImpl... scs");
         NamedItemImpl sec01 = new NamedItemImpl("name01", "displayName01");
         NamedItemImpl sec02 = new NamedItemImpl("name02", "displayName02");
 
         NamedItemImpl[] scs = new NamedItemImpl[]{sec01};
         NamedItemListImpl instance = new NamedItemListImpl();
-        instance.addItems(scs);
+        instance.addOrUpdateItems(scs);
         assertEquals(1, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
 
         instance.getItems().clear();
         scs = new NamedItemImpl[]{sec01, sec02};
-        instance.addItems(scs);
+        instance.addOrUpdateItems(scs);
         assertEquals(2, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -278,7 +278,7 @@ public class NamedItemListTest {
         //
         // Try to add the same array. We expect that no items will be added
         //
-        instance.addItems(scs);
+        instance.addOrUpdateItems(scs);
         assertEquals(2, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -288,7 +288,7 @@ public class NamedItemListTest {
         //
         NamedItemImpl sec03 = new NamedItemImpl("name03", "displayName03");
         scs = new NamedItemImpl[]{sec01, sec03, sec02};
-        instance.addItems(scs);
+        instance.addOrUpdateItems(scs);
         assertEquals(3, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -310,7 +310,7 @@ public class NamedItemListTest {
         //    change the displayName of the sec05
         // 4. sec07 will be added
 
-        instance.addItems(scs);
+        instance.addOrUpdateItems(scs);
         assertEquals(5, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -325,7 +325,7 @@ public class NamedItemListTest {
      * Test of addItems method, of class NamedItemList.
      */
     @Test
-    public void testAddItems_int_GenericType() {
+    public void testAddOrUpdateItems_int_GenericType() {
         System.out.println("addItems(int idx,NamedItemImpl... scs)");
         int idx = 0;
 
@@ -335,14 +335,14 @@ public class NamedItemListTest {
         NamedItemImpl[] scs = new NamedItemImpl[]{sec01};
         NamedItemListImpl instance = new NamedItemListImpl();
         
-        instance.addItems(idx, scs);
+        instance.addOrUpdateItems(idx, scs);
         assertEquals(1, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
 
         instance.getItems().clear();
 
         scs = new NamedItemImpl[]{sec01, sec02};
-        instance.addItems(idx, scs);
+        instance.addOrUpdateItems(idx, scs);
         assertEquals(2, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -350,7 +350,7 @@ public class NamedItemListTest {
         //
         // Try to add the same array. We expect that no items will be added
         //
-        instance.addItems(idx, scs);
+        instance.addOrUpdateItems(idx, scs);
         assertEquals(2, instance.getItems().size());
         assertEquals(sec01, instance.getItems().get(0));
         assertEquals(sec02, instance.getItems().get(1));
@@ -361,7 +361,7 @@ public class NamedItemListTest {
         //
         NamedItemImpl sec03 = new NamedItemImpl("name03", "displayName03");
         scs = new NamedItemImpl[]{sec01, sec03, sec02};
-        instance.addItems(idx, scs);
+        instance.addOrUpdateItems(idx, scs);
         assertEquals(3, instance.getItems().size());
         assertEquals(sec03, instance.getItems().get(0));
         assertEquals(sec01, instance.getItems().get(1));
@@ -373,7 +373,7 @@ public class NamedItemListTest {
         NamedItemImpl sec04 = new NamedItemImpl("name04", "displayName04");
         NamedItemImpl sec05 = new NamedItemImpl("name05", "displayName05");
         scs = new NamedItemImpl[]{sec04, sec05};
-        instance.addItems(++idx, scs);
+        instance.addOrUpdateItems(++idx, scs);
         assertEquals(5, instance.getItems().size());
         assertEquals(sec03, instance.getItems().get(0));
         assertEquals(sec04, instance.getItems().get(1));
@@ -388,7 +388,7 @@ public class NamedItemListTest {
         NamedItemImpl sec06 = new NamedItemImpl("name06", "displayName06");
         NamedItemImpl sec07 = new NamedItemImpl("name07", "displayName07");
         scs = new NamedItemImpl[]{sec06, sec07};
-        instance.addItems(instance.getItems().size(), scs);
+        instance.addOrUpdateItems(instance.getItems().size(), scs);
         assertEquals(7, instance.getItems().size());
         assertEquals(sec03, instance.getItems().get(0));
         assertEquals(sec04, instance.getItems().get(1));
@@ -401,18 +401,6 @@ public class NamedItemListTest {
         assertEquals(sec07, instance.getItems().get(6));
     }
 
-    /**
-     * Test of mergeChilds method, of class NamedItemList.
-     */
-    @Test
-    public void testMergeChilds() {
-        System.out.println("mergeChilds");
-        NamedItemImpl item = null;
-        NamedItemList instance = new NamedItemListImpl();
-        instance.mergeChilds(item);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-    }
 
     public static class NamedItemListImpl implements NamedItemList<NamedItemImpl> {
         
@@ -424,10 +412,6 @@ public class NamedItemListTest {
         @Override
         public ObservableList<NamedItemImpl> getItems() {
             return items;
-        }
-
-        @Override
-        public void mergeChilds(NamedItemImpl item) {
         }
 
         @Override

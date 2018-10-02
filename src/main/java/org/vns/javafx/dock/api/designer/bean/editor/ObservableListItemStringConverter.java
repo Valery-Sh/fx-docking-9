@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import javafx.scene.control.ButtonType;
 import javafx.util.StringConverter;
 import javafx.util.converter.BigDecimalStringConverter;
 import javafx.util.converter.BigIntegerStringConverter;
@@ -82,6 +83,8 @@ public class ObservableListItemStringConverter<T> extends StringConverter<T> imp
             converter = new LocalDateTimeStringConverter();
         } else if (itemClass.equals(LocalTime.class)) {
             converter = new LocalTimeStringConverter();
+        } else if (itemClass.equals(ButtonType.class)) {
+            converter = new ButtonTypeStringConverter();
         }
     }
 

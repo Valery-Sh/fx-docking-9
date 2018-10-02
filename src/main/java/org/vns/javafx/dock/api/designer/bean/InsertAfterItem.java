@@ -15,31 +15,12 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
-import javafx.beans.DefaultProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
  *
  * @author Valery
  */
-@DefaultProperty("insertList")
-public class InsertAfter extends PropertyItem implements NamedItemList<PropertyItem>, InsertAfterItem<PropertyItem>{
-    private final ObservableList<PropertyItem> insertList = FXCollections.observableArrayList();
-
-    public InsertAfter(String name) {
-        super(name, null);
-    }
-
-    public InsertAfter() {
-    }
-
-    @Override
-    public ObservableList<PropertyItem> getItems() {
-        return insertList;
-    }
-    @Override
-    public ObservableList<PropertyItem> getInsertList() {
-        return insertList;
-    }
+public interface InsertAfterItem<E> {
+    ObservableList<E> getInsertList();
 }

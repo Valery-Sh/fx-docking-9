@@ -6,96 +6,1445 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 -->
-<?import org.vns.javafx.dock.api.designer.bean0.*?>
+<?import org.vns.javafx.dock.api.designer.bean.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.*?>
+<?import javafx.scene.web.*?>
+
+<?import javafx.scene.shape.*?>
 
 <PropertyPaneModel fx:id="bgd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <BeanModel name = "button">
+    <BeanModel name = "group">
+        <bean>
+            <Group/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="autoSizeChildren" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>    
+    <BeanModel name = "button" displayName="Button">
         <bean>
             <Button/>
         </bean>
-        <InsertCategoriesAfter name="properties" >
-           <Category name="custom" displayName="Custom" >
-               <Section name="customSection">
-                   <PropertyItem name="text0"  /> 
-                   
-                   <InsertAfter name="text">
-                       <PropertyItem name="text1"  /> 
-                       <PropertyItem name="text10"  /> 
-                   </InsertAfter>    
-                   <PropertyItem name="text2"  /> 
-
-               </Section> 
-               <InsertSectionsAfter name="properties" >
-               </InsertSectionsAfter>
-           </Category>    
-           
-           <Category name="properties" displayName="Properties" />
-        </InsertCategoriesAfter>    
-        <Category name="code" displayName="Code" />
-        <!--InsertCategoriesBefore>
-            <Category name="layout" displayName="Layout" />
-        </InsertCategoriesBefore-->    
-        <Category name="extras" displayName="Extras" />
-        
-        <Category name="custom01" displayName="Custom" >
-            <Section name="customSection01">
-                <PropertyItem name="text0"  /> 
-                   
-                <InsertAfter name="text">
-                    <PropertyItem name="text1"  /> 
-                    <PropertyItem name="text10"  /> 
-                </InsertAfter>    
-                <PropertyItem name="text2"  /> 
-
-            </Section> 
-            <InsertSectionsAfter name="properties" >
-            </InsertSectionsAfter>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="defaultButton" />
+                    <PropertyItem name="cancelButton" />
+                </Section>
+            </InsertSectionsBefore>
         </Category>    
         
-        <!--Category id="properties" displayName="Properties" >
-            <Section id="node" displayName="Node">
-                <PropertyDescriptor name="id" />
-                <PropertyDescriptor name="disable" />
-                <PropertyDescriptor name="disabled" />                
-                <PropertyDescriptor name="opacity" />
-                <PropertyDescriptor name="nodeOrientaion" displayName="Node Orientaion" />
-                <PropertyDescriptor name="visible" />
-                <PropertyDescriptor name="focusTraversable" displayName="Focus Traversable" />                
-                 
-                <PropertyDescriptor name="cursor"  />                
-                <PropertyDescriptor name="effect"  />                
-                <PropertyDescriptor name="effectivaNodeOrientation" displayName="Effectiva Node Orientation" />                
-                
-            </Section>
-            <Section id="javafxcss" displayName="JavaFX CSS">
-                <PropertyDescriptor name="style" />                
-                <PropertyDescriptor name="styleClass" displayName="Style Class" />                
-            </Section>
-            <Section id="extras" displayName="Extras">
-                <PropertyDescriptor name="blendMode" displayName="Blend Mode" />                
-                <PropertyDescriptor name="cash"  />      
-                <PropertyDescriptor name="cashHint" displayName="Cash Hint" />      
-                <PropertyDescriptor name="depthTest" displayName="Depth Test" />      
-            </Section>
-            <Section id="accessibility" displayName="Accessibility">
-                <PropertyDescriptor name="accessibleText" displayName="Accessible Text" />
-                <PropertyDescriptor name="accessibleHelp" displayName="Accessible Help" />
-                <PropertyDescriptor name="accessibleRole" displayName="Accessible Role" />
-                <PropertyDescriptor name="accessibleRoleDescription" displayName="Accessible Role Description" />
-            </Section>
-        </Category-->
     </BeanModel>
+
+    <BeanModel name = "checkBox" displayName="CheckBox">
+        <bean>
+            <CheckBox/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="allowIndeterminate" />
+                    <PropertyItem name="indeterminate" />
+                    <PropertyItem name="selected" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>
+
+    <BeanModel name = "hyperlink" displayName="Hyperlink">
+        <bean>
+            <Hyperlink/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="visited" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>
+    <BeanModel name = "menuButton" displayName="MenuButton">
+        <bean>
+            <MenuButton/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="popupSide" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>
+    <BeanModel name = "toggleButton" displayName="ToggleButton">
+        <bean>
+            <ToggleButton/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="selected" />
+                    <PropertyItem name="toggleGroup" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>
+    <BeanModel name = "cell">
+        <bean>
+            <Cell/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="editable" />
+                    <PropertyItem name="editing" />
+                    <PropertyItem name="empty" />
+                    <PropertyItem name="selected" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+    <BeanModel name = "titledPane">
+        <bean>
+            <TitledPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="graphic" >
+                <Section name="specific" >
+                    <PropertyItem name="animated" />
+                    <PropertyItem name="collapsible" />
+                    <PropertyItem name="expanded" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+    <BeanModel name = "buttonBar">
+        <bean>
+            <ButtonBar/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="buttonMinWidth" />
+                    <PropertyItem name="buttonOrder" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+    <BeanModel name = "separator">
+        <bean>
+            <Separator/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+        </Category>    
+        <Category name="layout">
+            <InsertSectionsBefore name="size" >
+                <Section name="specific" >
+                    <PropertyItem name="halignment" />
+                    <PropertyItem name="valignment" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+    <BeanModel name = "slider">
+        <bean>
+            <Slider/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="min" />
+                    <PropertyItem name="max" />
+                    <PropertyItem name="value" />
+                    <PropertyItem name="valueChanging" />
+                    <PropertyItem name="blockIncrement" />
+                    <PropertyItem name="showTickMarks" />
+                    <PropertyItem name="showTickLabels" />
+                    <PropertyItem name="majorTickUnit" />
+                    <PropertyItem name="minorTickCount" />
+                    <PropertyItem name="snapToTicks" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel> 
+    <BeanModel name = "splitPane">
+        <bean>
+            <SplitPane/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+        </Category>    
+        
+    </BeanModel>  
+
+    <BeanModel name = "toolBar">
+        <bean>
+            <ToolBar/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+        </Category>    
+    </BeanModel>          
+    
+    
+    <BeanModel name = "tableView">
+        <bean>
+            <TableView/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" > 
+                    <PropertyItem name="editable" />                    
+                    <PropertyItem name="tableMenuButtonVisible" />                    
+                    <PropertyItem name="fixedCellSize" />                    
+                </Section>
+            </InsertSectionsBefore>                 
+        </Category>    
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onSort" />
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="scroll" >
+                <PropertyItem name="onScrollTo" />
+                <PropertyItem name="onScrollToColumn" />
+            </Section>
+        </Category>            
+    </BeanModel>            
+    <BeanModel name = "treeTableView">
+        <bean>
+            <TreeTableView/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" > 
+                    <PropertyItem name="editable" />                    
+                    <PropertyItem name="tableMenuButtonVisible" />                    
+                    <PropertyItem name="fixedCellSize" />     
+                    <PropertyItem name="showRoot" />     
+                </Section>
+            </InsertSectionsBefore>                 
+        </Category>    
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onSort" />
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="scroll" >
+                <PropertyItem name="onScrollTo" />
+                <PropertyItem name="onScrollToColumn" />
+            </Section>
+        </Category>            
+        
+    </BeanModel>            
+    
+    <BeanModel name = "treeView">
+        <bean>
+            <TreeView/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" > 
+                    <PropertyItem name="editable" />                    
+                    <PropertyItem name="fixedCellSize" />     
+                    <PropertyItem name="showRoot" />     
+                </Section>
+            </InsertSectionsBefore>                 
+        </Category>    
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onSort" />
+                    <PropertyItem name="onEditCancel" />
+                    <PropertyItem name="onEditCommit" />
+                    <PropertyItem name="onEditStart" />
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="scroll" >
+                <PropertyItem name="onScrollTo" />
+            </Section>
+        </Category>            
+        
+    </BeanModel>            
+    <BeanModel name = "listView">
+        <bean>
+            <ListView/>
+        </bean>
+     
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" > 
+                    <PropertyItem name="editable" />                    
+                    <PropertyItem name="fixedCellSize" />     
+                </Section>
+            </InsertSectionsBefore>     
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>                         
+        </Category>    
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onEditCancel" />
+                    <PropertyItem name="onEditCommit" />
+                    <PropertyItem name="onEditStart" />
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="scroll" >
+                <PropertyItem name="onScrollTo" />
+            </Section>
+        </Category>            
+        
+    </BeanModel>            
+    
+    <BeanModel name = "tabPane">
+        <bean>
+            <TabPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="side" />
+                    <PropertyItem name="tabClosingPolicy" />
+                    <PropertyItem name="rotateGraphic" />                    
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        <Category name="layout">
+            <InsertSectionsBefore name="size" >
+                <Section name="specific" >
+                    <PropertyItem name="tabMinWidth" />
+                    <PropertyItem name="tabMinHeight" />
+                    <PropertyItem name="tabMaxWidth" />
+                    <PropertyItem name="tabMaxHeight" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+    
+    <BeanModel name = "spinner">
+        <bean>
+            <Spinner/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="editable" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "menuBar">
+        <bean>
+            <MenuBar/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="useSystemMenuBar" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+    <BeanModel name = "pagination">
+        <bean>
+            <Pagination/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="currentPageIndex" />
+                    <PropertyItem name="maxPageIndicatorCount" />
+                    <PropertyItem name="pageCount" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "progressIndicator">
+        <bean>
+            <ProgressIndicator/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="progress" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "scrollBar">
+        <bean>
+            <ScrollBar/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="min" />
+                    <PropertyItem name="max" />
+                    <PropertyItem name="blockIncrement" />
+                    <PropertyItem name="unitIncrement" />
+                    <PropertyItem name="value" />
+                    <PropertyItem name="visibleAmount" />
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "scrollPane">
+        <bean>
+            <ScrollPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="specific" >
+                    <PropertyItem name="fitToWidth" />
+                    <PropertyItem name="fitToHeight" />
+                    <PropertyItem name="minViewportWidth" />
+                    <PropertyItem name="minViewportHeight" />
+                    <PropertyItem name="prefViewportWidth" />
+                    <PropertyItem name="prefViewportHeight" />
+                    <PropertyItem name="viewportBounds" />
+                    <PropertyItem name="hbarPolicy" />
+                    <PropertyItem name="vbarPolicy" />
+                    <PropertyItem name="hmin" />
+                    <PropertyItem name="hmax" />
+                    <PropertyItem name="vmin" />
+                    <PropertyItem name="vmax" />
+                    <PropertyItem name="hvalue" />
+                    <PropertyItem name="vvalue" />
+                    <PropertyItem name="pannable" />
+                    
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="node" >
+                <InsertBefore name="nodeOrientation" >
+                    <PropertyItem name="orientation" />
+                </InsertBefore>
+            </Section>
+        </Category>    
+        
+    </BeanModel>     
+    <BeanModel name = "dialogPane">
+        <bean>
+            <DialogPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="text">
+                    <PropertyItem name="headerText" />
+                    <PropertyItem name="contentText" />
+                </Section>
+                <Section name="specific" >
+                    <PropertyItem name="expanded" />
+                    <PropertyItem name="buttonTypes" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+
+    <BeanModel name = "textFlow">
+        <bean>
+            <TextFlow/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="text">
+                    <PropertyItem name="textAlignment" />
+                    <PropertyItem name="lineSpacing" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+                                                                                                                                
+    <BeanModel name = "comboBoxBase">
+        <beanClassName>
+            javafx.scene.control.ComboBoxBase
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="text" >
+                    <PropertyItem name="promptText" />
+                </Section>
+                <Section name="specific" >
+                    <PropertyItem name="editable" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onAction" />
+                </Section>
+            </InsertSectionsBefore>
+            
+            <InsertSectionsBefore name="keyboard" >
+                <Section name="hideShow" >
+                    <PropertyItem name="onHidden" />
+                    <PropertyItem name="onHiding" />
+                    <PropertyItem name="onShowing" />
+                    <PropertyItem name="onShown" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>             
+        
+    <BeanModel name = "buttonBase">
+        <beanClassName>
+            javafx.scene.control.ButtonBase
+        </beanClassName>
+        <Category name="code">
+            <InsertSectionsBefore name="dragdrop" >
+                <Section name="main" >
+                    <PropertyItem name="onAction" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>        
+    </BeanModel>    
     <BeanModel name = "labeled">
         <beanClassName>
             javafx.scene.control.Labeled
         </beanClassName>
-        <InsertCategoriesAfter name="properties" >
-            <Category name="custom" displayName="Custom" />
-            <Category name="properties" displayName="Properties" />
-        </InsertCategoriesAfter>    
-        <Category name="code" displayName="Code" />
-        <Category name="extras" displayName="Extras" />
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="text">
+                    <PropertyItem name="text"></PropertyItem>
+                    <PropertyItem name="font"></PropertyItem>
+                    <PropertyItem name="textFill"></PropertyItem>
+                    <PropertyItem name="wrapText"></PropertyItem>
+                    <PropertyItem name="textAlignment"></PropertyItem>
+                    <PropertyItem name="textOverrun"></PropertyItem>
+                    <PropertyItem name="ellipsisString"></PropertyItem>
+                    <PropertyItem name="underLine"></PropertyItem>
+                    <PropertyItem name="lineSpacing"></PropertyItem>
+                    
+                    
+                </Section>    
+                <Section name="graphic" >
+                    <PropertyItem name="graphicTextGap"></PropertyItem>
+                    <PropertyItem name="contentDisplay"></PropertyItem>
+                </Section>
+            </InsertSectionsBefore>    
+            
+            <Section name="node" >
+                <InsertBefore name="disable"> 
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>
+            </Section>
+            <Section name="extras" >
+                <InsertAfter name="blendMode"> 
+                    <PropertyItem name="mnemonicParsing"></PropertyItem>
+                </InsertAfter>
+                <InsertAfter name="insets"> 
+                    <PropertyItem name="labelPadding"></PropertyItem>
+                </InsertAfter>
+                
+            </Section>
+
+        </Category>
     </BeanModel>
+    
+    <BeanModel name = "textInputControl">
+        <beanClassName>
+            javafx.scene.control.TextInputControl
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore name="node" >
+                <Section name="text">
+                    <PropertyItem name="promptText"></PropertyItem>                    
+                    <PropertyItem name="text"></PropertyItem>
+                    <PropertyItem name="font"></PropertyItem>
+                </Section>    
+                <Section name="specific">
+                    <PropertyItem name="editable"></PropertyItem>
+                </Section>  
+            </InsertSectionsBefore>    
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "textField">
+        <bean>
+            <TextField/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="prefColumnCount"/>
+            </Section>  
+            <Section name="node" >
+                <InsertBefore> 
+                    <PropertyItem name="alignment"/>
+                </InsertBefore>
+            </Section>
+        </Category>
+        <Category name="code">
+            <InsertSectionsBefore>
+                <Section name="Main">
+                    <PropertyItem name="onAction"/>
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "textArea">
+        <bean>
+            <TextArea/>
+        </bean>
+        <Category name="properties">
+            <Section name="text">
+                <PropertyItem name="wrapText"/>
+                <PropertyItem name="scrollLeft"/>
+                <PropertyItem name="scrollTop"/>
+            </Section> 
+            <Section name="specific">
+                <PropertyItem name="prefColumnCount"/>
+                <PropertyItem name="prefRowCount"/>
+            </Section>  
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "vbox">
+        <bean>
+            <VBox/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        <Category name="layout">
+            <InsertSectionsAfter name="internal">
+                <Section name="specific">
+                    <PropertyItem name="fillWidth"></PropertyItem>
+                </Section>
+            </InsertSectionsAfter>
+            
+            <Section name="internal" >
+                <InsertAfter>
+                    <PropertyItem name="spacing"></PropertyItem>
+                </InsertAfter>    
+            </Section>
+        </Category>
+        
+    </BeanModel>
+    <BeanModel name = "hbox">
+        <bean>
+            <HBox/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        <Category name="layout">
+            <InsertSectionsAfter name="internal">
+                <Section name="specific">
+                    <PropertyItem name="fillHeight"></PropertyItem>
+                </Section>
+            </InsertSectionsAfter>
+            
+            <Section name="internal" >
+                <InsertAfter>
+                    <PropertyItem name="spacing"></PropertyItem>
+                </InsertAfter>    
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "flowPane">
+        <bean>
+            <FlowPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="rowValignment"></PropertyItem>
+                    <PropertyItem name="columnHalignment"></PropertyItem>
+                    <PropertyItem name="prefWrapLength"></PropertyItem>
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+                <InsertBefore name="nodeOrientation">
+                    <PropertyItem name="orientation"></PropertyItem>
+                </InsertBefore>    
+                
+            </Section>
+        </Category>
+        <Category name="layout">
+            <Section name="internal" >
+                <InsertBefore>
+                    <PropertyItem name="hgap"></PropertyItem>
+                    <PropertyItem name="vgap"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        
+    </BeanModel>
+    
+    <BeanModel name = "tilePane">
+        <bean>
+            <TilePane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="tileAlignment"></PropertyItem>
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+                <InsertBefore name="nodeOrientation">
+                    <PropertyItem name="orientation"></PropertyItem>
+                </InsertBefore>    
+                
+            </Section>
+        </Category>
+        <Category name="layout">
+            <Section name="internal" >
+                <InsertBefore>
+                    <PropertyItem name="hgap"></PropertyItem>
+                    <PropertyItem name="vgap"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+            <InsertSectionsAfter name="internal">
+                <Section name="specific" >
+                    <PropertyItem name="prefTileWidth"></PropertyItem>
+                    <PropertyItem name="prefTileHeight"></PropertyItem>
+                    <PropertyItem name="prefColumns"></PropertyItem>
+                    <PropertyItem name="prefRows"></PropertyItem>
+                    <PropertyItem name="tileWidth"></PropertyItem>
+                    <PropertyItem name="tileHeight"></PropertyItem>
+                </Section>
+                
+            </InsertSectionsAfter>
+        </Category>
+        
+    </BeanModel>
+    
+    
+    <BeanModel name = "gridPane">
+        <bean>
+            <GridPane/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="gridLinesVisible"></PropertyItem>
+                </Section>
+            </InsertSectionsBefore>
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        <Category name="layout">
+            <Section name="internal" >
+                <InsertBefore>
+                    <PropertyItem name="hgap"></PropertyItem>
+                    <PropertyItem name="vgap"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "stackPane">
+        <bean>
+            <StackPane/>
+        </bean>
+        <Category name="properties">
+            <Section name="node" >
+                <InsertBefore>
+                    <PropertyItem name="alignment"></PropertyItem>
+                </InsertBefore>    
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "shape">
+        <beanClassName>
+            javafx.scene.shape.Shape
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="fill"/>
+                    <PropertyItem name="smooth"/>
+                </Section>
+                <Section name="stroke" >
+                    <PropertyItem name="stroke"/>
+                    <PropertyItem name="strokeWidth"/>
+                    <PropertyItem name="strokeType"/>
+                    <PropertyItem name="strokeLineCap"/>
+                    <PropertyItem name="strokeLineJoin"/>
+                    <PropertyItem name="strokeMiterLimit"/>
+                    <PropertyItem name="strokeDashOffset"/>
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+    <BeanModel name = "circle">
+        <bean>
+            <Circle/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <InsertBefore>
+                    <PropertyItem name="centerX"/>
+                    <PropertyItem name="centerY"/>
+                </InsertBefore>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "arc">
+        <bean>
+            <Arc/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="type" />
+            </Section>
+        </Category>
+        <Category name="layout">
+            <Section name="position" >
+                <InsertBefore>
+                    <PropertyItem name="centerX"/>
+                    <PropertyItem name="centerY"/>
+                </InsertBefore>
+            </Section>
+            <InsertSectionsBefore name="position">
+                <Section name="size" >
+                    <PropertyItem name="radiusX"/>
+                    <PropertyItem name="radiusY"/>
+                    <PropertyItem name="startAngle"/>
+                    <PropertyItem name="length"/>
+                </Section>    
+            </InsertSectionsBefore>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "ellipse">
+        <bean>
+            <Ellipse/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <InsertBefore>
+                    <PropertyItem name="centerX"/>
+                    <PropertyItem name="centerY"/>
+                </InsertBefore>
+            </Section>
+            <InsertSectionsBefore name="position">
+                <Section name="size" >
+                    <PropertyItem name="radiusX"/>
+                    <PropertyItem name="radiusY"/>
+                </Section>    
+            </InsertSectionsBefore>
+        </Category>
+        
+    </BeanModel>
+
+
+    <BeanModel name = "cubicCurve">
+        <bean>
+            <CubicCurve/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="startX"/>
+                <PropertyItem name="startY"/>
+                <PropertyItem name="endX"/>
+                <PropertyItem name="endY"/>
+                <PropertyItem name="controlX1"/>
+                <PropertyItem name="controlY1"/>
+                <PropertyItem name="controlX2"/>
+                <PropertyItem name="controlY2"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "quadCurve">
+        <bean>
+            <QuadCurve/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="startX"/>
+                <PropertyItem name="startY"/>
+                <PropertyItem name="endX"/>
+                <PropertyItem name="endY"/>
+                <PropertyItem name="controlX"/>
+                <PropertyItem name="controlY"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+    <BeanModel name = "rectangle">
+        <bean>
+            <Rectangle/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="arcWidth" />
+                <PropertyItem name="arcHeight" />
+            </Section>
+        </Category>
+
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="x"/>
+                <PropertyItem name="y"/>
+            </Section>
+            <InsertSectionsBefore name="position">
+                <Section name="size" >
+                    <PropertyItem name="width"/>
+                    <PropertyItem name="height"/>
+                </Section>    
+            </InsertSectionsBefore>
+        </Category>
+        
+    </BeanModel>
+                
+    <BeanModel name = "Line">
+        <bean>
+            <Line/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="startX"/>
+                <PropertyItem name="startY"/>
+                <PropertyItem name="endX"/>
+                <PropertyItem name="endY"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    <BeanModel name = "polyline">
+        <bean>
+            <Polyline/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="points"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+    <BeanModel name = "polygon">
+        <bean>
+            <Polygon/>
+        </bean>
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="points"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>    
+    
+    <BeanModel name = "path">
+        <bean>
+            <Path/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="fillRule" />
+            </Section>
+        </Category>
+    </BeanModel>                       
+    <BeanModel name = "svgpath">
+        <bean>
+            <SVGPath/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="content" />
+                <PropertyItem name="fillRule" />
+            </Section>
+        </Category>
+    </BeanModel>          
+    
+    <BeanModel name = "text">
+        <bean>
+            <Text/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="text">
+                    <PropertyItem name="text" />
+                    <PropertyItem name="font" />
+                    <PropertyItem name="fontSmoothingType"/>
+                    <PropertyItem name="textAlignment"/>
+                    <PropertyItem name="wrappingWidth"/>
+                    <PropertyItem name="strikethrough"/>
+                    <PropertyItem name="underline"/>
+                    <PropertyItem name="lineSpacing"/>
+                    <PropertyItem name="wrappingWidth"/>
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+        
+
+        <Category name="layout">
+            <Section name="position" >
+                <PropertyItem name="x"/>
+                <PropertyItem name="y"/>
+            </Section>
+        </Category>
+        
+    </BeanModel>
+
+    
+    <BeanModel name = "camera">
+        <beanClassName>
+            javafx.scene.Camera
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="3D">
+                    <PropertyItem name="farClip" />
+                    <PropertyItem name="nearClip" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+    <BeanModel name = "PerspectiveCamera">
+        <bean>
+            <PerspectiveCamera/>
+        </bean>
+        <Category name="properties">
+            <Section name="3D">
+                <PropertyItem name="fieldOfView" />
+                <PropertyItem name="verticalFieldOfView" />
+                <PropertyItem name="fixedEyeAtCameraZero" modifiable="false" />
+            </Section>
+        </Category>
+    </BeanModel>
+    
+    <BeanModel name = "canvas">
+        <bean>
+            <Canvas/>
+        </bean>
+        <Category name="layout">
+            <InsertSectionsBefore name="position">
+                <Section name="size" >
+                    <PropertyItem name="width"/>
+                    <PropertyItem name="height"/>
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+        
+    </BeanModel>              
+    
+    <BeanModel name = "lightBase">
+        <beanClassName>
+            javafx.scene.LightBase
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific">
+                    <PropertyItem name="color" />
+                    <PropertyItem name="lightOn" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+    <BeanModel name = "shape3D" displayName="Shape3D">
+        <beanClassName>
+            javafx.scene.shape.Shape3D
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="3D">
+                    <PropertyItem name="cullFace" />
+                    <PropertyItem name="drawMode" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+    
+    <BeanModel name = "shape3D" displayName="Shape3D">
+        <beanClassName>
+            javafx.scene.shape.Shape3D
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="3D">
+                    <PropertyItem name="cullFace" />
+                    <PropertyItem name="drawMode" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "box">
+        <bean>
+            <Box/>
+        </bean>
+        <Category name="layout">
+            <InsertSectionsBefore name="position">
+                <Section name="size">
+                    <PropertyItem name="width" />
+                    <PropertyItem name="height" />
+                    <PropertyItem name="depth" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+    <BeanModel name = "cylinder">
+        <bean>
+            <Cylinder/>
+        </bean>
+        <Category name="properties">
+            <Section name="3D">
+                <PropertyItem name="divisions" modifiable="false" />
+            </Section>
+        </Category>
+        <Category name="layout">
+            <InsertSectionsBefore name="position">
+                <Section name="size">
+                    <PropertyItem name="height" />
+                    <PropertyItem name="radius" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "sphere">
+        <bean>
+            <Sphere/>
+        </bean>
+      
+        <Category name="layout">
+            <InsertSectionsBefore name="position">
+                <Section name="size">
+                    <PropertyItem name="radius" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "tooltip">
+        <bean>
+            <Tooltip/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="text">
+                    <PropertyItem name="text" />
+                    <PropertyItem name="font" />
+                    <PropertyItem name="wrapText"/>
+                    <PropertyItem name="textAlignment"/>
+                    <PropertyItem name="textOverrun"/>
+                </Section>
+                <Section name="specific">
+                    <PropertyItem name="autoFix" />
+                    <PropertyItem name="autoHide" />
+                    <PropertyItem name="consumeAutoHidingEvents"/>
+                    <PropertyItem name="hideOnEscape"/>
+                </Section>
+                <Section name="graphic">
+                    <PropertyItem name="graphicTextGap" />
+                    <PropertyItem name="contentDisplay" />
+                </Section>
+                
+            </InsertSectionsBefore>
+        </Category>
+        <Category name="code">
+            
+            <Section name="hideShow" >
+                <PropertyItem name="onHidden" />
+                <PropertyItem name="onHiding" />
+                <PropertyItem name="onAutoHide" />
+                <PropertyItem name="onShowing" />
+                <PropertyItem name="onShown" />
+            </Section>
+        </Category>         
+        
+    </BeanModel>
+
+    <BeanModel name = "chart">
+        <beanClassName>
+            javafx.scene.chart.Chart
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific">
+                    <PropertyItem name="title" />
+                    <PropertyItem name="animated" />
+                    <PropertyItem name="titleSide"/>
+                    <PropertyItem name="legendVisible"/>
+                    <PropertyItem name="legendSide"/>
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "pieChart">
+        <bean>
+            <PieChart/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="clockwise" />
+                <PropertyItem name="labelsVisible"/>
+                <PropertyItem name="labelLineLength" />
+                <PropertyItem name="startAngle"/>
+            </Section>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "XYChart">
+        <beanClassName>
+            javafx.scene.chart.XYChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="alternativeColumnFillVisible" />
+                <PropertyItem name="alternativeRowFillVisible"/>
+                <PropertyItem name="horizontalGridLinesVisible"/>
+                <PropertyItem name="horizontalZeroLineVisible"/>                    
+                <PropertyItem name="verticalGridLinesVisible"/>
+                <PropertyItem name="verticalZeroLineVisible"/>
+                <PropertyItem name="verticalGridLinesVisible"/>
+            </Section>
+        </Category>
+    </BeanModel>
+
+    <BeanModel name = "areaChart">
+        <beanClassName>
+            javafx.scene.chart.AreaChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="createSymbols" />
+            </Section>
+        </Category>
+    </BeanModel>
+    
+    <BeanModel name = "barChart">
+        <beanClassName>
+            javafx.scene.chart.BarChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="barGap" />
+                <PropertyItem name="categoryGap" />
+            </Section>
+        </Category>
+    </BeanModel>
+    
+    <BeanModel name="stackedBarChart">
+        <beanClassName>
+            javafx.scene.chart.StackedBarChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="categoryGap" />
+            </Section>
+        </Category>
+    </BeanModel>
+    
+    <BeanModel name="lineChart">
+        <beanClassName>
+            javafx.scene.chart.LineChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="createSymbols" />
+                <PropertyItem name="axisSortingPolicy" />
+            </Section>
+        </Category>
+    </BeanModel>      
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    <BeanModel name = "stackedAreaChart">
+        <beanClassName>
+            javafx.scene.chart.StackedAreaChart
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific">
+                <PropertyItem name="createSymbols" />
+            </Section>
+        </Category>
+    </BeanModel>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+
+    <BeanModel name = "webView">
+        <bean>
+            <WebView/>
+        </bean>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="text" >
+                    <PropertyItem name="fontScale" />
+                    <PropertyItem name="fontSmoothingType" />
+                </Section>
+                <Section name="specific" >
+                    <PropertyItem name="contextMenuEnabled" />
+                    <PropertyItem name="zoom" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        <Category name="layout">
+            <InsertSectionsBefore name="position" >
+                <Section name="size" >
+                    <PropertyItem name="minWidth" />
+                    <PropertyItem name="minHeight" />
+                    <PropertyItem name="prefWidth" />
+                    <PropertyItem name="prefHeight" />
+                    <PropertyItem name="maxWidth" />
+                    <PropertyItem name="maxHeight" />
+                    <PropertyItem name="width" />
+                    <PropertyItem name="height" />
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "axis">
+        <beanClassName>
+            javafx.scene.chart.Axis
+        </beanClassName>
+        <Category name="properties">
+            <InsertSectionsBefore>
+                <Section name="specific" >
+                    <PropertyItem name="animated" />
+                    <PropertyItem name="autoRanging" />
+                    <PropertyItem name="label" />
+                    <PropertyItem name="side" />
+
+                    <PropertyItem name="tickLabelFill" />
+                    <PropertyItem name="tickLabelFont" />
+                    <PropertyItem name="tickLabelGap" />
+                    <PropertyItem name="tickLabelRotation" />
+                    <PropertyItem name="tickLabelsVisible" />
+                    <PropertyItem name="tickLength" />
+                    <PropertyItem name="tickMarkVisible" />
+                    
+                                        
+                </Section>
+            </InsertSectionsBefore>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "categoryAxis">
+        <bean>
+            <CategoryAxis/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific" >
+                <PropertyItem name="categorySpacing" />
+                <PropertyItem name="startMargin" />
+                <PropertyItem name="endMargin" />
+                <PropertyItem name="gapStartAndEnd"/>
+            </Section>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "valueAxis">
+        <beanClassName>
+            javafx.scene.chart.ValueAxis
+        </beanClassName>
+        <Category name="properties">
+            <Section name="specific" >
+                <PropertyItem name="lowerBound" />
+                <PropertyItem name="upperBound" />
+                <PropertyItem name="scale" />
+                <PropertyItem name="minorTickVisible" />
+                <PropertyItem name="minorTickCount" />
+                <PropertyItem name="minorTickLength" />
+            </Section>
+        </Category>    
+        
+    </BeanModel>     
+
+    <BeanModel name = "numberAxis">
+        <bean>
+            <NumberAxis/>
+        </bean>
+        <Category name="properties">
+            <Section name="specific" >
+                <PropertyItem name="tickUnit" />
+                <PropertyItem name="forceZeroInRange" />
+            </Section>
+        </Category>    
+        
+    </BeanModel>     
+
 </PropertyPaneModel>
+
+                    

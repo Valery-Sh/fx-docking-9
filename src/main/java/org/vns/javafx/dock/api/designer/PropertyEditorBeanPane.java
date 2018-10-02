@@ -13,32 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx.dock.api.designer;
 
-import javafx.beans.DefaultProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 
 /**
  *
  * @author Valery
  */
-@DefaultProperty("insertList")
-public class InsertSectionsBefore extends Section implements InsertBeforeItem<Section> {
-    private final ObservableList<Section> insertList = FXCollections.observableArrayList();
-
-    public InsertSectionsBefore() {
-    }
-
-    public InsertSectionsBefore(String name) {
-        super(name, null);
-    }
-
-
-    @Override
-    public ObservableList<Section> getInsertList() {
-        return insertList;
-    }
-            
+public class PropertyEditorBeanPane extends Control {
     
 }

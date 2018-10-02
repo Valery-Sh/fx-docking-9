@@ -1,0 +1,16 @@
+.button-type-editor .plus-button {
+    -fx-graphic: url("../plus-black-thin-7x7.png");            
+    -fx-padding: 3 5 4 5 ;
+}
+
+.button-type-editor .minus-button {
+    -fx-padding: 3 5 4 5;
+    -fx-graphic: url("../minus-black-thin-7x7.png");    
+}
+
+.button-type-editor .text-field {
+    /*-fx-background-color: inherit;
+    -fx-border-color: lightgrey;
+    */
+    
+}

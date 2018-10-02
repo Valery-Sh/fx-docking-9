@@ -23,12 +23,25 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("properties")
-public class InsertBefore extends PropertyItem{
- private final ObservableList<PropertyItem> properties = FXCollections.observableArrayList();
+@DefaultProperty("insertList")
+public class InsertBefore extends PropertyItem  implements NamedItemList<PropertyItem>,InsertBeforeItem<PropertyItem> {
+ private final ObservableList<PropertyItem> insertList = FXCollections.observableArrayList();
 
-    public ObservableList<PropertyItem> getProperties() {
-        return properties;
+    @Override
+    public ObservableList<PropertyItem> getItems() {
+        return insertList;
     }
-    
+
+    @Override
+    public ObservableList<PropertyItem> getInsertList() {
+        return insertList;
+    }
+
+    public InsertBefore(String name) {
+        super(name, null);
+    }
+
+    public InsertBefore() {
+    }
+
 }

@@ -59,6 +59,10 @@ public abstract class AbstractPropertyEditor<E> extends StringTextField implemen
         addValidators();
         addFilterValidators();
     }
+    @Override
+    public String getUserAgentStylesheet() {
+        return getClass().getResource("resources/styles/default.css").toExternalForm();
+    }
 
     protected void addValidators() {
 

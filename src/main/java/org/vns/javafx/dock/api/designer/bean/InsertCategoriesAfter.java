@@ -23,11 +23,18 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("categories")
-public class InsertCategoriesAfter extends Category{
+@DefaultProperty("insertList")
+public class InsertCategoriesAfter extends Category implements InsertAfterItem<Category>{
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
 
-    public ObservableList<Category> getCategories() {
+    public InsertCategoriesAfter() {
+    }
+
+    public InsertCategoriesAfter(String name) {
+        super(name, null);
+    }
+
+    public ObservableList<Category> getInsertList() {
         return categories;
     }
             

@@ -26,16 +26,16 @@ import javafx.collections.ObservableList;
  * @author Valery
  */
 @DefaultProperty("items")
-public class BeanModel implements NamedItemList<Category> {
+public class BeanModel extends AbstractNamedItem implements NamedItemList<Category> {
 
     private Class<?> beanType;
     private String beanClassName;
     private Object bean;
-    private String name;
-    private String displayName;    
+//    private String name;
+//    private String displayName;    
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
 
-    public int indexByName(String categoryName) {
+/*    public int indexByName(String categoryName) {
         int retval = -1;
         Category p = getByName(categoryName);
         if (p != null) {
@@ -54,8 +54,8 @@ public class BeanModel implements NamedItemList<Category> {
         }
         return retval;
     }
-
-    @Override
+*/
+/*    @Override
     public String getName() {
         return name;
     }
@@ -64,7 +64,7 @@ public class BeanModel implements NamedItemList<Category> {
     public void setName(String name) {
         this.name = name;
     }
-
+*/
     public Class<?> getBeanType() {
         return beanType;
     }
@@ -102,12 +102,12 @@ public class BeanModel implements NamedItemList<Category> {
         return ppd;
     }
 
-    protected void merge(ObservableList<Category> cts) {
+/*    protected void merge(ObservableList<Category> cts) {
         for (Category c : cts) {
             updateBy(c);
         }
     }
-
+*/
     protected Category addCategory(String cat, String displayName) {
         Category retval = null;
         for (Category c : categories) {
@@ -117,9 +117,9 @@ public class BeanModel implements NamedItemList<Category> {
             }
         }
         if (retval == null) {
-            retval = new Category();
-            retval.setName(cat);
-            retval.setDisplayName(displayName);
+            retval = new Category(cat, displayName);
+            //retval.setName(cat);
+            //retval.setDisplayName(displayName);
             categories.add(retval);
         }
 
@@ -215,14 +215,26 @@ public class BeanModel implements NamedItemList<Category> {
         return retval;
     }
      */
-    protected void updateBy(Category cat) {
+/*    protected void updateBy(Category cat) {
         int idx = indexByName(cat.getName());
         int pos = NOT_INSERT;
         List<Category> list = new ArrayList<>();
         if (cat instanceof InsertCategoriesBefore) {
+            if ( idx < 0 && cat.getName() != null) {
+                return;
+            } else if ( idx < 0 ) {
+                idx = 0;
+            }
             pos = BEFORE;
             list = ((InsertCategoriesBefore) cat).getCategories();
         } else if (cat instanceof InsertCategoriesAfter) {
+            if ( idx < 0 && cat.getName() != null) {
+                return;
+            } else if ( idx < 0 ) {
+                idx = categories.size();
+            } else {
+                idx++;
+            }            
             pos = AFTER;
             list = ((InsertCategoriesAfter) cat).getCategories();
         } else {
@@ -231,7 +243,7 @@ public class BeanModel implements NamedItemList<Category> {
 
         if (idx < 0 || pos == NOT_INSERT) {
             for (Category c : list) {
-                addItem(categories.size() - 1, cat);
+                addItems(categories.size() - 1, cat);
             }
         } else if (pos == BEFORE) {
             int size = categories.size();
@@ -245,7 +257,7 @@ public class BeanModel implements NamedItemList<Category> {
         } else if (pos == AFTER) {
             int size = categories.size();
             for (Category c : list) {
-                addItem(idx, c);
+                addItems(idx, c);
                 if (categories.size() > size) {
                     ++idx;
                 }
@@ -254,8 +266,8 @@ public class BeanModel implements NamedItemList<Category> {
         }
 
     }
-
-    @Override
+*/
+/*    @Override
     public String getDisplayName() {
         return displayName;
     }
@@ -264,10 +276,6 @@ public class BeanModel implements NamedItemList<Category> {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
-    @Override
-    public void mergeChilds(Category category) {
-        
-    }
+*/
 
 }

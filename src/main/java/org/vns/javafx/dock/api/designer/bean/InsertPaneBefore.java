@@ -23,12 +23,13 @@ import javafx.collections.ObservableList;
  *
  * @author Valery
  */
-@DefaultProperty("inserted")
-public class InsertPaneBefore extends BeanModel{
-       private final ObservableList<BeanModel> inserted = FXCollections.observableArrayList();
+@DefaultProperty("insertList")
+public class InsertPaneBefore extends BeanModel  implements InsertBeforeItem<BeanModel> {
+       private final ObservableList<BeanModel> insertList = FXCollections.observableArrayList();
 
-    public ObservableList<BeanModel> getInserted() {
-        return inserted;
+       @Override
+    public ObservableList<BeanModel> getInsertList() {
+        return insertList;
     }
 
 }

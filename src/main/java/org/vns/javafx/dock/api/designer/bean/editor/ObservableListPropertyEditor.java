@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.util.function.Predicate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.StringConverter;
@@ -191,12 +190,11 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
             listContentBinding.unbind();
         }
     }
-
-  
     @Override
     public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+        return getClass().getResource("resources/styles/default.css").toExternalForm();
     }
+
 
     @Override
     public boolean isBound() {

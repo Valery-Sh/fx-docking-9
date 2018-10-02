@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api.designer.bean;
 
 import java.util.Arrays;
+import javafx.collections.ObservableList;
 import static org.vns.javafx.dock.api.designer.bean.NamedItem.AFTER;
 import static org.vns.javafx.dock.api.designer.bean.NamedItem.BEFORE;
 
@@ -45,7 +46,7 @@ public class ModelUtil {
             if (displayName != null) {
                 pd.setDisplayName(displayName);
             }
-            pd.setSection(section);
+            //pd.setSection(section);
             section.getItems().add(pd);
         }
         
@@ -83,7 +84,7 @@ public class ModelUtil {
             if (displayName != null) {
                 pd.setDisplayName(displayName);
             }
-            pd.setSection(section);
+//            pd.setSection(section);
             propModels[i] = pd;
         }
         if ( idx >= 0 && pos == AFTER) {
@@ -151,6 +152,17 @@ public class ModelUtil {
 
         }
         return retval;
-
     }    
+    
+    public static boolean contains(String propertyName, ObservableList<PropertyItem> pds) {
+        boolean retval = false;
+        for (PropertyItem pd : pds) {
+            if (propertyName.equals(pd.getName())) {
+                retval = true;
+                break;
+            }
+        }
+        return retval;
+    }
+    
 }

@@ -29,5 +29,61 @@ public interface NamedItem {
     String getDisplayName();
     void setDisplayName(String displayName);
     
-//    ObservableList<E> getDescriptors();
+    static String toDisplayName(String propName) {
+        
+        char[] str = propName.toCharArray();
+        if ( Character.isDigit(str[0]) ) {
+            return propName;
+        }
+        StringBuilder sb = new StringBuilder();
+        int startPos = 0;
+        
+        while ( true ) {
+            int endPos = getFirstWordPos(str, startPos);
+            str[startPos] = Character.toUpperCase(str[startPos]);
+            for ( int i = startPos; i <= endPos; i++  )  {
+                sb.append(str[i]);
+            }                  
+            if ( endPos == str.length - 1 ) {
+                break;
+            }
+            sb.append(' ');
+            startPos = endPos + 1;
+        }
+        return sb.toString().trim();
+    }
+
+    static int getFirstWordPos(char[] str, int startPos) {
+        int lastPos = startPos;
+        //str[startPos] = Character.toUpperCase(str[startPos]);
+        if (startPos == str.length - 1) {
+            return lastPos;
+        }
+        //
+        // Check whether first and cecond char are in upper case
+        //
+        
+        if (Character.isUpperCase(str[startPos])&& Character.isUpperCase(str[startPos + 1]) ) {
+
+            // try search lower case char
+            for (int i = startPos + 1; i < str.length; i++) {
+                if ( ! Character.isUpperCase(str[i]) ) {
+                    lastPos = i - 1;
+                    break;
+                }
+                lastPos = i;
+            }
+            return lastPos;
+        }
+
+        for (int i = startPos + 1; i < str.length; i++) {
+            if (Character.isUpperCase(str[i])) {
+                lastPos = i - 1;
+                break;
+            }
+            lastPos = i;
+        }
+        return lastPos;
+    }
+
 }

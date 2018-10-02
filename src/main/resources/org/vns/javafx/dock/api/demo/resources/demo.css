@@ -1,0 +1,30 @@
+
+.btn1 {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+}
+
+.btn2 {
+    -fx-text-fill: green;
+    -fx-font-weight: bold;
+}
+
+.button-type-editor .plus-button {
+    /*-fx-graphic: url("../plus-black-thin-7x7.png");*/            
+    -fx-padding: 0;
+}
+
+.my-hbox > .my-button {
+    /*-fx-graphic: url("../plus-black-thin-7x7.png");*/            
+    /*-fx-padding: 4;*/
+    -fx-text-fill: red;
+    
+}
+
+.my-btn1 {
+    /*-fx-graphic: url("../plus-black-thin-7x7.png");*/            
+    /*-fx-padding: 4;*/
+    -fx-text-fill: red;
+    
+}
