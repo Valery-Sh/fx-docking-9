@@ -466,7 +466,7 @@ public class StringTextField extends TextField {
     }
 
     @Override
-    public ObservableList<Node> getChildren() {
+    protected ObservableList<Node> getChildren() {
         return super.getChildren();
     }
 

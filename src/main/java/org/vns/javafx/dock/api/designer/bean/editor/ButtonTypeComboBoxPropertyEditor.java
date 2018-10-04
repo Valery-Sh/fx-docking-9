@@ -140,12 +140,7 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                     super.layoutChildren();
                 }
             };
-            //grid.setMinWidth(10);
-            //hbox.setSpacing(1);
-            //grid.setStyle("-fx-background-color: yellow");
-            
-            //contentPane.setStyle("-fx-background-color: aqua");
-            //control.getTextField().setStyle("-fx-background-color: aqua");
+         
             comboBox.setCellFactory(listView -> new ListCell<Label>() {
                 @Override
                 public void updateItem(Label item, boolean empty) {
@@ -166,7 +161,7 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
             grid.add(contentPane, 0, 0);
             grid.add(btnBox, 1, 0);
             comboBox.getItems().addAll(labels);
-            comboBox.setVisibleRowCount(labels.size());
+            //comboBox.setVisibleRowCount(labels.size());
             comboBox.setMaxWidth(1000);
             comboBox.setVisible(false);
 

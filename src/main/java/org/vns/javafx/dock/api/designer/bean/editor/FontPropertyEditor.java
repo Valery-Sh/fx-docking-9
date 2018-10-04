@@ -24,7 +24,6 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
