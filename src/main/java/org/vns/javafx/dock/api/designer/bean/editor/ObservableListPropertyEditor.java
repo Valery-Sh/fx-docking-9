@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.StringConverter;
@@ -224,5 +226,6 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
             
         });
     }
+
 
 }

@@ -31,7 +31,7 @@
         </Category>    
         
     </BeanModel>    
-    <BeanModel name = "button" displayName="Button">
+    <!--BeanModel name = "button" displayName="Button">
         <bean>
             <Button/>
         </bean>
@@ -44,7 +44,7 @@
             </InsertSectionsBefore>
         </Category>    
         
-    </BeanModel>
+    </BeanModel-->
 
     <BeanModel name = "checkBox" displayName="CheckBox">
         <bean>
@@ -571,7 +571,7 @@
                     <PropertyItem name="textAlignment"></PropertyItem>
                     <PropertyItem name="textOverrun"></PropertyItem>
                     <PropertyItem name="ellipsisString"></PropertyItem>
-                    <PropertyItem name="underLine"></PropertyItem>
+                    <PropertyItem name="underline"></PropertyItem>
                     <PropertyItem name="lineSpacing"></PropertyItem>
                     
                     

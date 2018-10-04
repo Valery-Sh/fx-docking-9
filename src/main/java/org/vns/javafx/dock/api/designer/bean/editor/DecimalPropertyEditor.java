@@ -44,7 +44,6 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
     }
 
     public DecimalPropertyEditor(Double minValue, Double maxValue, Integer scale) {
-        System.err.println("DecimalPropertyEditor constr min = " + minValue + "; max=" + maxValue);
         if (minValue.equals(Double.MIN_VALUE)) {
             this.minValue.set(-Double.MAX_VALUE);
         } else {

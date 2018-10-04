@@ -201,25 +201,14 @@ public class TestGridPane extends Application {
         Stage stage1 = new Stage();
         stage1.initOwner(stage);
 
-        VBox vbox = new VBox(btn1, btn2);
+        VBox vbox = new VBox(btn1);
         VBox propPane = new VBox();
         TilePane tilePane = new TilePane();
         propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
         vbox.getChildren().add(propPane);
         propPane.getChildren().add(tilePane);
 
-        /*        TabPane tabPane = new TabPane();
-        //propPane.getChildren().add(tabPane);
-        Tab propTab = new Tab();
-        Tab layoutTab = new Tab();
-        Tab codeTab = new Tab();
-        tabPane.getTabs().addAll(propTab,layoutTab,codeTab);
-        
-        tabPane.setTabMaxHeight(0);
-        propTab.setContent(new Label("P111"));
-        layoutTab.setContent(new Label("L111"));
-        codeTab.setContent(new Label("C111"));
-         */
+      
         StackPane contentPane = new StackPane();
         propPane.getChildren().add(contentPane);
         contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");

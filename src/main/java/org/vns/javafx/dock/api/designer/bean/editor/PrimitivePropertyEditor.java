@@ -188,7 +188,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         protected void addValidators() {
-            System.err.println("Add Validators");
             getValidators().add(item -> {
                 return Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
             });
@@ -220,7 +219,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         protected void addValidators() {
-            System.err.println("Add Validators");
             getValidators().add(item -> {
                 boolean retval = Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
                 Double dv = Double.valueOf(item);

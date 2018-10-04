@@ -10,7 +10,9 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -22,7 +24,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
-import org.vns.javafx.dock.api.designer.PropertyEditorBeanPane;
+import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditorFactory;
 
 /**
  *
@@ -31,6 +33,7 @@ import org.vns.javafx.dock.api.designer.PropertyEditorBeanPane;
 public class PropertyPaneModelRegistry {
 
     private PropertyPaneModel propertyPaneModel;
+
     private final ObservableMap<Class<?>, Introspection> introspection = FXCollections.observableHashMap();
 
     public static PropertyPaneModelRegistry getInstance() {
@@ -48,23 +51,12 @@ public class PropertyPaneModelRegistry {
         return retval;
     }
 
-    private final ObservableMap<Class<?>,BeanModel> beanModels = FXCollections.observableHashMap();
-    private final ObservableMap<Object,PropertyEditorBeanPane> beanPanes = FXCollections.observableHashMap();
-    
     protected void createInternalDescriptors() {
         propertyPaneModel = new PropertyPaneModel();
 
         addObjectBeanModel(propertyPaneModel);
         addNodeBeanModel(propertyPaneModel);
         addRegionBeanModel(propertyPaneModel);
-
-    }
-
-    public ObservableMap<Class<?>,BeanModel> getBeanModels() {
-        return beanModels;
-    }
-    public ObservableMap<Object,PropertyEditorBeanPane> getBeanPanes() {
-        return beanPanes;
     }
 
     protected void addObjectBeanModel(PropertyPaneModel paneModel) {
@@ -76,17 +68,15 @@ public class PropertyPaneModelRegistry {
         cat.setDisplayName("Properties");
         beanModel.getItems().add(cat);
         paneModel.getBeanModels().add(beanModel);
-
     }
 
     protected void addNodeBeanModel(PropertyPaneModel paneModel) {
         BeanModel beanModel = new BeanModel();
-      
 
         beanModel.setBeanType(Node.class);
         beanModel.setBeanClassName(Node.class.getName());
         paneModel.getBeanModels().add(beanModel);
-        
+
         Category propCat = beanModel.addCategory("properties", "Properties");
         Category layoutCat = beanModel.addCategory("layout", "Layout");
         Category codeCat = beanModel.addCategory("code", "Code");
@@ -357,17 +347,24 @@ public class PropertyPaneModelRegistry {
                 excl.add(s);
             }
         }
+/*        beanModel.getItems().forEach(cat -> {
+            cat.getItems().forEach( sec -> {
+                sec.getItems().forEach(pi -> {
+                    pi.setOriginClass(Node.class.getName());
+                });
+            });
+        });
+*/        
     }
 
     protected void addRegionBeanModel(PropertyPaneModel paneModel) {
 
         BeanModel beanModel = paneModel.getBeanModel(Node.class.getName()).getCopyFor(Region.class);
-        System.err.println("addRegionPropertyPaneDescriptor categories.size() = " + beanModel.getItems().size());
-        //paneModel.getBeanModels().add(beanModel);
+
         beanModel.setBeanType(Region.class);
         beanModel.setBeanClassName(Region.class.getName());
         paneModel.getBeanModels().add(beanModel);
-        
+
         Category propCat = beanModel.addCategory("properties", "Properties");
         Section sec = ModelUtil.addSection(propCat, "node", "Node");
         ModelUtil.addAfter(sec, "focusTraversable", "cacheShape", "centerShape", "scaleShape",
@@ -381,19 +378,25 @@ public class PropertyPaneModelRegistry {
         Category layoutCat = beanModel.addCategory("layout", "Layout");
 //        sec = layoutCat.addSectionBefore("position","internal","Internal");
 //        sec.add("padding","border","background");
-        
+
         sec = ModelUtil.addSectionBefore(layoutCat, "position", "size", "Size");
         ModelUtil.add(sec, "minWidth", "minHeight", "prefWidth", "prefHeight", "maxWidth", "maxHeight", "width", "height");
         ModelUtil.add(sec, "snapToPixel");
 
         sec = ModelUtil.addSectionBefore(layoutCat, "size", "internal", "Internal");
         ModelUtil.add(sec, "padding");
-        
-        
+
         Category codeCat = beanModel.addCategory("code", "Code");
-
-        System.err.println("2) addRegionPropertyPaneDescriptor categories.size() = " + beanModel.getItems().size());
-
+/*        beanModel.getItems().forEach(cat -> {
+            cat.getItems().forEach( sc -> {
+                sc.getItems().forEach(pi -> {
+                    if ( pi.getOriginClass() == null ) {
+                        pi.setOriginClass(Node.class.getName());
+                    }
+                });
+            });
+        });
+*/        
     }
 
     public static ObservableList<String> getPropertyNames(BeanModel beanModel) {
@@ -408,7 +411,7 @@ public class PropertyPaneModelRegistry {
         return list.sorted();
     }
 
-    protected static BeanModel getBeanModel(String beanClassName) {
+    protected static BeanModel getBeanModelByClassName(String beanClassName) {
         BeanModel ppd = null;
         for (BeanModel d : getPropertyPaneModel().getBeanModels()) {
             if (beanClassName.equals(d.getBeanClassName())) {
@@ -419,12 +422,32 @@ public class PropertyPaneModelRegistry {
         return ppd;
     }
 
+    public static void printBeanModel(BeanModel beanModel) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        System.err.println("===================================================");
+        System.err.println("Bean Class Name: " + beanModel.getBeanClassName() + "; size = " + beanModel.getItems().size());
+        System.err.println("---------------------------------------------------");
+
+        for (Category cat : beanModel.getItems()) {
+            System.err.println("Category id = " + cat.getName() + "; name = " + cat.getDisplayName());
+            for (Section sec : cat.getItems()) {
+                System.err.println("   Section = " + sec.getName() + "; name = " + sec.getDisplayName());
+                sec.getItems().forEach(pd -> {
+                    list.add(pd.getName());
+                    System.err.println("      " + pd.getName());
+                });
+            }
+        }
+        System.err.println("Bean Class Name: " + beanModel.getBeanClassName() + "; size = " + list.size());
+
+    }
+
     public static void printBeanModel(String beanClassName) {
-        BeanModel ppd = PropertyPaneModelRegistry.getBeanModel(beanClassName);
+        BeanModel beanModel = PropertyPaneModelRegistry.getBeanModelByClassName(beanClassName);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
 
-        ppd.getItems().forEach(cat -> {
+        beanModel.getItems().forEach(cat -> {
             cat.getItems().forEach(sec -> {
                 sec.getItems().forEach(pd -> {
                     list.add(cat.getDisplayName() + ":" + sec.getDisplayName() + ":" + pd.getName());
@@ -440,13 +463,13 @@ public class PropertyPaneModelRegistry {
     }
 
     public static void printBeanModel(String beanClassName, boolean byCategories) {
-        BeanModel ppd = PropertyPaneModelRegistry.getBeanModel(beanClassName);
+        BeanModel beanModel = PropertyPaneModelRegistry.getBeanModelByClassName(beanClassName);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
-        System.err.println("Bean Class Name: " + beanClassName + "; size = " + ppd.getItems().size());
+        System.err.println("Bean Class Name: " + beanClassName + "; size = " + beanModel.getItems().size());
         System.err.println("---------------------------------------------------");
 
-        for (Category cat : ppd.getItems()) {
+        for (Category cat : beanModel.getItems()) {
             System.err.println("Category id = " + cat.getName() + "; name = " + cat.getDisplayName());
             for (Section sec : cat.getItems()) {
                 System.err.println("   Section = " + sec.getName() + "; name = " + sec.getDisplayName());
@@ -460,7 +483,114 @@ public class PropertyPaneModelRegistry {
 
     }
 
-    public static BeanModel getBeanModel(Class<?> beanClass) {
+    public BeanModel getBeanModel(Object bean) {
+        return getBeanModel(bean, introspect(bean.getClass()));
+    }
+
+    public BeanModel getBeanModel(Object bean, Introspection isp) {
+        Map<Class<?>, BeanModel> map = FXCollections.observableHashMap();
+        String type = bean.getClass().getName();
+        for (BeanModel bm : propertyPaneModel.getBeanModels()) {
+            if (type.equals(bm.getBeanClassName())) {
+                return bm;
+            }
+            map.put(bm.getBeanType(), bm);
+        }
+
+        BeanModel beanModel = null;
+
+        Class sup = bean.getClass().getSuperclass();
+
+        while (true) {
+            if (map.containsKey(sup)) {
+                beanModel = map.get(sup);
+                break;
+            }
+            sup = sup.getSuperclass();
+        }
+
+        beanModel = beanModel.getCopyFor(bean.getClass());
+        beanModel.setBeanType(bean.getClass());
+        beanModel.setBeanClassName(bean.getClass().getName());
+
+        propertyPaneModel.getBeanModels().add(beanModel);
+        updateByIntrospection(beanModel, isp);
+
+        return beanModel;
+    }
+
+    protected void updateByIntrospection(BeanModel beanModel, Introspection isp) {
+        Category propCat = null;
+        Category codeCat = null;
+        Section propSpec = null;
+        Section codeSpec = null;
+
+        Map<String, PropertyItem> map = FXCollections.observableHashMap();
+        for (Category cat : beanModel.getItems()) {
+            if ("properties".equals(cat.getName())) {
+                propCat = cat;
+            }
+            if ("code".equals(cat.getName())) {
+                codeCat = cat;
+            }
+
+            for (Section sec : cat.getItems()) {
+                if ("properties".equals(cat.getName()) && "specific".equals(sec.getName())) {
+                    propSpec = sec;
+                }
+                if ("code".equals(cat.getName()) && "specific".equals(sec.getName())) {
+                    codeSpec = sec;
+                }
+
+                for (PropertyItem it : sec.getItems()) {
+                    map.put(it.getName(), it);
+                }
+            }
+        }
+
+        Section sec = new Section("specific");
+        for (PropertyDescriptor pd : isp.getPropertyDescriptors().values()) {
+            if (!map.containsKey(pd.getName())) {
+                sec.getItems().add(new PropertyItem(pd.getName()));
+            }
+        }
+
+        if (!sec.getItems().isEmpty()) {
+            if (propCat == null) {
+                propCat = new Category("properties");
+                beanModel.getItems().add(0, propCat);
+            }
+            if (propSpec == null) {
+                propCat.getItems().add(0, sec);
+            } else {
+                propSpec.getItems().addAll(sec.getItems());
+            }
+
+        }
+
+        sec = new Section("specific");
+        for (PropertyDescriptor pd : isp.getEventPropertyDescriptors().values()) {
+            if (!map.containsKey(pd.getName())) {
+                sec.getItems().add(new PropertyItem(pd.getName()));
+            }
+        }
+
+        if (!sec.getItems().isEmpty()) {
+            if (codeCat == null) {
+                codeCat = new Category("code");
+                beanModel.getItems().add(0, codeCat);
+            }
+            if (codeSpec == null) {
+                codeCat.getItems().add(0, sec);
+            } else {
+                codeSpec.getItems().addAll(sec.getItems());
+            }
+
+        }
+
+    }
+
+    public static BeanModel getBeanModelByType(Class<?> beanClass) {
         BeanModel beanModel = null;
         for (BeanModel bm : getPropertyPaneModel().getBeanModels()) {
             if (beanClass.equals(bm.getBeanType())) {
@@ -469,7 +599,7 @@ public class PropertyPaneModelRegistry {
             }
         }
         return beanModel;
-        
+
     }
 
     protected PropertyPaneModel loadDefaultDescriptors() {
@@ -478,23 +608,9 @@ public class PropertyPaneModelRegistry {
         try {
             InputStream is = getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/DefaultPropertyPaneCollection.fxml");
             root = loader.load(is);
-            
-            /*            root.getBeanDescriptors().forEach(d -> {
-                String className = d.getType();
-                Class clazz;//
-                try {
-                    clazz = Class.forName(className);
-                    register(clazz, d);
-                } catch (ClassNotFoundException ex) {
-                    System.err.println("ClassNotFoundException EXCEPTION: " + ex.getMessage());
-                    Logger.getLogger(PropertyPaneDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-             */
         } catch (IOException ex) {
             Logger.getLogger(PropertyPaneModelRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return root;
     }
 
@@ -534,10 +650,10 @@ public class PropertyPaneModelRegistry {
             updateCopy.removeAll(part);
 
             for (int i = 0; i < part.size(); i++) {
-                if ( "javafx.scene.layout.VBox".equals(part.get(i).getBeanClassName()) ) {
-                    System.err.println("part " + part.get(i).getBeanClassName());
-                }
-                
+//                if ("javafx.scene.layout.VBox".equals(part.get(i).getBeanClassName())) {
+//                    System.err.println("part " + part.get(i).getBeanClassName());
+//                }
+
                 updateBy(part.get(i));
             }
         }
@@ -605,9 +721,9 @@ public class PropertyPaneModelRegistry {
         retval.setBeanClassName(update.getBeanType().getName());
         retval.setBean(update.getBean());
         retval.merge(update.getItems());
-        
+
         propertyPaneModel.getBeanModels().add(retval);
-        
+
         return retval;
     }
 
@@ -639,8 +755,8 @@ public class PropertyPaneModelRegistry {
     public Introspection introspect(Class<?> clazz) {
         Introspection retval = new Introspection(clazz);
         long start = System.currentTimeMillis();
-        List<String> excludeProps = FXCollections.observableArrayList("properties", "pseudoClassStates", "scene", "parent", "skin",
-                "graphic", "contentMenu", "clip", "transforms");
+        List<String> excludeProps = FXCollections.observableArrayList("properties", "pseudoClassStates", "sceneProperty", "parent", "skinProperty",
+                "graphicProperty", "contentMenuProperty", "clipProperty", "transformsProperty", "armedProperty", "needsLayoutProperty", "hoverProperty");
 
         //Map<String, MethodDescriptor> methodDescr = new HashMap<>();
         //Map<String, PropertyDescriptor> propDescrs = new HashMap<>();
@@ -652,30 +768,27 @@ public class PropertyPaneModelRegistry {
 //                    System.err.println("not get not set" + md.getMethod().getName());
 //                }
 
-                if (md.getName().endsWith("Property")) {
+                if (md.getName().endsWith("Property") && !excludeProps.contains(md.getName())) {
                     retval.getMethodDescriptors().put(md.getName(), md);
-                    System.err.println("fxProperty: " + md.getName());
+                    //System.err.println("fxProperty: " + md.getName());
                 }
             }
             PropertyDescriptor[] pds = info.getPropertyDescriptors();
             for (PropertyDescriptor pd : pds) {
                 if (retval.getMethodDescriptors().containsKey(pd.getName() + "Property")) {
                     Class<?> returnType = pd.getReadMethod().getReturnType();
-
-                    if (hasPropertyEditor(pd.getReadMethod())) {
+                    if (EventHandler.class.isAssignableFrom(returnType)) {
+                        retval.getEventPropertyDescriptors().put(pd.getName(), pd);
+                    } else if (hasPropertyEditor(pd.getName(), pd.getReadMethod())) {
                         retval.getPropertyDescriptors().put(pd.getName(), pd);
-
-                        if (EventHandler.class.isAssignableFrom(returnType)) {
-                            retval.getEventPropertyDescriptors().put(pd.getName(), pd);
-                        }
                     }
                 } else if (pd.getReadMethod() != null) {
 
                     Class<?> returnType = pd.getReadMethod().getReturnType();
-                    if (hasPropertyEditor(pd.getReadMethod())) {
+                    if (hasPropertyEditor(pd.getName(), pd.getReadMethod())) {
 
                         if (ObservableList.class.isAssignableFrom(returnType) || ObservableMap.class.isAssignableFrom(returnType) || ObservableSet.class.isAssignableFrom(returnType)) {
-                            System.err.println("MMM = " + pd.getReadMethod().getName());
+//                            System.err.println("MMM = " + pd.getReadMethod().getName());
                             retval.getPropertyDescriptors().put(pd.getName(), pd);
                         }
                     }
@@ -698,18 +811,26 @@ public class PropertyPaneModelRegistry {
             System.err.println("INROSPECTION Exception ex = " + ex.getMessage());
         }
         long end = System.currentTimeMillis();
-        System.err.println("Interval = " + (end - start));
-        System.err.println("propertyDescriptors.size = " + retval.getPropertyDescriptors().size());
-        System.err.println("eventPropertyDescriptors.size = " + retval.getEventPropertyDescriptors().size());
+//        System.err.println("Interval = " + (end - start));
+//        System.err.println("propertyDescriptors.size = " + retval.getPropertyDescriptors().size());
+//        System.err.println("eventPropertyDescriptors.size = " + retval.getEventPropertyDescriptors().size());
         return retval;
     }
 
-    public boolean hasPropertyEditor(Method readMethod) {
+    public boolean hasPropertyEditor(String propName, Method readMethod) {
+        boolean retval = false;
         if (ObservableList.class.isAssignableFrom(readMethod.getReturnType())) {
             Class<?> clazz = BeanAdapter.getListItemType(readMethod.getGenericReturnType());
-            System.err.println("$$$$$$$$$$$$$$$$ generic observablelist item = " + clazz);
+            //System.err.println("Method get prop name = " + readMethod.getName());
+            retval = PropertyEditorFactory.getDefault().hasEditor(propName, ObservableList.class, clazz);
+        } else {
+            retval = PropertyEditorFactory.getDefault().hasEditor(propName, readMethod.getReturnType());
         }
-        return true;
+        //System.err.println("*********************************************");
+        if (!retval) {
+            //System.err.println("propName = " + propName + "; returnType = " + readMethod.getReturnType().getSimpleName());
+        }
+        return retval;
     }
 
     public static class Introspection {
@@ -724,14 +845,41 @@ public class PropertyPaneModelRegistry {
             this.beanClass = beanClass;
         }
 
+        /**
+         * Returns a map which key is a property name and value is an object of
+         * type {@code MethodDescriptor).
+         * Each item represents a method which name starts with a bean property name
+         * an ends with {@literal "Property"}.
+         *
+         * @return a map which key is a property name and value is an object
+         * of type {@code MethodDescriptor).
+         */
         public ObservableMap<String, MethodDescriptor> getMethodDescriptors() {
             return methodDescriptors;
         }
 
+        /**
+         * Returns a map which key is a property name and value is an object of
+         * type {@code PropertyDescriptor).
+         * Each corresponding property is a javaFX property or is of type
+         * ObservableList and is not of type {@code EventHandler}.
+         *
+         * @return a map which key is a property name and value is an object
+         * of type {@code PropertyDescriptor).
+         */
         public ObservableMap<String, PropertyDescriptor> getPropertyDescriptors() {
             return propertyDescriptors;
         }
 
+        /**
+         * Returns a map which key is a property name and value is an object of
+         * type {@code PropertyDescriptor).
+         * Each corresponding property is a javaFX property and is of type
+         * {@code EventHandler}.
+         *
+         * @return a map which key is a property name and value is an object
+         * of type {@code PropertyDescriptor).
+         */
         public ObservableMap<String, PropertyDescriptor> getEventPropertyDescriptors() {
             return eventPropertyDescriptors;
         }
@@ -740,5 +888,21 @@ public class PropertyPaneModelRegistry {
             return beanClass;
         }
 
+        public Class[] getPropTypes(String propName) {
+            Class[] retval;
+            PropertyDescriptor pd = getPropertyDescriptors().get(propName);
+            if ( pd == null ) {
+                return null;
+            }
+            Method rm = pd.getReadMethod();
+            if (ObservableList.class.isAssignableFrom(rm.getReturnType())) {
+                Class<?> clazz = BeanAdapter.getListItemType(rm.getGenericReturnType());
+                retval = new Class[] {ObservableList.class, clazz};
+                
+            } else {
+                retval = new Class[] {rm.getReturnType()};
+            }
+            return retval;
+        }
     }
 }

@@ -13,14 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer;
+package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.scene.control.Control;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 
 /**
  *
- * @author Valery
+ * @author Valery Shyshkin
  */
-public class PropertyEditorBeanPane extends Control {
+public class FontPane extends StackPane {
+    private final GridPane grid;
+    public FontPane() {
+        grid = new GridPane();
+        init();
+    }
+    private void init() {
+        grid.add(new TextField(), 0, 0);
+        grid.add(new Label("Label1"), 0, 1);
+        grid.add(new Button("Button1"), 0, 1);
+        getChildren().add(grid);
+    }
     
 }

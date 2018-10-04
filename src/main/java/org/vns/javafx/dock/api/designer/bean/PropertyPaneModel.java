@@ -18,17 +18,13 @@ package org.vns.javafx.dock.api.designer.bean;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
 import javafx.scene.control.Control;
 
 @DefaultProperty("beanModels")
 public class PropertyPaneModel extends Control {
 
-    //private final ObservableList<BeanModel> beanModels = FXCollections.observableArrayList();
-
     private final ObservableList<BeanModel> beanModels = FXCollections.observableArrayList();
-    
   
     public PropertyPaneModel() {
         init();

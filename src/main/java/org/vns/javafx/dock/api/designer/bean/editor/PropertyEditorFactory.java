@@ -18,8 +18,12 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.control.ButtonType;
+import javafx.scene.text.Font;
+import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.BytePropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.CharacterPropertyEditor;
@@ -44,33 +48,32 @@ public abstract class PropertyEditorFactory {
      *
      * @param propertyType the type of the property
      * @param bean the bean the property belongs to
-     * @param propertyName the name of the property 
+     * @param propertyName the name of the property
      * @return the new property editor instance for the specified parameters
      */
-    public abstract PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName);// {
+    //public abstract PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName);// {
 //        return null;
 //    }
-
     /**
      *
      * @param propertyType the type of the property
-     * @param propertyName the name of the property 
+     * @param propertyName the name of the property
      * @return the object of type {@code PropertyEditor }
      */
-    public abstract PropertyEditor getEditor(Class<?> propertyType, String propertyName);// {
+    public abstract PropertyEditor getEditor(String propertyName, Class<?>... propertyType);// {
 
-    public abstract PropertyEditor getEditor(String propertyType, String propertyName);// {    
+    public abstract boolean hasEditor(String propertyName, Class<?>... propertyType);// {
+
+    //public abstract PropertyEditor getEditor(String propertyType, String propertyName);// {    
 //        return null;
 //    }  
-
     public static class DefaultEditorFactory extends PropertyEditorFactory {
 
-        @Override
-        public PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName) {
+        /*        public PropertyEditor getEditor(Class<?> propertyType, Object bean, String propertyName) {
             List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
             PropertyEditor retval = null;
             for (PropertyEditorFactory f : list) {
-                retval = f.getEditor(propertyType, bean, propertyName);
+                //retval = f.getEditor(propertyType, bean, propertyName);
                 if (retval != null) {
                     break;
                 }
@@ -98,7 +101,7 @@ public abstract class PropertyEditorFactory {
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
                 return new DoublePropertyEditor();
             }  else if ("style".equals(propertyName) && propertyType.equals(String.class)) {
-                return new StyleClassPropertyEditor();
+                return new StylePropertyEditor();
             } else if (propertyType.equals(String.class)) {
                 return new StringPropertyEditor();
             } else if (propertyType.isEnum()) {
@@ -110,13 +113,18 @@ public abstract class PropertyEditorFactory {
             }
             return retval;
         }
-
+         */
         @Override
-        public PropertyEditor getEditor(Class<?> propertyType, String propertyName) {
+        public PropertyEditor getEditor(String propertyName, Class<?>... propertyTypes) {
+            Class<?> propertyType = propertyTypes[0];
+            Class<?> genericType = null;
+            if (propertyTypes.length >= 2) {
+                genericType = propertyTypes[1];
+            }
             List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
             PropertyEditor retval = null;
             for (PropertyEditorFactory f : list) {
-                retval = f.getEditor(propertyType, propertyName);
+                retval = f.getEditor(propertyName, propertyTypes);
                 if (retval != null) {
                     break;
                 }
@@ -143,8 +151,8 @@ public abstract class PropertyEditorFactory {
                 return new SliderPropertyEditor(0, 1, 1);
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
                 return new DoublePropertyEditor();
-            }  else if ("style".equals(propertyName) && propertyType.equals(String.class)) {
-                return new StyleClassPropertyEditor();
+            } else if ("style".equals(propertyName) && propertyType.equals(String.class)) {
+                return new StylePropertyEditor();
             } else if (propertyType.equals(String.class)) {
                 return new StringPropertyEditor();
             } else if (propertyType.isEnum()) {
@@ -153,6 +161,12 @@ public abstract class PropertyEditorFactory {
                 return new InsetsPropertyEditor();
             } else if (propertyType.equals(Bounds.class)) {
                 return new BoundsPropertyEditor();
+            } else if (("styleClass".equals(propertyName) && propertyType.equals(ObservableList.class) && String.class.equals(genericType))) {
+                return new StyleClassPropertyEditor();
+            } else if (("buttonTypes".equals(propertyName) && propertyType.equals(ObservableList.class) && ButtonType.class.equals(genericType))) {
+                return new ButtonTypeComboBoxPropertyEditor();
+            } else if (propertyType.equals(Font.class)) {
+                return new FontPropertyEditor();
             }
             return retval;
         }
@@ -161,12 +175,11 @@ public abstract class PropertyEditorFactory {
             return SingletonInstance.INSTANCE;
         }
 
-        @Override
-        public PropertyEditor getEditor(String propertyType, String propertyName) {
+        /*        public PropertyEditor getEditor(String propertyType, String propertyName) {
             List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
             PropertyEditor editor = null;
             for (PropertyEditorFactory f : list) {
-                editor = f.getEditor(propertyType, propertyName);
+       //         editor = f.getEditor(propertyType, propertyName);
                 if (editor != null) {
                     break;
                 }
@@ -194,7 +207,7 @@ public abstract class PropertyEditorFactory {
             } else if (propertyType.equals(Double.class.getName()) || propertyType.equals(double.class.getName())) {
                 return new DoublePropertyEditor();
             } else if ("style".equals(propertyName) && propertyType.equals(String.class.getName())) {
-                return new StyleClassPropertyEditor();
+                return new StylePropertyEditor();
             }  else if (propertyType.equals(String.class.getName())) {
                 return new StringPropertyEditor();
             } else if (propertyType.equals(Insets.class.getName())) {
@@ -213,9 +226,64 @@ public abstract class PropertyEditorFactory {
             }
             return editor;
         }
-        
+         */
+        @Override
+        public boolean hasEditor(String propertyName, Class<?>... propertyTypes) {
+            Class<?> propertyType = propertyTypes[0];
+            Class<?> genericType = null;
+            if (propertyTypes.length >= 2) {
+                genericType = propertyTypes[1];
+            }
+            List<? extends PropertyEditorFactory> list = DesignerLookup.lookupAll(PropertyEditorFactory.class);
+            boolean retval = false;
+            for (PropertyEditorFactory f : list) {
+                retval = f.hasEditor(propertyName,propertyTypes);
+                if (retval) {
+                    break;
+                }
+            }
+            if (retval) {
+                return retval;
+            }
 
-        
+            if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
+                retval = true;
+            } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
+                retval = true;
+            } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
+                retval = true;
+            } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
+                retval = true;
+            } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
+                retval = true;
+            } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
+                retval = true;
+            } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
+                retval = true;
+            } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
+                retval = true;
+            } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
+                retval = true;
+            } else if ("style".equals(propertyName) && propertyType.equals(String.class)) {
+                retval = true;
+            } else if (propertyType.equals(String.class)) {
+                retval = true;
+            } else if (propertyType.isEnum()) {
+                retval = true;
+            } else if (propertyType.equals(Insets.class)) {
+                retval = true;
+            } else if (propertyType.equals(Bounds.class)) {
+                retval = true;
+            } else if (("styleClass".equals(propertyName) && propertyType.equals(ObservableList.class) && String.class.equals(genericType))) {
+                retval = true;
+            } else if (("buttonTypes".equals(propertyName) && propertyType.equals(ObservableList.class) && ButtonType.class.equals(genericType))) {
+                retval = true;
+            } else if (propertyType.equals(Font.class)) {
+                retval = true;
+            }
+            return retval;
+
+        }
 
         private static class SingletonInstance {
 

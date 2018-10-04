@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 
@@ -24,9 +25,28 @@ import javafx.collections.ObservableList;
  * @author Valery Shyshkin
  * @param <T> the type of the propertyValue
  */
-public interface ListPropertyEditor<T> {
+public interface ListPropertyEditor<T> extends PropertyEditor<T>{
     void bind(ObservableList<T> property);
     void bindBidirectional(ObservableList<T> property);
+    
+    @Override
+    default void bind(Property<T> property) {
+        if ( ! (property instanceof ListProperty) ) {
+            return;
+        }
+        bind( ((ListProperty<T>)property).get());
+    }
+
+    
+    @Override
+    default void bindBidirectional(Property<T> property) {
+        if ( ! (property instanceof ListProperty) ) {
+            return;
+        }
+        bindBidirectional(((ListProperty<T>)property).get());
+
+    }
+    
     void unbind();
     boolean isEditable();
     void setEditable(boolean editable);

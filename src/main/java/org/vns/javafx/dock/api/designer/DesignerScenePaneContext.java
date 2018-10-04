@@ -31,7 +31,6 @@ public class DesignerScenePaneContext extends ScenePaneContext {
         init();
     }
     private void init(){
-        System.err.println("******* DesignerScenePaneContext");
     }
     public static class DesignerScenePaneContextFactory extends ScenePaneContextFactory{
         public ScenePaneContext getContext(Dockable dockable) {

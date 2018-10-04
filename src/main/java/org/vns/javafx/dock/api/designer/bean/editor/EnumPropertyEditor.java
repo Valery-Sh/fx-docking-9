@@ -53,6 +53,7 @@ public class EnumPropertyEditor<T extends Enum<T>> extends ChoiceBox<String> imp
                 break;
             }
         }
+        
     });
 
     public EnumPropertyEditor(Class<T> enumType) {
@@ -65,10 +66,8 @@ public class EnumPropertyEditor<T extends Enum<T>> extends ChoiceBox<String> imp
     });
 
     private void init() {
-        //disableProperty().bindBidirectional();
         getStyleClass().add("enum-field-editor");
         disableProperty().addListener((v, oldValue, newValue) -> {
-            System.err.println("disableProperty changed: " + newValue);
             pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, newValue);
             setEditable(!newValue);
         });
@@ -79,6 +78,7 @@ public class EnumPropertyEditor<T extends Enum<T>> extends ChoiceBox<String> imp
         for (Object o : objects) {
             getItems().add(o.toString());
         }
+        setMaxWidth(1000);
     }
 
     @Override

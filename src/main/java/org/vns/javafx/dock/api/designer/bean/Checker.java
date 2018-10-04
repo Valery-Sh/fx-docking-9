@@ -73,7 +73,7 @@ public class Checker {
     }
 
     public List<String> getPropertyNames() {
-        BeanModel ppd = registry.getBeanModel(beanClass);
+        BeanModel ppd = registry.getBeanModelByType(beanClass);
         ObservableList<String> list = FXCollections.observableArrayList();
         System.err.println("===================================================");
 
@@ -94,7 +94,7 @@ public class Checker {
     }
     public void printPropertyDisplayNames() {
         System.err.println("==================================================================");
-        BeanModel ppd = registry.getBeanModel(beanClass);
+        BeanModel ppd = registry.getBeanModelByType(beanClass);
         System.err.println("              --- display names  ---");
         System.err.println("==================================================================");
         ppd.getItems().forEach(cat -> {

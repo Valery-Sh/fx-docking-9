@@ -19,8 +19,6 @@ import java.lang.reflect.Method;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -37,6 +35,8 @@ public class PropertyItem  extends AbstractNamedItem {
     private Method readMethod;
     private Method writetMethod;
     private Class<?> propertyType;
+    //private String originClass;
+    
 //    private final StringProperty  editorClass = new SimpleStringProperty();
 //    private final ReadOnlyObjectWrapper<Section> sectionWrapper = new ReadOnlyObjectWrapper<>();
 
@@ -53,6 +53,14 @@ public class PropertyItem  extends AbstractNamedItem {
         super(name);
     }
 
+/*    public String getOriginClass() {
+        return originClass;
+    }
+
+    public void setOriginClass(String originClass) {
+        this.originClass = originClass;
+    }
+*/
 
 /*    public ReadOnlyObjectProperty<Section> categoryProperty() {
         return sectionWrapper.getReadOnlyProperty();
@@ -179,6 +187,7 @@ public class PropertyItem  extends AbstractNamedItem {
         pd.setName(getName());
         pd.setDisplayName(pd.getDisplayName());
         pd.setModifiable(isModifiable());
+        //pd.setOriginClass(originClass);
         //pd.setModifiable(isModifiable());
         //pd.setSection(sec);
         return pd;

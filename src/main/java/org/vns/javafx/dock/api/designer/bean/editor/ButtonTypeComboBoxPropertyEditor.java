@@ -27,7 +27,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -45,6 +48,8 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
     private void init() {
         getStyleClass().add("button-type-editor");
         textField = new ButtonTypeListPropertyEditor();
+        //setMaxWidth(1000);
+
     }
 
     @Override
@@ -93,7 +98,7 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
 
     public static class ButtonTypeComboBoxPropertyEditorSkin extends SkinBase<ButtonTypeComboBoxPropertyEditor> {
 
-        private final HBox hbox;
+        private final GridPane grid;
         private final Button plusButton;
         private final Button minusButton;
         private final StackPane contentPane;
@@ -104,12 +109,12 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
 
         public ButtonTypeComboBoxPropertyEditorSkin(ButtonTypeComboBoxPropertyEditor control) {
             super(control);
-
+            
             separator = control.getTextField().getSeparator();
 
             contentPane = new StackPane();
             comboBox = new ComboBox<>();
-
+            
             contentPane.getChildren().addAll(comboBox, control.getTextField());
             plusButton = new Button();
             plusButton.getStyleClass().add("plus-button");
@@ -128,15 +133,18 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                     show(minusButton);
                 }
             });
-
-            hbox = new HBox() {
+            HBox btnBox = new HBox(plusButton,minusButton);
+            grid = new GridPane() {
                 @Override
                 protected void layoutChildren() {
                     super.layoutChildren();
                 }
             };
-            hbox.setSpacing(1);
-          
+            //grid.setMinWidth(10);
+            //hbox.setSpacing(1);
+            //grid.setStyle("-fx-background-color: yellow");
+            
+            //contentPane.setStyle("-fx-background-color: aqua");
             //control.getTextField().setStyle("-fx-background-color: aqua");
             comboBox.setCellFactory(listView -> new ListCell<Label>() {
                 @Override
@@ -152,13 +160,14 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
 
             contentPane.setAlignment(Pos.BASELINE_CENTER);
 
-            hbox.getChildren().addAll(contentPane, plusButton, minusButton);
-
+            ColumnConstraints column0 = new ColumnConstraints();
+            column0.setHgrow(Priority.ALWAYS);
+            grid.getColumnConstraints().addAll(column0);
+            grid.add(contentPane, 0, 0);
+            grid.add(btnBox, 1, 0);
             comboBox.getItems().addAll(labels);
             comboBox.setVisibleRowCount(labels.size());
-            comboBox.prefWidthProperty().bind(control.getTextField().widthProperty());
-            comboBox.minWidthProperty().bind(control.getTextField().widthProperty());
-            comboBox.maxWidthProperty().bind(control.getTextField().widthProperty());
+            comboBox.setMaxWidth(1000);
             comboBox.setVisible(false);
 
             comboBox.setOnHidden(ev -> {
@@ -189,7 +198,7 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                     }
                 }
             });
-            getChildren().add(hbox);
+            getChildren().add(grid);
         }
         private Button pressed;
 
