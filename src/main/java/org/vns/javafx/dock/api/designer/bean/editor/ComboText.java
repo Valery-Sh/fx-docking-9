@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -34,6 +35,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
@@ -42,7 +44,7 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  *
  * @author Valery Shyshkin
  */
-public class ComboText extends Control {
+public class ComboText extends Control implements PropertyEditor<Font>{
 
     private final ObjectProperty<Button> button = new SimpleObjectProperty<>();
     private final ObjectProperty<Parent> popupRoot = new SimpleObjectProperty<>();
@@ -98,8 +100,7 @@ public class ComboText extends Control {
         btn.setTextOverrun(OverrunStyle.CLIP);
         btn.setContentDisplay(ContentDisplay.LEFT);
         btn.setAlignment(Pos.CENTER_LEFT);
-        //AnchorPane.setLeftAnchor(btn, 0d);
-        //AnchorPane.setRightAnchor(btn, 0d);
+    
     }
 
     public static Polygon createTriangle() {
@@ -111,6 +112,36 @@ public class ComboText extends Control {
         return polygon;
     }
 
+    @Override
+    public void bind(Property<Font> property) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void bindBidirectional(Property<Font> property) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void unbind() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isEditable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isBound() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public static class ComboTextSkin extends SkinBase<ComboText> {
 
         private AnchorPane anchor = null;
@@ -118,15 +149,27 @@ public class ComboText extends Control {
 
         public ComboTextSkin(ComboText control) {
             super(control);
-
-            anchor = new AnchorPane();
+            Button btnGr = new Button();
+            
+            anchor = new AnchorPane() {
+                @Override
+                protected void layoutChildren() {
+                    super.layoutChildren();
+                }
+            };
             anchor.getStyleClass().add("button");
-            anchor.setPadding(new Insets(0, 0, 0, 0));
+
             Shape graphic = ComboText.createTriangle();
             //StackPane sp = new StackPane(graphic);
             //sp.setStyle("-fx-background-color: aqua");
             Button btn = control.getButton();
-            Button btnGr = new Button();
+            
+
+            //Insets ins = btn.getInsets();
+            Insets insGr = btnGr.getInsets();
+
+            btnGr.getStyleClass().clear();
+
             btnGr.setGraphic(graphic);
             if (btn == null) {
                 btn = new Button();
@@ -134,11 +177,14 @@ public class ComboText extends Control {
                 ComboText.setDefaultLayout(btn);
                 //ComboButton.setDefaultButtonGraphic(btn);
                 control.setButton(btn);
+
                 AnchorPane.setLeftAnchor(btn, 0d);
                 AnchorPane.setRightAnchor(btn, 0d);
                 AnchorPane.setTopAnchor(btn, 0d);
                 AnchorPane.setBottomAnchor(btn, 0d);
                 AnchorPane.setRightAnchor(btnGr, 0d);
+                AnchorPane.setTopAnchor(btnGr, 0d);
+                AnchorPane.setBottomAnchor(btnGr, 0d);
                 //anchor.set
             }
 
@@ -158,7 +204,8 @@ public class ComboText extends Control {
             control.popupRootProperty().addListener(popupRootChangeListener);
 
             getChildren().add(anchor);
-
+            //btnGr.getInsets();
+            //anchor.setPadding(new Insets(4, 4, 4, 8));
         }
         private final EventHandler<ActionEvent> buttonActionHandler = (ev) -> {
             Button b = (Button) ev.getSource();

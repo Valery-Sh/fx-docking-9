@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.scene.Node;
@@ -129,7 +130,11 @@ public class ErrorMarkerBuilder {
         }
 
         String regExp = textField.getSeparator();
-        
+        if ( regExp == null ) {
+            System.err.println("REGEXP = '" + regExp + "'");
+            regExp = UUID.randomUUID().toString();
+        }
+        //System.err.println("REGEXP = '" + regExp + "'");
         Pattern ptn = Pattern.compile(regExp);
         Matcher m = ptn.matcher(txt);
 

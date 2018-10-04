@@ -166,7 +166,8 @@ public abstract class PropertyEditorFactory {
             } else if (("buttonTypes".equals(propertyName) && propertyType.equals(ObservableList.class) && ButtonType.class.equals(genericType))) {
                 return new ButtonTypeComboBoxPropertyEditor();
             } else if (propertyType.equals(Font.class)) {
-                return new FontPropertyEditor();
+                //return new FontPropertyEditor();
+                return new ComboText();
             }
             return retval;
         }
