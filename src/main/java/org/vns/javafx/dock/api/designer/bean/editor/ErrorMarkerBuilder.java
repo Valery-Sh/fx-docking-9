@@ -69,23 +69,12 @@ public class ErrorMarkerBuilder {
         }
         errorMarkers = getDefaultErrorMarkers(errorIndexes.length);
         textField.getChildren().addAll(errorMarkers);
-        System.err.println("****************************************************************");
-        System.err.println("showErrorMarkers errorIndexes.length = " + errorIndexes.length);
-        for ( int i = 0;  i < errorIndexes.length; i ++  ) {
-            System.err.println("itemPos[i].length = " + itemPos[i].length);
-            for ( int j=0; j < 2; j++) {
-                System.err.println("itemPos[" + i + "," + j + "] = " + itemPos[i][j]);
-            }
-        }
-        System.err.println("****************************************************************");
         for (int i = 0; i < errorIndexes.length; i++) {
             int itemIndex = errorIndexes[i];
-            System.err.println("itemIndex = " + itemIndex);
             int start = itemPos[itemIndex][0];
             
             int end = itemPos[itemIndex][1];
             int charPos = start + (end - start) / 2;
-            //double pos = getWidth(textField.getText(0, charPos));
             double pos = getWidth(txt.substring(0, charPos));
             if ((end - start) % 2 != 0) {
                 //
@@ -125,16 +114,12 @@ public class ErrorMarkerBuilder {
     public void showErrorMarkers(String txt,String[] items,Integer... errorIndexes) {
 
         if (textField.getSeparator() == null) {
-            //showErrorMarker();
-            //return;
+            showErrorMarker();
+            return;
         }
 
         String regExp = textField.getSeparator();
-        if ( regExp == null ) {
-            System.err.println("REGEXP = '" + regExp + "'");
-            regExp = UUID.randomUUID().toString();
-        }
-        //System.err.println("REGEXP = '" + regExp + "'");
+
         Pattern ptn = Pattern.compile(regExp);
         Matcher m = ptn.matcher(txt);
 

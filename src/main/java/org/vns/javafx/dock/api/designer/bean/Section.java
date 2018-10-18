@@ -24,11 +24,11 @@ import javafx.collections.ObservableList;
  * @author Valery Shyshkin
  */
 @DefaultProperty("items")
-public class Section extends AbstractNamedItem implements NamedItemList<PropertyItem> {
+public class Section extends AbstractNamedItem implements NamedItemList<BeanProperty> {
 
 //    private final StringProperty name = new SimpleStringProperty();
 //    private final StringProperty displayName = new SimpleStringProperty();
-    private final ObservableList<PropertyItem> properties = FXCollections.observableArrayList();
+    private final ObservableList<BeanProperty> properties = FXCollections.observableArrayList();
 //    private ReadOnlyObjectWrapper<Category> categoryWrapper = new ReadOnlyObjectWrapper<>();
 
     public Section() {
@@ -120,7 +120,7 @@ public class Section extends AbstractNamedItem implements NamedItemList<Property
     }
 */
     @Override
-    public ObservableList<PropertyItem> getItems() {
+    public ObservableList<BeanProperty> getItems() {
         return properties;
     }
 
@@ -128,7 +128,7 @@ public class Section extends AbstractNamedItem implements NamedItemList<Property
         Section sec = new Section();
         sec.setDisplayName(getDisplayName());
         sec.setName(getName());
-        for (PropertyItem pd : properties) {
+        for (BeanProperty pd : properties) {
             sec.getItems().add(pd.getCopyFor(clazz, ppd, cat, sec));
         }
         return sec;

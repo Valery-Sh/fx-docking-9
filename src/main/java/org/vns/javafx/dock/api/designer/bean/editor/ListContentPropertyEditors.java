@@ -22,24 +22,22 @@ import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.Inte
  * @author Valery
  */
 public abstract class ListContentPropertyEditors {
+    
     public static ObservableListPropertyEditor getEditor(Class<?> itemClass) {
         ObservableListPropertyEditor retval = new ObservableListPropertyEditor();
         if ( itemClass.equals(String.class)) {
             retval = new ObservableListPropertyEditor<String>();
             retval.setStringConverter(new ObservableListItemStringConverter(retval,itemClass));  
-            retval.setEmptySubstitution("<EMPTY>");
-            retval.setNullSubstitution("<NULL>");
+            retval.getTextField().setEmptySubstitution("<EMPTY>");
+            retval.getTextField().setNullSubstitution("<NULL>");
             
         } else  if ( itemClass.equals(Integer.class)) {
             retval = new ObservableListPropertyEditor<Integer>();
             retval.setStringConverter(new ObservableListItemStringConverter(retval,itemClass));            
             IntegerPropertyEditor ipe = new PrimitivePropertyEditor.IntegerPropertyEditor();
-            retval.getFilterValidators().addAll(ipe.getFilterValidators());
-            retval.getValidators().addAll(ipe.getValidators());
+            retval.getTextField().getFilterValidators().addAll(ipe.getFilterValidators());
+            retval.getTextField().getValidators().addAll(ipe.getValidators());
         }
-
-        
-        
         return retval;
     }
 }

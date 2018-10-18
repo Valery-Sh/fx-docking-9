@@ -128,8 +128,8 @@ public class SectionTest {
     public void testGetItems() {
         System.out.println("getItems");
         Section instance = new Section();
-        ObservableList<PropertyItem> expResult = null;
-        ObservableList<PropertyItem> result = instance.getItems();
+        ObservableList<BeanProperty> expResult = null;
+        ObservableList<BeanProperty> result = instance.getItems();
 //        assertEquals(expResult, result);
     }
 
@@ -139,7 +139,7 @@ public class SectionTest {
     @Test
     public void testMerge() {
         System.out.println("merge");
-        ObservableList<PropertyItem> props = null;
+        ObservableList<BeanProperty> props = null;
         Section instance = new Section();
 //        instance.merge(props);
     }
@@ -150,14 +150,14 @@ public class SectionTest {
     @Test
     public void testUpdateBy_InsertBefore() {
         System.out.println("updateBy(propertyItem prop)");
-        PropertyItem item01 = new PropertyItem("name01","displayName01");
+        BeanProperty item01 = new BeanProperty("name01","displayName01");
         Section instance = new Section("secName01","secDisplayName01");
         instance.addOrUpdateItems(item01);
         
         //
         // Try to add a single item
         //
-        PropertyItem updateProp = new PropertyItem("name02","displayName02");
+        BeanProperty updateProp = new BeanProperty("name02","displayName02");
         instance.updateBy(updateProp);
         assertEquals(2,instance.getItems().size());
         
@@ -165,7 +165,7 @@ public class SectionTest {
         // Try to add an item when the there is an item with the same name.
         // We expect that a new item will just update the existing item but not add the new one.
         //
-        PropertyItem updateProp01 = new PropertyItem("name02","updated_displayName02");
+        BeanProperty updateProp01 = new BeanProperty("name02","updated_displayName02");
         instance.updateBy(updateProp01);
         assertEquals(2,instance.getItems().size());
         assertEquals(item01, instance.getItems().get(0));
@@ -178,8 +178,8 @@ public class SectionTest {
         // two new items will be added.
         //
         InsertBefore insBefore01 = new InsertBefore("name01");
-        PropertyItem ins01 = new PropertyItem("name03","displayName03");
-        PropertyItem ins02 = new PropertyItem("name04","displayName04");
+        BeanProperty ins01 = new BeanProperty("name03","displayName03");
+        BeanProperty ins02 = new BeanProperty("name04","displayName04");
         insBefore01.addOrUpdateItems(ins01,ins02);
         instance.updateBy(insBefore01);
         assertEquals(4,instance.getItems().size());
@@ -213,8 +213,8 @@ public class SectionTest {
         // exists. We expect that no change will be applied.
         //        
         insBefore01 = new InsertBefore("unknown");
-        PropertyItem ins05 = new PropertyItem("name05","displayName05");
-        PropertyItem ins06 = new PropertyItem("name06","displayName06");
+        BeanProperty ins05 = new BeanProperty("name05","displayName05");
+        BeanProperty ins06 = new BeanProperty("name06","displayName06");
         insBefore01.addOrUpdateItems(ins05, ins06);
         instance.updateBy(insBefore01);
         assertEquals(4,instance.getItems().size());
@@ -240,14 +240,14 @@ public class SectionTest {
     @Test
     public void testUpdateBy_InsertAfter() {
         System.out.println("updateBy(propertyItem prop)");
-        PropertyItem item01 = new PropertyItem("name01","displayName01");
+        BeanProperty item01 = new BeanProperty("name01","displayName01");
         Section instance = new Section("secName01","secDisplayName01");
         instance.addOrUpdateItems(item01);
         
         //
         // Try to add a single item
         //
-        PropertyItem updateProp = new PropertyItem("name02","displayName02");
+        BeanProperty updateProp = new BeanProperty("name02","displayName02");
         instance.updateBy(updateProp);
         assertEquals(2,instance.getItems().size());
         assertEquals(item01, instance.getItems().get(0));
@@ -256,7 +256,7 @@ public class SectionTest {
         // Try to add an item when the there is an item with the same name.
         // We expect that a new item will just update the existing item but not add the new one.
         //
-        PropertyItem updateProp01 = new PropertyItem("name02","updated_displayName02");
+        BeanProperty updateProp01 = new BeanProperty("name02","updated_displayName02");
         instance.updateBy(updateProp01);
         assertEquals(2,instance.getItems().size());
         assertEquals(item01, instance.getItems().get(0));
@@ -269,8 +269,8 @@ public class SectionTest {
         // two new items will be added after the item with the specified name.
         //
         InsertAfter insAfter01 = new InsertAfter("name01");
-        PropertyItem ins01 = new PropertyItem("name03","displayName03");
-        PropertyItem ins02 = new PropertyItem("name04","displayName04");
+        BeanProperty ins01 = new BeanProperty("name03","displayName03");
+        BeanProperty ins02 = new BeanProperty("name04","displayName04");
         insAfter01.addOrUpdateItems(ins01,ins02);
         instance.updateBy(insAfter01);
         assertEquals(4,instance.getItems().size());
@@ -296,8 +296,8 @@ public class SectionTest {
         // exists. We expect that no change will be applied.
         //        
         insAfter01 = new InsertAfter("unknown");
-        PropertyItem ins05 = new PropertyItem("name05","displayName05");
-        PropertyItem ins06 = new PropertyItem("name06","displayName06");
+        BeanProperty ins05 = new BeanProperty("name05","displayName05");
+        BeanProperty ins06 = new BeanProperty("name06","displayName06");
         insAfter01.addOrUpdateItems(ins05, ins06);
         instance.updateBy(insAfter01);
         assertEquals(4,instance.getItems().size());
@@ -345,7 +345,7 @@ public class SectionTest {
         System.out.println("getByName");
         String propertyName = "";
         Section instance = new Section();
-        PropertyItem expResult = null;
+        BeanProperty expResult = null;
 //        PropertyItem result = instance.getByName(propertyName);
 //        assertEquals(expResult, result);
     }
@@ -370,14 +370,14 @@ public class SectionTest {
     public void testMergeChilds() {
         System.out.println("mergeChilds(Section sec");
         System.out.println("updateBy(propertyItem prop)");
-        PropertyItem prop = new PropertyItem("name01","displayName01");
+        BeanProperty prop = new BeanProperty("name01","displayName01");
         Section instance = new Section("secName01","secDisplayName01");
         instance.addOrUpdateItems(prop);
         
         //
         // Try to add a single item
         //
-        PropertyItem updateProp = new PropertyItem("name02","displayName02");
+        BeanProperty updateProp = new BeanProperty("name02","displayName02");
         instance.updateBy(updateProp);
         assertEquals(2,instance.getItems().size());
         assertEquals(prop, instance.getItems().get(0));
@@ -386,7 +386,7 @@ public class SectionTest {
         // Try to add an item when the there is an item with the same name.
         // We expect that a new item will just update the existing item but not add the new one.
         //
-        PropertyItem updateProp01 = new PropertyItem("name02","updated_displayName02");
+        BeanProperty updateProp01 = new BeanProperty("name02","updated_displayName02");
         instance.updateBy(updateProp01);
         assertEquals(2,instance.getItems().size());
         assertEquals(prop, instance.getItems().get(0));
@@ -399,8 +399,8 @@ public class SectionTest {
         // two new items will be added after the item with the specified name.
         //
         InsertAfter insAfter01 = new InsertAfter("name01");
-        PropertyItem ins01 = new PropertyItem("name03","displayName03");
-        PropertyItem ins02 = new PropertyItem("name04","displayName04");
+        BeanProperty ins01 = new BeanProperty("name03","displayName03");
+        BeanProperty ins02 = new BeanProperty("name04","displayName04");
         insAfter01.addOrUpdateItems(ins01,ins02);
         instance.updateBy(insAfter01);
         assertEquals(4,instance.getItems().size());
@@ -426,8 +426,8 @@ public class SectionTest {
         // exists. We expect that no change will be applied.
         //        
         insAfter01 = new InsertAfter("unknown");
-        PropertyItem ins05 = new PropertyItem("name05","displayName05");
-        PropertyItem ins06 = new PropertyItem("name06","displayName06");
+        BeanProperty ins05 = new BeanProperty("name05","displayName05");
+        BeanProperty ins06 = new BeanProperty("name06","displayName06");
         insAfter01.addOrUpdateItems(ins05, ins06);
         instance.updateBy(insAfter01);
         assertEquals(4,instance.getItems().size());

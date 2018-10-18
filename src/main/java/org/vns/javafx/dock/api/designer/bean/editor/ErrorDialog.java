@@ -76,7 +76,6 @@ public class ErrorDialog {
         cancelButton = new Button("cancel");
         
         okButton.setOnAction(a -> {
-            //System.err.println("H = " + stage.getHeight() +  " W = " + stage.getWidth());
             if ( getValidator() != null && ! getValidator().test(itemTextField.getText())) {
                 errorText[0].setText("The error not fixed. Try again");
                 return;
@@ -87,7 +86,6 @@ public class ErrorDialog {
             stage.close();
         });
         cancelButton.setOnAction(a -> {
-            System.err.println("ErrorDialog CANCEL item = " + item);
             result = Result.CANCEL;
             stage.close();
         });
@@ -135,17 +133,6 @@ public class ErrorDialog {
     
     public void show(Window ownerWindow, String item, String... errorMessages ) {
         
-//        if ( this.ownerWindow != null ) {
-            System.err.println("!!! ErrorDialog SHOW ");
-            //stage = new Stage();
-            //stage.sizeToScene();
-            //stage.setScene(scene);
-            //stage.initOwner(ownerWindow);
-//        } else {
-//            this.ownerWindow = ownerWindow;
-//            stage.initOwner(ownerWindow);
-//        }
-        //stage.initModality(Modality.APPLICATION_MODAL);
         
         stage.setWidth(140);
         stage.setHeight(265);

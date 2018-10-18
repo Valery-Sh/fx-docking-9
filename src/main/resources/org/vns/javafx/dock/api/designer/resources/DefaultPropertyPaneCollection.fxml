@@ -25,26 +25,26 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="autoSizeChildren" />
+                    <BeanProperty name="autoSizeChildren" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
         
     </BeanModel>    
-    <!--BeanModel name = "button" displayName="Button">
+    <BeanModel name = "button" displayName="Button">
         <bean>
             <Button/>
         </bean>
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="defaultButton" />
-                    <PropertyItem name="cancelButton" />
+                    <BeanProperty name="defaultButton" />
+                    <BeanProperty name="cancelButton" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
         
-    </BeanModel-->
+    </BeanModel>
 
     <BeanModel name = "checkBox" displayName="CheckBox">
         <bean>
@@ -53,9 +53,9 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="allowIndeterminate" />
-                    <PropertyItem name="indeterminate" />
-                    <PropertyItem name="selected" />
+                    <BeanProperty name="allowIndeterminate" />
+                    <BeanProperty name="indeterminate" />
+                    <BeanProperty name="selected" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -69,7 +69,7 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="visited" />
+                    <BeanProperty name="visited" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -82,7 +82,7 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="popupSide" />
+                    <BeanProperty name="popupSide" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -95,8 +95,8 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="selected" />
-                    <PropertyItem name="toggleGroup" />
+                    <BeanProperty name="selected" />
+                    <BeanProperty name="toggleGroup" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -109,10 +109,10 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="editable" />
-                    <PropertyItem name="editing" />
-                    <PropertyItem name="empty" />
-                    <PropertyItem name="selected" />
+                    <BeanProperty name="editable" />
+                    <BeanProperty name="editing" />
+                    <BeanProperty name="empty" />
+                    <BeanProperty name="selected" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -125,9 +125,9 @@
         <Category name="properties">
             <InsertSectionsBefore name="graphic" >
                 <Section name="specific" >
-                    <PropertyItem name="animated" />
-                    <PropertyItem name="collapsible" />
-                    <PropertyItem name="expanded" />
+                    <BeanProperty name="animated" />
+                    <BeanProperty name="collapsible" />
+                    <BeanProperty name="expanded" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -140,8 +140,8 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="buttonMinWidth" />
-                    <PropertyItem name="buttonOrder" />
+                    <BeanProperty name="buttonMinWidth" />
+                    <BeanProperty name="buttonOrder" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -154,15 +154,15 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
         </Category>    
         <Category name="layout">
             <InsertSectionsBefore name="size" >
                 <Section name="specific" >
-                    <PropertyItem name="halignment" />
-                    <PropertyItem name="valignment" />
+                    <BeanProperty name="halignment" />
+                    <BeanProperty name="valignment" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -175,21 +175,21 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="min" />
-                    <PropertyItem name="max" />
-                    <PropertyItem name="value" />
-                    <PropertyItem name="valueChanging" />
-                    <PropertyItem name="blockIncrement" />
-                    <PropertyItem name="showTickMarks" />
-                    <PropertyItem name="showTickLabels" />
-                    <PropertyItem name="majorTickUnit" />
-                    <PropertyItem name="minorTickCount" />
-                    <PropertyItem name="snapToTicks" />
+                    <BeanProperty name="min" />
+                    <BeanProperty name="max" />
+                    <BeanProperty name="value" />
+                    <BeanProperty name="valueChanging" />
+                    <BeanProperty name="blockIncrement" />
+                    <BeanProperty name="showTickMarks" />
+                    <BeanProperty name="showTickLabels" />
+                    <BeanProperty name="majorTickUnit" />
+                    <BeanProperty name="minorTickCount" />
+                    <BeanProperty name="snapToTicks" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -202,7 +202,7 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
         </Category>    
@@ -216,7 +216,7 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
         </Category>    
@@ -230,21 +230,21 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" > 
-                    <PropertyItem name="editable" />                    
-                    <PropertyItem name="tableMenuButtonVisible" />                    
-                    <PropertyItem name="fixedCellSize" />                    
+                    <BeanProperty name="editable" />                    
+                    <BeanProperty name="tableMenuButtonVisible" />                    
+                    <BeanProperty name="fixedCellSize" />                    
                 </Section>
             </InsertSectionsBefore>                 
         </Category>    
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onSort" />
+                    <BeanProperty name="onSort" />
                 </Section>
             </InsertSectionsBefore>
             <Section name="scroll" >
-                <PropertyItem name="onScrollTo" />
-                <PropertyItem name="onScrollToColumn" />
+                <BeanProperty name="onScrollTo" />
+                <BeanProperty name="onScrollToColumn" />
             </Section>
         </Category>            
     </BeanModel>            
@@ -255,22 +255,22 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" > 
-                    <PropertyItem name="editable" />                    
-                    <PropertyItem name="tableMenuButtonVisible" />                    
-                    <PropertyItem name="fixedCellSize" />     
-                    <PropertyItem name="showRoot" />     
+                    <BeanProperty name="editable" />                    
+                    <BeanProperty name="tableMenuButtonVisible" />                    
+                    <BeanProperty name="fixedCellSize" />     
+                    <BeanProperty name="showRoot" />     
                 </Section>
             </InsertSectionsBefore>                 
         </Category>    
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onSort" />
+                    <BeanProperty name="onSort" />
                 </Section>
             </InsertSectionsBefore>
             <Section name="scroll" >
-                <PropertyItem name="onScrollTo" />
-                <PropertyItem name="onScrollToColumn" />
+                <BeanProperty name="onScrollTo" />
+                <BeanProperty name="onScrollToColumn" />
             </Section>
         </Category>            
         
@@ -283,23 +283,23 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" > 
-                    <PropertyItem name="editable" />                    
-                    <PropertyItem name="fixedCellSize" />     
-                    <PropertyItem name="showRoot" />     
+                    <BeanProperty name="editable" />                    
+                    <BeanProperty name="fixedCellSize" />     
+                    <BeanProperty name="showRoot" />     
                 </Section>
             </InsertSectionsBefore>                 
         </Category>    
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onSort" />
-                    <PropertyItem name="onEditCancel" />
-                    <PropertyItem name="onEditCommit" />
-                    <PropertyItem name="onEditStart" />
+                    <BeanProperty name="onSort" />
+                    <BeanProperty name="onEditCancel" />
+                    <BeanProperty name="onEditCommit" />
+                    <BeanProperty name="onEditStart" />
                 </Section>
             </InsertSectionsBefore>
             <Section name="scroll" >
-                <PropertyItem name="onScrollTo" />
+                <BeanProperty name="onScrollTo" />
             </Section>
         </Category>            
         
@@ -312,26 +312,26 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" > 
-                    <PropertyItem name="editable" />                    
-                    <PropertyItem name="fixedCellSize" />     
+                    <BeanProperty name="editable" />                    
+                    <BeanProperty name="fixedCellSize" />     
                 </Section>
             </InsertSectionsBefore>     
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>                         
         </Category>    
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onEditCancel" />
-                    <PropertyItem name="onEditCommit" />
-                    <PropertyItem name="onEditStart" />
+                    <BeanProperty name="onEditCancel" />
+                    <BeanProperty name="onEditCommit" />
+                    <BeanProperty name="onEditStart" />
                 </Section>
             </InsertSectionsBefore>
             <Section name="scroll" >
-                <PropertyItem name="onScrollTo" />
+                <BeanProperty name="onScrollTo" />
             </Section>
         </Category>            
         
@@ -344,19 +344,19 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="side" />
-                    <PropertyItem name="tabClosingPolicy" />
-                    <PropertyItem name="rotateGraphic" />                    
+                    <BeanProperty name="side" />
+                    <BeanProperty name="tabClosingPolicy" />
+                    <BeanProperty name="rotateGraphic" />                    
                 </Section>
             </InsertSectionsBefore>
         </Category>    
         <Category name="layout">
             <InsertSectionsBefore name="size" >
                 <Section name="specific" >
-                    <PropertyItem name="tabMinWidth" />
-                    <PropertyItem name="tabMinHeight" />
-                    <PropertyItem name="tabMaxWidth" />
-                    <PropertyItem name="tabMaxHeight" />
+                    <BeanProperty name="tabMinWidth" />
+                    <BeanProperty name="tabMinHeight" />
+                    <BeanProperty name="tabMaxWidth" />
+                    <BeanProperty name="tabMaxHeight" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -370,7 +370,7 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="editable" />
+                    <BeanProperty name="editable" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -384,7 +384,7 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="useSystemMenuBar" />
+                    <BeanProperty name="useSystemMenuBar" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -397,9 +397,9 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="currentPageIndex" />
-                    <PropertyItem name="maxPageIndicatorCount" />
-                    <PropertyItem name="pageCount" />
+                    <BeanProperty name="currentPageIndex" />
+                    <BeanProperty name="maxPageIndicatorCount" />
+                    <BeanProperty name="pageCount" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -413,7 +413,7 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="progress" />
+                    <BeanProperty name="progress" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -427,17 +427,17 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="min" />
-                    <PropertyItem name="max" />
-                    <PropertyItem name="blockIncrement" />
-                    <PropertyItem name="unitIncrement" />
-                    <PropertyItem name="value" />
-                    <PropertyItem name="visibleAmount" />
+                    <BeanProperty name="min" />
+                    <BeanProperty name="max" />
+                    <BeanProperty name="blockIncrement" />
+                    <BeanProperty name="unitIncrement" />
+                    <BeanProperty name="value" />
+                    <BeanProperty name="visibleAmount" />
                 </Section>
             </InsertSectionsBefore>
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
         </Category>    
@@ -451,28 +451,28 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="specific" >
-                    <PropertyItem name="fitToWidth" />
-                    <PropertyItem name="fitToHeight" />
-                    <PropertyItem name="minViewportWidth" />
-                    <PropertyItem name="minViewportHeight" />
-                    <PropertyItem name="prefViewportWidth" />
-                    <PropertyItem name="prefViewportHeight" />
-                    <PropertyItem name="viewportBounds" />
-                    <PropertyItem name="hbarPolicy" />
-                    <PropertyItem name="vbarPolicy" />
-                    <PropertyItem name="hmin" />
-                    <PropertyItem name="hmax" />
-                    <PropertyItem name="vmin" />
-                    <PropertyItem name="vmax" />
-                    <PropertyItem name="hvalue" />
-                    <PropertyItem name="vvalue" />
-                    <PropertyItem name="pannable" />
+                    <BeanProperty name="fitToWidth" />
+                    <BeanProperty name="fitToHeight" />
+                    <BeanProperty name="minViewportWidth" />
+                    <BeanProperty name="minViewportHeight" />
+                    <BeanProperty name="prefViewportWidth" />
+                    <BeanProperty name="prefViewportHeight" />
+                    <BeanProperty name="viewportBounds" />
+                    <BeanProperty name="hbarPolicy" />
+                    <BeanProperty name="vbarPolicy" />
+                    <BeanProperty name="hmin" />
+                    <BeanProperty name="hmax" />
+                    <BeanProperty name="vmin" />
+                    <BeanProperty name="vmax" />
+                    <BeanProperty name="hvalue" />
+                    <BeanProperty name="vvalue" />
+                    <BeanProperty name="pannable" />
                     
                 </Section>
             </InsertSectionsBefore>
             <Section name="node" >
                 <InsertBefore name="nodeOrientation" >
-                    <PropertyItem name="orientation" />
+                    <BeanProperty name="orientation" />
                 </InsertBefore>
             </Section>
         </Category>    
@@ -485,12 +485,12 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="text">
-                    <PropertyItem name="headerText" />
-                    <PropertyItem name="contentText" />
+                    <BeanProperty name="headerText" />
+                    <BeanProperty name="contentText" />
                 </Section>
                 <Section name="specific" >
-                    <PropertyItem name="expanded" />
-                    <PropertyItem name="buttonTypes" />
+                    <BeanProperty name="expanded" />
+                    <BeanProperty name="buttonTypes" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -504,8 +504,8 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="text">
-                    <PropertyItem name="textAlignment" />
-                    <PropertyItem name="lineSpacing" />
+                    <BeanProperty name="textAlignment" />
+                    <BeanProperty name="lineSpacing" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -519,26 +519,26 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="text" >
-                    <PropertyItem name="promptText" />
+                    <BeanProperty name="promptText" />
                 </Section>
                 <Section name="specific" >
-                    <PropertyItem name="editable" />
+                    <BeanProperty name="editable" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onAction" />
+                    <BeanProperty name="onAction" />
                 </Section>
             </InsertSectionsBefore>
             
             <InsertSectionsBefore name="keyboard" >
                 <Section name="hideShow" >
-                    <PropertyItem name="onHidden" />
-                    <PropertyItem name="onHiding" />
-                    <PropertyItem name="onShowing" />
-                    <PropertyItem name="onShown" />
+                    <BeanProperty name="onHidden" />
+                    <BeanProperty name="onHiding" />
+                    <BeanProperty name="onShowing" />
+                    <BeanProperty name="onShown" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -552,7 +552,7 @@
         <Category name="code">
             <InsertSectionsBefore name="dragdrop" >
                 <Section name="main" >
-                    <PropertyItem name="onAction" />
+                    <BeanProperty name="onAction" />
                 </Section>
             </InsertSectionsBefore>
         </Category>        
@@ -564,35 +564,35 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="text">
-                    <PropertyItem name="text"></PropertyItem>
-                    <PropertyItem name="font"></PropertyItem>
-                    <PropertyItem name="textFill"></PropertyItem>
-                    <PropertyItem name="wrapText"></PropertyItem>
-                    <PropertyItem name="textAlignment"></PropertyItem>
-                    <PropertyItem name="textOverrun"></PropertyItem>
-                    <PropertyItem name="ellipsisString"></PropertyItem>
-                    <PropertyItem name="underline"></PropertyItem>
-                    <PropertyItem name="lineSpacing"></PropertyItem>
+                    <BeanProperty name="text"></BeanProperty>
+                    <BeanProperty name="font"></BeanProperty>
+                    <BeanProperty name="textFill"></BeanProperty>
+                    <BeanProperty name="wrapText"></BeanProperty>
+                    <BeanProperty name="textAlignment"></BeanProperty>
+                    <BeanProperty name="textOverrun"></BeanProperty>
+                    <BeanProperty name="ellipsisString"></BeanProperty>
+                    <BeanProperty name="underline"></BeanProperty>
+                    <BeanProperty name="lineSpacing"></BeanProperty>
                     
                     
                 </Section>    
                 <Section name="graphic" >
-                    <PropertyItem name="graphicTextGap"></PropertyItem>
-                    <PropertyItem name="contentDisplay"></PropertyItem>
+                    <BeanProperty name="graphicTextGap"></BeanProperty>
+                    <BeanProperty name="contentDisplay"></BeanProperty>
                 </Section>
             </InsertSectionsBefore>    
             
             <Section name="node" >
                 <InsertBefore name="disable"> 
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>
             </Section>
             <Section name="extras" >
                 <InsertAfter name="blendMode"> 
-                    <PropertyItem name="mnemonicParsing"></PropertyItem>
+                    <BeanProperty name="mnemonicParsing"></BeanProperty>
                 </InsertAfter>
                 <InsertAfter name="insets"> 
-                    <PropertyItem name="labelPadding"></PropertyItem>
+                    <BeanProperty name="labelPadding"></BeanProperty>
                 </InsertAfter>
                 
             </Section>
@@ -607,12 +607,12 @@
         <Category name="properties">
             <InsertSectionsBefore name="node" >
                 <Section name="text">
-                    <PropertyItem name="promptText"></PropertyItem>                    
-                    <PropertyItem name="text"></PropertyItem>
-                    <PropertyItem name="font"></PropertyItem>
+                    <BeanProperty name="promptText"></BeanProperty>                    
+                    <BeanProperty name="text"></BeanProperty>
+                    <BeanProperty name="font"></BeanProperty>
                 </Section>    
                 <Section name="specific">
-                    <PropertyItem name="editable"></PropertyItem>
+                    <BeanProperty name="editable"></BeanProperty>
                 </Section>  
             </InsertSectionsBefore>    
         </Category>
@@ -624,18 +624,18 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="prefColumnCount"/>
+                <BeanProperty name="prefColumnCount"/>
             </Section>  
             <Section name="node" >
                 <InsertBefore> 
-                    <PropertyItem name="alignment"/>
+                    <BeanProperty name="alignment"/>
                 </InsertBefore>
             </Section>
         </Category>
         <Category name="code">
             <InsertSectionsBefore>
                 <Section name="Main">
-                    <PropertyItem name="onAction"/>
+                    <BeanProperty name="onAction"/>
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -647,13 +647,13 @@
         </bean>
         <Category name="properties">
             <Section name="text">
-                <PropertyItem name="wrapText"/>
-                <PropertyItem name="scrollLeft"/>
-                <PropertyItem name="scrollTop"/>
+                <BeanProperty name="wrapText"/>
+                <BeanProperty name="scrollLeft"/>
+                <BeanProperty name="scrollTop"/>
             </Section> 
             <Section name="specific">
-                <PropertyItem name="prefColumnCount"/>
-                <PropertyItem name="prefRowCount"/>
+                <BeanProperty name="prefColumnCount"/>
+                <BeanProperty name="prefRowCount"/>
             </Section>  
         </Category>
     </BeanModel>
@@ -665,20 +665,32 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
             </Section>
         </Category>
         <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="VBox Constraints" >
+                    <BeanProperty name="vgrow" constraint="true" />    
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+            <InsertSectionsAfter>
+                <Section name="specific">
+                    <BeanProperty name="fillWidth" />
+                </Section>
+            </InsertSectionsAfter>
+
             <InsertSectionsAfter name="internal">
                 <Section name="specific">
-                    <PropertyItem name="fillWidth"></PropertyItem>
+                    <BeanProperty name="fillWidth"></BeanProperty>
                 </Section>
             </InsertSectionsAfter>
             
             <Section name="internal" >
                 <InsertAfter>
-                    <PropertyItem name="spacing"></PropertyItem>
+                    <BeanProperty name="spacing"></BeanProperty>
                 </InsertAfter>    
             </Section>
         </Category>
@@ -691,20 +703,27 @@
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
             </Section>
         </Category>
         <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="HBox Constraints" >
+                    <BeanProperty name="hgrow" constraint="true" />    
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+            
             <InsertSectionsAfter name="internal">
                 <Section name="specific">
-                    <PropertyItem name="fillHeight"></PropertyItem>
+                    <BeanProperty name="fillHeight"></BeanProperty>
                 </Section>
             </InsertSectionsAfter>
             
             <Section name="internal" >
                 <InsertAfter>
-                    <PropertyItem name="spacing"></PropertyItem>
+                    <BeanProperty name="spacing"></BeanProperty>
                 </InsertAfter>    
             </Section>
         </Category>
@@ -718,26 +737,32 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="rowValignment"></PropertyItem>
-                    <PropertyItem name="columnHalignment"></PropertyItem>
-                    <PropertyItem name="prefWrapLength"></PropertyItem>
+                    <BeanProperty name="rowValignment"></BeanProperty>
+                    <BeanProperty name="columnHalignment"></BeanProperty>
+                    <BeanProperty name="prefWrapLength"></BeanProperty>
                 </Section>
             </InsertSectionsBefore>
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
                 <InsertBefore name="nodeOrientation">
-                    <PropertyItem name="orientation"></PropertyItem>
+                    <BeanProperty name="orientation"></BeanProperty>
                 </InsertBefore>    
                 
             </Section>
         </Category>
         <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="FlowPane Constraints" >
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+            
             <Section name="internal" >
                 <InsertBefore>
-                    <PropertyItem name="hgap"></PropertyItem>
-                    <PropertyItem name="vgap"></PropertyItem>
+                    <BeanProperty name="hgap"></BeanProperty>
+                    <BeanProperty name="vgap"></BeanProperty>
                 </InsertBefore>    
             </Section>
         </Category>
@@ -751,15 +776,15 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="tileAlignment"></PropertyItem>
+                    <BeanProperty name="tileAlignment"></BeanProperty>
                 </Section>
             </InsertSectionsBefore>
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
                 <InsertBefore name="nodeOrientation">
-                    <PropertyItem name="orientation"></PropertyItem>
+                    <BeanProperty name="orientation"></BeanProperty>
                 </InsertBefore>    
                 
             </Section>
@@ -767,18 +792,18 @@
         <Category name="layout">
             <Section name="internal" >
                 <InsertBefore>
-                    <PropertyItem name="hgap"></PropertyItem>
-                    <PropertyItem name="vgap"></PropertyItem>
+                    <BeanProperty name="hgap"></BeanProperty>
+                    <BeanProperty name="vgap"></BeanProperty>
                 </InsertBefore>    
             </Section>
             <InsertSectionsAfter name="internal">
                 <Section name="specific" >
-                    <PropertyItem name="prefTileWidth"></PropertyItem>
-                    <PropertyItem name="prefTileHeight"></PropertyItem>
-                    <PropertyItem name="prefColumns"></PropertyItem>
-                    <PropertyItem name="prefRows"></PropertyItem>
-                    <PropertyItem name="tileWidth"></PropertyItem>
-                    <PropertyItem name="tileHeight"></PropertyItem>
+                    <BeanProperty name="prefTileWidth"></BeanProperty>
+                    <BeanProperty name="prefTileHeight"></BeanProperty>
+                    <BeanProperty name="prefColumns"></BeanProperty>
+                    <BeanProperty name="prefRows"></BeanProperty>
+                    <BeanProperty name="tileWidth"></BeanProperty>
+                    <BeanProperty name="tileHeight"></BeanProperty>
                 </Section>
                 
             </InsertSectionsAfter>
@@ -794,20 +819,35 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="gridLinesVisible"></PropertyItem>
+                    <BeanProperty name="gridLinesVisible"></BeanProperty>
                 </Section>
             </InsertSectionsBefore>
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
             </Section>
         </Category>
         <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="GridPane Constraints" >
+                    <BeanProperty name="rowIndex" constraint="true" />    
+                    <BeanProperty name="columnIndex" constraint="true" />    
+                    <BeanProperty name="rowSpan" constraint="true" />    
+                    <BeanProperty name="columnSpan" constraint="true" />    
+                    
+                    <BeanProperty name="valignment" constraint="true" />    
+                    <BeanProperty name="halignment" constraint="true" />    
+                    <BeanProperty name="hgrow" constraint="true" />    
+                    <BeanProperty name="vgrow" constraint="true" />    
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+            
             <Section name="internal" >
                 <InsertBefore>
-                    <PropertyItem name="hgap"></PropertyItem>
-                    <PropertyItem name="vgap"></PropertyItem>
+                    <BeanProperty name="hgap" />
+                    <BeanProperty name="vgap"/>
                 </InsertBefore>    
             </Section>
         </Category>
@@ -818,14 +858,50 @@
         <bean>
             <StackPane/>
         </bean>
+        <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="StackPane Constraints" >
+                    <BeanProperty name="alignment" constraint="true" />    
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+
         <Category name="properties">
             <Section name="node" >
                 <InsertBefore>
-                    <PropertyItem name="alignment"></PropertyItem>
+                    <BeanProperty name="alignment"></BeanProperty>
                 </InsertBefore>    
             </Section>
         </Category>
         
+    </BeanModel>
+    <BeanModel name = "borderPane">
+        <bean>
+            <BorderPane/>
+        </bean>
+        <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="BorderPane Constraints" >
+                    <BeanProperty name="margin" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+
+    </BeanModel>
+
+    <BeanModel name = "anchorPane">
+        <bean>
+            <AnchorPane/>
+        </bean>
+        <Category name="layout">
+            <InsertSectionsBefore>
+                <Section name="constraint" displayName="AnchorPane Constraints" >
+                    <BeanProperty name="anchor" constraint="true" />    
+                </Section>
+            </InsertSectionsBefore>
+        </Category>
+
     </BeanModel>
 
     <BeanModel name = "shape">
@@ -835,17 +911,17 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="fill"/>
-                    <PropertyItem name="smooth"/>
+                    <BeanProperty name="fill"/>
+                    <BeanProperty name="smooth"/>
                 </Section>
                 <Section name="stroke" >
-                    <PropertyItem name="stroke"/>
-                    <PropertyItem name="strokeWidth"/>
-                    <PropertyItem name="strokeType"/>
-                    <PropertyItem name="strokeLineCap"/>
-                    <PropertyItem name="strokeLineJoin"/>
-                    <PropertyItem name="strokeMiterLimit"/>
-                    <PropertyItem name="strokeDashOffset"/>
+                    <BeanProperty name="stroke"/>
+                    <BeanProperty name="strokeWidth"/>
+                    <BeanProperty name="strokeType"/>
+                    <BeanProperty name="strokeLineCap"/>
+                    <BeanProperty name="strokeLineJoin"/>
+                    <BeanProperty name="strokeMiterLimit"/>
+                    <BeanProperty name="strokeDashOffset"/>
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -857,8 +933,8 @@
         <Category name="layout">
             <Section name="position" >
                 <InsertBefore>
-                    <PropertyItem name="centerX"/>
-                    <PropertyItem name="centerY"/>
+                    <BeanProperty name="centerX"/>
+                    <BeanProperty name="centerY"/>
                 </InsertBefore>
             </Section>
         </Category>
@@ -871,22 +947,22 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="type" />
+                <BeanProperty name="type" />
             </Section>
         </Category>
         <Category name="layout">
             <Section name="position" >
                 <InsertBefore>
-                    <PropertyItem name="centerX"/>
-                    <PropertyItem name="centerY"/>
+                    <BeanProperty name="centerX"/>
+                    <BeanProperty name="centerY"/>
                 </InsertBefore>
             </Section>
             <InsertSectionsBefore name="position">
                 <Section name="size" >
-                    <PropertyItem name="radiusX"/>
-                    <PropertyItem name="radiusY"/>
-                    <PropertyItem name="startAngle"/>
-                    <PropertyItem name="length"/>
+                    <BeanProperty name="radiusX"/>
+                    <BeanProperty name="radiusY"/>
+                    <BeanProperty name="startAngle"/>
+                    <BeanProperty name="length"/>
                 </Section>    
             </InsertSectionsBefore>
         </Category>
@@ -900,14 +976,14 @@
         <Category name="layout">
             <Section name="position" >
                 <InsertBefore>
-                    <PropertyItem name="centerX"/>
-                    <PropertyItem name="centerY"/>
+                    <BeanProperty name="centerX"/>
+                    <BeanProperty name="centerY"/>
                 </InsertBefore>
             </Section>
             <InsertSectionsBefore name="position">
                 <Section name="size" >
-                    <PropertyItem name="radiusX"/>
-                    <PropertyItem name="radiusY"/>
+                    <BeanProperty name="radiusX"/>
+                    <BeanProperty name="radiusY"/>
                 </Section>    
             </InsertSectionsBefore>
         </Category>
@@ -921,14 +997,14 @@
         </bean>
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="startX"/>
-                <PropertyItem name="startY"/>
-                <PropertyItem name="endX"/>
-                <PropertyItem name="endY"/>
-                <PropertyItem name="controlX1"/>
-                <PropertyItem name="controlY1"/>
-                <PropertyItem name="controlX2"/>
-                <PropertyItem name="controlY2"/>
+                <BeanProperty name="startX"/>
+                <BeanProperty name="startY"/>
+                <BeanProperty name="endX"/>
+                <BeanProperty name="endY"/>
+                <BeanProperty name="controlX1"/>
+                <BeanProperty name="controlY1"/>
+                <BeanProperty name="controlX2"/>
+                <BeanProperty name="controlY2"/>
             </Section>
         </Category>
         
@@ -940,12 +1016,12 @@
         </bean>
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="startX"/>
-                <PropertyItem name="startY"/>
-                <PropertyItem name="endX"/>
-                <PropertyItem name="endY"/>
-                <PropertyItem name="controlX"/>
-                <PropertyItem name="controlY"/>
+                <BeanProperty name="startX"/>
+                <BeanProperty name="startY"/>
+                <BeanProperty name="endX"/>
+                <BeanProperty name="endY"/>
+                <BeanProperty name="controlX"/>
+                <BeanProperty name="controlY"/>
             </Section>
         </Category>
         
@@ -956,20 +1032,20 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="arcWidth" />
-                <PropertyItem name="arcHeight" />
+                <BeanProperty name="arcWidth" />
+                <BeanProperty name="arcHeight" />
             </Section>
         </Category>
 
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="x"/>
-                <PropertyItem name="y"/>
+                <BeanProperty name="x"/>
+                <BeanProperty name="y"/>
             </Section>
             <InsertSectionsBefore name="position">
                 <Section name="size" >
-                    <PropertyItem name="width"/>
-                    <PropertyItem name="height"/>
+                    <BeanProperty name="width"/>
+                    <BeanProperty name="height"/>
                 </Section>    
             </InsertSectionsBefore>
         </Category>
@@ -982,10 +1058,10 @@
         </bean>
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="startX"/>
-                <PropertyItem name="startY"/>
-                <PropertyItem name="endX"/>
-                <PropertyItem name="endY"/>
+                <BeanProperty name="startX"/>
+                <BeanProperty name="startY"/>
+                <BeanProperty name="endX"/>
+                <BeanProperty name="endY"/>
             </Section>
         </Category>
         
@@ -997,7 +1073,7 @@
         </bean>
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="points"/>
+                <BeanProperty name="points"/>
             </Section>
         </Category>
         
@@ -1008,7 +1084,7 @@
         </bean>
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="points"/>
+                <BeanProperty name="points"/>
             </Section>
         </Category>
         
@@ -1020,7 +1096,7 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="fillRule" />
+                <BeanProperty name="fillRule" />
             </Section>
         </Category>
     </BeanModel>                       
@@ -1030,8 +1106,8 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="content" />
-                <PropertyItem name="fillRule" />
+                <BeanProperty name="content" />
+                <BeanProperty name="fillRule" />
             </Section>
         </Category>
     </BeanModel>          
@@ -1043,15 +1119,15 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="text">
-                    <PropertyItem name="text" />
-                    <PropertyItem name="font" />
-                    <PropertyItem name="fontSmoothingType"/>
-                    <PropertyItem name="textAlignment"/>
-                    <PropertyItem name="wrappingWidth"/>
-                    <PropertyItem name="strikethrough"/>
-                    <PropertyItem name="underline"/>
-                    <PropertyItem name="lineSpacing"/>
-                    <PropertyItem name="wrappingWidth"/>
+                    <BeanProperty name="text" />
+                    <BeanProperty name="font" />
+                    <BeanProperty name="fontSmoothingType"/>
+                    <BeanProperty name="textAlignment"/>
+                    <BeanProperty name="wrappingWidth"/>
+                    <BeanProperty name="strikethrough"/>
+                    <BeanProperty name="underline"/>
+                    <BeanProperty name="lineSpacing"/>
+                    <BeanProperty name="wrappingWidth"/>
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1059,8 +1135,8 @@
 
         <Category name="layout">
             <Section name="position" >
-                <PropertyItem name="x"/>
-                <PropertyItem name="y"/>
+                <BeanProperty name="x"/>
+                <BeanProperty name="y"/>
             </Section>
         </Category>
         
@@ -1074,8 +1150,8 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="3D">
-                    <PropertyItem name="farClip" />
-                    <PropertyItem name="nearClip" />
+                    <BeanProperty name="farClip" />
+                    <BeanProperty name="nearClip" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1086,9 +1162,9 @@
         </bean>
         <Category name="properties">
             <Section name="3D">
-                <PropertyItem name="fieldOfView" />
-                <PropertyItem name="verticalFieldOfView" />
-                <PropertyItem name="fixedEyeAtCameraZero" modifiable="false" />
+                <BeanProperty name="fieldOfView" />
+                <BeanProperty name="verticalFieldOfView" />
+                <BeanProperty name="fixedEyeAtCameraZero" modifiable="false" />
             </Section>
         </Category>
     </BeanModel>
@@ -1100,8 +1176,8 @@
         <Category name="layout">
             <InsertSectionsBefore name="position">
                 <Section name="size" >
-                    <PropertyItem name="width"/>
-                    <PropertyItem name="height"/>
+                    <BeanProperty name="width"/>
+                    <BeanProperty name="height"/>
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1115,8 +1191,8 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific">
-                    <PropertyItem name="color" />
-                    <PropertyItem name="lightOn" />
+                    <BeanProperty name="color" />
+                    <BeanProperty name="lightOn" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1128,8 +1204,8 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="3D">
-                    <PropertyItem name="cullFace" />
-                    <PropertyItem name="drawMode" />
+                    <BeanProperty name="cullFace" />
+                    <BeanProperty name="drawMode" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1142,8 +1218,8 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="3D">
-                    <PropertyItem name="cullFace" />
-                    <PropertyItem name="drawMode" />
+                    <BeanProperty name="cullFace" />
+                    <BeanProperty name="drawMode" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1156,9 +1232,9 @@
         <Category name="layout">
             <InsertSectionsBefore name="position">
                 <Section name="size">
-                    <PropertyItem name="width" />
-                    <PropertyItem name="height" />
-                    <PropertyItem name="depth" />
+                    <BeanProperty name="width" />
+                    <BeanProperty name="height" />
+                    <BeanProperty name="depth" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1169,14 +1245,14 @@
         </bean>
         <Category name="properties">
             <Section name="3D">
-                <PropertyItem name="divisions" modifiable="false" />
+                <BeanProperty name="divisions" modifiable="false" />
             </Section>
         </Category>
         <Category name="layout">
             <InsertSectionsBefore name="position">
                 <Section name="size">
-                    <PropertyItem name="height" />
-                    <PropertyItem name="radius" />
+                    <BeanProperty name="height" />
+                    <BeanProperty name="radius" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1190,7 +1266,7 @@
         <Category name="layout">
             <InsertSectionsBefore name="position">
                 <Section name="size">
-                    <PropertyItem name="radius" />
+                    <BeanProperty name="radius" />
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1203,21 +1279,21 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="text">
-                    <PropertyItem name="text" />
-                    <PropertyItem name="font" />
-                    <PropertyItem name="wrapText"/>
-                    <PropertyItem name="textAlignment"/>
-                    <PropertyItem name="textOverrun"/>
+                    <BeanProperty name="text" />
+                    <BeanProperty name="font" />
+                    <BeanProperty name="wrapText"/>
+                    <BeanProperty name="textAlignment"/>
+                    <BeanProperty name="textOverrun"/>
                 </Section>
                 <Section name="specific">
-                    <PropertyItem name="autoFix" />
-                    <PropertyItem name="autoHide" />
-                    <PropertyItem name="consumeAutoHidingEvents"/>
-                    <PropertyItem name="hideOnEscape"/>
+                    <BeanProperty name="autoFix" />
+                    <BeanProperty name="autoHide" />
+                    <BeanProperty name="consumeAutoHidingEvents"/>
+                    <BeanProperty name="hideOnEscape"/>
                 </Section>
                 <Section name="graphic">
-                    <PropertyItem name="graphicTextGap" />
-                    <PropertyItem name="contentDisplay" />
+                    <BeanProperty name="graphicTextGap" />
+                    <BeanProperty name="contentDisplay" />
                 </Section>
                 
             </InsertSectionsBefore>
@@ -1225,11 +1301,11 @@
         <Category name="code">
             
             <Section name="hideShow" >
-                <PropertyItem name="onHidden" />
-                <PropertyItem name="onHiding" />
-                <PropertyItem name="onAutoHide" />
-                <PropertyItem name="onShowing" />
-                <PropertyItem name="onShown" />
+                <BeanProperty name="onHidden" />
+                <BeanProperty name="onHiding" />
+                <BeanProperty name="onAutoHide" />
+                <BeanProperty name="onShowing" />
+                <BeanProperty name="onShown" />
             </Section>
         </Category>         
         
@@ -1242,11 +1318,11 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific">
-                    <PropertyItem name="title" />
-                    <PropertyItem name="animated" />
-                    <PropertyItem name="titleSide"/>
-                    <PropertyItem name="legendVisible"/>
-                    <PropertyItem name="legendSide"/>
+                    <BeanProperty name="title" />
+                    <BeanProperty name="animated" />
+                    <BeanProperty name="titleSide"/>
+                    <BeanProperty name="legendVisible"/>
+                    <BeanProperty name="legendSide"/>
                 </Section>
             </InsertSectionsBefore>
         </Category>
@@ -1258,10 +1334,10 @@
         </bean>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="clockwise" />
-                <PropertyItem name="labelsVisible"/>
-                <PropertyItem name="labelLineLength" />
-                <PropertyItem name="startAngle"/>
+                <BeanProperty name="clockwise" />
+                <BeanProperty name="labelsVisible"/>
+                <BeanProperty name="labelLineLength" />
+                <BeanProperty name="startAngle"/>
             </Section>
         </Category>
     </BeanModel>
@@ -1272,13 +1348,13 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="alternativeColumnFillVisible" />
-                <PropertyItem name="alternativeRowFillVisible"/>
-                <PropertyItem name="horizontalGridLinesVisible"/>
-                <PropertyItem name="horizontalZeroLineVisible"/>                    
-                <PropertyItem name="verticalGridLinesVisible"/>
-                <PropertyItem name="verticalZeroLineVisible"/>
-                <PropertyItem name="verticalGridLinesVisible"/>
+                <BeanProperty name="alternativeColumnFillVisible" />
+                <BeanProperty name="alternativeRowFillVisible"/>
+                <BeanProperty name="horizontalGridLinesVisible"/>
+                <BeanProperty name="horizontalZeroLineVisible"/>                    
+                <BeanProperty name="verticalGridLinesVisible"/>
+                <BeanProperty name="verticalZeroLineVisible"/>
+                <BeanProperty name="verticalGridLinesVisible"/>
             </Section>
         </Category>
     </BeanModel>
@@ -1289,7 +1365,7 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="createSymbols" />
+                <BeanProperty name="createSymbols" />
             </Section>
         </Category>
     </BeanModel>
@@ -1300,8 +1376,8 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="barGap" />
-                <PropertyItem name="categoryGap" />
+                <BeanProperty name="barGap" />
+                <BeanProperty name="categoryGap" />
             </Section>
         </Category>
     </BeanModel>
@@ -1312,7 +1388,7 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="categoryGap" />
+                <BeanProperty name="categoryGap" />
             </Section>
         </Category>
     </BeanModel>
@@ -1323,8 +1399,8 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="createSymbols" />
-                <PropertyItem name="axisSortingPolicy" />
+                <BeanProperty name="createSymbols" />
+                <BeanProperty name="axisSortingPolicy" />
             </Section>
         </Category>
     </BeanModel>      
@@ -1335,7 +1411,7 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific">
-                <PropertyItem name="createSymbols" />
+                <BeanProperty name="createSymbols" />
             </Section>
         </Category>
     </BeanModel>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
@@ -1347,26 +1423,26 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="text" >
-                    <PropertyItem name="fontScale" />
-                    <PropertyItem name="fontSmoothingType" />
+                    <BeanProperty name="fontScale" />
+                    <BeanProperty name="fontSmoothingType" />
                 </Section>
                 <Section name="specific" >
-                    <PropertyItem name="contextMenuEnabled" />
-                    <PropertyItem name="zoom" />
+                    <BeanProperty name="contextMenuEnabled" />
+                    <BeanProperty name="zoom" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
         <Category name="layout">
             <InsertSectionsBefore name="position" >
                 <Section name="size" >
-                    <PropertyItem name="minWidth" />
-                    <PropertyItem name="minHeight" />
-                    <PropertyItem name="prefWidth" />
-                    <PropertyItem name="prefHeight" />
-                    <PropertyItem name="maxWidth" />
-                    <PropertyItem name="maxHeight" />
-                    <PropertyItem name="width" />
-                    <PropertyItem name="height" />
+                    <BeanProperty name="minWidth" />
+                    <BeanProperty name="minHeight" />
+                    <BeanProperty name="prefWidth" />
+                    <BeanProperty name="prefHeight" />
+                    <BeanProperty name="maxWidth" />
+                    <BeanProperty name="maxHeight" />
+                    <BeanProperty name="width" />
+                    <BeanProperty name="height" />
                 </Section>
             </InsertSectionsBefore>
         </Category>    
@@ -1380,18 +1456,18 @@
         <Category name="properties">
             <InsertSectionsBefore>
                 <Section name="specific" >
-                    <PropertyItem name="animated" />
-                    <PropertyItem name="autoRanging" />
-                    <PropertyItem name="label" />
-                    <PropertyItem name="side" />
+                    <BeanProperty name="animated" />
+                    <BeanProperty name="autoRanging" />
+                    <BeanProperty name="label" />
+                    <BeanProperty name="side" />
 
-                    <PropertyItem name="tickLabelFill" />
-                    <PropertyItem name="tickLabelFont" />
-                    <PropertyItem name="tickLabelGap" />
-                    <PropertyItem name="tickLabelRotation" />
-                    <PropertyItem name="tickLabelsVisible" />
-                    <PropertyItem name="tickLength" />
-                    <PropertyItem name="tickMarkVisible" />
+                    <BeanProperty name="tickLabelFill" />
+                    <BeanProperty name="tickLabelFont" />
+                    <BeanProperty name="tickLabelGap" />
+                    <BeanProperty name="tickLabelRotation" />
+                    <BeanProperty name="tickLabelsVisible" />
+                    <BeanProperty name="tickLength" />
+                    <BeanProperty name="tickMarkVisible" />
                     
                                         
                 </Section>
@@ -1406,10 +1482,10 @@
         </bean>
         <Category name="properties">
             <Section name="specific" >
-                <PropertyItem name="categorySpacing" />
-                <PropertyItem name="startMargin" />
-                <PropertyItem name="endMargin" />
-                <PropertyItem name="gapStartAndEnd"/>
+                <BeanProperty name="categorySpacing" />
+                <BeanProperty name="startMargin" />
+                <BeanProperty name="endMargin" />
+                <BeanProperty name="gapStartAndEnd"/>
             </Section>
         </Category>    
         
@@ -1421,12 +1497,12 @@
         </beanClassName>
         <Category name="properties">
             <Section name="specific" >
-                <PropertyItem name="lowerBound" />
-                <PropertyItem name="upperBound" />
-                <PropertyItem name="scale" />
-                <PropertyItem name="minorTickVisible" />
-                <PropertyItem name="minorTickCount" />
-                <PropertyItem name="minorTickLength" />
+                <BeanProperty name="lowerBound" />
+                <BeanProperty name="upperBound" />
+                <BeanProperty name="scale" />
+                <BeanProperty name="minorTickVisible" />
+                <BeanProperty name="minorTickCount" />
+                <BeanProperty name="minorTickLength" />
             </Section>
         </Category>    
         
@@ -1438,13 +1514,25 @@
         </bean>
         <Category name="properties">
             <Section name="specific" >
-                <PropertyItem name="tickUnit" />
-                <PropertyItem name="forceZeroInRange" />
+                <BeanProperty name="tickUnit" />
+                <BeanProperty name="forceZeroInRange" />
             </Section>
         </Category>    
         
     </BeanModel>     
-
+    
+    <CompositeBeanModel name = "effect">
+        <beanClassName>
+            javafx.scene.effect.Effect
+        </beanClassName>
+    </CompositeBeanModel>             
+    <CompositeBeanModel name = "bloom">
+        <beanClassName>
+            javafx.scene.effect.Bloom
+        </beanClassName>
+        <BeanProperty name="threshold" />
+        <BeanProperty name="input" />
+    </CompositeBeanModel>             
 </PropertyPaneModel>
 
                     

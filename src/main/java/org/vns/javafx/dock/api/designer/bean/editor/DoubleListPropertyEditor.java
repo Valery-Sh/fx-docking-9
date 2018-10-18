@@ -91,71 +91,17 @@ public class DoubleListPropertyEditor extends ObservableListPropertyEditor<Doubl
     }
 
     private void init() {
-        setSeparator(",");
+        getTextField().setSeparator(",");
         
         setStringConverter(new ObservableListItemStringConverter(this,Double.class));            
         DoublePropertyEditor e = new PrimitivePropertyEditor.DoublePropertyEditor();
-        getValidators().addAll(e.getValidators());
-        getFilterValidators().addAll(e.getFilterValidators());
-        setDefaultValue("0");
-        setEmptySubstitution("");
-        setNullSubstitution("<NULL>");
-        
-/*        getValidators().add(item -> {
-            boolean retval = true;
-            System.err.println("item = " + item);
-            //retval = item.matches("0|-?([1-9][0-9]*)?");
-            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
-                retval = false;
-            }
-            return retval;
-        });
-*/        
-    }
-
-    //@Override
-/*    protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
-            boolean retval = true;
-            //retval = item.matches("0|-?([1-9][0-9]*)?");
-                System.err.println("FILTER VALIDATOR item = " + item);
-            if (!(item.trim().matches("0|-?([1-9][0-9]*)?") && (item.trim().isEmpty() || item.trim().equals("-") || Long.parseLong(item.trim()) <= Integer.MAX_VALUE && Long.parseLong(item.trim()) >= Integer.MIN_VALUE))) {
-                System.err.println("FALSE FILTER VALIDATOR item = " + item);
-                retval = false;
-            }
-            return retval;
-        });
-    }
-    */
-    /**
-     * List of objects of type {@code integer} can't contain {@code null } values.
-     * The method is overridden to do nothing. 
-     * @param str the string used as a null value placeholder
-     */
-    @Override
-    public void setNullSubstitution(String str) {
+        getTextField().getValidators().addAll(e.getValidators());
+        getTextField().getFilterValidators().addAll(e.getFilterValidators());
+        getTextField().setDefaultValue("0");
+        getTextField().setEmptySubstitution("");
+        getTextField().setNullSubstitution("<NULL>");
         
     }
-    //@Override
-/*    protected void addValidators() {
-        getValidators().add(item -> {
-            boolean retval = true;
-            //11.09if (item.trim().isEmpty() && getValueIfBlank() == null || "-".equals(item.trim()) || "+".equals(item.trim())) {
-            if (item.trim().isEmpty()  || "-".equals(item.trim()) || "+".equals(item.trim())) {                
-                retval = false;
-            }
-            return retval;
-        });
 
-    }
-*/
-   // @Override
-/*    public Integer toListItem(String item) {
-        if (item.trim().equals("-")) {
-            return Integer.MIN_VALUE;
-        }
-        System.err.println("toListItem = " + item);
-        return Integer.parseInt(item.trim());
-    }
-*/
+
 }//class IntegerListPropertyEditor

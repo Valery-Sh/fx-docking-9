@@ -36,12 +36,12 @@ public class ModelUtil {
                 displayName = props[i].substring(props[i].indexOf(":") + 1);
 
             }
-            for (PropertyItem pd : section.getItems()) {
+            for (BeanProperty pd : section.getItems()) {
                 if (pd.getName().equals(name)) {
                     continue;
                 }
             }
-            PropertyItem pd = new PropertyItem();
+            BeanProperty pd = new BeanProperty();
             pd.setName(name);
             if (displayName != null) {
                 pd.setDisplayName(displayName);
@@ -61,7 +61,7 @@ public class ModelUtil {
     
     public static void add(Section section,int pos, String posPropName, String... props) {
         
-        PropertyItem[] propModels = new PropertyItem[props.length];
+        BeanProperty[] propModels = new BeanProperty[props.length];
         int idx = section.indexByName(posPropName);
         
         for (int i = 0; i < props.length; i++) {
@@ -79,7 +79,7 @@ public class ModelUtil {
             if (section.getByName(name) != null) {
                 continue;
             }
-            PropertyItem pd = new PropertyItem();
+            BeanProperty pd = new BeanProperty();
             pd.setName(name);
             if (displayName != null) {
                 pd.setDisplayName(displayName);
@@ -154,9 +154,9 @@ public class ModelUtil {
         return retval;
     }    
     
-    public static boolean contains(String propertyName, ObservableList<PropertyItem> pds) {
+    public static boolean contains(String propertyName, ObservableList<BeanProperty> pds) {
         boolean retval = false;
-        for (PropertyItem pd : pds) {
+        for (BeanProperty pd : pds) {
             if (propertyName.equals(pd.getName())) {
                 retval = true;
                 break;

@@ -17,78 +17,50 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.List;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import org.vns.javafx.dock.api.designer.bean.editor.AbstractPropertyEditor.AbstractPropertyEditorSkin;
 
 /**
  *
  * @author Valery Shyskin
  */
-public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPropertyEditor<ButtonType> {
-
-    private ButtonTypeListPropertyEditor textField;
+public class ButtonTypeComboBoxPropertyEditor extends ObservableListPropertyEditor<ButtonType>{
+    
 
     public ButtonTypeComboBoxPropertyEditor() {
+        this(null);
+    }
+    public ButtonTypeComboBoxPropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
         getStyleClass().add("button-type-editor");
-        textField = new ButtonTypeListPropertyEditor();
-        //setMaxWidth(1000);
+        setStringConverter(new ObservableListItemStringConverter(this,ButtonType.class));            
+        getTextField().setSeparator(",");
+        getTextField().setDefaultValue("");
+        getTextField().setEmptySubstitution("");
+        getTextField().setNullable(false);
 
     }
+
 
     @Override
     public String getUserAgentStylesheet() {
         return getClass().getResource("resources/styles/default.css").toExternalForm();
-    }
-
-    public ButtonTypeListPropertyEditor getTextField() {
-        return textField;
-    }
-
-    @Override
-    public void bind(ObservableList<ButtonType> property) {
-        textField.bind(property);
-    }
-
-    @Override
-    public void bindBidirectional(ObservableList<ButtonType> property) {
-        textField.bind(property);
-    }
-
-    @Override
-    public void unbind() {
-        textField.unbind();
-    }
-
-    @Override
-    public boolean isEditable() {
-        return textField.isEditable();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        textField.setEditable(editable);
-    }
-
-    @Override
-    public boolean isBound() {
-        return textField.isBound();
     }
 
     @Override
@@ -96,9 +68,15 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
         return new ButtonTypeComboBoxPropertyEditorSkin(this);
     }
 
-    public static class ButtonTypeComboBoxPropertyEditorSkin extends SkinBase<ButtonTypeComboBoxPropertyEditor> {
+    @Override
+    protected Node createEditorNode() {
+        super.createEditorNode();
+        return new GridPane();
+    }
 
-        private final GridPane grid;
+    public static class ButtonTypeComboBoxPropertyEditorSkin extends AbstractPropertyEditorSkin {
+
+        private GridPane grid;
         private final Button plusButton;
         private final Button minusButton;
         private final StackPane contentPane;
@@ -106,10 +84,12 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
         private final List<Label> labels;
 
         private final String separator;
-
+        
+        ButtonTypeComboBoxPropertyEditor control;
+         
         public ButtonTypeComboBoxPropertyEditorSkin(ButtonTypeComboBoxPropertyEditor control) {
             super(control);
-            
+            this.control = control;
             separator = control.getTextField().getSeparator();
 
             contentPane = new StackPane();
@@ -119,7 +99,6 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
             plusButton = new Button();
             plusButton.getStyleClass().add("plus-button");
 
-            //System.err.println("plusButton padding = " + plusButton.getPadding());
             minusButton = new Button();
             minusButton.getStyleClass().add("minus-button");
 
@@ -129,17 +108,13 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                 show(plusButton);
             });
             minusButton.setOnAction(a -> {
-                if (!getSkinnable().getTextField().getText().isEmpty()) {
+                if (!control.getTextField().getText().isEmpty()) {
                     show(minusButton);
                 }
             });
             HBox btnBox = new HBox(plusButton,minusButton);
-            grid = new GridPane() {
-                @Override
-                protected void layoutChildren() {
-                    super.layoutChildren();
-                }
-            };
+            //grid = (GridPane) control.getEditorNode();
+            grid = (GridPane) getEditorNode();
          
             comboBox.setCellFactory(listView -> new ListCell<Label>() {
                 @Override
@@ -189,17 +164,17 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                         if (sb.lastIndexOf(separator) >= 0) {
                             sb.deleteCharAt(sb.lastIndexOf(separator));
                         }
-                        getSkinnable().getTextField().setText(sb.toString());
+                       control.getTextField().setText(sb.toString());
                     }
                 }
             });
-            getChildren().add(grid);
+            //getChildren().add(grid);
         }
         private Button pressed;
 
         private void show(Button plusOrMinus) {
             pressed = plusOrMinus;
-            String text = getSkinnable().getTextField().getText();
+            String text = control.getTextField().getText();
             comboBox.getSelectionModel().clearSelection();
             if (pressed == minusButton && text.isEmpty()) {
                 return;
@@ -225,8 +200,6 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
                     }
                 });
             }
-            //comboBox.setVisibleRowCount(comboBox.getItems().size());
-            //System.err.println("getVis row count = " + comboBox.getVisibleRowCount());
             comboBox.show();
         }
 
@@ -243,6 +216,14 @@ public class ButtonTypeComboBoxPropertyEditor extends Control implements ListPro
             list.add(new Label(ButtonType.YES.getText().toUpperCase()));
             return list;
         }
-
+        
+/*        @Override
+        protected Node getEditorNode() {
+            if ( grid == null ) {
+                grid = new GridPane();
+            }
+            return grid;
+        }
+*/
     }//Skin
 }//Control

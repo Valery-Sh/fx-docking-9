@@ -83,7 +83,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
  * <p>
  * It is not necessary to use a comma as the separator of string elements. For
  * this purpose, any sequence of characters can be applied. Use the 
- * {@link ObservableListPropertyEditor#setSeparator(java.lang.String) }
+ * {@link ObservableListEditor#setSeparator(java.lang.String) }
  * </p>
  * <pre>
  *   \s*;
@@ -98,16 +98,22 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 public class StringListPropertyEditor extends ObservableListPropertyEditor<String> {
 
     public StringListPropertyEditor() {
+        this(null);
+    }
+
+    public StringListPropertyEditor(String name) {
+        super(name);
         init();
     }
 
+
     private void init() {
         createBindingStringConverter();
-        setSeparator(",");
-        
+        ((StringTextField)getEditorNode()).setSeparator(",");
+
     }
 
     public void createBindingStringConverter() {
-        setStringConverter(new ObservableListItemStringConverter(this,String.class));
+        setStringConverter(new ObservableListItemStringConverter(this, String.class));
     }
 }//class StringListPropertyEditor

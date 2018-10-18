@@ -16,14 +16,12 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.text.Font;
-import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.BytePropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.CharacterPropertyEditor;
@@ -134,40 +132,44 @@ public abstract class PropertyEditorFactory {
             }
 
             if (propertyType.equals(Boolean.class) || propertyType.equals(boolean.class)) {
-                return new BooleanPropertyEditor();
+                retval = new BooleanPropertyEditor(propertyName);
             } else if (propertyType.equals(Character.class) || propertyType.equals(char.class)) {
-                return new CharacterPropertyEditor();
+                retval = new CharacterPropertyEditor(propertyName);
             } else if (propertyType.equals(Byte.class) || propertyType.equals(byte.class)) {
-                return new BytePropertyEditor();
+                retval = new BytePropertyEditor(propertyName);
             } else if (propertyType.equals(Short.class) || propertyType.equals(short.class)) {
-                return new ShortPropertyEditor();
+                retval = new ShortPropertyEditor(propertyName);
             } else if (propertyType.equals(Integer.class) || propertyType.equals(int.class)) {
-                return new IntegerPropertyEditor();
+                retval = new IntegerPropertyEditor(propertyName);
             } else if (propertyType.equals(Long.class) || propertyType.equals(long.class)) {
-                return new LongPropertyEditor();
+                retval = new LongPropertyEditor(propertyName);
             } else if (propertyType.equals(Float.class) || propertyType.equals(float.class)) {
-                return new FloatPropertyEditor();
+                retval = new FloatPropertyEditor(propertyName);
             } else if ("opacity".equals(propertyName) && ((propertyType.equals(Double.class) || propertyType.equals(double.class)))) {
-                return new SliderPropertyEditor(0, 1, 1);
+                retval = new SliderPropertyEditor(propertyName,0, 1, 1);
             } else if (propertyType.equals(Double.class) || propertyType.equals(double.class)) {
-                return new DoublePropertyEditor();
+                retval = new DoublePropertyEditor(propertyName);
             } else if ("style".equals(propertyName) && propertyType.equals(String.class)) {
-                return new StylePropertyEditor();
+                retval = new StylePropertyEditor(propertyName);
             } else if (propertyType.equals(String.class)) {
-                return new StringPropertyEditor();
+                retval = new StringPropertyEditor(propertyName);
             } else if (propertyType.isEnum()) {
-                return new EnumPropertyEditor(propertyType);
+                retval = new EnumPropertyEditor(propertyName,propertyType);
             } else if (propertyType.equals(Insets.class)) {
-                return new InsetsPropertyEditor();
+                retval = new InsetsPropertyEditor(propertyName);
             } else if (propertyType.equals(Bounds.class)) {
-                return new BoundsPropertyEditor();
+                retval = new BoundsPropertyEditor(propertyName);
             } else if (("styleClass".equals(propertyName) && propertyType.equals(ObservableList.class) && String.class.equals(genericType))) {
-                return new StyleClassPropertyEditor();
+                retval = new StyleClassPropertyEditor(propertyName);
             } else if (("buttonTypes".equals(propertyName) && propertyType.equals(ObservableList.class) && ButtonType.class.equals(genericType))) {
-                return new ButtonTypeComboBoxPropertyEditor();
+                retval = new ButtonTypeComboBoxPropertyEditor(propertyName);
             } else if (propertyType.equals(Font.class)) {
-                //return new FontPropertyEditor();
-                return new ComboText();
+                retval = new FontPropertyEditor(propertyName);
+                //return new ComboText();
+            }
+            if ( retval != null ) {
+              ((Node)retval).getStyleClass().add("it_is_pe");
+
             }
             return retval;
         }

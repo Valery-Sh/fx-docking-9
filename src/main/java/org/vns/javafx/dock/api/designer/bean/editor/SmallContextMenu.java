@@ -36,15 +36,10 @@ public class SmallContextMenu extends ContextMenu {
 
     public SmallContextMenu(MenuItem... mis) {
         super(mis);
-        System.err.println("SmallContextMenu()");
-        setOnShowing(e -> {
+        setOnShown(e -> {
             Node content = getSkin().getNode();
             if (content instanceof Region) {
-                
-                System.err.println("1CONTENT HEIGHT: " + getContentHeight());
                 ((Region) content).setMaxHeight(getContentHeight());
-                System.err.println("2CONTENT HEIGHT: " + getContentHeight());
-                
             }
         });
 

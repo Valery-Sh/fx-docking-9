@@ -24,17 +24,21 @@ import java.util.regex.Pattern;
 public class StyleClassPropertyEditor extends StringListPropertyEditor {
 
     public StyleClassPropertyEditor() {
+        this(null);
+    }
+    public StyleClassPropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
-        setSeparator(",");
-        setEmptySubstitution("[]");
-        setNullSubstitution("<NULL>");
-        setSingleEmptyItemSubstitution("[\"\"]");
-        setNullable(true);
+        getTextField().setSeparator(",");
+        getTextField().setEmptySubstitution("[]");
+        getTextField().setNullSubstitution("<NULL>");
+        getTextField().setSingleEmptyItemSubstitution("[\"\"]");
+        getTextField().setNullable(true);
         
-        getFilterValidators().add(item -> {
+        getTextField().getFilterValidators().add(item -> {
             String regExp = "^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$";
             boolean retval = item.trim().isEmpty();
             if (!retval) {
@@ -44,21 +48,11 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
             return retval;
         });
       
-        /*        boundPropertyProperty().addListener((v,ov,nv) -> {
-            if ( ov == null ) {
-                setContextMenu(null);
-            }
-            StringProperty bv = ((StringProperty)boundPropertyProperty());
-            if ( nv != null && (bv.getBean() instanceof Styleable)) {
-                ContextMenu cm = createMenu((Styleable)bv);
-            }
-        });
-         */
     }
 
     @Override
     protected void addValidators() {
-         getValidators().add(item -> {
+         getTextField().getValidators().add(item -> {
             if ( item.trim().isEmpty() ) {
                 return true;
             }
@@ -68,7 +62,7 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
 
     @Override
     protected void addFilterValidators() {
-        getFilterValidators().add(item -> {
+        getTextField().getFilterValidators().add(item -> {
             String regExp = "^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$";
             boolean retval = item.trim().isEmpty();
             if (!retval) {
@@ -79,4 +73,4 @@ public class StyleClassPropertyEditor extends StringListPropertyEditor {
         });
     }
 
-}//class DoublePropertyEditor
+}//class StyleClassPropertyEditor

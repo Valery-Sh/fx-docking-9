@@ -18,11 +18,11 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.regex.Pattern;
-import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.StringConverter;
@@ -31,19 +31,24 @@ import javafx.util.StringConverter;
  *
  * @author Valery
  */
-public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
+public class DecimalPropertyEditor extends TextFieldPropertyEditor<Double> {
 
-    private RoundingMode roundingMode = RoundingMode.HALF_UP;
+    private final RoundingMode roundingMode = RoundingMode.HALF_UP;
 
     private final DoubleProperty minValue = new SimpleDoubleProperty();
     private final DoubleProperty maxValue = new SimpleDoubleProperty();
     private final IntegerProperty scale = new SimpleIntegerProperty();
 
     public DecimalPropertyEditor() {
-        this(Double.MIN_VALUE, Double.MAX_VALUE, 0);
+        this(null, Double.MIN_VALUE, Double.MAX_VALUE, 0);
     }
 
     public DecimalPropertyEditor(Double minValue, Double maxValue, Integer scale) {
+        this(null, minValue, maxValue, scale);
+    }
+
+    public DecimalPropertyEditor(String name, Double minValue, Double maxValue, Integer scale) {
+        super(name);
         if (minValue.equals(Double.MIN_VALUE)) {
             this.minValue.set(-Double.MAX_VALUE);
         } else {
@@ -55,8 +60,7 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
     }
 
     private void init() {
-
-        getStringTransformers().add(src -> {
+        getTextField().getStringTransformers().add(src -> {
             String retval = src;
             src = src.trim();
             Double dv;
@@ -70,27 +74,31 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
             }
             return stringOf(dv);
         });
-
     }
 
     @Override
     protected void addValidators() {
-        getValidators().add(item -> {
-
+        getTextField().getValidators().add(item -> {
             Double dv = Double.valueOf(item);
-            System.err.println("min()=" + Double.min(Double.MIN_VALUE, dv));
             boolean retval = dv >= getMinValue() && dv <= getMaxValue();
-            System.err.println("MIN = " + getMinValue() + "; MAX=" + getMaxValue());
-            System.err.println("validator item=" + dv + "; retval = " + retval);
             return retval;
-
         });
+
     }
 
     @Override
     protected void addFilterValidators() {
-        getFilterValidators().add(item -> {
-            //item = item.trim();
+        getTextField().getFilterValidators().add(item -> {
+/*            String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
+            String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d{0," + getScale() + "})?)";
+            String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
+            if (getScale() == 0) {
+                regExp = "0|-?([1-9][0-9]*)?";
+                //regExp = "([+-]?)|([+-]?\\d+)";
+            } else if (getScale() > 0) {
+                regExp = "([+-]?)|([+-]?\\d+\\.?(\\d{0," + getScale() + "})?)";
+            }
+*/
             String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
             if (getScale() == 0) {
                 regExp = "([+-]?)|([+-]?\\d+)";
@@ -101,9 +109,9 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
             if (!retval) {
                 retval = Pattern.matches(regExp, item);
             }
-            if (retval ) {
+            if (retval) {
                 Double dv = 0d;
-                if ( !item.trim().isEmpty() && !item.trim().equals("-") && !item.trim().equals("+") ) {
+                if (!item.trim().isEmpty() && !item.trim().equals("-") && !item.trim().equals("+")) {
                     dv = Double.valueOf(item);
                 }
                 retval = dv >= getMinValue() && dv <= getMaxValue();
@@ -120,11 +128,6 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
         return bd.toString();
     }
 
-/*0909    @Override
-    public void setBoundValue(Double boundValue) {
-        ((DoubleProperty) (Observable) getBoundProperty()).set(boundValue);
-    }
-*/
     public DoubleProperty minValueProperty() {
         return minValue;
     }
@@ -139,6 +142,10 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     public Double getMinValue() {
         return minValue.get();
+    }
+
+    public double getValue() {
+        return Double.valueOf(getTextField().getText());
     }
 
     public Double getMaxValue() {
@@ -167,12 +174,11 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
 
     @Override
     public StringConverter<Double> createBindingStringConverter() {
-        //return new DoubleConverter(this);
-        return new AbstractPropertyEditor.BindingStringConverter<>(this);
+        return new TextFieldPropertyEditor.BindingStringConverter<>(this);
     }
 
     @Override
-    protected StringBinding asString(Property property) {
+    protected StringBinding asString(ReadOnlyProperty property) {
         return ((DoubleProperty) property).asString();
     }
 
@@ -184,16 +190,4 @@ public class DecimalPropertyEditor extends AbstractPropertyEditor<Double> {
         return Double.valueOf(stringOf(Double.valueOf(txt)));
     }
 
-    /*    public static class DoubleConverter extends AbstractPropertyEditor.BindingStringConverter<Double> {
-        public DoubleConverter(DecimalPropertyEditor textField) {
-            super(textField);
-        }
-        @Override
-        protected Double valueOf(String txt) {
-            return (Double) getEditor().valueOf(txt);
-            //return Double.valueOf(getEditor().stringOf(Double.valueOf(txt)));            
-        }
-
-    }//class DoubleConverter
-     */
 }//class DecimalPropertyEditor

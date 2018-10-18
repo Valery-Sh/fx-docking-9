@@ -19,9 +19,11 @@ import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
@@ -30,31 +32,31 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  * @author Valery
  */
 @DefaultProperty("bounds")
-public class BoundsPropertyEditor extends ContentComboBox implements PropertyEditor<Bounds> {
+public class BoundsPropertyEditor extends AbstractPropertyEditor<Bounds> {
 
     private final ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0, 0, 0));
 
     public BoundsPropertyEditor() {
+       this(null);
+    }
+    public BoundsPropertyEditor(String name) {
+        super(name);
         getStyleClass().add("bounds-property-editor");
     }
 
+    
     @Override
-    public void bind(Property<Bounds> property) {
-        setEditable(false);
+    public void bind(ReadOnlyProperty<Bounds> property) {
         unbind();
+        setBoundProperty(property);
         bounds.bind(property);
     }
 
-    public void bind(ReadOnlyObjectProperty<Bounds> property) {
-        setEditable(false);
-        unbind();
-        bounds.bind(property);
-    }
 
     @Override
     public void bindBidirectional(Property<Bounds> property) {
-        setEditable(false);
         unbind();
+        setBoundProperty(property);
         bounds.bind(property);
     }
 
@@ -88,6 +90,11 @@ public class BoundsPropertyEditor extends ContentComboBox implements PropertyEdi
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+
+    @Override
+    protected Node createEditorNode() {
+        return new ContentComboBox();
     }
 
 }

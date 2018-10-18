@@ -15,20 +15,21 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import java.lang.reflect.Method;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -41,10 +42,11 @@ import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.Doub
  *
  * @author Olga
  */
-public class InsetsPropertyEditor extends Control implements PropertyEditor<Insets> {
+public class InsetsPropertyEditor extends AbstractPropertyEditor<Insets> implements StaticConstraintPropertyEditor{
 
     private final ObjectProperty<Insets> editorInsets = new SimpleObjectProperty<>();
-
+//    private final ObjectProperty<Insets> margin = new SimpleObjectProperty<>();
+    private MarginBinding marginBinding;
     private final DoublePropertyEditor top;
     private final DoublePropertyEditor right;
     private final DoublePropertyEditor bottom;
@@ -52,8 +54,7 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
     private final BooleanProperty decorated = new SimpleBooleanProperty(true);
 
-    private final BooleanProperty editable = new SimpleBooleanProperty(true);
-
+    //private final BooleanProperty editable = new SimpleBooleanProperty(true);
     private ChangeListener<Insets> editorInsetslistener;
 
     private final ChangeListener<String> topValueInsetslistener = ((v, ov, nv) -> {
@@ -68,6 +69,7 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     private final ChangeListener<String> leftValueInsetslistener = ((v, ov, nv) -> {
         setEditorInsets(new Insets(getEditorInsets().getTop(), getEditorInsets().getRight(), getEditorInsets().getBottom(), Double.valueOf(nv)));
     });
+
     public InsetsPropertyEditor() {
         this(0d);
     }
@@ -77,14 +79,27 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     }
 
     public InsetsPropertyEditor(double top, double right, double bottom, double left) {
+        this(null, top, right, bottom, left);
+    }
+
+    public InsetsPropertyEditor(String name) {
+        this(name, 0, 0, 0, 0);
+    }
+
+    public InsetsPropertyEditor(String name, double top, double right, double bottom, double left) {
+        super(name);
         this.editorInsets.set(new Insets(top, right, bottom, left));
         this.top = new DoublePropertyEditor();
+        this.top.setMenuButtonAllignment(SidePos.NO);
         this.top.getStyleClass().add("top-inset");
         this.right = new DoublePropertyEditor();
+        this.right.setMenuButtonAllignment(SidePos.NO);
         this.right.getStyleClass().add("right-inset");
         this.bottom = new DoublePropertyEditor();
+        this.bottom.setMenuButtonAllignment(SidePos.NO);
         this.bottom.getStyleClass().add("bottom-inset");
         this.left = new DoublePropertyEditor();
+        this.left.setMenuButtonAllignment(SidePos.NO);
         this.left.getStyleClass().add("left-inset");
         init();
     }
@@ -93,27 +108,19 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
         getStyleClass().add("insets-property-editor");
         editorInsetslistener = (v, ov, nv) -> {
             if (nv != null) {
-                top.setText(String.valueOf(nv.getTop()));
-                right.setText(String.valueOf(nv.getRight()));
-                bottom.setText(String.valueOf(nv.getBottom()));
-                left.setText(String.valueOf(nv.getLeft()));
+                top.getTextField().setText(String.valueOf(nv.getTop()));
+                right.getTextField().setText(String.valueOf(nv.getRight()));
+                bottom.getTextField().setText(String.valueOf(nv.getBottom()));
+                left.getTextField().setText(String.valueOf(nv.getLeft()));
             }
         };
         editorInsetsProperty().addListener(editorInsetslistener);
-    }
-
-    public BooleanProperty editableProperty() {
-        return editable;
-    }
-
-    @Override
-    public boolean isEditable() {
-        return editable.get();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable.set(editable);
+        editableProperty().addListener((v, ov, nv) -> {
+            top.setEditable(nv);
+            right.setEditable(nv);
+            bottom.setEditable(nv);
+            left.setEditable(nv);
+        });
     }
 
     public Insets getEditorInsets() {
@@ -149,10 +156,11 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
-    
+
     @Override
-    public void bind(Property<Insets> property) {
+    public void bind(ReadOnlyProperty<Insets> property) {
         unbind();
+        setBoundProperty(property);
         setEditable(false);
         editorInsetsProperty().removeListener(editorInsetslistener);
         removeTopRightBottopTopListeners();
@@ -164,62 +172,118 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
     @Override
     public void bindBidirectional(Property<Insets> property) {
         unbind();
+        setBoundProperty(property);
         setEditable(true);
         editorInsetsProperty().removeListener(editorInsetslistener);
         removeTopRightBottopTopListeners();
         editorInsetsProperty().addListener(editorInsetslistener);
         addTopRightBottopTopListeners();
-        setEditorInsets(new Insets(property.getValue().getRight(), property.getValue().getRight(), property.getValue().getBottom(), property.getValue().getLeft()));
+//        if ( property.getValue() == null ) {
+
+//        }
+//        setEditorInsets(new Insets(property.getValue().getRight(), property.getValue().getRight(), property.getValue().getBottom(), property.getValue().getLeft()));
         editorInsets.bindBidirectional(property);
 
     }
 
+    @Override
+    public void bindConstraint(Parent node, Method... setMethods) {
+        unbind();
+        setBoundProperty(null);
+        setEditable(true);
+        editorInsetsProperty().removeListener(editorInsetslistener);
+        removeTopRightBottopTopListeners();
+        editorInsetsProperty().addListener(editorInsetslistener);
+        addTopRightBottopTopListeners();
+//        if ( property.getValue() == null ) {
+
+//        }
+//        setEditorInsets(new Insets(property.getValue().getRight(), property.getValue().getRight(), property.getValue().getBottom(), property.getValue().getLeft()));
+        marginBinding = new MarginBinding(node, editorInsets);
+        marginBinding.bind();
+    }    
+    
+    public void bindBidirectional1(ReadOnlyProperty<Parent> property) {
+        
+        unbind();
+        setBoundProperty(property);
+        setEditable(true);
+        editorInsetsProperty().removeListener(editorInsetslistener);
+        removeTopRightBottopTopListeners();
+        editorInsetsProperty().addListener(editorInsetslistener);
+        addTopRightBottopTopListeners();
+//        if ( property.getValue() == null ) {
+
+//        }
+//        setEditorInsets(new Insets(property.getValue().getRight(), property.getValue().getRight(), property.getValue().getBottom(), property.getValue().getLeft()));
+        //editorInsets.bindBidirectional(property);
+
+    }
+
     protected void removeTopRightBottopTopListeners() {
-        top.lastValidTextProperty().removeListener(topValueInsetslistener);
-        right.lastValidTextProperty().removeListener(rightValueInsetslistener);
-        bottom.lastValidTextProperty().removeListener(bottomValueInsetslistener);
-        left.lastValidTextProperty().removeListener(leftValueInsetslistener);
+        top.getTextField().lastValidTextProperty().removeListener(topValueInsetslistener);
+        right.getTextField().lastValidTextProperty().removeListener(rightValueInsetslistener);
+        bottom.getTextField().lastValidTextProperty().removeListener(bottomValueInsetslistener);
+        left.getTextField().lastValidTextProperty().removeListener(leftValueInsetslistener);
     }
 
     protected void addTopRightBottopTopListeners() {
-        top.lastValidTextProperty().addListener(topValueInsetslistener);
-        right.lastValidTextProperty().addListener(rightValueInsetslistener);
-        bottom.lastValidTextProperty().addListener(bottomValueInsetslistener);
-        left.lastValidTextProperty().addListener(leftValueInsetslistener);
+        top.getTextField().lastValidTextProperty().addListener(topValueInsetslistener);
+        right.getTextField().lastValidTextProperty().addListener(rightValueInsetslistener);
+        bottom.getTextField().lastValidTextProperty().addListener(bottomValueInsetslistener);
+        left.getTextField().lastValidTextProperty().addListener(leftValueInsetslistener);
     }
 
     @Override
     public void unbind() {
         editorInsets.unbind();
         removeTopRightBottopTopListeners();
+        if (getBoundProperty() != null && (getBoundProperty() instanceof Property)) {
+            editorInsets.unbindBidirectional((Property) getBoundProperty());
+        }
+        editorInsetsProperty().removeListener(editorInsetslistener);
+        removeTopRightBottopTopListeners();
+        
+        setBoundProperty(null);
+        
+        if ( marginBinding != null ) {
+            marginBinding.unbind();
+        }
     }
 
     @Override
     public boolean isBound() {
-       return editorInsets.isBound();
+        return editorInsets.isBound() || getBoundProperty() != null || (marginBinding != null && marginBinding.isBound());
     }
 
-    public static class InsetsPropertyEditorSkin extends SkinBase<InsetsPropertyEditor> {
+    @Override
+    protected Node createEditorNode() {
+        return new GridPane();
+    }
 
-        private Node[] graphics;
+    public static class InsetsPropertyEditorSkin extends AbstractPropertyEditorSkin {
 
+        private final Node[] graphics;
         private final GridPane grid;
+
+        private final InsetsPropertyEditor control;
 
         public InsetsPropertyEditorSkin(InsetsPropertyEditor control) {
             super(control);
+            this.control = control;
 
             graphics = new Node[]{new StackPane(), new StackPane(), new StackPane(), new StackPane()};
-            grid = new GridPane();
+            grid = (GridPane) control.getEditorNode();
 
-            getSkinnable().decoratedProperty().addListener((v, ov, nv) -> {
+            control.decoratedProperty().addListener((v, ov, nv) -> {
                 if (nv) {
                     decorateDefault();
                 } else {
                     decorateImage();
                 }
             });
-            adustEditable(getSkinnable().isEditable());
-            getSkinnable().editableProperty().addListener((v, ov, nv) -> {
+            adustEditable(control.isEditable());
+            control.editableProperty().addListener((v, ov, nv) -> {
                 adustEditable(nv);
             });
 
@@ -227,16 +291,16 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
                 grid.add(graphics[i], i, 0);
             }
 
-            if (getSkinnable().isDecorated()) {
+            if (control.isDecorated()) {
                 decorateDefault();
             } else {
                 decorateImage();
             }
 
-            grid.add(getSkinnable().top, 0, 1);
-            grid.add(getSkinnable().right, 1, 1);
-            grid.add(getSkinnable().bottom, 2, 1);
-            grid.add(getSkinnable().left, 3, 1);
+            grid.add(control.top, 0, 1);
+            grid.add(control.right, 1, 1);
+            grid.add(control.bottom, 2, 1);
+            grid.add(control.left, 3, 1);
             ColumnConstraints column0 = new ColumnConstraints();
             column0.setPercentWidth(25);
             ColumnConstraints column1 = new ColumnConstraints();
@@ -250,7 +314,7 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
 
             grid.setHgap(10);
 
-            getChildren().add(grid);
+            //getChildren().add(grid);
         }
 
         private Side getSide(int idx) {
@@ -342,10 +406,10 @@ public class InsetsPropertyEditor extends Control implements PropertyEditor<Inse
         }
 
         protected void adustEditable(boolean editable) {
-            getSkinnable().top.setEditable(editable);
-            getSkinnable().right.setEditable(editable);
-            getSkinnable().bottom.setEditable(editable);
-            getSkinnable().left.setEditable(editable);
+            control.top.setEditable(editable);
+            control.right.setEditable(editable);
+            control.bottom.setEditable(editable);
+            control.left.setEditable(editable);
         }
     }// Skin
 

@@ -15,28 +15,16 @@
  */
 package org.vns.javafx.dock.api.demo;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PopupControl;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
 
 /**
@@ -45,186 +33,51 @@ import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
  */
 public class TestDecimalPropertyEditor extends Application {
 
+    int sz = 100;
+
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
 
-        System.err.println("Double.valueOf = " + Double.valueOf("1"));
-        System.err.println("Integer.valueOf = " + Integer.parseInt("-003"));
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
-        long start1 = System.currentTimeMillis();
-        Pane p = new Pane();
-        long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
-
-
         GridPane grid = new GridPane();
+
         grid.setHgap(10);
-        //AnchorPane anchor = new AnchorPane(grid);
-        //anchor.setStyle("-fx-border-color: red; -fx-border-width: 4 ");
-        //grid.setStyle("-fx-border-color: green; -fx-border-width: 2 ");
 
         StackPane root = new StackPane(grid);
-        Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
-        DoubleProperty ip = new SimpleDoubleProperty(27);
-        
-        DecimalPropertyEditor tf1 = new DecimalPropertyEditor(-1d,150d,2);
-        System.err.println("1 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
+
+        DecimalPropertyEditor tf1 = new DecimalPropertyEditor(-100d, 200d, 0);
+        //DecimalPropertyEditor tf1 = new DecimalPropertyEditor();
+        btn2.setPrefWidth(12.1);
         tf1.bindBidirectional(btn2.prefWidthProperty());
-        System.err.println("2 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-//        System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
+
         btn1.setOnAction(e -> {
-            //tf1.setText("-210");
-            btn2.setPrefWidth(btn2.getPrefWidth() + 20);
-                
+            btn2.setPrefWidth(120.25);
             System.err.println("3 btn2.prefWidthProperty() = " + btn2.getPrefWidth());
-//            System.err.println("DoublePropertyEditor value=" + tf1.getLastValidText());
-            
         });
 
-        Label lb2 = new Label("111111lable 1");
-        lb2.setFont(new Font(13));
-        //SimpleStringPropertyEditor tf2 = new SimpleStringPropertyEditor("1234");
-
-        //tf2.setFont(new Font(13));
         btn2.setOnAction(e -> {
-            btn2.setPrefWidth(-20);
-            System.err.println("btn2.prefWidth = " + btn2.getPrefWidth());
-            //tf1.setText("50");
-            //btn2.setPrefWidth(200.56);
+            btn2.setPrefWidth(sz = sz + 10);
         });
-        Label lb3 = new Label("lable 3");
-        lb3.setFont(new Font(13));
+        grid.add(btn1, 0, 0);
+        grid.add(tf1, 0, 1);
+        grid.add(btn2, 0, 2);
 
-        Label elb = new Label("errors");
-        HBox ehb = new HBox();
-        ehb.setStyle("-fx-background-color: aqua");
-        Circle shape = new Circle(2, Color.RED);
-        shape.setManaged(false);
-        ehb.getChildren().add(shape);
-
-        grid.add(lb1, 0, 0);
-        grid.add(tf1, 1, 0);
-        grid.add(elb, 0, 1);
-        grid.add(ehb, 1, 1);
-        grid.add(lb2, 0, 2);
-//        grid.add(tf2, 1, 2);
-
-
-        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
-        tf3.setOnAction(e -> {
-        });
-        tf3.setFont(new Font(13));
-
-        grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
-        tf3.bind(btn1.disableProperty());
-        ColumnConstraints cc0 = new ColumnConstraints();
-        ColumnConstraints cc1 = new ColumnConstraints();
-        ColumnConstraints cc20 = new ColumnConstraints();
-
-        cc0.setPercentWidth(35);
-        cc1.setPercentWidth(65);
-
-        grid.getColumnConstraints().addAll(cc0, cc1);
-        root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
+
         stage.setScene(scene);
-        stage.setTitle("Scrolling Text");
         stage.show();
-
-        Stage stage1 = new Stage();
-        stage1.initOwner(stage);
-
-        VBox vbox = new VBox(btn1);
-        VBox propPane = new VBox();
-        TilePane tilePane = new TilePane();
-        propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
-        vbox.getChildren().add(propPane);
-        propPane.getChildren().add(tilePane);
-
-        StackPane contentPane = new StackPane();
-        propPane.getChildren().add(contentPane);
-        contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
-        Button propBtn = new Button("Properties");
-        Button layoutBtn = new Button("Layout");
-        Button codeBtn = new Button("Code");
-        tilePane.getChildren().addAll(propBtn, layoutBtn, codeBtn);
-        //
-        // Properties Category
-        //
-        TitledPane propTitledPane1 = new TitledPane();
-        propTitledPane1.setText("Node");
-
-        TitledPane propTitledPane2 = new TitledPane();
-        propTitledPane2.setText("JavaFx CSS");
-        TitledPane propTitledPane3 = new TitledPane();
-        propTitledPane3.setText("Extras");
-        VBox propSecBox = new VBox(propTitledPane1, propTitledPane2, propTitledPane3);
-        contentPane.getChildren().add(propSecBox);
-
-        TitledPane layoutTitledPane1 = new TitledPane();
-        layoutTitledPane1.setText("Content");
-        TitledPane layoutTitledPane2 = new TitledPane();
-        layoutTitledPane2.setText("Internals");
-        VBox layoutSecBox = new VBox(layoutTitledPane1, layoutTitledPane2);
-        contentPane.getChildren().add(layoutSecBox);
-        layoutSecBox.setVisible(false);
-
-        TitledPane codeTitledPane1 = new TitledPane();
-        codeTitledPane1.setText("onAction");
-        VBox codeSecBox = new VBox(codeTitledPane1);
-        contentPane.getChildren().add(codeSecBox);
-        codeSecBox.setVisible(false);
-
-        propBtn.setDisable(true);
-
-        propBtn.setOnAction(e -> {
-            propBtn.setDisable(true);
-            propSecBox.setVisible(true);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        layoutBtn.setOnAction(e -> {
-            layoutBtn.setDisable(true);
-            layoutSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        codeBtn.setOnAction(e -> {
-            codeBtn.setDisable(true);
-            codeSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-        });
-
-        Scene scene1 = new Scene(vbox);
-        stage1.setScene(scene1);
-
-        stage1.show();
-
-        VBox vbox2 = new VBox(btn2);
-        PopupControl pc = new PopupControl();
-        pc.getScene().setRoot(vbox2);
-        pc.show(stage, 20, 2);
-
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);
-        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
+        System.err.println("minWidth = " + split("minWidth"));
+        System.err.println("Point2D = " + split("Point2D"));
+        System.err.println("P2D = " + split("P2D"));
+        System.err.println("PDC = " + split("PDC"));
+        System.err.println("PD = " + split("PD"));
+        System.err.println("iPD = " + split("iPD"));
+//        System.err.println("R = " + getClass().getResource("resources/demo-styles.css").toExternalForm());
+//        scene.getStylesheets().add(getClass().getResource("resources/demo-styles.css").toExternalForm());
 
     }
 
@@ -239,5 +92,46 @@ public class TestDecimalPropertyEditor extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    private static final String CAMELCASE_OR_UNDERSCORE
+            = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|_";
 
+    /*public static List<String> split(String string) {
+        List<String> words = new ArrayList<String>();
+        for (String word : string.split(RE_CAMELCASE_OR_UNDERSCORE)) {
+            if (!word.isEmpty()) {
+                words.add(word);
+            }
+        }
+        return words;
+    }
+     */
+    public static String split(String string, String... except) {
+        StringBuilder sb = new StringBuilder();
+        String[] split = string.split(CAMELCASE_OR_UNDERSCORE);
+        for (String word : split) {
+            if (!word.isEmpty()) {
+                if ( sb.length() == 2 ) {
+                    sb.deleteCharAt(1);
+                    if ( Character.isLowerCase(string.charAt(0))) {
+                        sb.deleteCharAt(0);
+                        sb.append(string.charAt(0));
+                    }
+                    sb.append(word)
+                            .append(' ');
+                } else if (word.length() == 1) {
+                    if (sb.length() != 0) {
+                        sb.deleteCharAt(sb.length() - 1);
+                    }
+                    sb.append(word.toUpperCase())
+                            .append(' ');
+                } else {
+                    sb.append(word.substring(0, 1).toUpperCase())
+                            .append(word.substring(1))
+                            .append(' ');
+                }
+            }
+        }
+
+        return sb.toString().trim();
+    }
 }

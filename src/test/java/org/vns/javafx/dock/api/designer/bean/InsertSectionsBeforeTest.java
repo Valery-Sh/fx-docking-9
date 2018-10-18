@@ -65,12 +65,12 @@ public class InsertSectionsBeforeTest {
         Section section01 = new Section("secName01","secDisplayName01");
         Section section02 = new Section("secName02","secDisplayName02");
 
-        PropertyItem item01_01 = new PropertyItem("name01_01","displayName01_01");
-        PropertyItem item01_02 = new PropertyItem("name01_02","displayName01_02");
+        BeanProperty item01_01 = new BeanProperty("name01_01","displayName01_01");
+        BeanProperty item01_02 = new BeanProperty("name01_02","displayName01_02");
         section01.getItems().addAll(item01_01,item01_02);
         
-        PropertyItem item02_01 = new PropertyItem("name02_01","displayName02_01");
-        PropertyItem item02_02 = new PropertyItem("name02_02","displayName02_02");
+        BeanProperty item02_01 = new BeanProperty("name02_01","displayName02_01");
+        BeanProperty item02_02 = new BeanProperty("name02_02","displayName02_02");
         section02.getItems().addAll(item02_01,item02_02);        
         
         Category category01 = new Category("catName01","catDisplayName01");

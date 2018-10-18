@@ -15,41 +15,43 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Control;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class ComboText extends Control implements PropertyEditor<Font>{
+public class ComboButtonPropertyEditor<T> extends AbstractPropertyEditor<T> {
 
-    private final ObjectProperty<Button> button = new SimpleObjectProperty<>();
+    private final ReadOnlyObjectWrapper<Button> buttonWrapper = new ReadOnlyObjectWrapper<>(new Button());
     private final ObjectProperty<Parent> popupRoot = new SimpleObjectProperty<>();
 
-    public ComboText() {
+    public ComboButtonPropertyEditor() {
+        this(null);
+    }
+
+    public ComboButtonPropertyEditor(String name) {
+        super(name);
         init();
     }
 
@@ -57,16 +59,16 @@ public class ComboText extends Control implements PropertyEditor<Font>{
         getStyleClass().add("combo-button");
     }
 
-    public ObjectProperty<Button> buttonProperty() {
-        return button;
+    public ReadOnlyObjectProperty<Button> buttonProperty() {
+        return buttonWrapper.getReadOnlyProperty();
     }
 
     public Button getButton() {
-        return button.get();
+        return buttonWrapper.getValue();
     }
 
-    public void setButton(Button button) {
-        this.button.set(button);
+    protected void setButton(Button button) {
+        this.buttonWrapper.setValue(button);
     }
 
     public ObjectProperty<Parent> popupRootProperty() {
@@ -81,14 +83,10 @@ public class ComboText extends Control implements PropertyEditor<Font>{
         this.popupRoot.set(popupRoot);
     }
 
-    @Override
-    public String getUserAgentStylesheet() {
-        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-
+   
     @Override
     public Skin<?> createDefaultSkin() {
-        return new ComboTextSkin(this);
+        return new ComboButtonPropertyEditorSkin(this);
     }
 
     public static void setDefaultButtonGraphic(Button btn) {
@@ -100,7 +98,7 @@ public class ComboText extends Control implements PropertyEditor<Font>{
         btn.setTextOverrun(OverrunStyle.CLIP);
         btn.setContentDisplay(ContentDisplay.LEFT);
         btn.setAlignment(Pos.CENTER_LEFT);
-    
+
     }
 
     public static Polygon createTriangle() {
@@ -113,12 +111,12 @@ public class ComboText extends Control implements PropertyEditor<Font>{
     }
 
     @Override
-    public void bind(Property<Font> property) {
+    public void bind(ReadOnlyProperty<T> property) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void bindBidirectional(Property<Font> property) {
+    public void bindBidirectional(Property<T> property) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -128,65 +126,52 @@ public class ComboText extends Control implements PropertyEditor<Font>{
     }
 
     @Override
-    public boolean isEditable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isBound() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static class ComboTextSkin extends SkinBase<ComboText> {
+    @Override
+    protected Node createEditorNode() {
+        return new AnchorPane();
+    }
+
+    public static class ComboButtonPropertyEditorSkin extends AbstractPropertyEditorSkin {
 
         private AnchorPane anchor = null;
         private Popup popup;
 
-        public ComboTextSkin(ComboText control) {
+        public ComboButtonPropertyEditorSkin(ComboButtonPropertyEditor control) {
             super(control);
             Button btnGr = new Button();
+
+            anchor = (AnchorPane) control.getEditorNode();
             
-            anchor = new AnchorPane() {
-                @Override
-                protected void layoutChildren() {
-                    super.layoutChildren();
-                }
-            };
             anchor.getStyleClass().add("button");
 
-            Shape graphic = ComboText.createTriangle();
-            //StackPane sp = new StackPane(graphic);
-            //sp.setStyle("-fx-background-color: aqua");
+            Shape graphic = ComboButtonPropertyEditor.createTriangle();
+
             Button btn = control.getButton();
-            
-
+            btn.setId("comboButton");
+//            btn.setText("Arial");
             //Insets ins = btn.getInsets();
-            Insets insGr = btnGr.getInsets();
-
+            //Insets insGr = btnGr.getInsets();
             btnGr.getStyleClass().clear();
 
             btnGr.setGraphic(graphic);
-            if (btn == null) {
-                btn = new Button();
-                btn.getStyleClass().clear();
-                ComboText.setDefaultLayout(btn);
-                //ComboButton.setDefaultButtonGraphic(btn);
-                control.setButton(btn);
 
-                AnchorPane.setLeftAnchor(btn, 0d);
-                AnchorPane.setRightAnchor(btn, 0d);
-                AnchorPane.setTopAnchor(btn, 0d);
-                AnchorPane.setBottomAnchor(btn, 0d);
-                AnchorPane.setRightAnchor(btnGr, 0d);
-                AnchorPane.setTopAnchor(btnGr, 0d);
-                AnchorPane.setBottomAnchor(btnGr, 0d);
-                //anchor.set
-            }
+           
+            btn.getStyleClass().clear();
+            ComboButtonPropertyEditor.setDefaultLayout(btn);
+
+            AnchorPane.setLeftAnchor(btn, 0d);
+            AnchorPane.setRightAnchor(btn, 0d);
+            AnchorPane.setTopAnchor(btn, 0d);
+            AnchorPane.setBottomAnchor(btn, 0d);
+            
+            AnchorPane.setRightAnchor(btnGr, 0d);
+            AnchorPane.setTopAnchor(btnGr, 0d);
+            AnchorPane.setBottomAnchor(btnGr, 0d);
+            //anchor.set
 
             anchor.getChildren().addAll(btn, btnGr);
 
@@ -198,14 +183,17 @@ public class ComboText extends Control implements PropertyEditor<Font>{
             if (root != null) {
                 popup.getScene().setRoot(root);
                 btn.setOnAction(buttonActionHandler);
+                btnGr.setOnAction(buttonActionHandler);
             }
 
-            control.buttonProperty().addListener(buttonChangeListener);
+            //control.buttonProperty().addListener(buttonChangeListener);
             control.popupRootProperty().addListener(popupRootChangeListener);
 
-            getChildren().add(anchor);
-            //btnGr.getInsets();
-            //anchor.setPadding(new Insets(4, 4, 4, 8));
+            //getChildren().add(anchor);
+            control.editableProperty().addListener((ObservableValue<? extends Boolean> v, Boolean ov, Boolean nv) -> {
+                anchor.getChildren().get(0).setDisable(!nv);
+                anchor.getChildren().get(1).setDisable(!nv);
+            });
         }
         private final EventHandler<ActionEvent> buttonActionHandler = (ev) -> {
             Button b = (Button) ev.getSource();

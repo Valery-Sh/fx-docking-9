@@ -13,7 +13,9 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.ObservableListStringBinding;
 import org.vns.javafx.dock.api.designer.bean.editor.ListContentPropertyEditors;
+import org.vns.javafx.dock.api.designer.bean.editor.ObservableListEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.ObservableListPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
 
 /**
  *
@@ -28,20 +30,12 @@ public class TestObservableListPropertyEditor extends Application {
         StringProperty strProp = new SimpleStringProperty();
         b01.getStyleClass().add("btn01");
 
-        ObservableListPropertyEditor<String> olb = ListContentPropertyEditors.getEditor(String.class);
-        olb.setSeparator(",");
-        olb.getValidators().add(item -> {
-            System.err.println("******** VALIDATOR item = '" + item + "'");
-            if (olb.isNull(item) || "1".equals(item)) {
-                System.err.println("&&&&&&&&&&& IS SAME AS NULL &&&&&&&&&&&&&&& item = " + item);
-                return false;
-            }
-            return true;
-        });
-
-        olb.bindBidirectional(b01.getStyleClass());
-
-        VBox vbox = new VBox(olb, b01, b02);
+        ObservableListEditor<String> olb = null ;//ListContentPropertyEditors.getEditor(String.class);
+//        olb.bindBidirectional(b01.getStyleClass());
+        ObservableListPropertyEditor lpe = new StringListPropertyEditor("styleClass");
+        b01.getStyleClass().add("my-class");
+        lpe.bindBidirectional(b01.getStyleClass());
+        VBox vbox = new VBox(lpe, b01, b02);
 
         stage.setTitle("Test DockSideBar");
         //b01.fireEvent();
@@ -49,7 +43,7 @@ public class TestObservableListPropertyEditor extends Application {
         Scene scene = new Scene(vbox);
         stage.setWidth(200);
         b01.setOnAction(e -> {
-            System.err.println("1 lastValid = '" + olb.getLastValidText() + "'");
+//            System.err.println("1 lastValid = '" + olb.getLastValidText() + "'");
             for (String s : b01.getStyleClass()) {
                 System.err.println("1 b01.styleClass = '" + s + "'");
             }
@@ -59,7 +53,7 @@ public class TestObservableListPropertyEditor extends Application {
             } else {
                 b01.getStyleClass().add("button");
             }
-            System.err.println("2 lastValid = '" + olb.getLastValidText() + "'");
+//            System.err.println("2 lastValid = '" + olb.getLastValidText() + "'");
             for (String s : b01.getStyleClass()) {
                 System.err.println("2 b01.styleClass = '" + s + "'");
             }

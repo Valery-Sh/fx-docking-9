@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import static org.vns.javafx.dock.api.designer.bean.editor.SubstitutionConverter.Substitution.NULL;
-
 /**
  *
  * @author Valery
@@ -38,27 +36,25 @@ public interface SubstitutionConverter<E> {
     }
 
     default boolean isEmptyListSubstitution(String item) {
-        
-        System.err.println("getEditor().getBoundList().size() = " + getEditor().getBoundList().size());
-        System.err.println("   -- item = '" + item + "'");
-        System.err.println("getEditor().getEmptySubstitution() = " + getEditor().getEmptySubstitution());
-        //if (getEditor().getBoundList().isEmpty() && getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {
-        if (getEditor().getEmptySubstitution() != null && getEditor().getEmptySubstitution().equals(item)) {        
+        ObservableListEditor editorNode = (ObservableListEditor) getEditor().getTextField();        
+        if (editorNode.getEmptySubstitution() != null && editorNode.getEmptySubstitution().equals(item)) {        
             return true;
         } else {
             return false;
         }       
     }
     default boolean isNullSubstitution(String item) {
-        if (getEditor().getNullSubstitution() != null && getEditor().getNullSubstitution().equals(item)) {
+        ObservableListEditor editorNode = (ObservableListEditor) getEditor().getTextField();
+        if (editorNode.getNullSubstitution() != null && editorNode.getNullSubstitution().equals(item)) {
             return true;
         } else {
             return false;
         }       
     }    
     default boolean isSingleEmptyItemSubstitution(String item) {
+        ObservableListEditor editorNode = (ObservableListEditor) getEditor().getTextField();
         //if (getEditor().getBoundList().size() == 1 && getEditor().getSingleEmptyItemSubstitution() != null && getEditor().getSingleEmptyItemSubstitution().equals(item)) {
-        if (getEditor().getSingleEmptyItemSubstitution() != null && getEditor().getSingleEmptyItemSubstitution().equals(item)) {            
+        if (editorNode.getSingleEmptyItemSubstitution() != null && editorNode.getSingleEmptyItemSubstitution().equals(item)) {            
             return true;
         } else {
             return false;
@@ -66,54 +62,36 @@ public interface SubstitutionConverter<E> {
     }
 
     static <T> Substitution getSubstitution(ObservableListPropertyEditor<T> editor, String item) {
-       
-        if (editor.getBoundList().isEmpty() && editor.getEmptySubstitution() != null && editor.getEmptySubstitution().equals(item)) {
+        ObservableListEditor editorNode = (ObservableListEditor) editor.getTextField();
+        if (editor.getBoundList().isEmpty() && editorNode.getEmptySubstitution() != null && editorNode.getEmptySubstitution().equals(item)) {
             return Substitution.EMPTY_LIST;
         }
-        if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
+        if (editor.getBoundList().size() == 1 && editorNode.getSingleEmptyItemSubstitution() != null && editorNode.getSingleEmptyItemSubstitution().equals(item)) {
             return Substitution.EMPTY_SINGLE_ITEM;
         }
-        if (editor.getNullSubstitution() != null && editor.getNullSubstitution().equals(item)) {
+        if (editorNode.getNullSubstitution() != null && editorNode.getNullSubstitution().equals(item)) {
             return Substitution.NULL;
         }
         return null;
     }
 
     static <T> String toSubstitution(ObservableListPropertyEditor<T> editor, T item) {
-        System.err.println("1 toSubstitution = '" + item + "'");
-        if (editor.getBoundList().isEmpty() && editor.getEmptySubstitution() != null && editor.getBoundList().isEmpty()) {
-            return editor.getEmptySubstitution();
+        ObservableListEditor editorNode = (ObservableListEditor) editor.getTextField();
+        if (editor.getBoundList().isEmpty() && editorNode.getEmptySubstitution() != null && editor.getBoundList().isEmpty()) {
+            return editorNode.getEmptySubstitution();
         }
 
-        if (item == null && editor.getNullSubstitution() != null && !editor.getBoundList().isEmpty()) {
-            return editor.getNullSubstitution();
+        if (item == null && editorNode.getNullSubstitution() != null && !editor.getBoundList().isEmpty()) {
+            return editorNode.getNullSubstitution();
         }
-        //if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
-        if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && "".equals(item)) {            
-            System.err.println("2 toSubstitution = '" + editor.getSingleEmptyItemSubstitution() + "'");
-            return editor.getSingleEmptyItemSubstitution();
+        if (editor.getBoundList().size() == 1 && editorNode.getSingleEmptyItemSubstitution() != null && "".equals(item)) {            
+            return editorNode.getSingleEmptyItemSubstitution();
         }
         //
         // No substitution for the specified item 
         //
         return null;
     }
-/*    static <T> T fromSubstitution(ObservableListPropertyEditor<T> editor, String item) {
-        if (editor.getBoundList().isEmpty() && editor.getEmptyListSubstitution() != null && editor.getEmptyListSubstitution().equals(item)) {
-            return editor.getEmptyListSubstitution();
-        }
 
-        if (item == null && editor.getNullSubstitution() != null && !editor.getBoundList().isEmpty()) {
-            return editor.getNullSubstitution();
-        }
-        if (editor.getBoundList().size() == 1 && editor.getSingleEmptyItemSubstitution() != null && editor.getSingleEmptyItemSubstitution().equals(item)) {
-            return editor.getSingleEmptyItemSubstitution();
-        }
-        //
-        // No substitution for the specified item 
-        //
-        return null;
-    }
-  */  
     
 }

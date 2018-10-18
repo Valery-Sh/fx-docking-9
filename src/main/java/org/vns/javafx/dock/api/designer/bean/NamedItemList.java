@@ -278,7 +278,7 @@ public interface NamedItemList<E extends NamedItem> extends NamedItem {
      * an insert operation can be used to change the position of an item in an
      * object's collection.
      *
-     * @param the list of items defined by an insert operation.
+     * @param list the list of items defined by an insert operation.
      */
     default void updateByInsert(List<E> list) {
         Map<E, E> replace = new HashMap<>();

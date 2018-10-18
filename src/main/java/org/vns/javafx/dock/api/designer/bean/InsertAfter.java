@@ -24,8 +24,8 @@ import javafx.collections.ObservableList;
  * @author Valery
  */
 @DefaultProperty("insertList")
-public class InsertAfter extends PropertyItem implements NamedItemList<PropertyItem>, InsertAfterItem<PropertyItem>{
-    private final ObservableList<PropertyItem> insertList = FXCollections.observableArrayList();
+public class InsertAfter extends BeanProperty implements NamedItemList<BeanProperty>, InsertAfterItem<BeanProperty>{
+    private final ObservableList<BeanProperty> insertList = FXCollections.observableArrayList();
 
     public InsertAfter(String name) {
         super(name, null);
@@ -35,11 +35,11 @@ public class InsertAfter extends PropertyItem implements NamedItemList<PropertyI
     }
 
     @Override
-    public ObservableList<PropertyItem> getItems() {
+    public ObservableList<BeanProperty> getItems() {
         return insertList;
     }
     @Override
-    public ObservableList<PropertyItem> getInsertList() {
+    public ObservableList<BeanProperty> getInsertList() {
         return insertList;
     }
 }

@@ -15,200 +15,325 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.binding.StringBinding;
-import javafx.beans.binding.StringExpression;
-import javafx.beans.property.Property;
-import javafx.beans.property.StringProperty;
-import javafx.util.StringConverter;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
- * @author Valery
+ * @author Olga
  */
-public abstract class AbstractPropertyEditor<E> extends StringTextField implements PropertyEditor<E> {
+public abstract class AbstractPropertyEditor<T> extends Control implements PropertyEditor<T> {
 
+    private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("readonly");
 
-    private Property<E> boundProperty;
-
-    private boolean realTimeBinding;
-
-    private StringConverter<E> stringConverter;
-
-    public boolean isRealTimeBinding() {
-        return realTimeBinding;
+    public static enum SidePos {
+        LEFT,
+        RIGHT,
+        NO
     }
+    private final ObjectProperty<SidePos> menuButtonAllignment = new SimpleObjectProperty(SidePos.RIGHT);
 
-    public void setRealTimeBinding(boolean realTimeBinding) {
-        this.realTimeBinding = realTimeBinding;
-    }
+    private String name;
 
-  
-    public AbstractPropertyEditor(E defaulValue) {
-        super(defaulValue.toString());
-        init();
-    }
+    private HyperlinkTitle title;
+    private Node editorNode;
+
+    private ReadOnlyProperty boundProperty;
+    private final BooleanProperty editable = new SimpleBooleanProperty(true);
+
     public AbstractPropertyEditor() {
-        super();
+        this(null);
+    }
+
+    public AbstractPropertyEditor(String name) {
+        this.name = name;
         init();
     }
 
     private void init() {
-        stringConverter = createBindingStringConverter();
-        setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-
-        addValidators();
-        addFilterValidators();
-    }
-    @Override
-    public String getUserAgentStylesheet() {
-        return getClass().getResource("resources/styles/default.css").toExternalForm();
-    }
-
-    protected void addValidators() {
-
-    }
-
-    protected void addFilterValidators() {
-
-    }
-
-    public StringConverter<E> getStringConverter() {
-        return stringConverter;
-    }
-
-  
-    @Override
-    public void bind(Property property) {
-        
-        unbind();
-        //setEditable(true);
-        setEditable(false);
-
-        this.boundProperty = property;
-        StringProperty sp = isRealTimeBinding() ? textProperty() : lastValidTextProperty();
-        if (property instanceof StringExpression) {
-            sp.bind(property);
-        } else {
-            sp.bind(asString(property));
+        editorNode = createEditorNode();
+        if (getName() != null) {
+            setId(getName());
         }
-        createContextMenu(property);
-    }
-
-    @Override
-    public void bindBidirectional(Property property) {
-        System.err.println("AbstractPropertyEditor bindBidirectional");
-        unbind();
-        setEditable(true);
-        //0909boundPropertyOld.set((ObservableValue<E>) property);
-        this.boundProperty = property;
-        /*        boundPropertyOld.get().addListener((v, ov, nv) -> {
-            System.err.println("CHANGE LISTENER: ov = " + ov + "; nv = " + nv + "; bondValue=" + boundPropertyOld.getValue());
-            if (!checkValidators((E) nv)) {
-                Platform.runLater(() -> {
-                    System.err.println("CHANGE LISTENER: RUN LATER before set old bound value ov = " + ov + " nv = " + nv);
-//                    boundPropertyOld.get()
-                    setBoundValue((E) ov);
-                    System.err.println("CHANGE LISTENER: RUN LATER after set old bound value ov = " + ov + " nv = " + nv);
-                });
-            }
+        disableProperty().addListener((v, oldValue, newValue) -> {
+            pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, newValue);
         });
-         */
-
-        //lastValidTextProperty().bindBidirectional(property, stringConverter);
-        if (isRealTimeBinding()) {
-            textProperty().bindBidirectional(property, stringConverter);
-        } else {
-            lastValidTextProperty().bindBidirectional(property, stringConverter);
-        }
-        createContextMenu(property);
+        title = new HyperlinkTitle(this,getName() == null ? "" : getName() );
+        editable.addListener(this::editableChangeListener);
     }
 
-    /*0909    public ObjectProperty<ObservableValue> boundPropertyProperty() {
-        return boundPropertyOld;
+    public ObjectProperty<SidePos> menuButtonAllignmentProperty() {
+        return menuButtonAllignment;
     }
 
-    public ObservableValue<E> getBoundProperty() {
-        return boundPropertyOld.get();
+    public SidePos getMenuButtonAllignment() {
+        return menuButtonAllignment.get();
     }
 
-    public void setBoundProperty(ObservableValue<E> boundProperty) {
-        this.boundPropertyOld.set(boundProperty);
+    public void setMenuButtonAllignment(SidePos pos) {
+        menuButtonAllignment.set(pos);
     }
-     */
-//    public abstract void setBoundValue(E boundValue);
-    public abstract E valueOf(String txt);
 
-    public Property<E> getBoundProperty() {
+    protected void editableChangeListener(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        setDisable(!newValue);
+    }
+
+    @Override
+    public ReadOnlyProperty getBoundProperty() {
         return boundProperty;
     }
 
-    protected void setBoundProperty(Property<E> boundProperty) {
+    protected void setBoundProperty(ReadOnlyProperty boundProperty) {
         this.boundProperty = boundProperty;
     }
 
-    public StringConverter<E> createBindingStringConverter() {
-        return new BindingStringConverter(this);
+    public Node getEditorNode() {
+        return editorNode;
     }
 
-    protected void createContextMenu(Property property) {
-    }
-
-    public String stringOf(E value) {
-        String retval = value == null ? "" : value.toString();
-        if (value == null && getNullSubstitution() != null) {
-            retval = getNullSubstitution();
-        }
-        return retval;
-    }
-
-    protected abstract StringBinding asString(Property property);
+    protected abstract Node createEditorNode();
 
     @Override
+    public String getUserAgentStylesheet() {
+        return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /*    @Override
+    public void bind(ReadOnlyProperty<Boolean> property) {
+
+        setEditable(false);
+
+        this.setFocusTraversable(false);
+        editorNode.selectedProperty().bind(property);
+    }
+
+    @Override
+    public void bindBidirectional(Property<Boolean> property) {
+        setEditable(true);
+        this.setFocusTraversable(true);
+        editorNode.selectedProperty().bindBidirectional(property);
+
+    }
+     */
+    @Override
+    public HyperlinkTitle getTitle() {
+        return title;
+    }
+
+    public BooleanProperty editableProperty() {
+        return editable;
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable.get();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        this.editable.set(editable);
+    }
+
+    /*  @Override
     public void unbind() {
-        lastValidTextProperty().unbind();
+        editorNode.selectedProperty().unbind();
     }
 
     @Override
     public boolean isBound() {
-        return lastValidTextProperty().isBound();
+        return editorNode.selectedProperty().isBound();
 
     }
+     */
+    @Override
+    public Skin<?> createDefaultSkin() {
+        return new AbstractPropertyEditorSkin(this);
+    }
 
-    public static class BindingStringConverter<T> extends StringConverter<T> {
-
-        private final AbstractPropertyEditor editor;
-
-        public BindingStringConverter(AbstractPropertyEditor textField) {
-            this.editor = textField;
+/*    private void showInBrowser() {
+        if (getBoundProperty() == null || getBoundProperty().getBean() == null) {
+            return;
         }
-
-        protected T getBoundValue() {
-            return (T) getEditor().getBoundProperty().getValue();
-        }
-
-        public AbstractPropertyEditor getEditor() {
-            return editor;
-        }
-
-        @Override
-        public String toString(T dv) {
-            if (dv == null && editor.getNullSubstitution() != null) {
-                return editor.getNullSubstitution();
+        try {
+            BeanInfo info = Introspector.getBeanInfo(getBoundProperty().getBean().getClass());
+            Method method = null;
+            for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+                if (getBoundProperty().getName().equals(pd.getName())) {
+                    method = pd.getReadMethod();
+                    break;
+                }
             }
-            return editor.stringOf(dv);
-        }
-
-        @Override
-        public T fromString(String tx) {
-            System.err.println("fromString _______________________");
-            T retval;
-            if (getEditor().hasErrorItems()) {
-                retval = getBoundValue();
-            } else {
-                retval = (T) editor.valueOf(tx);
+            if (method == null) {
+                return;
             }
-            return retval;
+            String rdmethod = method.getName();
+            String origin = getBoundProperty().getBean().getClass().getName();
+            Class objClass = getBoundProperty().getBean().getClass();
+            while (!Object.class.equals(objClass)) {
+                try {
+                    Method m = objClass.getMethod(rdmethod, new Class[0]);
+                    if (Modifier.isPublic(m.getModifiers())) {
+                        origin = objClass.getName();
+                    }
+                    objClass = objClass.getSuperclass();
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    break;
+                }
+            }
+            origin = origin.replace('.', '/');
+            BrowserService.getInstance().showDocument(PropertyEditor.HYPERLINK + origin + ".html#" + rdmethod + "--");
+        } catch (IntrospectionException ex) {
+            Logger.getLogger(AbstractPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//class BindingStringConverter
+    }
 
-}//class AbstractPropertyEditor
+    String toDisplayName(String propName) {
+
+        char[] str = propName.toCharArray();
+        if (Character.isDigit(str[0])) {
+            return propName;
+        }
+        StringBuilder sb = new StringBuilder();
+        int startPos = 0;
+
+        while (true) {
+            int endPos = getFirstWordPos(str, startPos);
+            str[startPos] = Character.toUpperCase(str[startPos]);
+            for (int i = startPos; i <= endPos; i++) {
+                sb.append(str[i]);
+            }
+            if (endPos == str.length - 1) {
+                break;
+            }
+            sb.append(' ');
+            startPos = endPos + 1;
+        }
+        return sb.toString().trim();
+    }
+
+    int getFirstWordPos(char[] str, int startPos) {
+        int lastPos = startPos;
+        //str[startPos] = Character.toUpperCase(str[startPos]);
+        if (startPos == str.length - 1) {
+            return lastPos;
+        }
+        //
+        // Check whether first and cecond char are in upper case
+        //
+
+        if (Character.isUpperCase(str[startPos]) && Character.isUpperCase(str[startPos + 1])) {
+
+            // try search lower case char
+            for (int i = startPos + 1; i < str.length; i++) {
+                if (!Character.isUpperCase(str[i])) {
+                    lastPos = i - 1;
+                    break;
+                }
+                lastPos = i;
+            }
+            return lastPos;
+        }
+
+        for (int i = startPos + 1; i < str.length; i++) {
+            if (Character.isUpperCase(str[i])) {
+                lastPos = i - 1;
+                break;
+            }
+            lastPos = i;
+        }
+        return lastPos;
+    }
+*/
+    public static class AbstractPropertyEditorSkin<T> extends SkinBase<AbstractPropertyEditor<T>> {
+
+        private AnchorPane anchor;
+
+        public AbstractPropertyEditorSkin(AbstractPropertyEditor<T> control) {
+            super(control);
+            init();
+        }
+
+        private void init() {
+            getSkinnable().getStyleClass().add(PropertyEditor.EDITOR_STYLE_CLASS);
+            anchor = createAnchorPane();
+            getChildren().add(anchor);
+        }
+
+        protected AnchorPane createAnchorPane() {
+            anchor = new AnchorPane();
+
+            Button menuButton = new Button();
+            menuButton.getStyleClass().clear();
+
+            Circle resetShape = new Circle(3.5);
+            resetShape.setStroke(Color.DARKGRAY);
+            resetShape.setStrokeWidth(2);
+            menuButton.setVisible(false);
+
+            resetShape.setFill(Color.TRANSPARENT);
+
+            menuButton.setGraphic(resetShape);
+
+            switch (getSkinnable().getMenuButtonAllignment()) {
+                case RIGHT:
+                    AnchorPane.setLeftAnchor(getSkinnable().getEditorNode(), 0d);
+                    AnchorPane.setRightAnchor(getSkinnable().getEditorNode(), 14d);
+
+                    AnchorPane.setRightAnchor(menuButton, 0d);
+                    AnchorPane.setTopAnchor(menuButton, 0d);
+                    AnchorPane.setBottomAnchor(menuButton, 0d);
+                    menuButton.setId("menu-" + getSkinnable().getName());
+                    anchor.getChildren().addAll(getEditorNode(), menuButton);                    
+                    break;
+                case LEFT:
+                    AnchorPane.setLeftAnchor(getSkinnable().getEditorNode(), 14d);
+                    AnchorPane.setRightAnchor(getSkinnable().getEditorNode(), 0d);
+
+                    AnchorPane.setLeftAnchor(menuButton, 0d);
+                    AnchorPane.setTopAnchor(menuButton, 0d);
+                    AnchorPane.setBottomAnchor(menuButton, 0d);
+                    menuButton.setId("menu-" + getSkinnable().getName());
+                    anchor.getChildren().addAll(menuButton,getEditorNode() );
+                    break;
+                case NO:
+                    AnchorPane.setLeftAnchor(getSkinnable().getEditorNode(), 0d);
+                    AnchorPane.setRightAnchor(getSkinnable().getEditorNode(), 0d);
+                    anchor.getChildren().addAll(getEditorNode() );
+                    break;
+            }
+        
+        
+            anchor.setOnMouseEntered(ev -> {
+                menuButton.setVisible(true);
+            });
+            anchor.setOnMouseExited(ev -> {
+                menuButton.setVisible(false);
+            });
+            return anchor;
+        }
+
+        protected Node getEditorNode() {
+            return getSkinnable().getEditorNode();
+        }
+    }//EditorSkin
+
+}//BooleaPropertyEditor

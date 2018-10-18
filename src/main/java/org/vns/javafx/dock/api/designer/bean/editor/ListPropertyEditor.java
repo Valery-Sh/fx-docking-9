@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.ObservableList;
 
 
@@ -30,7 +31,7 @@ public interface ListPropertyEditor<T> extends PropertyEditor<T>{
     void bindBidirectional(ObservableList<T> property);
     
     @Override
-    default void bind(Property<T> property) {
+    default void bind(ReadOnlyProperty<T> property) {
         if ( ! (property instanceof ListProperty) ) {
             return;
         }

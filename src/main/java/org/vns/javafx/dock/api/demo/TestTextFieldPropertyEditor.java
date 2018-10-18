@@ -7,7 +7,9 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,7 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.ComboButton;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboText;
+import org.vns.javafx.dock.api.designer.bean.editor.ComboButton.ItemsUpdater;
+import org.vns.javafx.dock.api.designer.bean.editor.TextFieldPropertyEditor;
 
 //It's a filter which throws an Exception when apply a method `c.getControlNewText()`.
 //You should implement the TestTextFormatter with a StringConverter.
@@ -26,7 +29,7 @@ import org.vns.javafx.dock.api.designer.bean.editor.ComboText;
  *
  * @author Valery
  */
-public class TestComboText extends Application {
+public class TestTextFieldPropertyEditor extends Application {
 
     Stage stage;
     Scene scene;
@@ -34,17 +37,36 @@ public class TestComboText extends Application {
 
     @Override
     public void start(Stage stage) {
-        ComboText cb = new ComboText();
+        //ComboPropertyEditor comboText = new ComboPropertyEditor();
+        TextFieldPropertyEditor comboText = new TextFieldPropertyEditor() {
+            @Override
+            public Object valueOf(String txt) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            protected StringBinding asString(ReadOnlyProperty property) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        ComboButton cbtn = new ComboButton();
+        cbtn.getComboBox().getItems().add("Text1");
+        cbtn.getComboBox().getItems().add("Text2");
+        cbtn.getComboBox().getItems().add("Text3");        
+        comboText.getButtons().add(cbtn);
+        ItemsUpdater<String> updater = list -> {
+            cbtn.getComboBox().getItems().add("text4");
+        };
+        cbtn.setItemsUpdater(updater);
         
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
-      
-        /*TitledPane tp = new TitledPane();
-        tp.setAlignment(Pos.CENTER_RIGHT);
-        tp.setGraphic(new Label("Val"));
-        tp.setText("titled Pane");
-        */
-        VBox root = new VBox(btn1, btn2, cb);
+        Button btn3 = new Button("Set editable");
+    
+        VBox root = new VBox(btn1, btn2, btn3, comboText);
+        btn3.setOnAction(a -> {
+           comboText.setEditable(! comboText.isEditable());
+        });
         
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -53,15 +75,16 @@ public class TestComboText extends Application {
         
         Button cbBtn1 = new Button("cbBtn1");
         btn1.setOnAction(e -> {
-            //cb.setButton(cbBtn1);
-            cb.getButton().setText("Arial 2px");
+            comboText.getButtons().add(cbBtn1);
+            cbBtn1.setText("Arial 2px");
             
         });
         Button cbBtn2 = new Button("cbBtn2");
         btn2.setOnAction(e -> {
-            cb.setButton(cbBtn2);
-            ComboText.setDefaultLayout(cbBtn2);
-            ComboText.setDefaultButtonGraphic(cbBtn2);
+//            comboText.setButton(cbBtn2);
+            comboText.getButtons().add(cbBtn2);
+            //ComboButton.setDefaultLayout(cbBtn2);
+            //ComboButton.setDefaultButtonGraphic(cbBtn2);
             
         });
         root.setPrefSize(500, 200);

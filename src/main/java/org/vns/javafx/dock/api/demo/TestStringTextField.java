@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -50,11 +51,7 @@ public class TestStringTextField extends Application {
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
 
-        long start1 = System.currentTimeMillis();
-        Pane p = new Pane();
-        long end1 = System.currentTimeMillis();
-        //System.err.println("DIF0 = " + (end1 - start1));
-
+      
         GridPane grid = new GridPane();
         grid.setHgap(10);
         //AnchorPane anchor = new AnchorPane(grid);
@@ -63,14 +60,10 @@ public class TestStringTextField extends Application {
 
         StackPane root = new StackPane(grid);
         Label lb1 = new Label("Text Alignment");
-        //lb1.getStyleClass().add("str");
-        //lb1.setFont(new Font(13));
-        //System.err.println("font size lb1.getFont().getSize()= " + lb1.getFont().getSize());
-        //SliderEditor tf1 = new SliderEditor(0,1,1);
-        //DecimalTextField tf1 = new DecimalTextField();
-
+        TextField textField = new TextField("234");
         StringTextField tf1 = new StringTextField();
         System.err.println("@@@@@ getText = " + tf1.getText());
+        tf1.setEditable(false);
         tf1.setText("txt1");
             System.err.println("1 START: getText() = " + tf1.getText());
             System.err.println("1 START: formatter.getValue() = " + tf1.getTextFormatter().getValue());
@@ -145,111 +138,13 @@ public class TestStringTextField extends Application {
         grid.add(elb, 0, 1);
         grid.add(ehb, 1, 1);
         grid.add(lb2, 0, 2);
-//        grid.add(tf2, 1, 2);
-
-        BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
-
-        tf3.setOnAction(e -> {
-        });
-        tf3.setFont(new Font(13));
-
-        grid.add(lb3, 0, 3);
-        grid.add(tf3, 1, 3);
-        tf3.bind(btn1.disableProperty());
-        ColumnConstraints cc0 = new ColumnConstraints();
-        ColumnConstraints cc1 = new ColumnConstraints();
-        ColumnConstraints cc20 = new ColumnConstraints();
-
-        cc0.setPercentWidth(35);
-        cc1.setPercentWidth(65);
-
-        grid.getColumnConstraints().addAll(cc0, cc1);
+        grid.add(textField, 0, 3);
+        textField.setEditable(false);
         root.setPrefSize(500, 200);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Scrolling Text");
         stage.show();
-
-        Stage stage1 = new Stage();
-        stage1.initOwner(stage);
-
-        VBox vbox = new VBox(btn1, btn2);
-        VBox propPane = new VBox();
-        TilePane tilePane = new TilePane();
-        propPane.setStyle("-fx-border-width: 2; -fx-border-color: green");
-        vbox.getChildren().add(propPane);
-        propPane.getChildren().add(tilePane);
-
-        StackPane contentPane = new StackPane();
-        propPane.getChildren().add(contentPane);
-        contentPane.setStyle("-fx-border-width: 2; -fx-border-color: blue");
-        Button propBtn = new Button("Properties");
-        Button layoutBtn = new Button("Layout");
-        Button codeBtn = new Button("Code");
-        tilePane.getChildren().addAll(propBtn, layoutBtn, codeBtn);
-        //
-        // Properties Category
-        //
-        TitledPane propTitledPane1 = new TitledPane();
-        propTitledPane1.setText("Node");
-
-        TitledPane propTitledPane2 = new TitledPane();
-        propTitledPane2.setText("JavaFx CSS");
-        TitledPane propTitledPane3 = new TitledPane();
-        propTitledPane3.setText("Extras");
-        VBox propSecBox = new VBox(propTitledPane1, propTitledPane2, propTitledPane3);
-        contentPane.getChildren().add(propSecBox);
-
-        TitledPane layoutTitledPane1 = new TitledPane();
-        layoutTitledPane1.setText("Content");
-        TitledPane layoutTitledPane2 = new TitledPane();
-        layoutTitledPane2.setText("Internals");
-        VBox layoutSecBox = new VBox(layoutTitledPane1, layoutTitledPane2);
-        contentPane.getChildren().add(layoutSecBox);
-        layoutSecBox.setVisible(false);
-
-        TitledPane codeTitledPane1 = new TitledPane();
-        codeTitledPane1.setText("onAction");
-        VBox codeSecBox = new VBox(codeTitledPane1);
-        contentPane.getChildren().add(codeSecBox);
-        codeSecBox.setVisible(false);
-
-        propBtn.setDisable(true);
-
-        propBtn.setOnAction(e -> {
-            propBtn.setDisable(true);
-            propSecBox.setVisible(true);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        layoutBtn.setOnAction(e -> {
-            layoutBtn.setDisable(true);
-            layoutSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            codeBtn.setDisable(false);
-            codeSecBox.setVisible(false);
-        });
-        codeBtn.setOnAction(e -> {
-            codeBtn.setDisable(true);
-            codeSecBox.setVisible(true);
-            propBtn.setDisable(false);
-            propSecBox.setVisible(false);
-            layoutBtn.setDisable(false);
-            layoutSecBox.setVisible(false);
-        });
-
-        Scene scene1 = new Scene(vbox);
-        stage1.setScene(scene1);
-
-        stage1.show();
-
-        VBox vbox2 = new VBox(btn2);
-        PopupControl pc = new PopupControl();
-        pc.getScene().setRoot(vbox2);
-        pc.show(stage, 20, 2);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Dockable.initDefaultStylesheet(null);

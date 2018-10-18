@@ -16,22 +16,20 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.util.StringConverter;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class FontStringConverter extends StringConverter<Font>{
+public class FontStringConverter extends StringConverter<Font> {
 
     @Override
     public String toString(Font font) {
-        
+
         long sz = Math.round(font.getSize());
         String str = font.getFamily() + " " + Long.toString(sz) + "px ";
-        if ( font.getStyle() != null && ! font.getStyle().isEmpty() ) {
+        if (font.getStyle() != null && !font.getStyle().isEmpty() && !"Regular".equals(font.getStyle())) {
             str += "(" + font.getStyle() + ")";
         }
         return str;
@@ -39,60 +37,166 @@ public class FontStringConverter extends StringConverter<Font>{
 
     @Override
     public Font fromString(String str) {
-        
-        Font font = Font.getDefault();
-        
-        String[] split = str.split(" ");
-        int idx = -1;
-        
-        for ( int i=0; i < split.length; i++) {
-            if ( split[i].endsWith("px") && startsWithDigits(split[i].substring(0,split[i].length()-2))) {
-                idx = i;
-                break;
-            }
-        }
-        double sz = 0;
-        
-        if ( idx >= 0 ) {
-            sz = Integer.parseInt(split[idx].substring(0,split[idx].indexOf("px")) );
+
+        Font font;
+        str = str.trim();
+        String style;
+        String family;
+        double size;
+
+        int idx = str.indexOf("(");
+        if (idx < 0) {
+            style = "Regular";
+            str = str.substring(0, str.length() - 2).trim();
         } else {
-            return Font.font(str);
+            style = str.substring(idx + 1, str.length() - 1).trim();
+            str = str.substring(0, idx).trim();
+            str = str.substring(0, str.length() - 2);
+
         }
-        
-        if ( idx == 0 && split.length == 1 ) {
-            return Font.font(sz);
-        } else if ( idx == 1 && split.length == 2 ) {
-            return Font.font(split[0],sz);
-        }
-        String family = split[0];
-        String style = "";
-        for ( int i = 2; i < split.length; i++) {
-            style += split[i];
-        }
-        
-        String post = null;
-        style = style.substring(1, style.length() - 1); // remove '(' and ')'
-        if ( style.contains("Italic") ) {
-            post = "ITALIC";
-            style.replace("Italic", "");
-        } else if ( style.contains("Regular") ) {
-            post = "REGULAR";
-            style.replace("Regular", "");
-        }
-        FontWeight fw = FontWeight.findByName(style.toUpperCase());
-        FontPosture fp = FontPosture.findByName(style.toUpperCase());
-        return Font.font(family, fw, fp, sz);
-    }
-    
-    private boolean startsWithDigits(String str) {
         char[] chars = str.toCharArray();
-        boolean retval = true;
-        for ( char c : chars) {
-            if ( ! Character.isDigit(c)) {
-                retval = false;
-                break;
-            }
+        StringBuilder sb = new StringBuilder();
+        idx = str.length() - 1;
+        char c = chars[idx];
+        while (Character.isDigit(c)) {
+            sb.insert(0, c);
+            c = chars[--idx];
         }
-        return retval;
+        size = Double.valueOf(sb.toString());
+        family = str.substring(0, idx).trim();
+        font = Util.getFont(family, style, size);
+
+        return font;
     }
-}
+
+    public static class FamilyStringConverter extends StringConverter<Font> {
+
+        private final FontPropertyEditor editor;
+
+        public FamilyStringConverter(FontPropertyEditor editor) {
+            this.editor = editor;
+        }
+
+        @Override
+        public String toString(Font font) {
+            return font.getFamily();
+        }
+
+        @Override
+        public Font fromString(String family) {
+            //
+            // New font family. We check whether the existing style is actual.
+            //
+            Font retval;
+
+            //String style = editor.getFontStyle().getTextField().getText();
+            //double size = editor.getSize().getDecimalEditor().getValue();
+            String style = ((Font)editor.getBoundProperty().getValue()).getStyle();
+            double size = ((Font)editor.getBoundProperty().getValue()).getSize();
+            return Util.getFont(family, style, size);
+            
+            //if (font.getFamily().equals(family) && font.getStyle().equals(editor.getFontStyle().getTextField().getText()) && font.getSize() == editor.getSize().getDecimalEditor().getValue()) {
+            //if (font.getFamily().equals(family) && font.getStyle().equals(editor.getFontStyle().getTextField().getText()) && String.valueOf(font.getSize()).equals(editor.getSize().getTextField().getText()) ) {            
+/*            if (font.getFamily().equals(family) && font.getStyle().equals(editor.getFontStyle().getTextField().getText()) && String.valueOf(font.getSize()).equals(size) ) {                        
+                retval = font;
+            } else {
+                font = Font.font(family, size);
+                if (font.getFamily().equals(family)) {
+                    retval = font;
+                }
+                retval = Font.font(family);
+            }
+            return retval;
+*/
+        }
+
+    }//FamilyStringConverter
+
+    public static class StyleStringConverter extends StringConverter<Font> {
+
+        private final FontPropertyEditor editor;
+
+        public StyleStringConverter(FontPropertyEditor editor) {
+            this.editor = editor;
+        }
+
+        @Override
+        public String toString(Font font) {
+            return font.getStyle();
+        }
+
+        @Override
+        public Font fromString(String style) {
+            //
+            // New font family. We check whether the existing style is actual.
+            //
+            Font retval;
+
+//            String family = editor.getFamily().getTextField().getText();
+//            double size = editor.getSize().getDecimalEditor().getValue();
+            String family = ((Font)editor.getBoundProperty().getValue()).getFamily();
+            double size = ((Font)editor.getBoundProperty().getValue()).getSize();
+
+            return Util.getFont(family, style, size);
+/*            if (font.getFamily().equals(family) && font.getStyle().equals(editor.getFontStyle().getTextField().getText())) {
+                retval = font;
+            } else {
+                //
+                // In PropertyEditorPane it's not posible
+                //
+
+                font = Font.font(family, size);
+                if (font.getFamily().equals(family)) {
+                    retval = font;
+                }
+                retval = Font.font(family);
+/
+            }
+            return retval;
+*/
+        }
+    }//StyleStringConverter
+
+    public static class SizeStringConverter extends StringConverter<Font> {
+
+        private final FontPropertyEditor editor;
+
+        public SizeStringConverter(FontPropertyEditor editor) {
+            this.editor = editor;
+        }
+
+        @Override
+        public String toString(Font font) {
+            return String.valueOf(font.getSize());
+        }
+
+        @Override
+        public Font fromString(String sz) {
+            //
+            // New font family. We check whether the existing style is actual.
+            //
+            Font retval;
+
+            String family = ((Font)editor.getBoundProperty().getValue()).getFamily();
+            String style = ((Font)editor.getBoundProperty().getValue()).getStyle();
+            
+            double size = Double.valueOf(sz);
+
+            Font font = Util.getFont(family, style, size);
+            if (font.getFamily().equals(family) && font.getStyle().equals(editor.getFontStyle().getTextField().getText())) {
+                retval = font;
+            } else {
+                //
+                // In PropertyEditorPane it's not posible
+                //
+
+                font = Font.font(family, size);
+                if (font.getFamily().equals(family)) {
+                    retval = font;
+                }
+                retval = Font.font(family);
+            }
+            return retval;
+        }
+    }//SizeStringConverter
+}//FontStringConverter

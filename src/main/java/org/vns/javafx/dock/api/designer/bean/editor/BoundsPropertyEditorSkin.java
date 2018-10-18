@@ -25,12 +25,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.dock.api.designer.bean.editor.AbstractPropertyEditor.AbstractPropertyEditorSkin;
 
 /**
  *
  * @author Valery
  */
-public class BoundsPropertyEditorSkin extends ContentComboBoxSkin {
+public class BoundsPropertyEditorSkin extends AbstractPropertyEditorSkin {
 
     protected BoundsPropertyEditor comboBox;
     protected GridPane grid;
@@ -39,7 +40,7 @@ public class BoundsPropertyEditorSkin extends ContentComboBoxSkin {
     public BoundsPropertyEditorSkin(BoundsPropertyEditor control) {
         super(control);
         comboBox = control;
-        displayNode = (Label) comboBox.getDisplayNode();
+        displayNode = (Label) ((ContentComboBox)comboBox.getEditorNode()).getDisplayNode();
         //displayNode.setStyle("-fx-padding: 2 0 2 10");
         initContent();
         initDisplayNode();
@@ -147,7 +148,7 @@ public class BoundsPropertyEditorSkin extends ContentComboBoxSkin {
 
         fillGrid();
 
-        comboBox.setContent(grid);
+        ((ContentComboBox)comboBox.getEditorNode()).setContent(grid);
     }
 
     protected void fillGrid() {

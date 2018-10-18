@@ -8,6 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditorFactory;
 
@@ -34,7 +36,7 @@ public class PropertyPaneModelRegistry {
 
     private PropertyPaneModel propertyPaneModel;
 
-    private final ObservableMap<Class<?>, Introspection> introspection = FXCollections.observableHashMap();
+    //private final ObservableMap<Class<?>, Introspection> introspection = FXCollections.observableHashMap();
 
     public static PropertyPaneModelRegistry getInstance() {
         return SingletonInstance.INSTANCE;
@@ -50,6 +52,26 @@ public class PropertyPaneModelRegistry {
         }
         return retval;
     }
+        public void createConstraintMap() {
+            long start = System.currentTimeMillis();
+            ObservableList<BeanModel> beanModels = PropertyPaneModelRegistry.getPropertyPaneModel().getBeanModels();
+            beanModels.forEach(model -> {
+                model.getItems().forEach(cat -> {
+                    cat.getItems().forEach(sec -> {
+                        sec.getItems().forEach(pi -> {
+                            if ( pi.isConstraint() ) {
+                                System.err.println("BeanModel: " + model.getBeanType().getSimpleName());
+                                System.err.println("   --- Category: " + cat.getName());
+                                System.err.println("      --- Section: " + sec.getName());
+                                System.err.println("         --- Property: " + pi.getName());
+                            }
+                        });
+                    });
+                });
+            });
+            long end = System.currentTimeMillis();
+            System.err.println("INTERVAL createconstraintMap = " + (end - start));
+        }
 
     protected void createInternalDescriptors() {
         propertyPaneModel = new PropertyPaneModel();
@@ -63,10 +85,10 @@ public class PropertyPaneModelRegistry {
         BeanModel beanModel = new BeanModel();
         beanModel.setBeanType(Object.class);
         beanModel.setBeanClassName(Object.class.getName());
-        Category cat = new Category();
-        cat.setName("properties");
-        cat.setDisplayName("Properties");
-        beanModel.getItems().add(cat);
+        //Category cat = new Category();
+        //cat.setName("properties");
+        //cat.setDisplayName("Properties");
+        //beanModel.getItems().add(cat);
         paneModel.getBeanModels().add(beanModel);
     }
 
@@ -492,11 +514,12 @@ public class PropertyPaneModelRegistry {
         String type = bean.getClass().getName();
         for (BeanModel bm : propertyPaneModel.getBeanModels()) {
             if (type.equals(bm.getBeanClassName())) {
+                System.err.println("beanModel EXISTS !!!");
                 return bm;
             }
             map.put(bm.getBeanType(), bm);
         }
-
+        System.err.println("beanModel NOT exists !!!");
         BeanModel beanModel = null;
 
         Class sup = bean.getClass().getSuperclass();
@@ -512,7 +535,7 @@ public class PropertyPaneModelRegistry {
         beanModel = beanModel.getCopyFor(bean.getClass());
         beanModel.setBeanType(bean.getClass());
         beanModel.setBeanClassName(bean.getClass().getName());
-
+        System.err.println("************** NEW BEAN MODEL");
         propertyPaneModel.getBeanModels().add(beanModel);
         updateByIntrospection(beanModel, isp);
 
@@ -525,7 +548,7 @@ public class PropertyPaneModelRegistry {
         Section propSpec = null;
         Section codeSpec = null;
 
-        Map<String, PropertyItem> map = FXCollections.observableHashMap();
+        Map<String, BeanProperty> map = FXCollections.observableHashMap();
         for (Category cat : beanModel.getItems()) {
             if ("properties".equals(cat.getName())) {
                 propCat = cat;
@@ -542,7 +565,7 @@ public class PropertyPaneModelRegistry {
                     codeSpec = sec;
                 }
 
-                for (PropertyItem it : sec.getItems()) {
+                for (BeanProperty it : sec.getItems()) {
                     map.put(it.getName(), it);
                 }
             }
@@ -551,7 +574,7 @@ public class PropertyPaneModelRegistry {
         Section sec = new Section("specific");
         for (PropertyDescriptor pd : isp.getPropertyDescriptors().values()) {
             if (!map.containsKey(pd.getName())) {
-                sec.getItems().add(new PropertyItem(pd.getName()));
+                sec.getItems().add(new BeanProperty(pd.getName()));
             }
         }
 
@@ -571,7 +594,7 @@ public class PropertyPaneModelRegistry {
         sec = new Section("specific");
         for (PropertyDescriptor pd : isp.getEventPropertyDescriptors().values()) {
             if (!map.containsKey(pd.getName())) {
-                sec.getItems().add(new PropertyItem(pd.getName()));
+                sec.getItems().add(new BeanProperty(pd.getName()));
             }
         }
 
@@ -620,6 +643,7 @@ public class PropertyPaneModelRegistry {
      *
      * @param update the instance of class PropertyPaneModel to be resolved with
      * the internal instance
+     * @return false if the an error found. true otherwise
      */
     protected boolean updateBy(PropertyPaneModel update) {
         //
@@ -752,7 +776,7 @@ public class PropertyPaneModelRegistry {
         private static final PropertyPaneModelRegistry INSTANCE = new PropertyPaneModelRegistry();
     }
 
-    public Introspection introspect(Class<?> clazz) {
+    public static Introspection introspect(Class<?> clazz) {
         Introspection retval = new Introspection(clazz);
         long start = System.currentTimeMillis();
         List<String> excludeProps = FXCollections.observableArrayList("properties", "pseudoClassStates", "sceneProperty", "parent", "skinProperty",
@@ -762,12 +786,17 @@ public class PropertyPaneModelRegistry {
         //Map<String, PropertyDescriptor> propDescrs = new HashMap<>();
         try {
             BeanInfo info = Introspector.getBeanInfo(clazz);
+            
             MethodDescriptor[] mds = info.getMethodDescriptors();
             for (MethodDescriptor md : mds) {
 //                if ( ! md.getMethod().getName().startsWith("get") && ! md.getMethod().getName().startsWith("set")) {
 //                    System.err.println("not get not set" + md.getMethod().getName());
 //                }
 
+                
+                if ( Modifier.isStatic(md.getMethod().getModifiers()) ) {
+                    System.err.println("STATIC METHOD " + md.getName());
+                }
                 if (md.getName().endsWith("Property") && !excludeProps.contains(md.getName())) {
                     retval.getMethodDescriptors().put(md.getName(), md);
                     //System.err.println("fxProperty: " + md.getName());
@@ -817,7 +846,7 @@ public class PropertyPaneModelRegistry {
         return retval;
     }
 
-    public boolean hasPropertyEditor(String propName, Method readMethod) {
+    public static boolean hasPropertyEditor(String propName, Method readMethod) {
         boolean retval = false;
         if (ObservableList.class.isAssignableFrom(readMethod.getReturnType())) {
             Class<?> clazz = BeanAdapter.getListItemType(readMethod.getGenericReturnType());
@@ -847,12 +876,12 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code MethodDescriptor).
+         * type {@code MethodDescriptor}.
          * Each item represents a method which name starts with a bean property name
          * an ends with {@literal "Property"}.
          *
          * @return a map which key is a property name and value is an object
-         * of type {@code MethodDescriptor).
+         * of type {@code MethodDescriptor}.
          */
         public ObservableMap<String, MethodDescriptor> getMethodDescriptors() {
             return methodDescriptors;
@@ -860,12 +889,12 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code PropertyDescriptor).
+         * type {@code PropertyDescriptor}.
          * Each corresponding property is a javaFX property or is of type
          * ObservableList and is not of type {@code EventHandler}.
          *
          * @return a map which key is a property name and value is an object
-         * of type {@code PropertyDescriptor).
+         * of type {@code PropertyDescriptor}.
          */
         public ObservableMap<String, PropertyDescriptor> getPropertyDescriptors() {
             return propertyDescriptors;
@@ -873,12 +902,12 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code PropertyDescriptor).
+         * type {@code PropertyDescriptor}.
          * Each corresponding property is a javaFX property and is of type
          * {@code EventHandler}.
          *
          * @return a map which key is a property name and value is an object
-         * of type {@code PropertyDescriptor).
+         * of type {@code PropertyDescriptor}.
          */
         public ObservableMap<String, PropertyDescriptor> getEventPropertyDescriptors() {
             return eventPropertyDescriptors;

@@ -21,30 +21,29 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.NumberExpression;
 import javafx.beans.binding.ObjectExpression;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.scene.text.Font;
 
 /**
  *
  * @author Valery
  */
-public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<T> {
-
-    public PrimitivePropertyEditor(T defaultValue) {
-        super(defaultValue);
-        init();
-    }
+public abstract class PrimitivePropertyEditor<T> extends TextFieldPropertyEditor<T> {
 
     public PrimitivePropertyEditor() {
-        super();
+        this(null);
+    }
+
+    public PrimitivePropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
-//        setValueIfBlank("0");
     }
 
     @Override
-    protected StringBinding asString(Property property) {
+    protected StringBinding asString(ReadOnlyProperty property) {
         StringBinding retval = null;
         if (property instanceof ObjectExpression) {
             retval = ((ObjectExpression) property).asString();
@@ -60,7 +59,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
     public T valueOf(String txt) {
 
         T retval = null;
-        if (isNullString(txt)) {
+        if (getTextField().isNullString(txt)) {
             return null;
         }
 
@@ -81,16 +80,24 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     public static class ShortPropertyEditor extends PrimitivePropertyEditor<Short> {
 
+        public ShortPropertyEditor() {
+        }
+
+        public ShortPropertyEditor(String name) {
+            super(name);
+            getTextField().setEmptySubstitution("0");
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
             });
         }
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
 
                 String regExp = "0|-?([1-9][0-9]*)?";
                 boolean retval = item.isEmpty();
@@ -112,14 +119,13 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
          */
         @Override
-        protected StringBinding asString(Property property) {
+        protected StringBinding asString(ReadOnlyProperty property) {
             return ((ObjectExpression) property).asString();
         }
 
         @Override
         public Short valueOf(String txt) {
-            System.err.println("VALUE OF txt = '" + txt + "'");
-            if (isNullString(txt)) {
+            if (getTextField().isNullString(txt)) {
                 return null;
             }
             Short retval;
@@ -128,9 +134,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             } else {
                 retval = Short.valueOf(txt);
             }
-
-            System.err.println("VALUE OF  retval = '" + retval + "'");
-            System.err.println("===============================================");
             return retval;
         }
 
@@ -138,16 +141,24 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     public static class LongPropertyEditor extends PrimitivePropertyEditor<Long> {
 
+        public LongPropertyEditor() {
+        }
+
+        public LongPropertyEditor(String name) {
+            super(name);
+            getTextField().setEmptySubstitution("0");
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
             });
         }
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
                 //item = item.trim();
                 String regExp = "0|-?([1-9][0-9]*)?";
                 boolean retval = item.isEmpty();
@@ -186,16 +197,25 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     public static class DoublePropertyEditor extends PrimitivePropertyEditor<Double> {
 
+        public DoublePropertyEditor() {
+            this(null);
+        }
+
+        public DoublePropertyEditor(String name) {
+            super(name);
+            getTextField().setEmptySubstitution("0");
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 return Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
             });
         }
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
                 item = item.trim();
                 String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
                 boolean retval = item.isEmpty();
@@ -208,18 +228,21 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         }
 
-        /*0909        @Override
-        public void setBoundValue(Double boundValue) {
-            ((DoubleProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
-        }
-         */
     }//class DoublePropertyEditor
 
     public static class FloatPropertyEditor extends PrimitivePropertyEditor<Float> {
 
+        public FloatPropertyEditor() {
+        }
+
+        public FloatPropertyEditor(String name) {
+            super(name);
+            getTextField().setEmptySubstitution("0");
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 boolean retval = Pattern.matches("[+-]?\\d+\\.?(\\d+)?", item.trim());
                 Double dv = Double.valueOf(item);
                 retval = dv >= -Float.MAX_VALUE && dv <= Float.MAX_VALUE;
@@ -229,7 +252,7 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
                 item = item.trim();
                 String regExp = "([+-]?)|([+-]?\\d+\\.?(\\d+)?)";
                 boolean retval = item.isEmpty();
@@ -251,16 +274,24 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     public static class IntegerPropertyEditor extends PrimitivePropertyEditor<Integer> {
 
+        public IntegerPropertyEditor() {
+        }
+
+        public IntegerPropertyEditor(String name) {
+            super(name);
+            getTextField().setEmptySubstitution("0");
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]*)+", item.trim());
             });
         }
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
                 //item = item.trim();
                 String regExp = "0|-?([1-9][0-9]*)?";
                 boolean retval = item.isEmpty();
@@ -279,16 +310,23 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
     public static class BytePropertyEditor extends PrimitivePropertyEditor<Byte> {
 
+        public BytePropertyEditor() {
+        }
+
+        public BytePropertyEditor(String name) {
+            super(name);
+        }
+
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
                 return Pattern.matches("0|-?([1-9][0-9]{0,3})+", item.trim());
             });
         }
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
+            getTextField().getFilterValidators().add(item -> {
                 //item = item.trim();
                 String regExp = "0|-?([1-9][0-9]{0,3})?";
                 boolean retval = item.isEmpty();
@@ -310,14 +348,13 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
         }
          */
         @Override
-        protected StringBinding asString(Property property) {
+        protected StringBinding asString(ReadOnlyProperty property) {
             return ((ObjectExpression) property).asString();
         }
 
         @Override
         public Byte valueOf(String txt) {
-            System.err.println("VALUE OF txt = '" + txt + "'");
-            if (isNullString(txt)) {
+            if (getTextField().isNullString(txt)) {
                 return null;
             }
             Byte retval;
@@ -327,8 +364,6 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
                 retval = Byte.valueOf(txt);
             }
 
-            System.err.println("VALUE OF  retval = '" + retval + "'");
-            System.err.println("===============================================");
             return retval;
         }
 
@@ -337,25 +372,29 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
     public static class CharacterPropertyEditor extends PrimitivePropertyEditor<Character> {
 
         public CharacterPropertyEditor() {
+        }
+
+        public CharacterPropertyEditor(String name) {
+            super(name);
             init();
         }
 
         private void init() {
 //            setValueIfBlank(null);
             //setNullString("<NULL>");
-            setNullSubstitution("");
+            getTextField().setNullSubstitution("");
         }
 
         @Override
         protected void addValidators() {
-            getValidators().add(item -> {
+            getTextField().getValidators().add(item -> {
 
-                if (getNullSubstitution() != null) {
+                if (getTextField().getNullSubstitution() != null) {
                     String it = item;
-                    if (!getNullSubstitution().isEmpty()) {
+                    if (!getTextField().getNullSubstitution().isEmpty()) {
                         it = it.trim();
                     }
-                    if (it.equals((getNullSubstitution()))) {
+                    if (it.equals((getTextField().getNullSubstitution()))) {
                         return true;
                     }
                 }
@@ -366,24 +405,21 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
 
         @Override
         protected void addFilterValidators() {
-            getFilterValidators().add(item -> {
-                if (getNullSubstitution() != null) {
+            getTextField().getFilterValidators().add(item -> {
+                if (getTextField().getNullSubstitution() != null) {
                     String it = item;
-                    if (!getNullSubstitution().isEmpty()) {
+                    if (!getTextField().getNullSubstitution().isEmpty()) {
                         it = it.trim();
                     }
-                    //System.err.println("======= it = '" + it + "'; getNullString()='" + getNullString() + "'");
-                    if (it.equals(getNullSubstitution())) {
-                        if (!getNullSubstitution().isEmpty()) {
-                            System.err.println("======= it = '" + it + "'; getNullString()='" + getNullSubstitution() + "'");
+                    if (it.equals(getTextField().getNullSubstitution())) {
+                        if (!getTextField().getNullSubstitution().isEmpty()) {
                             Platform.runLater(() -> {
-                                selectAll();
+                                getTextField().selectAll();
                             });
                         }
                         return true;
                     }
                 }
-                //item = item.trim();
                 String regExp = ".{1}";
                 boolean retval = item.isEmpty();
                 if (!retval) {
@@ -394,21 +430,14 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             });
         }
 
-        /*0909        @Override
-        public void setBoundValue(Character boundValue
-        ) {
-            ((ObjectProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
-        }
-         */
         @Override
-        protected StringBinding asString(Property property) {
+        protected StringBinding asString(ReadOnlyProperty property) {
             return ((ObjectExpression) property).asString();
         }
 
         @Override
         public Character valueOf(String txt) {
-            System.err.println("VALUE OF txt = '" + txt + "'");
-            if (isNullString(txt)) {
+            if (getTextField().isNullString(txt)) {
                 return null;
             }
             Character retval;
@@ -417,46 +446,23 @@ public abstract class PrimitivePropertyEditor<T> extends AbstractPropertyEditor<
             } else {
                 retval = new Character(txt.charAt(0));
             }
-
-            System.err.println("VALUE OF  retval = '" + retval + "'");
-            System.err.println("===============================================");
             return retval;
         }
 
     }//class CharacterPropertyEditor
 
-    /*    public static class PrimitiveStringConverter<T> extends AbstractPropertyEditor.Converter<T> {
-
-        public PrimitiveStringConverter(AbstractPropertyEditor textField) {
-            super(textField);
-        }
-
-    }//class PrimitiveStringConverter
-     */
     public static class StringPropertyEditor extends PrimitivePropertyEditor<String> {
 
-        public StringPropertyEditor(String defaultValue) {
-            super(defaultValue);
-        }
-
         public StringPropertyEditor() {
-            this("");
+            this(null);
         }
 
-        private void init() {
-//            setValueIfBlank(null);
+        public StringPropertyEditor(String name) {
+            super(name);
         }
-
-
-        /*0909        @Override
-        public void setBoundValue(String boundValue) {
-            ((StringProperty) (ObservableValue) boundPropertyProperty().get()).set(boundValue);
-        }
-         */
         @Override
         public String valueOf(String txt) {
-            System.err.println("VALUE OF txt = '" + txt + "'");
-            if (isNullString(txt)) {
+            if (getTextField().isNullString(txt)) {
                 return null;
             }
             return txt;

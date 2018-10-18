@@ -16,7 +16,7 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
-
+import javafx.beans.property.ReadOnlyProperty;
 
 /**
  *
@@ -24,10 +24,25 @@ import javafx.beans.property.Property;
  * @param <T> the type of the propertyValue
  */
 public interface PropertyEditor<T> {
-    void bind(Property<T> property);
+
+    public final String EDITOR_STYLE_CLASS = "editor-a796e7ef-bfda-4255-9a69-598be15d7571";
+    public static final String HYPERLINK = "https://docs.oracle.com/javase/8/javafx/api/";
+
+    String getName();
+
+    void bind(ReadOnlyProperty<T> property);
+
     void bindBidirectional(Property<T> property);
+
     void unbind();
+
     boolean isEditable();
+
     void setEditable(boolean editable);
+
     boolean isBound();
+    
+    HyperlinkTitle getTitle();
+    
+    ReadOnlyProperty<T> getBoundProperty();
 }

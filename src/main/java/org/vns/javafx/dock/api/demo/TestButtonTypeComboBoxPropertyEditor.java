@@ -75,9 +75,9 @@ public class TestButtonTypeComboBoxPropertyEditor extends Application {
 
         //list.add(null);
         //System.err.println("list.size=" + list.size() + "; item = " + list.get(0));
-        ButtonTypeComboBoxPropertyEditor tf1 = new ButtonTypeComboBoxPropertyEditor();
+        ButtonTypeComboBoxPropertyEditor tf1 = new ButtonTypeComboBoxPropertyEditor("buttonType");
 
-        tf1.bindBidirectional(list);
+        //tf1.bindBidirectional(list);
 
         btn1.setOnAction(e -> {
             list.forEach(s -> {

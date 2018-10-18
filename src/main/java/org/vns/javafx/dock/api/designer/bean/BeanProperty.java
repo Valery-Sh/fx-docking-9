@@ -24,17 +24,19 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Valery Shyshkin
  */
-public class PropertyItem  extends AbstractNamedItem {
+public class BeanProperty  extends AbstractNamedItem {
 
 //    private final StringProperty name = new SimpleStringProperty();
 //    private final StringProperty displayName = new SimpleStringProperty();
     private final BooleanProperty modifiable = new SimpleBooleanProperty(true);
-    private BooleanProperty rejected = new SimpleBooleanProperty(false);
-
-    private Method propertyMethod;
-    private Method readMethod;
-    private Method writetMethod;
-    private Class<?> propertyType;
+    private final BooleanProperty rejected = new SimpleBooleanProperty(false);
+    private final BooleanProperty constraint = new SimpleBooleanProperty(false);
+    
+//    private Method propertyMethod;
+//    private Method readMethod;
+//    private Method writetMethod;
+//    private Class<?> propertyType;
+    
     //private String originClass;
     
 //    private final StringProperty  editorClass = new SimpleStringProperty();
@@ -42,65 +44,65 @@ public class PropertyItem  extends AbstractNamedItem {
 
     protected Class<? extends PropertyEditor> editorType;
 
-    public PropertyItem() {
+    public BeanProperty() {
     }
 
-    public PropertyItem(String name, String displayName) {
+    public BeanProperty(String name, String displayName) {
         super(name, displayName);
     }
 
-    public PropertyItem(String name) {
+    public BeanProperty(String name) {
         super(name);
     }
 
+    public BooleanProperty constraintProperty() {
+        return constraint;
+    }
+    public boolean isConstraint() {
+        return constraint.get();
+    }
+    public void setConstraint(boolean constraint) {
+        this.constraint.set(constraint);
+    }    
 /*    public String getOriginClass() {
-        return originClass;
+    return originClass;
     }
-
     public void setOriginClass(String originClass) {
-        this.originClass = originClass;
+    this.originClass = originClass;
     }
-*/
-
+     */
 /*    public ReadOnlyObjectProperty<Section> categoryProperty() {
-        return sectionWrapper.getReadOnlyProperty();
+    return sectionWrapper.getReadOnlyProperty();
     }
-
     public Section getSection() {
-        return sectionWrapper.getValue();
+    return sectionWrapper.getValue();
     }
-
     protected void setSection(Section section) {
-        sectionWrapper.setValue(section);
+    sectionWrapper.setValue(section);
     }
-*/
+     */
 /*    public StringProperty nameProperty() {
-        return name;
+    return name;
     }
-
     public String getName() {
-        return name.get();
+    return name.get();
     }
-
     public void setName(String name) {
-        this.name.set(name);
+    this.name.set(name);
     }
-
     public StringProperty displayNameProperty() {
-        return displayName;
+    return displayName;
     }
-
     @Override
     public String getDisplayName() {
-        return displayName.get();
+    return displayName.get();
     }
-
     @Override
     public void setDisplayName(String displayName) {
-        this.displayName.set(displayName);
+    this.displayName.set(displayName);
     }
-*/
-
+     */
+  
     public boolean isReadOnly() {
         //BeanAdapter ba = new BeanAdapter(beanClass);
         //return ba.isReadOnly(getName());
@@ -150,7 +152,7 @@ public class PropertyItem  extends AbstractNamedItem {
         return getSection().getCategory().getBeanModel();
     }
 */
-    public Method getPropertyMethod() {
+/*    public Method getPropertyMethod() {
         return propertyMethod;
     }
 
@@ -181,12 +183,15 @@ public class PropertyItem  extends AbstractNamedItem {
     public void setPropertyType(Class<?> propertyType) {
         this.propertyType = propertyType;
     }
-
-    public PropertyItem getCopyFor(Class<?> clazz, BeanModel ppd, Category cat, Section sec) {
-        PropertyItem pd = new PropertyItem();
+*/
+    public BeanProperty getCopyFor(Class<?> clazz, BeanModel ppd, Category cat, Section sec) {
+        BeanProperty pd = new BeanProperty();
         pd.setName(getName());
-        pd.setDisplayName(pd.getDisplayName());
+        pd.setDisplayName(getDisplayName());
         pd.setModifiable(isModifiable());
+        pd.setRejected(isRejected());
+        pd.setConstraint(isConstraint());
+        
         //pd.setOriginClass(originClass);
         //pd.setModifiable(isModifiable());
         //pd.setSection(sec);

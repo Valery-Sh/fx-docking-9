@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BoundsPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.BoundsPropertyEditor1;
 
 /**
  *
@@ -50,7 +51,8 @@ public class TestBoundsPropertyEditor extends Application {
         
         root.getChildren().add(btn1);
         BoundsPropertyEditor boundsEditor = new BoundsPropertyEditor();
-        boundsEditor.setPrefWidth(150);
+        
+        boundsEditor.setPrefWidth(350);
        
         root.getChildren().add(boundsEditor);
         ComboBox cb = new ComboBox();
@@ -58,10 +60,10 @@ public class TestBoundsPropertyEditor extends Application {
         //boundsEditor.bind(cb.layoutBoundsProperty());
         ObjectProperty<Bounds> bp = new SimpleObjectProperty<>();
         boundsEditor.bindBidirectional(bp);
-        
+        //boundsEditor.setEditable(true);
         btn1.setOnAction(e -> {
             System.err.println("cb.pw = " + cb.getLayoutBounds().getMaxX() + "; cb.ph = " + cb.getPrefHeight());
-            Bounds b = new BoundingBox(0, 0, 0, 0);
+            Bounds b = new BoundingBox(1, 2, 3, 4);
             if ( bp.get() != null ) {
                 b = new BoundingBox(bp.get().getMinX()+ 10, bp.get().getMinY() + 5, bp.get().getWidth()+ 2, bp.get().getHeight()+ 1) ;
             }

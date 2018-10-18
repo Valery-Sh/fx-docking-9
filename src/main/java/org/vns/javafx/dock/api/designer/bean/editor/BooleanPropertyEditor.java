@@ -16,42 +16,27 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.Property;
-import javafx.css.PseudoClass;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
- * @author Olga
+ * @author Valery Shyshkin
  */
-public class BooleanPropertyEditor extends CheckBox implements PropertyEditor<Boolean> {
+public class BooleanPropertyEditor extends AbstractPropertyEditor<Boolean> {
 
-    private static final PseudoClass EDITABLE_PSEUDO_CLASS = PseudoClass.getPseudoClass("readonly");
-
-
-    private final Boolean defaultValue;
-
-    //private BooleanProperty value = new SimpleBooleanProperty();
     public BooleanPropertyEditor() {
-        this((Boolean) null);
+        this(null);
     }
 
-    /**
-     *
-     * @param defaultValue if null then an empty String value will be shown
-     */
-    public BooleanPropertyEditor(Boolean defaultValue) {
-        this.defaultValue = defaultValue;
+    public BooleanPropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
-        getStyleClass().add("check-box-field-editor");
-        disableProperty().addListener((v, oldValue, newValue) -> {
-            System.err.println("disableProperty changed: " + newValue);
-            pseudoClassStateChanged(EDITABLE_PSEUDO_CLASS, newValue);
-        });
-
     }
 
     @Override
@@ -60,45 +45,41 @@ public class BooleanPropertyEditor extends CheckBox implements PropertyEditor<Bo
     }
 
     @Override
-    public void bind(Property<Boolean> property) {
-
-        boolean d = defaultValue == null ? property.getValue() : defaultValue;
-        //this.setDisabled(true);
+    public void bind(ReadOnlyProperty<Boolean> property) {
+        setBoundProperty(property);
         setEditable(false);
-        property.setValue(d);
+
         this.setFocusTraversable(false);
-        selectedProperty().bind(property);
+        ((CheckBox) getEditorNode()).selectedProperty().bind(property);
     }
 
     @Override
     public void bindBidirectional(Property<Boolean> property) {
-        boolean d = (defaultValue == null) ? property.getValue() : defaultValue;
+        setBoundProperty(property);
         setEditable(true);
-        property.setValue(d);
-
         this.setFocusTraversable(true);
-        selectedProperty().bindBidirectional(property);
+        ((CheckBox) getEditorNode()).selectedProperty().bindBidirectional(property);
 
-    }
-
-    @Override
-    public boolean isEditable() {
-        return !isDisable();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        setDisable(!editable);
     }
 
     @Override
     public void unbind() {
-        selectedProperty().unbind();
+        ((CheckBox) getEditorNode()).selectedProperty().unbind();
+        if (getBoundProperty() != null && (getBoundProperty() instanceof Property)) {
+            ((CheckBox) getEditorNode()).selectedProperty().unbindBidirectional((Property) getBoundProperty());
+        }
+        setBoundProperty(null);
     }
 
     @Override
     public boolean isBound() {
-        return selectedProperty().isBound();
+        return ((CheckBox) getEditorNode()).selectedProperty().isBound() || getBoundProperty() != null;
 
     }
-}
+
+    @Override
+    protected Node createEditorNode() {
+        return new CheckBox();
+    }
+
+}//BooleaPropertyEditor

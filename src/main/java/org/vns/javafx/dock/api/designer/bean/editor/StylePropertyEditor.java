@@ -19,10 +19,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.StringPropertyEditor;
 
 /**
@@ -30,26 +32,37 @@ import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.Stri
  * @author Valery
  */
 public class StylePropertyEditor extends StringPropertyEditor {
-    
+
     public StylePropertyEditor() {
+        this(null);
+    }
+
+    public StylePropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
         getStyleClass().add("style-class-text-field");
-        setSeparator(";");
+        getTextField().setSeparator(";");
     }
+
     @Override
     protected void addValidators() {
-        getValidators().add(item -> {
+        getTextField().getValidators().add(item -> {
+            //if ( item.ends)
+            if ( item.endsWith("?") ) {
+                return false;
+            }
             return true;
             //return Pattern.matches("", item.trim());
         });
-        
+
     }
+
     @Override
     protected void addFilterValidators() {
-        getFilterValidators().add(item -> {
+        getTextField().getFilterValidators().add(item -> {
 
             String regExp = "^((-)(f)(x)(-))([a-z][a-z0-9]*)(-[a-z0-9]+)*$";
             String orCond0 = "|^((-))";
@@ -65,11 +78,8 @@ public class StylePropertyEditor extends StringPropertyEditor {
             String orCond9 = "|^((v))|((v)(i))|((v)(i)(s))|((v)(i)(s)(i))|((v)(i)(s)(i)(b))|((v)(i)(s)(i)(b)(i))|((v)(i)(s)(i)(b)(i)(l))|((v)(i)(s)(i)(b)(i)(l)(i))|((v)(i)(s)(i)(b)(i)(l)(i)(t))|((v)(i)(s)(i)(b)(i)(l)(i)(t)(y))";
             String orCond10 = orCond9 + "(\\s*):$";
             String orCond11 = orCond9 + "(\\s*):(\\s*).+$";
-            //String orCond11 = orCond10 + "|((:))";
-            //String orCond11 = "";
+
             regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7 + orCond8 + orCond9 + orCond10 + orCond11;
-            //regExp += orCond0 + orCond1 + orCond2 + orCond3 + orCond4 + orCond5 + orCond6 + orCond7;
-//            System.err.println("REG EXP = " + regExp);
             boolean retval = item.trim().isEmpty();
             if (!retval) {
                 retval = Pattern.matches(regExp, item.trim());
@@ -77,14 +87,13 @@ public class StylePropertyEditor extends StringPropertyEditor {
 
             return retval;
         });
-        
+
     }
 
-    
     @Override
-    protected void createContextMenu(Property property) {
+    protected void createContextMenu(ReadOnlyProperty property) {
         if (property.getBean() instanceof Styleable) {
-            setContextMenu(createStyleMenu((Styleable) property.getBean()));
+            getTextField().setContextMenu(createStyleMenu((Styleable) property.getBean()));
         }
     }
 
@@ -94,22 +103,29 @@ public class StylePropertyEditor extends StringPropertyEditor {
         cm.setContentHeight(400d);
 
         List<CssMetaData<? extends Styleable, ?>> cssList = bean.getCssMetaData();
-        
+
         for (CssMetaData<? extends Styleable, ?> md : cssList) {
-            cm.getItems().add(new MenuItem(md.getProperty()));
+            MenuItem item = new MenuItem(md.getProperty());
+            item.setOnAction( a -> {
+                String s = getTextField().getText().isEmpty() ? "" : "; ";
+                        
+                if ( ! getTextField().getText().contains(item.getText())) {
+                    getTextField().setText(getTextField().getText() + s + item.getText() + ":???"); 
+                }
+            });
+            cm.getItems().add(item);
             cm.getItems().sort(new Comparator<MenuItem>() {
                 @Override
                 public int compare(MenuItem o1, MenuItem o2) {
-                    if ( o1.equals(o2) ) {
+                    if (o1.equals(o2)) {
                         return 0;
                     }
-                    return ( o1.getText().compareTo(o2.getText()));
+                    return (o1.getText().compareTo(o2.getText()));
                 }
             });
         }
+        
         return cm;
     }
-
-
 
 }

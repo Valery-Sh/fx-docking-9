@@ -18,7 +18,7 @@
 }
 .insets-property-editor .top-inset:readonly, .right-inset:readonly, .bottom-inset:readonly, .left-inset:readonly{
     -fx-background-color: -fx-background;
-    -fx-border-color: black;
+    -fx-border-color: lightgrey;
     -fx-border-width: 0.5;
 }
 
@@ -32,8 +32,6 @@
     -fx-opacity: 0.4;
 }
 
-.check-box-field-editor:readonly {
-}
 
 .trash-tray .image-view {
    -fx-image: url("../images/trash-empty.png");
@@ -255,4 +253,8 @@
 }
 .section {
     
+}
+
+.hyperlink:cssvalue {
+  -fx-graphic: url("../images/css-value.png");    
 }

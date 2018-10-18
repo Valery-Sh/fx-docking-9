@@ -15,74 +15,100 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Polygon;
-import javafx.stage.Popup;
+import javafx.scene.shape.Shape;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Valery Shyshkin
  */
-public class ComboButton extends Control {
+public class ComboButton<T> extends Button {
 
-    private final ObjectProperty<Button> button = new SimpleObjectProperty<>();
-    private final ObjectProperty<Parent> popupRoot = new SimpleObjectProperty<>();
-
+    private ComboBox<T> comboBox;
+    
+    private ItemsUpdater itemsUpdater;
+    
     public ComboButton() {
         init();
     }
 
     private void init() {
         getStyleClass().add("combo-button");
+        comboBox = new ComboBox();
+        Shape graphic = createTriangle();
+        setGraphic(graphic);
+        setOnAction(a -> {
+            if ( itemsUpdater != null ) {
+                itemsUpdater.update(comboBox.getItems());
+            }
+            comboBox.show();
+        });
+
+        comboBox.setCellFactory(listView -> new ListCell<T>() {
+            @Override
+            public void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    String text = "";
+                    if ( item instanceof String ) {
+                        text = (String) item;
+                    } else if ( item instanceof Labeled ) {
+                        text = (((Labeled)item).getText());
+                    } else {
+                        text = item.toString();
+                    }
+                    setText(text);
+                }
+            }
+        });
+
     }
 
-    public ObjectProperty<Button> buttonProperty() {
-        return button;
+    public ComboBox<T> getComboBox() {
+        return comboBox;
     }
 
-    public Button getButton() {
-        return button.get();
+    public ItemsUpdater getItemsUpdater() {
+        return itemsUpdater;
     }
 
-    public void setButton(Button button) {
-        this.button.set(button);
+    public void setItemsUpdater(ItemsUpdater itemsUpdater) {
+        this.itemsUpdater = itemsUpdater;
     }
 
-    public ObjectProperty<Parent> popupRootProperty() {
-        return popupRoot;
-    }
-
-    public Parent getPopupRoot() {
-        return popupRoot.get();
-    }
-
-    public void setPopupRoot(Parent popupRoot) {
-        this.popupRoot.set(popupRoot);
+    public String getSelectedText() {
+        String retval = (comboBox.getValue() instanceof String) ? (String) comboBox.getValue() : null;
+        if (retval == null) {
+            retval = (comboBox.getValue() instanceof Labeled) ? ((Labeled) comboBox.getValue()).getText() : null;
+        }
+        if (retval == null) {
+            retval = comboBox.getValue().toString();
+        }
+        return retval;
     }
 
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
-    }
-
-    @Override
-    public Skin<?> createDefaultSkin() {
-        return new ComboButtonSkin(this);
     }
 
     public static void setDefaultButtonGraphic(Button btn) {
@@ -92,10 +118,9 @@ public class ComboButton extends Control {
 
     public static void setDefaultLayout(Button btn) {
         btn.setTextOverrun(OverrunStyle.CLIP);
-        btn.setContentDisplay(ContentDisplay.RIGHT);
-        btn.setAlignment(Pos.CENTER_RIGHT);
-        AnchorPane.setLeftAnchor(btn, 0d);
-        AnchorPane.setRightAnchor(btn, 0d);
+        btn.setContentDisplay(ContentDisplay.LEFT);
+        btn.setAlignment(Pos.CENTER_LEFT);
+
     }
 
     public static Polygon createTriangle() {
@@ -107,70 +132,55 @@ public class ComboButton extends Control {
         return polygon;
     }
 
-    public static class ComboButtonSkin extends SkinBase<ComboButton> {
+    public static class ItemPane<T> extends Control {
 
-        private AnchorPane anchor = null;
-        private Popup popup;
+        public ObservableList<T> items = FXCollections.observableArrayList();
 
-        public ComboButtonSkin(ComboButton control) {
-            super(control);
-
-            anchor = new AnchorPane();
-
-            Button btn = control.getButton();
-            if (btn == null) {
-                btn = new Button();
-                ComboButton.setDefaultLayout(btn);
-                ComboButton.setDefaultButtonGraphic(btn);
-                
-                AnchorPane.setLeftAnchor(btn, 0d);
-                AnchorPane.setRightAnchor(btn, 0d);
-            }
-
-            anchor.getChildren().add(btn);
-
-            popup = new Popup();
-            popup.setAutoFix(true);
-            popup.setAutoHide(true);
-            
-            Parent root = control.getPopupRoot();
-            if (root != null) {
-                popup.getScene().setRoot(root);
-                btn.setOnAction(buttonActionHandler);
-            }
-
-            control.buttonProperty().addListener(buttonChangeListener);
-            control.popupRootProperty().addListener(popupRootChangeListener);
-
-            getChildren().add(anchor);
+        public ObservableList<T> getItems() {
+            return items;
         }
-        private final EventHandler<ActionEvent> buttonActionHandler = (ev) -> {
-            Button b = (Button) ev.getSource();
-            double x = b.localToScreen(b.getBoundsInLocal()).getMinX();
-            double y = b.localToScreen(b.getBoundsInLocal()).getMinY();
-            popup.show(b, x, y + b.getHeight());
 
-        };
-        private final ChangeListener<? super Button> buttonChangeListener = (v, ov, nv) -> {
-            if (ov != null) {
-                ov.setOnAction(null);
-                anchor.getChildren().remove(ov);
-          
-            }
-            if (nv != null) {
-                anchor.getChildren().add(nv);
-                nv.setOnAction(buttonActionHandler);
-                //AnchorPane.setLeftAnchor(nv, 0d);
-                //AnchorPane.setRightAnchor(nv, 0d);
-            
-                
-            }
-        };
-
-        private final ChangeListener<? super Parent> popupRootChangeListener = (v, ov, nv) -> {
-            popup.getScene().setRoot(nv);
-        };
+        @Override
+        public Skin<?> createDefaultSkin() {
+            return new ItemPaneSkin(this);
+        }
 
     }
 
+    public static class ItemPaneSkin<T> extends SkinBase<ItemPane<T>> {
+
+        ScrollPane root;
+        VBox content;
+
+        public ItemPaneSkin(ItemPane control) {
+            super(control);
+            content = new VBox();
+            root = new ScrollPane(content);
+            root.setFitToWidth(true);
+            root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            root.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+            if (!control.getItems().isEmpty()) {
+                if (control.getItems().get(0) instanceof String) {
+
+                }
+                for (Object o : control.getItems()) {
+                    if (o instanceof Node) {
+                        content.getChildren().add((Node) o);
+                    } else {
+                        Label lb = new Label(o.toString());
+                        content.getChildren().add(lb);
+                    }
+                }
+            }
+
+            getChildren().add(root);
+
+        }
+
+    }
+    @FunctionalInterface
+    public interface ItemsUpdater<T> {
+        void update(ObservableList<T> items);
+    }
 }

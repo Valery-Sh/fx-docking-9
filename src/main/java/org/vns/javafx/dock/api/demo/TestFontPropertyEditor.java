@@ -18,57 +18,46 @@ package org.vns.javafx.dock.api.demo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.FontPane;
 import org.vns.javafx.dock.api.designer.bean.editor.FontPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.FontStringConverter;
+import org.vns.javafx.dock.api.designer.bean.editor.HyperlinkTitle;
+import org.vns.javafx.dock.api.designer.bean.editor.Util;
 
 /**
  *
  * @author Valery
  */
-public class TestFontEditor1  extends Application {
+public class TestFontPropertyEditor  extends Application {
 
     Scene scene;
-
+    double fontSize = 15;
     @Override
     public void start(Stage stage) {
-
+        
+        //System.err.println("VALUE OF " + Double.valueOf(10));
+        Font font1 = Util.getFont("Amiri", "Bold Slanted", 10);
+/*        System.err.println("FONT STYLE: " + Util.getFontStyle("Amiri Bold", "Slanted", 10));
+        Font font1 = Font.font("Amiri", FontWeight.BOLD, FontPosture.ITALIC, 10);
+        System.err.println("font name = " + font1.getFamily());
+        System.err.println("font1 style = " + font1.getStyle());
+        System.err.println("### P = " + FontPosture.findByName("Bold Slanted"));
+        System.err.println("### W = " + FontWeight.findByName("Bold Slanted"));
+*/        
         VBox root = new VBox();
         root.getStyleClass().add("font-editor");
-        Button btn1 = new Button("Edit Font, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10");
-        FontStringConverter conv = new FontStringConverter();
-        String str = "Arial 10px (Regular)";
-        
-        Font font = conv.fromString(str);
+        //Button btn1 = new Button("Edit Font, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10");
+        Button btn1 = new Button("get styles");
         btn1.getStyleClass().add("button-shape");
-        Rectangle sh = new Rectangle(0,0,8, 8);
-        FontPropertyEditor tf = new FontPropertyEditor();
         
-        Font f = Font.font("Verdana", FontWeight.LIGHT, FontPosture.ITALIC, 12);
-        
-        System.err.println("FONT = " + f);
-        FontStringConverter  fontconv = new FontStringConverter();
-        tf.getEditorButton().textProperty().bindBidirectional(btn1.fontProperty(), fontconv );
-        
-        System.err.println("FONT = " + btn1.getFont());
+        FontPropertyEditor tf = new FontPropertyEditor("minWidth");
+        tf.bindBidirectional(btn1.fontProperty());
         
         root.setPrefSize(500, 70);
         root.getChildren().addAll(btn1, tf);
@@ -77,10 +66,26 @@ public class TestFontEditor1  extends Application {
         popup.setAutoFix(true);
         popup.setAutoHide(true);
         popup.getScene().setRoot(new FontPane());
+        System.err.println("btn1.getFont = " + btn1.getFont());
         btn1.setOnAction(a -> {
-            double x = btn1.localToScreen(btn1.getBoundsInLocal()).getMinX();
+            System.err.println("tf.size = " + tf.size);
+            System.err.println("btn1.getFont = " + btn1.getFont());
+            if ( ! tf.isBound() ) {
+                btn1.setFont(Font.font("Arial", 10));
+                return;
+            }
+            tf.size.getTextField().setText(Double.toString(fontSize++));
+            System.err.println("btn1 = " + btn1);
+            System.err.println("   --- btn1.getFont = " + btn1.getFont());            
+            if ( btn1.getFont().getSize() == 17) {
+                tf.unbind();
+                
+            }
+            System.err.println("tf.isBound = " + tf.isBound());
+/*            double x = btn1.localToScreen(btn1.getBoundsInLocal()).getMinX();
             double y = btn1.localToScreen(btn1.getBoundsInLocal()).getMinY();
             popup.show(btn1,x,y + btn1.getHeight());
+*/            
         });
         Scene scene = new Scene(root);
         stage.setScene(scene);

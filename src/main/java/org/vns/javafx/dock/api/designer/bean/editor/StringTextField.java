@@ -100,7 +100,6 @@ public class StringTextField extends TextField {
 
     public StringTextField(String defaultValue) {
         setDefaultValue(defaultValue);
-        //System.err.println("CONSTR getText() = " + getText());
         this.lastValidValueChangeListener = (v, ov, nv) -> {
             invalidateFormatterValue();
         };
@@ -116,11 +115,8 @@ public class StringTextField extends TextField {
         });
         getStyleClass().add("string-textfield");
         setErrorMarkerBuilder(new ErrorMarkerBuilder(this));
-//        System.err.println("BEFORE SET FORMATTER");
 
         setTextFormatter(createTextFormatter());
-        //lastText.addListener(lastValidValueChangeListener);
-//        System.err.println("AFTER SET FORMATTER");
 
         setOnMouseClicked(this::mouseClicked);
         lastValidTextProperty().addListener(lastValidValueChangeListener);
@@ -161,34 +157,17 @@ public class StringTextField extends TextField {
         UnaryOperator<TextFormatter.Change> filter = change -> {
             setCreated(true);
             String txt = getText();
-/*            System.err.println("isNullable = " + isNullable());
-            System.err.println("=========================================================================");
-            //System.err.println("getControl().class " + change.getControl().getClass().getName());
-            System.err.println("1. TextField.getText() = '" + getText() + "'");
-            System.err.println("2. TextFormatter.getValue() = '" + getTextFormatter().getValue() + "'");
-            System.err.println("3. change.getText() = '" + change.getText() + "'");
-            System.err.println("4. change.getControlText() = '" + change.getControlText() + "'");
-            if (getText() != null) {
-                System.err.println("5. change.getControlNewText() = '" + change.getControlNewText() + "'");
-            }
-            System.err.println("6. lastText = '" + lastText + "'");
-            System.err.println("--------------------------------------------------------------------------");
-*/            
             if (txt == null && isNullable() && getNullSubstitution() == null) {
                 return change;
             }
             if (isNull(txt) && !isNullable()) {
-                //System.err.println("6.1 setLastText = " + lastText);
                 if (lastText.isEmpty() && (getEmptySubstitution() == null || getEmptySubstitution().isEmpty())) {
-                    //System.err.println("7.1");
                     change.setText(NULL);
                     return change;
                 } else if (lastText.isEmpty() && (getEmptySubstitution() != null && !getEmptySubstitution().isEmpty())) {
-                    //System.err.println("7.2");
                     change.setText(getEmptySubstitution());
                     return change;
                 } else {
-                    //System.err.println("7.3");
                     change.setText(lastText);
                     return change;
                 }
@@ -205,26 +184,19 @@ public class StringTextField extends TextField {
                 return change;
             }
             if (change.getControlNewText().isEmpty() && getEmptySubstitution() != null) {
-                //System.err.println("8. setText(getEmptySubstitution())");
                 change.setText(getEmptySubstitution());
-                //clearErrorMarkers();
                 return change;
             }
             if (!change.getControlNewText().isEmpty() && change.getControlNewText().equals(getEmptySubstitution())) {
-                //clearErrorMarkers();
                 return change;
             }
             if (!change.getControlNewText().isEmpty() && isNullable() && change.getControlNewText().equals(getNullSubstitution())) {
-                //clearErrorMarkers();
                 return change;
             }
             if (!change.getControlNewText().isEmpty() && change.getControlNewText().equals(getSingleEmptyItemSubstitution())) {
-                //clearErrorMarkers();
                 return change;
             }
-
-            //System.err.println("****************** before isAcceptable");
-
+            
             if (isAcceptable(change.getControlNewText())) {
                 return change;
             } else {
@@ -417,7 +389,7 @@ public class StringTextField extends TextField {
      * Sets the last value which represents the last result of the invocation of
      * the {@link FormatterConverter#toString(java.lang.String) }.
      *
-     * @param the last value which represents the last result of the invocation
+     * @param lastText the last value which represents the last result of the invocation
      * of the {@link FormatterConverter#toString(java.lang.String) }.
      */
     protected void setLastText(String lastText) {
@@ -433,7 +405,6 @@ public class StringTextField extends TextField {
     }
 
     protected boolean isAcceptable(String txt) {
-        //System.err.println("isAcceptable(String) txt = '" + txt + "' ; lastText =  '" + lastText + "' ; isNull =  " + isNull(txt));
         if (getSeparator() == null || getSeparator().isEmpty()) {
             return testFilterValidators(txt);
         }
@@ -448,7 +419,6 @@ public class StringTextField extends TextField {
                 break;
             }
         }
-        //System.err.println("   ---isAcceptable(String) retval = " + retval);
         return retval;
 
     }
@@ -471,7 +441,7 @@ public class StringTextField extends TextField {
     }
 
     protected List<Integer> getErrorIndexes(String[] items) {
-        List<Integer> errorItemIndexes = FXCollections.observableArrayList();
+        List<Integer> errorIndexes = FXCollections.observableArrayList();
         errorItems.clear();
         int d = 0;
         for (int i = 0; i < items.length; i++) {
@@ -490,11 +460,11 @@ public class StringTextField extends TextField {
             if (testValidators(item)) {
                 continue;
             } else {
-                errorItemIndexes.add(i - d);
+                errorIndexes.add(i - d);
                 errorItems.put(i - d, item);
             }
         }
-        return errorItemIndexes;
+        return errorIndexes;
     }
 
     public boolean hasErrorItems() {
@@ -591,6 +561,7 @@ public class StringTextField extends TextField {
     }
 
     protected boolean testFilterValidators(String txt) {
+        txt = transform(txt);
         boolean retval = true;
         for (Predicate<String> p : getSubstitutionFilterValidators()) {
             if (p.test(txt)) {
@@ -659,8 +630,8 @@ public class StringTextField extends TextField {
      * a {@code null empty list substitution}. For example if the property
      * {@link #emptySubstitution} is set to {@code "EMPTY"} the the method will
      * return {@code true} if the item is equal to {@code "EMPTY"}. This method
-     * should be used in {@code validators } instead of the expression like {@code item.isEmpty{) }.
-     *
+     * should be used in {@code validators } instead of the expression like {@code item.isEmpty }.
+     * 
      * @param item the string item to be tested
      * @return true if the given item is empty or has a value which is aa null
      * null null null null null null null null null null null null null null
@@ -687,9 +658,10 @@ public class StringTextField extends TextField {
         return retval;
     }
 
-    protected void applyStringTransformers(String[] items, int idx) {
-        String item = items[idx];
 
+    protected void applyStringTransformers(String[] items, int idx) {
+        
+        String item = items[idx];
         for (StringTransformer st : getStringTransformers()) {
             if (item == null && st.transform(item) == null) {
                 continue;
@@ -704,21 +676,21 @@ public class StringTextField extends TextField {
         }
     }
 
-    protected void applyEmptyStringTransformer(String[] items, int idx) {
-        String item = items[idx];
-
+    protected String transform(String item) {
+        String retval = item;
         for (StringTransformer st : getStringTransformers()) {
             if (item == null && st.transform(item) == null) {
                 continue;
             } else if (item == null || st.transform(item) == null) {
-                items[idx] = st.transform(item);
+                retval = st.transform(item);
                 break;
             }
             if (!item.equals(st.transform(item))) {
-                items[idx] = st.transform(item);
+                retval = st.transform(item);
                 break;
             }
         }
+        return retval;
     }
 
     public static class FormatterConverter extends StringConverter<String> {
@@ -733,27 +705,16 @@ public class StringTextField extends TextField {
 
         @Override
         public String toString(String txt) {
-//            System.err.println("isCreated() = " + textField.isCreated() + "; updating = " + updating);
-//            System.err.println("* --- toString txt = " + txt);
             if (!textField.isCreated()) {
                 textField.setLastText(textField.getDefaultValue());
                 return textField.getDefaultValue();
             }
             //       if (true) {
 
-/*            System.err.println("* --- toString ");
-            System.err.println("     toString parameter = '" + txt + "'");
-            System.err.println("     textFormattre.getValue() = '" + textField.getTextFormatter().getValue() + "'");
-            System.err.println("     TextField.getText() = '" + textField.getText() + "'");
-            System.err.println("---------------------------------------------------------------------------");
-*/
             if (updating) {
-//                System.err.println("updating == TRUE");
                 return updatingText;
             }
-//            System.err.println("Метод toString after updating");
             String retval = "";
-
             try {
                 updating = true;
                 if (textField.NULL.equals(txt)) {
@@ -802,7 +763,6 @@ public class StringTextField extends TextField {
                     }
                     return retval = textField.getSingleEmptyItemSubstitution();
                 }
-
                 for (int i = 0; i < items.length; i++) {
                     if (items[i] != null && items[i].isEmpty() && textField.getEmptyStringTransformer() != null) {
                         items[i] = textField.getEmptyStringTransformer().transform(items[i]);
@@ -833,7 +793,6 @@ public class StringTextField extends TextField {
                 int n = items.length - textField.getErrorItemIndexes().size();
                 for (int i = 0; i < items.length; i++) {
                     String item = items[i];
-//                    System.err.println("   === item = '" + item + "'");
                     sb.append(item);
                     if (!textField.getErrorItemIndexes().contains(i)) {
 
@@ -850,7 +809,6 @@ public class StringTextField extends TextField {
 
                 }
                 retval = sb.toString();
-//                System.err.println("@@@@ retval = " + retval);
                 if (textField.getErrorItemIndexes().isEmpty()) {
                     updateLastValidText(sbValue.toString());
                 }
@@ -861,19 +819,19 @@ public class StringTextField extends TextField {
                 updating = false;
                 updatingText = retval;
             }
-            //System.err.println("!!! toString retval == null : " + (retval == null));
-            System.err.println("!!! toString retval = '" + retval + "'");
             return retval;
 
         }
 
         @Override
         public String fromString(String txt) {
-//            System.err.println("* --- fromString txt = '" + txt + "'; getText() = '" + textField.getText() + "'; form.value = '" + textField.getTextFormatter().getValue());
             return txt;
         }
 
         private void updateLastValidText(String validText) {
+            if ( textField.lastValidTextProperty().isBound() ) {
+                return;
+            }
             textField.lastValidTextProperty().removeListener(textField.getLastValidValueChangeListener());
             textField.setLastValidText(validText);
             textField.lastValidTextProperty().addListener(textField.getLastValidValueChangeListener());

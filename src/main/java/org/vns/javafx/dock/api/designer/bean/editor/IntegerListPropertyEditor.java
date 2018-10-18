@@ -92,16 +92,16 @@ public class IntegerListPropertyEditor extends ObservableListPropertyEditor<Inte
     }
 
     private void init() {
-        setSeparator(",");
+        getTextField().setSeparator(",");
 
         setStringConverter(new ObservableListItemStringConverter(this,Integer.class));            
         IntegerPropertyEditor e = new PrimitivePropertyEditor.IntegerPropertyEditor();
-        getValidators().addAll(e.getValidators());
-        getFilterValidators().addAll(e.getFilterValidators());
-        setDefaultValue("0");
-        setEmptySubstitution("");
-        setNullSubstitution("<NULL>");
-        setNullable(true);
+        getTextField().getValidators().addAll(e.getValidators());
+        getTextField().getFilterValidators().addAll(e.getFilterValidators());
+        getTextField().setDefaultValue("0");
+        getTextField().setEmptySubstitution("");
+        getTextField().setNullSubstitution("<NULL>");
+        getTextField().setNullable(true);
         
     }
 

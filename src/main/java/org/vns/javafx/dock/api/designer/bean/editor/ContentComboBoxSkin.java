@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import org.vns.javafx.dock.api.designer.bean.editor.ContentComboBox;
 import com.sun.javafx.scene.control.behavior.ComboBoxBaseBehavior;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.ComboBoxPopupControl;

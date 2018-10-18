@@ -17,10 +17,11 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.util.StringConverter;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  * The base class is used as an editor for properties of type
@@ -57,78 +58,61 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  * </p>
  * <pre>
  *   {@link #isAcceptable(java.lang.String) }
- *   {@link #toListItem(java.lang.String) }
  * </pre>
  *
+ * @param <E> name
  * @see StringListPropertyEditor
  * @see IntegerListPropertyEditor
  *
  * @author Valery Shyshkin
  */
-public class ObservableListPropertyEditor<E> extends StringTextField implements ListPropertyEditor<E> {//, ErrorPointerSupport {
+public class ObservableListPropertyEditor<E> extends AbstractPropertyEditor<E> implements ListPropertyEditor<E> {//, ErrorPointerSupport {
 
     private ObservableList<E> boundList = FXCollections.observableArrayList();
     private ListContentStringBinding<E> listContentBinding;
     private StringConverter<E> stringConverter;
-    
-    
+
+    private ObservableListEditor textField;
 
     public ObservableListPropertyEditor() {
+        this(null);
+    }
+
+    public ObservableListPropertyEditor(String name) {
+        super(name);
         init();
     }
 
     private void init() {
+//        textField = new ObservableListEditor(getName());
         addValidators();
         addFilterValidators();
         addSubstitutionsFilterValidators();
-        
+
     }
-   
-    @Override
+
+    //@Override
     protected String applySubstitutions(String txt) {
-        if ( true ) {
-            return super.applySubstitutions(txt);
+        if (true) {
+            return textField.applySubstitutions(txt);
         }
-        System.err.println("applySubstitutions txt = '" + txt + "'");
-        String retval = getNullSubstitution();
+        String retval = textField.getNullSubstitution();
         if (txt == null && retval == null) {
             retval = "";
         } else if (retval != null) {
 
-        } else if (getEmptySubstitution() != null && txt != null && txt.equals(getEmptySubstitution())) {
-            retval = getEmptySubstitution();
+        } else if (textField.getEmptySubstitution() != null && txt != null && txt.equals(textField.getEmptySubstitution())) {
+            retval = textField.getEmptySubstitution();
         }
-        System.err.println("applySubstitutions retval = '" + retval + "'");
         return retval;
+    }
+
+    public ObservableListEditor getTextField() {
+        return textField;
     }
 
     public ObservableList<E> getBoundList() {
         return boundList;
-    }
-
-/*    @Override
-    public void setNullSubstitution(String nullSubstitution) {
-        super.setNullSubstitution(nullSubstitution);
-    }
-*/
-    @Override
-    public String getEmptySubstitution() {
-        return super.getEmptySubstitution();
-    }
-
-    @Override
-    public void setEmptySubstitution(String emptyListSubstitution) {
-        super.setEmptySubstitution(emptyListSubstitution);
-    }
-
-    @Override
-    public String getSingleEmptyItemSubstitution() {
-        return super.getSingleEmptyItemSubstitution();
-    }
-
-    @Override
-    public void setSingleEmptyItemSubstitution(String singleEmptyItemSubstitution) {
-        super.setSingleEmptyItemSubstitution(singleEmptyItemSubstitution);
     }
 
     public ListContentStringBinding<E> getListContentBinding() {
@@ -143,20 +127,19 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
         this.stringConverter = converter;
     }
 
-    @Override
     protected boolean testValidators(String item) {
 
         if (getBoundList() != null && isBound()) {
-            String s = getEmptySubstitution();
+            String s = textField.getEmptySubstitution();
             if (s != null && s.equals(item) && getBoundList().isEmpty()) {
                 return true;
             }
-            s = getSingleEmptyItemSubstitution();
+            s = textField.getSingleEmptyItemSubstitution();
             if (s != null && s.equals(item) && getBoundList().size() == 1) {
                 return true;
             }
         }
-        return super.testValidators(item);
+        return textField.testValidators(item);
     }
 
     public boolean isSubstitution(String item) {
@@ -169,20 +152,20 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
 
         this.setEditable(false);
         this.setFocusTraversable(false);
-        
-        listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
+
+        listContentBinding = new ListContentStringBinding(textField.lastValidTextProperty(), boundList, ",", getStringConverter());
         listContentBinding.bind();
-        
+
     }
 
     @Override
     public void bindBidirectional(ObservableList<E> property) {
-        boundList = (ObservableList) property;
+        boundList = property;
 
         this.setEditable(true);
         this.setFocusTraversable(true);
-        
-        listContentBinding = new ListContentStringBinding(lastValidTextProperty(), boundList, ",", getStringConverter());
+
+        listContentBinding = new ListContentStringBinding(textField.lastValidTextProperty(), boundList, ",", getStringConverter());
         listContentBinding.bindBidirectional();
     }
 
@@ -191,41 +174,82 @@ public class ObservableListPropertyEditor<E> extends StringTextField implements 
         if (listContentBinding != null) {
             listContentBinding.unbind();
         }
+        boundList = null;
+        setBoundProperty(null);
+        listContentBinding = null;
     }
+
     @Override
     public String getUserAgentStylesheet() {
         return getClass().getResource("resources/styles/default.css").toExternalForm();
     }
 
-
     @Override
     public boolean isBound() {
-        return getListContentBinding() != null && getListContentBinding().isBound();
+        return getListContentBinding() != null && getListContentBinding().isBound() || getBoundList() != null || getBoundProperty() != null;
     }
-    
+
     protected void addValidators() {
     }
 
     protected void addFilterValidators() {
     }
+
     protected void addSubstitutionsFilterValidators() {
-        getSubstitutionFilterValidators().add( it -> {
-            
-            if ( it == null  ) {
+        textField.getSubstitutionFilterValidators().add(it -> {
+
+            if (it == null) {
                 return false;
             }
             boolean retval = false;
-            if ( getNullSubstitution() != null ) {
-                for ( int i=0; i < it.length(); i++) {
-                    if ( getNullSubstitution().startsWith(it)) {
+            if (textField.getNullSubstitution() != null) {
+                for (int i = 0; i < it.length(); i++) {
+                    if (textField.getNullSubstitution().startsWith(it)) {
                         return true;
                     }
                 }
             }
             return false;
-            
         });
     }
 
+    @Override
+    protected Node createEditorNode() {
+        textField = new ObservableListEditor();
+        textField.setTestBindValidator((item) -> {
+            boolean retval = false;
+            if (getBoundList() != null && isBound()) {
+                String s = textField.getEmptySubstitution();
+                if (s != null && s.equals(item) && getBoundList().isEmpty()) {
+                    retval = true;
+                } else {
+                    s = textField.getSingleEmptyItemSubstitution();
+                    if (s != null && s.equals(item) && getBoundList().size() == 1) {
+                        retval = true;
+                    }
+                }
+            }
+            return retval;
+        });
+        return textField;
+    }
+
+    @Override
+    public void bind(ReadOnlyProperty<E> property) {
+        if (property instanceof ListProperty) {
+            setBoundProperty(property);
+            bind(((ListProperty) property).getValue());
+        }
+
+    }
+
+    @Override
+    public void bindBidirectional(Property<E> property) {
+        if (property instanceof ListProperty) {
+            setBoundProperty(property);
+            bindBidirectional(((ListProperty) property).getValue());
+        }
+
+    }
 
 }
