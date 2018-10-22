@@ -1,9 +1,7 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import java.net.URL;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

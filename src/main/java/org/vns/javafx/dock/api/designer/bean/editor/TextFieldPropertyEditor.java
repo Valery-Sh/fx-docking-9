@@ -303,7 +303,7 @@ public abstract class TextFieldPropertyEditor<E> extends AbstractPropertyEditor<
         }
     }//class BindingStringConverter
 
-    public static class TextFieldPropertyEditorSkin extends AbstractPropertyEditorSkin {
+    public static class TextFieldPropertyEditorSkin extends BaseEditorSkin {
 
         private final GridPane grid;
         private final TextFieldPropertyEditor control;

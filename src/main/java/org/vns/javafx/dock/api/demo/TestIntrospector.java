@@ -204,8 +204,8 @@ public class TestIntrospector extends Application {
             }
         });
 
-        System.err.println("tf1.getNullSubstitution = " + tf1.getNullSubstitution());
-        System.err.println("tf1.separator = " + tf1.getSeparator());
+//        System.err.println("tf1.getNullSubstitution = " + tf1.getNullSubstitution());
+//        System.err.println("tf1.separator = " + tf1.getSeparator());
 
 //            retval = new ObservableListPropertyEditor<String>();
         //tf1.setStringConverter(new ObservableListItemStringConverter(tf1,String.class));  

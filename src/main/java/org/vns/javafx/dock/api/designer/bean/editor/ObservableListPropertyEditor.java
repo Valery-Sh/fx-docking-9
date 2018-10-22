@@ -52,13 +52,6 @@ import javafx.util.StringConverter;
  *   \s*;\s*
  * </pre> The first expression causes the left trimming of the string element,
  * the second right trimming and the third both left and right trimming.
- * <p>
- * A subclass of this class should, as a rule, override one or more of the
- * methods presented below
- * </p>
- * <pre>
- *   {@link #isAcceptable(java.lang.String) }
- * </pre>
  *
  * @param <E> name
  * @see StringListPropertyEditor

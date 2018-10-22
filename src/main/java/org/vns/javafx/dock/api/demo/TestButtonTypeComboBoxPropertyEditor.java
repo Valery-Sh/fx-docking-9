@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.css.StyleManager;
-import java.net.URL;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.collections.FXCollections;
@@ -28,20 +26,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.ButtonTypeComboBoxPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ButtonTypeListPropertyEditor;
 
 /**
  *

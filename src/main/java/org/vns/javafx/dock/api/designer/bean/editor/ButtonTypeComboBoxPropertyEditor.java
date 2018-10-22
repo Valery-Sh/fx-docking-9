@@ -30,7 +30,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import org.vns.javafx.dock.api.designer.bean.editor.AbstractPropertyEditor.AbstractPropertyEditorSkin;
 
 /**
  *
@@ -74,7 +73,7 @@ public class ButtonTypeComboBoxPropertyEditor extends ObservableListPropertyEdit
         return new GridPane();
     }
 
-    public static class ButtonTypeComboBoxPropertyEditorSkin extends AbstractPropertyEditorSkin {
+    public static class ButtonTypeComboBoxPropertyEditorSkin extends BaseEditorSkin {
 
         private GridPane grid;
         private final Button plusButton;

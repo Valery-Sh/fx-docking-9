@@ -74,7 +74,6 @@ public class TestLongPropertyEditor extends Application {
         tf1.bindBidirectional(ip);
 //        System.err.println("IntegerPropertyEditor value=" + tf1.getLastValidText());
         btn1.setOnAction(e -> {
-            tf1.setLastValidText("21");
             System.err.println("IntegerPropertyEditor ip=" + ip.get());
         });
 
@@ -105,9 +104,6 @@ public class TestLongPropertyEditor extends Application {
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
-        tf3.setOnAction(e -> {
-        });
-        tf3.setFont(new Font(13));
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);

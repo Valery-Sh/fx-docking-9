@@ -17,11 +17,9 @@ package org.vns.javafx.dock.api.designer;
 
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -39,13 +37,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import static javafx.css.StyleOrigin.AUTHOR;
 import static javafx.css.StyleOrigin.INLINE;
-import javafx.css.Styleable;
 import javafx.css.StyleableProperty;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -75,6 +70,7 @@ import org.vns.javafx.dock.api.designer.bean.editor.ListPropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditor;
 import org.vns.javafx.dock.api.designer.bean.editor.PropertyEditorFactory;
 import org.vns.javafx.dock.api.designer.bean.editor.StaticConstraintPropertyEditor;
+import org.vns.javafx.dock.api.designer.bean.editor.TreePaneItem;
 import org.vns.javafx.dock.api.designer.bean.editor.Util;
 
 /**
@@ -93,20 +89,41 @@ public class PropertyEditorPane extends Control {
 
     private final ObjectProperty bean = new SimpleObjectProperty<>();
     
-    private Pane categoryButtonPane;
+    private ObservableList<PropertyEditorPane> childEditorPanes = FXCollections.observableArrayList();
+    
+    private final ObjectProperty<Node> compositeManager = new SimpleObjectProperty<>();
+    
+    private final ObjectProperty<Node> toolBar = new SimpleObjectProperty<>();
+    
+    private TilePane categoryButtonPane;
 
 //    public WeakReference wr;
     private final ObjectProperty<ScrollPane.ScrollBarPolicy> scrollVBarPolicy = new SimpleObjectProperty<>(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
-    //private ObservableMap<String,
+    private final TreePaneItem treePaneItem;
+            
     public PropertyEditorPane() {
-        this(new CategoryTilePane());
-        
+        this(null);
     }
     
-    public PropertyEditorPane(Pane categoryButtonPane) {
-        this.categoryButtonPane = categoryButtonPane;
+    public PropertyEditorPane(TreePaneItem item) {
+        this.treePaneItem = item;
+        init();
+    }    
+
+    private void init() {
+        categoryButtonPane = new TilePane();
+        ToolBar tb = new ToolBar();
+        tb.setId(TOOLBAR_ID);
+        tb.setVisible(false);
+        setToolBar(tb);
+        
     }
+
+    public TreePaneItem getTreePaneItem() {
+        return treePaneItem;
+    }
+
     public ObjectProperty beanProperty() {
         return bean;
     }
@@ -117,6 +134,27 @@ public class PropertyEditorPane extends Control {
 
     public void setBean(Object bean) {
         this.bean.set(bean);
+    }
+    public ObjectProperty<Node> toolBarProperty() {
+        return toolBar; 
+    }
+    public Node getToolBar() {
+        return toolBar.get();
+    }
+    public void setToolBar(Node toolBar) {
+        this.toolBar.set(toolBar);
+    }
+
+    public ObjectProperty<Node> compositeManagerProperty() {
+        return compositeManager;
+    }
+
+    public Node getCompositeManager() {
+        return compositeManager.get();
+    }
+
+    public void setCompositeManager(Node compositeManager) {
+        this.compositeManager.set(compositeManager);
     }
 
     @Override
@@ -217,7 +255,7 @@ public class PropertyEditorPane extends Control {
                 }
             });
 
-            layout = new VBox(getToolBar(), getStatusBar(), beanPane);
+            layout = new VBox(control.getToolBar(), getStatusBar(), beanPane);
             layout.setSpacing(2);
             //getSkinnable().beanProperty().addListener(this::beanChanged);
             getSkinnable().beanProperty().addListener(beanChangeListener);
@@ -258,13 +296,6 @@ public class PropertyEditorPane extends Control {
             hb.setId(STATUSBAR_ID);
             hb.setStyle("-fx-border-width: 1; -fx-border-color: lightgrey");
             return hb;
-        }
-
-        private Node getToolBar() {
-            ToolBar tb = new ToolBar();
-            tb.setId(TOOLBAR_ID);
-            tb.setVisible(false);
-            return tb;
         }
 
         private void createLayoutConstraintMap() {
@@ -313,19 +344,12 @@ public class PropertyEditorPane extends Control {
             }
             toggleGroup.selectToggle(null);
             categoryButtonPane.getChildren().clear();
-            /*            Map<StyleableProperty, ChangeListener> stylePropMap = listenerMap.get(getSkinnable().getBean());
-            if (stylePropMap == null) {
-                stylePropMap = FXCollections.observableHashMap();
-                listenerMap.put(getSkinnable().getBean(), stylePropMap);
-            }
-             */
+
             Introspection introspection = PropertyPaneModelRegistry.getInstance().introspect(getBean().getClass());
-            //styleableMap.clear();
-            //cssMetaData = null;
+
             BeanModel beanModel = PropertyPaneModelRegistry.getInstance().getBeanModel(getBean(), introspection);
 
             for (Category c : beanModel.getItems()) {
-                System.err.println("CATEGORY name = " + c.getName());
                 VBox categoryContent = getCategoryPane(c.getName(), c.getDisplayName());
                 if ("layout".equals(c.getName())) {
                     if ((getBean() instanceof Parent) && ((Parent) getBean()).getParent() != null) {
@@ -354,8 +378,6 @@ public class PropertyEditorPane extends Control {
                                 }
                             }
                         }
-//                       StaticConstraintPropertyEditor editor = (StaticConstraintPropertyEditor) ConstraintPropertyEditorFactory.getDefault().getEditor(propItem.getName(), ((Parent) getBean()).getParent().getClass());
-                        // constraintEditors.put(propItem.getName(), (StaticConstraintPropertyEditor) editor);
                     }
 
                 }
@@ -492,7 +514,7 @@ public class PropertyEditorPane extends Control {
             toggleGroup.getToggles().add(catBtn);
             System.err.println("catBtn added = " + name);
             categoryButtonPane.getChildren().add(catBtn);
-            
+
             pane.getChildren().clear();
             return pane;
         }
@@ -613,49 +635,6 @@ public class PropertyEditorPane extends Control {
             });
         }
     }// Skin
-    
-    public interface CategoryNodeCollection {
-        ObservableList<Node> getCategoryNodes();
-        
-    }
-    public static class CategoryTilePane extends TilePane implements CategoryNodeCollection {
 
-        public CategoryTilePane() {
-        }
 
-        public CategoryTilePane(Orientation orientation) {
-            super(orientation);
-        }
-
-        public CategoryTilePane(double hgap, double vgap) {
-            super(hgap, vgap);
-        }
-
-        public CategoryTilePane(Orientation orientation, double hgap, double vgap) {
-            super(orientation, hgap, vgap);
-        }
-
-        public CategoryTilePane(Node... children) {
-            super(children);
-        }
-
-        public CategoryTilePane(Orientation orientation, Node... children) {
-            super(orientation, children);
-        }
-
-        public CategoryTilePane(double hgap, double vgap, Node... children) {
-            super(hgap, vgap, children);
-        }
-
-        public CategoryTilePane(Orientation orientation, double hgap, double vgap, Node... children) {
-            super(orientation, hgap, vgap, children);
-        }
-
-        @Override
-        public ObservableList<Node> getCategoryNodes() {
-            return getChildren();
-        }
-
-    
-    }
 }//class PropertyEditorPane

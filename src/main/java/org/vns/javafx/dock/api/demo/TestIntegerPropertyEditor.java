@@ -171,15 +171,6 @@ public class TestIntegerPropertyEditor extends Application {
         //TextField tf3 = new TextField();
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        
-        tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                System.err.println("STYLE = " + s);
-            });
-       });
-        tf3.setFont(new Font(13));
         grid.add(lb3, 0, 2);
         grid.add(tf3, 1, 2);
         //tf3.bindBidirectional(btn1.disableProperty());

@@ -20,18 +20,14 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
@@ -149,8 +145,6 @@ public class TestIntegerListPropertyEditor extends Application {
             }
         });
 
-        System.err.println("tf1.getNullSubstitution = " + tf1.getNullSubstitution());
-        System.err.println("tf1.separator = " + tf1.getSeparator());
 
 //            retval = new ObservableListPropertyEditor<String>();
         //tf1.setStringConverter(new ObservableListItemStringConverter(tf1,String.class));  

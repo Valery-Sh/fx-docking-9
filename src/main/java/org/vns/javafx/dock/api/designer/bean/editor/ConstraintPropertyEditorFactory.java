@@ -45,9 +45,9 @@ public abstract class ConstraintPropertyEditorFactory {
 //    }
     /**
      *
-     * @param propertyType the type of the property
      * @param propertyName the name of the property
-     * @return the object of type {@code PropertyEditor }
+     * @param beanParentClass the class of the parent node
+     * @return the object of type {@code StaticConstraintPropertyEditor }
      */
     public abstract StaticConstraintPropertyEditor getEditor(String propertyName, Class<?> beanParentClass);// {
 

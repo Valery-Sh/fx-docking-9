@@ -32,10 +32,10 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 public class HyperlinkTitle extends Hyperlink {
     
     private static final PseudoClass CSS_VALUE = PseudoClass.getPseudoClass("cssvalue");
-    private PropertyEditor editor = null;
+    private BaseEditor editor = null;
     private String propName = null;
             
-    public HyperlinkTitle(PropertyEditor editor, String propName ) {
+    public HyperlinkTitle(BaseEditor editor, String propName ) {
         super(Util.toDisplayName(propName));
         this.editor = editor;
         this.propName = propName;

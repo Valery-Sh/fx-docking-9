@@ -14,3 +14,18 @@
     */
     
 }
+
+.bean-editor-category-pane .tree-cell .tree-disclosure-node  .arrow {
+    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../plus-blue-16x16.png);
+}
+
+.bean-editor-category-pane .tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../minuss-blue-16x16.png);
+    -fx-rotate: 0;
+}
+

@@ -261,7 +261,7 @@ public class InsetsPropertyEditor extends AbstractPropertyEditor<Insets> impleme
         return new GridPane();
     }
 
-    public static class InsetsPropertyEditorSkin extends AbstractPropertyEditorSkin {
+    public static class InsetsPropertyEditorSkin extends BaseEditorSkin {
 
         private final Node[] graphics;
         private final GridPane grid;

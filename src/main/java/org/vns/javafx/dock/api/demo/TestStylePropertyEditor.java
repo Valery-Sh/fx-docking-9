@@ -70,19 +70,10 @@ public class TestStylePropertyEditor extends Application {
         //DecimalTextField tf1 = new DecimalTextField();
 
         StylePropertyEditor tf1 = new StylePropertyEditor();
-        tf1.setNullSubstitution("<NULL>");
-        tf1.getValidators().add(item -> {
-            if ( tf1.isNull(item)) {
-                return false;
-            }
-            return true;
-        });
         //tf1.setSeparator(",", "\\s*,\\s*");
         tf1.bindBidirectional(btn2.styleProperty());
 
         btn1.setOnAction(e -> {
-            tf1.setText("visibility");
-            tf1.setText(null);
         });
 
         Label lb2 = new Label("111111lable 1");
@@ -112,9 +103,6 @@ public class TestStylePropertyEditor extends Application {
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
-        tf3.setOnAction(e -> {
-        });
-        tf3.setFont(new Font(13));
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);

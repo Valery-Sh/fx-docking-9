@@ -71,7 +71,7 @@ public class Util {
         return sb.toString().trim();
     }
 
-    public static void showInBrowser(PropertyEditor editor) {
+    public static void showInBrowser(BaseEditor editor) {
         if (editor == null || editor.getBoundProperty() == null) {
             return;
         }

@@ -15,27 +15,10 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
-import javafx.beans.property.ReadOnlyProperty;
-
 /**
  *
- * @author Olga
+ * @author Nastia
  */
-public abstract class AbstractPropertyEditor<T> extends BaseEditor<T> implements PropertyEditor<T> {
-
-
-    public AbstractPropertyEditor() {
-        this(null);
-    }
-
-    public AbstractPropertyEditor(String name) {
-        super(name);
-    }
+public interface CompositePropertyEditor {
     
-    @Override
-    public ReadOnlyProperty getBoundProperty() {
-        return super.getBoundProperty();
-    }
-
-
-}//BooleaPropertyEditor
+}

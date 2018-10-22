@@ -201,7 +201,7 @@ public class SliderPropertyEditor extends AbstractPropertyEditor<Number> {
         return slider.valueProperty().isBound() || decimalEditor.isBound() || getBoundProperty() != null;
     }
 
-    public static class SliderEditorSkin extends AbstractPropertyEditorSkin {
+    public static class SliderEditorSkin extends BaseEditorSkin {
 
         private GridPane grid;
         private SliderPropertyEditor control;

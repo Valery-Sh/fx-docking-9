@@ -258,3 +258,59 @@
 .hyperlink:cssvalue {
   -fx-graphic: url("../images/css-value.png");    
 }
+
+/* -------------------------------------------------------------
+   BeanEditorCategoryPane
+   -------------------------------------------------------------*/
+/*.bean-editor-category-pane .tree-cell .tree-disclosure-node  .arrow {
+    -fx-padding: 0.6em 0.6em 0.6em 0.6em;     
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../images/plus-blue-16x16.png);
+}
+
+.bean-editor-category-pane .tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-shape: null;
+    -fx-background-color: null;
+    -fx-background-image: url(../images/minus-blue-16x16.png);
+    -fx-rotate: 0;
+}
+*/
+.composite-editor .update-button {
+    -fx-graphic: url("../images/plus-black-thin-7x7.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.composite-editor:notnull .update-button {
+    -fx-graphic: url("../images/minus-black-thin-7x7.png");            
+}
+
+/*.tree-pane-item .image-view {
+    -fx-image: url("../images/plus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+*/
+.tree-pane-item .expand-button {
+    -fx-graphic: url("../images/plus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+
+.tree-pane-item:itemexpanded .expand-button {
+    
+    -fx-graphic: url("../images/minus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.tree-pane-item:leafitem .expand-button {
+    visibility: hidden;
+}
+.tree-pane-item .content {
+    -fx-padding: 5 0 5 0;
+    -fx-spacing: 5;
+}
+.tree-pane .tree-pane-item {
+    -fx-padding: 0 0 0 10;
+}
+/*.vbox .image-view {
+    -fx-image: url("../images/plus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+*/

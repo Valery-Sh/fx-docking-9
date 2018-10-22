@@ -25,13 +25,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
-import org.vns.javafx.dock.api.designer.bean.editor.AbstractPropertyEditor.AbstractPropertyEditorSkin;
+import org.vns.javafx.dock.api.designer.bean.editor.BaseEditor.BaseEditorSkin;
 
 /**
  *
  * @author Valery
  */
-public class BoundsPropertyEditorSkin extends AbstractPropertyEditorSkin {
+public class BoundsPropertyEditorSkin extends BaseEditorSkin {
 
     protected BoundsPropertyEditor comboBox;
     protected GridPane grid;

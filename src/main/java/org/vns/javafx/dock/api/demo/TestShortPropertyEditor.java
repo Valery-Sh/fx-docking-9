@@ -72,7 +72,6 @@ public class TestShortPropertyEditor extends Application {
         ObjectProperty<Short> ip = new SimpleObjectProperty(0);
         
         ShortPropertyEditor tf1 = new ShortPropertyEditor();
-        tf1.getStringTransformers().add(new EmptyStringNumberTransformer());
         
         //CharacterTextField tf1 = new CharacterTextField();
         // System.err.println("ShortMax = " + Short.MAX_VALUE);
@@ -85,7 +84,6 @@ public class TestShortPropertyEditor extends Application {
         //tf1.bind(ip);
    
         btn1.setOnAction(e -> {
-            System.err.println("ShortPropertyEditor: ip = " + ip + "; tf1.text = " + tf1.getText());
             ip.set((short)20);
         
         });
@@ -102,15 +100,6 @@ public class TestShortPropertyEditor extends Application {
         grid.add(lb2, 0, 1);
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
        
-        tf3.setOnAction(e -> {
-            tf3.getPseudoClassStates().forEach(s -> {
-                System.err.println("PSEUDO = " + s);
-            });
-            tf3.getStyleClass().forEach(s -> {
-                System.err.println("STYLE = " + s);
-            });
-       });
-        tf3.setFont(new Font(13));
         grid.add(lb3, 0, 2);
         grid.add(tf3, 1, 2);
         //tf3.bindBidirectional(btn1.disableProperty());

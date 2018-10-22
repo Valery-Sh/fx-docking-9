@@ -132,9 +132,6 @@ public class TestStringTextFieldforInteger extends Application {
 
         BooleanPropertyEditor tf3 = new BooleanPropertyEditor();
 
-        tf3.setOnAction(e -> {
-        });
-        tf3.setFont(new Font(13));
 
         grid.add(lb3, 0, 3);
         grid.add(tf3, 1, 3);

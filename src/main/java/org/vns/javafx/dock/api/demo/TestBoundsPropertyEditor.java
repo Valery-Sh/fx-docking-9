@@ -28,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.bean.editor.BoundsPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.BoundsPropertyEditor1;
 
 /**
  *

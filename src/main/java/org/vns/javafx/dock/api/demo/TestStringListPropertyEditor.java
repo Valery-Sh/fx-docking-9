@@ -69,7 +69,6 @@ public class TestStringListPropertyEditor extends Application {
         Label lb1 = new Label("Text Alignment");
      
         StringListPropertyEditor tf1 = new StringListPropertyEditor();
-        tf1.setSeparator(",");
         btn1.setOnAction(e -> {
             System.err.println("btn1 onAction");
             btn2.getStyleClass().forEach(s -> {

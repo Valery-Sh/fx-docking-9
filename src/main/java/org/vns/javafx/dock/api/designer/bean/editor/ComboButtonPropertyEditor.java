@@ -135,7 +135,7 @@ public class ComboButtonPropertyEditor<T> extends AbstractPropertyEditor<T> {
         return new AnchorPane();
     }
 
-    public static class ComboButtonPropertyEditorSkin extends AbstractPropertyEditorSkin {
+    public static class ComboButtonPropertyEditorSkin extends BaseEditorSkin {
 
         private AnchorPane anchor = null;
         private Popup popup;

@@ -118,7 +118,7 @@ public class SampleBindingByInsets implements WeakListener {
         return hc1 * hc2;
     }
 
-    @Override
+/*    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -129,7 +129,7 @@ public class SampleBindingByInsets implements WeakListener {
         if ((ls == null) || (sp == null)) {
             return false;
         }
-
+/
         if (obj instanceof MarginBinding) {
             final MarginBinding otherBinding = (MarginBinding) obj;
             final Object o1 = otherBinding.editorInsets.get();
@@ -147,7 +147,7 @@ public class SampleBindingByInsets implements WeakListener {
         }
         return false;
     }
-
+*/
     public void marginChanged(ObservableValue<? extends Insets> observable, Insets oldValue, Insets newValue) {
         if (!updating) {
 
