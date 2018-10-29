@@ -17,6 +17,7 @@ package org.vns.javafx.dock.api.designer.bean;
 
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -29,13 +30,75 @@ public class CompositeBeanModel extends BeanModel {
     public CompositeBeanModel() {
         init();
     }
+    Category cat;
+    Section sec;
     private void init() {
-        Category cat = new Category("properties");
+        cat = new Category("properties");
         getItems().add(cat);
-        Section sec = new Section("defaultSection");
+        sec = new Section("specific");
         cat.getItems().add(sec);
+        getPropertyItems().addListener((ListChangeListener.Change<?extends BeanProperty> change)  -> {
+        while (change.next()) {
+            if (change.wasPermutated()) {
+            } else if (change.wasUpdated()) {
+/*                List<TreePaneItem> list = (List<TreePaneItem>) change.getList().subList(change.getFrom(), change.getTo());
+                list.forEach(it -> {
+                    it.setParentItem(this);
+                });
+*/
+            } else if (change.wasReplaced()) {
+  /*              change.getRemoved().forEach(it -> {
+                    TreePane tp = it.getTreePane();
+                    if (tp != null) {
+                        tp.getTogleGroup().getToggles().remove(it.getTextButton());
+                    }
+                    it.setParentItem(null);
+                });
+                change.getAddedSubList().forEach(it -> {
+                    it.setParentItem(this);
+                    updateMenuButton();
+                    int level = it.getLevel();
+                    Insets ins = it.getPadding();
+                    //it.setPadding(new Insets(ins.getTop(), ins.getRight(), ins.getBottom(), 10));
+                    TreePane tp = it.getTreePane();
+                    if (tp != null) {
+                        tp.getTogleGroup().getToggles().add((Toggle) it.getTextButton());
+                    }
+
+                });
+*/                
+            } else {
+              if (change.wasRemoved()) {
+  /*                  change.getRemoved().forEach(it -> {
+                        it.setParentItem(null);
+                        TreePane tp = it.getTreePane();
+                        if (tp != null) {
+                            tp.getTogleGroup().getToggles().remove((Toggle) it.getTextButton());
+                        }
+                    });
+*/
+                } else if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(it -> {
+
+                    });
+                }
+            }
+        }
+            
+        });
     }
     public ObservableList<BeanProperty> getPropertyItems() {
-        return getItems().get(0).getItems().get(0).getItems();
+        //return getItems().get(0).getItems().get(0).getItems();
+        return sec.getItems();
     }
+/*    @Override
+    public BeanModel getCopyFor(Class<?> clazz) {
+        System.err.println("CompositeBeanModel: clazz = " + clazz.getName());
+        BeanModel ppd = new CompositeBeanModel();
+        for (Category c : getItems()) {
+            ppd.getItems().add(c.getCopyFor(clazz, ppd));
+        }
+        return ppd;
+    }
+*/    
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import javafx.beans.DefaultProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.effect.Bloom;
 
 /**
  *
@@ -95,11 +96,43 @@ public class BeanModel extends AbstractNamedItem implements NamedItemList<Catego
     }
 
     public BeanModel getCopyFor(Class<?> clazz) {
-        BeanModel ppd = new BeanModel();
+        BeanModel ppd;
+        if ( Bloom.class.equals(clazz)) {
+            System.err.println("");
+        }
+        if ( Bloom.class.equals(this.getBeanType())) {
+            System.err.println("");
+        }        
+        if ( this instanceof CompositeBeanModel ) {
+            ppd = new CompositeBeanModel();
+            ppd.getItems().clear();
+        } else {
+            ppd = new BeanModel();            
+        }
+        
         for (Category c : categories) {
             ppd.getItems().add(c.getCopyFor(clazz, ppd));
         }
         return ppd;
+    }
+    
+    public BeanModel getCopyFor(BeanModel source) {
+        BeanModel ppd;
+        if ( source instanceof CompositeBeanModel ) {
+            ppd = new CompositeBeanModel();
+            ppd.getItems().clear();
+        } else {
+            ppd = new BeanModel();
+        }
+        Class<?> clazz = source.getBeanType();
+        for (Category c : categories) {
+            ppd.getItems().add(c.getCopyFor(clazz, ppd));
+        }
+        return ppd;
+    }
+    @Override
+    public String toString() {
+        return "name = " + getName() + "; beanClassName = " + getBeanClassName() + "items.size = " + getItems().size(); 
     }
 
 /*    protected void merge(ObservableList<Category> cts) {

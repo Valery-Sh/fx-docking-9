@@ -77,6 +77,7 @@ public class SliderPropertyEditor extends AbstractPropertyEditor<Number> {
         //textField.setR(2, RoundingMode.HALF_UP);
         sliderBoundValue.set(value);
         slider = new Slider(min, max, value);
+        //slider.
         init();
     }
 

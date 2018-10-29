@@ -20,5 +20,5 @@ package org.vns.javafx.dock.api.designer.bean.editor;
  * @author Nastia
  */
 public interface CompositePropertyEditor {
-    
+  
 }

@@ -7,6 +7,7 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -23,6 +25,9 @@ import javafx.collections.ObservableSet;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Effect;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
@@ -37,7 +42,6 @@ public class PropertyPaneModelRegistry {
     private PropertyPaneModel propertyPaneModel;
 
     //private final ObservableMap<Class<?>, Introspection> introspection = FXCollections.observableHashMap();
-
     public static PropertyPaneModelRegistry getInstance() {
         return SingletonInstance.INSTANCE;
     }
@@ -49,13 +53,15 @@ public class PropertyPaneModelRegistry {
             PropertyPaneModel loaded = getInstance().loadDefaultDescriptors();
             getInstance().updateBy(loaded);
             retval = getInstance().propertyPaneModel;
+            retval.initialize();
         }
         return retval;
     }
-        public void createConstraintMap() {
-            long start = System.currentTimeMillis();
-            ObservableList<BeanModel> beanModels = PropertyPaneModelRegistry.getPropertyPaneModel().getBeanModels();
-            beanModels.forEach(model -> {
+
+    public void createConstraintMap() {
+        long start = System.currentTimeMillis();
+        ObservableList<BeanModel> beanModels = PropertyPaneModelRegistry.getPropertyPaneModel().getBeanModels();
+        /*            beanModels.forEach(model -> {
                 model.getItems().forEach(cat -> {
                     cat.getItems().forEach(sec -> {
                         sec.getItems().forEach(pi -> {
@@ -69,9 +75,10 @@ public class PropertyPaneModelRegistry {
                     });
                 });
             });
-            long end = System.currentTimeMillis();
-            System.err.println("INTERVAL createconstraintMap = " + (end - start));
-        }
+         */
+        long end = System.currentTimeMillis();
+//            System.err.println("INTERVAL createconstraintMap = " + (end - start));
+    }
 
     protected void createInternalDescriptors() {
         propertyPaneModel = new PropertyPaneModel();
@@ -369,14 +376,14 @@ public class PropertyPaneModelRegistry {
                 excl.add(s);
             }
         }
-/*        beanModel.getItems().forEach(cat -> {
+        /*        beanModel.getItems().forEach(cat -> {
             cat.getItems().forEach( sec -> {
                 sec.getItems().forEach(pi -> {
                     pi.setOriginClass(Node.class.getName());
                 });
             });
         });
-*/        
+         */
     }
 
     protected void addRegionBeanModel(PropertyPaneModel paneModel) {
@@ -409,7 +416,7 @@ public class PropertyPaneModelRegistry {
         ModelUtil.add(sec, "padding");
 
         Category codeCat = beanModel.addCategory("code", "Code");
-/*        beanModel.getItems().forEach(cat -> {
+        /*        beanModel.getItems().forEach(cat -> {
             cat.getItems().forEach( sc -> {
                 sc.getItems().forEach(pi -> {
                     if ( pi.getOriginClass() == null ) {
@@ -418,7 +425,7 @@ public class PropertyPaneModelRegistry {
                 });
             });
         });
-*/        
+         */
     }
 
     public static ObservableList<String> getPropertyNames(BeanModel beanModel) {
@@ -514,12 +521,12 @@ public class PropertyPaneModelRegistry {
         String type = bean.getClass().getName();
         for (BeanModel bm : propertyPaneModel.getBeanModels()) {
             if (type.equals(bm.getBeanClassName())) {
-                System.err.println("beanModel EXISTS !!!");
+//                System.err.println("beanModel EXISTS !!!");
                 return bm;
             }
             map.put(bm.getBeanType(), bm);
         }
-        System.err.println("beanModel NOT exists !!!");
+//        System.err.println("beanModel NOT exists !!!");
         BeanModel beanModel = null;
 
         Class sup = bean.getClass().getSuperclass();
@@ -535,7 +542,7 @@ public class PropertyPaneModelRegistry {
         beanModel = beanModel.getCopyFor(bean.getClass());
         beanModel.setBeanType(bean.getClass());
         beanModel.setBeanClassName(bean.getClass().getName());
-        System.err.println("************** NEW BEAN MODEL");
+//        System.err.println("************** NEW BEAN MODEL");
         propertyPaneModel.getBeanModels().add(beanModel);
         updateByIntrospection(beanModel, isp);
 
@@ -653,8 +660,12 @@ public class PropertyPaneModelRegistry {
         ObservableList<BeanModel> updateCopy = FXCollections.observableArrayList();
         //updateCopy.addAll(update.getBeanModels().values());
         updateCopy.addAll(update.getBeanModels());
+        
         for (int i = 0; i < updateCopy.size(); i++) {
             BeanModel ppd = updateCopy.get(i);
+//            if (ppd.getBeanClassName() != null && ppd.getBeanClassName().endsWith(".Bloom")) {
+//                printBeanModel(ppd);
+//            }
             if (!resolveBeanClass(ppd)) {
                 errors.add(ppd);
             }
@@ -665,22 +676,26 @@ public class PropertyPaneModelRegistry {
         //
         //Find the nearest class that already exists, in the sense of inheritance
         //
-        //ObservableList<BeanModel> copy = FXCollections.observableArrayList();
-        //copy.addAll(updateCopy);
         ObservableList<BeanModel> part = FXCollections.observableArrayList();
         while (!updateCopy.isEmpty()) {
 
+/*            if (updateCopy.get(0).getBeanClassName() != null && updateCopy.get(0).getBeanClassName().endsWith(".Bloom")) {
+                System.err.println("**** Bloom");
+            }
+            if (updateCopy.get(0).getBeanClassName() != null && updateCopy.get(0).getBeanClassName().endsWith(".Effect")) {
+                System.err.println("**** Effect");
+            }
+*/
             fillPart(updateCopy.get(0), part, updateCopy);
+            
             updateCopy.removeAll(part);
 
             for (int i = 0; i < part.size(); i++) {
-//                if ("javafx.scene.layout.VBox".equals(part.get(i).getBeanClassName())) {
-//                    System.err.println("part " + part.get(i).getBeanClassName());
-//                }
-
                 updateBy(part.get(i));
             }
-        }
+        }//while
+        printBeanModel(Bloom.class.getName(),true);
+        //printBeanModel(Effect.class.getName(),true);
 
         return true;
 
@@ -739,7 +754,8 @@ public class PropertyPaneModelRegistry {
             }
         }
 
-        retval = retval.getCopyFor(update.getBeanType());
+        //23.10retval = retval.getCopyFor(update.getBeanType());
+        retval = retval.getCopyFor(update);
         retval.setName(update.getName());
         retval.setBeanType(update.getBeanType());
         retval.setBeanClassName(update.getBeanType().getName());
@@ -782,24 +798,13 @@ public class PropertyPaneModelRegistry {
         List<String> excludeProps = FXCollections.observableArrayList("properties", "pseudoClassStates", "sceneProperty", "parent", "skinProperty",
                 "graphicProperty", "contentMenuProperty", "clipProperty", "transformsProperty", "armedProperty", "needsLayoutProperty", "hoverProperty");
 
-        //Map<String, MethodDescriptor> methodDescr = new HashMap<>();
-        //Map<String, PropertyDescriptor> propDescrs = new HashMap<>();
         try {
             BeanInfo info = Introspector.getBeanInfo(clazz);
-            
+
             MethodDescriptor[] mds = info.getMethodDescriptors();
             for (MethodDescriptor md : mds) {
-//                if ( ! md.getMethod().getName().startsWith("get") && ! md.getMethod().getName().startsWith("set")) {
-//                    System.err.println("not get not set" + md.getMethod().getName());
-//                }
-
-                
-                if ( Modifier.isStatic(md.getMethod().getModifiers()) ) {
-                    System.err.println("STATIC METHOD " + md.getName());
-                }
                 if (md.getName().endsWith("Property") && !excludeProps.contains(md.getName())) {
                     retval.getMethodDescriptors().put(md.getName(), md);
-                    //System.err.println("fxProperty: " + md.getName());
                 }
             }
             PropertyDescriptor[] pds = info.getPropertyDescriptors();
@@ -817,32 +822,16 @@ public class PropertyPaneModelRegistry {
                     if (hasPropertyEditor(pd.getName(), pd.getReadMethod())) {
 
                         if (ObservableList.class.isAssignableFrom(returnType) || ObservableMap.class.isAssignableFrom(returnType) || ObservableSet.class.isAssignableFrom(returnType)) {
-//                            System.err.println("MMM = " + pd.getReadMethod().getName());
                             retval.getPropertyDescriptors().put(pd.getName(), pd);
                         }
                     }
                 }
             }
 
-            retval.getPropertyDescriptors().forEach((k, v) -> {
-                //System.err.println("prop name = " + k);
-            });
-            /*            for ( MethodDescriptor md : mds) {
-                System.err.println("MethodName = " + md.getMethod().getName());
-                System.err.println("returnType = " + md.getMethod().getReturnType().getSimpleName());
-                System.err.println("toGeneric = " + md.getMethod().toGenericString());
-            }
-             */
-            //PropertyDescriptor pd1 = new PropertyDescriptor("styleClass", btn1.getClass(),"getStyleClass", null);
-            //System.err.println("readMethod Name = " + pd1.getReadMethod().getName() + "; name = " + pd1.getName());
-            //System.err.println("writeMethod Name = " + pd.getWriteMethod().getName());
         } catch (IntrospectionException ex) {
             System.err.println("INROSPECTION Exception ex = " + ex.getMessage());
         }
         long end = System.currentTimeMillis();
-//        System.err.println("Interval = " + (end - start));
-//        System.err.println("propertyDescriptors.size = " + retval.getPropertyDescriptors().size());
-//        System.err.println("eventPropertyDescriptors.size = " + retval.getEventPropertyDescriptors().size());
         return retval;
     }
 
@@ -850,14 +839,9 @@ public class PropertyPaneModelRegistry {
         boolean retval = false;
         if (ObservableList.class.isAssignableFrom(readMethod.getReturnType())) {
             Class<?> clazz = BeanAdapter.getListItemType(readMethod.getGenericReturnType());
-            //System.err.println("Method get prop name = " + readMethod.getName());
             retval = PropertyEditorFactory.getDefault().hasEditor(propName, ObservableList.class, clazz);
         } else {
             retval = PropertyEditorFactory.getDefault().hasEditor(propName, readMethod.getReturnType());
-        }
-        //System.err.println("*********************************************");
-        if (!retval) {
-            //System.err.println("propName = " + propName + "; returnType = " + readMethod.getReturnType().getSimpleName());
         }
         return retval;
     }
@@ -876,12 +860,12 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code MethodDescriptor}.
-         * Each item represents a method which name starts with a bean property name
-         * an ends with {@literal "Property"}.
+         * type {@code MethodDescriptor}. Each item represents a method which
+         * name starts with a bean property name an ends with
+         * {@literal "Property"}.
          *
-         * @return a map which key is a property name and value is an object
-         * of type {@code MethodDescriptor}.
+         * @return a map which key is a property name and value is an object of
+         * type {@code MethodDescriptor}.
          */
         public ObservableMap<String, MethodDescriptor> getMethodDescriptors() {
             return methodDescriptors;
@@ -889,12 +873,12 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code PropertyDescriptor}.
-         * Each corresponding property is a javaFX property or is of type
-         * ObservableList and is not of type {@code EventHandler}.
+         * type {@code PropertyDescriptor}. Each corresponding property is a
+         * javaFX property or is of type ObservableList and is not of type
+         * {@code EventHandler}.
          *
-         * @return a map which key is a property name and value is an object
-         * of type {@code PropertyDescriptor}.
+         * @return a map which key is a property name and value is an object of
+         * type {@code PropertyDescriptor}.
          */
         public ObservableMap<String, PropertyDescriptor> getPropertyDescriptors() {
             return propertyDescriptors;
@@ -902,12 +886,11 @@ public class PropertyPaneModelRegistry {
 
         /**
          * Returns a map which key is a property name and value is an object of
-         * type {@code PropertyDescriptor}.
-         * Each corresponding property is a javaFX property and is of type
-         * {@code EventHandler}.
+         * type {@code PropertyDescriptor}. Each corresponding property is a
+         * javaFX property and is of type {@code EventHandler}.
          *
-         * @return a map which key is a property name and value is an object
-         * of type {@code PropertyDescriptor}.
+         * @return a map which key is a property name and value is an object of
+         * type {@code PropertyDescriptor}.
          */
         public ObservableMap<String, PropertyDescriptor> getEventPropertyDescriptors() {
             return eventPropertyDescriptors;
@@ -920,18 +903,45 @@ public class PropertyPaneModelRegistry {
         public Class[] getPropTypes(String propName) {
             Class[] retval;
             PropertyDescriptor pd = getPropertyDescriptors().get(propName);
-            if ( pd == null ) {
+            if (pd == null) {
                 return null;
             }
             Method rm = pd.getReadMethod();
             if (ObservableList.class.isAssignableFrom(rm.getReturnType())) {
                 Class<?> clazz = BeanAdapter.getListItemType(rm.getGenericReturnType());
-                retval = new Class[] {ObservableList.class, clazz};
-                
+                retval = new Class[]{ObservableList.class, clazz};
+
             } else {
-                retval = new Class[] {rm.getReturnType()};
+                retval = new Class[]{rm.getReturnType()};
             }
             return retval;
+        }
+        /**
+         * Returns a list of objects of type {@code Property} defined 
+         * in the specified bean and with a property value of the given type.
+         * @param bean the object to search for  properties
+         * @param type the class of property value
+         * @return the list of found objects
+         */
+        public List<Property> findProperties(Object bean, Class<?> type) {
+           
+            List<Property> list = new ArrayList<>();
+            for ( PropertyDescriptor pd : propertyDescriptors.values() ) {
+                if ( type.isAssignableFrom(pd.getPropertyType()) && pd.getWriteMethod() != null ) {
+                    MethodDescriptor md = getMethodDescriptors().get(pd.getName() + "Property");
+                    if ( md == null ) {
+                        continue;
+                    }
+                    try {
+                        Object o = md.getMethod().invoke(bean, new Object[0]);
+                        if ( o != null && (o instanceof Property)) {
+                            list.add((Property) o);
+                        }
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    }
+                }
+            }
+            return list;
         }
     }
 }

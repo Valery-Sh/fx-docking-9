@@ -18,14 +18,15 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableMap;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.StackPane;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.dock.api.designer.PropertyEditorPane;
 
 /**
  *
@@ -34,7 +35,7 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
 public class TreePane<E> extends TreePaneItem<E> {
 
     //private ObjectProperty<TreePaneItem<E>> root = new SimpleObjectProperty();
-    private final ToggleGroup togleGroup;
+    private final ToggleGroup toggleGroup;
     private final ObservableMap<ButtonBase,E> values = FXCollections.observableHashMap();
     
             
@@ -44,7 +45,38 @@ public class TreePane<E> extends TreePaneItem<E> {
 
     public TreePane(String name) {
         super(name);
-        togleGroup = new ToggleGroup();
+        toggleGroup = new ToggleGroup();
+/*        toggleGroup.getToggles().addListener( (ListChangeListener.Change<? extends Toggle> change) -> {
+            System.err.println("TOGLE GROUP CHANGE");
+            if ( ! change.getList().contains(toggleGroup.getSelectedToggle()) ) {
+                getExternalValuePane().getChildren().clear();   
+            }
+        });
+*/        
+        toggleGroup.selectedToggleProperty().addListener((v,ov,nv) -> {
+            if ( getExternalValuePane() == null ) {
+                return;
+            }
+            if ( nv == null ) {
+                //getValuePane().getChildren().clear();   
+                getExternalValuePane().getChildren().clear();   
+                return;
+            }
+            if ( nv.isSelected() ) {
+                //getValuePane().getChildren().clear();
+                getExternalValuePane().getChildren().clear();
+                TreePaneItem item = itemOf((ToggleButton)nv);
+                if ( item != null && item.getValue() != null ) {
+                    PropertyEditorPane pane = (PropertyEditorPane) item.getValue();
+//                    if ( getBoundProperty() != null && pane.getBean() != getBoundProperty().getValue() ) {
+//                        pane.setBean(getBoundProperty().getValue());
+//                    }
+//                    getValuePane().getChildren().add(pane);
+                    getExternalValuePane().getChildren().add(pane);
+                    
+                }
+            }
+        });
         getStyleClass().add("tree-pane");
         init();
     }
@@ -52,7 +84,17 @@ public class TreePane<E> extends TreePaneItem<E> {
     private void init() {
 
     }
-
+    private TreePaneItem itemOf(Node node) {
+        
+        if ( node instanceof TreePaneItem ) {
+            return (TreePaneItem) node;
+        }
+        Node retval = node;
+        while(retval != null && ! (retval instanceof TreePaneItem) ) {
+            retval = retval.getParent();
+        }
+        return (TreePaneItem) retval;
+    }
     @Override
     public List<TreePaneItem<E>> getAllItems() {
         List list = new ArrayList<>();
@@ -75,8 +117,8 @@ public class TreePane<E> extends TreePaneItem<E> {
         return values;
     }
     
-    public ToggleGroup getTogleGroup() {
-        return togleGroup;
+    public ToggleGroup getToggleGroup() {
+        return toggleGroup;
     }
 
 /*    public ObjectProperty<TreePaneItem<E>> rootProperty() {
@@ -108,10 +150,9 @@ public class TreePane<E> extends TreePaneItem<E> {
         public TreePaneSkin(TreePane<E> control) {
             super(control);
             List<TreePaneItem<E>> items = control.getAllItems();
-            System.err.println("SIZE = " + items.size());
-            control.getTogleGroup().getToggles().clear();
+            control.getToggleGroup().getToggles().clear();
             items.forEach(it -> {
-                control.getTogleGroup().getToggles().add((Toggle)it.getTextButton());
+                control.getToggleGroup().getToggles().add((Toggle)it.getTextButton());
             });
 
   /*          layout = new StackPane();

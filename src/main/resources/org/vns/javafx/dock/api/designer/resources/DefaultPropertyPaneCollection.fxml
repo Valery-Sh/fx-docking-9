@@ -1526,6 +1526,7 @@
             javafx.scene.effect.Effect
         </beanClassName>
     </CompositeBeanModel>             
+    
     <CompositeBeanModel name = "bloom">
         <beanClassName>
             javafx.scene.effect.Bloom
@@ -1533,6 +1534,26 @@
         <BeanProperty name="threshold" />
         <BeanProperty name="input" />
     </CompositeBeanModel>             
+    
+    <!--BeanModel name = "effect">
+        <beanClassName>
+            javafx.scene.effect.Effect
+        </beanClassName>
+    </BeanModel>             
+    
+    <BeanModel name = "bloom">
+        <beanClassName>
+            javafx.scene.effect.Bloom
+        </beanClassName>
+        <Category name="properties">
+        <Section name="specific">
+        
+            <BeanProperty name="threshold" />
+            <BeanProperty name="input" />
+        </Section>
+        </Category>
+    </BeanModel-->             
+    
 </PropertyPaneModel>
 
                     

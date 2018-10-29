@@ -17,9 +17,15 @@ package org.vns.javafx.dock.api.designer.bean.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -31,10 +37,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Reflection;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -43,13 +54,20 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Polygon;
 import javafx.util.StringConverter;
+import org.vns.javafx.dock.api.designer.PropertyEditorPane;
+import static org.vns.javafx.dock.api.designer.PropertyEditorPane.STATUSBAR_ID;
+import static org.vns.javafx.dock.api.designer.PropertyEditorPane.STATUSBAR_LABEL_ID;
+import org.vns.javafx.dock.api.designer.bean.PropertyPaneModelRegistry;
+import org.vns.javafx.dock.api.designer.bean.PropertyPaneModelRegistry.Introspection;
 import static org.vns.javafx.dock.api.designer.bean.editor.ComboButton.createTriangle;
 
 /**
  *
  * @author Valery
  */
-public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> implements StaticConstraintPropertyEditor {
+public class TreePaneItem<E> extends AbstractPropertyEditor implements CompositePropertyEditor { //AbstractPropertyEditor<E> implements StaticConstraintPropertyEditor {
+
+    public static final PseudoClass NOTNULL_PSEUDO_CLASS = PseudoClass.getPseudoClass("notnull");
 
     private static final PseudoClass LEAFITEM_PSEUDO_CLASS = PseudoClass.getPseudoClass("leafitem");
     private static final PseudoClass ITEMEXPANDED_PSEUDO_CLASS = PseudoClass.getPseudoClass("itemexpanded");
@@ -63,13 +81,17 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
 
     private boolean realTimeBinding;
 
-    private StringConverter<E> stringConverter;
+    private StringConverter stringConverter;
 
     private HiddenTitledPane titledPane;
 
-    //private ObservableList<Button> childItems;
+    private final ObjectProperty<E> value = new SimpleObjectProperty<>();
+
+    private TreePaneItem delegateItem;
+
     public TreePaneItem() {
         this(null);
+
     }
 
     public TreePaneItem(String name) {
@@ -77,17 +99,21 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
         ToggleButton b = new ToggleButton();
         b.setMaxWidth(1000);
         b.setAlignment(Pos.BASELINE_LEFT);
+        b.getStyleClass().add("text-button");
+
         textButtonWrapper.setValue(b);
         titledPane = new HiddenTitledPane();
-//        togleGroup = new ToggleGroup();
         init();
     }
 
     private void init() {
+
         getStyleClass().add("tree-pane-item");
         setMenuButton(new Button());
+        Tooltip tt = new Tooltip();
+        tt.setOnShown(e -> tt.setText("Property name=" + getName()));
 
-        stringConverter = createBindingStringConverter();
+        getTextButton().setTooltip(tt);
         pseudoClassStateChanged(LEAFITEM_PSEUDO_CLASS, true);
         editableProperty().addListener((v, ov, nv) -> {
             this.setEditable(nv);
@@ -107,6 +133,18 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
         getChildItems().addListener(this::childItemsChanged);
     }
 
+    public ObjectProperty<E> valueProperty() {
+        return value;
+    }
+
+    public E getValue() {
+        return value.get();
+    }
+
+    public void setValue(E value) {
+        this.value.set(value);
+    }
+
     public TreePane<TreePaneItem<E>> getTreePane() {
         TreePaneItem<E> p = getParentItem();
         TreePaneItem<E> root = null;
@@ -118,11 +156,6 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
         TreePane<TreePaneItem<E>> pane = null;
         if (root != null && (root instanceof TreePane)) {
             pane = (TreePane<TreePaneItem<E>>) root;
-            /*            Parent parent = root.getParent().getParent();
-            if ((TreePane<TreePaneItem<E>>) root.getParent().getParent() instanceof TreePane) {
-                pane = (TreePane<TreePaneItem<E>>) root.getParent().getParent();
-            }
-             */
         }
         return pane;
     }
@@ -133,9 +166,20 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
             getMenuButton().getStyleClass().clear();
             AnchorPane.setRightAnchor(getEditorNode(), 0d);
         }
-
     }
 
+    /*    private  ChangeListener<String> textReplaceHandler = ( value,  oldValue, newValue) -> {
+        
+    };
+
+    public ChangeListener<String> getTextReplaceHandler() {
+        return textReplaceHandler;
+    }
+
+    public void setTextReplaceHandler(ChangeListener<String> textReplaceHandler) {
+        this.textReplaceHandler = textReplaceHandler;
+    }
+     */
     private void childItemsChanged(ListChangeListener.Change<? extends TreePaneItem> change) {
         if (change.getList().isEmpty()) {
             pseudoClassStateChanged(LEAFITEM_PSEUDO_CLASS, true);
@@ -154,7 +198,7 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                 change.getRemoved().forEach(it -> {
                     TreePane tp = it.getTreePane();
                     if (tp != null) {
-                        tp.getTogleGroup().getToggles().remove(it.getTextButton());
+                        tp.getToggleGroup().getToggles().remove(it.getTextButton());
                     }
                     it.setParentItem(null);
                 });
@@ -166,7 +210,7 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                     //it.setPadding(new Insets(ins.getTop(), ins.getRight(), ins.getBottom(), 10));
                     TreePane tp = it.getTreePane();
                     if (tp != null) {
-                        tp.getTogleGroup().getToggles().add((Toggle) it.getTextButton());
+                        tp.getToggleGroup().getToggles().add((Toggle) it.getTextButton());
                     }
 
                 });
@@ -176,7 +220,7 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                         it.setParentItem(null);
                         TreePane tp = it.getTreePane();
                         if (tp != null) {
-                            tp.getTogleGroup().getToggles().remove((Toggle) it.getTextButton());
+                            tp.getToggleGroup().getToggles().remove((Toggle) it.getTextButton());
                         }
                     });
 
@@ -189,7 +233,7 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                         //it.setPadding(new Insets(ins.getTop(), ins.getRight(), ins.getBottom(), 10));
                         TreePane tp = it.getTreePane();
                         if (tp != null) {
-                            tp.getTogleGroup().getToggles().add((Toggle) it.getTextButton());
+                            tp.getToggleGroup().getToggles().add((Toggle) it.getTextButton());
                         }
 
                     });
@@ -204,18 +248,6 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
 
     public TreePaneItem<E> getParentItem() {
         return parentItem;
-        /*        if ( getParent() == null ) {
-            return null;
-        }
-        Node parent = getParent();
-        while ( ! (parent instanceof TreePaneItem) ) {
-            parent = parent.getParent();
-            if ( parent == null ) {
-                break;
-            }
-        }
-        return (TreePaneItem<E>) parent;
-         */
     }
 
     public ObservableList<TreePaneItem> getChildItems() {
@@ -276,11 +308,6 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
         this.realTimeBinding = realTimeBinding;
     }
 
-    /*    public TextFieldPropertyEditor(E defaulValue) {
-        super(defaulValue.toString());
-        init();
-    }
-     */
     public ReadOnlyObjectProperty<ButtonBase> textFieldProperty() {
         return textButtonWrapper.getReadOnlyProperty();
     }
@@ -307,117 +334,25 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
 
     @Override
     protected Node createEditorNode() {
-        return new GridPane();
+        //return new GridPane();
+        return new VBox();
     }
 
     protected void addValidators() {
 
     }
 
-    public StringConverter<E> getStringConverter() {
+    public StringConverter getStringConverter() {
         return stringConverter;
     }
 
-/*    @Override
-    public void bind(ReadOnlyProperty property) {
-
-        unbind();
-        //setEditable(true);
-        setBoundProperty(property);
-        setEditable(false);
-
-        //   this.boundProperty = property;
-        StringProperty sp = getTextButton().textProperty();
-        if (property instanceof StringExpression) {
-            sp.bind(property);
-        } else {
-//            sp.bind(asString(property));
-        }
-        createContextMenu(property);
-    }
-
-    @Override
-    public void bindBidirectional(Property property) {
-        unbind();
-        setEditable(true);
-        setBoundProperty(property);
-
-        if (isRealTimeBinding()) {
-            getTextButton().textProperty().bindBidirectional(property, stringConverter);
-        }
-        createContextMenu(property);
-    }
-
-    @Override
-    public void bindConstraint(Parent node, Method... setMethods) {
-        unbind();
-        setEditable(true);
-        ObjectProperty<E> property = new SimpleObjectProperty<>();
-        setBoundProperty(property);
-        try {
-
-            String getname = "get" + getName().substring(0, 1).toUpperCase() + getName().substring(1);
-            Method m = node.getParent().getClass().getMethod(getname, new Class[]{Node.class});
-            if (m != null) {
-                E value = (E) m.invoke(node.getParent(), new Object[]{node});
-                property.setValue(value);
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-        }
-
-        property.addListener((v, ov, nv) -> {
-            setConstraint(node, nv);
-        });
-        getTextButton().textProperty().bindBidirectional(property, stringConverter);
-        //createContextMenu(property);
-    }
-
-    protected void setConstraint(Parent node, E value) {
-        try {
-
-            String setname = "set" + getName().substring(0, 1).toUpperCase() + getName().substring(1);
-            Method m = node.getParent().getClass().getMethod(setname, new Class[]{Node.class, value.getClass()});
-            if (m != null) {
-                m.invoke(node.getParent(), new Object[]{node, value});
-            }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-        }
-
-    }
-*/    
-//    public abstract E valueOf(String txt);
-
-    /*    @Override
-    public ReadOnlyProperty<E> getBoundProperty() {
-        return boundProperty;
-    }
-
-    protected void setBoundProperty(Property<E> boundProperty) {
-        this.boundProperty = boundProperty;
-    }
-     */
-    public StringConverter<E> createBindingStringConverter() {
-        return new BindingStringConverter(this);
+    public void setStringConverter(StringConverter<E> stringConverter) {
+        this.stringConverter = stringConverter;
     }
 
     protected void createContextMenu(ReadOnlyProperty property) {
     }
-/*
-    @Override
-    public void unbind() {
 
-        getTextButton().textProperty().unbind();
-        if (getBoundProperty() != null && (getBoundProperty() instanceof Property)) {
-            getTextButton().textProperty().unbindBidirectional(getBoundProperty());
-        }
-        setBoundProperty(null);
-    }
-
-    @Override
-    public boolean isBound() {
-        return getTextButton().textProperty().isBound() || getBoundProperty() != null;
-    }
-*/
     @Override
     public Skin<?> createDefaultSkin() {
         return new TreePaneItemSkin(this);
@@ -432,40 +367,159 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
         btn.setTextOverrun(OverrunStyle.CLIP);
         btn.setContentDisplay(ContentDisplay.LEFT);
         btn.setAlignment(Pos.CENTER_LEFT);
-
     }
 
-    public static class BindingStringConverter<T> extends StringConverter<T> {
+    @Override
+    public void bind(ReadOnlyProperty property) {
+        unbind();
 
-        private final TreePaneItem editor;
-
-        public BindingStringConverter(TreePaneItem textField) {
-            this.editor = textField;
+        setBoundProperty(property);
+        setEditable(false);
+        boundPropertyChanged(null, property.getValue());
+        property.addListener(boundPropertyChangeListener);
+    }
+    protected ChangeListener boundPropertyChangeListener = (ObservableValue observable, Object oldValue, Object newValue) -> {
+        if (newValue != null && stringConverter != null) {
+            getTextButton().setText(stringConverter.toString(newValue));
+        } else if (newValue != null) {
+            getTextButton().setText(newValue.getClass().getSimpleName());
+        } else {
+            getTextButton().setText(null);
         }
 
-        protected T getBoundValue() {
-            return (T) getEditor().getBoundProperty().getValue();
-        }
+    };
 
-        public TreePaneItem getEditor() {
-            return editor;
-        }
+    private void boundPropertyChanged(Object oldValue, Object newValue) {
+        if (newValue == null) {
+            setValue(null);
+            if (delegateItem != null) {
+                delegateItem.removeChilds();
+            } else if (this instanceof TreePane) {
+                removeChilds();
+            }
 
-        @Override
-        public String toString(T object) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+        } else {
 
-        @Override
-        public T fromString(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+            if (oldValue != null) {
+                if (delegateItem != null) {
+                    delegateItem.removeChilds();
+                } else if (this instanceof TreePane) {
+                    removeChilds();
+                }
+                //
+                // modify newValue by oldValue
+                //
+                modifyOnReplace(oldValue, newValue);
+            }
+            List<TreePaneItem> oldChilds = getChildItems();
 
-    }//class BindingStringConverter
+            PropertyEditorPane ppe = null;
+            if (delegateItem == null) {
+                ppe = new PropertyEditorPane(this);
+                ppe.setBean(newValue);
+                setValue((E) ppe);
+
+            } else {
+                ppe = new PropertyEditorPane(delegateItem);
+                ppe.setBean(newValue);
+                delegateItem.setValue((E) ppe);
+            }
+            ppe.setStatusBar(createDefaultStatusBar(newValue));
+            List<TreePaneItem> newChilds = getChildItems();
+        }
+    }
+
+    private HBox createDefaultStatusBar(Object bean) {
+        Labeled lb = bean == null ? new Label()
+                : new Label("Property: " + getName() + ". Type: " + bean.getClass().getSimpleName());
+        lb.setId(STATUSBAR_LABEL_ID);
+
+        lb.setPadding(new Insets(4, 4, 4, 4));
+
+        HBox hb = new HBox(lb);
+        hb.setId(STATUSBAR_ID);
+        hb.getStyleClass().add("status-bar");
+        return hb;
+    }
+
+    public BiConsumer<Object, Object> replaceBoundPropertyHandler = (oldValue, newValue) -> {
+    };
+
+    protected void modifyOnReplace(Object oldValue, Object newValue) {
+        if (replaceBoundPropertyHandler != null) {
+            replaceBoundPropertyHandler.accept(oldValue, newValue);
+        }
+    }
+
+    public BiConsumer<Object, Object> getReplaceBoundPropertyHandler() {
+        return replaceBoundPropertyHandler;
+    }
+
+    public void setReplaceBoundPropertyHandler(BiConsumer<Object, Object> replaceBoundPropertyHandler) {
+        this.replaceBoundPropertyHandler = replaceBoundPropertyHandler;
+    }
+
+    protected ChangeListener boundBidirectionalChangeListener = (ObservableValue observable, Object oldValue, Object newValue) -> {
+        boundPropertyChanged(oldValue, newValue);
+    };
+
+    public void setSelected(boolean selected) {
+        ((ToggleButton) getTextButton()).setSelected(selected);
+    }
+
+    public void removeChilds() {
+        getAllItems().forEach(item -> {
+            item.setSelected(false);
+        });
+        setSelected(false);
+//        if (delegateItem != null) {
+//            delegateItem.removeChilds();
+//        } else {
+        getChildItems().clear();
+//        }
+    }
+
+    @Override
+    public void bindBidirectional(Property property) {
+        unbind();
+        setEditable(true);
+
+        setBoundProperty(property);
+        boundPropertyChanged(null, property.getValue());
+        getTextButton().textProperty().bindBidirectional(property, stringConverter);
+        property.addListener(boundBidirectionalChangeListener);
+    }
+
+    public void bindItems(TreePaneItem newDelegate) {
+        delegateItem = newDelegate;
+        getTextButton().textProperty().bindBidirectional(newDelegate.getTextButton().textProperty());
+        newDelegate.valueProperty().bindBidirectional(valueProperty());
+    }
+
+    @Override
+    public void unbind() {
+
+        getTextButton().textProperty().unbind();
+        if (getBoundProperty() != null && (getBoundProperty() instanceof Property)) {
+            getTextButton().textProperty().unbindBidirectional(getBoundProperty());
+            if (delegateItem != null) {
+                getTextButton().textProperty().unbindBidirectional(delegateItem.getTextButton().textProperty());
+            }
+            getBoundProperty().removeListener(boundPropertyChangeListener);
+            getBoundProperty().removeListener(boundBidirectionalChangeListener);
+        }
+        setBoundProperty(null);
+    }
+
+    @Override
+    public boolean isBound() {
+        return getTextButton().textProperty().isBound() || getBoundProperty() != null;
+    }
 
     public static class TreePaneItemSkin extends BaseEditorSkin {
 
         private final GridPane grid;
+        private final VBox editorNode;
         private final TreePaneItem control;
         private VBox vbox;
 
@@ -474,13 +528,15 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
             this.control = control;
 
             control.updateMenuButton();
-            grid = (GridPane) control.getEditorNode();
-  
+            editorNode = (VBox) control.getEditorNode();
+            grid = new GridPane();
+            editorNode.getChildren().add(grid);
+
             HBox btnBox = new HBox();
             btnBox.setSpacing(1);
             btnBox.getStyleClass().add("button-box");
             grid.getStyleClass().add("control-pane");
-//            editorNode.getChildren().get(1).getStyleClass().add("value-pane");
+
             btnBox.getChildren().addAll(control.getButtons());
             ColumnConstraints column0 = new ColumnConstraints();
             column0.setHgrow(Priority.ALWAYS);
@@ -501,9 +557,10 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
 
             vbox.getChildren().add(gridBox);
 
-            grid.add(vbox, 0, 0);
+            grid.add(gridBox, 0, 0);
             grid.add(btnBox, 1, 0);
-            vbox.getChildren().add(control.getTitledPane());
+
+            editorNode.getChildren().add(control.getTitledPane());
             control.getTitledPane().setExpanded(false);
 
             for (Object b : control.getButtons()) {
@@ -531,10 +588,7 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                         }
                     }
                 }
-
             });
-
-            //getChildren().add(grid);
         }
 
         private void injectComboButton(ComboButton comboButton) {
@@ -557,16 +611,6 @@ public class TreePaneItem<E> extends BaseEditor { //AbstractPropertyEditor<E> im
                 comboBox.getSelectionModel().clearSelection();
             });
         }
-
-        /*        private void injectTitledPane(TitledPane pane) {
-//            pane.setVisible(false);
-            pane.toBack();
-            vbox.getChildren().add(pane);
-            
-            control.setTitledPane(pane);
-            pane.setExpanded(false);
-        }
-         */
     }//TextFieldPropertyEditorSkin
 
 }//class TextFieldPropertyEditor

@@ -29,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
-import org.vns.javafx.dock.api.designer.bean.editor.EffectTreePane;
 
 import org.vns.javafx.dock.api.designer.bean.editor.HiddenTitledPane;
 import org.vns.javafx.dock.api.designer.bean.editor.TreePane;
@@ -65,7 +64,7 @@ public class TestTreePaneItem extends Application {
         
         HiddenTitledPane tp3 = new HiddenTitledPane("tp3");
         
-        EffectTreePane treePane = new EffectTreePane();
+        TreePane treePane = new TreePane();
         treePane.getValuePane().getChildren().add(new Label("TreePane. Test Value pane"));
         TreePaneItem treePaneItem = new TreePaneItem("Titled Pane");
         //treePane.setRoot(treePaneItem);

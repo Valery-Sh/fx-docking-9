@@ -1,5 +1,7 @@
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import static com.sun.javafx.scene.control.skin.Utils.getResource;
+import java.net.URL;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Node;
@@ -8,15 +10,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Reflection;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.demo.MyButton1;
+import org.vns.javafx.dock.api.designer.DesignerLookup;
 import org.vns.javafx.dock.api.designer.PropertyEditorPane;
 import org.vns.javafx.dock.api.designer.bean.PropertyPaneModelRegistry;
 
@@ -37,10 +42,10 @@ public class Test07 extends Application {
     Button gridPaneBtn = new Button("create GridPane");    
     Button anchorPaneBtn = new Button("create AnchorPane");    
 
-    AnchorPane anchorPane = new AnchorPane();
     Stage stage;
     Scene scene;
     int top = 1;
+    
     PropertyEditorPane editorPane = new PropertyEditorPane();
 
     @Override
@@ -55,11 +60,21 @@ public class Test07 extends Application {
         tp.setText("Titled Pane");
         
         Label lb1 = new Label("label lb1");
-        //mybtn1.setStyle("-fx-graphic: url(resources/effect-boom.png)");
-        labelBtn.getStyleClass().add("mybtn1");
-        labelBtn.getStylesheets().add(getClass().getResource("resources/styles/test.css").toExternalForm());
-        String u = getClass().getResource("resources/effect-boom.png").toExternalForm();
-        System.err.println("u = " + u);
+        //mybtn1.setStyle("-fx-graphic: url(resources/effect-bloom.png)");
+        //labelBtn.getStyleClass().add("mybtn1");
+        Label t = new Label("Effect");
+        String u1 = DesignerLookup.class.getResource("resources/images/effect-bloom-15x15.png").toExternalForm();
+        URL u = getClass().getResource("resources/effect-bloom-15x15.png");
+        System.err.println("URL = " + u);
+        t.setStyle("-fx-graphic: url(" + u1 + ")");
+        labelBtn.setGraphic(t);
+        labelBtn.getStylesheets().add(DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm());
+        Reflection reflEffect = new Reflection();
+        Bloom bloomEffect = new Bloom();
+        reflEffect.setInput(bloomEffect);
+        labelBtn.setEffect(reflEffect);
+        //String u = getClass().getResource("resources/effect-boom.png").toExternalForm();
+        //System.err.println("u = " + u);
                 
         vb.add(mybtn1,0,0);
         vb.add(lb1,0,1);
@@ -88,7 +103,8 @@ public class Test07 extends Application {
         });
         labelBtn.setOnAction(a -> {
             long start = System.currentTimeMillis();
-            editorPane.setBean(new Label("Label"));
+            //editorPane.setBean(new Label("Label"));
+            editorPane.setBean(labelBtn);
             long end = System.currentTimeMillis();
             System.err.println("SHOW INTERVAL = " + (end - start));
         });

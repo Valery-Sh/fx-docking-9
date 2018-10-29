@@ -37,16 +37,17 @@ public class HiddenTitledPane extends StackPane {
     }
 
     public HiddenTitledPane(String title) {
+        getStyleClass().add("hidden-titled-pane");
         content = new VBox();
         content.getStyleClass().clear();
         content.getStyleClass().add("content");
-        content.setSpacing(20);
+        //content.setSpacing(20);
         //content.setPadding(Insets.EMPTY);
         expanded.addListener((v, ov, nv) -> {
             if (nv) {
                 getChildren().add(content);
                 //StackPane.setAlignment(content, Pos.CENTER);
-                content.setSpacing(20);
+                //content.setSpacing(20);
             } else {
                 getChildren().remove(content);
             }

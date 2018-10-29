@@ -1,3 +1,17 @@
+/**
+ * The status bar is HBox
+ */
+.property-editor-pane .status-bar {
+    -fx-border-width: 1; 
+    -fx-border-color: lightgrey
+}
+/**
+ * The title by default is a label, but can be replaced in code with any object 
+ * of type Node
+ */
+.property-editor-pane .status-bar .title {
+}
+
 .content-combo-box .display-node {
     -fx-padding: 2 0 2 10;
 }
@@ -276,12 +290,19 @@
     -fx-rotate: 0;
 }
 */
-.composite-editor .update-button {
+.tree-pane-item .update-button {
     -fx-graphic: url("../images/plus-black-thin-7x7.png");            
     -fx-padding: 4 4 4 4 ;
 }
-.composite-editor:notnull .update-button {
+.tree-pane-item:notnull .update-button {
     -fx-graphic: url("../images/minus-black-thin-7x7.png");            
+}
+.tree-pane-item .text-button {
+    -fx-graphic: url("../images/effect-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.tree-pane-item:notnull .text-button {
+    -fx-graphic: null;            
 }
 
 /*.tree-pane-item .image-view {
@@ -309,8 +330,96 @@
 .tree-pane .tree-pane-item {
     -fx-padding: 0 0 0 10;
 }
-/*.vbox .image-view {
-    -fx-image: url("../images/plus-blue-16x16.png");            
-    -fx-padding: 4 4 4 4 ;
+.tree-pane .hidden-titled-pane .content {
+    -fx-padding: 5 0 0 0;
+}
+
+/***************************************************************************
+ *
+ * Paint Controls
+ *
+ ***************************************************************************/
+.color-pane .content {
+    -fx-border-width: 0; 
+}
+
+.color-pane .color-indicator {
+
+    -fx-background-color: null;
+    -fx-border-color: white;
+    -fx-border-radius: 0.4166667em;
+    -fx-translate-x: -0.4166667em;
+    -fx-translate-y: -0.4166667em;
+    
+    -fx-pref-width: 0.833333em;
+    -fx-pref-height: 0.833333em;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}    
+.hue-bar .content {
+
+    -fx-min-height: 1.3em;
+    -fx-max-height: 1.3em;    
+    -fx-min-width: 16.666667em;
+    
+    -fx-border-width: 0;
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.hue-bar .content > .hue-indicator {
+    -fx-border-radius: 0.333333em;
+    -fx-border-color: white;
+    -fx-border-width: 3;
+    
+    -fx-effect: dropshadow(three-pass-box, black, 1.5, 0.0, 0, 1);
+    
+/*    -fx-pref-height: 1.5em;
+    -fx-pref-width: 0.833333em;
+*/
+    -fx-translate-y: -0.1666667em;
+    -fx-translate-x: -0.4166667em;
+    
+}    
+/*.hue-bar:vertical .content {
+   -fx-translate-y: 0;
+   -fx-translate-x: 0;
+    -fx-min-height: 20;
+    -fx-max-height: 20;
+    -fx-max-width: 200;
+    -fx-pref-width: 200;
+    -fx-pref-height: 20;
+
+    -fx-border-color: derive(#ececec, -20%);
 }
 */
+/*.hue-bar .content-parent {
+
+    -fx-min-width: 1.666667em;
+    -fx-min-height: 16.666667em;
+    -fx-max-width: 1.666667em;
+    -fx-border-color: derive(#ececec, -20%);
+}
+*/
+.color-chooser > .content {
+    -fx-border-width: 1;
+    -fx-border-color: -fx-box-border;
+    -fx-padding: 7;
+    
+}
+.color-chooser .shape-view {
+    -fx-stroke: lightgray;
+}
+.color-chooser .color-pane {
+    -fx-pref-width: 200;
+    -fx-pref-height: 80;
+}
+.color-chooser .chosen-hsla, .alpha-value {
+    -fx-pref-width:  72;
+
+}
+
+.color-chooser .hsb-grid .text-field {
+    -fx-pref-width:  42;
+}
+.color-chooser .rgb-grid .text-field {
+    -fx-pref-width:  42;
+}

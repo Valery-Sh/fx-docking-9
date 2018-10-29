@@ -49,6 +49,7 @@ public abstract class BaseEditor<T> extends Control {
     }
     private Button menuButton;
     private final StackPane valuePane;
+    private StackPane externalValuePane;
     
     private final ObjectProperty<SidePos> menuButtonAllignment = new SimpleObjectProperty(SidePos.RIGHT);
 
@@ -85,6 +86,12 @@ public abstract class BaseEditor<T> extends Control {
 
     public StackPane getValuePane() {
         return valuePane;
+    }
+    public void setExternalValuePane(StackPane pane) {
+        externalValuePane = pane;
+    }
+    public StackPane getExternalValuePane() {
+        return externalValuePane;
     }
 
     public ObjectProperty<SidePos> menuButtonAllignmentProperty() {
@@ -166,116 +173,12 @@ public abstract class BaseEditor<T> extends Control {
         this.menuButton = menuButton;
     }
     
-    /*  @Override
-    public void unbind() {
-        editorNode.selectedProperty().unbind();
-    }
-
-    @Override
-    public boolean isBound() {
-        return editorNode.selectedProperty().isBound();
-
-    }
-     */
+ 
     @Override
     public Skin<?> createDefaultSkin() {
         return new BaseEditorSkin(this);
     }
 
-/*    private void showInBrowser() {
-        if (getBoundProperty() == null || getBoundProperty().getBean() == null) {
-            return;
-        }
-        try {
-            BeanInfo info = Introspector.getBeanInfo(getBoundProperty().getBean().getClass());
-            Method method = null;
-            for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-                if (getBoundProperty().getName().equals(pd.getName())) {
-                    method = pd.getReadMethod();
-                    break;
-                }
-            }
-            if (method == null) {
-                return;
-            }
-            String rdmethod = method.getName();
-            String origin = getBoundProperty().getBean().getClass().getName();
-            Class objClass = getBoundProperty().getBean().getClass();
-            while (!Object.class.equals(objClass)) {
-                try {
-                    Method m = objClass.getMethod(rdmethod, new Class[0]);
-                    if (Modifier.isPublic(m.getModifiers())) {
-                        origin = objClass.getName();
-                    }
-                    objClass = objClass.getSuperclass();
-                } catch (NoSuchMethodException | SecurityException ex) {
-                    break;
-                }
-            }
-            origin = origin.replace('.', '/');
-            BrowserService.getInstance().showDocument(PropertyEditor.HYPERLINK + origin + ".html#" + rdmethod + "--");
-        } catch (IntrospectionException ex) {
-            Logger.getLogger(AbstractPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    String toDisplayName(String propName) {
-
-        char[] str = propName.toCharArray();
-        if (Character.isDigit(str[0])) {
-            return propName;
-        }
-        StringBuilder sb = new StringBuilder();
-        int startPos = 0;
-
-        while (true) {
-            int endPos = getFirstWordPos(str, startPos);
-            str[startPos] = Character.toUpperCase(str[startPos]);
-            for (int i = startPos; i <= endPos; i++) {
-                sb.append(str[i]);
-            }
-            if (endPos == str.length - 1) {
-                break;
-            }
-            sb.append(' ');
-            startPos = endPos + 1;
-        }
-        return sb.toString().trim();
-    }
-
-    int getFirstWordPos(char[] str, int startPos) {
-        int lastPos = startPos;
-        //str[startPos] = Character.toUpperCase(str[startPos]);
-        if (startPos == str.length - 1) {
-            return lastPos;
-        }
-        //
-        // Check whether first and cecond char are in upper case
-        //
-
-        if (Character.isUpperCase(str[startPos]) && Character.isUpperCase(str[startPos + 1])) {
-
-            // try search lower case char
-            for (int i = startPos + 1; i < str.length; i++) {
-                if (!Character.isUpperCase(str[i])) {
-                    lastPos = i - 1;
-                    break;
-                }
-                lastPos = i;
-            }
-            return lastPos;
-        }
-
-        for (int i = startPos + 1; i < str.length; i++) {
-            if (Character.isUpperCase(str[i])) {
-                lastPos = i - 1;
-                break;
-            }
-            lastPos = i;
-        }
-        return lastPos;
-    }
-*/
     public static class BaseEditorSkin<T> extends SkinBase<BaseEditor<T>> {
 
         private AnchorPane anchor;

@@ -25,7 +25,8 @@ import javafx.scene.control.Control;
 public class PropertyPaneModel extends Control {
 
     private final ObservableList<BeanModel> beanModels = FXCollections.observableArrayList();
-  
+    private final ObservableList<Class<?>> compositeProperties = FXCollections.observableArrayList();
+    
     public PropertyPaneModel() {
         init();
     }
@@ -47,6 +48,32 @@ public class PropertyPaneModel extends Control {
             }
         }
         return retval;
+    }
+    public boolean isComposite(Class<?> clazz) {
+        boolean retval = false;
+//        System.err.println("-----------------------------");
+//        System.err.println("clazz = " + clazz);
+        for ( Class c : compositeProperties ) {
+//            System.err.println("composite: " + c);
+            if ( c.isAssignableFrom(clazz)) {
+//                System.err.println("isAssign from class = " + clazz);
+            }
+        }        
+        for ( Class c : compositeProperties ) {
+            if ( c.isAssignableFrom(clazz)) {
+                
+                retval = true;
+                break;
+            }
+        }
+        return retval;
+    }
+    protected void initialize() {
+        for (BeanModel bd : getBeanModels()) {
+            if (bd instanceof CompositeBeanModel ) {
+                compositeProperties.add(bd.getBeanType());
+            }
+        }
     }
 
 }

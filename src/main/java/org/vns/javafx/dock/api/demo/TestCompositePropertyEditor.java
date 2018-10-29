@@ -17,51 +17,78 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.EffectChildPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.CompositePropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.EffectTreePaneItem;
-import org.vns.javafx.dock.api.designer.bean.editor.TitledPaneItem;
+import org.vns.javafx.dock.api.designer.bean.editor.EffectPropertyHelper;
+import org.vns.javafx.dock.api.designer.bean.editor.TreePane;
+import org.vns.javafx.dock.api.designer.bean.editor.TreePaneItem;
 
 /**
  *
  * @author Valery
  */
 public class TestCompositePropertyEditor extends Application {
-
+    private Pane colorBar;
     @Override
     public void start(Stage stage) throws ClassNotFoundException {
 
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
+        btn1.setStyle("-fx-font-weight: bold; -fx-font-size: 24");
+        btn2.setStyle("-fx-font-weight: bold; -fx-font-size: 24");
         Button btn3 = new Button("ExpandTitledPane");
-
-        EffectChildPropertyEditor rootEditor = new EffectChildPropertyEditor("effect");
-        EffectTreePaneItem effectTreeItem = new EffectTreePaneItem("effect");        
-        rootEditor.bindBidirectional(btn1.effectProperty());
+        TextField tf;
         
-        VBox vbox = new VBox(btn1, btn2, rootEditor,  btn3, effectTreeItem );
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.getStylesheets().add( getClass().getResource("resources/color.css").toExternalForm());
+        
+        //colorPicker.setStyle("-fx-color-label-visible: false");
+        colorPicker.getStyleClass().add(ColorPicker.STYLE_CLASS_SPLIT_BUTTON);
+        TreePane effectTreePane = EffectPropertyHelper.createTreePane("effect");
+        TreePaneItem treeItemEditor = EffectPropertyHelper.createTreePaneItem("effect1");
+        TreePaneItem treeItemEditor2 = EffectPropertyHelper.createTreePaneItem("effect2");
+        effectTreePane.getChildItems().add(treeItemEditor);
+        effectTreePane.getChildItems().add(treeItemEditor2);
+        
+        treeItemEditor.bindBidirectional(btn1.effectProperty());
+        effectTreePane.bindBidirectional(btn2.effectProperty());
+        colorBar = new Pane();
+        colorBar.setPrefSize(100, 30);
+        colorBar.setBackground(new Background(new BackgroundFill(createHueGradient(),
+                CornerRadii.EMPTY, Insets.EMPTY)));        
+        VBox vbox = new VBox(colorBar,colorPicker,btn1, btn2,  btn3, effectTreePane );
 
         StackPane root = new StackPane(vbox);
         btn1.setOnAction(e -> {
-            rootEditor.getTextButton().setText("Bloom");
+            //treeItemEditor.getTextButton().setText("Bloom");
+            System.err.println("btn1 textFill = " + btn1.getTextFill());
+            //btn2.setTextFill(Color.valueOf("#333333ff"));
+            btn1.setTextFill(Color.BLACK);
+            System.err.println("Color.BLACK = " + Color.BLACK);
         });
         btn2.setOnAction(e -> {
-   
+            ColorPicker colorPicker1 = new ColorPicker();
+            
         });
         btn3.setOnAction(e -> {
         });
@@ -86,7 +113,16 @@ public class TestCompositePropertyEditor extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
+   private static LinearGradient createHueGradient() {
+        double offset;
+        Stop[] stops = new Stop[255];
+        for (int x = 0; x < 255; x++) {
+            offset = (double) ((1.0 / 255) * x);
+            int h = (int) ((x / 255.0) * 360);
+            stops[x] = new Stop(offset, Color.hsb(h, 1.0, 1.0));
+        }
+        return new LinearGradient(0f, 0f, 1f, 0f, true, CycleMethod.NO_CYCLE, stops);
+    }
     public static class TitledPaneEx extends TitledPane {
 //        StackPane p = (StackPane) titledPane.lookup(".title");
         //p.setManaged(false);
