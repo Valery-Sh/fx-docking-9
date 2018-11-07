@@ -16,18 +16,20 @@
 
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
+import org.vns.javafx.ContextLookup;
 
 /**
  *
  * @author Valery
  */
-public class DefaultContextLookup implements ContextLookup {
+public class DefaultContextLookup1 implements ContextLookup {
 
     public final ObservableMap<Class, List<Object>> lookup = FXCollections.observableHashMap();
 

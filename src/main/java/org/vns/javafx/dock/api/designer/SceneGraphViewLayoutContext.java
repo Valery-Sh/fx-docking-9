@@ -23,7 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.ContextLookup;
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;

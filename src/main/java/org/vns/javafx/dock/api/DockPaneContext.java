@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.SideIndicator;
 import org.vns.javafx.dock.api.indicator.DockPaneIndicatorPopup;

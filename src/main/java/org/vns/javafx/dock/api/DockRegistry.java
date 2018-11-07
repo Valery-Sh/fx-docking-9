@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import com.sun.javafx.stage.StageHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import javafx.scene.Node;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.vns.javafx.BaseContextLookup;
 
 /**
  * The class contains methods to manage all windows
@@ -40,7 +42,7 @@ public class DockRegistry {
 
     private DockRegistry() {
         beanRemover = new DefaultNodeRemover();
-        lookup = new DefaultContextLookup();
+        lookup = new BaseContextLookup();
         init();
     }
 

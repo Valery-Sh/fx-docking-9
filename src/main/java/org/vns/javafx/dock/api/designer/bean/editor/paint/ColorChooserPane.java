@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor.paint;
 
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 import javafx.beans.binding.StringBinding;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -26,33 +24,32 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import javafx.util.StringConverter;
-import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
 
 /**
  *
  * @author Nastia
  */
-public class ColorChooser extends Control {
+public class ColorChooserPane extends Control {
     
-    private StackPane content;
+    private GridPane content;
     
     private ColorPane colorPane;
     private HueBar hueBar;
 
-    public ColorChooser() {
+    public ColorChooserPane() {
         this(Color.TRANSPARENT);
     }
 
-    public ColorChooser(Color currentColor) {
-        content = new StackPane();
+    public ColorChooserPane(Color currentColor) {
+        content = new GridPane();
         init(currentColor);
     }
 
@@ -61,9 +58,20 @@ public class ColorChooser extends Control {
         content.getStyleClass().add("content");
         colorPane = new ColorPane(currentColor);
         hueBar = new HueBar(colorPane);
+        
     }
-
-    public StackPane getContent() {
+    public void setCurrentColor(Color color) {
+        System.err.println("ColorChoosenPaint.setCurrentColor = " + color);
+        colorPane.setCurrentColor(color);
+    }
+    public void currentPaintChanged(Paint paint) {
+        if ( ! (paint instanceof Color)) {
+            return;
+        }
+        setCurrentColor((Color) paint);
+        colorPane.currentPaintChanged(paint);
+    }
+    public GridPane getContent() {
         return content;
     }
 
@@ -82,13 +90,13 @@ public class ColorChooser extends Control {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new ColorChooserSkin(this);
+        return new ColorChooserPaneSkin(this);
     }
 
-    public static class ColorChooserSkin extends SkinBase<ColorChooser> {
+    public static class ColorChooserPaneSkin extends SkinBase<ColorChooserPane> {
 
         private GridPane grid;
-        ColorChooser control;
+        ColorChooserPane control;
         Rectangle shapeView = new Rectangle();
 
         TextField chosenHSLA;   // no alpha
@@ -96,21 +104,22 @@ public class ColorChooser extends Control {
         TextField alphaValue;  // opacity value
 
         ColorPane colorPane;
-        double hgap = 5;
-        double vgap = 3;
 
-        public ColorChooserSkin(ColorChooser control) {
+        public ColorChooserPaneSkin(ColorChooserPane control) {
             super(control);
             this.control = control;
             colorPane = control.getColorPane();
-            grid = new GridPane();
+            //grid = new GridPane();
+            grid = control.getContent();
+            
+            grid.getStyleClass().add("grid-pane");
+            
             chosenHSLA = new TextField();
             chosenHSLA.setEditable(false);
             chosenHSLA.getStyleClass().add("chosen-hsla");
             shapeView.getStyleClass().add("shape-view");
             shapeView.widthProperty().bind(chosenHSLA.prefWidthProperty());
             shapeView.heightProperty().bind(
-                    //colorPane.prefHeightProperty().subtract(chosenHSLA.prefHeightProperty().add(vgap))
                     shapeView.widthProperty()
             );
 
@@ -125,11 +134,16 @@ public class ColorChooser extends Control {
             alphaValue = new TextField();
             alphaValue.getStyleClass().add("alpha-value");
 
-            createTextFormatter(alphaValue, 0, 1, 2);
+            Util.createTextFormatter(alphaValue, 0, 1, 2);
 
-            alphaValue.textProperty().bindBidirectional(alphaSlider.valueProperty(), doubleStringConverter(2));
-            colorPane.alphaProperty().bind(alphaSlider.valueProperty().multiply(100));
+            alphaValue.textProperty().bindBidirectional(alphaSlider.valueProperty(), Util.doubleStringConverter(2));
             
+            //colorPane.alphaProperty().bind(alphaSlider.valueProperty().multiply(100));
+            
+            DoubleBinder alphaBinder = new DoubleBinder(colorPane.alphaProperty(), alphaSlider.valueProperty());
+            alphaBinder.change(colorPane.alphaProperty(), value -> {return value*100;});
+            alphaBinder.change(alphaSlider.valueProperty(), value -> {return value / 100;});
+                    
             TextField hsbHueField = new TextField();
             hsbHueField.setEditable(false);
             TextField hsbSatField = new TextField();
@@ -145,12 +159,14 @@ public class ColorChooser extends Control {
             rgbBlueField.setEditable(false);
             
             
-            grid.setHgap(hgap);
-            grid.setVgap(vgap);
+            //grid.setHgap(hgap); // set in CSS
+            //grid.setVgap(vgap); // set in CSS
+            
             GridPane.setValignment(chosenHSLA, VPos.BOTTOM);
-            //GridPane.setFillHeight(shapeView,true);
+            
             GridPane.setValignment(shapeView, VPos.TOP);
             grid.add(colorPane, 0, 0, 1, 2);
+            GridPane.setHgrow(colorPane, Priority.ALWAYS);
             grid.add(shapeView, 1, 0);
             grid.add(chosenHSLA, 1, 1);
             grid.add(control.getHueBar(), 0, 2, 2, 1);
@@ -166,7 +182,7 @@ public class ColorChooser extends Control {
             hsbGrid.add(hsbHueField, 0, 1);
             hsbGrid.add(hsbSatField, 1, 1);
             hsbGrid.add(hsbBrightField, 2, 1);
-            //grid.add(hsbGrid,0,4);
+            
             
             GridPane rgbGrid = new GridPane();
             rgbGrid.getStyleClass().add("rgb-grid");
@@ -190,8 +206,8 @@ public class ColorChooser extends Control {
             hsbHueField.textProperty().bind(stringBinding("hue"));
             hsbSatField.textProperty().bind(stringBinding("saturation"));
             hsbBrightField.textProperty().bind(stringBinding("brightness"));
-            control.getContent().getChildren().add(grid);
-            getChildren().add(control.getContent());
+            
+            getChildren().add(grid);
             
 
         }
@@ -200,7 +216,6 @@ public class ColorChooser extends Control {
 
             StringBinding bnd = new StringBinding() {
                 {
-                    //               bind(colorPane.chosenColorProperty());
                     bind(shapeView.fillProperty());
                 }
 
@@ -219,38 +234,23 @@ public class ColorChooser extends Control {
                             retval = Long.toString(dv.longValue());
                             break;
                         case "green":
-//                            retval = Double.toString(((Color) shapeView.getFill()).getGreen());
                             dv = ((Color) shapeView.getFill()).getGreen()*255;
                             retval = Long.toString(dv.longValue());
-                            
                             break;
                         case "blue":
-                            //retval = Double.toString(((Color) shapeView.getFill()).getBlue());
                             dv = ((Color) shapeView.getFill()).getBlue()*255;
                             retval = Long.toString(dv.longValue());
-                            
                             break;
                         case "hue":
                             dv = colorPane.getHue();
-/*                            String s = Double.toString(dv);
-                            int idx = s.indexOf(".");
-                            if ( idx > 0 ) {
-                                retval = s.substring(0,idx);
-                            } else {
-                                retval = Long.toString(dv.longValue());
-                            }
-*/
                             retval = Long.toString(dv.longValue());
                             break;
                         case "saturation":
-                            retval = doubleStringConverter(2).toString(((Color) shapeView.getFill()).getSaturation());
-                            //retval = Double.toString(((Color) shapeView.getFill()).getSaturation());
+                            retval = Util.doubleStringConverter(2).toString(((Color) shapeView.getFill()).getSaturation());
                             break;
                         case "brightness":
-                            retval = doubleStringConverter(2).toString(((Color) shapeView.getFill()).getBrightness());
-                            //retval = Double.toString(((Color) shapeView.getFill()).getBrightness());
+                            retval = Util.doubleStringConverter(2).toString(((Color) shapeView.getFill()).getBrightness());
                             break;
-
                     }//switch
                     return retval;
                 }
@@ -259,7 +259,7 @@ public class ColorChooser extends Control {
             return bnd;
         }
 
-        private StringConverter<Number> doubleStringConverter(final int scale) {
+/*        private StringConverter<Number> doubleStringConverter(final int scale) {
             DoubleStringConverter ds = new DoubleStringConverter();
             return new StringConverter<Number>() {
                 @Override
@@ -282,8 +282,8 @@ public class ColorChooser extends Control {
             };
 
         }
-
-        private TextFormatter createTextFormatter(final TextField txtField, double minValue, double maxValue, int scale) {
+*/
+/*        private TextFormatter createTextFormatter(final TextField txtField, double minValue, double maxValue, int scale) {
             UnaryOperator<TextFormatter.Change> filter = change -> {
                 String str = change.getControlNewText();
 
@@ -295,7 +295,7 @@ public class ColorChooser extends Control {
                 }
                 return null;
             };
-            TextFormatter<Double> f = new TextFormatter(doubleStringConverter(scale), minValue, filter);
+            TextFormatter<Double> f = new TextFormatter(Util.doubleStringConverter(scale), minValue, filter);
             txtField.setTextFormatter(f);
             return f;
         }
@@ -325,6 +325,6 @@ public class ColorChooser extends Control {
         public boolean validate(String item, int scale) {
             return validate(item, -Double.MAX_VALUE, Double.MAX_VALUE, scale);
         }
-
+*/
     }//ColorChooserSkin
 }//ColorChooser

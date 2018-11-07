@@ -36,7 +36,7 @@ public class TestColorChooser1 extends Application {
         Button btn1 = new Button("btn1");
         btn1.setPadding(new Insets(15,15,15,15));
         Button btn2 = new Button("btn2");
-        ColorChooser colorChooser = new ColorChooser(Color.RED);
+        ColorChooserPane colorChooser = new ColorChooserPane(Color.TRANSPARENT);
         btn2.textFillProperty().bind(colorChooser.getColorPane().chosenColorProperty());
         //colorChooser.getColorPane().setPrefSize(150, 100);
         
@@ -53,8 +53,9 @@ public class TestColorChooser1 extends Application {
             
         });
         btn1.setOnAction(e -> {
+            System.err.println("WWWW = " + colorChooser.getColorPane().getWidth() );
             double h1 = colorChooser.getColorPane().getCurrentColor().getHue();
-            double h2 = colorChooser.getColorPane().getChosenColor().getHue();
+            double h2 = ((Color)colorChooser.getColorPane().getChosenColor()).getHue();
             System.err.println("h1 = " + h1 + "; h2 = " + h2);
             System.err.println("colorPane.getHue = " + colorChooser.getColorPane().getHue() ) ;
             //colorChooser.getColorPane().getChosenColor().getHue();

@@ -17,7 +17,7 @@ package org.vns.javafx.dock.api.designer;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import org.vns.javafx.dock.api.ContextLookup;
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean.editor;
+package org.vns.javafx.dock.api.designer.bean.editor.paint;
 
 import com.sun.javafx.scene.control.behavior.ComboBoxBaseBehavior;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
@@ -34,7 +34,6 @@ public class ContentComboBoxSkin extends ComboBoxPopupControl<ContentComboBox> {
 
     public ContentComboBoxSkin(ContentComboBox control) {
         super(control, new ComboBoxBaseBehavior(control, new ArrayList<KeyBinding>()));
-        
     }
     
     protected ContentComboBox getComboBox() {
@@ -63,7 +62,7 @@ public class ContentComboBoxSkin extends ComboBoxPopupControl<ContentComboBox> {
         super.show();
     }
 
-    @Override
+/*    @Override
     protected void handleControlPropertyChanged(String p) {
 
         if ("SHOWING".equals(p)) {
@@ -72,23 +71,27 @@ public class ContentComboBoxSkin extends ComboBoxPopupControl<ContentComboBox> {
             } else {
                 hide();
             }
+            System.err.println("handleControlPropertyChanged SHOWING root " + this.getPopup().getScene().getRoot());
         } else if ("SHOW_WEEK_NUMBERS".equals(p)) {
 //            if (datePickerContent != null) {
 //                datePickerContent.updateGrid();
 //                datePickerContent.updateWeeknumberDateCells();
         } else if ("VALUE".equals(p)) {
             updateDisplayNode();
+            
 //            if (datePickerContent != null) {
 //                LocalDate date = comboBox.getValue();
 //                datePickerContent.displayedYearMonthProperty().set((date != null) ? YearMonth.from(date) : YearMonth.now());
 //                datePickerContent.updateValues();
 //            }
             getComboBox().fireEvent(new ActionEvent());
+            System.err.println("handleControlPropertyChanged VALUER");
         } else {
+            System.err.println("handleControlPropertyChanged ELSE");
             super.handleControlPropertyChanged(p);
         }
     }
-
+*/
     @Override
     protected TextField getEditor() {
         if (!getSkinnable().isEditable()) {
@@ -127,4 +130,6 @@ public class ContentComboBoxSkin extends ComboBoxPopupControl<ContentComboBox> {
             getComboBox().hide();
         }
     }
+
+
 }

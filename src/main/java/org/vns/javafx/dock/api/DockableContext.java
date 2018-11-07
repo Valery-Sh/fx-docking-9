@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import java.util.Properties;
 import javafx.application.Platform;
@@ -16,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
+import org.vns.javafx.BaseContextLookup;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
@@ -91,7 +93,7 @@ public class DockableContext {
 
         //titleBar = new TitleBarProperty(dockable.node());
         titleBar.set(dockable.node());
-        lookup = new DefaultContextLookup();
+        lookup = new BaseContextLookup();
         init();
     }
 
@@ -117,7 +119,7 @@ public class DockableContext {
 
     public ContextLookup getLookup() {
         if (lookup == null) {
-            lookup = new DefaultContextLookup();
+            lookup = new BaseContextLookup();
             initLookup(lookup);
         }
         return lookup;

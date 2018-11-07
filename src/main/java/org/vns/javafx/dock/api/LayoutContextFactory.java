@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;

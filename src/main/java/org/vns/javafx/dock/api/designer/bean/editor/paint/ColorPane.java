@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor.paint;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -34,10 +36,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import static javafx.scene.paint.Color.*;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 import org.vns.javafx.dock.api.designer.DesignerLookup;
+//import static 
 
 /**
  *
@@ -45,12 +50,15 @@ import org.vns.javafx.dock.api.designer.DesignerLookup;
  */
 //@DefaultProperty("content")
 public class ColorPane extends Control {
-
-    private Pane content;
+    
+    
+    public static final Map<Color, String> COLORS = createColorNameMap();
+            
+    private StackPane content;
     private Region colorIndicator;
 
-    private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.WHITE);
-    private final ObjectProperty<Color> chosenColor = new SimpleObjectProperty<>(Color.TRANSPARENT);
+    private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.TRANSPARENT);
+    private final ObjectProperty<Paint> chosenColor = new SimpleObjectProperty<>(Color.TRANSPARENT);
 
     private final DoubleProperty hue = new SimpleDoubleProperty(-1);
     private final DoubleProperty saturation = new SimpleDoubleProperty(-1);
@@ -59,31 +67,41 @@ public class ColorPane extends Control {
 
         @Override
         protected void invalidated() {
-            setChosenColor(new Color(getChosenColor().getRed(),
-                    getChosenColor().getGreen(),
-                    getChosenColor().getBlue(),
+            Color c = (Color) getChosenColor();
+            setChosenColor(new Color(c.getRed(),
+                    c.getGreen(),
+                    c.getBlue(),
                     clamp(alpha.get() / 100)));
         }
     };
 
     public ColorPane() {
-        this(Color.TRANSPARENT);
+        this(null);
     }
+
     public ColorPane(Color currentColor) {
-        
         init(currentColor);
     }
 
     private void init(Color currentColor) {
-        setCurrentColor(currentColor);
+        if (currentColor == null) {
+            setCurrentColor(Color.TRANSPARENT);
+        } else {
+            setCurrentColor(currentColor);
+            setChosenColor(currentColor);
+        }
         colorIndicator = new Region();
         getStyleClass().add("color-pane");
         content = createContent();
         content.getStyleClass().add("content");
         updateValues();
+        currentColorProperty().addListener((v, ov, nv) -> {
+            updateValues();
+        });
     }
-
-    protected Pane createContent() {
+    
+    
+    protected StackPane createContent() {
         return new StackPane(colorIndicator) {
             @Override
             protected void layoutChildren() {
@@ -138,8 +156,9 @@ public class ColorPane extends Control {
     }
 
     /**
-     * Gets the brightness component of the chosen {@code Color}. return
-     * brightness value in the range in the range 0.0-1.0.
+     * Gets the brightness component of the chosen {@code Color}. 
+     * 
+     * @return brightness value in the range in the range 0.0-1.0
      */
     public double getBrightness() {
         return brightness.get();
@@ -147,6 +166,7 @@ public class ColorPane extends Control {
 
     /**
      * Sets the brightness component of the chosen {@code Color}.
+     * @param brightness brightness value in the range in the range 0.0-1.0
      */
     public void setBrightness(double brightness) {
         this.brightness.set(brightness);
@@ -161,14 +181,15 @@ public class ColorPane extends Control {
     }
 
     public void setCurrentColor(Color currentColor) {
+//        System.err.println("colorPane: setCurrentColor color = " + currentColor);
         this.currentColor.set(currentColor);
     }
 
-    public ObjectProperty<Color> chosenColorProperty() {
+    public ObjectProperty<Paint> chosenColorProperty() {
         return chosenColor;
     }
 
-    public Color getChosenColor() {
+    public Paint getChosenColor() {
         return chosenColor.get();
     }
 
@@ -195,14 +216,34 @@ public class ColorPane extends Control {
                 clamp(getBrightness() / 100), clamp(getAlpha() / 100));
         setChosenColor(newColor);
     }
-
+    
+    public void currentPaintChanged(Paint paint) {
+        if ( ! (paint instanceof Color)) {
+            return;
+        }
+        Color c = paint == null ? Color.TRANSPARENT : (Color)paint;
+        setCurrentColor(c);
+        updateValues();
+    }
+    
     private void updateValues() {
+/*        System.err.println("ColorPane: UPDATE VALUES");
+        System.err.println(" before  --- hue = " + getHue());
+        System.err.println("         --- sat = " + getSaturation());
+        System.err.println("         --- bri = " + getBrightness());
+        System.err.println("         --- alf = " + getAlpha());
+*/
         setHue(getCurrentColor().getHue());
         setSaturation(getCurrentColor().getSaturation() * 100);
         setBrightness(getCurrentColor().getBrightness() * 100);
         setAlpha(getCurrentColor().getOpacity() * 100);
+  /*      System.err.println(" after   --- hue = " + getHue());
+        System.err.println("         --- sat = " + getSaturation());
+        System.err.println("         --- bri = " + getBrightness());
+        System.err.println("         --- alf = " + getAlpha());
+*/        
         setChosenColor(Color.hsb(getHue(), clamp(getSaturation() / 100),
-        clamp(getBrightness() / 100), clamp(getAlpha() / 100)));
+                clamp(getBrightness() / 100), clamp(getAlpha() / 100)));
     }
 
     public static class ColorPaneSkin extends SkinBase<ColorPane> {
@@ -273,11 +314,174 @@ public class ColorPane extends Control {
             colorContainer.getChildren().setAll(huePane, overlayOnePane, overlayTwoPane);
             content.getChildren().setAll(colorContainer, colorIndicator);
 
-            overlayOnePane.getStyleClass().add("content");
-            overlayTwoPane.getStyleClass().add("content");
+//            overlayOnePane.getStyleClass().add("content");
+//            overlayTwoPane.getStyleClass().add("content");
 
+            //control
             getChildren().add(content);
         }
 
     }////ColorPaneSkin
+    
+    
+    private static Map<Color, String> createColorNameMap() {
+        Map<Color,String> names = new HashMap<>();
+        Map<String, Color> namedColors = createNamedColors();
+        namedColors.forEach((name,color) -> names.put(color,name));
+        return names;
+    }
+    private static Map<String, Color> createNamedColors() {
+        Map<String, Color> colors = new HashMap<>();
+        
+        colors.put("aliceblue", ALICEBLUE);
+        colors.put("antiquewhite", ANTIQUEWHITE);
+        colors.put("aqua", AQUA);
+        colors.put("aquamarine", AQUAMARINE);
+        colors.put("azure", AZURE);
+        colors.put("beige", BEIGE);
+        colors.put("bisque", BISQUE);
+        colors.put("black", BLACK);
+        colors.put("blanchedalmond", BLANCHEDALMOND);
+        colors.put("blue", BLUE);
+        colors.put("blueviolet", BLUEVIOLET);
+        colors.put("brown", BROWN);
+        colors.put("burlywood", BURLYWOOD);
+        colors.put("cadetblue", CADETBLUE);
+        colors.put("chartreuse", CHARTREUSE);
+        colors.put("chocolate", CHOCOLATE);
+        colors.put("coral", CORAL);
+        colors.put("cornflowerblue", CORNFLOWERBLUE);
+        colors.put("cornsilk", CORNSILK);
+        colors.put("crimson", CRIMSON);
+        colors.put("cyan", CYAN);
+        colors.put("darkblue", DARKBLUE);
+        colors.put("darkcyan", DARKCYAN);
+        colors.put("darkgoldenrod", DARKGOLDENROD);
+        colors.put("darkgray", DARKGRAY);
+        colors.put("darkgreen", DARKGREEN);
+        colors.put("darkgrey", DARKGREY);
+        colors.put("darkkhaki", DARKKHAKI);
+        colors.put("darkmagenta", DARKMAGENTA);
+        colors.put("darkolivegreen", DARKOLIVEGREEN);
+        colors.put("darkorange", DARKORANGE);
+        colors.put("darkorchid", DARKORCHID);
+        colors.put("darkred", DARKRED);
+        colors.put("darksalmon", DARKSALMON);
+        colors.put("darkseagreen", DARKSEAGREEN);
+        colors.put("darkslateblue", DARKSLATEBLUE);
+        colors.put("darkslategray", DARKSLATEGRAY);
+        colors.put("darkslategrey", DARKSLATEGREY);
+        colors.put("darkturquoise", DARKTURQUOISE);
+        colors.put("darkviolet", DARKVIOLET);
+        colors.put("deeppink", DEEPPINK);
+        colors.put("deepskyblue", DEEPSKYBLUE);
+        colors.put("dimgray", DIMGRAY);
+        colors.put("dimgrey", DIMGREY);
+        colors.put("dodgerblue", DODGERBLUE);
+        colors.put("firebrick", FIREBRICK);
+        colors.put("floralwhite", FLORALWHITE);
+        colors.put("forestgreen", FORESTGREEN);
+        colors.put("fuchsia", FUCHSIA);
+        colors.put("gainsboro", GAINSBORO);
+        colors.put("ghostwhite", GHOSTWHITE);
+        colors.put("gold", GOLD);
+        colors.put("goldenrod", GOLDENROD);
+        colors.put("gray", GRAY);
+        colors.put("green", GREEN);
+        colors.put("greenyellow", GREENYELLOW);
+        colors.put("grey", GREY);
+        colors.put("honeydew", HONEYDEW);
+        colors.put("hotpink", HOTPINK);
+        colors.put("indianred", INDIANRED);
+        colors.put("indigo", INDIGO);
+        colors.put("ivory", IVORY);
+        colors.put("khaki", KHAKI);
+        colors.put("lavender", LAVENDER);
+        colors.put("lavenderblush", LAVENDERBLUSH);
+        colors.put("lawngreen", LAWNGREEN);
+        colors.put("lemonchiffon", LEMONCHIFFON);
+        colors.put("lightblue", LIGHTBLUE);
+        colors.put("lightcoral", LIGHTCORAL);
+        colors.put("lightcyan", LIGHTCYAN);
+        colors.put("lightgoldenrodyellow", LIGHTGOLDENRODYELLOW);
+        colors.put("lightgray", LIGHTGRAY);
+        colors.put("lightgreen", LIGHTGREEN);
+        colors.put("lightgrey", LIGHTGREY);
+        colors.put("lightpink", LIGHTPINK);
+        colors.put("lightsalmon", LIGHTSALMON);
+        colors.put("lightseagreen", LIGHTSEAGREEN);
+        colors.put("lightskyblue", LIGHTSKYBLUE);
+        colors.put("lightslategray", LIGHTSLATEGRAY);
+        colors.put("lightslategrey", LIGHTSLATEGREY);
+        colors.put("lightsteelblue", LIGHTSTEELBLUE);
+        colors.put("lightyellow", LIGHTYELLOW);
+        colors.put("lime", LIME);
+        colors.put("limegreen", LIMEGREEN);
+        colors.put("linen", LINEN);
+        colors.put("magenta", MAGENTA);
+        colors.put("maroon", MAROON);
+        colors.put("mediumaquamarine", MEDIUMAQUAMARINE);
+        colors.put("mediumblue", MEDIUMBLUE);
+        colors.put("mediumorchid", MEDIUMORCHID);
+        colors.put("mediumpurple", MEDIUMPURPLE);
+        colors.put("mediumseagreen", MEDIUMSEAGREEN);
+        colors.put("mediumslateblue", MEDIUMSLATEBLUE);
+        colors.put("mediumspringgreen", MEDIUMSPRINGGREEN);
+        colors.put("mediumturquoise", MEDIUMTURQUOISE);
+        colors.put("mediumvioletred", MEDIUMVIOLETRED);
+        colors.put("midnightblue", MIDNIGHTBLUE);
+        colors.put("mintcream", MINTCREAM);
+        colors.put("mistyrose", MISTYROSE);
+        colors.put("moccasin", MOCCASIN);
+        colors.put("navajowhite", NAVAJOWHITE);
+        colors.put("navy", NAVY);
+        colors.put("oldlace", OLDLACE);
+        colors.put("olive", OLIVE);
+        colors.put("olivedrab", OLIVEDRAB);
+        colors.put("orange", ORANGE);
+        colors.put("orangered", ORANGERED);
+        colors.put("orchid", ORCHID);
+        colors.put("palegoldenrod", PALEGOLDENROD);
+        colors.put("palegreen", PALEGREEN);
+        colors.put("paleturquoise", PALETURQUOISE);
+        colors.put("palevioletred", PALEVIOLETRED);
+        colors.put("papayawhip", PAPAYAWHIP);
+        colors.put("peachpuff", PEACHPUFF);
+        colors.put("peru", PERU);
+        colors.put("pink", PINK);
+        colors.put("plum", PLUM);
+        colors.put("powderblue", POWDERBLUE);
+        colors.put("purple", PURPLE);
+        colors.put("red", RED);
+        colors.put("rosybrown", ROSYBROWN);
+        colors.put("royalblue", ROYALBLUE);
+        colors.put("saddlebrown", SADDLEBROWN);
+        colors.put("salmon", SALMON);
+        colors.put("sandybrown", SANDYBROWN);
+        colors.put("seagreen", SEAGREEN);
+        colors.put("seashell", SEASHELL);
+        colors.put("sienna", SIENNA);
+        colors.put("silver", SILVER);
+        colors.put("skyblue", SKYBLUE);
+        colors.put("slateblue", SLATEBLUE);
+        colors.put("slategray", SLATEGRAY);
+        colors.put("slategrey", SLATEGREY);
+        colors.put("snow", SNOW);
+        colors.put("springgreen", SPRINGGREEN);
+        colors.put("steelblue", STEELBLUE);
+        colors.put("tan", TAN);
+        colors.put("teal", TEAL);
+        colors.put("thistle", THISTLE);
+        colors.put("tomato", TOMATO);
+        colors.put("transparent", TRANSPARENT);
+        colors.put("turquoise", TURQUOISE);
+        colors.put("violet", VIOLET);
+        colors.put("wheat", WHEAT);
+        colors.put("white", WHITE);
+        colors.put("whitesmoke", WHITESMOKE);
+        colors.put("yellow", YELLOW);
+        colors.put("yellowgreen", YELLOWGREEN);
+
+        return colors;
+    }
 }//ColorPane

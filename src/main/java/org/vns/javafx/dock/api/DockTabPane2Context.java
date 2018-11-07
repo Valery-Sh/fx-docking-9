@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import java.util.List;
 import java.util.UUID;
 import javafx.animation.KeyFrame;

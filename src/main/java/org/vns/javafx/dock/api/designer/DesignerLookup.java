@@ -17,9 +17,9 @@ package org.vns.javafx.dock.api.designer;
 
 import org.vns.javafx.dock.api.Selection;
 import java.util.List;
+import org.vns.javafx.BaseContextLookup;
 import org.vns.javafx.dock.api.ApplicationContext;
-import org.vns.javafx.dock.api.ContextLookup;
-import org.vns.javafx.dock.api.DefaultContextLookup;
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
@@ -27,8 +27,6 @@ import org.vns.javafx.dock.api.Selection.SelectionHandler;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
 import org.vns.javafx.dock.api.designer.DesignerScenePaneContext.DesignerScenePaneContextFactory;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
-import org.vns.javafx.dock.api.dragging.view.RectangularFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
@@ -41,7 +39,7 @@ public class DesignerLookup { // implements ContextLookup {
     private final ContextLookup lookup;
     
     protected DesignerLookup() {
-        lookup = new DefaultContextLookup();
+        lookup = new BaseContextLookup();
         init();
     }
     private void init() {

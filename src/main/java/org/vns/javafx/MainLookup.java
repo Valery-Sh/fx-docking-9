@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.dock.api.designer.bean;
+package org.vns.javafx;
 
 import java.util.List;
-import org.vns.javafx.BaseContextLookup;
-import org.vns.javafx.dock.api.ApplicationContext;
-import org.vns.javafx.ContextLookup;
 
 /**
  *
  * @author Valery
  */
-public class BeanLookup { // implements ContextLookup {
+public class MainLookup { // implements ContextLookup {
     
     private final ContextLookup lookup;
     
-    protected BeanLookup() {
+    protected MainLookup() {
         lookup = new BaseContextLookup();
         init();
     }
     private void init() {
     }
-    private static BeanLookup getInstance() {
+    private static MainLookup getInstance() {
         return SingletonInstance.INSTANCE;
     }
     public static <T> T lookup(Class<T> clazz) {
@@ -65,17 +62,10 @@ public class BeanLookup { // implements ContextLookup {
     public static <T> void remove(Class key, T obj) {
         getInstance().lookup.remove(key, obj);
     }
-    private static class SingletonInstance {
+    
 
-        private static final BeanLookup INSTANCE = new BeanLookup();
+    private static class SingletonInstance {
+        private static final MainLookup INSTANCE = new MainLookup();
     }
     
-    public static class DesignerApplicationContext implements ApplicationContext {
-
-        @Override
-        public boolean isDesignerContext() {
-            return true;
-        }
-        
-    }
 }

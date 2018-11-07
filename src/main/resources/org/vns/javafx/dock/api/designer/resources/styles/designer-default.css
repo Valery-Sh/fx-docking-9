@@ -12,15 +12,19 @@
 .property-editor-pane .status-bar .title {
 }
 
+.content-combo-box {
+    -fx-pref-width: 150;
+}
 .content-combo-box .display-node {
     -fx-padding: 2 0 2 10;
 }
+
 .string-textfield:errorfound {
     -fx-text-fill: red;
     -fx-border-color: red;
 }
 .bounds-property-editor {
-  
+
 }
 
 .bounds-property-editor-grid {
@@ -48,10 +52,10 @@
 
 
 .trash-tray .image-view {
-   -fx-image: url("../images/trash-empty.png");
+    -fx-image: url("../images/trash-empty.png");
 }    
 .trash-tray:full .image-view {
-   -fx-image: url("../images/trash-full.png");
+    -fx-image: url("../images/trash-full.png");
 }    
 
 .trash-clear-menu-item:disabled >.label {
@@ -231,7 +235,7 @@
     -fx-stroke-width: 2;
     -fx-background-color: transparent;
     -fx-fill: transparent    
-        
+
 }
 
 /* -----------------------------------
@@ -254,23 +258,23 @@
 }
 
 .property-editor {
-    
+
 }
 .property-editor .status-bar {
-    
+
 }
 .property-editor .tool-bar {
-    
+
 }
 .category {
-    
+
 }
 .section {
-    
+
 }
 
 .hyperlink:cssvalue {
-  -fx-graphic: url("../images/css-value.png");    
+    -fx-graphic: url("../images/css-value.png");    
 }
 
 /* -------------------------------------------------------------
@@ -316,7 +320,7 @@
 }
 
 .tree-pane-item:itemexpanded .expand-button {
-    
+
     -fx-graphic: url("../images/minus-blue-16x16.png");            
     -fx-padding: 4 4 4 4 ;
 }
@@ -339,8 +343,9 @@
  * Paint Controls
  *
  ***************************************************************************/
-.color-pane .content {
+.color-pane > .content {
     -fx-border-width: 0; 
+    -fx-background-color: yellow;  /*-fx-background;: derive(-fx-base,26.4%);*/
 }
 
 .color-pane .color-indicator {
@@ -350,7 +355,7 @@
     -fx-border-radius: 0.4166667em;
     -fx-translate-x: -0.4166667em;
     -fx-translate-y: -0.4166667em;
-    
+
     -fx-pref-width: 0.833333em;
     -fx-pref-height: 0.833333em;
     -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
@@ -360,7 +365,7 @@
     -fx-min-height: 1.3em;
     -fx-max-height: 1.3em;    
     -fx-min-width: 16.666667em;
-    
+
     -fx-border-width: 0;
     -fx-border-color: derive(#ececec, -20%);
 }
@@ -369,15 +374,15 @@
     -fx-border-radius: 0.333333em;
     -fx-border-color: white;
     -fx-border-width: 3;
-    
+
     -fx-effect: dropshadow(three-pass-box, black, 1.5, 0.0, 0, 1);
-    
-/*    -fx-pref-height: 1.5em;
-    -fx-pref-width: 0.833333em;
-*/
+
+    /*    -fx-pref-height: 1.5em;
+        -fx-pref-width: 0.833333em;
+    */
     -fx-translate-y: -0.1666667em;
     -fx-translate-x: -0.4166667em;
-    
+
 }    
 /*.hue-bar:vertical .content {
    -fx-translate-y: 0;
@@ -403,18 +408,23 @@
     -fx-border-width: 1;
     -fx-border-color: -fx-box-border;
     -fx-padding: 7;
-    
+    -fx-background-color: -fx-background; /*: derive(-fx-base,26.4%);*/
+
 }
+.color-chooser > .grid-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 3;
+}
+
 .color-chooser .shape-view {
     -fx-stroke: lightgray;
 }
-.color-chooser .color-pane {
+.color-chooser .color-pane .content{
     -fx-pref-width: 200;
-    -fx-pref-height: 80;
+    -fx-pref-height: 60;
 }
 .color-chooser .chosen-hsla, .alpha-value {
     -fx-pref-width:  72;
-
 }
 
 .color-chooser .hsb-grid .text-field {
@@ -422,4 +432,105 @@
 }
 .color-chooser .rgb-grid .text-field {
     -fx-pref-width:  42;
+}
+
+.stop-pane .stop-button .color-rect {
+    /*
+    -fx-stroke: -fx-box-border;
+    */
+    -fx-stroke: white;
+    -fx-stroke-type: outside;
+    -fx-stroke-width: 1;
+    -fx-stroke-dash-array: 2 1;
+    -fx-stroke-line-cap: butt;
+    
+}
+
+.stop-pane > .content .anchor-pane .title {
+    -fx-background-color: -fx-base;
+}
+
+/***************************************************************************
+ *
+ * GradientPane
+ *
+ ***************************************************************************/
+.gradient-pane .content {
+     -fx-background-color:  -fx-background; /*: derive(-fx-base,26.4%);*/
+}
+.gradient-pane .sample-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+}
+.gradient-pane .sample-pane .sample-rect {
+    -fx-stroke: gray;
+    -fx-stroke-type: outside;
+    -fx-stroke-width: 1;
+    -fx-stroke-dash-array: 2 1;
+    -fx-stroke-line-cap: butt;
+}
+.gradient-pane .sample-pane .slider {
+}
+
+.gradient-pane .properties-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 5; 
+}
+.gradient-pane .properties-pane .text-field {
+    -fx-pref-width: 50;
+}
+.gradient-pane .properties-pane .label {
+}
+.gradient-pane .properties-pane .choice-box {
+}
+.gradient-pane .properties-pane .combo-box {
+}
+.gradient-pane .properties-pane .slider {
+}
+.gradient-pane .properties-pane .top-slider {
+}
+.gradient-pane .properties-pane .right-slider  {
+}
+.gradient-pane .properties-pane .bottom-slider  {
+}
+.gradient-pane .properties-pane .left-slider  {
+}
+
+/******************************************************
+ *
+ * PaintPicker
+ *
+ ******************************************************/
+
+.paint-picker .paint-pane > .content {
+/*    -fx-pref-width: 350;*/
+/*    -fx-background-color: -fx-background;
+    -fx-border-width: 1;
+    -fx-border-color: -fx-box-border;
+    -fx-padding: 5 8 5 8;
+*/    
+}
+.paint-picker {
+    -fx-pref-width: 125;
+}
+.paint-picker .display-node {
+    -fx-padding: 4 8 4 8;
+    -fx-pref-width: 125;
+}
+.paint-picker .display-node .color-rect {
+    -fx-stroke: -fx-box-border;
+    -fx-stroke-width: 1.5;
+    -fx-stroke-type: outside;    
+}
+
+.paint-picker1 {
+}
+.paint-picker1 .display-node {
+    -fx-padding: 4 8 4 8;
+    -fx-pref-width: 125;
+}
+.paint-picker1 .display-node .color-rect {
+    -fx-stroke: -fx-box-border;
+    -fx-stroke-width: 1.5;
+    -fx-stroke-type: outside;    
 }

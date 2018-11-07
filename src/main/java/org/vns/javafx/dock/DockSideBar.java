@@ -13,8 +13,8 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import org.vns.javafx.dock.api.ContextLookup;
-import org.vns.javafx.dock.api.DefaultContextLookup;
+import org.vns.javafx.BaseContextLookup;
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DockSideBarSkin;
@@ -60,7 +60,7 @@ public class DockSideBar extends Control { // ListChangeListener {
     }
 
     public DockSideBar() {
-        lookup = new DefaultContextLookup();
+        lookup = new BaseContextLookup();
         init();
     }
 

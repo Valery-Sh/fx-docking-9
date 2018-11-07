@@ -1,14 +1,14 @@
 package org.vns.javafx.dock.api;
 
+import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.BaseContextLookup;
 
 /**
  *
@@ -37,7 +37,7 @@ public abstract class LayoutContext {
 
     public ContextLookup getLookup() {
         if (lookup == null) {
-            lookup = new DefaultContextLookup();
+            lookup = new BaseContextLookup();
             initLookup(lookup);
         }
         return lookup;

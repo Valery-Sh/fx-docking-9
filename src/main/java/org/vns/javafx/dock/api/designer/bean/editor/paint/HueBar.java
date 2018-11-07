@@ -16,16 +16,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor.paint;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -38,7 +30,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -175,12 +166,12 @@ public class HueBar extends Control {
             hueIndicator.radiusProperty().bind(
                     content.heightProperty().divide(2).subtract(hueIndicator.strokeWidthProperty().multiply(2))
             );
-            NumberBidirectionalBinding nbb = new NumberBidirectionalBinding(hueIndicator.centerXProperty(), colorPane.hueProperty());
-            hueIndicator.radiusProperty().addListener((v, ov, nv) -> {
-                if ( nbb.isBound() ) {
-                    nbb.unbind();
+            /*            NumberBidirectionalBinding dbb = new NumberBidirectionalBinding(hueIndicator.centerXProperty(), colorPane.hueProperty());
+                     hueIndicator.radiusProperty().addListener((v, ov, nv) -> {
+                if ( dbb.isBound() ) {
+                    dbb.unbind();
                 }
-                nbb.bindBidirectional((propChanging, value) -> {
+                dbb.bindBidirectional((propChanging, value) -> {
                     Double retval;// = value;
                     double size = colorPane.getContent().getWidth() - 1;
                     double f = size / (content.getWidth() - 1);
@@ -189,10 +180,7 @@ public class HueBar extends Control {
                         //
                         // centerX changing
                         //
-                        double x = hueIndicator.getCenterX();
-                        if (x < 0) {
-                            x = 0;
-                        }
+                     
                         if (value <= 0) {
                             retval = r;
                         } else {
@@ -208,7 +196,44 @@ public class HueBar extends Control {
                 });
 
             });
-       
+             */
+            DoubleBinder dbb = new DoubleBinder(hueIndicator.centerXProperty(), colorPane.hueProperty());
+            hueIndicator.radiusProperty().addListener((v, ov, nv) -> {
+                if (dbb.isBound()) {
+                    dbb.unbind();
+                }
+                dbb.change(hueIndicator.centerXProperty(), value -> {
+                    Double retval;// = value;
+                    double size = colorPane.getContent().getWidth() - 1;
+                    double f = size / (content.getWidth() - 1);
+                    double r = hueIndicator.getBoundsInParent().getWidth() / 2;
+                    //
+                    // centerX changing
+                    //
+                    if (value <= 0) {
+                        retval = r;
+                    } else {
+                        retval = (((value + r) / 360) * size) / f;
+                    }
+                    return retval;
+
+                });
+                dbb.change(colorPane.hueProperty(), value -> {
+                    Double retval;// = value;
+                    double size = colorPane.getContent().getWidth() - 1;
+                    double f = size / (content.getWidth() - 1);
+                    double r = hueIndicator.getBoundsInParent().getWidth() / 2;
+                    //
+                    // colorPane hueProperty changing
+                    //
+                    //return clamp(((value - r) * f) / size) * 360;
+
+                    retval = clamp(((value - r) * f) / size) * 360;
+                    return clamp(((value - r) * f) / size) * 360;
+
+                });
+            });
+
             hueIndicator.centerYProperty().bind(
                     content.heightProperty().add(2).divide(2)
             );
@@ -233,7 +258,7 @@ public class HueBar extends Control {
                 hueIndicator.setCenterX(pos + hueIndicator.getBoundsInParent().getWidth() / 2);
                 colorPane.updateChosenColor();
             };
-/*            EventHandler<MouseEvent> mouseHandler1 = event -> {
+            /*            EventHandler<MouseEvent> mouseHandler1 = event -> {
                 double size;
                 double pos;
                 pos = event.getX();
@@ -249,7 +274,7 @@ public class HueBar extends Control {
                 colorPane.updateChosenColor();
 
             };
-*/
+             */
             content.setOnMouseDragged(mouseHandler);
 
             content.setOnMousePressed(mouseHandler);
