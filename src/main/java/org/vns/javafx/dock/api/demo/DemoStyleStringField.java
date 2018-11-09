@@ -11,7 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.scene.control.editors.StringTextField;
 
 /**
  *

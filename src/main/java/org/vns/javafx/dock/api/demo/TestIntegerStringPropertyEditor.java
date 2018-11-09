@@ -44,10 +44,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ErrorMarkerBuilder;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.scene.control.editors.BooleanPropertyEditor;
+import org.vns.javafx.scene.control.editors.ErrorMarkerBuilder;
+import org.vns.javafx.scene.control.editors.PrimitivePropertyEditor.IntegerPropertyEditor;
+import org.vns.javafx.scene.control.editors.StringTextField;
 
 /**
  *

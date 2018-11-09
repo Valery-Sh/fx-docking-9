@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.scene.control.editors.beans.NamedItem;
+import org.vns.javafx.scene.control.editors.beans.NamedItemList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.junit.After;

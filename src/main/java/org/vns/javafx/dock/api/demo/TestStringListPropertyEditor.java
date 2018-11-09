@@ -36,7 +36,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.converter.DefaultStringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
+import org.vns.javafx.scene.control.editors.StringListPropertyEditor;
 
 /**
  *

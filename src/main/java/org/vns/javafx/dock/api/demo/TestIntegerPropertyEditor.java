@@ -28,9 +28,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.SliderPropertyEditor;
+import org.vns.javafx.scene.control.editors.BooleanPropertyEditor;
+import org.vns.javafx.scene.control.editors.PrimitivePropertyEditor.IntegerPropertyEditor;
+import org.vns.javafx.scene.control.editors.SliderPropertyEditor;
 
 /**
  *

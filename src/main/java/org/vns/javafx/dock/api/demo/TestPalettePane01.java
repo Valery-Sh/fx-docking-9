@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.DockPane;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.PalettePane;
+import org.vns.javafx.designer.PalettePane;
 
 /**
  *

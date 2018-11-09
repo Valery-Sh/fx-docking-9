@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.designer.bean.editor;
 
+import org.vns.javafx.scene.control.editors.FontStringConverter;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;

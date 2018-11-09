@@ -27,9 +27,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.EmptyStringNumberTransformer;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.ShortPropertyEditor;
+import org.vns.javafx.scene.control.editors.BooleanPropertyEditor;
+import org.vns.javafx.scene.control.editors.EmptyStringNumberTransformer;
+import org.vns.javafx.scene.control.editors.PrimitivePropertyEditor.ShortPropertyEditor;
 
 /**
  *

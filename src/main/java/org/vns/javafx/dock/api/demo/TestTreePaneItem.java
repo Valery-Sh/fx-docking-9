@@ -28,11 +28,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.DesignerLookup;
+import org.vns.javafx.designer.DesignerLookup;
 
-import org.vns.javafx.dock.api.designer.bean.editor.HiddenTitledPane;
-import org.vns.javafx.dock.api.designer.bean.editor.TreePane;
-import org.vns.javafx.dock.api.designer.bean.editor.TreePaneItem;
+import org.vns.javafx.scene.control.editors.HiddenTitledPane;
+import org.vns.javafx.scene.control.editors.TreePane;
+import org.vns.javafx.scene.control.editors.TreePaneItem;
 
 /**
  *

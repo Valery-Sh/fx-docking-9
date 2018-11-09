@@ -1,0 +1,201 @@
+
+/***************************************************************************
+ *
+ * Paint Controls
+ *
+ ***************************************************************************/
+.content-combo-box {
+    -fx-pref-width: 150;
+}
+.content-combo-box .display-node {
+    -fx-padding: 4 8 4 8;
+}
+
+.color-pane > .content {
+    -fx-border-width: 0; 
+    -fx-background-color: yellow;  /*-fx-background;: derive(-fx-base,26.4%);*/
+}
+
+.color-pane .color-indicator {
+
+    -fx-background-color: null;
+    -fx-border-color: white;
+    -fx-border-radius: 0.4166667em;
+    -fx-translate-x: -0.4166667em;
+    -fx-translate-y: -0.4166667em;
+
+    -fx-pref-width: 0.833333em;
+    -fx-pref-height: 0.833333em;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}    
+.hue-bar .content {
+
+    -fx-min-height: 1.3em;
+    -fx-max-height: 1.3em;    
+    -fx-min-width: 16.666667em;
+
+    -fx-border-width: 0;
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.hue-bar .content > .hue-indicator {
+    -fx-border-radius: 0.333333em;
+    -fx-border-color: white;
+    -fx-border-width: 3;
+
+    -fx-effect: dropshadow(three-pass-box, black, 1.5, 0.0, 0, 1);
+
+    /*    -fx-pref-height: 1.5em;
+        -fx-pref-width: 0.833333em;
+    */
+    -fx-translate-y: -0.1666667em;
+    -fx-translate-x: -0.4166667em;
+
+}    
+/*.hue-bar:vertical .content {
+   -fx-translate-y: 0;
+   -fx-translate-x: 0;
+    -fx-min-height: 20;
+    -fx-max-height: 20;
+    -fx-max-width: 200;
+    -fx-pref-width: 200;
+    -fx-pref-height: 20;
+
+    -fx-border-color: derive(#ececec, -20%);
+}
+*/
+/*.hue-bar .content-parent {
+
+    -fx-min-width: 1.666667em;
+    -fx-min-height: 16.666667em;
+    -fx-max-width: 1.666667em;
+    -fx-border-color: derive(#ececec, -20%);
+}
+*/
+.color-chooser > .content {
+    -fx-border-width: 1;
+    -fx-border-color: -fx-box-border;
+    -fx-padding: 7;
+    -fx-background-color: -fx-background; /*: derive(-fx-base,26.4%);*/
+
+}
+.color-chooser > .grid-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 3;
+}
+
+.color-chooser .shape-view {
+    -fx-stroke: lightgray;
+}
+.color-chooser .color-pane .content{
+    -fx-pref-width: 200;
+    -fx-pref-height: 60;
+}
+.color-chooser .chosen-hsla, .alpha-value {
+    -fx-pref-width:  72;
+}
+
+.color-chooser .hsb-grid .text-field {
+    -fx-pref-width:  42;
+}
+.color-chooser .rgb-grid .text-field {
+    -fx-pref-width:  42;
+}
+
+.stop-pane .stop-button .color-rect {
+    -fx-stroke: white;
+    -fx-stroke-type: outside;
+    -fx-stroke-width: 1;
+    -fx-stroke-dash-array: 2 1;
+    -fx-stroke-line-cap: butt;
+}
+
+.stop-pane > .content .anchor-pane .title {
+    -fx-background-color: -fx-base;
+}
+
+/***************************************************************************
+ *
+ * GradientPane
+ *
+ ***************************************************************************/
+.gradient-pane .content {
+     -fx-background-color:  -fx-background; /*: derive(-fx-base,26.4%);*/
+}
+.gradient-pane .sample-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+}
+.gradient-pane .sample-pane .sample-rect {
+    -fx-stroke: gray;
+    -fx-stroke-type: outside;
+    -fx-stroke-width: 1;
+    -fx-stroke-dash-array: 2 1;
+    -fx-stroke-line-cap: butt;
+}
+.gradient-pane .sample-pane .slider {
+}
+
+.gradient-pane .properties-pane {
+    -fx-hgap: 5;
+    -fx-vgap: 5; 
+}
+.gradient-pane .properties-pane .text-field {
+    -fx-pref-width: 50;
+}
+.gradient-pane .properties-pane .label {
+}
+.gradient-pane .properties-pane .choice-box {
+}
+.gradient-pane .properties-pane .combo-box {
+}
+.gradient-pane .properties-pane .slider {
+}
+.gradient-pane .properties-pane .top-slider {
+}
+.gradient-pane .properties-pane .right-slider  {
+}
+.gradient-pane .properties-pane .bottom-slider  {
+}
+.gradient-pane .properties-pane .left-slider  {
+}
+
+/******************************************************
+ *
+ * PaintPicker
+ *
+ ******************************************************/
+
+.paint-picker .paint-pane > .content {
+/*    -fx-pref-width: 350;*/
+/*    -fx-background-color: -fx-background;
+    -fx-border-width: 1;
+    -fx-border-color: -fx-box-border;
+    -fx-padding: 5 8 5 8;
+*/    
+}
+.paint-picker {
+    -fx-pref-width: 125;
+}
+.paint-picker .display-node {
+    -fx-padding: 4 8 4 8;
+    -fx-pref-width: 125;
+}
+.paint-picker .display-node .color-rect {
+    -fx-stroke: -fx-box-border;
+    -fx-stroke-width: 1.5;
+    -fx-stroke-type: outside;    
+}
+
+/*.paint-picker1 {
+}
+.paint-picker1 .display-node {
+    -fx-padding: 4 8 4 8;
+    -fx-pref-width: 125;
+}
+.paint-picker1 .display-node .color-rect {
+    -fx-stroke: -fx-box-border;
+    -fx-stroke-width: 1.5;
+    -fx-stroke-type: outside;    
+}
+*/

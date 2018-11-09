@@ -21,7 +21,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.SceneGraphData;
+import org.vns.javafx.designer.SceneGraphData;
 
 /**
  *

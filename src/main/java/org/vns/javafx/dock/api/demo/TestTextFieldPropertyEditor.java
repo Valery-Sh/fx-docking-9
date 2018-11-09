@@ -19,9 +19,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboButton;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboButton.ItemsUpdater;
-import org.vns.javafx.dock.api.designer.bean.editor.TextFieldPropertyEditor;
+import org.vns.javafx.scene.control.editors.ComboButton;
+import org.vns.javafx.scene.control.editors.ComboButton.ItemsUpdater;
+import org.vns.javafx.scene.control.editors.TextFieldPropertyEditor;
 
 //It's a filter which throws an Exception when apply a method `c.getControlNewText()`.
 //You should implement the TestTextFormatter with a StringConverter.

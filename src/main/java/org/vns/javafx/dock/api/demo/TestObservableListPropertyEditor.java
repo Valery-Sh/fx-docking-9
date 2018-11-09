@@ -12,10 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.ObservableListStringBinding;
-import org.vns.javafx.dock.api.designer.bean.editor.ListContentPropertyEditors;
-import org.vns.javafx.dock.api.designer.bean.editor.ObservableListEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ObservableListPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.StringListPropertyEditor;
+import org.vns.javafx.scene.control.editors.ListContentPropertyEditors;
+import org.vns.javafx.scene.control.editors.ObservableListEditor;
+import org.vns.javafx.scene.control.editors.ObservableListPropertyEditor;
+import org.vns.javafx.scene.control.editors.StringListPropertyEditor;
 
 /**
  *

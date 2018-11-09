@@ -25,7 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.DecimalPropertyEditor;
+import org.vns.javafx.scene.control.editors.DecimalPropertyEditor;
 
 /**
  *

@@ -26,8 +26,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.EnumPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.PrimitivePropertyEditor.IntegerPropertyEditor;
+import org.vns.javafx.scene.control.editors.EnumPropertyEditor;
+import org.vns.javafx.scene.control.editors.PrimitivePropertyEditor.IntegerPropertyEditor;
 
 /**
  *

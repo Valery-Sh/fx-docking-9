@@ -29,8 +29,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockTitleBar;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.TrashTray;
-import org.vns.javafx.dock.api.designer.TrashTray.TrayItem;
+import org.vns.javafx.designer.TrashTray;
+import org.vns.javafx.designer.TrashTray.TrayItem;
 
 /**
  *

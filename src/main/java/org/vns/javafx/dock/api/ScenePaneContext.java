@@ -60,14 +60,7 @@ public class ScenePaneContext extends LayoutContext {
         }
     }
 
-    /*    public LayoutContext getRestoreContext() {
-        return restoreContext;
-    }
 
-    public void setRestoreContext(LayoutContext restoreContext) {
-        this.restoreContext = restoreContext;
-    }
-     */
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
         Object o = getValue(dockable);

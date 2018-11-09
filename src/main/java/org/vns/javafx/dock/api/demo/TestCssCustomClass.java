@@ -18,7 +18,7 @@ package org.vns.javafx.dock.api.demo;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import org.vns.javafx.dock.api.designer.bean.editor.ButtonTypeComboBoxPropertyEditor;
+import org.vns.javafx.scene.control.editors.ButtonTypeComboBoxPropertyEditor;
 
 /**
  *

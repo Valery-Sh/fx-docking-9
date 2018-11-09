@@ -22,7 +22,7 @@ package org.vns.javafx.dock.api;
 public interface SaveRestore {
     void save(Object obj);
     void save(Object obj, int listIndex);
-    
+    boolean isSaved();
     void restore(Object obj);
     void restoreExpanded(Object obj);
     

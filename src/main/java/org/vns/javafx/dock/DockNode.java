@@ -20,6 +20,7 @@ public class DockNode extends Control { //implements Dockable {
 
     private DockableContext context;
     
+    
     ObjectProperty<Node> content = new SimpleObjectProperty<>();
     
     public DockNode() {
@@ -58,6 +59,9 @@ public class DockNode extends Control { //implements Dockable {
     public void setContent(Node content) {
         this.content.set(content);
     }    
+    public ObjectProperty<Node> titleBarProperty() {
+        return getContext().titleBarProperty();
+    }
     @Override
     public String getUserAgentStylesheet() {
         return Dockable.class.getResource("resources/default.css").toExternalForm();

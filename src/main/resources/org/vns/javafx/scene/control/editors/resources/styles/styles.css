@@ -1,0 +1,118 @@
+/**
+ * The status bar is HBox
+ */
+.property-editor-pane .status-bar {
+    -fx-border-width: 1; 
+    -fx-border-color: lightgrey
+}
+/**
+ * The title by default is a label, but can be replaced in code with any object 
+ * of type Node
+ */
+.property-editor-pane .status-bar .title {
+}
+
+*.content-combo-box {
+    -fx-pref-width: 150;
+}
+.content-combo-box .display-node {
+    -fx-padding: 4 8 4 8;
+}
+
+.string-textfield:errorfound {
+    -fx-text-fill: red;
+    -fx-border-color: red;
+}
+.bounds-property-editor {
+
+}
+
+.bounds-property-editor-grid {
+    -fx-opacity: 1; 
+    -fx-background-color: white; 
+    -fx-border-color: lightgrey; 
+    -fx-border-width: 1; 
+    -fx-padding: 10 10 10 10;
+}
+.insets-property-editor .top-inset:readonly, .right-inset:readonly, .bottom-inset:readonly, .left-inset:readonly{
+    -fx-background-color: -fx-background;
+    -fx-border-color: lightgrey;
+    -fx-border-width: 0.5;
+}
+
+.enum-field-editor:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .label:disabled {
+    -fx-opacity: 1;
+}
+.enum-field-editor:disabled .arrow:disabled {
+    -fx-opacity: 0.4;
+}
+
+
+.property-editor {
+
+}
+.property-editor .status-bar {
+
+}
+.property-editor .tool-bar {
+
+}
+.category {
+
+}
+.section {
+
+}
+
+.hyperlink:cssvalue {
+    -fx-graphic: url("../images/css-value.png");    
+}
+
+
+.tree-pane-item .update-button {
+    -fx-graphic: url("../images/plus-black-thin-7x7.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.tree-pane-item:notnull .update-button {
+    -fx-graphic: url("../images/minus-black-thin-7x7.png");            
+}
+.tree-pane-item .text-button {
+    -fx-graphic: url("../images/effect-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.tree-pane-item:notnull .text-button {
+    -fx-graphic: null;            
+}
+
+/*.tree-pane-item .image-view {
+    -fx-image: url("../images/plus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+*/
+.tree-pane-item .expand-button {
+    -fx-graphic: url("../images/plus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+
+.tree-pane-item:itemexpanded .expand-button {
+
+    -fx-graphic: url("../images/minus-blue-16x16.png");            
+    -fx-padding: 4 4 4 4 ;
+}
+.tree-pane-item:leafitem .expand-button {
+    visibility: hidden;
+}
+.tree-pane-item .content {
+    -fx-padding: 5 0 5 0;
+    -fx-spacing: 5;
+}
+.tree-pane .tree-pane-item {
+    -fx-padding: 0 0 0 10;
+}
+.tree-pane .hidden-titled-pane .content {
+    -fx-padding: 5 0 0 0;
+}
+

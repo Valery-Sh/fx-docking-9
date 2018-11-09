@@ -16,6 +16,7 @@
 package org.vns.javafx.dock.api.designer.bean;
 
 
+import org.vns.javafx.scene.control.editors.beans.NamedItem;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

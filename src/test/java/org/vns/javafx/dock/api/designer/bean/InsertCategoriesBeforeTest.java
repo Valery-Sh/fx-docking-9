@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.dock.api.designer.bean;
 
+import org.vns.javafx.scene.control.editors.beans.Category;
+import org.vns.javafx.scene.control.editors.beans.InsertCategoriesBefore;
 import javafx.collections.ObservableList;
 import org.junit.After;
 import org.junit.AfterClass;

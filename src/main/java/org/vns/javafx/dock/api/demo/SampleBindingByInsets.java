@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import org.vns.javafx.dock.api.designer.bean.editor.*;
 import java.lang.ref.WeakReference;
 import javafx.beans.WeakListener;
 import javafx.beans.property.ObjectProperty;

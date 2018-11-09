@@ -5,7 +5,6 @@
  */
 package org.vns.javafx.dock.api.demo;
 
-import com.sun.javafx.scene.control.skin.ComboBoxBaseSkin;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.property.IntegerProperty;
@@ -13,17 +12,15 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboButton;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboButton.ItemPane;
-import org.vns.javafx.dock.api.designer.bean.editor.ComboButtonPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.ContentComboBox;
+import org.vns.javafx.scene.control.editors.ComboButton;
+import org.vns.javafx.scene.control.editors.ComboButtonPropertyEditor;
+import org.vns.javafx.scene.control.ContentComboBox;
 
 //It's a filter which throws an Exception when apply a method `c.getControlNewText()`.
 //You should implement the TestTextFormatter with a StringConverter.
@@ -42,9 +39,10 @@ public class TestComboButton extends Application {
         
         Button btn1 = new Button("Button btn1");
         Button btn2 = new Button("Button btn2");
-        ItemPane<String> itemPane = new ItemPane();
+/*        ItemPane<String> itemPane = new ItemPane();
         itemPane.getItems().add("String 1");
         itemPane.getItems().add("Str 2");
+*/        
         ComboButton cb = new ComboButton();
         
             

@@ -27,8 +27,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.BooleanPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.FontPropertyEditor;
+import org.vns.javafx.scene.control.editors.BooleanPropertyEditor;
+import org.vns.javafx.scene.control.editors.FontPropertyEditor;
 
 /**
  *

@@ -15,8 +15,8 @@ import javafx.util.converter.DefaultStringConverter;
 
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.ObservableListStringBinding;
-import org.vns.javafx.dock.api.designer.bean.editor.ListContentStringBinding;
-import org.vns.javafx.dock.api.designer.bean.editor.StringTextField;
+import org.vns.javafx.scene.control.editors.binding.ListContentStringBinding;
+import org.vns.javafx.scene.control.editors.StringTextField;
 
 /**
  *

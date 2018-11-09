@@ -390,6 +390,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
                 tc.executeDock(pt, getDockable());
                 isDocked = LayoutContext.isDocked(tc, getDockable());
                 if (isDocked && floatingWindow != null && floatingWindow.isShowing()) {
+                    System.err.println("HIDE 1");
                     hideFloatingWindow();
                 }
             }
@@ -398,10 +399,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             }
         }
         if ((getHideOption() == ALL || getHideOption() == CARRIERED) && getContainerValue() != null && floatingWindow != null) {
+            System.err.println("HIDE 2");
             hideFloatingWindow();
         }
         if ((getHideOption() == ALL || getHideOption() == CARRIER) && getContainerValue() == null && floatingWindow != null) {
             hideFloatingWindow();
+            System.err.println("HIDE 3");
         }
 
         DragContainer dc = getDockable().getContext().getDragContainer();
@@ -417,7 +420,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         }
         if (!ev.isAltDown() ) {
             SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
-            if (sr != null) {
+            System.err.println("isSaved = " + sr.isSaved());
+            if (sr != null && sr.isSaved()) {
                 Object o = dragValue;
                 if (Dockable.of(o) != null) {
                     o = Dockable.of(o).node();
@@ -426,6 +430,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
                 sr.restore(o);
                 sr.remove(o);
                 if (floatingWindow != null) {
+                    System.err.println("HIDE 4");
                     hideFloatingWindow();
                 }
             }

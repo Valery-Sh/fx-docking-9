@@ -48,7 +48,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.IntegerListPropertyEditor;
+import org.vns.javafx.scene.control.editors.IntegerListPropertyEditor;
 
 /**
  *

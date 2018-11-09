@@ -19,16 +19,13 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.FontPane;
-import org.vns.javafx.dock.api.designer.bean.editor.FontPropertyEditor;
-import org.vns.javafx.dock.api.designer.bean.editor.FontStringConverter;
-import org.vns.javafx.dock.api.designer.bean.editor.HyperlinkTitle;
-import org.vns.javafx.dock.api.designer.bean.editor.Util;
+import org.vns.javafx.scene.control.editors.FontPane;
+import org.vns.javafx.scene.control.editors.FontPropertyEditor;
+import org.vns.javafx.scene.control.editors.Util;
 
 /**
  *

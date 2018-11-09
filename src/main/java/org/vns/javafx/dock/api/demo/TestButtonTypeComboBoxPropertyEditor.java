@@ -33,7 +33,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.api.designer.bean.editor.ButtonTypeComboBoxPropertyEditor;
+import org.vns.javafx.scene.control.editors.ButtonTypeComboBoxPropertyEditor;
 
 /**
  *

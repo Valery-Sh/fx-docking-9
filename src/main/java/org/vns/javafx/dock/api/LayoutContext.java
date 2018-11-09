@@ -231,15 +231,6 @@ public abstract class LayoutContext {
      * {@code LayoutContext}
      */
     public static boolean isDocked(LayoutContext tc, Dockable dockable) {
-        /*28.03        Dockable d = dockable;
-        DragContainer dc = dockable.getContext().getDragContainer();
-        if (dc != null && dc.getValue() != null && dc.isValueDockable()) {
-            d = Dockable.of(dc.getValue());
-        } else if (dc != null && dc.getValue() != null && !dc.isValueDockable()) {
-            return tc.contains(dc.getValue());
-        }
-        return tc.isDocked(d.node());
-         */
         return tc.isDocked(dockable);
     }
 
@@ -251,6 +242,7 @@ public abstract class LayoutContext {
         } else if (dc != null && dc.getValue() != null && !dc.isValueDockable()) {
             obj = dc.getValue();
         }
+        System.err.println("isDocked = " + contains(obj));
         return contains(obj);
     }
 
@@ -260,14 +252,11 @@ public abstract class LayoutContext {
      * @return true
      */
     public boolean contains(Object obj) {
-        /*        if (obj instanceof Node) {
-            return isDocked((Node) obj);
-        }
-         */
         return false;
     }
 
     public void undock(Dockable dockable) {
+        System.err.println("1. LayoutContext: undock");
         if (dockable == null) {
             return;
         }
@@ -283,21 +272,18 @@ public abstract class LayoutContext {
         }
         
         Dockable dockableObj = Dockable.of(obj);
-
         if ((obj instanceof Node) && dockableObj != null && dockableObj.getContext().getLayoutContext().isDocked(dockableObj)) {
-           
             ctx = dockableObj.getContext();
-            
+            System.err.println("2. LayoutContext: undock layoutContext.class = " + ctx.getLayoutContext().getClass().getSimpleName());            
             ctx.getLayoutContext().remove(obj);
             
             ctx.setLayoutContext(null);
             LayoutContext tc = ctx.getLayoutContext();
-//            if (tc instanceof ScenePaneContext) {
-//                ((ScenePaneContext) tc).setRestoreContext(this);
-//            }
         } else if ( dockableObj == null ) {
+            System.err.println("3. LayoutContext: undock");
             if ( dc.getDragSource() != null ) {
                 dc.getDragSource().remove(dc.getValue());
+                System.err.println("4. LayoutContext: undock dc.getValue = " + dc.getValue());
             }
         }
 

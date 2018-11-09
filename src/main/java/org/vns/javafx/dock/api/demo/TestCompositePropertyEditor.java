@@ -39,9 +39,9 @@ import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.designer.bean.editor.EffectPropertyHelper;
-import org.vns.javafx.dock.api.designer.bean.editor.TreePane;
-import org.vns.javafx.dock.api.designer.bean.editor.TreePaneItem;
+import org.vns.javafx.scene.control.editors.EffectPropertyHelper;
+import org.vns.javafx.scene.control.editors.TreePane;
+import org.vns.javafx.scene.control.editors.TreePaneItem;
 
 /**
  *
