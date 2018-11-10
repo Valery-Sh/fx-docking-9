@@ -63,6 +63,9 @@ public class ScenePaneContext extends LayoutContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
+        if ( ! isAcceptable(dockable)) {
+            return;
+        }
         Object o = getValue(dockable);
         if (o == null || Dockable.of(o) == null) {
             return;

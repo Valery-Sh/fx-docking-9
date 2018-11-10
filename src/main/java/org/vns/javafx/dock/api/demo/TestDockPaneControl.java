@@ -406,7 +406,7 @@ public class TestDockPaneControl extends Application {
         Button dragButton1 = new Button();
         dragButton1.getStyleClass().add("drag-icon");
         Button dragButton2 = new Button();
-        ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-hand-2-16x16.png");
+        ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-node-16x16.png");
         //ImageView iv = new ImageView("/org/vns/javafx/dock/api/resources/drag-12x12.png");
         dragButton2.setGraphic(iv);
         //dragButton2.setStyle("-fx-padding: 0");

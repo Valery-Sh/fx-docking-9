@@ -1,5 +1,6 @@
 package org.vns.javafx.dock.api;
 
+import java.util.function.BiPredicate;
 import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
@@ -25,7 +26,10 @@ public abstract class LayoutContext {
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
     private boolean usedAsDockLayout = true;
-
+    
+    private BiPredicate<LayoutContext,Dockable> acceptFilter = (lc,d) -> {
+        return true;
+    };
     protected LayoutContext(Node layoutNode) {
         this.layoutNode = layoutNode;
         init();
@@ -49,6 +53,14 @@ public abstract class LayoutContext {
     }
 
     protected void initLookup(ContextLookup lookup) {
+    }
+
+    public BiPredicate<LayoutContext, Dockable> getAcceptFilter() {
+        return acceptFilter;
+    }
+
+    public void setAcceptFilter(BiPredicate<LayoutContext, Dockable> acceptFilter) {
+        this.acceptFilter = acceptFilter;
     }
 
 //    protected abstract boolean doDock(Point2D mousePos, Node node);
@@ -132,6 +144,9 @@ public abstract class LayoutContext {
         Object v = getValue(dockable);
         if (Dockable.of(v) == null) {
             return false;
+        }
+        if ( acceptFilter != null ) {
+            return acceptFilter.test(this, dockable);
         }
         return true;
     }
@@ -242,7 +257,6 @@ public abstract class LayoutContext {
         } else if (dc != null && dc.getValue() != null && !dc.isValueDockable()) {
             obj = dc.getValue();
         }
-        System.err.println("isDocked = " + contains(obj));
         return contains(obj);
     }
 
@@ -256,7 +270,6 @@ public abstract class LayoutContext {
     }
 
     public void undock(Dockable dockable) {
-        System.err.println("1. LayoutContext: undock");
         if (dockable == null) {
             return;
         }
@@ -274,16 +287,13 @@ public abstract class LayoutContext {
         Dockable dockableObj = Dockable.of(obj);
         if ((obj instanceof Node) && dockableObj != null && dockableObj.getContext().getLayoutContext().isDocked(dockableObj)) {
             ctx = dockableObj.getContext();
-            System.err.println("2. LayoutContext: undock layoutContext.class = " + ctx.getLayoutContext().getClass().getSimpleName());            
             ctx.getLayoutContext().remove(obj);
             
             ctx.setLayoutContext(null);
             LayoutContext tc = ctx.getLayoutContext();
         } else if ( dockableObj == null ) {
-            System.err.println("3. LayoutContext: undock");
             if ( dc.getDragSource() != null ) {
                 dc.getDragSource().remove(dc.getValue());
-                System.err.println("4. LayoutContext: undock dc.getValue = " + dc.getValue());
             }
         }
 

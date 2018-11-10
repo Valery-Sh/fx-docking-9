@@ -420,7 +420,6 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         }
         if (!ev.isAltDown() ) {
             SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
-            System.err.println("isSaved = " + sr.isSaved());
             if (sr != null && sr.isSaved()) {
                 Object o = dragValue;
                 if (Dockable.of(o) != null) {
