@@ -1,11 +1,14 @@
 package org.vns.javafx.dock.api;
 
+import java.util.Set;
 import java.util.function.BiPredicate;
 import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -26,10 +29,13 @@ public abstract class LayoutContext {
     private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
     private boolean usedAsDockLayout = true;
-    
-    private BiPredicate<LayoutContext,Dockable> acceptFilter = (lc,d) -> {
+
+    private BiPredicate<LayoutContext, Dockable> acceptFilter = (lc, d) -> {
         return true;
     };
+
+    private ObservableSet<Scope> scopes = FXCollections.observableSet();
+
     protected LayoutContext(Node layoutNode) {
         this.layoutNode = layoutNode;
         init();
@@ -37,6 +43,10 @@ public abstract class LayoutContext {
 
     protected LayoutContext() {
         init();
+    }
+
+    public ObservableSet<Scope> getScopes() {
+        return scopes;
     }
 
     public ContextLookup getLookup() {
@@ -67,7 +77,7 @@ public abstract class LayoutContext {
 /*    protected boolean restore(Dockable dockable) {
         return false;
     }
-*/
+     */
     public void commitDock(Object obj) {
         if (obj != null && DockRegistry.isDockable(obj)) {
             DockableContext dockableContext = Dockable.of(obj).getContext();
@@ -86,7 +96,7 @@ public abstract class LayoutContext {
         if (getLayoutNode() == null) {
             return;
         }
-/*        getLayoutNode().sceneProperty().addListener((v, ov, nv) -> {
+        /*        getLayoutNode().sceneProperty().addListener((v, ov, nv) -> {
             if (getLayoutNode().getScene() != null) {
                 focusedDockNode.bind(getLayoutNode().getScene().focusOwnerProperty());
             }
@@ -109,7 +119,7 @@ public abstract class LayoutContext {
                 Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
             }
         });
-*/
+         */
     }
 
     /**
@@ -145,56 +155,20 @@ public abstract class LayoutContext {
         if (Dockable.of(v) == null) {
             return false;
         }
-        if ( acceptFilter != null ) {
-            return acceptFilter.test(this, dockable);
+//        System.err.println("!!!!!!!!!!!!!!!!!!! isAcc");
+        if (acceptFilter != null && !acceptFilter.test(this, dockable)) {
+            return false;
         }
-        return true;
+        return (DockRegistry.lookup(ScopeEvaluator.class).evaluate(this, dockable.getContext()));
     }
-    
+
     public final void executeDock(Point2D mousePos, Dockable dockable) {
         dock(mousePos, dockable);
         commitDock(dockable.getContext().getDragValue());
     }
+
     public abstract void dock(Point2D mousePos, Dockable dockable);
 
-/*    public void dock(Point2D mousePos, Dockable dockable) {
-        Object o = getValue(dockable);
-        if (o == null || Dockable.of(o) == null) {
-            return;
-        }
-
-        Dockable d = Dockable.of(o);
-        //
-        // Test is we drag dockable or the value of a dragContainer 
-        //
-//        if (isDocked(d.node()) && d == dockable) {/
-        if (contains(d.node()) && d == dockable) {
-            return;
-//        } else if (isDocked(d.node())) {
-        } else if (contains(d.node())) {
-            LayoutContext tc = d.getContext().getLayoutContext();
-            if (tc != null && isDocked(tc, d)) {
-                tc.undock(d.node());
-            }
-        }
-
-        Node node = d.node();
-        Window stage = null;
-        if (node.getScene() != null && node.getScene().getWindow() != null) { //&& (node.getScene().getWindow() instanceof Stage)) {
-            stage = node.getScene().getWindow();
-        }
-
-        if (doDock(mousePos, d.node()) && stage != null) {
-            //d.getContext().setFloating(false);
-            if ((stage instanceof Stage)) {
-                ((Stage) stage).close();
-            } else {
-                stage.hide();
-            }
-            d.getContext().setLayoutContext(this);
-        }
-    }
-    */
     public boolean isUsedAsDockLayout() {
         return usedAsDockLayout;
     }
@@ -283,23 +257,23 @@ public abstract class LayoutContext {
         } else if (dc != null) {
             obj = dc.getValue();
         }
-        
+
         Dockable dockableObj = Dockable.of(obj);
         if ((obj instanceof Node) && dockableObj != null && dockableObj.getContext().getLayoutContext().isDocked(dockableObj)) {
             ctx = dockableObj.getContext();
             ctx.getLayoutContext().remove(obj);
-            
+
             ctx.setLayoutContext(null);
             LayoutContext tc = ctx.getLayoutContext();
-        } else if ( dockableObj == null ) {
-            if ( dc.getDragSource() != null ) {
+        } else if (dockableObj == null) {
+            if (dc.getDragSource() != null) {
                 dc.getDragSource().remove(dc.getValue());
             }
         }
 
     }
 
-/*    public void undock(Node node) {
+    /*    public void undock(Node node) {
         if (node != null && DockRegistry.isDockable(node)) {
             DockableContext dc = Dockable.of(node).getContext();
 
@@ -312,8 +286,75 @@ public abstract class LayoutContext {
 
         }
     }
-*/
-
+     */
     public abstract void remove(Object obj);
 
+    public static class DefaultScopeEvaluator implements ScopeEvaluator {
+
+        @Override
+        public boolean evaluate(LayoutContext layoutContext, DockableContext dockableContext) {
+            System.err.println("evaluate layotContext node = " + layoutContext.layoutNode);
+            System.err.println("evaluate dockableContext node = " + dockableContext.getDragNode());
+
+            boolean retval = false;
+            Set<Scope> lset = FXCollections.observableSet(layoutContext.getScopes());
+            Set<Scope> dset = FXCollections.observableSet();
+            if (lset.isEmpty()) {
+                lset.add(createLayoutScope(layoutContext));
+            }
+         
+            if (dockableContext.getDragContainer() != null) {
+                
+                Object obj = dockableContext.getDragContainer().getValue();
+                System.err.println("evaluate: dragContainer obj = " + obj);
+                if (Dockable.of(obj) != null) {
+                    System.err.println("evaluate: dragContainer obj is Dockable ");
+                    dset.addAll(Dockable.of(obj).getContext().getScopes());
+                }
+            } else {
+                dset.addAll(dockableContext.getScopes());
+            }
+            if (dset.isEmpty()) {
+                dset.add(createDockableScope(dockableContext));
+            }
+            
+
+            for (Scope ls : lset) {
+                for (Scope ds : dset) {
+                    if (evaluate(layoutContext, dockableContext, ls, ds)) {
+                        retval = true;
+                        break;
+                    }
+                }
+                if (retval) {
+                    break;
+                }
+            }
+            return retval;
+        }
+
+        protected boolean evaluate(LayoutContext lc, DockableContext dc, Scope layoutScope, Scope dockableScope) {
+            if (!Scope.test(layoutScope, dockableScope)) {
+                return false;
+            }
+            boolean retval = true;
+            if (layoutScope.getFilter() != null && !layoutScope.getFilter().test(lc, dc)) {
+                retval = false;
+            }
+            if (retval && dockableScope.getFilter() != null && !dockableScope.getFilter().test(lc, dc)) {
+                retval = false;
+            }
+            return retval;
+        }
+
+        @Override
+        public Scope createLayoutScope(LayoutContext LayoutContext) {
+            return new Scope("default");
+        }
+
+        @Override
+        public Scope createDockableScope(DockableContext LayoutContext) {
+            return new Scope("default");
+        }
+    }
 }//class

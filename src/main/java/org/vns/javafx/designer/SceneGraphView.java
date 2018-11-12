@@ -24,6 +24,7 @@ import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 
 /**
@@ -52,22 +53,42 @@ public class SceneGraphView extends Control implements DockLayout {
 
     private Map<Class<?>, Map<String, Object>> saved = new HashMap<>();
 
+    private boolean designer;
+    
     public SceneGraphView() {
-        this.treeView = new TreeViewEx<>(this);
-        init();
+        this(null,false);
     }
 
     public SceneGraphView(Node rootNode) {
-        this.treeView = new TreeViewEx<>(this);
-        root.set(rootNode);
-        init();
+        this(rootNode,false);
     }
 
+    public SceneGraphView(boolean designer) {
+        this(null,designer);
+    }
+
+    public SceneGraphView(Node rootNode, boolean designer) {
+        this.treeView = new TreeViewEx<>(this);
+        root.set(rootNode);
+        this.designer = designer;
+        init();
+    }
+    
     private void init() {
         //getStyleClass().add("scene-graph-view");
         //treeView.getStyleClass().add("tree-view");
-
+        if ( getRoot() != null && isDesigner() ) {
+            PalettePane palette = DesignerLookup.lookup(PalettePane.class);
+            if ( palette != null ) {
+                //TreeItemEx item = new TreeItemBuilder(isDesigner()).build(getRoot());
+                //getTreeView().setRoot(item);
+            }
+        }
         customizeCell();
+    }
+
+    public boolean isDesigner() {
+        return designer;
     }
 
     @Override
@@ -211,8 +232,10 @@ public class SceneGraphView extends Control implements DockLayout {
     public LayoutContext getLayoutContext() {
         if (targetContext == null) {
             targetContext = new SceneGraphViewLayoutContext(this);
+            if ( isDesigner() ) {
+                targetContext.getScopes().add(new Scope("designer"));
+            }
         }
-        
         return targetContext;
     }
 

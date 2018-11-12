@@ -58,7 +58,7 @@ public class DesignerLookup { // implements ContextLookup {
         
        // lookup.putUnique(SaveRestore.class, new AutoSaveRestore() ); 
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
-        lookup.putUnique(SceneGraphView.class, new SceneGraphView() );
+        lookup.putUnique(SceneGraphView.class, new SceneGraphView(true) );
     }
     private static DesignerLookup getInstance() {
         return SingletonInstance.INSTANCE;

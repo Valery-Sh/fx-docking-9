@@ -52,6 +52,7 @@ public class DockRegistry {
 
     private void init() {
         windows.addListener(this::windowsChanged);
+        lookup.putUnique(ScopeEvaluator.class, new LayoutContext.DefaultScopeEvaluator());
     }
 
     public static <T> T lookup(Class<T> clazz) {

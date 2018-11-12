@@ -38,7 +38,8 @@ public class DesignerScenePaneContext extends ScenePaneContext {
         }
     } 
     
-  @Override
+
+    @Override
     public boolean contains(Object obj) {
         if (obj == null ) {
             return false;
@@ -50,6 +51,12 @@ public class DesignerScenePaneContext extends ScenePaneContext {
         return Dockable.of(obj) != null && Dockable.of(obj).getContext().getLayoutContext() == this && item != null;
     }
 
+    @Override
+    public boolean isAcceptable(Dockable dockable) {
+        System.err.println("IS ACCEPTABLE node = " + dockable.node());
+        return super.isAcceptable(dockable);
+    }
+    
     @Override
     public void remove(Object obj) {
         System.err.println("DesignerScenePaneContext.remove obj = " + obj);

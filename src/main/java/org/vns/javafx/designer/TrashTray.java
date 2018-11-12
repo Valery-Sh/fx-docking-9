@@ -68,7 +68,8 @@ import static org.vns.javafx.dock.api.dragging.view.FloatView.FLOAT_WINDOW;
  */
 @DefaultProperty("items")
 public class TrashTray extends Control {
- private static final PseudoClass FULL_PSEUDO_CLASS = PseudoClass.getPseudoClass("full");
+
+    private static final PseudoClass FULL_PSEUDO_CLASS = PseudoClass.getPseudoClass("full");
 
     /*    public PrimitivesTextField() {
         System.err.println("PrimitveTextField Constructor");
@@ -78,12 +79,13 @@ public class TrashTray extends Control {
         });
     }
      */
+    private final boolean designer;
+    
     private final ObservableList<TrayItem> items = FXCollections.observableArrayList();
     private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
     private final ObjectProperty<Bounds> windowBounds = new SimpleObjectProperty<>();
     private final ReadOnlyObjectWrapper<TableView<TrayItem>> tableViewWrapper = new ReadOnlyObjectWrapper<>();
     private final ObservableList<TableRow> visibleRows = FXCollections.observableArrayList();
-
 
     private ListChangeListener<TrayItem> itemsChangeListener = (change) -> {
         while (change.next()) {
@@ -108,24 +110,33 @@ public class TrashTray extends Control {
                 });
             }
         }//while      
-        
-        pseudoClassStateChanged(FULL_PSEUDO_CLASS, ! getItems().isEmpty());
-        
+
+        pseudoClassStateChanged(FULL_PSEUDO_CLASS, !getItems().isEmpty());
+
     };
 
-    public TrashTray() {
+    public TrashTray(boolean designer ) {
+        this.designer = designer;
         init();
+    }
+
+    public TrashTray() {
+        this(true);
     }
 
     private void init() {
         //setImage(new Image(getClass().getResourceAsStream("/org/vns/javafx/dock/api/designer/resources/images/trash-empty.png")));
         getStyleClass().add("trash-tray");
         DockRegistry.makeDockLayout(this, new TrashTrayLayoutContext(this));
-
         setTableView(createTableView());
         getItems().addListener(itemsChangeListener);
     }
     
+    public boolean isDesigner() {
+        return designer;
+    }
+    
+
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
@@ -283,7 +294,7 @@ public class TrashTray extends Control {
         fp.makePopup(Dockable.of(tray), owner, tray, true);
 
         DockRegistry.makeDockLayout(tray, new TrashTrayLayoutContext(tray));
-
+        
     }
 
     public static Stage showStage(Window owner) {
@@ -503,7 +514,7 @@ public class TrashTray extends Control {
             windowRoot.getStyleClass().add(FLOATVIEW);
             windowRoot.getStyleClass().add("float-window-root");
             //StyleUtil.styleFloatWindowRoot(windowRoot);
-            
+
             window.getScene().setRoot(windowRoot);
             window.getScene().setCursor(Cursor.HAND);
             markFloating(window);

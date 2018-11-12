@@ -83,6 +83,7 @@ import org.vns.javafx.dock.api.LayoutContextFactory;
 import static org.vns.javafx.designer.PalettePane.NodePolicy.BOTH;
 import static org.vns.javafx.designer.PalettePane.NodePolicy.DOCKABLE;
 import static org.vns.javafx.designer.PalettePane.NodePolicy.DOCKLAYOUT;
+import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -148,6 +149,7 @@ public class PalettePane extends Control {
     public PalettePane(boolean createDefault) {
         initModel(createDefault);
         getStyleClass().add(PALETTE_PANE);
+
     }
 
     private void initModel(boolean createDefault) {
@@ -158,11 +160,85 @@ public class PalettePane extends Control {
         }
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
     }
+
+    public void setLayoutContext(Object value) {
+        if ( !(value instanceof Node)) {
+            return;
+        }
+
+        PaletteItem item = getModel().getItem(value.getClass());
+        if (item != null ) {
+            NodePolicy itemPolicy = item.getProducedNodePolicy();
+            if (itemPolicy == DOCKLAYOUT || itemPolicy == BOTH) {
+                if (getProducedNodePolicy() == DOCKLAYOUT || getProducedNodePolicy() == BOTH) {
+                    LayoutContext lc = null;
+                    if (item.getLayoutContextClass() == null) {
+                        LayoutContextFactory f = new LayoutContextFactory();
+                        lc = f.getContext((Node) value);
+                    }
+                    if (lc != null) {
+                        System.err.println("PalettePane makeDockLayout value = " + value);
+                        DockRegistry.makeDockLayout((Node) value, lc);
+
+                        lc.getScopes().add(new Scope("designer"));
+                    }
+                }
+            }
+        }
+    }//setLayoutContext
+
+    public void setDockableContext(Object value) {
+        if ( !(value instanceof Node)) {
+            return;
+        }
+
+        PaletteItem item = getModel().getItem(value.getClass());
+        if (item != null) {
+            NodePolicy itemPolicy = item.getProducedNodePolicy();
+            if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
+                if (getProducedNodePolicy() == DOCKABLE || getProducedNodePolicy() == BOTH) {
+                    System.err.println("PalettePane makeDockable value = " + value);
+                    DockRegistry.makeDockable((Node) value);
+                    Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
+                    ((Node) value).setId("PALETTE_NODE");
+                }
+            }
+        }
+    }
+
+    public void setCustomizer(Object value) {
+        if ( !(value instanceof Node) ) {
+            return;
+        }
+        PaletteItem item = getModel().getItem(value.getClass());
+        if (item != null) {
+            if (getModel().getCustomizer() != null) {
+                getModel().getCustomizer().customize(value);
+            }
+            if (item.getCustomizer() != null) {
+                item.getCustomizer().customize(value);
+            }
+
+            if ((value instanceof Node) && item.getEventDispatcher() != null) {
+                try {
+                    PaletteEventDispatcher ped = item.getEventDispatcher().getClass().newInstance();
+                    ped.setPreventCondition(item.getEventDispatcher().getPreventCondition());
+                    ped.start((Node) value);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
+    }
+
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
-    
+
     /**
      * Sets the custom customizer of the palette paletteModel.
      *
@@ -171,6 +247,7 @@ public class PalettePane extends Control {
     public void setDragValueCustomizer(DragValueCustomizer customizer) {
         getModel().setCustomizer(customizer);
     }
+
     public ObjectProperty<NodePolicy> producedNodePolicy() {
         return producedNodePolicy;
     }
@@ -293,39 +370,39 @@ public class PalettePane extends Control {
 
         Label lb = new Label("Docking");
         PaletteCategory pc = paletteModel.addCategory("docking", lb);
-        lb.getStyleClass().add("tree-item-font-bold");        
-        
+        lb.getStyleClass().add("tree-item-font-bold");
+
         lb = new Label("DockPane");
         pc.addItem(lb, DockPane.class);
         lb.getStyleClass().add("tree-item-node-dockpane");
-        lb.applyCss();     
-        
+        lb.applyCss();
+
         lb = new Label("HPane");
         PaletteItem item = pc.addItem(lb, HPane.class);
         item.setProducedNodePolicy(NodePolicy.NONE);
         lb.getStyleClass().add("tree-item-node-hpane");
-        lb.applyCss();     
-        
+        lb.applyCss();
+
         lb = new Label("VPane");
         item = pc.addItem(lb, VPane.class);
         item.setProducedNodePolicy(NodePolicy.NONE);
         lb.getStyleClass().add("tree-item-node-vpane");
-        lb.applyCss();     
-        
+        lb.applyCss();
+
         lb = new Label("DockNode");
         item = pc.addItem(lb, DockNode.class);
         lb.getStyleClass().add("tree-item-node-docknode");
-        lb.applyCss();     
-        
+        lb.applyCss();
+
         lb = new Label("DockTitleBar");
         item = pc.addItem(lb, DockTitleBar.class);
         item.setProducedNodePolicy(NodePolicy.NONE);
         lb.getStyleClass().add("tree-item-node-docktitlebar");
-        lb.applyCss();            
+        lb.applyCss();
         //
         // Containers Category
         //
-        
+
         lb = new Label("Containers");
         pc = paletteModel.addCategory("containers", lb);
         lb.getStyleClass().add("tree-item-font-bold");
@@ -341,7 +418,10 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("BorderPane");
-        pc.addItem(lb, BorderPane.class, node -> { ((Pane)node).setPrefSize(100, 100); ((Pane)node).setMinHeight(100);});
+        pc.addItem(lb, BorderPane.class, node -> {
+            ((Pane) node).setPrefSize(100, 100);
+            ((Pane) node).setMinHeight(100);
+        });
         lb.getStyleClass().add("tree-item-node-borderpane");
         lb.applyCss();
 
@@ -415,7 +495,9 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("Button");
-        pc.addItem(lb, Button.class, n -> { ( (Button)n).setFocusTraversable(false); });
+        pc.addItem(lb, Button.class, n -> {
+            ((Button) n).setFocusTraversable(false);
+        });
         lb.getStyleClass().add("tree-item-node-button");
 
         lb = new Label("CheckBox");
@@ -436,8 +518,9 @@ public class PalettePane extends Control {
         lb = new Label("ComboBox");
         item = pc.addItem(lb, ComboBox.class);//, n -> { ( (ComboBox)n).setVisibleRowCount(0);( (ComboBox)n).armedProperty().set(false);});
         lb.getStyleClass().add("tree-item-node-combobox");
-        item.setEventDispatcher(new MouseEventDispatcher( n -> { return ((ComboBox) n).getItems().isEmpty();} ));
-        
+        item.setEventDispatcher(new MouseEventDispatcher(n -> {
+            return ((ComboBox) n).getItems().isEmpty();
+        }));
 
         lb = new Label("ListView");
         pc.addItem(lb, ListView.class);
@@ -838,6 +921,7 @@ public class PalettePane extends Control {
          * Creates a new instance of the class. The created object has the
          * property {@code customizer} set to the object of type
          * {@link DefaultDragValueCustomizer}.
+         *
          * @param palette the palette this model belongs to
          */
         public PaletteModel(PalettePane palette) {
@@ -912,6 +996,19 @@ public class PalettePane extends Control {
             return retval;
         }
 
+        public PaletteItem getItem(Class<?> valueClass) {
+            PaletteItem retval = null;
+            for (PaletteCategory pc : categories) {
+                for (PaletteItem it : pc.getItems()) {
+                    if (it.getValueClass().equals(valueClass)) {
+                        retval = it;
+                        break;
+                    }
+                }
+            }
+            return retval;
+        }
+
         /**
          * Creates a new instance of type {@link PaletteCategory} and adds it to
          * the end of the categories list.
@@ -955,6 +1052,7 @@ public class PalettePane extends Control {
         }
 
         public PalettePane getPalette() {
+
             return palette;
         }
 
@@ -977,6 +1075,7 @@ public class PalettePane extends Control {
             if (!ev.isPrimaryButtonDown()) {
                 return;
             }
+
             PalettePane palette = item.getModel().getPalette();
             try {
                 Object value = item.getValueClass().newInstance();
@@ -984,7 +1083,10 @@ public class PalettePane extends Control {
                     NodePolicy itemPolicy = item.getProducedNodePolicy();
                     if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
                         if (palette.getProducedNodePolicy() == DOCKABLE || palette.getProducedNodePolicy() == BOTH) {
+                            System.err.println("PalettePane makeDockable value = " + value);
                             DockRegistry.makeDockable((Node) value);
+                            Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
+                            ((Node) value).setId("PALETTE_NODE");
                         }
                     }
                 }
@@ -1000,7 +1102,10 @@ public class PalettePane extends Control {
 
                             }
                             if (lc != null) {
+                                System.err.println("PalettePane makeDockLayout value = " + value);
                                 DockRegistry.makeDockLayout((Node) value, lc);
+
+                                lc.getScopes().add(new Scope("designer"));
                             }
                         }
                     }
@@ -1015,7 +1120,7 @@ public class PalettePane extends Control {
                 if ((value instanceof Node) && item.getEventDispatcher() != null) {
                     //item.getEventDispatcher().start((Node) value);
                     PaletteEventDispatcher ped = item.getEventDispatcher().getClass().newInstance();
-                    ped.setPreventCondition( item.getEventDispatcher().getPreventCondition());
+                    ped.setPreventCondition(item.getEventDispatcher().getPreventCondition());
                     ped.start((Node) value);
                 }
 
@@ -1057,6 +1162,7 @@ public class PalettePane extends Control {
 
     @FunctionalInterface
     public static interface DragValueCustomizer<T> {
+
         void customize(T value);
     }
 
@@ -1099,8 +1205,11 @@ public class PalettePane extends Control {
     public static interface PaletteEventDispatcher extends EventDispatcher {
 
         void start(Node node);
-        Predicate<Node> getPreventCondition(); 
-        void  setPreventCondition(Predicate<Node> preventCondition);   
+
+        Predicate<Node> getPreventCondition();
+
+        void setPreventCondition(Predicate<Node> preventCondition);
+
         void finish(Node node);
 
     }
@@ -1189,7 +1298,6 @@ public class PalettePane extends Control {
         public void finish(Node node) {
             node.setEventDispatcher(initial);
         }
-
 
     }
 

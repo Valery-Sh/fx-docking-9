@@ -27,12 +27,12 @@ public class Scope {
      * The identifier of the scope
      */
     private final Object id;
-    private BiPredicate<LayoutContext,Dockable> filter; 
+    private BiPredicate<LayoutContext,DockableContext> filter; 
 
     public Scope(Object id) {
         this.id = id;
     }
-    public Scope(Object id, BiPredicate<LayoutContext,Dockable> filter) {
+    public Scope(Object id, BiPredicate<LayoutContext,DockableContext> filter) {
         this.id = id;
         this.filter = filter;
     }
@@ -58,12 +58,34 @@ public class Scope {
         return true;
     }
 
-    public BiPredicate<LayoutContext, Dockable> getFilter() {
+    public BiPredicate<LayoutContext,DockableContext> getFilter() {
         return filter;
     }
 
-    public void setFilter(BiPredicate<LayoutContext, Dockable> filter) {
+    public Object getId() {
+        return id;
+    }
+
+    public void setFilter(BiPredicate<LayoutContext,DockableContext> filter) {
         this.filter = filter;
     }
     
+    public static boolean test(Scope layoutScope, Scope dockableScope) {
+
+        Scope ls = layoutScope;
+        Scope ds = dockableScope;
+        if ( layoutScope == null ) {
+            ls = new Scope("default");
+        }
+        if ( dockableScope == null ) {
+            ds = new Scope("default");
+        }
+        boolean test = false;
+        System.err.println("(ls.id == ds.id) = " + (ls.getId().equals(ds.getId())));
+        if ( ls.getId().equals(ds.getId())) {
+            test = true;
+        }
+        System.err.println("evaluate retval = " + test);
+        return test;
+    }
 }

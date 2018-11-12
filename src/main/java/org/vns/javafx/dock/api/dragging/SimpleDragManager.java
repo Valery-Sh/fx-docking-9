@@ -240,7 +240,8 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             floatingWindow.setX(ev.getScreenX() - leftDelta - getStartMousePos().getX());
             floatingWindow.setY(ev.getScreenY() - topDelta - getStartMousePos().getY());
         }
-
+//        System.err.println("SimoleDragManager node = " + getDockable().node());
+//        System.err.println("SimoleDragManager context.isAcceptable = " + getDockable().getContext().isAcceptable());
         if ( ! getDockable().getContext().isAcceptable()) {
             return;
         }
@@ -298,7 +299,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             node = Dockable.of(o).node();
         }
         boolean accept = node != tc.getLayoutNode();
-
+        
+/*        System.err.println("1 SimoleDragManager root = " + root);
+        System.err.println("1 SimoleDragManager DockLayout.of(root).getLayoutContext() = " + DockLayout.of(root).getLayoutContext());
+        System.err.println("1 SimoleDragManager accept = " + accept);
+        System.err.println("1 SimoleDragManager isAcceptable = " + DockLayout.of(root).getLayoutContext().isAcceptable(getDockable()));
+*/        
         if (!accept || ! DockLayout.of(root).getLayoutContext().isAcceptable(getDockable())) {
             return;
         }

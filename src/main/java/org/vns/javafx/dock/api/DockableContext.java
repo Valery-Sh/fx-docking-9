@@ -11,6 +11,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -75,6 +77,9 @@ public class DockableContext {
     private LayoutContext scenePaneContext;
 
     private boolean draggable;
+    
+    private ObservableSet<Scope> scopes = FXCollections.observableSet();
+    
 
     /**
      * dock layout pane
@@ -115,6 +120,10 @@ public class DockableContext {
         layoutContext.set(scenePaneContext);
 
         layoutContext.addListener(this::layoutContextChanged);
+    }
+
+    public ObservableSet<Scope> getScopes() {
+        return scopes;
     }
 
     public ContextLookup getLookup() {

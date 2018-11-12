@@ -86,7 +86,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
 //                System.err.println("TreeItemListChangelistener. onChanged added size = " + list.size());
 
                 list.forEach(elem -> {
-//                    System.err.println("TreeItemListChangelistener. onChanged added = " + elem);
+                    System.err.println("TreeItemListChangelistener. onChanged added = " + elem);
                     TreeItemEx it = new TreeItemBuilder().build(elem);
                     it.setExpanded(false);
                     itemList.add(it);

@@ -29,6 +29,8 @@ import org.vns.javafx.designer.TreeItemEx.ItemType;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.CONTENT;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.DEFAULTLIST;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.LIST;
+import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 
@@ -41,16 +43,36 @@ public class TreeItemBuilder {
     public static final String ACCEPT_TYPES_KEY = "tree-item-builder-accept-types";
     public static final String CELL_UUID = "uuid-29a4b479-0282-41f1-8ac8-21b4923235be";
     public static final String NODE_UUID = "uuid-f53db037-2e33-4c68-8ffa-06044fc10f81";
-
-    public TreeItemBuilder() {
+    
+    private final boolean designer;
+            
+    public TreeItemBuilder(boolean designer) {
+        this.designer = designer;
 
     }
-
+    public TreeItemBuilder() {
+        this(true);
+    }
+    private void setContexts(Object obj) {
+        if ( ! designer ) {
+            return;
+        }
+        System.err.println("TreeItemBuilder setContexts obj = " + obj);
+        PalettePane palette = DesignerLookup.lookup(PalettePane.class);
+        if ( palette == null ) {
+            return;
+        }
+        palette.setLayoutContext(obj);
+        palette.setDockableContext(obj);
+        palette.setCustomizer(obj);
+        
+    }
     public TreeItemEx build(Object obj) {
         return build(obj, null);
     }
 
     protected TreeItemEx build(Object obj, NodeElement p) {
+        setContexts(obj);
         TreeItemEx retval;
         if (p != null && (p instanceof NodeContent)) {
             retval = createContentItem(obj, (NodeContent) p);

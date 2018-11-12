@@ -101,12 +101,11 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-//        System.err.println("DOCK: dockable.node() = " + dockable.node());
+        
         Dockable d = dockable;
         Window window = null;
-//        System.err.println("1. dock() dockable = " + dockable.node());
+
         DragContainer dc = dockable.getContext().getDragContainer();
-//        System.err.println("2. dock() dc = " + dc);
 
         if (dc != null && dc.getValue() != null) {
             window = dc.getFloatingWindow(dockable);
@@ -236,9 +235,10 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
         return getDragIndicatorManager().getDragIndicator();
     }
 
-    @Override
+   @Override
     public boolean isAcceptable(Dockable dockable) {
-        return true;
+        //return true;
+        return super.isAcceptable(dockable);
     }
 
     protected boolean acceptValue(Point2D mousePos, Object value) {

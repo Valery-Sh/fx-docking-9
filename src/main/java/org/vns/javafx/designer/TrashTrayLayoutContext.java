@@ -21,6 +21,7 @@ import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.DragContainer;
 import org.vns.javafx.dock.api.LayoutContext;
+import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.indicator.DefaultPositionIndicator;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -32,6 +33,13 @@ public class TrashTrayLayoutContext extends LayoutContext {
 
     public TrashTrayLayoutContext(Node layoutNode) {
         super(layoutNode);
+        setContext();
+    }
+    private void setContext() {
+        TrashTray t = (getLayoutNode() instanceof TrashTray) ? (TrashTray)getLayoutNode() : null ;
+        if ( t != null && t.isDesigner() ) {
+            getScopes().add(new Scope("designer"));
+        }
     }
 
     @Override

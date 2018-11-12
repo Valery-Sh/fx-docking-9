@@ -26,6 +26,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -64,7 +65,8 @@ public class DemoDesigner1 extends Application {
         rootDockPane.setUsedAsDockLayout(false);
         StackPane root = new StackPane(rootDockPane);
         root.setId("mainStage " + root.getClass().getSimpleName());
-
+        //DesignerLookup.putUnique(SceneGraphView.class, new SceneGraphView(root, true));
+        DesignerLookup.putUnique(SceneGraphView.class, new SceneGraphView(true));
         SceneGraphView sceneGraphView = DesignerLookup.lookup(SceneGraphView.class);
         sceneGraphView.setPrefHeight(1000);
         //sceneGraphView.setOpacity(0.2);
@@ -80,15 +82,27 @@ public class DemoDesigner1 extends Application {
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
         VBox root1 = new VBox();
-        root1.getChildren().add(new Label("root1 Label"));
+        HBox hbox = new HBox(new Label("root1 Label"));
+        root1.getChildren().add(hbox);
         root1.setId("root1");
         sceneGraphView.setRoot(root1);
 
         StackPane sp = new StackPane(root1);
-        //StackPane sp = new StackPane();
+        sceneGraphView.rootProperty().addListener((v,ov,nv) -> {
+            if ( ov != null ) {
+                sp.getChildren().remove(ov);
+            }
+            if ( nv != null ) {
+                sp.getChildren().add(nv);
+            } else {
+                
+            }
+        });
+        
         root1.setStyle("-fx-background-color: white;");
         //rightPaneRoot.setStyle("-fx-background-color: SIENNA; -fx-padding: 10 10 10 10");
         sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");
+        //Scene scene1 = new Scene(sp);
         Scene scene1 = new Scene(sp);
         //sceneGraphView.getRootLayout().getChildren().add(root1);
         //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
