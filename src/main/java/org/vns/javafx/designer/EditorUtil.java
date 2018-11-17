@@ -1,17 +1,24 @@
 package org.vns.javafx.designer;
 
 import com.sun.javafx.stage.StageHelper;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -74,11 +81,11 @@ public class EditorUtil {
     }
 
     public static Bounds getIntersection(Bounds b1, Bounds b2) {
-        
-        if ( ! b1.intersects(b2)) {
+
+        if (!b1.intersects(b2)) {
             return null;
         }
-        
+
         double x, y, w, h;
         Bounds ib; // internal
         Bounds eb; // external
@@ -117,7 +124,7 @@ public class EditorUtil {
             eb = b1;
             y = b2.getMinY();
         }
-        
+
         iCoord = ib.getMinY();
         iDimention = ib.getHeight();
         eCoord = eb.getMinY();
@@ -139,7 +146,7 @@ public class EditorUtil {
     public static Bounds translate(Bounds b1, double x, double y) {
         return Transform.translate(x, y).transform(b1);
     }
-    
+
     public static Bounds screenInsetsFreeBounds(Region node) {
         Bounds b = node.localToScreen(node.getBoundsInLocal());
         Insets ins = node.getInsets();
@@ -151,7 +158,7 @@ public class EditorUtil {
     }
 
     public static TreeItemEx findTreeItemByObject(TreeView treeView, Object sourceGesture) {
-        if ( treeView.getRoot() != null && treeView.getRoot().getValue() == sourceGesture) {
+        if (treeView.getRoot() != null && treeView.getRoot().getValue() == sourceGesture) {
             return (TreeItemEx) treeView.getRoot();
         }
         return findChildTreeItem((TreeItemEx) treeView.getRoot(), sourceGesture);
@@ -159,11 +166,11 @@ public class EditorUtil {
 
     protected static TreeItemEx findChildTreeItem(TreeItemEx item, Object sourceGesture) {
         TreeItemEx retval = null;
-        if ( item == null || item.getChildren().isEmpty() ) {
+        if (item == null || item.getChildren().isEmpty()) {
             return null;
         }
         for (TreeItem it : item.getChildren()) {
-            if ( it.getValue() == sourceGesture) {
+            if (it.getValue() == sourceGesture) {
                 retval = (TreeItemEx) it;
                 break;
             }
@@ -174,28 +181,31 @@ public class EditorUtil {
         }
         return retval;
     }
+
     protected static TreeItemEx findByTreeItemObject(TreeItemEx item) {
-        if ( item.getValue() == null ) {
+        if (item.getValue() == null) {
             return null;
         }
-        TreeItemEx  root = findRootTreeItem(item);
+        TreeItemEx root = findRootTreeItem(item);
         return findChildTreeItem(root, item.getValue());
-    }    
+    }
+
     protected static TreeItemEx findRootTreeItem(TreeItemEx item) {
-        TreeItemEx  root = item;
-        TreeItemEx  retval = null;
-        while ( root != null  ) {
+        TreeItemEx root = item;
+        TreeItemEx retval = null;
+        while (root != null) {
             retval = root;
             root = (TreeItemEx) root.getParent();
-            
+
         }
         return retval;
     }
+
     public static TreeItemEx findTreeItem(TreeViewEx treeView, double x, double y) {
         TreeItemEx retval = null;
         int count = treeView.getExpandedItemCount();
         for (int i = 0; i < count; i++) {
-            TreeCell cell = (TreeCell) ((TreeItemEx)treeView.getTreeItem(i)).getCellGraphic().getParent();
+            TreeCell cell = (TreeCell) ((TreeItemEx) treeView.getTreeItem(i)).getCellGraphic().getParent();
             if (cell == null) {
                 continue;
             }
@@ -232,38 +242,117 @@ public class EditorUtil {
 
         return retval;
     }
-    
+
     public static String changeNodeStyle(String oldStyle, String newStyle) {
         String retval = "";
-        if ( oldStyle == null || oldStyle.trim().isEmpty() || newStyle == null || newStyle.trim().isEmpty() ) {
+        if (oldStyle == null || oldStyle.trim().isEmpty() || newStyle == null || newStyle.trim().isEmpty()) {
             retval = newStyle;
         } else {
-            String[] oldStyles = oldStyle.split(";");            
+            String[] oldStyles = oldStyle.split(";");
             String[] newStyles = newStyle.split(";");
-            Map<String,String> oldMap = new HashMap<>(); 
-            Map<String,String> newMap = new HashMap<>(); 
-            
-            for ( String s : oldStyles ) {
+            Map<String, String> oldMap = new HashMap<>();
+            Map<String, String> newMap = new HashMap<>();
+
+            for (String s : oldStyles) {
                 String[] kv = s.split(":");
                 String key = kv[0].trim();
                 String val = kv[1].trim();
-                oldMap.put(key,val);
+                oldMap.put(key, val);
             }
-            for ( String s : newStyles ) {
+            for (String s : newStyles) {
                 String[] kv = s.split(":");
                 String key = kv[0].trim();
                 String val = kv[1].trim();
-                newMap.put(key,val);
+                newMap.put(key, val);
             }
-            newMap.forEach((k,v) -> {
+            newMap.forEach((k, v) -> {
                 oldMap.put(k, v);
             });
             StringBuilder sb = new StringBuilder(retval);
-            oldMap.forEach((k,v) -> {
+            oldMap.forEach((k, v) -> {
                 sb.append(k + ":" + v + ";");
             });
             retval = sb.toString();
         }
         return retval;
     }
+
+    public static List<Node> getChildren(Node child) {
+        Parent p = child.getParent();
+        if (child.getParent() == null) {
+            return null;
+        }
+        ObservableList list = null;
+        Class<?> c = p.getClass();
+        Method method;
+        try {
+            method = c.getDeclaredMethod("getChildren");
+            method.setAccessible(true);
+            list = (ObservableList) method.invoke(p);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            
+        }
+        return list;
+    }
+    public static List<Node> getChildrenOf(Parent p) {
+        
+
+        ObservableList list = null;
+        
+        if ( p instanceof Pane ) {
+            list = ((Pane)p).getChildren();
+        }        
+        if ( list != null ) {
+            return list;
+        }
+        Class<?> c = p.getClass();
+        Method method;
+        try {
+            method = c.getDeclaredMethod("getChildren");
+            method.setAccessible(true);
+            list = (ObservableList) method.invoke(p);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            
+        }
+        return list;
+    }
+    
+    public static boolean addToParentOf(Node child, Node toAdd) {
+        boolean retval = false;
+        List children = getChildren(child);
+        if ( children != null ) {
+            retval = true;
+            int idx = children.indexOf(child);
+            children.add(idx,toAdd);
+        }
+        return retval;
+    }
+    public static boolean removeFromParentOf(Node child, Node toRemove) {
+        boolean retval = false;
+        List children = getChildren(child);
+        if ( children != null ) {
+            retval = true;
+            children.remove(toRemove);
+        }
+        return retval;
+    }    
+ public static boolean addToParent(Parent parent, Node toAdd) {
+        boolean retval = false;
+        List children = getChildrenOf(parent);
+        if ( children != null ) {
+            retval = true;
+            children.add(toAdd);
+        }
+        return retval;
+    }
+    public static boolean removeFromParent(Parent parent, Node toRemove) {
+        boolean retval = false;
+
+        List children = getChildrenOf(parent);
+        if ( children != null ) {
+            retval = true;
+            children.remove(toRemove);
+        }
+        return retval;
+    }        
 }

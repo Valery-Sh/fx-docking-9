@@ -17,9 +17,12 @@
 package org.vns.javafx.designer.demo;
 
 import com.sun.javafx.stage.StageHelper;
+import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.Observable;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -27,6 +30,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -40,7 +44,7 @@ import org.vns.javafx.dock.api.LayoutContextFactory;
 
 import org.vns.javafx.designer.PalettePane;
 import org.vns.javafx.designer.DesignerLookup;
-import org.vns.javafx.designer.SceneGraphView;
+import org.vns.javafx.designer.SceneView;
 import org.vns.javafx.designer.TrashTray;
 import org.vns.javafx.dock.api.dragging.DragManager;
 
@@ -52,6 +56,10 @@ public class DemoDesigner1 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        if ( null instanceof Node) {
+            System.err.println("NULL !!!!!!!");
+        }
+        System.err.println("");
         StageHelper.getStages().addListener((Observable c) -> {
             System.err.println("stages.size() = " + StageHelper.getStages().size());
         });
@@ -66,8 +74,8 @@ public class DemoDesigner1 extends Application {
         StackPane root = new StackPane(rootDockPane);
         root.setId("mainStage " + root.getClass().getSimpleName());
         //DesignerLookup.putUnique(SceneGraphView.class, new SceneGraphView(root, true));
-        DesignerLookup.putUnique(SceneGraphView.class, new SceneGraphView(true));
-        SceneGraphView sceneGraphView = DesignerLookup.lookup(SceneGraphView.class);
+        DesignerLookup.putUnique(SceneView.class, new SceneView(true));
+        SceneView sceneGraphView = DesignerLookup.lookup(SceneView.class);
         sceneGraphView.setPrefHeight(1000);
         //sceneGraphView.setOpacity(0.2);
         DockNode formDockNode = new DockNode("Form Designer");
@@ -81,54 +89,58 @@ public class DemoDesigner1 extends Application {
         LayoutContext ctx = ctxFactory.getContext(formPane);
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
+        //VBox root1 = new VBox();
         VBox root1 = new VBox();
         HBox hbox = new HBox(new Label("root1 Label"));
         root1.getChildren().add(hbox);
         root1.setId("root1");
         sceneGraphView.setRoot(root1);
 
-        StackPane sp = new StackPane(root1);
+        StackPane sp = new StackPane();
+        //StackPane sp = new StackPane(root1);
+        Scene scene1 = new Scene(root1);
+        //root1.setStyle("-fx-padding: 5 5 5 5");
+        
+        System.err.println("!!!!create sp children.size() = " + sp.getChildren().size());
         sceneGraphView.rootProperty().addListener((v,ov,nv) -> {
             if ( ov != null ) {
-                sp.getChildren().remove(ov);
+                System.err.println("before remove children.size() = " + sp.getChildren().size());
+                //sp.getChildren().remove(ov);
+                System.err.println("after remove children.size() = " + sp.getChildren().size());
             }
             if ( nv != null ) {
-                sp.getChildren().add(nv);
+                System.err.println("before add children.size() = " + sp.getChildren().size());
+                //sp.getChildren().add(nv);
+                System.err.println("after children.size() = " + sp.getChildren().size());
+              //&&&14.11  nv.toBack();
             } else {
                 
             }
         });
         
-        root1.setStyle("-fx-background-color: white;");
+        root1.setStyle("-fx-background-color: white;-fx-padding: 5 5 5 5");
         //rightPaneRoot.setStyle("-fx-background-color: SIENNA; -fx-padding: 10 10 10 10");
         sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");
         //Scene scene1 = new Scene(sp);
-        Scene scene1 = new Scene(sp);
-        //sceneGraphView.getRootLayout().getChildren().add(root1);
-        //Scene scene1 = new Scene(sceneGraphView.getRootLayout());
-        formButton.setOnAction(a -> {
-            System.err.println("root1 = " + sceneGraphView.getRoot());
-            SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
-            sp.getChildren().add(sceneGraphView.getRoot());
-            sceneGraphView.getRoot().setStyle("-fx-background-color: white;");
-            //sgv.save();
-            /*            TreeItemEx it = (TreeItemEx) sceneGraphView.getTreeView().getSelectionModel().getSelectedItem();
-            System.err.println("SELECTED = " + it);
-            if (it != null) {
-                System.err.println("SELECTED value = " + it.getValue());
-                DockRegistry.lookup(Selection.class).removeSelected(it.getValue());
-                DockRegistry.lookup(Selection.class).setSelected(it.getValue());
+        
+        sp.getChildren().addListener((Change<? extends Node> c) -> {
+            while (c.next()) {
+                if ( c.wasAdded() ) {
+                    System.err.println("*** added size = " + c.getAddedSize());
+                    for ( Node n1 : c.getAddedSubList()) {
+                        System.err.println("   --- added node = " + n1);
+                    }
+                }
             }
-             */
-//            ((Region)sceneGraphView.getRoot()).requestLayout();
-//            DockRegistry.getWindows().forEach(w -> {
-/*                System.err.println("******************** w = " + w.getScene().getRoot().getId());
-                System.err.println("******************** w = " + w.getScene().getRoot().isVisible());
-                System.err.println("******************** w.isShowing() = " + w.isShowing());
-                System.err.println("DockRegistry FOCUSED WIN.bounds = " + w.getScene().getRoot().localToScreen(w.getScene().getRoot().getBoundsInLocal()));
-
-                System.err.println("=============================================");
-             */
+        } );
+        formButton.setOnAction(a -> {
+            System.err.println("CHILD COUNT = " + ((Pane)root1.getScene().getRoot()).getChildren().size());
+            System.err.println("   --- root1.size = " + root1.getChildren().size());
+            System.err.println("   --- hbox.size = " + hbox.getChildren().size());
+            
+            //SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+            //sp.getChildren().add(sceneGraphView.getRoot());
+            //sceneGraphView.getRoot().setStyle("-fx-background-color: white;");
         });
 
         root1.setId("root1 " + root.getClass().getSimpleName());
@@ -201,7 +213,7 @@ public class DemoDesigner1 extends Application {
         */
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         System.err.println("getUserAgent = " + Application.getUserAgentStylesheet());
-        
+        System.err.println("Show window children.size() = " + sp.getChildren().size());        
         //Dockable.initDefaultStylesheet(null);
     }
 
@@ -217,4 +229,5 @@ public class DemoDesigner1 extends Application {
         launch(args);
     }
 
+  
 }

@@ -177,7 +177,6 @@ public class PalettePane extends Control {
                         lc = f.getContext((Node) value);
                     }
                     if (lc != null) {
-                        System.err.println("PalettePane makeDockLayout value = " + value);
                         DockRegistry.makeDockLayout((Node) value, lc);
 
                         lc.getScopes().add(new Scope("designer"));
@@ -197,7 +196,6 @@ public class PalettePane extends Control {
             NodePolicy itemPolicy = item.getProducedNodePolicy();
             if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
                 if (getProducedNodePolicy() == DOCKABLE || getProducedNodePolicy() == BOTH) {
-                    System.err.println("PalettePane makeDockable value = " + value);
                     DockRegistry.makeDockable((Node) value);
                     Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
                     ((Node) value).setId("PALETTE_NODE");
@@ -1083,7 +1081,6 @@ public class PalettePane extends Control {
                     NodePolicy itemPolicy = item.getProducedNodePolicy();
                     if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
                         if (palette.getProducedNodePolicy() == DOCKABLE || palette.getProducedNodePolicy() == BOTH) {
-                            System.err.println("PalettePane makeDockable value = " + value);
                             DockRegistry.makeDockable((Node) value);
                             Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
                             ((Node) value).setId("PALETTE_NODE");
@@ -1102,7 +1099,6 @@ public class PalettePane extends Control {
 
                             }
                             if (lc != null) {
-                                System.err.println("PalettePane makeDockLayout value = " + value);
                                 DockRegistry.makeDockLayout((Node) value, lc);
 
                                 lc.getScopes().add(new Scope("designer"));

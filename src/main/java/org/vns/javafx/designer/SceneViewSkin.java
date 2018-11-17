@@ -21,6 +21,7 @@ import java.util.Set;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -33,16 +34,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.util.Pair;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -59,7 +53,7 @@ import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
  *
  * @author Valery Shyshkin
  */
-public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
+public class SceneViewSkin extends SkinBase<SceneView> {
 
     private Pane contentPane;
     private ScrollAnimation scrollAnimation;
@@ -69,9 +63,15 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         RectangleFrame.hideAll(getSkinnable().getRoot().getScene().getWindow());
     };
 
-    public SceneGraphViewSkin(SceneGraphView control) {
+    public SceneViewSkin(SceneView control) {
         super(control);
-        Dockable d = DockRegistry.makeDockable(getSkinnable().getTreeView());
+
+        if (control.getRoot() != null) {
+            createSceneGraph(control.getRoot());
+            scrollAnimation = new ScrollAnimation(control.getTreeView());
+        }
+
+        Dockable d = DockRegistry.makeDockable(control.getTreeView());
 
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
 
@@ -93,6 +93,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
+
         SceneGraphViewLayoutContext targetContext = (SceneGraphViewLayoutContext) DockLayout.of(getSkinnable()).getLayoutContext();
 
         targetContext.getLookup()
@@ -107,17 +108,13 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                 control.setRoot(null);
             }
         });
+
         control.statusParProperty().addListener(this::statusBarChanged);
 
         targetContext.mousePositionProperty().addListener(this::mousePosChange);
 
         getChildren().add(contentPane);
 
-        if (control.getRoot() != null) {
-            createSceneGraph(control.getRoot());
-            scrollAnimation = new ScrollAnimation(control.getTreeView());
-        } else {
-        }
         control.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, this::sceneMousePressed);
         control.rootProperty().addListener(this::rootChanged);
 
@@ -137,6 +134,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
     private void sceneMousePressed(MouseEvent ev) {
         TreeItemEx item = getSkinnable().getTreeItem(ev.getScreenX(), ev.getScreenY());
+
         if (ev.isSecondaryButtonDown()) {
             secondaryMousePressed(ev, item);
             return;
@@ -154,6 +152,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
     }
 
     private void secondaryMousePressed(MouseEvent ev, TreeItemEx item) {
+
         if (item == null || item.getValue() == null || !(item.getValue() instanceof Node)) {
 //            return;
         }
@@ -194,26 +193,24 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                     mi.setDisable(false);
                 }
                 mi.setOnAction(a -> {
+                    if (item == null || item.getValue() == null) {
+                        return;
+                    }
                     map.put(DataFormat.PLAIN_TEXT, "cut-item");
                     TreeViewEx.clipBoardContent = new Pair("cut-item", item.getValue());
                     cb.setContent(map);
 
                     if (tv.getRoot() == item) {
-                        System.err.println("CUT SET ROOT NULL");
                         getSkinnable().setRoot(null);
 
                     } else {
-
                         getSkinnable().getLayoutContext().undock(Dockable.of(item.getValue()));
                     }
-                    //getSkinnable().setContextMenu(null);
                 });
                 break;
             case "paste-cut-item":
-                System.err.println("SceneGraphView paste-cut-item TreeViewEx.clipBoardContent = " + TreeViewEx.clipBoardContent);
                 LayoutContext lc = getSkinnable().getLayoutContext();
                 if (TreeViewEx.clipBoardContent != null) {
-                    System.err.println("TreeViewEx.clipBoardContent != null");
                     Object v = TreeViewEx.clipBoardContent.getValue();
                     Dockable d = Dockable.of(v);
 
@@ -226,19 +223,20 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                     mi.setDisable(true);
                 }
                 mi.setOnAction(a -> {
-                    Object o = TreeViewEx.clipBoardContent.getValue();
-                    System.err.println("SceneGraphView o = " + o);
-                    if (getSkinnable().getRoot() != null && TreeViewEx.clipBoardContent != null) {
+                    if (TreeViewEx.clipBoardContent.getValue() == null) {
+                        return;
+                    }
+                    Object obj = TreeViewEx.clipBoardContent.getValue();
 
-                        System.err.println("SceneGraphView doc(o) = " + o);
+                    if (getSkinnable().getRoot() != null && TreeViewEx.clipBoardContent != null) {
                         Object v = TreeViewEx.clipBoardContent.getValue();
                         Dockable d = Dockable.of(v);
-
-                        lc.dock(point, d);
+                        if (d != null) {
+                            lc.dock(point, d);
+                        }
                         TreeViewEx.clipBoardContent = null;
-                    } else if (getSkinnable().getRoot() == null && (o instanceof Node)) {
-                        System.err.println("SceneGraphView setRoot = " + o);
-                        getSkinnable().setRoot((Node) o);
+                    } else if (getSkinnable().getRoot() == null && (obj instanceof Node)) {
+                        getSkinnable().setRoot((Node) obj);
                         TreeViewEx.clipBoardContent = null;
                     }
                 });
@@ -250,8 +248,8 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                 } else {
                     mi.setDisable(false);
                 }
-                mi.setOnAction(e -> {
-                    if (item.getValue() != null && (item.getValue() instanceof Node)) {
+                mi.setOnAction((ActionEvent e) -> {
+                    if (item != null && (item.getValue() instanceof Node)) {
                         ((Node) item.getValue()).toBack();
                     }
                 });
@@ -263,13 +261,11 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
                     mi.setDisable(false);
                 }
                 mi.setOnAction(e -> {
-                    if (item.getValue() != null && (item.getValue() instanceof Node)) {
+                    if (item != null && (item.getValue() instanceof Node)) {
                         ((Node) item.getValue()).toFront();
                     }
                 });
-
                 break;
-
         }//switch
     }
 
@@ -287,6 +283,7 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
             oldValue.getScene().heightProperty().removeListener(rootSceneSizeListener);
             oldValue.getScene().widthProperty().removeListener(rootSceneSizeListener);
         }
+        SceneView.removeFramePanes(oldValue);
         if (newValue == null) {
             getSkinnable().getTreeView().setRoot(null);
             return;
@@ -299,8 +296,23 @@ public class SceneGraphViewSkin extends SkinBase<SceneGraphView> {
 
     private void createSceneGraph(Node node) {
         if (node == null) {
+            getSkinnable().getTreeView().setRoot(null);
             return;
         }
+        /*        if (node == node.getScene().getRoot()) {
+            node.getStyleClass().clear();
+            Scene sc = node.getScene();
+            StackPane sp = new StackPane();
+            sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");
+            sc.setRoot(sp);
+            sp.getChildren().add(node);
+            getSkinnable().setRoot(node);
+            node.toBack();
+            
+        }
+         */
+        SceneView.addFramePanes(node);
+        
         LayoutContext lc = new LayoutContextFactory().getContext(getSkinnable().getRoot());
         DockRegistry.makeDockLayout(getSkinnable().getRoot(), lc);
         if (getSkinnable().isDesigner() && !containsDesignerScope(lc.getScopes())) {

@@ -69,7 +69,7 @@ public class AutoSaveRestore implements SaveRestore {
         //
         // Not removes from PalettePane or TrashTray. So we save the position in SceneGraphView
         //
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         if (sgv == null) {
             return;
         }
@@ -117,7 +117,7 @@ public class AutoSaveRestore implements SaveRestore {
         // Not removes from PalettePane or TrashTray. So we save the position in SceneGraphView
         //
 
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         if (sgv == null) {
             return;
         }
@@ -154,7 +154,7 @@ public class AutoSaveRestore implements SaveRestore {
         // Not removes from PalettePane or TrashTray. So we save the position in SceneGraphView
         //
 
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         TreeItemEx item = (sgv == null || obj == null) ? null : EditorUtil.findTreeItemByObject(sgv.getTreeView(), obj);
         TrashTray tray = DockRegistry.lookup(TrashTray.class);
         if (dragInitiator == TRASH_TRAY) {
@@ -239,7 +239,7 @@ public class AutoSaveRestore implements SaveRestore {
     @Override
     public void restoreExpanded(Object obj) {
 //        System.err.println("0 restoreExpanded obj = " + obj);
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         TreeItemEx item = (sgv == null || obj == null) ? null : EditorUtil.findTreeItemByObject(sgv.getTreeView(), obj);
 //        System.err.println("   --- item = " + item);
 //        System.err.println("   --- object = " + objectToSave);

@@ -12,10 +12,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Circle;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -50,7 +52,7 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 */
     private void init() {
-        SceneGraphView gv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView gv = DesignerLookup.lookup(SceneView.class);
 /*        if ( gv != null ) {
             gv.addTreeItemEventHandlers(this);
         }
@@ -159,7 +161,7 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public void registerChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        if (getValue() == null) {
+        if (getValue() == null || (getValue() instanceof RectangleFrame) || (getValue() instanceof Circle)) {
             return;
         }
         if ((getValue() instanceof Node)) {
@@ -196,8 +198,6 @@ public class TreeItemEx extends TreeItem<Object> {
                 changeListeners.put(p.getName(), changeListener);
             } else {
                 changeListener = new TreeItemObjectChangeListener(this, p.getName());
-                //System.err.println("TreeItemEx.registerChangeHandlers getValue.getClass = " + getValue().getClass().getSimpleName());                
-                //System.err.println("TreeItemEx.registerChangeHandlers p.getName = " + p.getName());                                
                 Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
                 Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
                 Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
@@ -209,7 +209,7 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public void unregisterChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (getValue() == null || changeListeners.isEmpty()) {
+        if (getValue() == null || changeListeners.isEmpty() || (getValue() instanceof RectangleFrame) || (getValue() instanceof Circle)) {
             return;
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());

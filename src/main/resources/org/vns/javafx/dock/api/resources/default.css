@@ -153,8 +153,8 @@
  *                                                                             *
  ******************************************************************************/
 .dock-node {
-      -fx-background-color: -fx-background;
-      -fx-padding: 2 2 2 2;
+    -fx-background-color: -fx-background;
+    -fx-padding: 2 2 2 2;
 }
 
 
@@ -164,16 +164,16 @@
  *                                                                         *
  **************************************************************************/
 .float-window-root {
-      -fx-background-color: -fx-background;
-      -fx-border-width: 1;
-      -fx-border-color: -fx-outer-border;
+    -fx-background-color: -fx-background;
+    -fx-border-width: 1;
+    -fx-border-color: -fx-outer-border;
 }
 
 /*******************************************
  *          DockSideBar
  *******************************************/   
 .sidebar {
-    
+
 }
 
 .sidebar > .tool-bar {
@@ -261,3 +261,46 @@
     -fx-graphic: url(close-white.png);
 } 
 
+/*****************************************************************
+ * Framing API
+ *****************************************************************/
+.rectangle-shape-control {
+    -fx-pref-width: 6;
+    -fx-pref-height: 6;
+}
+.circle-shape-control {
+    -fx-pref-width: 4;
+    -fx-pref-height: 4;
+}
+.shape-control .circle {
+    -fx-stroke-type: outside; 
+    -fx-stroke: rgb(255, 148, 40); 
+    -fx-stroke-width: 1; 
+    -fx-fill: white;
+}
+.shape-control .rectangle {
+    
+    -fx-stroke-type: inside; 
+    -fx-stroke: rgb(255, 148, 40); 
+    -fx-stroke-width: 2; 
+    -fx-fill: white;
+}
+
+.frame-control {
+    /*    -fx-pref-width: 100;
+        -fx-pref-height: 50;
+    */    
+}
+.frame-control .resizable {
+    -fx-stroke-type: inside; 
+    -fx-stroke: rgb(255, 148, 40); 
+    -fx-stroke-width: 1; 
+    -fx-fill: transparent;
+}
+
+.frame-control .not-resizable {
+    -fx-stroke-type: inside; 
+    -fx-stroke: rgb(255, 148, 40); 
+    -fx-stroke-width: 5; 
+    -fx-fill: transparent;
+}

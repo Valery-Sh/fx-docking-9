@@ -36,8 +36,9 @@ public class RectangularFraming extends AbstractNodeFraming {
     @Override
     protected void finalizeOnHide(Node node) {
         //super.finalizeOnHide(node);
-        rectangleFrame.setVisible(false);
+        //rectangleFrame.setVisible(false);
         //finalizeNode();
+        rectangleFrame.hide();
     }
 
     public RectangularFraming() {
@@ -67,18 +68,23 @@ public class RectangularFraming extends AbstractNodeFraming {
         return rectangleFrame;
     }
 
-
+    //protected void initializeOnShow(Node node) {
+        
+    //}
     @Override
     protected void initializeOnShow(Node node) {
         RectangleFrame shape = lookupShapeFraming();
         if (rectangleFrame != null && shape == null) {
-            ((Pane) node.getScene().getRoot()).getChildren().add(rectangleFrame);
+            if ( ! (rectangleFrame instanceof PopupRectangleFrame) ) {
+                ((Pane) node.getScene().getRoot()).getChildren().add(rectangleFrame);
+            }
         } else if (rectangleFrame == null && shape != null) {
             rectangleFrame = shape;
         } else if (rectangleFrame == null && shape == null) {
-            rectangleFrame = new RectangleFrame();
+            
+            rectangleFrame = new RectangleFrame();    
+            
             rectangleFrame.setId(id);
-
             ((Pane) node.getScene().getRoot()).getChildren().add(rectangleFrame);
             if (!applyCss) {
                 if (getStyle() != null) {
@@ -99,7 +105,7 @@ public class RectangularFraming extends AbstractNodeFraming {
         }
 
         rectangleFrame.bind(node);
-        rectangleFrame.setVisible(true);
+        rectangleFrame.show();
 
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {

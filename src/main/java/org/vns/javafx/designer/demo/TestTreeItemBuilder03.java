@@ -49,7 +49,7 @@ import javafx.stage.Stage;
 import org.vns.javafx.dock.DockBorderPane;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.designer.SceneGraphView;
+import org.vns.javafx.designer.SceneView;
 import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
@@ -169,7 +169,7 @@ public class TestTreeItemBuilder03 extends Application {
         //TreeView treeView = new TreeView(rootItem);
         
         //sceneGraphView.setDragType(DragType.DRAG_AND_DROP);
-        SceneGraphView sceneGraphView = new SceneGraphView(root);  
+        SceneView sceneGraphView = new SceneView(root);  
         btn1.setOnAction(v -> {
             sceneGraphView.getTreeView().getSelectionModel().selectRange(9,10);
             sceneGraphView.getTreeView().getFocusModel().focus(9);

@@ -19,17 +19,17 @@ import static org.vns.javafx.designer.TreeItemBuilder.NODE_UUID;
  */
 public abstract class DragEventHandler implements EventHandler<DragEvent> {
 
-    private final SceneGraphView editor;
+    private final SceneView editor;
     private final TreeCell dragTargetCell;
 
     /**
      * Creates a new instance of the class for the specified object of type
-     * {@link SceneGraphView} and an instance of {@code TreeCell}.
+     * {@link SceneView} and an instance of {@code TreeCell}.
      *
      * @param editor the object of type SceneGraphEdotor
      * @param targetCell the cell this object is creating for
      */
-    protected DragEventHandler(SceneGraphView editor, TreeCell targetCell) {
+    protected DragEventHandler(SceneView editor, TreeCell targetCell) {
         this.editor = editor;
         this.dragTargetCell = targetCell;
     }
@@ -220,11 +220,11 @@ public abstract class DragEventHandler implements EventHandler<DragEvent> {
     }
 
     /**
-     * Return an object of type {@link SceneGraphView }.
+     * Return an object of type {@link SceneView }.
      *
-     * @return an object of type {@link SceneGraphView }.
+     * @return an object of type {@link SceneView }.
      */
-    public SceneGraphView getSceneGraphView() {
+    public SceneView getSceneGraphView() {
         return editor;
     }
 

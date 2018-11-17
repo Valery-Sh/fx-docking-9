@@ -40,6 +40,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.transform.Transform;
+import javafx.stage.Popup;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 
@@ -49,6 +50,8 @@ import org.vns.javafx.dock.api.DockRegistry;
  */
 public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
+    private Popup popup;
+    
     public static String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
     //private Rectangle indicator;
 
@@ -104,9 +107,15 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
         initRect();
     }
 
+    public Popup getPopup() {
+        return popup;
+    }
+    
+    protected void setPopup(Popup popup) {
+        this.popup = popup;
+    }
     public static void hideAll(Window win) {
         Set<Node> set = win.getScene().getRoot().lookupAll("." + ID);
-        //System.err.println("Rectangleframe set.size() = " + set.size());
         for (Node node : set) {
             if ((node instanceof RectangleFrame) && node.getParent() == win.getScene().getRoot()) {
                 node.setVisible(false);
@@ -118,14 +127,12 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
         setStyle("-fx-stroke-type: inside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 2; -fx-fill: transparent");
     }
 
-    private void initBoundNode() {
+    protected void initBoundNode() {
         
         boundNodeListener = (v, ov, nv) -> {
             if (ov != null) {
                 ov.boundsInParentProperty().removeListener(boundsInParentListener);
-//                ov.parentProperty().removeListener(parentNodeListener);
                 ov.localToSceneTransformProperty().removeListener(localToSceneTransformListener);
-                
                 if (getSideShapes() != null) {
                     getSideShapes().unbind(); // to remove mouseEventListeners
                 }
@@ -134,9 +141,6 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
                 if (getSideShapes() != null) {
                     getSideShapes().bind(); // to remove mouseEventListeners
                 }
-                //System.err.println("initBoundNode ov=" + ov + "; nv=" + nv);
-                //nv.parentProperty().addListener(parentNodeListener);
-
                 nv.boundsInParentProperty().addListener(boundsInParentListener);
                 nv.localToSceneTransformProperty().addListener(localToSceneTransformListener);
 
@@ -147,12 +151,18 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             }
 
             if (nv == null) {
-                setVisible(false);
+                hide();
             } else {
-                setVisible(true);
+                show();
             }
         };
         boundNodeProperty().addListener(boundNodeListener);
+    }
+    protected void show() {
+        setVisible(true);
+    }
+    protected void hide() {
+        setVisible(false);     
     }
 
 
@@ -160,16 +170,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
         Platform.runLater(() -> {
             Bounds sb = getBoundNode().localToScene(getBoundNode().getLayoutBounds());
             Bounds pb = getBoundNode().localToScene(getBoundNode().parentToLocal(boundsInParent));
-/*            System.err.println("11 adjustBoundsToNode boundNode=" + getBoundNode());
-            System.err.println("11 adjustBoundsToNode boundNode.getParent=" + getBoundNode().getParent());
-            System.err.println("   --- adjustBoundsToNode min.y=" + sb.getMinY());
-            System.err.println("   --- adjustBoundsToNode pmin.y=" + pb.getMinY());
-            System.err.println("   --- adjustBoundsToNode y=" + getY());
-            System.err.println("   --- adjustBoundsToNode (boundsInParent.Width=" + boundsInParent.getWidth());
-            System.err.println("   --- adjustBoundsToNode (boundsInParent.Height=" + boundsInParent.getHeight());            
 
-            System.err.println("-----------------------------------------");
-*/
             setY(sb.getMinY());
             setX(sb.getMinX());
             setWidth(boundsInParent.getWidth());
@@ -291,7 +292,6 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             this.shapeFraming = selPane;
 
             indicator = shapeFraming;
-
             addToPane((Pane) indicator.getParent());
 
             if (getStyle() == null && getStyleClass().isEmpty()) {
@@ -334,7 +334,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             return shapeFraming != null;
         }
 
-        public Shape getShape(Cursor c) {
+/*        public Shape getShape(Cursor c) {
             Shape retval = null;
             if (c == Cursor.N_RESIZE) {
                 retval = nShape;
@@ -363,7 +363,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             }
             return retval;
         }
-
+*/
         public double getOffset() {
             return 0;
         }
@@ -378,15 +378,11 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
         }
 
         protected void removeShapeMouseEventHandlers(Shape shape) {
-            //System.err.println("removeShapeMouseEventHandlers " + shapeFraming.getBoundNode());            
             shape.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_MOVED, this);
             shape.removeEventFilter(MouseEvent.MOUSE_EXITED, this);
             shape.removeEventFilter(MouseEvent.DRAG_DETECTED, this);
-//            System.err.println("---------------------------------------------------------------------");            
-//            indicator.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-
         }
 
         protected void removeMouseExitedListener(Shape shape) {
@@ -409,7 +405,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
         protected void createShapes(Class<?> shapeClass) {
             try {
-
+                if ( nShape ==  null) {
                 remove(nShape);
                 nShape = (Shape) shapeClass.newInstance(); //north indicator
 
@@ -433,22 +429,19 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
                 remove(nwShape);
                 nwShape = (Shape) shapeClass.newInstance();   // north-west indicator            
-
+                }
                 initialize();
 
             } catch (InstantiationException | IllegalAccessException ex) {
-                System.err.println("EXCEPTION. " + ex.getMessage());
                 Logger.getLogger(SideShapes.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
         }
 
         protected void initialize() {
-
             initialize(nShape);
             nShape.setManaged(false);
             nShape.toFront();
-
             initialize(neShape);
 
             neShape.toFront();
@@ -517,7 +510,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
         }
 
-        private void setVisible(boolean visible) {
+        public void setVisible(boolean visible) {
             setVisible(nShape, visible);
             setVisible(neShape, visible);
             setVisible(eShape, visible);
@@ -542,8 +535,10 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
 
         }
 
-        private void bind() {
+        protected void bind() {
+            if ( false ) {
             unbind(nShape);
+            
             unbind(neShape);
             unbind(eShape);
             unbind(seShape);
@@ -552,10 +547,12 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             unbind(wShape);
             unbind(nwShape);
             removeShapeMouseEventHandlers();
-
+            }
+            
             initialize();
 
             bind(nShape);
+            
             bind(neShape);
             bind(eShape);
             bind(seShape);
@@ -641,6 +638,7 @@ public class RectangleFrame extends Rectangle { //implements NodeFraming{
             } else if (ev.getSource() == nwShape) {
                 handle(ev, nwShape, Cursor.NW_RESIZE);
             }
+            ev.consume();
         }
 
     }//class SideShapes

@@ -109,9 +109,7 @@ public abstract class Selection {
 
         protected void mousePressed(MouseEvent ev) {
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-//            System.err.println("SelectionHandler: framing = " + nf.getClass().getName());
             if (nf != null && (ev.getSource() instanceof Node)) {
-//                System.err.println("   --- show node=" + ev.getSource());
                 nf.show((Node) ev.getSource());
             }
             ev.consume();

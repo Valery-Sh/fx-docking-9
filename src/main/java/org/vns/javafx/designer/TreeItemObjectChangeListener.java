@@ -65,16 +65,9 @@ public class TreeItemObjectChangeListener implements ChangeListener {
 
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-        //System.err.println("------- oldValue = " + oldValue + "; newValue = " + newValue);
-        //System.err.println("TreeItemObjectChangeListener changed owner treeItem = " + treeItem);
-//        System.err.println("!!! propertyName=" + propertyName + "; treeItem.getValue() = " + treeItem.getValue());
-        if ("graphic".equals(propertyName)) {
-//            System.err.println("0 graphic oldValue = " + oldValue + "; newValue=" + newValue);
-        }
         Property prop = treeItem.getProperty(propertyName);
         TreeItemEx propItem = treeItem.getTreeItem(propertyName);
         int insertPos = propItem == null ? 0 : treeItem.getInsertPos(propertyName);
-        //System.err.println("TreeItemObjectChangeListener changed propertyName = " + propertyName +"; propItem = " + propItem);
         SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
         NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
 
@@ -87,10 +80,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     //
                     List<Boolean> expValues = downUpExpandedValues(treeItem);
                     treeItem.getChildren().add(insertPos, item);
-//                    System.err.println("treeItem is expanded = " + treeItem.isExpanded());
                     item.setExpanded(false);
-                    //restoreExpandedValues(treeItem, expValues);
-
                 } else {
                     treeItem.getChildren().add(insertPos, item);
                     if (nf != null && (newValue instanceof Node)) {

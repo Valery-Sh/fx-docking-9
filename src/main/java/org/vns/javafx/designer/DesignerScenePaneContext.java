@@ -45,7 +45,7 @@ public class DesignerScenePaneContext extends ScenePaneContext {
             return false;
         }
         
-        TreeViewEx tv = DesignerLookup.lookup(SceneGraphView.class).getTreeView();
+        TreeViewEx tv = DesignerLookup.lookup(SceneView.class).getTreeView();
         TreeItemEx item = EditorUtil.findTreeItemByObject(tv, obj);
   
         return Dockable.of(obj) != null && Dockable.of(obj).getContext().getLayoutContext() == this && item != null;
@@ -67,7 +67,7 @@ public class DesignerScenePaneContext extends ScenePaneContext {
         if (!contains(dockNode)) {
             return;
         }
-        TreeViewEx tv = DesignerLookup.lookup(SceneGraphView.class).getTreeView();
+        TreeViewEx tv = DesignerLookup.lookup(SceneView.class).getTreeView();
         TreeItemEx item = EditorUtil.findTreeItemByObject(tv, obj);        
         if ( item != null && item.getParent() == null ) {
             //
@@ -75,7 +75,7 @@ public class DesignerScenePaneContext extends ScenePaneContext {
             //
             //tv.setRoot(null); //09.11 was old: return;
             //return; // 09.11;
-            SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+            SceneView sgv = DesignerLookup.lookup(SceneView.class);
             if ( sgv.getRoot() == null ) {
                 return;
             }

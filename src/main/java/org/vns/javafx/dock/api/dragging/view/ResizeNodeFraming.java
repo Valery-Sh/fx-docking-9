@@ -30,16 +30,6 @@ public class ResizeNodeFraming extends RectangularFraming {
 
     private boolean applyCss;
 
-    @Override
-    protected void finalizeOnHide(Node node) {
-        super.finalizeOnHide(node);
-
-        //if (parentFraming != null) {
-        //    parentFraming.hide();
-        //}
-
-    }
-
     public ResizeNodeFraming() {
         super(RESIZE_RECT_ID, false);
 
@@ -66,10 +56,10 @@ public class ResizeNodeFraming extends RectangularFraming {
     @Override
     protected void initializeOnShow(Node node) {
         super.initializeOnShow(node);
+        System.err.println("ResizeNodeFraming: initializeOnShow node = " + node);
         createSideShapes();
 
 //        createParentFraming();
-
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {
             sel.notifySelected(node);
@@ -77,18 +67,22 @@ public class ResizeNodeFraming extends RectangularFraming {
 
     }
 
-  
     protected void createSideShapes() {
+        if (getRectangleFrame().getSideShapes() == null) {
+            System.err.println("ResizeNodeFraming createSideShapes getRectangleFrame().getBoundNode = " + getRectangleFrame().getBoundNode());
+            RectangleFrame.SideCircles sc = new RectangleFrame.SideCircles();
+            
+            sc.setRadius(2);
 
-        RectangleFrame.SideCircles sc = new RectangleFrame.SideCircles();
-        sc.setRadius(2);
-
-        if (!applyCss) {
-            sc.setDefaultStyle();
+            if (!applyCss) {
+                sc.setDefaultStyle();
+            } else {
+                sc.getStyleClass().add("side-shape");
+            }
+            getRectangleFrame().setSideShapes(sc);
         } else {
-            sc.getStyleClass().add("side-shape");
+            //getRectangleFrame().getSideShapes().setVisible(true);
         }
-        getRectangleFrame().setSideShapes(sc);
     }
 
 }

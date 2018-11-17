@@ -75,7 +75,7 @@ public class DesignerSelection extends Selection {
     @Override
     public void notifySelected(Object value) {
 //        System.err.println("notifySelected");
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         if (sgv != null) {
             TreeItemEx item;
             if (sgv.getTreeView().getRoot().getValue() == value) {

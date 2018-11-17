@@ -12,9 +12,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import static org.vns.javafx.designer.EditorUtil.screenTreeItemBounds;
-import static org.vns.javafx.designer.SceneGraphView.ANCHOR_OFFSET;
-import static org.vns.javafx.designer.SceneGraphView.FIRST;
-import static org.vns.javafx.designer.SceneGraphView.LAST;
+import static org.vns.javafx.designer.SceneView.ANCHOR_OFFSET;
+import static org.vns.javafx.designer.SceneView.FIRST;
+import static org.vns.javafx.designer.SceneView.LAST;
 
 /**
  *
@@ -35,7 +35,7 @@ public class DragIndicator {
     private final Pane indicatorPane = new Pane();
     private final Pane treeViewPane;
 
-    public DragIndicator(SceneGraphView sceneGraphView) {
+    public DragIndicator(SceneView sceneGraphView) {
         treeView = (TreeViewEx) sceneGraphView.getTreeView();
         this.treeViewPane = (Pane) treeView.getParent();
     }

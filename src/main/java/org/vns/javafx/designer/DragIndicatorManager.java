@@ -108,8 +108,8 @@ public class DragIndicatorManager implements IndicatorManager {
             dragIndicator.drawLines(fromItem, toItem);
         }
     }
-    private SceneGraphView getSceneGraphView() {
-        return (SceneGraphView)targetContext.getLayoutNode();
+    private SceneView getSceneGraphView() {
+        return (SceneView)targetContext.getLayoutNode();
     }
     @Override
     public PositionIndicator getPositionIndicator() {

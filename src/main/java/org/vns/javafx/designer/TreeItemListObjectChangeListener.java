@@ -21,10 +21,13 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -49,11 +52,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 if (!list.isEmpty()) {
                     SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
                     if (sr != null) {
-//                        System.err.println("TreeItemListChangelistener. onChanged removed size = " + list.size());
-//                        System.err.println("TreeItemListChangelistener. onChanged removed = " + list.get(list.size() - 1));
-//                        System.err.println("TreeItemListChangelistener. onChanged removed idx = " + change.getTo());
                         sr.save(list.get(list.size() - 1), change.getTo());
-
                     }
                 }
                 for (Object elem : list) {
@@ -63,7 +62,6 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             for (TreeItem ith : ((TreeItemEx) it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
-                                   //System.err.println("TreeItemListChangelistener. onChanged removed toRemove 1 = " + toRemove);
                                     it.getChildren().remove(toRemove);
                                     return;
                                 }
@@ -74,45 +72,46 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             break;
                         }
                     }
-//                    System.err.println("TreeItemListChangelistener. onChanged removed toRemove 2 = " + toRemove);
                     treeItem.getChildren().remove(toRemove);
-                    //13.03DockRegistry.lookup(Selection.class).removeSelected(toRemove.getValue());
                 }
 
             }
             if (change.wasAdded()) {
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
-//                System.err.println("TreeItemListChangelistener. onChanged added size = " + list.size());
-
                 list.forEach(elem -> {
-                    System.err.println("TreeItemListChangelistener. onChanged added = " + elem);
                     TreeItemEx it = new TreeItemBuilder().build(elem);
                     it.setExpanded(false);
                     itemList.add(it);
-                    //BeanDescriptorRegistry.getGraphDescriptor().register(elem);
                 });
 
                 treeItem.getChildren().addAll(change.getFrom(), itemList);
+                //treeItem.getChildren().addAll(itemList);
 
                 NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-                //if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
-                if (nf != null && (list.get(0)) instanceof Node) {
+                if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
+                //if (nf != null && (list.get(0)) instanceof Node) {
                     //
                     // We apply Platform.runLater because a list do not 
                     // has to be a children but for instance for SplitPane it
                     // is an items and an added node may be not set into scene graph
                     // immeduately
                     //
-                    nf.show((Node) list.get(list.size() - 1));
-                    Platform.runLater(() -> {
+                    //&&&nf.show((Node) list.get(list.size() - 1));
+                    Node n = (Node) list.get(list.size() - 1);
+                    if (!(n instanceof RectangleFrame) && !(n instanceof Circle)) {
                         nf.show((Node) list.get(list.size() - 1));
-//                        System.err.println("nf.show((Node) list.get(0) = " + list.get(0));
-//                        System.err.println("    --- itemList.size = " + itemList.size());
-                        //nf.show((Node) list.get(0));
-                        //                      System.err.println("itemList.get(0) = " + itemList.get(0));                        
-
+                        Platform.runLater(() -> {
+                            nf.show((Node) list.get(list.size() - 1));
+                        });
+                    }
+                    /*                  if ( ! filteredList.isEmpty()  ) {
+                    nf.show((Node) filteredList.get(filteredList.size() - 1));
+                    Platform.runLater(() -> {
+                        nf.show((Node) filteredList.get(filteredList.size() - 1));
                     });
+                    }
+                     */
                 }
             }
         }//while

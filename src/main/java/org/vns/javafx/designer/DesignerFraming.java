@@ -30,8 +30,8 @@ public class DesignerFraming extends ResizeNodeFraming {
     public static final String DESIGNER_RESIZE_RECT_ID = "DESIGNER-RESIZE-RECT-" + RectangleFrame.ID;
     public static final String DESIGNER_PARENT_RECT_ID = "DESIGNER-PARENT-RECT-" + RectangleFrame.ID;
 
-    private RectangularFraming parentFraming;    
-    
+    private RectangularFraming parentFraming;
+
     @Override
     protected void finalizeOnHide(Node node) {
         super.finalizeOnHide(node);
@@ -68,37 +68,30 @@ public class DesignerFraming extends ResizeNodeFraming {
     @Override
     protected void initializeOnShow(Node node) {
         super.initializeOnShow(node);
-
         createParentFraming();
 
         Selection sel = DockRegistry.lookup(Selection.class);
         if (sel != null) {
-//            System.err.println("DesignerFraming before notifySelected visible=" + getRectangleFrame().isVisible());
-            
             sel.notifySelected(node);
         }
-
     }
 
     protected void createParentFraming() {
-        SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class
-        );
+        SceneView sgv = DesignerLookup.lookup(SceneView.class);
         if (sgv == null) {
             return;
         }
         TreeItem item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), getNode());
         if (item != null && item.getParent() != null && item.getParent().getValue() != null && (item.getParent().getValue() instanceof Node)) {
             Node parent = (Node) item.getParent().getValue();
-            parentFraming = new RectangularFraming(DESIGNER_PARENT_RECT_ID);
-
-            parentFraming.show(parent);
-            //parentFraming.getShapeFraming().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.7");
-            parentFraming.getRectangleFrame().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.8");
-
+            if (parent != parent.getScene().getRoot()) { //&&& 12.02
+                 parentFraming = new RectangularFraming(DESIGNER_PARENT_RECT_ID);
+                 parentFraming.show(parent);
+                //parentFraming.getShapeFraming().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 148, 40); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.7");
+                parentFraming.getRectangleFrame().setStyle("-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 6; -fx-fill: transparent; -fx-opacity: 0.8");
+            }
         }
 
     }
-
-    //GOLDENROD NAVAJOWHITE SANDYBROWN PERU WHEAT             
 
 }

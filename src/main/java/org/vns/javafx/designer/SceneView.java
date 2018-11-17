@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
@@ -20,20 +21,26 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.Circle;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
+import org.vns.javafx.dock.api.dragging.view.FramePane;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
  * @author Valery
  */
 @DefaultProperty(value = "root")
-public class SceneGraphView extends Control implements DockLayout {
+public class SceneView extends Control implements DockLayout {
 
+//    public static String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
+//    public static final String DESIGNER_NODE_ID = "DESIGNER-NODE-" + RectangleFrame.ID;
+//    public static final String DESIGNER_PARENT_ID = "DESIGNER-PARENT-" + RectangleFrame.ID;
     private SceneGraphViewLayoutContext targetContext;
 
     private DragType dragType = DragType.SIMPLE;
@@ -54,35 +61,29 @@ public class SceneGraphView extends Control implements DockLayout {
     private Map<Class<?>, Map<String, Object>> saved = new HashMap<>();
 
     private boolean designer;
-    
-    public SceneGraphView() {
-        this(null,false);
+
+    public SceneView() {
+        this(null, false);
     }
 
-    public SceneGraphView(Node rootNode) {
-        this(rootNode,false);
+    public SceneView(Node rootNode) {
+        this(rootNode, false);
     }
 
-    public SceneGraphView(boolean designer) {
-        this(null,designer);
+    public SceneView(boolean designer) {
+        this(null, designer);
     }
 
-    public SceneGraphView(Node rootNode, boolean designer) {
+    public SceneView(Node rootNode, boolean designer) {
         this.treeView = new TreeViewEx<>(this);
         root.set(rootNode);
         this.designer = designer;
         init();
     }
-    
+
     private void init() {
-        //getStyleClass().add("scene-graph-view");
-        //treeView.getStyleClass().add("tree-view");
-        if ( getRoot() != null && isDesigner() ) {
+        if (getRoot() != null && isDesigner()) {
             PalettePane palette = DesignerLookup.lookup(PalettePane.class);
-            if ( palette != null ) {
-                //TreeItemEx item = new TreeItemBuilder(isDesigner()).build(getRoot());
-                //getTreeView().setRoot(item);
-            }
         }
         customizeCell();
     }
@@ -182,11 +183,39 @@ public class SceneGraphView extends Control implements DockLayout {
                     super.updateItem(value, empty);
 
                     if (empty) {
+                        //this.setScaleY(1);
+                        //this.setHeight(5);
+                        this.setMaxHeight(-1);
+                        this.setPrefHeight(-1);
+                        this.setMinHeight(-1);
+                        System.err.println("empty cell pref = " + this.getPrefHeight());
+                        System.err.println("empty cell min = " + this.getMinHeight());
+                        System.err.println("empty cell max = " + this.getMaxHeight());
+                        System.err.println("empty cell height = " + this.getHeight());
+
                         setText(null);
                         setGraphic(null);
                         getVisibleCells().remove(this);
+
                     } else {
-                        this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
+                        //this.setPrefHeight(-1);
+
+                        if (value != null && (value instanceof RectangleFrame)) {
+                            //this.setScaleY(0.5);
+                            setText(null);
+                            this.setGraphic(null);
+                            System.err.println("cell pref = " + this.getPrefHeight());
+                            System.err.println("cell min = " + this.getMinHeight());
+                            System.err.println("cell max = " + this.getMaxHeight());
+                            System.err.println("cell height = " + this.getHeight());
+                            //this.setHeight(5);
+                            this.setMaxHeight(2);
+                            this.setPrefHeight(2);
+                            this.setMinHeight(2);
+
+                        } else {
+                            this.setGraphic(((TreeItemEx) this.getTreeItem()).getCellGraphic());
+                        }
                         if (value != null && (value instanceof Node)) {
                             setId(((Node) value).getId());
                         }
@@ -200,6 +229,61 @@ public class SceneGraphView extends Control implements DockLayout {
         });
     }
 
+    public static boolean addFramePanes(Node root) {
+        boolean retval = false;
+        Parent parent = null;
+        if (root != null && root.getParent() != null) {
+            parent = root.getParent();
+        } else if (root instanceof Parent) {
+            parent = (Parent) root;
+        }
+        if (parent != null) {
+            Node framePane = parent.lookup("#" + FramePane.NODE_ID);
+            if (framePane == null) {
+                //
+                // Frame with resize shapes
+                //
+                framePane = new FramePane();
+                EditorUtil.addToParent(parent, framePane);
+            }
+
+            framePane = parent.lookup("#" + FramePane.PARENT_ID);
+            if (framePane == null) {
+                //
+                // Frame without resize shapes
+                //
+                framePane = new FramePane(false);
+                EditorUtil.addToParent(parent, framePane);
+            }
+        }
+
+        return retval;
+    }
+
+    public static boolean removeFramePanes(Node root) {
+        boolean retval = false;
+        Parent parent = null;
+        if (root != null && root.getParent() != null) {
+            parent = root.getParent();
+        } else if (root instanceof Parent) {
+            parent = (Parent) root;
+        }
+        if (parent != null) {
+            Node framePane = parent.lookup("#" + FramePane.NODE_ID);
+            if (framePane != null) {
+                EditorUtil.removeFromParent(parent, framePane);
+            }
+
+            framePane = parent.lookup("#" + FramePane.PARENT_ID);
+            if (framePane != null) {
+                EditorUtil.removeFromParent(parent, framePane);
+            }
+        }
+
+        return retval;
+    }
+    
+    
     public TreeViewEx getTreeView(double x, double y) {
         TreeViewEx retval = null;
         if (DockUtil.contains(getTreeView(), x, y)) {
@@ -232,7 +316,7 @@ public class SceneGraphView extends Control implements DockLayout {
     public LayoutContext getLayoutContext() {
         if (targetContext == null) {
             targetContext = new SceneGraphViewLayoutContext(this);
-            if ( isDesigner() ) {
+            if (isDesigner()) {
                 targetContext.getScopes().add(new Scope("designer"));
             }
         }
@@ -241,53 +325,7 @@ public class SceneGraphView extends Control implements DockLayout {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new SceneGraphViewSkin(this);
+        return new SceneViewSkin(this);
     }
-    
-/*    private EventHandler<TreeItem.TreeModificationEvent<Object>> treeItemEventHandler
-            = (TreeItem.TreeModificationEvent<Object> ev) -> {
-                System.err.println("WAS ADDED");
-                if (ev.wasAdded() && getTreeView().getRoot() == null) {
-                    getTreeView().setRoot(ev.getTreeItem());
-                }
-            };
-  */  
-    /*    private EventHandler<TreeItem.TreeModificationEvent<Object>> treeItemEventHandler;
-    private EventHandler<TreeItem.TreeModificationEvent<Object>> valueChangedHandler;
-    private EventHandler<TreeItem.TreeModificationEvent<Object>> childrenModificationEvent;
 
-    public void addTreeItemEventHandlers(TreeItemEx item) {
-        valueChangedHandler = ev -> {
-        };
-        childrenModificationEvent = ev -> {
-            if (ev.wasAdded()) {
-                for (TreeItem it : ev.getAddedChildren()) {
-                    if (it.getValue() instanceof Node) {
-                    }
-                }
-            }
-
-            if (ev.wasRemoved()) {
-
-                for (TreeItem it : ev.getRemovedChildren()) {
-//                    System.err.println("   --- removed it = " +  it);                    
-                }
-            }
-            if (ev.wasPermutated()) {
-                for (TreeItem it : ev.getRemovedChildren()) {
-//                    System.err.println("   --- permutated it = " +  it);                    
-                }
-            }
-
-        };
-
-        treeItemEventHandler = ev -> {
-        };
-
-        item.addEventHandler(TreeItem.valueChangedEvent(), valueChangedHandler);
-        item.addEventHandler(TreeItem.childrenModificationEvent(), childrenModificationEvent);
-
-        //item.addEventHandler(TreeItem.treeNotificationEvent(),  treeItemEventHandler);                
-    }
-     */
 }// SceneGraphView

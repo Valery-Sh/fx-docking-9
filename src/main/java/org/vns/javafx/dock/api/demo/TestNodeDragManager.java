@@ -14,7 +14,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.designer.NodeDragManager;
-import org.vns.javafx.designer.SceneGraphView;
+import org.vns.javafx.designer.SceneView;
 
 public class TestNodeDragManager  extends Application {
 
@@ -126,7 +126,7 @@ public class TestNodeDragManager  extends Application {
         stage.setY(20);
         
 //        SceneGraphView graphView = new SceneGraphView(treeViewRoot);
-        SceneGraphView graphView = new SceneGraphView(rootPane);
+        SceneView graphView = new SceneView(rootPane);
         Label statusBar = new Label("It is STAUS BAR");
         graphView.setStatusBar(statusBar);
         

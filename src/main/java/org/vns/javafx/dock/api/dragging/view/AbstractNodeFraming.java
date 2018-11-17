@@ -45,7 +45,6 @@ public abstract class AbstractNodeFraming implements NodeFraming {
 
     @Override
     public final void show(Node node) {
-//        System.err.println("AbstractNodeFraming: show node = " + node);
         if (!isAcceptable(node)) {
             return;
         }
@@ -148,12 +147,10 @@ public abstract class AbstractNodeFraming implements NodeFraming {
     protected boolean isAcceptable(Node node) {
         boolean retval = true;
 
-        if (node == null || node.getParent() == null || node.getScene() == null || node.getScene().getWindow() == null) {
+        //&&& 14.11 if (node == null || node.getParent() == null || node.getScene() == null || node.getScene().getWindow() == null) {
+        if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {        
             retval = false;
-        } else if (getNode() != null && getNode() == node) {
-            //retval = false;
         }
-        //System.err.println("AbstractNodeFraming isAcceptable() = " + retval);
         return retval;
     }
 }

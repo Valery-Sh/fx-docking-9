@@ -43,12 +43,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.api.LayoutContext.getValue;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -145,7 +147,7 @@ public class LayoutContextFactory {
             }
 
             Dockable d = Dockable.of(o);
- 
+
             dockable.getContext().getLayoutContext().undock(dockable);
 
             Node node = d.node();
@@ -222,7 +224,7 @@ public class LayoutContextFactory {
             });
             return list;
         }
-  }
+    }
 
     public static class StackPositionIndicator extends PositionIndicator {
 
@@ -742,7 +744,7 @@ public class LayoutContextFactory {
                     return Dockable.class.getResource("resources/default.css").toExternalForm();
                 }
             };
-            
+
             indicator.getStyleClass().add("list-based-indicator");
             return indicator;
         }
@@ -833,20 +835,26 @@ public class LayoutContextFactory {
             while (change.next()) {
                 if (change.wasRemoved()) {
                     List<? extends Node> list = change.getRemoved();
+
                     for (Node d : list) {
                         if (DockRegistry.isDockable(d)) {
                             context.undock(Dockable.of(d));
                         }
                     }
-
                 }
                 if (change.wasAdded()) {
-                    for (int i = change.getFrom(); i < change.getTo(); i++) {
-                        //if (DockRegistry.isDockable(change.getList().get(i))) {
-                        System.err.println("LayoutContextFactory wasAdded = " + change.getList().get(i));
-                        context.commitDock(change.getList().get(i));
-                        //}
+                    List<? extends Node> list = change.getAddedSubList();
+                    for (Node n : list) {
+                        if (Dockable.of(n) != null) {
+                            context.commitDock(n);
+                        }
                     }
+//                    for (int i = change.getFrom(); i < change.getTo(); i++) {
+                    //if (DockRegistry.isDockable(change.getList().get(i))) {
+//                        System.err.println("LayoutContextFactory wasAdded = " + change.getList().get(i));
+//                        context.commitDock(change.getList().get(i));
+                    //}
+//                    }
                 }
             }//while
         }

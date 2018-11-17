@@ -39,7 +39,6 @@ import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIERED;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.NONE;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
 import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
-import org.vns.javafx.dock.api.dragging.view.RectangularFraming;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
 /**
@@ -206,11 +205,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
      */
     protected void mouseDragged(MouseEvent ev) {
       
-        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
+/*        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
         if (rnf != null) {
+            System.err.println("SimpleDragManager: 1 RectangulaFraming NOT NULL");
             rnf.hide();
         }
-
+*/
         if (indicatorManager != null && !(indicatorManager instanceof Window)) {
             indicatorManager.hide();
         }
@@ -336,9 +336,10 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (!indicatorManager.isShowing()) {
             indicatorManager.showIndicator();
         }
-        if (rnf != null) {
+/*        if (rnf != null) {
             rnf.show(root);
         }
+*/        
         indicatorManager.handle(ev.getScreenX(), ev.getScreenY());
     }
 
@@ -420,10 +421,12 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         }
         DockRegistry.getInstance().getLookup().clear(FloatView.class);
 
-        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
+/*        RectangularFraming rnf = DockRegistry.lookup(RectangularFraming.class);
         if (rnf != null) {
+            System.err.println("SimpleDragManager: 2 RectangulaFraming NOT NULL");
             rnf.hide();
         }
+*/
         if (!ev.isAltDown() ) {
             SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
             if (sr != null && sr.isSaved()) {

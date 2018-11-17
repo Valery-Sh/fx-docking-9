@@ -32,7 +32,7 @@ import org.vns.javafx.dock.api.LayoutContextFactory;
 
 import org.vns.javafx.designer.PalettePane;
 import org.vns.javafx.designer.DesignerLookup;
-import org.vns.javafx.designer.SceneGraphView;
+import org.vns.javafx.designer.SceneView;
 
 /**
  *
@@ -44,7 +44,7 @@ public class DemoDesigner extends Application {
     public void start(Stage stage) throws Exception {
         DockPane rootDockPane = new DockPane();
         StackPane root = new StackPane(rootDockPane);
-        SceneGraphView sceneGraphView = DesignerLookup.lookup(SceneGraphView.class);
+        SceneView sceneGraphView = DesignerLookup.lookup(SceneView.class);
         sceneGraphView.setPrefHeight(1000);
         //sceneGraphView.setOpacity(0.2);
         DockNode formDockNode = new DockNode("Form Designer");

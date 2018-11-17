@@ -74,6 +74,7 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
     private boolean cursorSupported = false;
 
     private RectangleFrame rectangleFrame;
+    private FramePane frameControl;
 
     private double translateX;
     private double translateY;
@@ -119,7 +120,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
         });
-
         if (getNode() instanceof Region) {
             init((Region) getNode());
         }
@@ -296,16 +296,30 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
             getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             getNode().getScene().getRoot().removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
+            
             hide();
 
             if (rectangleFrame != null) {
-                rectangleFrame.setVisible(true);
+                //rectangleFrame.setVisible(true);
+                rectangleFrame.show();
             }
+            if (frameControl != null) {
+                //rectangleFrame.setVisible(true);
+                frameControl.setVisible(true);
+            }
+            
         }
     }
 
+    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, FramePane redirectSource) {
+        frameControl = redirectSource;
+        redirectMouseEvents(ev, startMousePos);
+    }    
     public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, RectangleFrame redirectSource) {
         this.rectangleFrame = redirectSource;
+        redirectMouseEvents(ev, startMousePos);
+    }
+    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos) {
 
         saveCursor = getNode().getScene().getCursor();
         getNode().getScene().getRoot().addEventFilter(MouseEvent.MOUSE_RELEASED, this);

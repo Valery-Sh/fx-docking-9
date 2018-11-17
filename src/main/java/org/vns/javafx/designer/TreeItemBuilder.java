@@ -23,8 +23,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import static org.vns.javafx.designer.SceneGraphView.ANCHOR_OFFSET;
-import static org.vns.javafx.designer.SceneGraphView.FIRST;
+import javafx.scene.shape.Circle;
+import static org.vns.javafx.designer.SceneView.ANCHOR_OFFSET;
+import static org.vns.javafx.designer.SceneView.FIRST;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.CONTENT;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.DEFAULTLIST;
@@ -33,6 +34,7 @@ import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
+import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -57,7 +59,9 @@ public class TreeItemBuilder {
         if ( ! designer ) {
             return;
         }
-        System.err.println("TreeItemBuilder setContexts obj = " + obj);
+        if ( (obj instanceof RectangleFrame) || (obj instanceof Circle)) {
+            return;
+        }
         PalettePane palette = DesignerLookup.lookup(PalettePane.class);
         if ( palette == null ) {
             return;
@@ -465,13 +469,11 @@ public class TreeItemBuilder {
     }
 
     public void updateOnMove(TreeItemEx child) {
-        System.err.println("TreeItemBuilder.updateOnMove");
         TreeItemEx parent = (TreeItemEx) child.getParent();
         if (parent == null) {
             //
             // child is a root TreeItem
             //
-            //if ( )
             return;
         }
         if (null == parent.getItemType()) {
@@ -489,7 +491,6 @@ public class TreeItemBuilder {
                     break;
                 }
                 default: {
-//                    System.err.println("TreeItemBuilder updateOnMove child = " + child);
                     BeanAdapter ba = new BeanAdapter(parent.getValue());
                     ba.put(child.getPropertyName(), null);
                     break;

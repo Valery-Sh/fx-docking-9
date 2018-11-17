@@ -81,10 +81,8 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
 
     @Override
     public void remove(Object obj) {
-        System.err.println("1. SceneGraphViewLayoutContext: remove obj = " + obj);
         TreeItemEx item = EditorUtil.findTreeItemByObject(getTreeView(), obj);
         if (item != null) {
-            System.err.println("2. SceneGraphViewLayoutContext: remove obj = " + obj);
             new TreeItemBuilder().updateOnMove(item);
         }
     }
@@ -111,7 +109,7 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
             window = dc.getFloatingWindow(dockable);
             d = Dockable.of(dc.getValue());
         }
-//        System.err.println("3. dock() dockable = " + dockable.node());
+
         Node node = null;
         if (d != null) {
             node = d.node();
@@ -131,14 +129,8 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
         if (value instanceof Dockable) {
             toAccept = ((Dockable) value).node();
         }
-//        System.err.println("4. dock() dockable = " + dockable.node());
         boolean accepted = acceptValue(mousePos, toAccept);
-//        System.err.println("accepted = " + accepted);
-        //SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
 
-        //if (accepted && sr != null) {
-        //sr.restoreExpanded(toAccept);
-        //}
         if (accepted && window != null) {
             if ((window instanceof Stage)) {
                 ((Stage) window).close();
@@ -191,7 +183,7 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
     @Override
     public boolean isAdmissiblePosition(Dockable dockable, Point2D mousePos) {
 
-        SceneGraphView gv = (SceneGraphView) getLayoutNode();
+        SceneView gv = (SceneView) getLayoutNode();
         if (gv.getTreeView(mousePos.getX(), mousePos.getY()) != null) {
             if (gv.getTreeView().getRoot() == null) {
                 return true;
@@ -218,13 +210,12 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
         if (value instanceof Dockable) {
             value = ((Dockable) value).node();
         }
-//        System.err.println("SceneGraphViewTargetContext target = " + target + "; value = " + value);
         return new TreeItemBuilder().isAdmissiblePosition(gv.getTreeView(), target, place, value);
 
     }
 
     protected TreeViewEx getTreeView() {
-        return ((SceneGraphView) getLayoutNode()).getTreeView();
+        return ((SceneView) getLayoutNode()).getTreeView();
     }
 
     protected DragIndicatorManager getDragIndicatorManager() {
@@ -242,15 +233,13 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
     }
 
     protected boolean acceptValue(Point2D mousePos, Object value) {
-        System.err.println("this.getClass = " + this.getClass());
-        SceneGraphView gv = (SceneGraphView) getLayoutNode();
+        SceneView gv = (SceneView) getLayoutNode();
         boolean retval = false;
         if (gv.getTreeView().getRoot() == null) {
             gv.setRoot((Node) value);
             return true;
         }
         TreeItemEx place = gv.getTreeItem(mousePos);
-        System.err.println("PLACE mousePos = " + mousePos);
         if (place != null) {
             TreeItemEx target = getDragIndicator().getTargetTreeItem(mousePos.getX(), mousePos.getY(), place);
             if (target != null) {
@@ -263,8 +252,7 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
 
     @Override
     public boolean contains(Object obj) {
-        System.err.println("contains");
-        SceneGraphView gv = (SceneGraphView) getLayoutNode();        
+        SceneView gv = (SceneView) getLayoutNode();        
         if ( gv.getTreeView().getRoot() != null && gv.getTreeView().getRoot().getValue() == obj  ) {
             return true;
         }

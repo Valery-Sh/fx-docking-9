@@ -48,6 +48,8 @@ public class DesignerLookup { // implements ContextLookup {
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance() );        
         DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DesignerFraming() );  
+        
+        //DockRegistry.getInstance().getLookup().putUnique(RectangleFrameFactory.class, new PopupRectangleFrameFactory() );  
         //String css = "-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 0; -fx-fill: transparent; -fx-opacity: 0.8";
         //RectangularFraming rnf = new RectangularFraming("DOCK-LAYOUT-" + RectangleFrame.ID );
         //rnf.setStyle(css);
@@ -58,7 +60,7 @@ public class DesignerLookup { // implements ContextLookup {
         
        // lookup.putUnique(SaveRestore.class, new AutoSaveRestore() ); 
         lookup.putUnique(PalettePane.class, new PalettePane(true) );
-        lookup.putUnique(SceneGraphView.class, new SceneGraphView(true) );
+        lookup.putUnique(SceneView.class, new SceneView(true) );
     }
     private static DesignerLookup getInstance() {
         return SingletonInstance.INSTANCE;

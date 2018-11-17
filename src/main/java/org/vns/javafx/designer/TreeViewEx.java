@@ -22,19 +22,19 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     private VirtualFlowEx<TreeCell> virtualFlow;
     
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
-    private final SceneGraphView sceneGraphView;
+    private final SceneView sceneGraphView;
             
     private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
     private DragEvent dragEvent;
     private boolean dragAccepted;
 
-    public TreeViewEx(SceneGraphView editor) {
+    public TreeViewEx(SceneView editor) {
         super();
         this.sceneGraphView = editor;
         init();
     }
 
-    public TreeViewEx(SceneGraphView editor, TreeItem<T> root) {
+    public TreeViewEx(SceneView editor, TreeItem<T> root) {
         super(root);
         this.sceneGraphView = editor;
         init();
@@ -43,6 +43,8 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     private void init() {
         getStyleClass().add(LOOKUP_SELECTOR);
         getStyleClass().add("designer");
+        //setFixedCellSize(-1);
+        
 /*        rootProperty().addListener((v,ov,nv) -> {
             if ( nv != null && sceneGraphView.getRoot() == null ) {
                 sceneGraphView.setRoot( (Node)((TreeItem)nv).getValue());
@@ -86,7 +88,7 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
         this.dragAccepted = dragAccepted;
     }
 
-    public SceneGraphView getSceneGraphView() {
+    public SceneView getSceneGraphView() {
         return sceneGraphView;
     }
 
