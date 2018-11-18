@@ -293,8 +293,8 @@ public abstract class LayoutContext {
 
         @Override
         public boolean evaluate(LayoutContext layoutContext, DockableContext dockableContext) {
-            System.err.println("evaluate layotContext node = " + layoutContext.layoutNode);
-            System.err.println("evaluate dockableContext node = " + dockableContext.getDragNode());
+            //System.err.println("evaluate layotContext node = " + layoutContext.layoutNode);
+            //System.err.println("evaluate dockableContext node = " + dockableContext.getDragNode());
 
             boolean retval = false;
             Set<Scope> lset = FXCollections.observableSet(layoutContext.getScopes());
@@ -306,9 +306,9 @@ public abstract class LayoutContext {
             if (dockableContext.getDragContainer() != null) {
                 
                 Object obj = dockableContext.getDragContainer().getValue();
-                System.err.println("evaluate: dragContainer obj = " + obj);
+                //System.err.println("evaluate: dragContainer obj = " + obj);
                 if (Dockable.of(obj) != null) {
-                    System.err.println("evaluate: dragContainer obj is Dockable ");
+                  //  System.err.println("evaluate: dragContainer obj is Dockable ");
                     dset.addAll(Dockable.of(obj).getContext().getScopes());
                 }
             } else {

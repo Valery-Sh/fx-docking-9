@@ -23,6 +23,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.TopNodeHelper;
+import org.vns.javafx.dock.api.dragging.view.FramePane;
 
 /**
  *
@@ -53,7 +54,10 @@ public class EditorUtil {
     }
 
     public static Bounds screenTreeItemBounds(TreeItemEx treeItem) {
+        System.err.println("EditorUtil treeItem = " + treeItem);
+        
         Node node = treeItem.getCellGraphic().getParent();
+        System.err.println("EditorUtil node = " + node);
         return node.localToScreen(node.getBoundsInLocal());
     }
 
@@ -277,7 +281,7 @@ public class EditorUtil {
         return retval;
     }
 
-    public static List<Node> getChildren(Node child) {
+/*    public static List<Node> getChildren(Node child) {
         Parent p = child.getParent();
         if (child.getParent() == null) {
             return null;
@@ -294,7 +298,8 @@ public class EditorUtil {
         }
         return list;
     }
-    public static List<Node> getChildrenOf(Parent p) {
+*/    
+    public static List<Node> getChildren(Parent p) {
         
 
         ObservableList list = null;
@@ -317,7 +322,7 @@ public class EditorUtil {
         return list;
     }
     
-    public static boolean addToParentOf(Node child, Node toAdd) {
+/*    public static boolean addToParentOf(Node child, Node toAdd) {
         boolean retval = false;
         List children = getChildren(child);
         if ( children != null ) {
@@ -327,6 +332,7 @@ public class EditorUtil {
         }
         return retval;
     }
+
     public static boolean removeFromParentOf(Node child, Node toRemove) {
         boolean retval = false;
         List children = getChildren(child);
@@ -336,9 +342,10 @@ public class EditorUtil {
         }
         return retval;
     }    
- public static boolean addToParent(Parent parent, Node toAdd) {
+*/
+    public static boolean addToParent(Parent parent, Node toAdd) {
         boolean retval = false;
-        List children = getChildrenOf(parent);
+        List children = getChildren(parent);
         if ( children != null ) {
             retval = true;
             children.add(toAdd);
@@ -348,11 +355,39 @@ public class EditorUtil {
     public static boolean removeFromParent(Parent parent, Node toRemove) {
         boolean retval = false;
 
-        List children = getChildrenOf(parent);
+        List children = getChildren(parent);
         if ( children != null ) {
             retval = true;
             children.remove(toRemove);
         }
         return retval;
     }        
+    
+    public static Parent getTopParentOf(Node node) {
+        Parent retval = null;
+        Parent p = node.getParent();
+        while ( p != null ) {
+            retval = p;
+            p = p.getParent();
+        }
+        if ( retval == null && (node instanceof Parent)) {
+            retval = (Parent) node;
+        }
+        return retval;
+    }
+    
+    public static void toBack(FramePane frame, Node node) {
+        if ( node == null || node.getParent() == null ) {
+            return;
+        }
+        List list = getChildren(node.getParent());
+        if ( list == null ) {
+            return;
+        }
+        int idx = list.indexOf(node);
+        int idx1 = list.indexOf(frame);
+        if ( idx < 0 || idx < idx1) {
+            list.add(idx,frame);
+        }
+    }
 }

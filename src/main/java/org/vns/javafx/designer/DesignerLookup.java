@@ -47,7 +47,7 @@ public class DesignerLookup { // implements ContextLookup {
         DockRegistry.getInstance().getLookup().putUnique(SaveRestore.class, new AutoSaveRestore() );        
         DockRegistry.getInstance().getLookup().putUnique(Selection.class, new DesignerSelection() );
         DockRegistry.getInstance().getLookup().putUnique(WindowNodeFraming.class, StageNodeFraming.getInstance() );        
-        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DesignerFraming() );  
+        DockRegistry.getInstance().getLookup().putUnique(NodeFraming.class, new DesignerFraming2() );  
         
         //DockRegistry.getInstance().getLookup().putUnique(RectangleFrameFactory.class, new PopupRectangleFrameFactory() );  
         //String css = "-fx-stroke-type: outside; -fx-stroke: rgb(255, 201, 14); -fx-stroke-width: 0; -fx-fill: transparent; -fx-opacity: 0.8";

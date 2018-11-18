@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.LayoutContext;
-import org.vns.javafx.dock.api.StyleUtil;
 
 public abstract class PositionIndicator {
 

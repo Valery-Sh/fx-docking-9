@@ -81,11 +81,11 @@ public class Scope {
             ds = new Scope("default");
         }
         boolean test = false;
-        System.err.println("(ls.id == ds.id) = " + (ls.getId().equals(ds.getId())));
+//        System.err.println("(ls.id == ds.id) = " + (ls.getId().equals(ds.getId())));
         if ( ls.getId().equals(ds.getId())) {
             test = true;
         }
-        System.err.println("evaluate retval = " + test);
+//        System.err.println("evaluate retval = " + test);
         return test;
     }
 }

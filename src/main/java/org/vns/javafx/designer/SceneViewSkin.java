@@ -46,8 +46,8 @@ import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.LayoutContextFactory;
 import org.vns.javafx.dock.api.Scope;
+import org.vns.javafx.dock.api.dragging.view.FramePane;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -60,17 +60,18 @@ public class SceneViewSkin extends SkinBase<SceneView> {
     private DragIndicator dragIndicator;
     private final Pane treeViewPane; // = new StackPane();
     private ChangeListener rootSceneSizeListener = (v, ov, nv) -> {
-        RectangleFrame.hideAll(getSkinnable().getRoot().getScene().getWindow());
+        FramePane.hideAll(getSkinnable().getRoot().getScene().getWindow());
+        
     };
 
     public SceneViewSkin(SceneView control) {
         super(control);
-
+        System.err.println("SceneViewSkin constr 1");
         if (control.getRoot() != null) {
             createSceneGraph(control.getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
         }
-
+        System.err.println("SceneViewSkin constr 2");
         Dockable d = DockRegistry.makeDockable(control.getTreeView());
 
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
@@ -87,10 +88,13 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 if (item != null) {
                     getSkinnable().getTreeView().getSelectionModel().select(item);
                 }
+                System.err.println("SceneViewSkin constr 3");
             }
+            
         };
-
+        System.err.println("SceneViewSkin constr 3.1");
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
+        System.err.println("SceneViewSkin constr 4");
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
 
@@ -100,7 +104,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 .putUnique(IndicatorManager.class, new DragIndicatorManager(targetContext, dragIndicator));
 
         TreeView treeView = control.getTreeView();
-
+        System.err.println("SceneViewSkin constr 5");
         treeView.rootProperty().addListener((v, ov, nv) -> {
             if (nv != null && control.getRoot() == null) {
                 control.setRoot((Node) ((TreeItem) nv).getValue());
@@ -108,15 +112,16 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 control.setRoot(null);
             }
         });
-
+System.err.println("SceneViewSkin constr 6");
         control.statusParProperty().addListener(this::statusBarChanged);
 
         targetContext.mousePositionProperty().addListener(this::mousePosChange);
 
         getChildren().add(contentPane);
-
+System.err.println("SceneViewSkin constr 7");
         control.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, this::sceneMousePressed);
         control.rootProperty().addListener(this::rootChanged);
+        System.err.println("SceneViewSkin constr end");
 
     }
 
@@ -134,7 +139,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
 
     private void sceneMousePressed(MouseEvent ev) {
         TreeItemEx item = getSkinnable().getTreeItem(ev.getScreenX(), ev.getScreenY());
-
+        System.err.println("SceneViewSkin  sceneMousePressed ");
         if (ev.isSecondaryButtonDown()) {
             secondaryMousePressed(ev, item);
             return;
@@ -146,6 +151,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
         if (item == null || item.getValue() == null) {
             nf.hide();
         } else if (item.getValue() instanceof Node) {
+            System.err.println("SceneViewSkin  sceneMousePressed before show(item) = " + item.getValue());
             nf.show((Node) item.getValue());
         }
 
@@ -311,8 +317,9 @@ public class SceneViewSkin extends SkinBase<SceneView> {
             
         }
          */
-        SceneView.addFramePanes(node);
-        
+        System.err.println("SceneViewSkin  1");
+        //SceneView.addFramePanes(node);
+        System.err.println("SceneViewSkin  2");
         LayoutContext lc = new LayoutContextFactory().getContext(getSkinnable().getRoot());
         DockRegistry.makeDockLayout(getSkinnable().getRoot(), lc);
         if (getSkinnable().isDesigner() && !containsDesignerScope(lc.getScopes())) {
@@ -336,7 +343,10 @@ public class SceneViewSkin extends SkinBase<SceneView> {
             getSkinnable().getRoot().getScene().heightProperty().addListener(rootSceneSizeListener);
             getSkinnable().getRoot().getScene().widthProperty().addListener(rootSceneSizeListener);
         }
-
+        SceneView.addFramePanes(node);    
+        SceneView.getParentFrame().hide();
+        SceneView.getResizeFrame().hide();
+        System.err.println("SceneViewSkin  3");
     }
 
     protected void mousePosChange(ObservableValue<? extends Point2D> observable, Point2D oldValue, Point2D newValue) {

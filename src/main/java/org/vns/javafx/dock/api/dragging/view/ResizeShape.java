@@ -58,7 +58,7 @@ public class ResizeShape extends Control {
         }
         
 
-        //setManaged(false);
+        setManaged(false);
         //centerXProperty().bin
     }
 
@@ -126,6 +126,7 @@ public class ResizeShape extends Control {
             } else if (Rectangle.class.isAssignableFrom(ctrl.getShapeClass())) {
                 bindRectangle();
             }
+            System.err.println("ResizeShape bind");
         }
 
         private void bindCircle() {
@@ -133,15 +134,8 @@ public class ResizeShape extends Control {
             shape.getStyleClass().add("circle");
             //c.getStyleClass().add("circle");
             c.radiusProperty().bind(ctrl.prefWidthProperty().divide(2));
-            //c.centerXProperty().bind(ctrl.centerXProperty());
-            //c.centerYProperty().bind(ctrl.centerYProperty());
-            //ctrl.centerXProperty().bindBidirectional(ctrl.layoutXProperty());
-            //ctrl.centerYProperty().bindBidirectional(ctrl.layoutYProperty());
             ctrl.layoutXProperty().bind(ctrl.centerXProperty());
             ctrl.layoutYProperty().bind(ctrl.centerYProperty());
-            //ctrl.layoutYProperty().bind(ctrl.centerYProperty().add(c.radiusProperty()));
-
-            //c.centerYProperty().bind(ctrl.centerYProperty());
         }
 
         private void bindRectangle() {
@@ -191,44 +185,5 @@ public class ResizeShape extends Control {
             //shape.resizeRelocate(x,y ,w, h);
             shape.resize(w, h);
         }
-
-        /*        @Override
-        protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return shape.minWidth(height);
-        }
-
-        @Override
-        protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return shape.minHeight(width);
-        }
-
-        @Override
-        protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-            //return shape.prefWidth(height) + leftInset + rightInset;
-            return ctrl.getPrefWidth() + leftInset + rightInset;
-        }
-
-        @Override
-        protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
-            //return shape.prefHeight(width) + topInset + bottomInset;
-            return ctrl.getPrefHeight() + topInset + bottomInset;
-        }
-
-        @Override
-        protected double computeMaxWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return computePrefWidth(height, topInset, rightInset, bottomInset, leftInset);
-        }
-
-        @Override
-        protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return computePrefHeight(width, topInset, rightInset, bottomInset, leftInset);
-        }
-
-        @Override
-        protected void layoutChildren(double x, double y, double w, double h) {
-            
-            shape.resize(w, h);
-        }        
-         */
     }//skin
 }

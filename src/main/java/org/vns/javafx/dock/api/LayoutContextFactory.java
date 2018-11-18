@@ -26,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -43,14 +44,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.DockUtil;
 import static org.vns.javafx.dock.api.LayoutContext.getValue;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 import org.vns.javafx.dock.api.indicator.IndicatorPopup;
 import org.vns.javafx.dock.api.indicator.PositionIndicator;
 
@@ -609,19 +608,7 @@ public class LayoutContextFactory {
             }
 
             Dockable d = Dockable.of(o);
-            //
-            // Test is we drag dockable or the value of a dragContainer 
-            //
-/*            if (contains(d.node()) && d == dockable) {
-                return;
-            } else if (contains(d.node())) {
-                LayoutContext tc = d.getContext().getLayoutContext();
-                if (tc != null && isDocked(tc, d)) {
-                    tc.undock(d.node());
-                }
-            }
-             */
-            //dockable.getContext().getLayoutContext().undock(dockable);
+  
 
             Node node = d.node();
             Window stage = null;
@@ -697,29 +684,7 @@ public class LayoutContextFactory {
             return items.contains((T) obj);
         }
 
-        /**
-         * For test purpose
-         *
-         * @return the list of dockable objects
-         */
-        /*        public List<Dockable> getDockables() {
-            BorderPane bp = (BorderPane) getLayoutNode();
-            List<Dockable> list = FXCollections.observableArrayList();
-            bp.getChildren().forEach(node -> {
-                //!!!08
-                if (DockRegistry.isDockable(node)) {
-                    list.add(DockRegistry.dockable(node));
-                }
-            });
-            return list;
-        }
-         */
- /*        @Override
-        public boolean restore(Dockable dockable) {
-            return false;
-
-        }
-         */
+   
     }
 
     public static class ListBasedPositionIndicator extends PositionIndicator {
@@ -744,7 +709,7 @@ public class LayoutContextFactory {
                     return Dockable.class.getResource("resources/default.css").toExternalForm();
                 }
             };
-
+            indicator.setId("list-ind-pane");
             indicator.getStyleClass().add("list-based-indicator");
             return indicator;
         }
@@ -757,6 +722,7 @@ public class LayoutContextFactory {
             Pane p = (Pane) getIndicatorPane();
 
             if (DockUtil.contains(p, x, y)) {
+
                 adjustPlace(p, x, y);
             } else {
                 visible = false;
@@ -765,11 +731,17 @@ public class LayoutContextFactory {
         }
 
         protected void adjustPlace(Node node) {
+            
+            Pane p = getIndicatorPane();
+            Insets ins = getIndicatorPane().getInsets();
+
             Rectangle r = (Rectangle) getDockPlace();
             r.setHeight(((Region) node).getHeight());
             r.setWidth(((Region) node).getWidth());
+            
             r.setX(((Region) node).getLayoutX());
             r.setY(((Region) node).getLayoutY());
+
         }
 
         protected void adjustPlace(Node pane, double x, double y) {
@@ -785,31 +757,33 @@ public class LayoutContextFactory {
             }
 
             Bounds b = pane.getLayoutBounds();
-
+            Insets ins = getIndicatorPane().getInsets();
+            
             if (innerNode != null) {
                 b = innerNode.getBoundsInParent();
                 if ((targetPane instanceof VBox) || (targetPane instanceof Accordion)) {
                     Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
                     r.setWidth(targetPane.getWidth());
-                    r.setX(b.getMinX());
+                    r.setX(b.getMinX() + ins.getLeft());
                     r.setHeight(b.getHeight() / 2);
 
                     if (y < b1.getMinY() + b.getHeight() / 2) {
-                        r.setY(b.getMinY());
+                        r.setY(b.getMinY() + ins.getTop());
                     } else {
-                        r.setY(b.getMinY() + b.getHeight() / 2);
+                        r.setY(b.getMinY() + ins.getTop() + b.getHeight() / 2);
                     }
 
                 } else if (targetPane instanceof HBox) {
                     Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
                     r.setHeight(targetPane.getHeight());
-                    r.setX(b.getMinX());
+                    r.setX(b.getMinX() + ins.getLeft());
+                    r.setY(b.getMinY() + ins.getTop());
                     r.setWidth(b.getWidth() / 2);
 
                     if (x < b1.getMinX() + b.getWidth() / 2) {
-                        r.setX(b.getMinX());
+                        r.setX(b.getMinX()  + ins.getLeft());
                     } else {
-                        r.setX(b.getMinX() + b.getWidth() / 2);
+                        r.setX(b.getMinX() + (b.getWidth() / 2)  + ins.getLeft());
                     }
                 } else {
                     r.setWidth(b.getWidth());

@@ -21,13 +21,11 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
+import org.vns.javafx.dock.api.dragging.view.FramePane;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -48,6 +46,7 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
         while (change.next()) {
 
             if (change.wasRemoved()) {
+                
                 List list = change.getRemoved();
                 if (!list.isEmpty()) {
                     SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
@@ -72,20 +71,35 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                             break;
                         }
                     }
+                    if ( (elem instanceof Node) && ! SceneView.isFrame(elem) ) {
+                        FramePane fp = SceneView.getResizeFrame();
+                        if ( fp != null ) {
+                            fp.hide();
+                        }
+                    }
                     treeItem.getChildren().remove(toRemove);
                 }
 
             }
+            
             if (change.wasAdded()) {
+                
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
                 list.forEach(elem -> {
                     TreeItemEx it = new TreeItemBuilder().build(elem);
-                    it.setExpanded(false);
-                    itemList.add(it);
+                    if ( it != null ) {
+                        it.setExpanded(false);
+                        itemList.add(it);
+                    }
                 });
-
-                treeItem.getChildren().addAll(change.getFrom(), itemList);
+                int idx = change.getFrom();
+                Object obj = change.getList().get(idx);
+                while( SceneView.isFrame(obj)) {
+                    obj = change.getList().get(--idx);
+                }
+                //treeItem.getChildren().addAll(change.getFrom(), itemList);
+                treeItem.getChildren().addAll(idx, itemList);
                 //treeItem.getChildren().addAll(itemList);
 
                 NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
@@ -99,10 +113,11 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                     //
                     //&&&nf.show((Node) list.get(list.size() - 1));
                     Node n = (Node) list.get(list.size() - 1);
-                    if (!(n instanceof RectangleFrame) && !(n instanceof Circle)) {
+                    if (!SceneView.isFrame(n)) {
+                        System.err.println("************** node = " + n);
                         nf.show((Node) list.get(list.size() - 1));
                         Platform.runLater(() -> {
-                            nf.show((Node) list.get(list.size() - 1));
+                        //    nf.show((Node) list.get(list.size() - 1));
                         });
                     }
                     /*                  if ( ! filteredList.isEmpty()  ) {

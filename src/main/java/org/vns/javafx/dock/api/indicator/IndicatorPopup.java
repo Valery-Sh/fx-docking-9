@@ -5,16 +5,14 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.PopupControl;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
@@ -137,7 +135,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             throw new IllegalStateException("The parameter 'ownerWindow' must be of type " + getClass().getName());
         }
 
-        super.show(ownerWindow, anchorX, anchorY);
+        super.show(ownerWindow, anchorX-6, anchorY-6);
 
         if (((IndicatorPopup) ownerWindow).getChildWindows().contains(this)) {
             return;
@@ -160,9 +158,22 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
-        super.show(ownerNode.getScene().getWindow(), anchorX, anchorY);
+        Pane p = targetContext.getPositionIndicator().getIndicatorPane();        
+        //Insets ins = (ownerNode instanceof Region) ? ((Region)ownerNode).getInsets() : new Insets(0,0,0,0);
+        //System.err.println("Pane insets = " + p.getInsets());
+        Insets ins = p.getInsets();
+/*        if ( p.getBorder() != null ) {
+            System.err.println("border  ");
+            if ( p.getBorder().getStrokes() != null) {
+                System.err.println("strokes width =  " + p.getBorder().getStrokes().get(0).getWidths().getLeft());
+            }
+        }
+*/        
+        //double left = ((Region)ownerNode).getBorder().getStrokes().get(0).getWidths().getLeft();
+        //System.err.println("INSETS = " + left);
+        super.show(ownerNode.getScene().getWindow(), anchorX-ins.getLeft(), anchorY-ins.getTop());
     }
-
+    
     @Override
     public void hide() {
         if (getOwnerWindow() instanceof IndicatorPopup) {
@@ -216,13 +227,14 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             }
 
             Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
-
+            Insets ins = indicatorPane.getInsets();
             if (getTargetNode() instanceof Region) {
-                indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty());
-                indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+                //System.err.println("IndicatorPopup region indicatorPane = " + indicatorPane);
+                indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));
+                indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty().add(ins.getLeft() + ins.getRight()));
 
-                indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty());
-                indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty());
+                indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));
+                indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty().add(ins.getLeft() + ins.getRight()));
             } else {
                 getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
                     indicatorPane.setPrefHeight(newValue.getHeight());
@@ -235,6 +247,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             indicatorPane.setMouseTransparent(true);
             if (!getContent().contains(indicatorPane)) {
                 getContent().add(indicatorPane);
+                
             }
         });
         

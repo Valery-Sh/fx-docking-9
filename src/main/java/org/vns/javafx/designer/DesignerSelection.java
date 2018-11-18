@@ -29,7 +29,7 @@ public class DesignerSelection extends Selection {
 
     //private NodeResizer resizer;
     private NodeFraming resizer;
-    
+
     public DesignerSelection() {
         init();
     }
@@ -37,20 +37,22 @@ public class DesignerSelection extends Selection {
     private void init() {
         selectedProperty().addListener(this::selectedChanged);
     }
+
     @Override
     public void setSelected(Object toSelect) {
-//        System.err.println("DesignerSelection: setLelected = " + toSelect);
-        if ( toSelect instanceof Node ) {
+        System.err.println("DesignerSelection: setLelected = " + toSelect);
+        if (toSelect instanceof Node) {
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-            if ( nf != null ) {
+            if (nf != null) {
                 nf.show((Node) toSelect);
             }
         }
         notifySelected(toSelect);
         //this.selected.set(toSelect);
     }
+
     protected void selectedChanged(ObservableValue ov, Object oldValue, Object newValue) {
-        
+
         NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
 //        System.err.println("1 Designerselection: selectedChanged nf = " + nf);
         if (newValue == null) {
@@ -60,15 +62,17 @@ public class DesignerSelection extends Selection {
             }
             return;
         }
-     
+
         if (nf != null) {
             nf.hide();
         }
         if (newValue instanceof Node) {
+            System.err.println("DesignerSelection: selectedChanged = " + newValue);
+
             nf.show((Node) newValue);
         }
 //        System.err.println("2 Designerselection: selectedChanged newValue = " + newValue);
-        
+
         notifySelected(newValue);
     }
 

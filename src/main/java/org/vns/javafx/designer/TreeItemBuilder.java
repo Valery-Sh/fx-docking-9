@@ -23,18 +23,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Circle;
 import static org.vns.javafx.designer.SceneView.ANCHOR_OFFSET;
 import static org.vns.javafx.designer.SceneView.FIRST;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.CONTENT;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.DEFAULTLIST;
 import static org.vns.javafx.designer.TreeItemEx.ItemType.LIST;
-import org.vns.javafx.dock.api.DockLayout;
-import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -59,7 +55,7 @@ public class TreeItemBuilder {
         if ( ! designer ) {
             return;
         }
-        if ( (obj instanceof RectangleFrame) || (obj instanceof Circle)) {
+        if ( SceneView.isFrame(obj) ) {
             return;
         }
         PalettePane palette = DesignerLookup.lookup(PalettePane.class);
@@ -72,10 +68,17 @@ public class TreeItemBuilder {
         
     }
     public TreeItemEx build(Object obj) {
+        
         return build(obj, null);
     }
 
     protected TreeItemEx build(Object obj, NodeElement p) {
+        System.err.println("treeItemBuilder build obj = " + obj);
+        System.err.println("treeItemBuilder build nodeElem = " + p);
+        if ( SceneView.isFrame(obj) ) {
+            return null;
+        }
+        System.err.println("TreeItemBuilder not Frame");
         setContexts(obj);
         TreeItemEx retval;
         if (p != null && (p instanceof NodeContent)) {
@@ -83,6 +86,7 @@ public class TreeItemBuilder {
         } else if (p != null && (p instanceof NodeList)) {
             retval = createListContentItem(obj, (NodeList) p);
         } else {
+            System.err.println("TreeItemBuilder createListElementItem obj = " + obj);
             retval = createListElementItem(obj);
         }
         if (p != null && (p instanceof Property)) {

@@ -10,7 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
+import org.vns.javafx.dock.api.dragging.view.FramePane;
 
 /**
  *
@@ -153,20 +153,23 @@ public class TopNodeHelper {
     }
 
     public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
-        String skipWithSyleClass = RectangleFrame.ID;
+        String skipWithSyleClass = FramePane.CSS_CLASS;
         
         Node retval = null;
-        Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {return ! n.getStyleClass().contains(skipWithSyleClass); } ));
-        
+        Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {
+            return !  n.getStyleClass().contains(skipWithSyleClass); } 
+        ));
+//        System.err.println("getTopNode while = " + node);
         while (node != null) {
 //              System.err.println("   ---  while node = " + node);
-            
+//            System.err.println("getTopNode while = " + node);
             if (node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
                 retval = node;
                 break;
             }
             node = node.getParent();
         }
+//        System.err.println("getTopNode = " + retval);
         return retval;
     }
 

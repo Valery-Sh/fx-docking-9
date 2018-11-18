@@ -41,7 +41,6 @@ import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
-import org.vns.javafx.dock.api.dragging.view.ResizeNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.StageNodeFraming;
 import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
 
@@ -51,8 +50,7 @@ import org.vns.javafx.dock.api.dragging.view.WindowNodeFraming;
  */
 public class TestSelectPane extends Application {
     
-    NodeFraming framing = new ResizeNodeFraming();
-
+    
     int counter = 0;
     int click = 0;
     Node last;
@@ -156,11 +154,6 @@ public class TestSelectPane extends Application {
         addLabelButton.setOnAction(a -> {
             
             rightPane.getChildren().add(lastLabel);
-            if ( ! rightPaneRoot.getChildren().contains(framing) ) {
-                //rightPaneRoot.getChildren().add((Node)framing);
-            }
-            framing.show(lastLabel);
-              //leftPane.getChildren().add(lastLabel);
         });
         
         

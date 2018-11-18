@@ -119,7 +119,7 @@ public abstract class Selection {
         protected void mouseRelesed(MouseEvent ev) {
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
 
-                Selection sel = DockRegistry.lookup(Selection.class);
+                //Selection sel = DockRegistry.lookup(Selection.class);
 
                 ev.consume();
             }

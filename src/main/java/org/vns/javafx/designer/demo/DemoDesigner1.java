@@ -17,11 +17,9 @@
 package org.vns.javafx.designer.demo;
 
 import com.sun.javafx.stage.StageHelper;
-import java.util.List;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.Observable;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
@@ -29,6 +27,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -56,6 +55,8 @@ public class DemoDesigner1 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Button tb = new Button();
+        tb.toFront();
         if ( null instanceof Node) {
             System.err.println("NULL !!!!!!!");
         }
@@ -75,8 +76,8 @@ public class DemoDesigner1 extends Application {
         root.setId("mainStage " + root.getClass().getSimpleName());
         //DesignerLookup.putUnique(SceneGraphView.class, new SceneGraphView(root, true));
         DesignerLookup.putUnique(SceneView.class, new SceneView(true));
-        SceneView sceneGraphView = DesignerLookup.lookup(SceneView.class);
-        sceneGraphView.setPrefHeight(1000);
+        SceneView sceneView = DesignerLookup.lookup(SceneView.class);
+        sceneView.setPrefHeight(1000);
         //sceneGraphView.setOpacity(0.2);
         DockNode formDockNode = new DockNode("Form Designer");
         Button formButton = new Button("CLICK");
@@ -89,33 +90,29 @@ public class DemoDesigner1 extends Application {
         LayoutContext ctx = ctxFactory.getContext(formPane);
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
-        //VBox root1 = new VBox();
+        //BorderPane root1 = new BorderPane();
         VBox root1 = new VBox();
+        Button eb = new Button("Ext Button");
+       
+
+        VBox centerPane = new VBox(eb);
+        //root1.setCenter(centerPane);
+        //root1.setCenter(eb);
+        //VBox root1 = new VBox();
         HBox hbox = new HBox(new Label("root1 Label"));
-        root1.getChildren().add(hbox);
+        //root1.getChildren().add(hbox);
         root1.setId("root1");
-        sceneGraphView.setRoot(root1);
+        sceneView.setRoot(root1);
 
         StackPane sp = new StackPane();
         //StackPane sp = new StackPane(root1);
         Scene scene1 = new Scene(root1);
-        //root1.setStyle("-fx-padding: 5 5 5 5");
         
-        System.err.println("!!!!create sp children.size() = " + sp.getChildren().size());
-        sceneGraphView.rootProperty().addListener((v,ov,nv) -> {
-            if ( ov != null ) {
-                System.err.println("before remove children.size() = " + sp.getChildren().size());
-                //sp.getChildren().remove(ov);
-                System.err.println("after remove children.size() = " + sp.getChildren().size());
-            }
-            if ( nv != null ) {
-                System.err.println("before add children.size() = " + sp.getChildren().size());
-                //sp.getChildren().add(nv);
-                System.err.println("after children.size() = " + sp.getChildren().size());
-              //&&&14.11  nv.toBack();
-            } else {
-                
-            }
+        root1.setStyle("-fx-padding: 5 5 5 5");
+        
+
+        sceneView.rootProperty().addListener((v,ov,nv) -> {
+         
         });
         
         root1.setStyle("-fx-background-color: white;-fx-padding: 5 5 5 5");
@@ -134,13 +131,31 @@ public class DemoDesigner1 extends Application {
             }
         } );
         formButton.setOnAction(a -> {
-            System.err.println("CHILD COUNT = " + ((Pane)root1.getScene().getRoot()).getChildren().size());
-            System.err.println("   --- root1.size = " + root1.getChildren().size());
-            System.err.println("   --- hbox.size = " + hbox.getChildren().size());
-            
-            //SceneGraphView sgv = DesignerLookup.lookup(SceneGraphView.class);
-            //sp.getChildren().add(sceneGraphView.getRoot());
-            //sceneGraphView.getRoot().setStyle("-fx-background-color: white;");
+/*            System.err.println("CLICKED CENTER ");
+            Node nd = root1.getCenter();
+            System.err.println("CLICKED CENTER scaleX     = " + nd.getScaleX());
+            System.err.println("CLICKED CENTER translateX = " + nd.getTranslateX());
+            System.err.println("eb.getInsets() = " + eb.getInsets());
+            //eb.setFocusTraversable(false);
+            if ( nd != null && nd.getScaleX() == 1 ) {
+                nd.setScaleX(0.5);
+                //if ( nd instanceof VBox) {
+                if ( false) {                    
+                    eb.setTranslateX(10);
+                } else {
+                    nd.setTranslateX(10);
+                }
+            } else if ( nd != null ) {
+                nd.setScaleX(1);
+                //if ( nd instanceof VBox) {
+                if ( false) {                                    
+                    eb.setTranslateX(0);
+                } else {
+                    nd.setTranslateX(0);
+                }
+
+            }
+*/
         });
 
         root1.setId("root1 " + root.getClass().getSimpleName());
@@ -151,17 +166,7 @@ public class DemoDesigner1 extends Application {
         stage1.setHeight(200);
         stage1.setScene(scene1);
         stage1.initOwner(stage);
-        scene1.setOnZoom(value -> {
-            System.err.println("!!!!!!!!!!!!!!!!!!!!!! ZOOOO MED");
-        });
-
-        //Rectangle rect = new Rectangle(50,25);
-        sceneGraphView.rootProperty().addListener((v, ov, nv) -> {
-            if (nv != null) {
-                System.err.println("DemoDesigner: rootChanged");
-                //formDockNode.setContent(nv);
-            }
-        });
+    
 
         DockSideBar sgvDockSideBar = new DockSideBar();
         sgvDockSideBar.setOrientation(Orientation.VERTICAL);
@@ -171,7 +176,7 @@ public class DemoDesigner1 extends Application {
 
         DockNode sgvDockNode = new DockNode(" Hierarchy ");
 
-        sgvDockNode.setContent(sceneGraphView);
+        sgvDockNode.setContent(sceneView);
         sgvDockSideBar.getItems().add(Dockable.of(sgvDockNode));
 
         PalettePane palettePane = DesignerLookup.lookup(PalettePane.class);

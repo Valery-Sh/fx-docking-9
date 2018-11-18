@@ -4,13 +4,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javafx.application.Platform;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -18,10 +16,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
@@ -29,7 +27,10 @@ import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.Scope;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.dragging.view.FramePane;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
+import static org.vns.javafx.dock.api.dragging.view.FramePane.CSS_CLASS;
+import static org.vns.javafx.dock.api.dragging.view.FramePane.NODE_ID;
+import static org.vns.javafx.dock.api.dragging.view.FramePane.PARENT_ID;
+import org.vns.javafx.dock.api.dragging.view.ResizeShape;
 
 /**
  *
@@ -188,11 +189,11 @@ public class SceneView extends Control implements DockLayout {
                         this.setMaxHeight(-1);
                         this.setPrefHeight(-1);
                         this.setMinHeight(-1);
-                        System.err.println("empty cell pref = " + this.getPrefHeight());
+/*                        System.err.println("empty cell pref = " + this.getPrefHeight());
                         System.err.println("empty cell min = " + this.getMinHeight());
                         System.err.println("empty cell max = " + this.getMaxHeight());
                         System.err.println("empty cell height = " + this.getHeight());
-
+*/
                         setText(null);
                         setGraphic(null);
                         getVisibleCells().remove(this);
@@ -200,15 +201,9 @@ public class SceneView extends Control implements DockLayout {
                     } else {
                         //this.setPrefHeight(-1);
 
-                        if (value != null && (value instanceof RectangleFrame)) {
-                            //this.setScaleY(0.5);
+                        if (value != null) {
                             setText(null);
                             this.setGraphic(null);
-                            System.err.println("cell pref = " + this.getPrefHeight());
-                            System.err.println("cell min = " + this.getMinHeight());
-                            System.err.println("cell max = " + this.getMaxHeight());
-                            System.err.println("cell height = " + this.getHeight());
-                            //this.setHeight(5);
                             this.setMaxHeight(2);
                             this.setPrefHeight(2);
                             this.setMinHeight(2);
@@ -243,7 +238,8 @@ public class SceneView extends Control implements DockLayout {
                 //
                 // Frame with resize shapes
                 //
-                framePane = new FramePane();
+                framePane = new FramePane(parent);
+                framePane.setId(FramePane.NODE_ID);
                 EditorUtil.addToParent(parent, framePane);
             }
 
@@ -252,14 +248,50 @@ public class SceneView extends Control implements DockLayout {
                 //
                 // Frame without resize shapes
                 //
-                framePane = new FramePane(false);
+                framePane = new FramePane(parent,false);
+                framePane.setId(FramePane.PARENT_ID);
                 EditorUtil.addToParent(parent, framePane);
             }
         }
 
         return retval;
     }
-
+    public static FramePane getResizeFrame() {
+        Parent p = (Parent) DesignerLookup.lookup(SceneView.class).getRoot();
+        if ( p.getParent() != null ) {
+            p = p.getParent();
+        }
+        return (FramePane) p.lookup("#" + NODE_ID);
+    }
+    public static FramePane getParentFrame() {
+        Parent p = (Parent) DesignerLookup.lookup(SceneView.class).getRoot();
+        
+        if ( p.getParent() != null ) {
+            p = p.getParent();
+        }
+        return (FramePane) p.lookup("#" + PARENT_ID);
+    }    
+    public static boolean isFrame(Object obj) {
+        if ( isRectFrame(obj)) {
+            return true;
+        }
+        
+        
+        if ( obj == null || ( ! (obj instanceof FramePane) && ! (obj instanceof ResizeShape) ) ) {
+            return false;
+        }
+        return ((Node)obj).getStyleClass().contains(CSS_CLASS);
+        //FramePane node = (FramePane) obj;
+        //return ( FramePane.NODE_ID.equals(node.getId()) || FramePane.PARENT_ID.equals(node.getId()) );
+    }
+    public static boolean isRectFrame(Object obj) {
+        if ( obj == null || !  (obj instanceof Circle) && ! (obj instanceof Rectangle)) {
+            return false;
+        }
+        
+        return true;
+    }    
+    
     public static boolean removeFramePanes(Node root) {
         boolean retval = false;
         Parent parent = null;

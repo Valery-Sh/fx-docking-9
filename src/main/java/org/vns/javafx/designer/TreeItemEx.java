@@ -12,12 +12,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Circle;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
 import org.vns.javafx.dock.api.Selection.SelectionListener;
-import org.vns.javafx.dock.api.dragging.view.RectangleFrame;
 
 /**
  *
@@ -161,9 +159,13 @@ public class TreeItemEx extends TreeItem<Object> {
 
     public void registerChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        if (getValue() == null || (getValue() instanceof RectangleFrame) || (getValue() instanceof Circle)) {
+        if (SceneView.isFrame(getValue())) {
             return;
         }
+        if ( getValue() == null ) {
+            return;
+        }
+        System.err.println("######### getValue() = " + getValue());
         if ((getValue() instanceof Node)) {
             //if (Dockable.of(getValue()) != null) {
                 SelectionListener l = DockRegistry.lookup(SelectionListener.class);
@@ -172,6 +174,7 @@ public class TreeItemEx extends TreeItem<Object> {
             //}
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        System.err.println("TreeItemEx nd = " + nd);
         Object changeListener;
         if (this.getItemType() == ItemType.LIST) {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
@@ -209,7 +212,7 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public void unregisterChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (getValue() == null || changeListeners.isEmpty() || (getValue() instanceof RectangleFrame) || (getValue() instanceof Circle)) {
+        if (SceneView.isFrame(getValue())) {
             return;
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());

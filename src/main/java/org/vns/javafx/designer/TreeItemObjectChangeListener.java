@@ -74,14 +74,14 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         if (propItem == null) {
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                if (sr != null && !sr.contains(newValue)) {
+                if (item != null && sr != null && !sr.contains(newValue)) {
                     //
                     //changed outside and not by dragging 
                     //
-                    List<Boolean> expValues = downUpExpandedValues(treeItem);
+                    //List<Boolean> expValues = downUpExpandedValues(treeItem);
                     treeItem.getChildren().add(insertPos, item);
                     item.setExpanded(false);
-                } else {
+                } else if (item != null ) {
                     treeItem.getChildren().add(insertPos, item);
                     if (nf != null && (newValue instanceof Node)) {
                         Platform.runLater(() -> {
@@ -109,15 +109,15 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     }
 
                     TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                    if (sr != null && !sr.contains(newValue)) {
+                    if ( item != null && sr != null && !sr.contains(newValue)) {
                         //
                         //changed outside and not by dragging 
                         //
-                        List<Boolean> expValues = downUpExpandedValues(propItemParent);
+                        //List<Boolean> expValues = downUpExpandedValues(propItemParent);
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                         item.setExpanded(false);
                         //restoreExpandedValues(propItemParent, expValues);
-                    } else {
+                    } else if ( item != null ) {
                         item.setExpanded(false);
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     }
@@ -126,7 +126,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                 // May be is NodeContent and not hidden when null
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
 
-                if (sr != null && !sr.contains(newValue)) {
+                if (item != null && sr != null && !sr.contains(newValue)) {
                     //
                     //changed outside and not by dragging 
                     //
@@ -134,7 +134,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     item.setExpanded(false);
                     //restoreExpandedValues(propItemParent, expValues);
-                } else {
+                } else if ( item != null ){
                     item.setExpanded(false);
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     if (nf != null && (newValue instanceof Node)) {

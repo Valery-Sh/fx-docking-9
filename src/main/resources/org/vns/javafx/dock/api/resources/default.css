@@ -53,7 +53,10 @@
     -fx-stroke-type: inside;
     -fx-stroke-line-cap: butt;
 }
-
+.list-based-indicator {
+    -fx-border-color: rgb(255, 201, 14);
+    -fx-border-width: 4;
+}
 .dock-place {
     -fx-fill: transparent;
     -fx-opacity: 0.3;
@@ -269,8 +272,8 @@
     -fx-pref-height: 6;
 }
 .circle-shape-control {
-    -fx-pref-width: 4;
-    -fx-pref-height: 4;
+    -fx-pref-width: 2.5;
+    -fx-pref-height: 2.5;
 }
 .shape-control .circle {
     -fx-stroke-type: outside; 
@@ -279,10 +282,9 @@
     -fx-fill: white;
 }
 .shape-control .rectangle {
-    
     -fx-stroke-type: inside; 
     -fx-stroke: rgb(255, 148, 40); 
-    -fx-stroke-width: 2; 
+    -fx-stroke-width: 1; 
     -fx-fill: white;
 }
 
@@ -294,13 +296,14 @@
 .frame-control .resizable {
     -fx-stroke-type: inside; 
     -fx-stroke: rgb(255, 148, 40); 
-    -fx-stroke-width: 1; 
+    -fx-stroke-width: 2; 
     -fx-fill: transparent;
 }
 
 .frame-control .not-resizable {
-    -fx-stroke-type: inside; 
-    -fx-stroke: rgb(255, 148, 40); 
-    -fx-stroke-width: 5; 
-    -fx-fill: transparent;
+    -fx-stroke-type: outside; 
+    -fx-stroke: rgb(255, 201, 14); 
+    -fx-stroke-width: 6; 
+    -fx-fill: transparent; 
+    -fx-opacity: 0.8
 }

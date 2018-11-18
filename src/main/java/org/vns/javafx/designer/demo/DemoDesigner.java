@@ -20,6 +20,7 @@ import static javafx.application.Application.launch;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.DockNode;
@@ -42,63 +43,7 @@ public class DemoDesigner extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        DockPane rootDockPane = new DockPane();
-        StackPane root = new StackPane(rootDockPane);
-        SceneView sceneGraphView = DesignerLookup.lookup(SceneView.class);
-        sceneGraphView.setPrefHeight(1000);
-        //sceneGraphView.setOpacity(0.2);
-        DockNode formDockNode = new DockNode("Form Designer");
-        StackPane formPane = new StackPane();
-        formPane.setStyle("-fx-background-color: yellow");
-        
-        
-        formDockNode.setContent(formPane);
-        LayoutContextFactory ctxFactory = new LayoutContextFactory();
-        LayoutContext ctx = ctxFactory.getContext(formPane);
-        System.err.println("ctx=" + ctx);
-        DockRegistry.makeDockLayout(formPane, ctx);
-        
-        //sceneGraphView.setRoot(formPane);
-        
-        sceneGraphView.rootProperty().addListener( (v, ov, nv) -> {
-            if ( nv != null ) {
-                System.err.println("DemoDesigner: rootChanged");
-                formDockNode.setContent(nv);
-            }
-        });
-        
-        
-        DockSideBar sgvDockSideBar = new DockSideBar();
-        sgvDockSideBar.setOrientation(Orientation.VERTICAL);
-        sgvDockSideBar.setRotation(DockSideBar.Rotation.DOWN_UP);
-        sgvDockSideBar.setSide(Side.RIGHT);
-        sgvDockSideBar.setHideOnExit(false);
-        
-        DockNode sgvDockNode = new DockNode(" Hierarchy ");
-        
-        sgvDockNode.setContent(sceneGraphView);
-        sgvDockSideBar.getItems().add(Dockable.of(sgvDockNode));
-                
-        PalettePane palettePane = DesignerLookup.lookup(PalettePane.class);
-        DockSideBar paletteDockSideBar = new DockSideBar();
-/*        sgvDockSideBar.getLookup().putUnique(FloatViewFactory.class, new FloatViewFactory() {
-            public FloatView getFloatView(Dockable d) {
-                return new FloatPopupControlView2(d);
-            }
-        });
-*/        
-        paletteDockSideBar.setOrientation(Orientation.VERTICAL);
-        paletteDockSideBar.setRotation(DockSideBar.Rotation.UP_DOWN);
-        paletteDockSideBar.setSide(Side.LEFT);
-        
-        DockNode palleteDockNode = new DockNode(" Palette ");
-        palleteDockNode.setContent(palettePane);
-        paletteDockSideBar.getItems().add(Dockable.of(palleteDockNode));
-        
-       
-        rootDockPane.dock(formDockNode, Side.TOP);
-        rootDockPane.dock(sgvDockSideBar, Side.LEFT);
-        rootDockPane.dock(paletteDockSideBar, Side.RIGHT);
+        BorderPane root = new BorderPane();
 
         Scene scene = new Scene(root);
         stage.setScene(scene);

@@ -15,6 +15,7 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,21 +24,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Transform;
+import javafx.stage.Window;
+import org.vns.javafx.designer.EditorUtil;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
 import static org.vns.javafx.dock.api.dragging.view.FramePane.Direction.*;
@@ -47,17 +50,23 @@ import static org.vns.javafx.dock.api.dragging.view.FramePane.Direction.*;
  * @author Valery Shyskin
  */
 public class FramePane extends Control {
+
     public static String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
     public static String CSS_CLASS = "CSS-89528991-bd7a-4792-911b-21bf56660bfb";
     public static final String NODE_ID = "NODE-" + ID;
     public static final String PARENT_ID = "PARENT-" + ID;
 
+    public static final String SHAPE_ID = "RESIZE-SHAPE-" + ID;
+
     private final ObservableMap<Direction, ResizeShape> sideShapes = FXCollections.observableHashMap();
+    private final Rectangle rectangle;
+
     private Class<?> shapeClass;
     private final ObjectProperty<Node> boundNode = new SimpleObjectProperty<>();
     private final boolean enableResize;
     private Point2D startMousePos;
     //private MouseEventHandler eventHandler;
+    private Parent root;
 
     public enum Direction {
         nShape, //north indicator
@@ -71,22 +80,26 @@ public class FramePane extends Control {
         nwShape   // north-west indicator
     }
 
-    public FramePane() {
-        this(null, true);
-    }
-    public FramePane(boolean enableResize) {
-        this(null, enableResize);
-    }
-    public FramePane(Class<?> resizeShapeClass) {
-        this(resizeShapeClass, true);
+    public FramePane(Parent root) {
+        this(root, true);
     }
 
-    public FramePane(Class<?> resizeShapeClass, boolean enableResize) {
+    public FramePane(Parent root, boolean enableResize) {
+        this(root, null, enableResize);
+    }
+
+    public FramePane(Parent root, Class<?> resizeShapeClass) {
+        this(root, resizeShapeClass, true);
+    }
+
+    public FramePane(Parent root, Class<?> resizeShapeClass, boolean enableResize) {
         this.shapeClass = resizeShapeClass;
         if (shapeClass == null) {
             this.shapeClass = Circle.class;
         }
         this.enableResize = enableResize;
+        this.root = root;
+        this.rectangle = new Rectangle();
         init();
     }
 
@@ -94,10 +107,48 @@ public class FramePane extends Control {
         getStyleClass().add(CSS_CLASS);
         getStyleClass().add("frame-control");
         setManaged(false);
-        if ( ! enableResize ) {
+        if (!enableResize) {
             setMouseTransparent(true);
         }
         //eventHandler = new MouseEventHandler(this);
+    }
+
+    public void hide() {
+        setVisible(false);
+        getSideShapes().forEach((k, v) -> {
+            v.setVisible(false);
+        });
+    }
+
+    public void show() {
+        Platform.runLater(() -> {
+            setVisible(true);
+            toFront();
+            getSideShapes().forEach((k, v) -> {
+                v.setVisible(true);
+                v.toFront();
+            });
+        });
+    }
+
+    public Parent getRoot() {
+        return root;
+    }
+
+    public static void hideAll(Window win) {
+        Set<Node> set = win.getScene().getRoot().lookupAll("#" + NODE_ID);
+        for (Node node : set) {
+            node.setVisible(false);
+        }
+        set = win.getScene().getRoot().lookupAll("#" + PARENT_ID);
+        for (Node node : set) {
+            node.setVisible(false);
+        }
+        set = win.getScene().getRoot().lookupAll("#" + SHAPE_ID);
+        for (Node node : set) {
+            node.setVisible(false);
+        }
+
     }
 
     public Point2D getStartMousePos() {
@@ -125,17 +176,18 @@ public class FramePane extends Control {
     }
 
     public void setBoundNode(Node boundNode) {
+
         this.boundNode.set(boundNode);
     }
 
     public Class<?> getShapeClass() {
         return shapeClass;
     }
-    private FrameRectangleSkin skinBase;
+    private FramePaneSkin skinBase;
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        skinBase = new FrameRectangleSkin(this);
+        skinBase = new FramePaneSkin(this);
         return skinBase;
     }
 
@@ -146,7 +198,7 @@ public class FramePane extends Control {
 
     protected double computeMinWidth(final double height) {
         //if (skinBase != null) {
-        return ((FrameRectangleSkin) skinBase).computeMinWidth(height, snappedTopInset(), snappedRightInset(), snappedBottomInset(), snappedLeftInset());
+        return ((FramePaneSkin) skinBase).computeMinWidth(height, snappedTopInset(), snappedRightInset(), snappedBottomInset(), snappedLeftInset());
         //} 
     }
 
@@ -245,14 +297,10 @@ public class FramePane extends Control {
             b = getBoundNode().localToScene(b);
             setLayoutX(b.getMinX());
             setLayoutY(b.getMinY());
-            //Rectangle r = (Rectangle) lookup("#rectangle");
-            //r.setTranslateX(pb.getMinX());
-            //r.setTranslateY(pb.getMinY());
-            //System.err.println("isTransp = " + r.isMouseTransparent());
         }
     }
 
-    public static class FrameRectangleSkin extends SkinBase<FramePane> {
+    public static class FramePaneSkin extends SkinBase<FramePane> {
 
         MouseEventHandler mouseHandler;
         Pane pane;
@@ -261,17 +309,25 @@ public class FramePane extends Control {
 
         private ChangeListener<Node> boundNodeListener;
         private final ChangeListener<Bounds> boundsInParentListener = (o, ov, nv) -> {
-            adjustBoundsToNode(nv);
+            adjustBoundsToNode();
         };
-        private final ChangeListener<Transform> localToSceneTransformListener = (o, ov, nv) -> {
-            //adjustBoundsToNode(ctrl.getBoundNode().getBoundsInParent());
+        private final ChangeListener<Background> backgroundListener = (o, ov, nv) -> {
+            if (nv != null) {
+                adjustBoundsToNode(nv.getOutsets());
+            }
         };
 
-        public FrameRectangleSkin(FramePane control) {
+        private final ChangeListener<Transform> localToSceneTransformListener = (o, ov, nv) -> {
+            adjustBoundsToNode();
+        };
+
+        public FramePaneSkin(FramePane control) {
             super(control);
             this.ctrl = control;
             rect = new Rectangle();
             rect.setId("rectangle");
+            rect.getStyleClass().add(CSS_CLASS);
+
             mouseHandler = new MouseEventHandler(ctrl);
             rect.setMouseTransparent(true);
             if (ctrl.isEnableResize()) {
@@ -280,63 +336,64 @@ public class FramePane extends Control {
                 rect.getStyleClass().add("not-resizable");
             }
             pane = new Pane(rect);
-            
+            pane.getStyleClass().add(CSS_CLASS);
+
             rect.toBack();
             pane.setStyle("-fx-background-color: transparent");
             ctrl.setStyle("-fx-background-color: transparent");
 
+            ctrl.setMouseTransparent(true);
             pane.setMouseTransparent(true);
             rect.setMouseTransparent(true);
-            ctrl.setManaged(true);
-            //pane.setManaged(false);
             ctrl.setManaged(false);
             if (ctrl.isEnableResize()) {
                 createSideShapes();
             }
             initBoundNode();
             getChildren().add(pane);
-            pane.toBack();
         }
 
         protected void createSideShapes() {
             ResizeShape sh = createSideShape(nShape);
-            sh.centerXProperty().bind(rect.xProperty().add(rect.widthProperty().divide(2)));
-            sh.centerYProperty().bind(rect.yProperty());
+            sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty().divide(2)));
+            sh.centerYProperty().bind(ctrl.layoutYProperty());
 
             sh = createSideShape(neShape);
-            sh.centerXProperty().bind(rect.xProperty().add(rect.widthProperty()));
-            sh.centerYProperty().bind(rect.yProperty());
+            sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty()));
+            sh.centerYProperty().bind(ctrl.layoutYProperty());
 
             sh = createSideShape(eShape);
-            sh.centerXProperty().bind(rect.xProperty().add(rect.widthProperty()));
-            sh.centerYProperty().bind(rect.yProperty().add(rect.heightProperty().divide(2)));
+            sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty()));
+            sh.centerYProperty().bind(ctrl.layoutYProperty().add(rect.heightProperty().divide(2)));
 
             sh = createSideShape(seShape);
-            sh.centerXProperty().bind(rect.xProperty().add(rect.widthProperty()));
-            sh.centerYProperty().bind(rect.yProperty().add(rect.heightProperty()));
+            sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty()));
+            sh.centerYProperty().bind(ctrl.layoutYProperty().add(rect.heightProperty()));
 
             sh = createSideShape(sShape);
-            sh.centerXProperty().bind(rect.xProperty().add(rect.widthProperty().divide(2)));
-            sh.centerYProperty().bind(rect.yProperty().add(rect.heightProperty()));
+            sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty().divide(2)));
+            sh.centerYProperty().bind(ctrl.layoutYProperty().add(rect.heightProperty()));
 
             sh = createSideShape(swShape);
-            sh.centerXProperty().bind(rect.xProperty());
-            sh.centerYProperty().bind(rect.yProperty().add(rect.heightProperty()));
+            sh.centerXProperty().bind(ctrl.layoutXProperty());
+            sh.centerYProperty().bind(ctrl.layoutYProperty().add(rect.heightProperty()));
 
             sh = createSideShape(wShape);
-            sh.centerXProperty().bind(rect.xProperty());
-            sh.centerYProperty().bind(rect.yProperty().add(rect.heightProperty().divide(2)));
+            sh.centerXProperty().bind(ctrl.layoutXProperty());
+            sh.centerYProperty().bind(ctrl.layoutYProperty().add(rect.heightProperty().divide(2)));
 
             sh = createSideShape(nwShape);
-            sh.centerXProperty().bind(rect.xProperty());
-            sh.centerYProperty().bind(rect.yProperty());
+            sh.centerXProperty().bind(ctrl.layoutXProperty());
+            sh.centerYProperty().bind(ctrl.layoutYProperty());
 
         }
 
         protected ResizeShape createSideShape(Direction d) {
             ResizeShape retval = new ResizeShape(ctrl.getShapeClass());
+            retval.getStyleClass().add(CSS_CLASS);
+            retval.setId(SHAPE_ID);
             ctrl.getSideShapes().put(d, retval);
-            getChildren().add(retval);
+            EditorUtil.getChildren(ctrl.getRoot()).add(retval);
             retval.toFront();
             return retval;
         }
@@ -347,38 +404,48 @@ public class FramePane extends Control {
                 if (ov != null) {
                     ov.boundsInParentProperty().removeListener(boundsInParentListener);
                     ov.localToSceneTransformProperty().removeListener(localToSceneTransformListener);
+                    if (ov instanceof Region) {
+                        ((Region) ov).backgroundProperty().removeListener(backgroundListener);
+                    }
 
                     if (!ctrl.getSideShapes().isEmpty()) {
-                        //getSideShapes().unbind(); // to remove mouseEventListeners
                         removeShapeMouseEventHandlers();
                     }
+                    ctrl.hide();
                 }
                 if (nv != null) {
                     if (!ctrl.getSideShapes().isEmpty()) {
-                        //getSideShapes().bind(); // to remove mouseEventListeners
                         addShapeMouseEventHandlers();
                     }
                     nv.boundsInParentProperty().addListener(boundsInParentListener);
                     nv.localToSceneTransformProperty().addListener(localToSceneTransformListener);
-
+                    if (nv instanceof Region) {
+                        ((Region) nv).backgroundProperty().addListener(backgroundListener);
+                    }
                     if (ctrl.getBoundNode().getScene() != null && ctrl.getBoundNode().getScene().getWindow() != null) {
-                        Bounds curPb = ctrl.getBoundNode().getBoundsInParent();
-                        adjustBoundsToNode(curPb);
+                        adjustBoundsToNode();
                     }
                 } else if (!ctrl.getSideShapes().isEmpty()) {
                     removeShapeMouseEventHandlers();
                 }
 
                 if (nv == null) {
-                    ctrl.setVisible(false);
+                    ctrl.hide();
                 } else {
-                    ctrl.setVisible(true);
+                    ctrl.show();
+                    if (ctrl.getBoundNode().getScene() != null && ctrl.getBoundNode().getScene().getWindow() != null) {
+                        adjustBoundsToNode();
+                    }
                 }
             };
             ctrl.boundNodeProperty().addListener(boundNodeListener);
         }
 
-        protected void adjustBoundsToNode(Bounds boundsInParent) {
+        protected void adjustBoundsToNode() {
+            this.adjustBoundsToNode(null);
+        }
+
+        protected void adjustBoundsToNode(Insets insets) {
             //
             // We change position of the rectangle in order to enforce layotChildren
             // to be executed. rutLater will restore to (0,0) position
@@ -388,9 +455,11 @@ public class FramePane extends Control {
             Platform.runLater(() -> {
                 rect.setX(0);
                 rect.setY(0);
-                rect.setWidth(boundsInParent.getWidth());
-                rect.setHeight(boundsInParent.getHeight());
-
+                Bounds sceneB = ctrl.getBoundNode().localToScene(ctrl.getBoundNode().getLayoutBounds());
+                double insw = insets != null ? insets.getLeft() + insets.getRight() : 0;
+                double insh = insets != null ? insets.getTop() + insets.getBottom() : 0;
+                rect.setWidth(sceneB.getWidth() + insw);
+                rect.setHeight(sceneB.getHeight() + insh);
             });
         }
 
@@ -457,8 +526,8 @@ public class FramePane extends Control {
         @Override
         protected void layoutChildren(double x, double y, double w, double h) {
             if (ctrl.getBoundNode() != null) {
-                Bounds sb = ctrl.getBoundNode().localToScene(ctrl.getBoundNode().getLayoutBounds());
-                Bounds bnds = ctrl.getBoundNode().getBoundsInParent();
+                //Bounds sb = ctrl.getBoundNode().localToScene(ctrl.getBoundNode().getLayoutBounds());
+                //Bounds bnds = ctrl.getBoundNode().getBoundsInParent();
                 pane.resizeRelocate(x, y, w, h);
             } else {
                 pane.resizeRelocate(x, y, w, h);
@@ -469,10 +538,10 @@ public class FramePane extends Control {
 
     public static class MouseEventHandler implements EventHandler<MouseEvent> {
 
-        private FramePane frameRect;
+        private FramePane framePane;
 
         public MouseEventHandler(FramePane frameRect) {
-            this.frameRect = frameRect;
+            this.framePane = frameRect;
         }
 
         public void handle(MouseEvent ev, ResizeShape shape, Cursor c) {
@@ -484,13 +553,13 @@ public class FramePane extends Control {
                 shape.getScene().setCursor(Cursor.DEFAULT);
             } else if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 removeMouseExitedListener(shape);
-                frameRect.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
+                framePane.setStartMousePos(new Point2D(ev.getScreenX(), ev.getScreenY()));
 
             } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
                 WindowNodeFraming wnf = DockRegistry.getInstance().lookup(WindowNodeFraming.class);
-                frameRect.setVisible(false);
-                wnf.show(frameRect.getBoundNode());
-                wnf.redirectMouseEvents(ev, frameRect.getStartMousePos(), frameRect);
+                framePane.hide();
+                wnf.show(framePane.getBoundNode());
+                wnf.redirectMouseEvents(ev, framePane.getStartMousePos(), framePane);
             } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 shape.getScene().setCursor(Cursor.DEFAULT);
                 addMouseExitedListener(shape);
@@ -503,24 +572,23 @@ public class FramePane extends Control {
             if (shape == null) {
                 return;
             }
-            if (shape == frameRect.getSideShapes().get(nShape)) {
-                handle(ev, frameRect.getSideShapes().get(nShape), Cursor.N_RESIZE);
+            if (shape == framePane.getSideShapes().get(nShape)) {
+                handle(ev, framePane.getSideShapes().get(nShape), Cursor.N_RESIZE);
 
-            } else if (shape == frameRect.getSideShapes().get(neShape)) {
-                handle(ev, frameRect.getSideShapes().get(neShape), Cursor.NE_RESIZE);
-            } else if (shape == frameRect.getSideShapes().get(eShape)) {
-                handle(ev, frameRect.getSideShapes().get(eShape), Cursor.E_RESIZE);
-
-            } else if (shape == frameRect.getSideShapes().get(seShape)) {
-                handle(ev, frameRect.getSideShapes().get(seShape), Cursor.SE_RESIZE);
-            } else if (shape == frameRect.getSideShapes().get(sShape)) {
-                handle(ev, frameRect.getSideShapes().get(sShape), Cursor.S_RESIZE);
-            } else if (shape == frameRect.getSideShapes().get(swShape)) {
-                handle(ev, frameRect.getSideShapes().get(swShape), Cursor.SW_RESIZE);
-            } else if (shape == frameRect.getSideShapes().get(wShape)) {
-                handle(ev, frameRect.getSideShapes().get(wShape), Cursor.W_RESIZE);
-            } else if (shape == frameRect.getSideShapes().get(nwShape)) {
-                handle(ev, frameRect.getSideShapes().get(nwShape), Cursor.NW_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(neShape)) {
+                handle(ev, framePane.getSideShapes().get(neShape), Cursor.NE_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(eShape)) {
+                handle(ev, framePane.getSideShapes().get(eShape), Cursor.E_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(seShape)) {
+                handle(ev, framePane.getSideShapes().get(seShape), Cursor.SE_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(sShape)) {
+                handle(ev, framePane.getSideShapes().get(sShape), Cursor.S_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(swShape)) {
+                handle(ev, framePane.getSideShapes().get(swShape), Cursor.SW_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(wShape)) {
+                handle(ev, framePane.getSideShapes().get(wShape), Cursor.W_RESIZE);
+            } else if (shape == framePane.getSideShapes().get(nwShape)) {
+                handle(ev, framePane.getSideShapes().get(nwShape), Cursor.NW_RESIZE);
             }
             ev.consume();
         }
