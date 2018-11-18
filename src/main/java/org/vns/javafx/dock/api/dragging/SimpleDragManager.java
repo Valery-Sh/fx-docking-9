@@ -279,6 +279,7 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
         if (root == null || !(root instanceof Pane) && !(DockRegistry.isDockLayout(root))) {
             return;
         }
+//        RectangleFrame.hideAll(resultStage);
         FramePane.hideAll(resultStage);
 
         Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {

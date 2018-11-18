@@ -51,21 +51,20 @@ import static org.vns.javafx.dock.api.dragging.view.FramePane.Direction.*;
  */
 public class FramePane extends Control {
 
-    public static String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
-    public static String CSS_CLASS = "CSS-89528991-bd7a-4792-911b-21bf56660bfb";
+    public static final String ID = "ID-89528991-bd7a-4792-911b-21bf56660bfb";
+    public static final String CSS_CLASS = "CSS-89528991-bd7a-4792-911b-21bf56660bfb";
     public static final String NODE_ID = "NODE-" + ID;
     public static final String PARENT_ID = "PARENT-" + ID;
 
     public static final String SHAPE_ID = "RESIZE-SHAPE-" + ID;
 
     private final ObservableMap<Direction, ResizeShape> sideShapes = FXCollections.observableHashMap();
-    private final Rectangle rectangle;
+    
 
     private Class<?> shapeClass;
     private final ObjectProperty<Node> boundNode = new SimpleObjectProperty<>();
     private final boolean enableResize;
     private Point2D startMousePos;
-    //private MouseEventHandler eventHandler;
     private Parent root;
 
     public enum Direction {
@@ -99,7 +98,6 @@ public class FramePane extends Control {
         }
         this.enableResize = enableResize;
         this.root = root;
-        this.rectangle = new Rectangle();
         init();
     }
 
@@ -110,7 +108,6 @@ public class FramePane extends Control {
         if (!enableResize) {
             setMouseTransparent(true);
         }
-        //eventHandler = new MouseEventHandler(this);
     }
 
     public void hide() {
@@ -148,7 +145,6 @@ public class FramePane extends Control {
         for (Node node : set) {
             node.setVisible(false);
         }
-
     }
 
     public Point2D getStartMousePos() {
@@ -197,9 +193,7 @@ public class FramePane extends Control {
     }
 
     protected double computeMinWidth(final double height) {
-        //if (skinBase != null) {
         return ((FramePaneSkin) skinBase).computeMinWidth(height, snappedTopInset(), snappedRightInset(), snappedBottomInset(), snappedLeftInset());
-        //} 
     }
 
     /**
@@ -353,7 +347,7 @@ public class FramePane extends Control {
             getChildren().add(pane);
         }
 
-        protected void createSideShapes() {
+        private void createSideShapes() {
             ResizeShape sh = createSideShape(nShape);
             sh.centerXProperty().bind(ctrl.layoutXProperty().add(rect.widthProperty().divide(2)));
             sh.centerYProperty().bind(ctrl.layoutYProperty());
@@ -398,7 +392,7 @@ public class FramePane extends Control {
             return retval;
         }
 
-        protected void initBoundNode() {
+        private void initBoundNode() {
 
             boundNodeListener = (v, ov, nv) -> {
                 if (ov != null) {
@@ -446,6 +440,7 @@ public class FramePane extends Control {
         }
 
         protected void adjustBoundsToNode(Insets insets) {
+
             //
             // We change position of the rectangle in order to enforce layotChildren
             // to be executed. rutLater will restore to (0,0) position
@@ -453,6 +448,9 @@ public class FramePane extends Control {
             rect.setX(1);
             rect.setY(1);
             Platform.runLater(() -> {
+                if (ctrl.getBoundNode() == null) {
+                    return;
+                }
                 rect.setX(0);
                 rect.setY(0);
                 Bounds sceneB = ctrl.getBoundNode().localToScene(ctrl.getBoundNode().getLayoutBounds());
@@ -482,7 +480,6 @@ public class FramePane extends Control {
             shape.addEventFilter(MouseEvent.MOUSE_MOVED, mouseHandler);
             shape.addEventFilter(MouseEvent.MOUSE_EXITED, mouseHandler);
             shape.addEventFilter(MouseEvent.DRAG_DETECTED, mouseHandler);
-            //shape.setVisible(true);
         }
 
         protected void removeShapeMouseEventHandlers(ResizeShape shape) {
@@ -526,8 +523,6 @@ public class FramePane extends Control {
         @Override
         protected void layoutChildren(double x, double y, double w, double h) {
             if (ctrl.getBoundNode() != null) {
-                //Bounds sb = ctrl.getBoundNode().localToScene(ctrl.getBoundNode().getLayoutBounds());
-                //Bounds bnds = ctrl.getBoundNode().getBoundsInParent();
                 pane.resizeRelocate(x, y, w, h);
             } else {
                 pane.resizeRelocate(x, y, w, h);

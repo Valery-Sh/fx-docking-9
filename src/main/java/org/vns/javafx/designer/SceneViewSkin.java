@@ -66,12 +66,10 @@ public class SceneViewSkin extends SkinBase<SceneView> {
 
     public SceneViewSkin(SceneView control) {
         super(control);
-        System.err.println("SceneViewSkin constr 1");
         if (control.getRoot() != null) {
             createSceneGraph(control.getRoot());
             scrollAnimation = new ScrollAnimation(control.getTreeView());
         }
-        System.err.println("SceneViewSkin constr 2");
         Dockable d = DockRegistry.makeDockable(control.getTreeView());
 
         TreeViewExMouseDragHandler dragHandler = new TreeViewExMouseDragHandler(d.getContext());
@@ -88,13 +86,10 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 if (item != null) {
                     getSkinnable().getTreeView().getSelectionModel().select(item);
                 }
-                System.err.println("SceneViewSkin constr 3");
             }
             
         };
-        System.err.println("SceneViewSkin constr 3.1");
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
-        System.err.println("SceneViewSkin constr 4");
         dragIndicator = new DragIndicator(getSkinnable());
         dragIndicator.initIndicatorPane();
 
@@ -104,7 +99,6 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 .putUnique(IndicatorManager.class, new DragIndicatorManager(targetContext, dragIndicator));
 
         TreeView treeView = control.getTreeView();
-        System.err.println("SceneViewSkin constr 5");
         treeView.rootProperty().addListener((v, ov, nv) -> {
             if (nv != null && control.getRoot() == null) {
                 control.setRoot((Node) ((TreeItem) nv).getValue());
@@ -112,17 +106,13 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                 control.setRoot(null);
             }
         });
-System.err.println("SceneViewSkin constr 6");
         control.statusParProperty().addListener(this::statusBarChanged);
 
         targetContext.mousePositionProperty().addListener(this::mousePosChange);
 
         getChildren().add(contentPane);
-System.err.println("SceneViewSkin constr 7");
         control.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, this::sceneMousePressed);
         control.rootProperty().addListener(this::rootChanged);
-        System.err.println("SceneViewSkin constr end");
-
     }
 
     private boolean containsDesignerScope(Set<Scope> scopes) {
@@ -139,7 +129,6 @@ System.err.println("SceneViewSkin constr 7");
 
     private void sceneMousePressed(MouseEvent ev) {
         TreeItemEx item = getSkinnable().getTreeItem(ev.getScreenX(), ev.getScreenY());
-        System.err.println("SceneViewSkin  sceneMousePressed ");
         if (ev.isSecondaryButtonDown()) {
             secondaryMousePressed(ev, item);
             return;
@@ -151,7 +140,6 @@ System.err.println("SceneViewSkin constr 7");
         if (item == null || item.getValue() == null) {
             nf.hide();
         } else if (item.getValue() instanceof Node) {
-            System.err.println("SceneViewSkin  sceneMousePressed before show(item) = " + item.getValue());
             nf.show((Node) item.getValue());
         }
 
@@ -305,21 +293,6 @@ System.err.println("SceneViewSkin constr 7");
             getSkinnable().getTreeView().setRoot(null);
             return;
         }
-        /*        if (node == node.getScene().getRoot()) {
-            node.getStyleClass().clear();
-            Scene sc = node.getScene();
-            StackPane sp = new StackPane();
-            sp.setStyle("-fx-background-color: SIENNA; -fx-padding: 20 20 20 20");
-            sc.setRoot(sp);
-            sp.getChildren().add(node);
-            getSkinnable().setRoot(node);
-            node.toBack();
-            
-        }
-         */
-        System.err.println("SceneViewSkin  1");
-        //SceneView.addFramePanes(node);
-        System.err.println("SceneViewSkin  2");
         LayoutContext lc = new LayoutContextFactory().getContext(getSkinnable().getRoot());
         DockRegistry.makeDockLayout(getSkinnable().getRoot(), lc);
         if (getSkinnable().isDesigner() && !containsDesignerScope(lc.getScopes())) {

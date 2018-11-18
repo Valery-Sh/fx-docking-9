@@ -78,7 +78,6 @@ public class TreeItemBuilder {
         if ( SceneView.isFrame(obj) ) {
             return null;
         }
-        System.err.println("TreeItemBuilder not Frame");
         setContexts(obj);
         TreeItemEx retval;
         if (p != null && (p instanceof NodeContent)) {
@@ -86,7 +85,6 @@ public class TreeItemBuilder {
         } else if (p != null && (p instanceof NodeList)) {
             retval = createListContentItem(obj, (NodeList) p);
         } else {
-            System.err.println("TreeItemBuilder createListElementItem obj = " + obj);
             retval = createListElementItem(obj);
         }
         if (p != null && (p instanceof Property)) {

@@ -73,6 +73,7 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
     private boolean cursorSupported = false;
 
+//    private RectangleFrame rectangleFrame;
     private FramePane frameControl;
 
     private double translateX;
@@ -298,7 +299,12 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
             
             hide();
 
+/*            if (rectangleFrame != null) {
+                rectangleFrame.show();
+            }
+*/
             if (frameControl != null) {
+                //rectangleFrame.setVisible(true);
                 frameControl.show();
             }
             
@@ -309,7 +315,11 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         frameControl = redirectSource;
         redirectMouseEvents(ev, startMousePos);
     }    
-
+/*    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, RectangleFrame redirectSource) {
+        this.rectangleFrame = redirectSource;
+        redirectMouseEvents(ev, startMousePos);
+    }
+*/
     public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos) {
 
         saveCursor = getNode().getScene().getCursor();

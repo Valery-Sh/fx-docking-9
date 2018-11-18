@@ -54,10 +54,7 @@ public class EditorUtil {
     }
 
     public static Bounds screenTreeItemBounds(TreeItemEx treeItem) {
-        System.err.println("EditorUtil treeItem = " + treeItem);
-        
         Node node = treeItem.getCellGraphic().getParent();
-        System.err.println("EditorUtil node = " + node);
         return node.localToScreen(node.getBoundsInLocal());
     }
 

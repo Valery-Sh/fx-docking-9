@@ -90,13 +90,12 @@ public class DemoDesigner1 extends Application {
         LayoutContext ctx = ctxFactory.getContext(formPane);
         System.err.println("ctx=" + ctx);
         DockRegistry.makeDockLayout(formPane, ctx);
-        //BorderPane root1 = new BorderPane();
-        VBox root1 = new VBox();
+        BorderPane root1 = new BorderPane();
         Button eb = new Button("Ext Button");
        
 
         VBox centerPane = new VBox(eb);
-        //root1.setCenter(centerPane);
+        root1.setCenter(centerPane);
         //root1.setCenter(eb);
         //VBox root1 = new VBox();
         HBox hbox = new HBox(new Label("root1 Label"));
@@ -104,9 +103,9 @@ public class DemoDesigner1 extends Application {
         root1.setId("root1");
         sceneView.setRoot(root1);
 
-        StackPane sp = new StackPane();
-        //StackPane sp = new StackPane(root1);
-        Scene scene1 = new Scene(root1);
+        //StackPane sp = new StackPane();
+        StackPane sp = new StackPane(root1);
+        Scene scene1 = new Scene(sp);
         
         root1.setStyle("-fx-padding: 5 5 5 5");
         
@@ -131,7 +130,7 @@ public class DemoDesigner1 extends Application {
             }
         } );
         formButton.setOnAction(a -> {
-/*            System.err.println("CLICKED CENTER ");
+            System.err.println("CLICKED CENTER ");
             Node nd = root1.getCenter();
             System.err.println("CLICKED CENTER scaleX     = " + nd.getScaleX());
             System.err.println("CLICKED CENTER translateX = " + nd.getTranslateX());
@@ -155,7 +154,7 @@ public class DemoDesigner1 extends Application {
                 }
 
             }
-*/
+
         });
 
         root1.setId("root1 " + root.getClass().getSimpleName());

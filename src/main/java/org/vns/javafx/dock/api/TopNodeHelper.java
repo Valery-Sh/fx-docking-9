@@ -153,17 +153,17 @@ public class TopNodeHelper {
     }
 
     public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
-        String skipWithSyleClass = FramePane.CSS_CLASS;
+        String skipWithSyleClass1 = FramePane.CSS_CLASS;
         
         Node retval = null;
         Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {
-            return !  n.getStyleClass().contains(skipWithSyleClass); } 
+            return ! n.getStyleClass().contains(skipWithSyleClass1)   ; } 
         ));
 //        System.err.println("getTopNode while = " + node);
         while (node != null) {
 //              System.err.println("   ---  while node = " + node);
 //            System.err.println("getTopNode while = " + node);
-            if (node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
+            if (! node.getStyleClass().contains(skipWithSyleClass1) && node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
                 retval = node;
                 break;
             }
