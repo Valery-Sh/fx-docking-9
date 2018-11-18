@@ -15,7 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging.view;
 
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -73,11 +72,8 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
 
     private boolean cursorSupported = false;
 
-//    private RectangleFrame rectangleFrame;
     private FramePane frameControl;
 
-    private double translateX;
-    private double translateY;
     private Cursor saveCursor;
 
     protected WindowNodeFraming() {
@@ -299,12 +295,7 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
             
             hide();
 
-/*            if (rectangleFrame != null) {
-                rectangleFrame.show();
-            }
-*/
             if (frameControl != null) {
-                //rectangleFrame.setVisible(true);
                 frameControl.show();
             }
             
@@ -315,11 +306,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         frameControl = redirectSource;
         redirectMouseEvents(ev, startMousePos);
     }    
-/*    public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos, RectangleFrame redirectSource) {
-        this.rectangleFrame = redirectSource;
-        redirectMouseEvents(ev, startMousePos);
-    }
-*/
     public void redirectMouseEvents(MouseEvent ev, Point2D startMousePos) {
 
         saveCursor = getNode().getScene().getCursor();
@@ -348,7 +334,6 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
             window.hide();
             window = null;
         }
-
     }
 
     public Resizer getResizer() {
@@ -372,5 +357,4 @@ public abstract class WindowNodeFraming extends AbstractNodeFraming implements E
         }
         return retval;
     }
-
 }

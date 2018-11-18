@@ -80,9 +80,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
 
     private Node draggedNode;
 
-   // public IndicatorPopup() {
-   // }
-
     @Override
     public Node getDraggedNode() {
         return draggedNode;
@@ -159,18 +156,7 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
     @Override
     public void show(Node ownerNode, double anchorX, double anchorY) {
         Pane p = targetContext.getPositionIndicator().getIndicatorPane();        
-        //Insets ins = (ownerNode instanceof Region) ? ((Region)ownerNode).getInsets() : new Insets(0,0,0,0);
-        //System.err.println("Pane insets = " + p.getInsets());
         Insets ins = p.getInsets();
-/*        if ( p.getBorder() != null ) {
-            System.err.println("border  ");
-            if ( p.getBorder().getStrokes() != null) {
-                System.err.println("strokes width =  " + p.getBorder().getStrokes().get(0).getWidths().getLeft());
-            }
-        }
-*/        
-        //double left = ((Region)ownerNode).getBorder().getStrokes().get(0).getWidths().getLeft();
-        //System.err.println("INSETS = " + left);
         super.show(ownerNode.getScene().getWindow(), anchorX-ins.getLeft(), anchorY-ins.getTop());
     }
     
@@ -195,30 +181,8 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
     public Node getTargetNode() {
         return targetContext.getLayoutNode();
     }
-/*    private EventHandler<WindowEvent> windowShownHandler = e -> {
-         getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
-    }; 
-*/    
     protected void initContent() {
-        //System.err.println("INDICATORPOPUP INIT CONTENT");   
-        //getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
-        //removeEventFilter(WindowEvent.WINDOW_SHOWN, windowShownHandler);
-        //addEventFilter(WindowEvent.WINDOW_SHOWN, windowShownHandler);
-/*        addEventFilter(WindowEvent.WINDOW_HIDDEN, new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        addEventFilter(WindowEvent.WINDOW_HIDDEN, f -> {
-            //getScene().getStylesheets().add("org/vns/javafx/dock/api/resources/default.css");
-            //getScene().getRoot().applyCss();
-            System.err.println("IndicatorPopup initContent HIDDEN addEventFilter");            
-        });
-*/        
         setOnShown(e -> {
-            //System.err.println("IndicatorPopup initContent setOnShown");            
-         
             if (targetContext.getPositionIndicator() == null || targetContext.getPositionIndicator().getIndicatorPane() == null) {
                 return;
             }
@@ -229,7 +193,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
             Insets ins = indicatorPane.getInsets();
             if (getTargetNode() instanceof Region) {
-                //System.err.println("IndicatorPopup region indicatorPane = " + indicatorPane);
                 indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));
                 indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty().add(ins.getLeft() + ins.getRight()));
 
@@ -300,27 +263,6 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
         Point2D pos = getTargetNode().localToScreen(0, 0);
         getPositionIndicator().showIndicatorPopup(getDraggedNode(), pos.getX(), pos.getY());
     }
-
-    /*    @Override
-    public void showIndicatorPopup(Node dragged) {
-        if (getPositionIndicator() == null) {
-            return;
-        }
-        setAutoFix(false);
-        Point2D pos = getTargetNode().localToScreen(0, 0);
-        getPositionIndicator().showIndicatorPopup(dragged,pos.getX(), pos.getY());
-    }
-     */
- /*    @Override
-    public void showSideIndicator(Node targetNode) {
-        if (getPositionIndicator() == null) {
-            return;
-        }
-        setAutoFix(false);
-        Point2D pos = getTargetNode().localToScreen(0, 0);
-        getPositionIndicator().showSideIndicator(pos.getX(), pos.getY(), targetNode);
-    }
-     */
     /**
      * Hides the pop up window when some condition are satisfied. If this pop up
      * is hidden returns true. If the mouse cursor is still inside the pane
@@ -380,5 +322,4 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
     public Node getDockPlace() {
         return targetContext.getPositionIndicator().getDockPlace();
     }
-
 }

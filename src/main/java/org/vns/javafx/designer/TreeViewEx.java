@@ -43,17 +43,6 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     private void init() {
         getStyleClass().add(LOOKUP_SELECTOR);
         getStyleClass().add("designer");
-        //setFixedCellSize(-1);
-        
-/*        rootProperty().addListener((v,ov,nv) -> {
-            if ( nv != null && sceneGraphView.getRoot() == null ) {
-                sceneGraphView.setRoot( (Node)((TreeItem)nv).getValue());
-            } else if ( nv == null ) {
-                System.err.println("SET ROOT NULL");
-                sceneGraphView.setRoot(null);
-            }
-        });
-*/
     }
 
     protected VirtualFlowEx<TreeCell> getVirtualFlow() {
@@ -105,25 +94,7 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
         return virtualFlow.getHScrollBar();
     }
 
-/*    private boolean isInsideScrollBar(MouseEvent ev) {
-        boolean retval = false;
-        VirtualScrollBar sb = getVScrollBar();
-        Bounds sbBounds = sb.localToScreen(sb.getBoundsInLocal());
-        if (sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
-            retval = true;
-        }
-        return retval;
-    }
 
-    private boolean isInsideTreeView(MouseEvent ev) {
-        boolean retval = false;
-        Bounds sbBounds = localToScreen(getBoundsInLocal());
-        if (sbBounds.contains(ev.getScreenX(), ev.getScreenY())) {
-            retval = true;
-        }
-        return retval;
-    }
-*/
     public static class VirtualFlowEx<I> extends VirtualFlow {
         public VirtualScrollBar getVScrollBar() {
             return this.getVbar();

@@ -41,20 +41,7 @@ public class TreeItemEx extends TreeItem<Object> {
         init();
     }
 
-/*    public TreeItemEx(Object value) {
-        super(value);
-    }
-
-    public TreeItemEx(Object value, Node graphic) {
-        super(value, graphic);
-    }
-*/
     private void init() {
-        SceneView gv = DesignerLookup.lookup(SceneView.class);
-/*        if ( gv != null ) {
-            gv.addTreeItemEventHandlers(this);
-        }
-*/
     }
 
     public Node getCellGraphic() {
@@ -90,7 +77,6 @@ public class TreeItemEx extends TreeItem<Object> {
     }
 
     public TreeItemEx getTreeItem(String propertyName) {
-        //NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
         TreeItemEx propTreeItem = null;
 
         for (int i = 0; i < this.getChildren().size(); i++) {
@@ -165,16 +151,13 @@ public class TreeItemEx extends TreeItem<Object> {
         if ( getValue() == null ) {
             return;
         }
-        System.err.println("######### getValue() = " + getValue());
         if ((getValue() instanceof Node)) {
-            //if (Dockable.of(getValue()) != null) {
                 SelectionListener l = DockRegistry.lookup(SelectionListener.class);
                 ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_PRESSED, l);
                 ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_RELEASED, l);
             //}
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
-        System.err.println("TreeItemEx nd = " + nd);
         Object changeListener;
         if (this.getItemType() == ItemType.LIST) {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());

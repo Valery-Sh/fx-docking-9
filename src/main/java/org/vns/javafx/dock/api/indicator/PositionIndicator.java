@@ -24,13 +24,8 @@ public abstract class PositionIndicator {
 
     private void init() {
         indicatorPane = createIndicatorPane();
-//        indicatorPane.getStyleClass().add("indicator-pane");
         dockPlace = createDockPlace();
         dockPlace.getStyleClass().add("dock-place");  
-/*        if ( dockPlace instanceof Rectangle ) {
-            StyleUtil.styleDockPlace((Rectangle) dockPlace);
-        }
-*/
         addDockPlace();
     }
     
@@ -58,14 +53,6 @@ public abstract class PositionIndicator {
         getIndicatorPopup().show(ownerNode, screenX, screenY);
     }
     
-/*    protected void showSideIndicator(double screenX, double screenY, Node targetNode) {
-    }
-*/    
-    
-/*    public void showIndicatorPopup(double screenX, double screenY) {
-        getIndicatorPopup().show(getLayoutContext().getTargetNode(), screenX, screenY);
-    }   
-*/
     public Node getDockPlace() {
         return dockPlace;
     }
@@ -90,10 +77,6 @@ public abstract class PositionIndicator {
     public Pane getIndicatorPane() {
         return indicatorPane;
     }
-
-
-    //protected abstract String getStylePrefix();
-
 
     public void hideDockPlace() {
         getDockPlace().setVisible(false);

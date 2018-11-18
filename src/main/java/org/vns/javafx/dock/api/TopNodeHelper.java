@@ -135,14 +135,12 @@ public class TopNodeHelper {
     }
     
     public static Node getTopNode(Stage stage, double screenX, double screenY) {
-        //System.err.println("TopNodeHelper 2");
         return getTopNode(stage, screenX, screenY, (n -> {
             return true;
         }));
     }
 
     public static Node getTopNode(Window stage, Point2D screenPos) {
-        //System.err.println("TopNodeHelper 1");
         return getTopNode(stage, screenPos, (n -> {
             return true;
         }));
@@ -159,17 +157,13 @@ public class TopNodeHelper {
         Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {
             return ! n.getStyleClass().contains(skipWithSyleClass1)   ; } 
         ));
-//        System.err.println("getTopNode while = " + node);
         while (node != null) {
-//              System.err.println("   ---  while node = " + node);
-//            System.err.println("getTopNode while = " + node);
             if (! node.getStyleClass().contains(skipWithSyleClass1) && node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
                 retval = node;
                 break;
             }
             node = node.getParent();
         }
-//        System.err.println("getTopNode = " + retval);
         return retval;
     }
 

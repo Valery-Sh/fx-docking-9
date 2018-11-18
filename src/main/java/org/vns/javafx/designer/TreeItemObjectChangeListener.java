@@ -21,8 +21,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
-import javafx.scene.control.TreeItem;
-import javafx.scene.image.ImageView;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
@@ -78,7 +76,6 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     //
                     //changed outside and not by dragging 
                     //
-                    //List<Boolean> expValues = downUpExpandedValues(treeItem);
                     treeItem.getChildren().add(insertPos, item);
                     item.setExpanded(false);
                 } else if (item != null ) {
@@ -113,10 +110,8 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                         //
                         //changed outside and not by dragging 
                         //
-                        //List<Boolean> expValues = downUpExpandedValues(propItemParent);
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                         item.setExpanded(false);
-                        //restoreExpandedValues(propItemParent, expValues);
                     } else if ( item != null ) {
                         item.setExpanded(false);
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
@@ -133,7 +128,6 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     List<Boolean> expValues = downUpExpandedValues(propItemParent);
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     item.setExpanded(false);
-                    //restoreExpandedValues(propItemParent, expValues);
                 } else if ( item != null ){
                     item.setExpanded(false);
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
@@ -144,19 +138,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     }
                 }
 
-            }/* else if (oldValue != null && newValue != null) {
-                TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                item.setExpanded(false);
-                propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
-          
-                if (nf != null && (newValue instanceof Node) && !(newValue instanceof ImageView)) {
-                    Platform.runLater(() -> {
-                        nf.show((Node) newValue);
-                    });
-                }
-
             }
-            */
         }
     }
 
@@ -165,10 +147,4 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         return retval;
     }
 
-    /*    protected TreeItemEx getPropertyTreeItem() {
-        TreeItemEx retval = null;
-//        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(treeItem.getValue());
-        return retval;
-    }
-     */
 }

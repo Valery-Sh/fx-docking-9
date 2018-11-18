@@ -44,15 +44,8 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
         super(targetNode);
     }
 
-    /*    public SceneGraphViewTargetContext(Dockable dockable) {
-        super(dockable);
-    }
-     */
     @Override
     protected void initLookup(ContextLookup lookup) {
-        //lookup.putUnique(DragManagerFactory.class, new TreeItemDragManagerFactory());
-        //lookup.putUnique(FloatViewFactory.class, new TreeItemFloatViewFactory());
-
     }
 
     public ObjectProperty acceptedValue() {
@@ -147,13 +140,14 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
             // is an items and an added node may be not set into scene graph
             // immeduately
             //
-            if (!(toAccept instanceof Node)) {
+/*            if (!(toAccept instanceof Node)) {
                 return;
             }
             final Node av = (Node) toAccept;
             Platform.runLater(() -> {
                 //nf.show(av);
             });
+*/            
         }
     }
 
@@ -228,7 +222,6 @@ public class SceneGraphViewLayoutContext extends LayoutContext {
 
    @Override
     public boolean isAcceptable(Dockable dockable) {
-        //return true;
         return super.isAcceptable(dockable);
     }
 

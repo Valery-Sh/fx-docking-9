@@ -23,8 +23,6 @@ import static org.vns.javafx.designer.SceneView.LAST;
 public class DragIndicator {
 
     private static final double LEVEL_SPACE = 15;
-
-    //private final SceneGraphView sceneGraphView;
     
     private final TreeViewEx treeView;
 
@@ -359,7 +357,6 @@ public class DragIndicator {
             } else {
                 startY += arrowBnd.getHeight();
             }
-
         }
 
         double startX = rootBounds.getMinX() + rootBounds.getWidth() + gap * level;
@@ -409,7 +406,6 @@ public class DragIndicator {
 
 
     protected void printBounds(TreeItemEx item) {
-        boolean retval = false;
         TreeCell cell = (TreeCell) item.getCellGraphic().getParent();
         treeView.intersects(cell.getBoundsInLocal());
     }

@@ -248,23 +248,18 @@ public class LayoutContextFactory {
 
             topNode.prefWidthProperty().bind(targetPane.widthProperty());
             topNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-            //topNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
-            //rightNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
             rightNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             rightNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
-            //leftNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
             leftNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             leftNode.prefWidthProperty().bind(targetPane.widthProperty().divide(4));
 
             bottomNode.prefWidthProperty().bind(targetPane.widthProperty());
             bottomNode.prefHeightProperty().bind(targetPane.heightProperty().divide(4));
-            //bottomNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             centerNode.prefHeightProperty().bind(targetPane.heightProperty().divide(2));
             centerNode.prefWidthProperty().bind(targetPane.widthProperty().divide(2));
-            //centerNode.setStyle("-fx-border-color: black; -fx-border-width:1.5; -fx-opacity: 0.3; -fx-background-color: lightgray; -fx-text-fill: black");
 
             BorderPane indicator = new BorderPane(centerNode, topNode, rightNode, bottomNode, leftNode) {
                 @Override
@@ -286,7 +281,6 @@ public class LayoutContextFactory {
         public void showDockPlace(double x, double y) {
 
             boolean visible = true;
-            //BorderPane layoutNode = (BorderPane) getLayoutContext().getTargetNode();
 
             BorderPane bp = (BorderPane) getIndicatorPane();
 
@@ -305,20 +299,7 @@ public class LayoutContextFactory {
             }
 
             getDockPlace().setVisible(visible);
-            /*        if (visible) {
-            //dockAreaStrokeTimeline.stop();
-            ((Rectangle) getDockPlace()).strokeDashOffsetProperty().set(0);
-            Timeline placeTimeline = new Timeline();
-            //dockAreaStrokeTimeline = new Timeline();
-            placeTimeline.setCycleCount(Timeline.INDEFINITE);
-            KeyValue kv = new KeyValue(((Rectangle) getDockPlace()).strokeDashOffsetProperty(), 12);
-            KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-            placeTimeline.getKeyFrames().add(kf);
-            placeTimeline.play();
         }
-             */
-        }
-        //Timeline placeTimeline = new Timeline();
 
         private void adjustPlace(Node node) {
             Rectangle r = (Rectangle) getDockPlace();
@@ -338,34 +319,7 @@ public class LayoutContextFactory {
         }
 
         private void init() {
-
             ((Pane) getLayoutNode()).getChildren().addListener(new NodeListChangeListener(this));
-            /*            p.getChildren().addListener(new ListChangeListener<Node>() {
-                @Override
-                public void onChanged(ListChangeListener.Change<? extends Node> change) {
-                    while (change.next()) {
-                        if (change.wasRemoved()) {
-                            List<? extends Node> list = change.getRemoved();
-                            for (Node d : list) {
-                                if (DockRegistry.isDockable(d)) {
-                                    undock(d);
-                                }
-                            }
-
-                        }
-                        if (change.wasAdded()) {
-                            for (int i = change.getFrom(); i < change.getTo(); i++) {
-                                if (DockRegistry.isDockable(change.getList().get(i))) {
-                                    commitDock(change.getList().get(i));
-                                }
-
-                            }
-                        }
-                    }//while
-                }
-
-            });
-             */
         }
 
         @Override
@@ -384,15 +338,6 @@ public class LayoutContextFactory {
             //
             // Test is we drag dockable or the value of a dragContainer 
             //
-/*03.04            if (contains(d.node()) && d == dockable) {
-                return;
-            } else if (contains(d.node())) {
-                LayoutContext tc = d.getContext().getLayoutContext();
-                if (tc != null && isDocked(tc, d)) {
-                    tc.undock(d.node());
-                }
-            }
-             */
             dockable.getContext().getLayoutContext().undock(dockable);
 
             Node node = d.node();
@@ -402,7 +347,6 @@ public class LayoutContextFactory {
             }
 
             if (doDock(mousePos, d.node()) && stage != null) {
-                //d.getContext().setFloating(false);
                 if ((stage instanceof Stage)) {
                     ((Stage) stage).close();
                 } else {
@@ -452,7 +396,6 @@ public class LayoutContextFactory {
             BorderPane bp = (BorderPane) getLayoutNode();
             List<Dockable> list = FXCollections.observableArrayList();
             bp.getChildren().forEach(node -> {
-                //!!!08
                 if (DockRegistry.isDockable(node)) {
                     list.add(DockRegistry.dockable(node));
                 }
@@ -460,12 +403,6 @@ public class LayoutContextFactory {
             return list;
         }
 
-        /*        @Override
-        public boolean restore(Dockable dockable) {
-            return false;
-
-        }
-         */
     }
 
     public static class PanePositionIndicator extends PositionIndicator {
@@ -503,7 +440,6 @@ public class LayoutContextFactory {
                 visible = false;
             }
             getDockPlace().setVisible(visible);
-            //getDockPlace().toFront();
         }
 
         private void adjustPlace(Node node) {
@@ -733,7 +669,6 @@ public class LayoutContextFactory {
         protected void adjustPlace(Node node) {
             
             Pane p = getIndicatorPane();
-            Insets ins = getIndicatorPane().getInsets();
 
             Rectangle r = (Rectangle) getDockPlace();
             r.setHeight(((Region) node).getHeight());
@@ -823,12 +758,6 @@ public class LayoutContextFactory {
                             context.commitDock(n);
                         }
                     }
-//                    for (int i = change.getFrom(); i < change.getTo(); i++) {
-                    //if (DockRegistry.isDockable(change.getList().get(i))) {
-//                        System.err.println("LayoutContextFactory wasAdded = " + change.getList().get(i));
-//                        context.commitDock(change.getList().get(i));
-                    //}
-//                    }
                 }
             }//while
         }
