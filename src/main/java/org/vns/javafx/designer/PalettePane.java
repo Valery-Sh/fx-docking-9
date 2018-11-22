@@ -16,6 +16,7 @@
 package org.vns.javafx.designer;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,12 +30,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.event.EventDispatchChain;
 import javafx.event.EventDispatcher;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -84,6 +87,7 @@ import static org.vns.javafx.designer.PalettePane.NodePolicy.BOTH;
 import static org.vns.javafx.designer.PalettePane.NodePolicy.DOCKABLE;
 import static org.vns.javafx.designer.PalettePane.NodePolicy.DOCKLAYOUT;
 import org.vns.javafx.dock.api.Scope;
+import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.dragging.DefaultMouseDragHandler;
 import org.vns.javafx.dock.api.dragging.DragManager;
 import org.vns.javafx.dock.api.dragging.MouseDragHandler;
@@ -149,7 +153,6 @@ public class PalettePane extends Control {
     public PalettePane(boolean createDefault) {
         initModel(createDefault);
         getStyleClass().add(PALETTE_PANE);
-
     }
 
     private void initModel(boolean createDefault) {
@@ -161,16 +164,29 @@ public class PalettePane extends Control {
         DockRegistry.makeDockable(this).getContext().setDragNode(null);
     }
 
+    public static void addDesignerStyles(Object obj) {
+        if ((obj instanceof Node) && !((Node) obj).getStyleClass().contains("designer-mode")) {
+            ((Node) obj).getStyleClass().add("designer-mode");
+        }
+    }
+
+    /**
+     * {@code PalettePane} doesn't use this method. For now it is used by
+     * {@code TreeItemBuilder}.
+     *
+     * @param value the value to make {@code DockLayout}
+     */
     public void setLayoutContext(Object value) {
-        if ( !(value instanceof Node)) {
+        if (!(value instanceof Node)) {
             return;
         }
 
         PaletteItem item = getModel().getItem(value.getClass());
-        if (item != null ) {
+        if (item != null) {
             NodePolicy itemPolicy = item.getProducedNodePolicy();
             if (itemPolicy == DOCKLAYOUT || itemPolicy == BOTH) {
-                if (getProducedNodePolicy() == DOCKLAYOUT || getProducedNodePolicy() == BOTH) {
+
+                if (DockLayout.of(value) == null) {
                     LayoutContext lc = null;
                     if (item.getLayoutContextClass() == null) {
                         LayoutContextFactory f = new LayoutContextFactory();
@@ -178,16 +194,24 @@ public class PalettePane extends Control {
                     }
                     if (lc != null) {
                         DockRegistry.makeDockLayout((Node) value, lc);
-
-                        lc.getScopes().add(new Scope("designer"));
+                        ((Node) value).getStyleClass().add("designer-dock-context");
                     }
+                }
+                if (DockLayout.of(value) != null) {
+                    DockLayout.of(value).getLayoutContext().getScopes().add(new Scope("designer"));
                 }
             }
         }
     }//setLayoutContext
 
+    /**
+     * {@code PalettePane} doesn't use this method. For now it is used by
+     * {@code TreeItemBuilder}.
+     *
+     * @param value the value to make {@code Dockable}
+     */
     public void setDockableContext(Object value) {
-        if ( !(value instanceof Node)) {
+        if (!(value instanceof Node)) {
             return;
         }
 
@@ -195,19 +219,31 @@ public class PalettePane extends Control {
         if (item != null) {
             NodePolicy itemPolicy = item.getProducedNodePolicy();
             if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
-                if (getProducedNodePolicy() == DOCKABLE || getProducedNodePolicy() == BOTH) {
-                    DockRegistry.makeDockable((Node) value);
-                    Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
-                    ((Node) value).setId("PALETTE_NODE");
+                if (Dockable.of(value) == null && (itemPolicy == DOCKABLE || itemPolicy == BOTH)) {
+                    if (getProducedNodePolicy() == DOCKABLE || getProducedNodePolicy() == BOTH) {
+                        DockRegistry.makeDockable((Node) value);
+                        ((Node) value).getStyleClass().add("designer-dock-context");
+                    }
                 }
+                if (Dockable.of(value) != null) {
+                    Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
+                }
+
             }
         }
     }
 
+    /**
+     * {@code PalettePane} doesn't use this method. For now it is used by
+     * {@code TreeItemBuilder}.
+     *
+     * @param value the value to customize
+     */
     public void setCustomizer(Object value) {
-        if ( !(value instanceof Node) ) {
-            return;
-        }
+//        if (!(value instanceof Node)) {
+//            return;
+//        }
+
         PaletteItem item = getModel().getItem(value.getClass());
         if (item != null) {
             if (getModel().getCustomizer() != null) {
@@ -216,19 +252,31 @@ public class PalettePane extends Control {
             if (item.getCustomizer() != null) {
                 item.getCustomizer().customize(value);
             }
-
+            /*
             if ((value instanceof Node) && item.getEventDispatcher() != null) {
                 try {
                     PaletteEventDispatcher ped = item.getEventDispatcher().getClass().newInstance();
                     ped.setPreventCondition(item.getEventDispatcher().getPreventCondition());
                     ped.start((Node) value);
-                } catch (InstantiationException ex) {
-                    Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
+                } catch (InstantiationException | IllegalAccessException ex) {
                     Logger.getLogger(PalettePane.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+             */
+        }
+    }
 
+    public void setCustomEventDispather(Object value) {
+        if (!(value instanceof Node)) {
+            return;
+        }
+        if ((value instanceof Node)) {
+            PaletteEventDispatcher ped = new MouseEventDispatcher();
+            PaletteItem item = getModel().getItem(value.getClass());
+            if (item != null && item.getPreventCondition() != null) {
+                ped.setPreventCondition(item.getPreventCondition());
+            }
+            ped.start((Node) value);
         }
     }
 
@@ -493,9 +541,13 @@ public class PalettePane extends Control {
         lb.applyCss();
 
         lb = new Label("Button");
-        pc.addItem(lb, Button.class, n -> {
+        item = pc.addItem(lb, Button.class, n -> {
             ((Button) n).setFocusTraversable(false);
         });
+        item.setPreventCondition((e, n) -> {
+            return e.getEventType().equals(MouseEvent.MOUSE_RELEASED);
+        });
+
         lb.getStyleClass().add("tree-item-node-button");
 
         lb = new Label("CheckBox");
@@ -505,7 +557,9 @@ public class PalettePane extends Control {
         //
         // Prevents MOUSE_RELEASED
         //
-        item.setEventDispatcher(new MouseEventDispatcher());
+        item.setPreventCondition((e, n) -> {
+            return e.getEventType().equals(MouseEvent.MOUSE_RELEASED);
+        });
 
         lb.getStyleClass().add("tree-item-node-checkbox");
 
@@ -516,10 +570,13 @@ public class PalettePane extends Control {
         lb = new Label("ComboBox");
         item = pc.addItem(lb, ComboBox.class);//, n -> { ( (ComboBox)n).setVisibleRowCount(0);( (ComboBox)n).armedProperty().set(false);});
         lb.getStyleClass().add("tree-item-node-combobox");
-        item.setEventDispatcher(new MouseEventDispatcher(n -> {
-            return ((ComboBox) n).getItems().isEmpty();
-        }));
+        item.setPreventCondition((e, n) -> {
+            return e.getEventType().equals(MouseEvent.MOUSE_RELEASED) && ((ComboBox) n).getItems().isEmpty();
+        });
 
+//        item.setEventDispatcher(new MouseEventDispatcher(n -> {
+//            return ((ComboBox) n).getItems().isEmpty();
+//        }));
         lb = new Label("ListView");
         pc.addItem(lb, ListView.class);
         lb.getStyleClass().add("tree-item-node-listview");
@@ -583,6 +640,8 @@ public class PalettePane extends Control {
         private final ObjectProperty<NodePolicy> producedNodePolicy = new SimpleObjectProperty(BOTH);
         private final ObjectProperty<Class<?>> layoutContextClass = new SimpleObjectProperty<>();
 
+        BiPredicate<Event, Node> preventCondition;
+
         private final ObjectProperty<PaletteEventDispatcher> eventDispatcher = new SimpleObjectProperty<>();
 
         /**
@@ -645,6 +704,14 @@ public class PalettePane extends Control {
 
         public void setEventDispatcher(PaletteEventDispatcher eventDispatcher) {
             this.eventDispatcher.set(eventDispatcher);
+        }
+
+        public BiPredicate<Event, Node> getPreventCondition() {
+            return preventCondition;
+        }
+
+        public void setPreventCondition(BiPredicate<Event, Node> preventCondition) {
+            this.preventCondition = preventCondition;
         }
 
         public ObjectProperty<NodePolicy> producedNodePolicy() {
@@ -1077,42 +1144,17 @@ public class PalettePane extends Control {
             PalettePane palette = item.getModel().getPalette();
             try {
                 Object value = item.getValueClass().newInstance();
-                if (Dockable.of(value) == null && (value instanceof Node)) {
-                    NodePolicy itemPolicy = item.getProducedNodePolicy();
-                    if (itemPolicy == DOCKABLE || itemPolicy == BOTH) {
-                        if (palette.getProducedNodePolicy() == DOCKABLE || palette.getProducedNodePolicy() == BOTH) {
-                            DockRegistry.makeDockable((Node) value);
-                            Dockable.of(value).getContext().getScopes().add(new Scope("designer"));
-                            ((Node) value).setId("PALETTE_NODE");
-                        }
-                    }
-                }
-                if (DockLayout.of(value) == null && (value instanceof Node)) {
-                    NodePolicy itemPolicy = item.getProducedNodePolicy();
-                    if (itemPolicy == DOCKLAYOUT || itemPolicy == BOTH) {
-                        if (palette.getProducedNodePolicy() == DOCKLAYOUT || palette.getProducedNodePolicy() == BOTH) {
-                            LayoutContext lc = null;
-                            if (item.getLayoutContextClass() == null) {
-                                LayoutContextFactory f = new LayoutContextFactory();
-                                lc = f.getContext((Node) value);
-                            } else {
 
-                            }
-                            if (lc != null) {
-                                DockRegistry.makeDockLayout((Node) value, lc);
+                palette.setDockableContext(value);
+                palette.setLayoutContext(value);
 
-                                lc.getScopes().add(new Scope("designer"));
-                            }
-                        }
-                    }
-                }
                 if (item.getModel().getCustomizer() != null) {
                     item.getModel().getCustomizer().customize(value);
                 }
                 if (item.getCustomizer() != null) {
                     item.getCustomizer().customize(value);
                 }
-
+                addDesignerStyles(value);
                 if ((value instanceof Node) && item.getEventDispatcher() != null) {
                     //item.getEventDispatcher().start((Node) value);
                     PaletteEventDispatcher ped = item.getEventDispatcher().getClass().newInstance();
@@ -1149,8 +1191,8 @@ public class PalettePane extends Control {
         }
 
         @Override
-        public DragManager getDragManager(MouseEvent ev) {
-            DragManager dm = super.getDragManager(ev);
+        public DragManager createDragManager(MouseEvent ev) {
+            DragManager dm = super.createDragManager(ev);
             dm.setHideOption(DragManager.HideOption.CARRIERED);
             return dm;
         }
@@ -1189,11 +1231,15 @@ public class PalettePane extends Control {
         @Override
         public void customize(Object value) {
             if (value instanceof Tab) {
-                ((Tab) value).setText("tab");
+                if (((Tab) value).getText() == null || ((Tab) value).getText().isEmpty()) {
+                    ((Tab) value).setText("tab");
+                }
             } else if (value instanceof Labeled) {
-                String tx = value.getClass().getSimpleName();
-                tx = tx.substring(0, 1).toLowerCase() + tx.substring(1);
-                ((Labeled) value).setText(tx);
+                if (((Labeled) value).getText() == null || ((Labeled) value).getText().isEmpty()) {
+                    String tx = value.getClass().getSimpleName();
+                    tx = tx.substring(0, 1).toLowerCase() + tx.substring(1);
+                    ((Labeled) value).setText(tx);
+                }
             }
         }
     }
@@ -1202,9 +1248,9 @@ public class PalettePane extends Control {
 
         void start(Node node);
 
-        Predicate<Node> getPreventCondition();
+        BiPredicate<Event, Node> getPreventCondition();
 
-        void setPreventCondition(Predicate<Node> preventCondition);
+        void setPreventCondition(BiPredicate<Event, Node> preventCondition);
 
         void finish(Node node);
 
@@ -1214,18 +1260,19 @@ public class PalettePane extends Control {
 
         private EventDispatcher initial;
         private Node node;
-        private Predicate<Node> preventCondition;
+        private BiPredicate<Event, Node> preventCondition;
 
         public MouseEventDispatcher() {
             this(null);
         }
 
-        public MouseEventDispatcher(Predicate<Node> cond) {
+        public MouseEventDispatcher(BiPredicate<Event, Node> cond) {
             preventCondition = cond;
             init();
         }
 
         private void init() {
+
         }
 
         @Override
@@ -1236,58 +1283,165 @@ public class PalettePane extends Control {
         }
 
         @Override
-        public Predicate<Node> getPreventCondition() {
+        public BiPredicate<Event, Node> getPreventCondition() {
             return preventCondition;
         }
 
         @Override
-        public void setPreventCondition(Predicate<Node> preventCondition) {
+        public void setPreventCondition(BiPredicate<Event, Node> preventCondition) {
             this.preventCondition = preventCondition;
         }
 
         @Override
         public Event dispatchEvent(Event event, EventDispatchChain tail) {
-            if (event instanceof MouseEvent) {
+            //if ( EventType. )
+            if (!(event instanceof MouseEvent)) {
+                return initial.dispatchEvent(event, tail);
+            }
+            MouseEvent mouseEvent = (MouseEvent) event;
 
-                MouseEvent mouseEvent = (MouseEvent) event;
-
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    return pressed(event, tail);
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                    return released(event, tail);
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                    return clicked(event, tail);
-                } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
-                    return dragDetected(event, tail);
-                } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    return dragged(event, tail);
-                }
+            if (mouseEvent.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                return pressed(event, tail);
+            } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                return released(event, tail);
+            } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
+                return clicked(event, tail);
+            } else if (mouseEvent.getEventType() == MouseEvent.DRAG_DETECTED) {
+                return dragDetected(event, tail);
+            } else if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                return dragged(event, tail);
             }
 
             return initial.dispatchEvent(event, tail);
+        }
+
+        protected boolean acceptable(Event event) {
+            boolean retval = false;
+            // if ((event instanceof MouseEvent) && event.getSource() == node) {
+            //     retval = true;
+            // }
+            Node parent = null;
+            if (event.getTarget() == node) {
+                parent = node;
+            } else if (Dockable.of(event.getTarget()) == null) {
+                parent = getDockableParent((Node) event.getTarget());
+            }
+            if (parent == node) {
+                retval = true;
+            }
+            return retval;
+        }
+
+        public Parent getDockableParent(Node target) {
+            Parent p = target.getParent();
+            while (p != null && p != node && Dockable.of(p) == null) {
+                p.getParent();
+            }
+            return p;
         }
 
         protected Event pressed(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
+/*            System.err.println("pressed dispatch node " + node);
+            System.err.println("pressed dispatch source " + event.getSource());
+            System.err.println("pressed dispatch target " + event.getTarget());
+            System.err.println("pressed dispatch isConsumed " + event.isConsumed());
+            System.err.println("-----------");
+
+            //if (!acceptable(event)) {
+            System.err.println("not acceptable pressed dispatch source " + event.getSource());
+            System.err.println("not acceptable pressed dispatch target " + event.getTarget());
+            System.err.println("=======");
+*/
+            //return initial.dispatchEvent(event, tail);
+            //return null;
+            //}
+            if (true) {
+                return initial.dispatchEvent(event, tail);
+            }
+            if (!acceptable(event)) {
+                return initial.dispatchEvent(event, tail);
+            }
+            Selection.SelectionListener l = DockRegistry.lookup(Selection.SelectionListener.class);
+            if (l != null) { //&& (event.getTarget() instanceof Node)) {
+                //l.handle((MouseEvent) event, (Node) event.getTarget());
+                l.handle((MouseEvent) event, node);
+            }
+            if (Dockable.of(node) != null) {
+                Dockable.of(node).getContext().getDragDetector().handle((MouseEvent) event);
+            }
+            return null;
+
+            //return initial.dispatchEvent(event, tail);
         }
 
         protected Event released(Event event, EventDispatchChain tail) {
-            if (preventCondition == null || preventCondition.test(node)) {
-                return null;
+            Event retval = null;
+            //if (preventCondition != null && ! preventCondition.test(event, node)) {
+            //    retval = initial.dispatchEvent(event, tail);
+            //}
+            if (true) {
+                return initial.dispatchEvent(event, tail);
             }
+            if (acceptable(event)) {
+                retval = null;
+                if (Dockable.of(node) != null) {
+                    //Dockable.of(node).getContext().getDragManager().
+                    //Dockable.of(node).getContext().getDragDetector().handle((MouseEvent) event);
+                } else {
+                    //initial.dispatchEvent(event, tail);
+                }
+            } else {
+                retval = initial.dispatchEvent(event, tail);
+            }
+            //return null;
+
             return initial.dispatchEvent(event, tail);
         }
 
         protected Event clicked(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
+            if (true) {
+                return initial.dispatchEvent(event, tail);
+            }
+            if (!acceptable(event)) {
+                return initial.dispatchEvent(event, tail);
+            }
+            return null;
         }
 
         protected Event dragDetected(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
+/*            System.err.println("dragDetected dispatch node " + node);
+            System.err.println("dragDetected dispatch source " + event.getSource());
+            System.err.println("dragDetected dispatch target " + event.getTarget());
+            System.err.println("dragDetected dispatch isConsumed " + event.isConsumed());
+            System.err.println("-----------");
+*/
+            if (true) {
+                return initial.dispatchEvent(event, tail);
+            }
+            if (!acceptable(event)) {
+                return initial.dispatchEvent(event, tail);
+            }
+            if (Dockable.of(node) != null) {
+                Dockable.of(node).getContext().getDragDetector().handle((MouseEvent) event);
+            }
+            return null;
         }
 
         protected Event dragged(Event event, EventDispatchChain tail) {
-            return initial.dispatchEvent(event, tail);
+            System.err.println("PalettePane dragged node = " + node);
+            System.err.println("PalettePane dragged source = " + event.getSource());
+            System.err.println("PalettePane dragged target = " + event.getTarget());
+            if (true) {
+                return initial.dispatchEvent(event, tail);
+            }
+            if (!acceptable(event)) {
+                return initial.dispatchEvent(event, tail);
+            }
+
+            if (Dockable.of(node) != null) {
+                //Dockable.of(node).getContext().getDragDetector().handle((MouseEvent) event);
+            }
+            return null;
         }
 
         @Override

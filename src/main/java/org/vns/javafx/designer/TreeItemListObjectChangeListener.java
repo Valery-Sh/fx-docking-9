@@ -34,11 +34,11 @@ import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 public class TreeItemListObjectChangeListener implements ListChangeListener {
 
     private final TreeItemEx treeItem;
-    private final String propertyName;
+    //private final String propertyName;
 
     public TreeItemListObjectChangeListener(TreeItemEx treeItem, String propertyName) {
         this.treeItem = treeItem;
-        this.propertyName = propertyName;
+        //this.propertyName = propertyName;
     }
 
     @Override
@@ -51,17 +51,22 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 if (!list.isEmpty()) {
                     SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
                     if (sr != null) {
-                        sr.save(list.get(list.size() - 1), change.getTo());
+                        //savasr.save(list.get(list.size() - 1), change.getTo());
                     }
                 }
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
+                    System.err.println("00 toRemove treeItem.getChildren = " + treeItem.getChildren());
                     for (TreeItem it : treeItem.getChildren()) {
                         if (((TreeItemEx) it).getItemType() == ItemType.LIST) {
+                            System.err.println("01 ITEM_LIST = " + ((TreeItemEx) it).getChildren());
                             for (TreeItem ith : ((TreeItemEx) it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
                                     it.getChildren().remove(toRemove);
+                                    SceneView.reset(toRemove);
+                                    System.err.println("1 toRemove value = " + toRemove.getValue());
+                                    //toRemove.unregisterChangeHandlers(); //22.11
                                     return;
                                 }
                             }
@@ -78,12 +83,15 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                         }
                     }
                     treeItem.getChildren().remove(toRemove);
+                    SceneView.reset(toRemove);
+                    System.err.println("2 toRemove value = " + toRemove.getValue());
+                    //toRemove.unregisterChangeHandlers(); //22.11
+                    
                 }
 
             }
             
             if (change.wasAdded()) {
-                
                 List list = change.getAddedSubList();
                 List itemList = new ArrayList();
                 list.forEach(elem -> {
@@ -98,35 +106,21 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                 while( SceneView.isFrame(obj)) {
                     obj = change.getList().get(--idx);
                 }
-                //treeItem.getChildren().addAll(change.getFrom(), itemList);
                 treeItem.getChildren().addAll(idx, itemList);
-                //treeItem.getChildren().addAll(itemList);
 
                 NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
                 if (nf != null && (list.get(list.size() - 1)) instanceof Node)  {
-                //if (nf != null && (list.get(0)) instanceof Node) {
                     //
                     // We apply Platform.runLater because a list do not 
                     // has to be a children but for instance for SplitPane it
                     // is an items and an added node may be not set into scene graph
                     // immeduately
                     //
-                    //&&&nf.show((Node) list.get(list.size() - 1));
                     Node n = (Node) list.get(list.size() - 1);
                     if (!SceneView.isFrame(n)) {
-                        System.err.println("************** node = " + n);
                         nf.show((Node) list.get(list.size() - 1));
-                        Platform.runLater(() -> {
-                        //    nf.show((Node) list.get(list.size() - 1));
-                        });
                     }
-                    /*                  if ( ! filteredList.isEmpty()  ) {
-                    nf.show((Node) filteredList.get(filteredList.size() - 1));
-                    Platform.runLater(() -> {
-                        nf.show((Node) filteredList.get(filteredList.size() - 1));
-                    });
-                    }
-                     */
+        
                 }
             }
         }//while

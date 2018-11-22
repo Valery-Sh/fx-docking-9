@@ -25,21 +25,21 @@ import org.vns.javafx.dock.api.Selection;
  *
  * @author Olga
  */
-public class DesignerFraming2 extends AbstractNodeFraming {
+public class DesignerFraming extends AbstractNodeFraming {
 
     @Override
     protected void initializeOnShow(Node node) {
 
-        //System.err.println("DesignerFraming2: initializeOnShow node = " + node);
         SceneView sv = DesignerLookup.lookup(SceneView.class);
         Parent p = EditorUtil.getTopParentOf(node);
         if (p != null && node != sv.getRoot()) {
-            FramePane resizePane = SceneView.getResizeFrame();
-            resizePane.setBoundNode(node);
             if (node.getParent() != null && node.getParent() != sv.getRoot()) {
                 FramePane parentPane = SceneView.getParentFrame();
                 parentPane.setBoundNode(node.getParent());
             }
+            FramePane resizePane = SceneView.getResizeFrame();
+            resizePane.setBoundNode(node);
+
         }
 
         Selection sel = DockRegistry.lookup(Selection.class);
@@ -65,7 +65,7 @@ public class DesignerFraming2 extends AbstractNodeFraming {
 
     }
 
-    public DesignerFraming2() {
+    public DesignerFraming() {
 
     }
 

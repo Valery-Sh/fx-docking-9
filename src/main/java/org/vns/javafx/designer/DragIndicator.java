@@ -300,7 +300,6 @@ public class DragIndicator {
     }
 
     protected void drawRectangle(TreeViewEx treeView) {
-//        System.err.println("drawRectangle(TreeViewEx treeView)");
         hideDrawShapes();
         Bounds lb = treeViewPane.getBoundsInLocal();
         itemRect.setX(lb.getMinX());

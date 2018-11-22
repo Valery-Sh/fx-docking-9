@@ -13,12 +13,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -125,11 +123,7 @@ public class DockTitleBar extends HBox {
         getStateButton().getStyleClass().add(StyleClasses.STATE_BUTTON.cssClass());
         getPinButton().getStyleClass().add(StyleClasses.PIN_BUTTON.cssClass());
         getStyleClass().add(StyleClasses.TITLE_BAR.cssClass());
-        
-        
-//        setOnMouseClicked(ev -> {
-//            getCloseButton().requestFocus();
-//        });
+ 
         
         getStateButton().setTooltip(new Tooltip("Undock pane"));
         getCloseButton().setTooltip(new Tooltip("Close pane"));
@@ -162,7 +156,7 @@ public class DockTitleBar extends HBox {
         DockableContext sp = dockNode.getContext();
         if (sp.isFloating() && (getScene().getWindow() instanceof Stage)) {
             ((Stage) getScene().getWindow()).close();
-        } else {
+        } else if (sp.isFloating() ) {
             ((Window) getScene().getWindow()).hide();
         }
 
@@ -228,7 +222,6 @@ public class DockTitleBar extends HBox {
             turnOffSelectedPseudoClass();
         }
         this.selectedPseudoClass.set(newValue);
-            
     }
 
     public BooleanProperty selectedPseudoClassProperty() {

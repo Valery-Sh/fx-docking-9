@@ -59,14 +59,23 @@ public abstract class Selection {
         }
     }
 
-    public static void removeListeners(Dockable dockable) {
-        Selection sel = DockRegistry.lookup(Selection.class);
+    public static void addListeners(Node node) {
+        //Selection sel = DockRegistry.lookup(Selection.class);
         SelectionListener l = DockRegistry.lookup(SelectionListener.class);
         if (l != null) {
-            dockable.node().removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
-            dockable.node().removeEventFilter(MouseEvent.MOUSE_PRESSED, l);
-            dockable.node().removeEventHandler(MouseEvent.MOUSE_RELEASED, l);
-            dockable.node().removeEventFilter(MouseEvent.MOUSE_RELEASED, l);
+            node.addEventHandler(MouseEvent.MOUSE_PRESSED, l);
+            node.addEventHandler(MouseEvent.MOUSE_RELEASED, l);
+        }
+    }
+
+    public static void removeListeners(Node node) {
+        //Selection sel = DockRegistry.lookup(Selection.class);
+        SelectionListener l = DockRegistry.lookup(SelectionListener.class);
+        if (l != null) {
+            node.removeEventHandler(MouseEvent.MOUSE_PRESSED, l);
+            //node.removeEventFilter(MouseEvent.MOUSE_PRESSED, l);
+            node.removeEventHandler(MouseEvent.MOUSE_RELEASED, l);
+            //node.removeEventFilter(MouseEvent.MOUSE_RELEASED, l);
         }
 
     }
@@ -76,6 +85,8 @@ public abstract class Selection {
         Object getSource();
 
         void setSource(Object source);
+
+        void handle(MouseEvent event, Node node);
 
     }
 
@@ -98,6 +109,9 @@ public abstract class Selection {
 
         @Override
         public void handle(MouseEvent ev) {
+//            System.err.println("Selection handle ev.source = " + ev.getSource());
+//            System.err.println("Selection handle ev.target = " + ev.getTarget());
+
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
 
@@ -108,6 +122,8 @@ public abstract class Selection {
         }
 
         protected void mousePressed(MouseEvent ev) {
+//            System.err.println("Selection mousePressed ev.source = " + ev.getSource());
+//            System.err.println("Selection mousePressed ev.target = " + ev.getTarget());
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             if (nf != null && (ev.getSource() instanceof Node)) {
                 nf.show((Node) ev.getSource());
@@ -120,10 +136,35 @@ public abstract class Selection {
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
 
                 //Selection sel = DockRegistry.lookup(Selection.class);
-
                 ev.consume();
             }
         }
 
+        @Override
+        public void handle(MouseEvent ev, Node node) {
+            if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                mousePressed(ev, node);
+            }
+            if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                mouseRelesed(ev, node);
+            }
+
+        }
+
+        protected void mousePressed(MouseEvent ev, Node node) {
+//            System.err.println("new Selection mousePressed node = " + node);
+//            System.err.println("new Selection mousePressed ev.source = " + ev.getSource());
+//            System.err.println("new Selection mousePressed ev.target = " + ev.getTarget());
+            NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
+            nf.show(node);
+            ev.consume();
+
+        }
+
+        protected void mouseRelesed(MouseEvent ev, Node node) {
+            if (Dockable.of(node) != null) {
+                ev.consume();
+            }
+        }
     }
 }

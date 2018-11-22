@@ -162,7 +162,7 @@ public class FloatPopupControlView implements FloatWindowView {
                 return make(dockable, Dockable.of(v), show);
             }
         }
-
+        System.err.println("FLOATING WIN MAKE");
         setSupportedCursors(DEFAULT_CURSORS);
 
         Node node = dockable.node();
@@ -170,7 +170,7 @@ public class FloatPopupControlView implements FloatWindowView {
         // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
         // and filters of type SeectionListener
         //
-        Selection.removeListeners(dockable);
+        Selection.removeListeners(node);
 
         Window owner;
         if ((node.getScene() == null || node.getScene().getWindow() == null)) {

@@ -24,6 +24,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
@@ -61,7 +62,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
     private final Pane treeViewPane; // = new StackPane();
     private ChangeListener rootSceneSizeListener = (v, ov, nv) -> {
         FramePane.hideAll(getSkinnable().getRoot().getScene().getWindow());
-        
+
     };
 
     public SceneViewSkin(SceneView control) {
@@ -87,7 +88,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
                     getSkinnable().getTreeView().getSelectionModel().select(item);
                 }
             }
-            
+
         };
         treeViewPane.getChildren().add(getSkinnable().getTreeView());
         dragIndicator = new DragIndicator(getSkinnable());
@@ -277,6 +278,19 @@ public class SceneViewSkin extends SkinBase<SceneView> {
             oldValue.getScene().heightProperty().removeListener(rootSceneSizeListener);
             oldValue.getScene().widthProperty().removeListener(rootSceneSizeListener);
         }
+        if (oldValue != null ) {
+            Parent parent = null;
+            if (oldValue.getParent() != null) {
+                parent = oldValue.getParent();
+            } else if (oldValue instanceof Parent) {
+                parent = (Parent) oldValue;
+            }
+            if ( parent != null ) {
+                parent.getStylesheets().remove(DesignerLookup.class.getResource("resources/styles/designer-customize.css").toExternalForm());
+                parent.getStyleClass().remove("designer-mode-root");
+            }
+        }
+
         SceneView.removeFramePanes(oldValue);
         if (newValue == null) {
             getSkinnable().getTreeView().setRoot(null);
@@ -289,6 +303,14 @@ public class SceneViewSkin extends SkinBase<SceneView> {
     }
 
     private void createSceneGraph(Node node) {
+        System.err.println("%%% node.getScene() = " + node.getScene());
+        if ( node.getScene() != null ) {
+            if ( (node.getScene().getEventDispatcher() instanceof SceneEventDispatcher)) {
+                ((SceneEventDispatcher)node.getScene().getEventDispatcher()).finish(node.getScene());
+            }
+            SceneEventDispatcher d = new SceneEventDispatcher();
+            d.start(node.getScene());
+        } 
         if (node == null) {
             getSkinnable().getTreeView().setRoot(null);
             return;
@@ -305,6 +327,7 @@ public class SceneViewSkin extends SkinBase<SceneView> {
             dockable.getContext().getScopes().add(new Scope("designer"));
         }
         if (getSkinnable().getTreeView().getRoot() == null || getSkinnable().getTreeView().getRoot().getValue() != node) {
+            System.err.println("*** createSceneGraph");
             TreeItemEx item = new TreeItemBuilder().build(node);
             getSkinnable().getTreeView().setRoot(item);
         }
@@ -316,9 +339,20 @@ public class SceneViewSkin extends SkinBase<SceneView> {
             getSkinnable().getRoot().getScene().heightProperty().addListener(rootSceneSizeListener);
             getSkinnable().getRoot().getScene().widthProperty().addListener(rootSceneSizeListener);
         }
-        SceneView.addFramePanes(node);    
-        SceneView.getParentFrame().hide();
-        SceneView.getResizeFrame().hide();
+
+        Parent parent = null;
+        if (node.getParent() != null) {
+            parent = node.getParent();
+        } else if (node instanceof Parent) {
+            parent = (Parent) node;
+        }
+        if (parent != null) {
+            SceneView.addFramePanes(parent);
+            SceneView.getParentFrame().hide();
+            SceneView.getResizeFrame().hide();
+            parent.getStyleClass().add("designer-mode-root");
+            parent.getStylesheets().add(DesignerLookup.class.getResource("resources/styles/designer-customize.css").toExternalForm());
+        }
         System.err.println("SceneViewSkin  3");
     }
 

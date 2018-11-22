@@ -94,7 +94,17 @@ public abstract class AbstractNodeFraming implements NodeFraming {
         getNode().getScene().windowProperty().addListener(nodeWindowListener);
 
     }
+    
+    @Override
+    public void removeListeners() {
+        if ( getNode() == null ) {
+            return;
+        }
+        getNode().parentProperty().removeListener(nodeParentListener);
+        getNode().sceneProperty().removeListener(nodeSceneListener);
+        getNode().getScene().windowProperty().removeListener(nodeWindowListener);
 
+    }
     protected abstract void initializeOnShow(Node node);
 
     protected abstract void finalizeOnHide(Node node);

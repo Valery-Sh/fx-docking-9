@@ -28,7 +28,7 @@ import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 public class DesignerSelection extends Selection {
 
     //private NodeResizer resizer;
-    private NodeFraming resizer;
+    //private NodeFraming resizer;
 
     public DesignerSelection() {
         init();
@@ -40,7 +40,7 @@ public class DesignerSelection extends Selection {
 
     @Override
     public void setSelected(Object toSelect) {
-        System.err.println("DesignerSelection: setLelected = " + toSelect);
+//        System.err.println("DesignerSelection: setLelected = " + toSelect);
         if (toSelect instanceof Node) {
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             if (nf != null) {
@@ -67,7 +67,7 @@ public class DesignerSelection extends Selection {
             nf.hide();
         }
         if (newValue instanceof Node) {
-            System.err.println("DesignerSelection: selectedChanged = " + newValue);
+//            System.err.println("DesignerSelection: selectedChanged = " + newValue);
 
             nf.show((Node) newValue);
         }

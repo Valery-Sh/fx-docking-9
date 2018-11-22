@@ -30,6 +30,8 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
 
     private final DockableContext context;
     private Point2D startMousePos;
+    private DragManager dragManager;
+    
     //private DragContainer dragContainer;
 
     protected MouseDragHandler(DockableContext context) {
@@ -61,17 +63,13 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent ev ) {
         if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            //System.err.println("MouseDragHandler mousePressed");
             mousePressed(ev);
         } else if (ev.getEventType() == MouseEvent.DRAG_DETECTED) {
-            //System.err.println("MouseDragHandler mouseDragDetected");
             mouseDragDetected(ev);
         } else if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            //System.err.println("MouseDragHandler mouseReleased");
             mouseReleased(ev);
         }
         ev.consume();
-
     }
     /**
      * May return null. If so then Mouse.DRAGDETECTED even is not handled
@@ -89,7 +87,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
             return null;
         }
         if ( getContext().dockable().node() instanceof DockNode) {
-            return startMousePos;
+            //return startMousePos;
         }
         return new Point2D(0,0);
     }
@@ -105,7 +103,13 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         this.dragContainer = dragContainer;
     }
 */
-    public DragManager getDragManager(MouseEvent ev) {
-        return getContext().getDragManager();
+    public DragManager createDragManager(MouseEvent ev) {
+        dragManager = getContext().newDragManager();
+        return dragManager;
     }
+
+    public DragManager getDragManager() {
+        return dragManager;
+    }
+    
 }

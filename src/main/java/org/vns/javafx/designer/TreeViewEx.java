@@ -43,6 +43,7 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     private void init() {
         getStyleClass().add(LOOKUP_SELECTOR);
         getStyleClass().add("designer");
+        
     }
 
     protected VirtualFlowEx<TreeCell> getVirtualFlow() {

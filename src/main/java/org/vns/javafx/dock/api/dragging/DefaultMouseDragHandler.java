@@ -34,11 +34,16 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
+//        System.err.println("DefaultDragHandler mousePressed source " + ev.getSource());
+//        System.err.println("DefaultDragHandler mousePressed target " + ev.getTarget());
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         ev.consume();
     }
     @Override
     public void mouseDragDetected(MouseEvent ev) {
+//        System.err.println("DefaultMouseDragHandler dragDetected source = " + ev.getSource());
+//        System.err.println("DefaultMouseDragHandler dragDetected target = " + ev.getTarget());
+        
         if (!ev.isPrimaryButtonDown() || getStartMousePos() == null ) {
             ev.consume();
             return;
@@ -62,15 +67,15 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         }
 */        
         if (!dockable.getContext().isFloating()) {
-             dm = getDragManager(ev);
+             dm = createDragManager(ev);
         } else if ( (dc != null) && dc.getPlaceholder() != null) {
             //dm = getDragManager(ev);
-            dm = Dockable.of(dc.getPlaceholder()).getContext().getDragManager();
+            dm = Dockable.of(dc.getPlaceholder()).getContext().newDragManager();
         } else {
-             dm = getDragManager(ev);
+             dm = createDragManager(ev);
         }
         ev.consume();
-        
+
         dm.mouseDragDetected(ev, getStartMousePos());
     }
 }

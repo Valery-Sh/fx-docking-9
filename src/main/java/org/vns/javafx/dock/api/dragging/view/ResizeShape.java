@@ -89,7 +89,14 @@ public class ResizeShape extends Control {
     public void setCenterY(double centerY) {
         this.centerY.set(centerY);
     }
-
+    public static boolean isResizeShape(Shape shape) {
+        if ( shape.getParent() instanceof ResizeShape ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     @Override
     protected Skin<?> createDefaultSkin() {
         return new ResizeShapeSkin(this);
@@ -126,13 +133,11 @@ public class ResizeShape extends Control {
             } else if (Rectangle.class.isAssignableFrom(ctrl.getShapeClass())) {
                 bindRectangle();
             }
-            System.err.println("ResizeShape bind");
         }
 
         private void bindCircle() {
             Circle c = (Circle) shape;
             shape.getStyleClass().add("circle");
-            //c.getStyleClass().add("circle");
             c.radiusProperty().bind(ctrl.prefWidthProperty().divide(2));
             ctrl.layoutXProperty().bind(ctrl.centerXProperty());
             ctrl.layoutYProperty().bind(ctrl.centerYProperty());
@@ -181,7 +186,6 @@ public class ResizeShape extends Control {
 
         @Override
         protected void layoutChildren(double x, double y, double w, double h) {
-            System.err.println("x = " + x + "; centerX = " + ctrl.getCenterX());
             //shape.resizeRelocate(x,y ,w, h);
             shape.resize(w, h);
         }

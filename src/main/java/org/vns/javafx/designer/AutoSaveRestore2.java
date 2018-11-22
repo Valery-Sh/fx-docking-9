@@ -24,12 +24,13 @@ import org.vns.javafx.dock.api.Dockable;
 import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
+import org.vns.javafx.dock.api.DragContainer;
 
 /**
  *
  * @author Olga
  */
-public class AutoSaveRestore implements SaveRestore {
+public class AutoSaveRestore2 implements SaveRestore {
 
     protected final static int PALETTE_PANE = 0;
     protected final static int TRASH_TRAY = 2;
@@ -49,18 +50,24 @@ public class AutoSaveRestore implements SaveRestore {
     public boolean isSaved() {
         return saved;
     }
-    
+
     @Override
-    public void save(Object obj) {
-        System.err.println("AutoSaveRestore save 1");
+    public void save(Object toSave) {
+        Object obj = toSave;
+        if (toSave instanceof TreeItemEx) {
+            obj = ((TreeItemEx) toSave).getValue();
+        }
+
+        System.err.println("AutoSaveRestore save 1 obj = " + obj);
         saved = false;
         if (objectToSave == null || obj != objectToSave) {
             return;
         }
+        System.err.println("AutoSaveRestore save 1.0");
         if (dragInitiator == PALETTE_PANE) {
             objectToSave = null;
             clear();
-            
+
             return;
         }
         if (dragInitiator == TRASH_TRAY) {
@@ -85,7 +92,8 @@ public class AutoSaveRestore implements SaveRestore {
             return;
         }
         System.err.println("AutoSaveRestore save 3 objectItem.value = " + objectItem.getValue());
-        parentItem = (TreeItemEx) objectItem.getParent(); // may be null for root item        '
+        parentItem = (TreeItemEx) objectItem.getParent(); // may be null for root item    
+        listIndex = parentItem.getChildren().indexOf(objectItem);
         System.err.println("AutoSaveRestore save 3 objectItem.parent = " + objectItem.getParent());
         if (parentItem == null) {
             return;
@@ -168,7 +176,7 @@ public class AutoSaveRestore implements SaveRestore {
                 }
             }
             return;
-        } else if (tray != null && tray.contains(obj) ) {
+        } else if (tray != null && tray.contains(obj)) {
             return;
         }
 
@@ -179,38 +187,51 @@ public class AutoSaveRestore implements SaveRestore {
             }
             return;
         }
+        System.err.println("AutoSaveRestore restore 1");
 
         if (parentItem == null) {
             return;
         }
-        if (listIndex >= 0) {
-            if (parentItem.getItemType() == ItemType.LIST) {
-                TreeItemEx p = (TreeItemEx) parentItem.getParent();
-                BeanAdapter ba = new BeanAdapter(p.getValue());
-                List list = (List) ba.get(parentItem.getPropertyName());
-                list.add(listIndex, obj);
-            } else {
-                NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parentItem.getValue());
-                BeanAdapter ba = new BeanAdapter(parentItem.getValue());
-                for (Property p : nd.getProperties()) {
-                    if (p instanceof NodeList) {
-                        List list = (List) ba.get(p.getName());
-                        if (list != null && list.size() >= listIndex) {
-                            list.add(listIndex, obj);
-                        }
+        System.err.println("AutoSaveRestore restore 2");
+
+        if (listIndex < 0) {
+            return;
+        }
+        System.err.println("AutoSaveRestore restore 3");
+
+        if (parentItem.getItemType() == ItemType.LIST) {
+            TreeItemEx p = (TreeItemEx) parentItem.getParent();
+            BeanAdapter ba = new BeanAdapter(p.getValue());
+            List list = (List) ba.get(parentItem.getPropertyName());
+            list.add(listIndex, obj);
+        } else if (parentItem.getItemType() == ItemType.ELEMENT && propertyName != null) {
+            BeanAdapter ba = new BeanAdapter(parentItem.getValue());
+            ba.put(propertyName, obj);
+
+        } else {
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parentItem.getValue());
+            BeanAdapter ba = new BeanAdapter(parentItem.getValue());
+            for (Property p : nd.getProperties()) {
+                if (p instanceof NodeList) {
+                    List list = (List) ba.get(p.getName());
+                    if (list != null && list.size() >= listIndex) {
+                        list.add(listIndex, obj);
                     }
                 }
             }
-        } else if (propertyName != null) {
-            BeanAdapter ba = new BeanAdapter(parentItem.getValue());
-            ba.put(propertyName, obj);
         }
+
+        System.err.println("AutoSaveRestore restore 4");
 
         item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), obj);
         if (verify(item, objectItem)) {
+            System.err.println("AutoSaveRestore restore 5");
+
             restoreExpanded(item, objectItem);
             item.setExpanded(objectItem.isExpanded());
         }
+        System.err.println("AutoSaveRestore restore 6");
+
     }
 
     protected boolean verify(TreeItemEx item, TreeItemEx objItem) {
@@ -282,16 +303,17 @@ public class AutoSaveRestore implements SaveRestore {
         if (dockable == null || dockable.getContext().getLayoutContext() == null || dockable.getContext().getLayoutContext().getLayoutNode() == null) {
             return;
         }
-        
+
         objectToSave = dockable.getContext().getDragValue();
-        System.err.println("AutoSaveRestore 2 toSave add = " + objectToSave);        
+        System.err.println("AutoSaveRestore 2 toSave add = " + objectToSave);
         Node node = dockable.getContext().getLayoutContext().getLayoutNode();
-        System.err.println("AutoSaveRestore 3 node add = " + node);        
+        System.err.println("AutoSaveRestore 3 node add = " + node);
         if (node instanceof PalettePane) {
             dragInitiator = PALETTE_PANE;
         } else if (node instanceof TrashTray) {
             dragInitiator = TRASH_TRAY;
         }
+        save(objectToSave);
     }
 
     @Override
@@ -303,5 +325,11 @@ public class AutoSaveRestore implements SaveRestore {
     @Override
     public boolean contains(Object obj) {
         return obj != null && obj == objectToSave;
+    }
+
+    public Object getObject(TreeViewEx tv) {
+        Dockable d = Dockable.of(tv);
+        DragContainer dc = d.getContext().getDragContainer();
+        return dc == null ? null : dc.getValue();
     }
 }

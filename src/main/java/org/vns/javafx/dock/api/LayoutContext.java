@@ -23,10 +23,10 @@ public abstract class LayoutContext {
     private ContextLookup lookup;
 
     private Node layoutNode;
-    private String title;
+   
     private PositionIndicator positionIndicator;
 
-    private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
+    //private final ObjectProperty<Node> focusedDockNode = new SimpleObjectProperty<>();
 
     private boolean usedAsDockLayout = true;
 
@@ -64,7 +64,10 @@ public abstract class LayoutContext {
 
     protected void initLookup(ContextLookup lookup) {
     }
-
+    void reset() {
+        layoutNode = null;
+        positionIndicator = null;
+    }
     public BiPredicate<LayoutContext, Dockable> getAcceptFilter() {
         return acceptFilter;
     }
@@ -73,11 +76,7 @@ public abstract class LayoutContext {
         this.acceptFilter = acceptFilter;
     }
 
-//    protected abstract boolean doDock(Point2D mousePos, Node node);
-/*    protected boolean restore(Dockable dockable) {
-        return false;
-    }
-     */
+
     public void commitDock(Object obj) {
         if (obj != null && DockRegistry.isDockable(obj)) {
             DockableContext dockableContext = Dockable.of(obj).getContext();
@@ -96,30 +95,6 @@ public abstract class LayoutContext {
         if (getLayoutNode() == null) {
             return;
         }
-        /*        getLayoutNode().sceneProperty().addListener((v, ov, nv) -> {
-            if (getLayoutNode().getScene() != null) {
-                focusedDockNode.bind(getLayoutNode().getScene().focusOwnerProperty());
-            }
-        });
-
-        focusedDockNode.addListener((ObservableValue<? extends Node> observable, Node oldValue, Node newValue) -> {
-            Node newNode = DockUtil.getImmediateParent(newValue, (p) -> {
-                return DockRegistry.isDockable(p);
-            });
-            if (newNode != null) {
-                Dockable.of(newNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
-            }
-            Node oldNode = DockUtil.getImmediateParent(oldValue, (p) -> {
-                return DockRegistry.isDockable(p);
-            });
-
-            if (oldNode != null && oldNode != newNode) {
-                Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(false);
-            } else if (oldNode != null && !Dockable.of(oldNode).getContext().titleBarProperty().isActiveChoosedPseudoClass()) {
-                Dockable.of(oldNode).getContext().titleBarProperty().setActiveChoosedPseudoClass(true);
-            }
-        });
-         */
     }
 
     /**
@@ -155,7 +130,6 @@ public abstract class LayoutContext {
         if (Dockable.of(v) == null) {
             return false;
         }
-//        System.err.println("!!!!!!!!!!!!!!!!!!! isAcc");
         if (acceptFilter != null && !acceptFilter.test(this, dockable)) {
             return false;
         }
@@ -206,10 +180,6 @@ public abstract class LayoutContext {
         this.layoutNode = layoutNode;
     }
 
-    /*    protected boolean isDocked(Node node) {
-        return false;
-    }
-     */
     /**
      * isDocked(Node) returns true even if the node is docked to the given
      * {@code LayoutContext}
@@ -273,28 +243,12 @@ public abstract class LayoutContext {
 
     }
 
-    /*    public void undock(Node node) {
-        if (node != null && DockRegistry.isDockable(node)) {
-            DockableContext dc = Dockable.of(node).getContext();
-
-            dc.getLayoutContext().remove(node);
-            dc.setLayoutContext(null);
-            LayoutContext tc = dc.getLayoutContext();
-            if (tc instanceof ScenePaneContext) {
-                ((ScenePaneContext) tc).setRestoreContext(this);
-            }
-
-        }
-    }
-     */
     public abstract void remove(Object obj);
 
     public static class DefaultScopeEvaluator implements ScopeEvaluator {
 
         @Override
         public boolean evaluate(LayoutContext layoutContext, DockableContext dockableContext) {
-            //System.err.println("evaluate layotContext node = " + layoutContext.layoutNode);
-            //System.err.println("evaluate dockableContext node = " + dockableContext.getDragNode());
 
             boolean retval = false;
             Set<Scope> lset = FXCollections.observableSet(layoutContext.getScopes());

@@ -446,7 +446,7 @@ public class TrashTray extends Control {
             // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
             // and filters of type SeectionListener
             //
-            Selection.removeListeners(dockable);
+            Selection.removeListeners(node);
 
             final Stage window = new Stage();
             if (owner != null) {
@@ -495,7 +495,7 @@ public class TrashTray extends Control {
             // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
             // and filters of type SeectionListener
             //
-            Selection.removeListeners(dockable);
+            Selection.removeListeners(node);
 
             Point2D windowPos = node.localToScreen(0, 0);
 

@@ -232,7 +232,7 @@ public class FloatStageView implements FloatWindowView {
             // Removes selected and then Removes all MMOUSE_CLICKED event handlers 
             // and filters of type SeectionListener
             //
-            Selection.removeListeners(dockable);
+            Selection.removeListeners(dockable.node());
         });
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
@@ -336,22 +336,6 @@ public class FloatStageView implements FloatWindowView {
         DockableContext context = dockable.getContext();
         Point2D p = context.getLookup().lookup(MouseDragHandler.class).getStartMousePos();
 
-        /*        Dockable d = Dockable.of(dragged);
-        if (d != null && d.getContext().isDocked()) {
-            //04.04getLayoutContext(d).undock(d.node());
-            getLayoutContext(d).undock(d);
-        } else {
-            DragContainer dc = context.getDragContainer();
-            if (dc != null && dc.getDragSource() != null) {
-                dc.getDragSource().removeValue(dockable);
-            }
-            
-            getLayoutContext(d).undock(d);
-        }
-         */
-//        System.err.println("FloatStageView make layoutContext = " + dockable.getContext().getLayoutContext());
-//        System.err.println("   --- dockable.node() = " + dockable.node());
-//       System.err.println("FloatStageView make layoutContext = " + dockable.getContext().getLayoutContext());
         dockable.getContext().getLayoutContext().undock(dockable);
 
         Stage window = new Stage();
@@ -362,7 +346,7 @@ public class FloatStageView implements FloatWindowView {
         window.setOnShown(e -> {
             DockRegistry.register(window);
             if (Dockable.of(dragged) != null) {
-                Selection.removeListeners(Dockable.of(dragged));
+                Selection.removeListeners(Dockable.of(dragged).node());
             }
         });
         window.setOnHidden(e -> {
@@ -472,7 +456,7 @@ public class FloatStageView implements FloatWindowView {
         window.setOnShown(e -> {
             DockRegistry.register(window);
             if (Dockable.of(dragged) != null) {
-                Selection.removeListeners(Dockable.of(dragged));
+                Selection.removeListeners(Dockable.of(dragged).node());
             }
 
         });

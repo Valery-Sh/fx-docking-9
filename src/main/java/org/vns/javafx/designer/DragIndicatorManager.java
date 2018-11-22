@@ -59,7 +59,6 @@ public class DragIndicatorManager implements IndicatorManager {
 
     @Override
     public void handle(double screenX, double screenY) {
-        //System.err.println("DragIndicatorManager handle ");
         showIndicator(screenX, screenY);
     }
     
@@ -83,13 +82,11 @@ public class DragIndicatorManager implements IndicatorManager {
     }
     
     public void showIndicator(double mouseScreenX, double mouseScreenY) {
-//        System.err.println("1 DragIndicatorManager: showIndicator ");
         TreeViewEx tv = getSceneGraphView().getTreeView(mouseScreenX, mouseScreenY);
         if ( tv == null ) {
             return;
         }
         if ( tv.getRoot() == null ) {
-//            System.err.println("2 DragIndicatorManager: showIndicator ");
             dragIndicator.drawRectangle(tv); 
             return;
         }

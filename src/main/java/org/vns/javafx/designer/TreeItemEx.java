@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -11,11 +13,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
-import javafx.scene.input.MouseEvent;
-import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.bean.ReflectHelper;
-import org.vns.javafx.dock.api.Selection.SelectionListener;
 
 /**
  *
@@ -29,7 +29,9 @@ public class TreeItemEx extends TreeItem<Object> {
 
     private int dragDropQualifier;
 
-    private final Map<String, Object> changeListeners = FXCollections.observableHashMap();
+    private final Map<String, Object> changeListeners2 = FXCollections.observableHashMap();
+    private final Map<ObservableList, ListChangeListener> listChangeListeners = FXCollections.observableHashMap();
+    private final Map<ObservableValue, ChangeListener> propChangeListeners = FXCollections.observableHashMap();
 
     private ItemType itemType = ItemType.CONTENT;
 
@@ -148,14 +150,11 @@ public class TreeItemEx extends TreeItem<Object> {
         if (SceneView.isFrame(getValue())) {
             return;
         }
-        if ( getValue() == null ) {
+        if (getValue() == null) {
             return;
         }
         if ((getValue() instanceof Node)) {
-                SelectionListener l = DockRegistry.lookup(SelectionListener.class);
-                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_PRESSED, l);
-                ((Node) getValue()).addEventHandler(MouseEvent.MOUSE_RELEASED, l);
-            //}
+            Selection.addListeners((Node) getValue());
         }
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
         Object changeListener;
@@ -163,15 +162,16 @@ public class TreeItemEx extends TreeItem<Object> {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
             ObservableList ol = (ObservableList) getValue();
             ol.addListener((ListChangeListener) changeListener);
-            changeListeners.put(getPropertyName(), changeListener);
+            listChangeListeners.put(ol, (ListChangeListener) changeListener);
+            changeListeners2.put(getPropertyName(), changeListener);
             return;
         }
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
-            
+
             Property p = nd.getProperties().get(i);
             Object v = new BeanAdapter(getValue()).get(p.getName());
-            
+
             if (v != null && (v instanceof List)) {
                 if ((p instanceof NodeList) && ((NodeList) p).isAlwaysVisible()) {
                     continue;
@@ -181,37 +181,130 @@ public class TreeItemEx extends TreeItem<Object> {
                 Object propValue = new BeanAdapter(getValue()).get(p.getName());
                 Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "addListener", new Class[]{ListChangeListener.class});
                 ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
-                changeListeners.put(p.getName(), changeListener);
+                changeListeners2.put(p.getName(), changeListener);
+                listChangeListeners.put((ObservableList) propValue, (ListChangeListener) changeListener);
             } else {
                 changeListener = new TreeItemObjectChangeListener(this, p.getName());
                 Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), p.getName() + "Property", new Class[0]);
                 Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
                 Method addListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "addListener", new Class[]{ChangeListener.class});
                 ReflectHelper.MethodUtil.invoke(addListenerMethod, propValue, new Object[]{changeListener});
-                changeListeners.put(p.getName(), changeListener);
+                propChangeListeners.put((ObservableValue) propValue, (ChangeListener) changeListener);
+
+                changeListeners2.put(p.getName(), changeListener);
             }
         }
 
     }
 
-    public void unregisterChangeHandlers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private void removeListeners() {
+        listChangeListeners.forEach((k, v) -> {
+            try {
+                k.removeListener(v);
+            } catch (Exception ex) {
+                System.err.println("EXCEPTION : " + ex.getMessage());
+            }
+        });
+        listChangeListeners.clear();
+
+        propChangeListeners.forEach((k, v) -> {
+            try {
+                k.removeListener(v);
+            } catch (Exception ex) {
+                System.err.println("1 EXCEPTION : " + ex.getMessage());
+            }
+        });
+        propChangeListeners.clear();
+
+    }
+
+    public void unregisterChangeHandlers_OLD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if (SceneView.isFrame(getValue())) {
             return;
         }
+       
+        if (getValue() == null) {
+            //removeListeners();
+            return;
+        }
+        if (getValue() instanceof Node) {
+            Selection.removeListeners((Node) getValue());
+        }
+
         NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
 
+        for (int i = 0; i < nd.getProperties().size(); i++) {
+
+            Object changeListener; // = changeListeners.get(propertyName);
+            Property p = nd.getProperties().get(i);
+            if (List.class.isAssignableFrom(getValue().getClass())) {
+            } else {
+                changeListener = changeListeners2.get(p.getName());
+                //Method propMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, p.getName() + "Property", new Class[0]);
+                String propertyName = p.getName() + "Property";
+                if (changeListener instanceof ListChangeListener) {
+                    propertyName = "get" + p.getName().substring(0, 1).toUpperCase() + p.getName().substring(1);
+                }
+                Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), propertyName, new Class[0]);
+                Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                //Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
+                if (changeListener instanceof ListChangeListener) {
+                    Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "removeListener", new Class[]{ListChangeListener.class});
+                    ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
+                } else {
+                    Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
+                    ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
+                }
+
+                changeListeners2.remove(p.getName());
+            }
+        }
+    }
+
+    public void unregisterChangeHandlers(){
+        if (SceneView.isFrame(getValue())) {
+            return;
+        }
+        if (getValue() == null) {
+            //removeListeners();
+            return;
+        }
+        if (getValue() instanceof Node) {
+            Selection.removeListeners((Node) getValue());
+        }
+
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        removeListeners();
+        if ( true ) {
+            return;
+        }
         for (int i = 0; i < nd.getProperties().size(); i++) {
             Object changeListener; // = changeListeners.get(propertyName);
             Property p = nd.getProperties().get(i);
             if (List.class.isAssignableFrom(getValue().getClass())) {
-
             } else {
-                changeListener = changeListeners.get(p.getName());
-                Method propMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, p.getName() + "Property", new Class[0]);
-                Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
-                Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
-                ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
-                changeListeners.remove(p.getName());
+                try {
+                    changeListener = changeListeners2.get(p.getName());
+                    //Method propMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, p.getName() + "Property", new Class[0]);
+                    String propertyName = p.getName() + "Property";
+                    if (changeListener instanceof ListChangeListener) {
+                        propertyName = "get" + p.getName().substring(0, 1).toUpperCase() + p.getName().substring(1);
+                    }
+                    Method propMethod = ReflectHelper.MethodUtil.getMethod(getValue().getClass(), propertyName, new Class[0]);
+                    Object propValue = ReflectHelper.MethodUtil.invoke(propMethod, getValue(), new Object[0]);
+                    //Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
+                    if (changeListener instanceof ListChangeListener) {
+                        Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableList.class, "removeListener", new Class[]{ListChangeListener.class});
+                        ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
+                    } else {
+                        Method removeListenerMethod = ReflectHelper.MethodUtil.getMethod(ObservableValue.class, "removeListener", new Class[]{ChangeListener.class});
+                        ReflectHelper.MethodUtil.invoke(removeListenerMethod, propValue, new Object[]{changeListener});
+                    }
+                    
+                    changeListeners2.remove(p.getName());
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+                    Logger.getLogger(TreeItemEx.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }

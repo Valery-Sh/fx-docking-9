@@ -227,7 +227,7 @@ public class DockRegistry {
         return windows.indexOf(window);
     }
 
-    public Window getTargettWindow(double x, double y, Window excl) {
+    public Window getTargetWindow(double x, double y, Window excl) {
         Window retval = null;
         for (Window w : windows) {
             Bounds b = new BoundingBox(w.getX(), w.getY(), w.getWidth(), w.getHeight());
@@ -432,13 +432,23 @@ public class DockRegistry {
         if ( (obj instanceof Dockable) || Dockable.of(obj) == null ) {
             return;
         }
+//        Node dn = Dockable.of(obj).getContext().getDragNode();
+        //Dockable.of(obj).getContext().setDragNode(null);
+        
+        Dockable.of(obj).getContext().reset();
+//        Dockable.of(obj).getContext().setLayoutContext(null);
+//        Dockable.of(obj).getContext().setDragNode(dn);
+        
         Dockable.of(obj).node().getProperties().remove(Dockable.DOCKABLE_KEY);
     }
     public static void unregisterDockLayout(Object obj) {
         if ( (obj instanceof DockLayout) || DockLayout.of(obj) == null ) {
             return;
         }
+        DockLayout.of(obj).getLayoutContext().reset();
         DockLayout.of(obj).layoutNode().getProperties().remove(DockLayout.DOCKLAYOUTS_KEY);
+        
+        
     }
     
     public static DockLayout makeDockLayout(Node node, LayoutContext layoutContext) {
@@ -462,9 +472,6 @@ public class DockRegistry {
             return;
         }
         dockables.put(dockable.node(), dockable);
-//        if (dockable.node().getParent() != null) {
-//            dockable.getContext().getLayoutContext().setTargetNode((Region) dockable.node().getParent());
-//        }
     }
 
     public void register(DockLayout dockTarget) {
@@ -501,9 +508,6 @@ public class DockRegistry {
         }
         Dockable d = new DefaultDockable(node);
         dockables.put(node, d);
-//        if (d.node().getParent() != null) {
-//            d.getContext().getLayoutContext().setTargetNode(d.node().getParent());
-//        }
         return d;
     }
 
@@ -635,7 +639,5 @@ public class DockRegistry {
         public LayoutContext getLayoutContext() {
             return context;
         }
-
     }
-
 }

@@ -23,14 +23,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PopupControl;
+import javafx.scene.control.TextField;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import org.vns.javafx.dock.api.Dockable;
@@ -80,6 +85,20 @@ public class TestLayout1 extends Application {
         rightStage.setAlwaysOnTop(true);
         rightStage.initOwner(stage);
         Scene rightScene = new Scene(rightPane);
+        //rightPane.setStyle("-fx-background-color: -fx-accent");
+        TextField textField = new TextField();
+        textField.setEditable(false);
+        textField.setFocusTraversable(false);
+        //textField.getStyleClass().clear();
+        //textField.setStyle("-fx-text-box-border: red ;-fx-focus-color: red ;");
+        textField.setBackground(Background.EMPTY);
+        textField.setStyle("-fx-text-box-border: black;-fx-focus-color: red ;");
+        //textField.setStyle("-fx-text-box-border: transparent;-fx-focus-color: transparent");
+        //-fx-highlight-fill
+        //textField.setOpaqueInsets(Insets.EMPTY);
+        //Color.l
+        //textField.setBlendMode(BlendMode.SCREEN);
+        rightPane.getChildren().add(textField);
         rightStage.setScene(rightScene);
 
         ObjectProperty<Bounds> oBounds = new SimpleObjectProperty();

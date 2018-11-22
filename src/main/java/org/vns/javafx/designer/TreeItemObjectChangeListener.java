@@ -70,6 +70,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
 
         if (propItem == null) {
+            System.err.println("TreeItemObjectChangeListener oldValue = " + oldValue + "; newValue = " + newValue );   
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
                 if (item != null && sr != null && !sr.contains(newValue)) {
@@ -96,13 +97,15 @@ public class TreeItemObjectChangeListener implements ChangeListener {
             if (oldValue != null && newValue == null) {
                 if (((prop instanceof NodeContent) && ((NodeContent) prop).isHideWhenNull())) {
                     if (sr != null) {
-                        sr.save(oldValue);
+                        //savasr.save(oldValue);
                     }
                     propItemParent.getChildren().remove(propItem);
+                    //SceneView.reset(propItem);
+                    
 
                 } else {
                     if (sr != null) {
-                        sr.save(oldValue);
+                       //sava sr.save(oldValue);
                     }
 
                     TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
@@ -117,8 +120,10 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     }
                 }
+                
             } else if ( newValue != null ) {
                 // May be is NodeContent and not hidden when null
+//                System.err.println("build newValue = " + newValue + "; prop = " + prop.getName());
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
 
                 if (item != null && sr != null && !sr.contains(newValue)) {
@@ -138,6 +143,14 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                     }
                 }
 
+            }
+            if ( oldValue != null ) {
+                System.err.println("TreeItemObjectChangeListener oldValue = " + oldValue);
+                System.err.println("TreeItemObjectChangeListener newValue = " + newValue);
+                if ( oldValue instanceof Node ) {
+                    
+                    //SceneView.reset((Node) oldValue);
+                }
             }
         }
     }

@@ -72,10 +72,17 @@ public class LayoutContextFactory {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof BorderPane) {
             retval = new DockBorderPaneContext(targetNode);
-            //} else if (targetNode instanceof VPane) {
-            //   retval = new ListBasedTargetContext(targetNode);
-            //} else if (targetNode instanceof HPane) {
-            //    retval = new ListBasedTargetContext(targetNode);
+            
+            for ( Node obj : ((BorderPane)targetNode).getChildren() ) {
+                DockableContext dc = null;
+                if (Dockable.of(obj) != null) {
+                    dc = Dockable.of(obj).getContext();
+                } else {
+                    dc = DockRegistry.makeDockable(obj).getContext();
+                }
+                dc.setLayoutContext(retval);
+                
+            }
         } else if ((targetNode instanceof SplitPane && !(targetNode instanceof DockSplitPane))) {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof FlowPane) {
@@ -109,17 +116,46 @@ public class LayoutContextFactory {
     }
 
     protected LayoutContext getStackPaneContext(StackPane pane) {
-        return new StackPaneContext(pane);
+        LayoutContext lc = new StackPaneContext(pane);
+        pane.getChildren().forEach(obj -> {
+            DockableContext dc = null;
+            if (Dockable.of(obj) != null) {
+                dc = Dockable.of(obj).getContext();
+            } else {
+                dc = DockRegistry.makeDockable(obj).getContext();
+            }
+            dc.setLayoutContext(lc);
+        });
+        return lc;
     }
 
     protected LayoutContext getPaneContext(Pane pane) {
-        return new PaneContext(pane);
+        LayoutContext lc = new PaneContext(pane);
+        pane.getChildren().forEach(obj -> {
+            DockableContext dc = null;
+            if (Dockable.of(obj) != null) {
+                dc = Dockable.of(obj).getContext();
+            } else {
+                dc = DockRegistry.makeDockable(obj).getContext();
+            }
+            dc.setLayoutContext(lc);
+        });
+        return lc;
+
     }
 
     protected LayoutContext getBorderPaneContext(BorderPane pane) {
-        LayoutContext retval = new DockBorderPaneContext(pane);
-        return retval;
-
+        LayoutContext lc = new DockBorderPaneContext(pane);
+        pane.getChildren().forEach(obj -> {
+            DockableContext dc = null;
+            if (Dockable.of(obj) != null) {
+                dc = Dockable.of(obj).getContext();
+            } else {
+                dc = DockRegistry.makeDockable(obj).getContext();
+            }
+            dc.setLayoutContext(lc);
+        });
+        return lc;
     }
 
     public static class StackPaneContext extends LayoutContext {
@@ -534,6 +570,19 @@ public class LayoutContextFactory {
             listBased = true;
             items = getNodeList(getLayoutNode());
             items.addListener(new NodeListChangeListener(this));
+            items.forEach(it -> {
+                DockableContext dc = null;
+                if (Dockable.of(dc) != null) {
+                    dc = Dockable.of(it).getContext();
+                    dc.setLayoutContext(this);
+                } else {
+                    DockRegistry.makeDockable(it);
+                    if (Dockable.of(it) != null) {
+                        Dockable.of(it).getContext().setLayoutContext(this);
+                    }
+                }
+
+            });
         }
 
         @Override
@@ -544,7 +593,6 @@ public class LayoutContextFactory {
             }
 
             Dockable d = Dockable.of(o);
-  
 
             Node node = d.node();
             Window stage = null;
@@ -620,7 +668,6 @@ public class LayoutContextFactory {
             return items.contains((T) obj);
         }
 
-   
     }
 
     public static class ListBasedPositionIndicator extends PositionIndicator {
@@ -667,13 +714,13 @@ public class LayoutContextFactory {
         }
 
         protected void adjustPlace(Node node) {
-            
+
             Pane p = getIndicatorPane();
 
             Rectangle r = (Rectangle) getDockPlace();
             r.setHeight(((Region) node).getHeight());
             r.setWidth(((Region) node).getWidth());
-            
+
             r.setX(((Region) node).getLayoutX());
             r.setY(((Region) node).getLayoutY());
 
@@ -693,7 +740,7 @@ public class LayoutContextFactory {
 
             Bounds b = pane.getLayoutBounds();
             Insets ins = getIndicatorPane().getInsets();
-            
+
             if (innerNode != null) {
                 b = innerNode.getBoundsInParent();
                 if ((targetPane instanceof VBox) || (targetPane instanceof Accordion)) {
@@ -716,9 +763,9 @@ public class LayoutContextFactory {
                     r.setWidth(b.getWidth() / 2);
 
                     if (x < b1.getMinX() + b.getWidth() / 2) {
-                        r.setX(b.getMinX()  + ins.getLeft());
+                        r.setX(b.getMinX() + ins.getLeft());
                     } else {
-                        r.setX(b.getMinX() + (b.getWidth() / 2)  + ins.getLeft());
+                        r.setX(b.getMinX() + (b.getWidth() / 2) + ins.getLeft());
                     }
                 } else {
                     r.setWidth(b.getWidth());

@@ -105,9 +105,9 @@ public class FramePane extends Control {
         getStyleClass().add(CSS_CLASS);
         getStyleClass().add("frame-control");
         setManaged(false);
-        if (!enableResize) {
-            setMouseTransparent(true);
-        }
+        //if (!enableResize) {
+        setMouseTransparent(true);
+        //}
     }
 
     public void hide() {

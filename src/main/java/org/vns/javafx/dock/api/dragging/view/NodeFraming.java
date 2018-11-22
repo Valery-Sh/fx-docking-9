@@ -16,8 +16,6 @@
 package org.vns.javafx.dock.api.dragging.view;
 
 import javafx.scene.Node;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 
 /**
  *
@@ -33,5 +31,6 @@ public interface NodeFraming {
     
     void show(Node node);
     void hide();
+    void removeListeners();
     
 }

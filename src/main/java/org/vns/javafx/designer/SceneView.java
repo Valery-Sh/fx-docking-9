@@ -1,9 +1,13 @@
 package org.vns.javafx.designer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,22 +16,29 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.Shape;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
 import org.vns.javafx.dock.api.Scope;
+import org.vns.javafx.dock.api.Selection;
 import org.vns.javafx.dock.api.bean.BeanAdapter;
 import org.vns.javafx.dock.api.dragging.view.FramePane;
 import static org.vns.javafx.dock.api.dragging.view.FramePane.CSS_CLASS;
 import static org.vns.javafx.dock.api.dragging.view.FramePane.NODE_ID;
 import static org.vns.javafx.dock.api.dragging.view.FramePane.PARENT_ID;
+import org.vns.javafx.dock.api.dragging.view.NodeFraming;
 import org.vns.javafx.dock.api.dragging.view.ResizeShape;
 
 /**
@@ -86,6 +97,52 @@ public class SceneView extends Control implements DockLayout {
 
     public boolean isDesigner() {
         return designer;
+    }
+
+    public static void reset(Node startNode) {
+        Node root = startNode;
+        if (startNode.getScene() != null && startNode.getScene().getRoot() != null) {
+            root = startNode.getScene().getRoot();
+        }
+        DockRegistry.getInstance().getLookup().clear(ScenePaneContextFactory.class);
+        NodeFraming fr = DockRegistry.lookup(NodeFraming.class);
+        fr.hide();
+        fr.removeListeners();
+
+        SceneView sv = DesignerLookup.lookup(SceneView.class);
+        sv.iterate(item -> {
+            ((TreeItemEx) item).unregisterChangeHandlers();
+        });
+
+        Set<Node> nodes = root.lookupAll("." + CSS_CLASS);
+        nodes.forEach(node -> {
+            if (node instanceof FramePane) {
+                ((FramePane) node).setBoundNode(null);
+            }
+            if (node.getParent() != null) {
+                EditorUtil.removeFromParent(node.getParent(), node);
+            }
+        });
+        nodes = root.lookupAll(".designer-mode");
+        nodes.forEach(node -> {
+            node.getStyleClass().remove("designer-mode");
+            node.getStyleClass().remove("designer-mode-root");
+            if (node instanceof Parent) {
+                ((Parent) node).getStylesheets().remove(DesignerLookup.class.getResource("resources/styles/designer-customize.css").toExternalForm());
+            }
+            if (node.getEventDispatcher() != null && (node.getEventDispatcher() instanceof PalettePane.PaletteEventDispatcher)) {
+                ((PalettePane.PaletteEventDispatcher) node.getEventDispatcher()).finish(node);
+            }
+            Selection.removeListeners(node);
+        });
+        DesignerLookup.getInstance().restoreDockRegistry();
+
+        nodes = root.lookupAll(".designer-dock-context");
+        nodes.forEach(node -> {
+            node.getStyleClass().remove("designer-dock-context");
+            DockRegistry.unregisterDockLayout(node);
+            DockRegistry.unregisterDockable(node);
+        });
     }
 
     @Override
@@ -210,58 +267,63 @@ public class SceneView extends Control implements DockLayout {
         });
     }
 
-    public static boolean addFramePanes(Node root) {
-        boolean retval = false;
-        Parent parent = null;
-        if (root != null && root.getParent() != null) {
-            parent = root.getParent();
-        } else if (root instanceof Parent) {
-            parent = (Parent) root;
+    /**
+     *
+     * @param root the node used to add two objects of type {@link org.vns.javafx.dock.api.dragging.view.FramePane
+     * }.
+     */
+    public static void addFramePanes(Parent parent) {
+        Node framePane = parent.lookup("#" + FramePane.PARENT_ID);
+        if (framePane == null) {
+            //
+            // Frame without resize shapes
+            //
+            framePane = new FramePane(parent, false);
+            framePane.setId(FramePane.PARENT_ID);
+            EditorUtil.addToParent(parent, framePane);
         }
-        if (parent != null) {
-            Node framePane = parent.lookup("#" + FramePane.NODE_ID);
-            if (framePane == null) {
-                //
-                // Frame with resize shapes
-                //
-                framePane = new FramePane(parent);
-                framePane.setId(FramePane.NODE_ID);
-                EditorUtil.addToParent(parent, framePane);
-            }
-
-            framePane = parent.lookup("#" + FramePane.PARENT_ID);
-            if (framePane == null) {
-                //
-                // Frame without resize shapes
-                //
-                framePane = new FramePane(parent,false);
-                framePane.setId(FramePane.PARENT_ID);
-                EditorUtil.addToParent(parent, framePane);
-            }
+        framePane = parent.lookup("#" + FramePane.NODE_ID);
+        if (framePane == null) {
+            //
+            // Frame with resize shapes
+            //
+            framePane = new FramePane(parent);
+            framePane.setId(FramePane.NODE_ID);
+            EditorUtil.addToParent(parent, framePane);
         }
 
-        return retval;
     }
+
     public static FramePane getResizeFrame() {
         Parent p = (Parent) DesignerLookup.lookup(SceneView.class).getRoot();
-        if ( p.getParent() != null ) {
+        if (p.getParent() != null) {
             p = p.getParent();
         }
         return (FramePane) p.lookup("#" + NODE_ID);
     }
+
     public static FramePane getParentFrame() {
-        
+
         Parent p = (Parent) DesignerLookup.lookup(SceneView.class).getRoot();
-        if ( p.getParent() != null ) {
+        if (p.getParent() != null) {
             p = p.getParent();
         }
         return (FramePane) p.lookup("#" + PARENT_ID);
-    }    
+    }
+
     public static boolean isFrame(Object obj) {
-        if ( obj == null || ( ! (obj instanceof FramePane) && ! (obj instanceof ResizeShape) ) ) {
+        if (obj == null || (!(obj instanceof FramePane) && !(obj instanceof ResizeShape))) {
             return false;
         }
-        return ((Node)obj).getStyleClass().contains(CSS_CLASS);
+        return ((Node) obj).getStyleClass().contains(CSS_CLASS);
+    }
+    
+    public static boolean isFrameShape(Object obj) {
+        boolean retval = isFrame(obj);
+        if ( ! retval && (obj instanceof Shape) ) {
+            retval = ResizeShape.isResizeShape((Shape) obj);
+        }
+        return retval;
     }
 
     public static boolean removeFramePanes(Node root) {
@@ -286,8 +348,7 @@ public class SceneView extends Control implements DockLayout {
 
         return retval;
     }
-    
-    
+
     public TreeViewEx getTreeView(double x, double y) {
         TreeViewEx retval = null;
         if (DockUtil.contains(getTreeView(), x, y)) {
@@ -330,6 +391,36 @@ public class SceneView extends Control implements DockLayout {
     @Override
     protected Skin<?> createDefaultSkin() {
         return new SceneViewSkin(this);
+    }
+
+    public void iterate(Consumer<TreeItem> consumer) {
+        getTreeView().getRoot();
+        iterate(getTreeView().getRoot(), consumer);
+    }
+
+    public void iterate(TreeItem item, Consumer<TreeItem> consumer) {
+        consumer.accept(item);
+        ObservableList<TreeItem> list = item.getChildren();
+        list.forEach(it -> {
+            iterate(it, consumer);
+        });
+
+    }
+    
+
+    public static void visit(TreeItemEx item, Consumer<TreeItemEx> consumer) {
+        consumer.accept(item);
+        ObservableList list = item.getChildren();
+        list.forEach(it -> {
+            visit( (TreeItemEx)it, consumer);
+        });
+    }
+    
+    public static void reset(TreeItemEx start) {
+        visit(start, it -> {
+            System.err.println(" reset it.value = " + it.getValue());
+            ((TreeItemEx)it).unregisterChangeHandlers();
+        }); 
     }
 
 }// SceneGraphView

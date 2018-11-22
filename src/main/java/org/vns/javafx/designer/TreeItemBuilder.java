@@ -41,44 +41,49 @@ public class TreeItemBuilder {
     public static final String ACCEPT_TYPES_KEY = "tree-item-builder-accept-types";
     public static final String CELL_UUID = "uuid-29a4b479-0282-41f1-8ac8-21b4923235be";
     public static final String NODE_UUID = "uuid-f53db037-2e33-4c68-8ffa-06044fc10f81";
-    
+
     private final boolean designer;
-            
+
     public TreeItemBuilder(boolean designer) {
         this.designer = designer;
 
     }
+
     public TreeItemBuilder() {
         this(true);
     }
+
     private void setContexts(Object obj) {
-        if ( ! designer ) {
+        if (!designer) {
             return;
         }
-        if ( SceneView.isFrame(obj) ) {
+        if (SceneView.isFrame(obj)) {
             return;
         }
         PalettePane palette = DesignerLookup.lookup(PalettePane.class);
-        if ( palette == null ) {
+        if (palette == null) {
             return;
         }
         palette.setLayoutContext(obj);
         palette.setDockableContext(obj);
-        palette.setCustomizer(obj);
         
+        
+        //palette.setCustomizer(obj);
+        //palette.setCustomEventDispather(obj);
+
     }
+
     public TreeItemEx build(Object obj) {
-        
         return build(obj, null);
     }
 
     protected TreeItemEx build(Object obj, NodeElement p) {
-        System.err.println("treeItemBuilder build obj = " + obj);
-        System.err.println("treeItemBuilder build nodeElem = " + p);
-        if ( SceneView.isFrame(obj) ) {
+        if (SceneView.isFrame(obj)) {
             return null;
         }
+        
         setContexts(obj);
+        PalettePane.addDesignerStyles(obj);
         TreeItemEx retval;
         if (p != null && (p instanceof NodeContent)) {
             retval = createContentItem(obj, (NodeContent) p);
@@ -95,6 +100,7 @@ public class TreeItemBuilder {
             for (int i = 0; i < ol.size(); i++) {
                 TreeItemEx it = build(ol.get(i));
                 retval.getChildren().add(it);
+                PalettePane.addDesignerStyles(ol.get(i));
             }
             return retval;
         }
@@ -121,6 +127,8 @@ public class TreeItemBuilder {
                     for (int i = 0; i < ol.size(); i++) {
                         TreeItemEx it = build(ol.get(i));
                         retval.getChildren().add(it);
+                        PalettePane.addDesignerStyles(ol.get(i));
+
                         //retval.getChildren().add(build(ol.get(i)));
                     }
                     retval.setItemType(ItemType.DEFAULTLIST);
@@ -128,6 +136,7 @@ public class TreeItemBuilder {
                     TreeItemEx listItem = build(cpObj, (NodeList) cp);
                     retval.getChildren().add(listItem);
                     listItem.setPropertyName(cp.getName());
+                    PalettePane.addDesignerStyles(cpObj);
 
                 }
 
@@ -135,6 +144,7 @@ public class TreeItemBuilder {
                 TreeItemEx item = build(cpObj, (NodeContent) cp);
                 item.setPropertyName(cp.getName());
                 retval.getChildren().add(item);
+                PalettePane.addDesignerStyles(cpObj);
             }
         });
         return retval;
@@ -153,6 +163,7 @@ public class TreeItemBuilder {
                 text = "";
             }
         }
+
         Label label = new Label((obj.getClass().getSimpleName() + " " + text).trim());
         String styleClass = nc.getStyleClass();
         if (styleClass == null) {
@@ -192,7 +203,6 @@ public class TreeItemBuilder {
         if (title == null) {
             title = NodeList.DEFAULT_TITLE;
         }
-
         Label label = new Label(title.trim());
         String styleClass = h.getStyleClass();
         if (styleClass == null) {
@@ -232,11 +242,12 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         TreeItemEx retval = new TreeItemEx();
         retval.setValue(obj);
-
+        
         box.getChildren().add(createContentItemContent(obj, cp));
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
         try {
+            
             retval.registerChangeHandlers();
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
             Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
@@ -257,6 +268,7 @@ public class TreeItemBuilder {
         iconLabel.getStyleClass().add(style);
 
         String title = cp.getTitle();
+
         if (title == null) {
             title = NodeContent.DEFAULT_TITLE;
         }
@@ -264,7 +276,6 @@ public class TreeItemBuilder {
         if (obj == null) {
             iconLabel.setText(title.trim());
         } else {
-
             NodeDescriptor nc = NodeDescriptorRegistry.getInstance().getDescriptor(obj);
             title = "";
             String tp = nc.getTitleProperty();
@@ -275,8 +286,8 @@ public class TreeItemBuilder {
                     title = "";
                 }
             }
+            title = "";
             Label glb = new Label(obj.getClass().getSimpleName());
-
             glb.getStyleClass().add("tree-item-node-" + obj.getClass().getSimpleName().toLowerCase());
             retval.getChildren().add(glb);
 

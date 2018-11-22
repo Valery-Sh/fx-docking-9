@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -60,7 +61,7 @@ public class DockableContext {
     private final ObjectProperty<Node> titleBar = new SimpleObjectProperty<>();
 
     private final StringProperty title = new SimpleStringProperty("");
-    private final Dockable dockable;
+    private Dockable dockable;
 
     private DragContainer dragContainer;
 
@@ -77,17 +78,20 @@ public class DockableContext {
     private LayoutContext scenePaneContext;
 
     private boolean draggable;
-    
-    private ObservableSet<Scope> scopes = FXCollections.observableSet();
-    
 
+    private final ObservableSet<Scope> scopes = FXCollections.observableSet();
+    
+    private final ChangeListener<? super LayoutContext> layoutContextListener = (v,ov,nv) -> {
+        layoutContextChanged(v, ov, nv);
+    };
     /**
      * dock layout pane
      */
     private final ObjectProperty<LayoutContext> layoutContext = new SimpleObjectProperty<>();
 
     private Properties properties;
-
+    
+    
     /**
      * Create a new object for the specified {@code dockable} object.
      *
@@ -99,14 +103,14 @@ public class DockableContext {
         //titleBar = new TitleBarProperty(dockable.node());
         titleBar.set(dockable.node());
         lookup = new BaseContextLookup();
+        draggable = true;
+        dragDetector = new DragDetector(this);
+
         init();
     }
 
     private void init() {
-        draggable = true;
-        dragDetector = new DragDetector(this);
         getLookup().putUnique(MouseDragHandler.class, new DefaultMouseDragHandler(this));
-
         addShowingListeners();
 
         getLookup().add(new FloatViewFactory());
@@ -119,7 +123,23 @@ public class DockableContext {
         }
         layoutContext.set(scenePaneContext);
 
-        layoutContext.addListener(this::layoutContextChanged);
+        layoutContext.addListener(layoutContextListener);
+    }
+
+    void reset() {
+        
+        setDragNode(null);
+        layoutContext.removeListener(layoutContextListener);
+        layoutContext.set(null);
+        dockable = null;
+        dragManager = null;
+        Node dn = getDragNode();
+        setDragNode(dn);
+
+    }
+
+    public DragDetector getDragDetector() {
+        return dragDetector;
     }
 
     public ObservableSet<Scope> getScopes() {
@@ -226,6 +246,7 @@ public class DockableContext {
     protected void layoutContextChanged(ObservableValue<? extends LayoutContext> observable, LayoutContext oldValue, LayoutContext newValue) {
         if (newValue == null) {
             layoutContext.set(scenePaneContext);
+            dragManager = null;
         } else {
             //
             // The drag manager may be changed 
@@ -253,7 +274,7 @@ public class DockableContext {
     /**
      * Return an object property which represents a title bar as a node.
      *
-     * @return the property 
+     * @return the property
      *
      */
     public ObjectProperty<Node> titleBarProperty() {
@@ -443,10 +464,12 @@ public class DockableContext {
      *
      * @return the object which manages a dragging execution
      */
-    public DragManager getDragManager() {
+    public DragManager newDragManager() {
         return getDragManager(true);
     }
-
+    public DragManager getDragManager() {
+        return dragManager;
+    }
     protected DragManager getDragManager(boolean create) {
         DragManager retval = dragManager;
         if (create || retval == null) {
@@ -541,8 +564,13 @@ public class DockableContext {
             });
         }
 
+        public MouseDragHandler getDragHandler() {
+            return dragHandler;
+        }
+
         @Override
         public void handle(MouseEvent event) {
+            
             dragHandler = getLookup().lookup(MouseDragHandler.class);
             if (dragHandler == null) {
                 dragHandler = new DefaultMouseDragHandler(dockableContext);
