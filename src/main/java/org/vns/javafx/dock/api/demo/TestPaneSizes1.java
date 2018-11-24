@@ -68,6 +68,9 @@ public class TestPaneSizes1 extends Application {
      //1234567890abcde;pbrkvyprstefx
         root.getStyleClass().add("my-test-pane-css");
         Button b1 = new Button("Show Dimentions");
+  b1.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+            System.err.println(" is Prim = " + e.isPrimaryButtonDown());
+        });        
         Button b2 = new Button("b2r");
         root.getChildren().add(b1);
         b1.setGraphic(b2);

@@ -277,15 +277,21 @@ public class SceneViewSkin extends SkinBase<SceneView> {
         if (oldValue != null && oldValue.getScene() != null) {
             oldValue.getScene().heightProperty().removeListener(rootSceneSizeListener);
             oldValue.getScene().widthProperty().removeListener(rootSceneSizeListener);
+            if (oldValue.getScene() != null) {
+                if ((oldValue.getScene().getEventDispatcher() instanceof SceneEventDispatcher)) {
+                    ((SceneEventDispatcher) oldValue.getScene().getEventDispatcher()).finish(oldValue.getScene());
+                }
+                SceneEventDispatcher d = new SceneEventDispatcher();
+            }
         }
-        if (oldValue != null ) {
+        if (oldValue != null) {
             Parent parent = null;
             if (oldValue.getParent() != null) {
                 parent = oldValue.getParent();
             } else if (oldValue instanceof Parent) {
                 parent = (Parent) oldValue;
             }
-            if ( parent != null ) {
+            if (parent != null) {
                 parent.getStylesheets().remove(DesignerLookup.class.getResource("resources/styles/designer-customize.css").toExternalForm());
                 parent.getStyleClass().remove("designer-mode-root");
             }
@@ -304,13 +310,14 @@ public class SceneViewSkin extends SkinBase<SceneView> {
 
     private void createSceneGraph(Node node) {
         System.err.println("%%% node.getScene() = " + node.getScene());
-        if ( node.getScene() != null ) {
-            if ( (node.getScene().getEventDispatcher() instanceof SceneEventDispatcher)) {
-                ((SceneEventDispatcher)node.getScene().getEventDispatcher()).finish(node.getScene());
+        if (node.getScene() != null) {
+            if ((node.getScene().getEventDispatcher() instanceof SceneEventDispatcher)) {
+                ((SceneEventDispatcher) node.getScene().getEventDispatcher()).finish(node.getScene());
             }
             SceneEventDispatcher d = new SceneEventDispatcher();
             d.start(node.getScene());
-        } 
+        }
+
         if (node == null) {
             getSkinnable().getTreeView().setRoot(null);
             return;

@@ -29,7 +29,6 @@ public interface DragManager { //extends EventHandler<MouseEvent> {
        NONE, ALL, CARRIER, CARRIERED
     }
             
-    DragType getDragType();
     
     Dockable getDockable();
     

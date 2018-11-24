@@ -50,130 +50,26 @@ public class DockUtil {
         return h;
     }
 
-/*    public static DockSplitPane getParentSplitPane(DockSplitPane root, Node childNode) {
-        DockSplitPane retval = null;
-        DockSplitPane split = root;
-        Stack<DockSplitPane> stack = new Stack<>();
-        stack.push(split);
-
-        while (!stack.empty()) {
-            split = stack.pop();
-            if (split.getItems().contains(childNode)) {
-                retval = split;
-                break;
-            }
-            for (Node n : split.getItems()) {
-                if (n instanceof DockSplitPane) {
-                    stack.push((DockSplitPane) n);
-                }
-            }
-        }
-        return retval;
-    }
-
-    public static void clearEmptySplitPanes(DockSplitPane root, DockSplitPane empty) {
-        if (root == null || !empty.getItems().isEmpty()) {
-            return;
-        }
-        List<DockSplitPane> list = new ArrayList<>();
-
-        DockSplitPane dsp = empty;
-        while (true) {
-            dsp = getParentSplitPane(root, dsp);
-            if (dsp == null) {
-                break;
-            }
-            list.add(dsp);
-        }
-        list.add(0, empty);
-        for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).getItems().isEmpty()) {
-                break;
-            }
-            if (i < list.size() - 1) {
-                list.get(i + 1).getItems().remove(list.get(i));
-            }
-        }
-    }
-*/
-/*    public static Side sideValue(String dockPos) {
-        Side retval = null;
-        if (dockPos == null) {
-            retval = Side.BOTTOM;
-        } else {
-            switch (dockPos) {
-                case "TOP":
-                    retval = Side.TOP;
-                    break;
-                case "BOTTOM":
-                    retval = Side.BOTTOM;
-                    break;
-                case "LEFT":
-                    retval = Side.LEFT;
-                    break;
-                case "RIGHT":
-                    retval = Side.RIGHT;
-                    break;
-            }
-        }
-        return retval;
-    }
-*/
-    /*    public static ObservableList<Dockable> getAllDockable(Region root) {
-        ObservableList<Dockable> retval = FXCollections.observableArrayList();
-
-        List<Dockable> list = findNodes(root, p -> {
-            return (DockRegistry.instanceOfDockable(p));
-        });
-        retval.addAll(list.toArray(new Dockable[0]));
-        list.forEach(d -> {
-            //((DockLayout)root).dock(root, d.getDockState().getDockPos());
-        });
-        return retval;
-    }
-     */
-
- /*11.01    public static List findNodes(Parent root, Predicate<Node> predicate) {
-        List retval = new ArrayList();
-        for (Node node : root.getChildrenUnmodifiable()) {
-            if (predicate.test(node)) {
-                retval.add(node);
-            }
-            if (node instanceof Parent) {
-                retval.addAll(findNodes((Parent) node, predicate));
-            }
-        }
-        return retval;
-    }
-     */
- /*11.01    public static Node findNode(Parent root, Predicate<Node> predicate) {
-        List<Node> ls = findNodes(root, predicate);
-        if (ls.isEmpty()) {
-            return null;
-        }
-        return ls.get(0);
-    }
-     */
     public static Node findDockable(Node root, double screenX, double screenY) {
 
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
-            //!!!08
-            if (DockRegistry.isDockable(node)) {
+         
+            if (Dockable.of(node) != null) {
                 b = true;
-                LayoutContext pd = Dockable.of(node).getContext().getLayoutContext();
-                DockableContext st = Dockable.of(node).getContext();
-                if (pd == null) {
+                LayoutContext layoutContext = Dockable.of(node).getContext().getLayoutContext();
+                DockableContext context = Dockable.of(node).getContext();
+                if (layoutContext == null) {
                     b = false;
                 } else {
-                    b = pd.isUsedAsDockLayout() && st.isUsedAsDockLayout();
+                    b = layoutContext.isUsedAsDockLayout() && context.isUsedAsDockLayout();
                 }
-
             }
             return b;
         };
-        return TopNodeHelper.getTopNode(root.getScene().getWindow(), screenX, screenY, predicate);
+        //return TopNodeHelper.getTopNode(root.getScene().getWindow(), screenX, screenY, predicate);
+        return TopNodeHelper.getTop(root.getScene().getWindow(), screenX, screenY, predicate);
     }
 
 
@@ -202,13 +98,23 @@ public class DockUtil {
                     && !(p.getClass().getName().startsWith("com.sun.javafx"));
         });
     }
-
-    public static boolean contains(Node node, double x, double y) {
+    /**
+     * Returns {@code true} if the given point (specified in the screen coordinate space)
+     * is contained within the shape of the given node. 
+     * The method doesn't take into account the visibility an transparency of the 
+     * specified node.
+     * 
+     * @param node the node to be checked
+     * @param screenX the x coordinate of the screen
+     * @param screenY the y coordinate of the screen
+     * @return true if the node contains the point. Otherwise returns false
+     */
+    public static boolean contains(Node node, double screenX, double screenY) {
         Bounds b = node.localToScreen(node.getBoundsInLocal());
         if ( b == null ) {
             return false;
         }
-        return b.contains(x, y);
+        return b.contains(screenX, screenY);
     }    
     
     public static Bounds getHalfBounds(Side side,Node node, double x, double y) {
@@ -237,10 +143,20 @@ public class DockUtil {
         }
         return retval;
     }
-
-    public static boolean contains(Window w, double x, double y) {
-        return ((x >= w.getX() && x <= w.getX() + w.getWidth() 
-                && y >= w.getY() && y <= w.getY() + w.getHeight()));
+ /**
+     * Returns {@code true} if the given point (specified in the screen coordinate space)
+     * is contained within the given window. 
+     * The method doesn't take into account the visibility an transparency of the 
+     * specified node.
+     * 
+     * @param node the node to be checked
+     * @param screenX the x coordinate of the screen
+     * @param screenY the y coordinate of the screen
+     * @return true if the node contains the point. Otherwise returns false
+     */
+    public static boolean contains(Window win, double screenX, double screenY) {
+        return ((screenX >= win.getX() && screenX <= win.getX() + win.getWidth() 
+                && screenY >= win.getY() && screenY <= win.getY() + win.getHeight()));
     }
 
     public static Node findNode(List<Node> list, double x, double y) {

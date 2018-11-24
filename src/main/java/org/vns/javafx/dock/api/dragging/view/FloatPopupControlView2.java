@@ -26,7 +26,6 @@ import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -57,30 +56,10 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
         floatPopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_TOP_LEFT);
         setFloatingWindow(floatPopup);
 
-       windowRoot = new StackPane() {
-            @Override
-            public String getUserAgentStylesheet() {
-                return Dockable.class.getResource("resources/default.css").toExternalForm();
-            }
-        };
-
+      
+        windowRoot = createRoot(node);
         setWindowRoot(windowRoot);
-
-        //DockPane dockPane = new DockPane();
-        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
-            @Override
-            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (floatPopup != null) {
-                    floatPopup.hide();
-                }
-                dockable.node().parentProperty().removeListener(this);
-            }
-        };
-
-        
         windowRoot.getStyleClass().add("sidebar-popup-root");
-        //StyleUtil.styleSideBarPopupRoot(windowRoot);
-        windowRoot.getChildren().add(node);
 
         floatPopup.getScene().setRoot(windowRoot);
 
@@ -99,6 +78,16 @@ public class FloatPopupControlView2 extends FloatPopupControlView {
            DockRegistry.unregister(floatPopup);
         });
         floatPopup.getStyleClass().clear();
+        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (floatPopup != null) {
+                    floatPopup.hide();
+                }
+                dockable.node().parentProperty().removeListener(this);
+            }
+        };
+        
         dockable.node().parentProperty().addListener(pcl);
 
         addResizer();

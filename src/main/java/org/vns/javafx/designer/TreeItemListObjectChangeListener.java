@@ -17,12 +17,10 @@ package org.vns.javafx.designer;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import org.vns.javafx.dock.api.DockRegistry;
-import org.vns.javafx.dock.api.SaveRestore;
 import org.vns.javafx.designer.TreeItemEx.ItemType;
 import org.vns.javafx.dock.api.dragging.view.FramePane;
 import org.vns.javafx.dock.api.dragging.view.NodeFraming;
@@ -48,25 +46,22 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
             if (change.wasRemoved()) {
                 
                 List list = change.getRemoved();
-                if (!list.isEmpty()) {
+/*                if (!list.isEmpty()) {
                     SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
                     if (sr != null) {
                         //savasr.save(list.get(list.size() - 1), change.getTo());
                     }
                 }
+*/
                 for (Object elem : list) {
                     TreeItemEx toRemove = null;
-                    System.err.println("00 toRemove treeItem.getChildren = " + treeItem.getChildren());
                     for (TreeItem it : treeItem.getChildren()) {
                         if (((TreeItemEx) it).getItemType() == ItemType.LIST) {
-                            System.err.println("01 ITEM_LIST = " + ((TreeItemEx) it).getChildren());
                             for (TreeItem ith : ((TreeItemEx) it).getChildren()) {
                                 if (((TreeItemEx) ith).getValue() == elem) {
                                     toRemove = (TreeItemEx) ith;
                                     it.getChildren().remove(toRemove);
                                     SceneView.reset(toRemove);
-                                    System.err.println("1 toRemove value = " + toRemove.getValue());
-                                    //toRemove.unregisterChangeHandlers(); //22.11
                                     return;
                                 }
                             }
@@ -84,9 +79,6 @@ public class TreeItemListObjectChangeListener implements ListChangeListener {
                     }
                     treeItem.getChildren().remove(toRemove);
                     SceneView.reset(toRemove);
-                    System.err.println("2 toRemove value = " + toRemove.getValue());
-                    //toRemove.unregisterChangeHandlers(); //22.11
-                    
                 }
 
             }

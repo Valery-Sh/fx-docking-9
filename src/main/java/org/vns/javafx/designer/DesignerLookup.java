@@ -68,11 +68,21 @@ public class DesignerLookup { // implements ContextLookup {
     
     public void restoreDockRegistry() {
         dockRegistrySafe.forEach((k,v) -> {
+            //System.err.println("k = " + k + "; v = " + v);
             if ( v == null ) {
-                DockRegistry.getInstance().getLookup().remove(k);
+                System.err.println("k = " + k + "; v = " + v);
+                DockRegistry.getInstance().getLookup().clear(k);
             } else {
+                System.err.println("again k = " + k + "; v = " + v);
                 DockRegistry.getInstance().getLookup().putUnique(k, v);
             }
+        });
+        System.err.println("===========================================================");
+         dockRegistrySafe.forEach((k,v) -> {
+            //System.err.println("k = " + k + "; v = " + v);
+            Object value = DockRegistry.getInstance().getLookup().lookup(k);
+            System.err.println("k = " + k + "; v = " + value);
+                
         });
     }
     

@@ -27,7 +27,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Shape;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.LayoutContext;
-import org.vns.javafx.dock.api.dragging.DragType;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.ScenePaneContext.ScenePaneContextFactory;
@@ -49,8 +48,6 @@ import org.vns.javafx.dock.api.dragging.view.ResizeShape;
 public class SceneView extends Control implements DockLayout {
 
     private SceneGraphViewLayoutContext targetContext;
-
-    private DragType dragType = DragType.SIMPLE;
 
     public static final int LAST = 0;
     public static final int FIRST = 2;
@@ -100,17 +97,24 @@ public class SceneView extends Control implements DockLayout {
     }
 
     public static void reset(Node startNode) {
+
         Node root = startNode;
         if (startNode.getScene() != null && startNode.getScene().getRoot() != null) {
             root = startNode.getScene().getRoot();
         }
+        if (root.getScene() != null) {
+            if ((root.getScene().getEventDispatcher() instanceof SceneEventDispatcher)) {
+                ((SceneEventDispatcher) root.getScene().getEventDispatcher()).finish(root.getScene());
+            }
+        }
+
         DockRegistry.getInstance().getLookup().clear(ScenePaneContextFactory.class);
         NodeFraming fr = DockRegistry.lookup(NodeFraming.class);
         fr.hide();
         fr.removeListeners();
 
         SceneView sv = DesignerLookup.lookup(SceneView.class);
-        sv.iterate(item -> {
+        sv.visitRoot(item -> {
             ((TreeItemEx) item).unregisterChangeHandlers();
         });
 
@@ -143,6 +147,7 @@ public class SceneView extends Control implements DockLayout {
             DockRegistry.unregisterDockLayout(node);
             DockRegistry.unregisterDockable(node);
         });
+        DesignerLookup.getInstance().restoreDockRegistry();
     }
 
     @Override
@@ -191,13 +196,6 @@ public class SceneView extends Control implements DockLayout {
         return visibleCells;
     }
 
-    public DragType getDragType() {
-        return dragType;
-    }
-
-    public void setDragType(DragType dragType) {
-        this.dragType = dragType;
-    }
 
     public ObjectProperty<Node> rootProperty() {
         return root;
@@ -317,10 +315,10 @@ public class SceneView extends Control implements DockLayout {
         }
         return ((Node) obj).getStyleClass().contains(CSS_CLASS);
     }
-    
+
     public static boolean isFrameShape(Object obj) {
         boolean retval = isFrame(obj);
-        if ( ! retval && (obj instanceof Shape) ) {
+        if (!retval && (obj instanceof Shape)) {
             retval = ResizeShape.isResizeShape((Shape) obj);
         }
         return retval;
@@ -393,12 +391,12 @@ public class SceneView extends Control implements DockLayout {
         return new SceneViewSkin(this);
     }
 
-    public void iterate(Consumer<TreeItem> consumer) {
+    public void visitRoot(Consumer<TreeItemEx> consumer) {
         getTreeView().getRoot();
-        iterate(getTreeView().getRoot(), consumer);
+        visit((TreeItemEx) getTreeView().getRoot(), consumer);
     }
 
-    public void iterate(TreeItem item, Consumer<TreeItem> consumer) {
+    /*    public void iterate(TreeItem item, Consumer<TreeItem> consumer) {
         consumer.accept(item);
         ObservableList<TreeItem> list = item.getChildren();
         list.forEach(it -> {
@@ -406,21 +404,19 @@ public class SceneView extends Control implements DockLayout {
         });
 
     }
-    
-
+     */
     public static void visit(TreeItemEx item, Consumer<TreeItemEx> consumer) {
         consumer.accept(item);
         ObservableList list = item.getChildren();
         list.forEach(it -> {
-            visit( (TreeItemEx)it, consumer);
+            visit((TreeItemEx) it, consumer);
         });
     }
-    
+
     public static void reset(TreeItemEx start) {
         visit(start, it -> {
-            System.err.println(" reset it.value = " + it.getValue());
-            ((TreeItemEx)it).unregisterChangeHandlers();
-        }); 
+            ((TreeItemEx) it).unregisterChangeHandlers();
+        });
     }
 
 }// SceneGraphView

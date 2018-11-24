@@ -154,8 +154,6 @@ public class FloatStageView implements FloatWindowView {
 
     @Override
     public Window make(Dockable dockable, boolean show) {
-//        System.err.println("1 FloatStageView dockable.node=" + dockable.node());
-
         DragContainer dc = dockable.getContext().getDragContainer();
         Object v;
         if (dc != null) {
@@ -247,31 +245,14 @@ public class FloatStageView implements FloatWindowView {
 
         window.initStyle(stageStyle);
 
-        // offset the new floatingWindow to cover exactly the area the dock was local to the scene
-        // this is useful for when the user presses the + sign and we have no information
-        // on where the mouse was clicked
-        windowRoot = new StackPane() {
-            @Override
-            public String getUserAgentStylesheet() {
-                return Dockable.class.getResource("resources/default.css").toExternalForm();
-            }
-        };
+
+        windowRoot = createRoot(node);
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
 
-        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
-            @Override
-            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (window != null) {
-                    window.close();
-                }
-                dockable.node().parentProperty().removeListener(this);
-            }
-        };
-
         windowRoot.getStyleClass().add("float-window-root");
         //StyleUtil.styleFloatWindowRoot(windowRoot);
-        windowRoot.getChildren().add(node);
+//        windowRoot.getChildren().add(node);
 
         Scene scene = new Scene(windowRoot);
         scene.setCursor(Cursor.HAND);
@@ -285,34 +266,27 @@ public class FloatStageView implements FloatWindowView {
             FloatView.layout(window, bounds);
         }
 
-        /*        Insets insetsDelta = windowRoot.getInsets();
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-        window.setX(stagePosition.getX() - insetsDelta.getLeft());
-        window.setY(stagePosition.getY() - insetsDelta.getTop());
-
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(draggedNode)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(draggedNode)) + insetsHeight);
-
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(draggedNode)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(draggedNode)) + insetsHeight;
-
-        windowRoot.setPrefWidth(prefWidth);
-        windowRoot.setPrefHeight(prefHeight);
-         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
         addResizer();
-        //stage.sizeToScene();
         window.setAlwaysOnTop(true);
 
-        // windowRoot.prefHeightProperty().bind(window.heightProperty());
-        // windowRoot.prefWidthProperty().bind(window.widthProperty());
         if (show) {
             window.show();
         }
+        
+        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (window != null) {
+                    window.close();
+                }
+                dockable.node().parentProperty().removeListener(this);
+            }
+        };
+        
         dockable.node().parentProperty().addListener(pcl);
         return window;
     }
@@ -357,17 +331,11 @@ public class FloatStageView implements FloatWindowView {
 
         window.initStyle(stageStyle);
 
-        windowRoot = new StackPane() {
-            @Override
-            public String getUserAgentStylesheet() {
-                return Dockable.class.getResource("resources/default.css").toExternalForm();
-            }
-        };
-        windowRoot.getStyleClass().add(FLOAT_WINDOW);
-        windowRoot.getStyleClass().add(FLOATVIEW);
 
         Node node = context.getDragContainer().getPlaceholder();
-        windowRoot.getChildren().add(node);
+        windowRoot  = createRoot(node);
+        windowRoot.getStyleClass().add(FLOAT_WINDOW);
+        windowRoot.getStyleClass().add(FLOATVIEW);
 
         Scene scene = new Scene(windowRoot);
 
@@ -382,7 +350,6 @@ public class FloatStageView implements FloatWindowView {
             scene.setFill(null);
         }
         addResizer();
-        //window.sizeToScene();
         window.setAlwaysOnTop(true);
         if (show) {
             window.show();
@@ -400,8 +367,6 @@ public class FloatStageView implements FloatWindowView {
      * @return the created window
      */
     protected Window make(Dockable dockable, Dockable dragged, boolean show) {
-//        System.err.println("3 !!!! FloatStageView dockable.node=" + dockable.node() + "dockable.dragged = " + dragged.node());
-
         setSupportedCursors(DEFAULT_CURSORS);
         Window owner = null;
         if (dockable.node().getScene() != null && dockable.node().getScene().getWindow() != null) {
@@ -438,15 +403,7 @@ public class FloatStageView implements FloatWindowView {
             }
         }
         if (isDocked(dragged)) {
-            //LayoutContext oldLayoutContext = getLayoutContext(dragged);
-            //03.04getLayoutContext(dragged).undock(dragged.node());
             getLayoutContext(dockable).undock(dockable);
-
-            LayoutContext tc = dockable.getContext().getLayoutContext();
-            //if (tc instanceof ScenePaneContext) {
-            //((ScenePaneContext) tc).setRestoreContext(oldLayoutContext);
-            //}
-
         }
 
         Stage window = new Stage();
@@ -472,32 +429,10 @@ public class FloatStageView implements FloatWindowView {
 
         window.initStyle(stageStyle);
 
-        // offset the new floatingWindow to cover exactly the area the dock was local to the scene
-        // this is useful for when the user presses the + sign and we have no information
-        // on where the mouse was clicked
-         windowRoot = new StackPane() {
-            @Override
-            public String getUserAgentStylesheet() {
-                return Dockable.class.getResource("resources/default.css").toExternalForm();
-            }
-        };
+        windowRoot = createRoot(draggedNode);
         windowRoot.getStyleClass().add(FLOAT_WINDOW);
         windowRoot.getStyleClass().add(FLOATVIEW);
-
-        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
-            @Override
-            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (window != null) {
-                    window.close();
-                }
-                dragged.node().parentProperty().removeListener(this);
-            }
-        };
-
         windowRoot.getStyleClass().add("float-window-root");
-        //StyleUtil.styleFloatWindowRoot(windowRoot);
-        //rootPane.setCenter(draggedNode);
-        windowRoot.getChildren().add(draggedNode);
 
         Scene scene = new Scene(windowRoot);
 
@@ -509,34 +444,24 @@ public class FloatStageView implements FloatWindowView {
         windowRoot.setStyle("-fx-background-color: aqua");
         windowRoot.applyCss();
 
-        //Bounds bounds = new BoundingBox(windowPos.getX(), windowPos.getY(), nodeWidth, nodeHeight);
-        //FloatView.layout(window, bounds);
-
-        /*        Insets insetsDelta = windowRoot.getInsets();
-        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-        window.setX(stagePosition.getX() - insetsDelta.getLeft());
-        window.setY(stagePosition.getY() - insetsDelta.getTop());
-
-        window.setMinWidth(windowRoot.minWidth(DockUtil.heightOf(draggedNode)) + insetsWidth);
-        window.setMinHeight(windowRoot.minHeight(DockUtil.widthOf(draggedNode)) + insetsHeight);
-
-        double prefWidth = windowRoot.prefWidth(DockUtil.heightOf(draggedNode)) + insetsWidth;
-        double prefHeight = windowRoot.prefHeight(DockUtil.widthOf(draggedNode)) + insetsHeight;
-
-        windowRoot.setPrefWidth(prefWidth);
-        windowRoot.setPrefHeight(prefHeight);
-         */
         if (stageStyle == StageStyle.TRANSPARENT) {
             scene.setFill(null);
         }
         addResizer();
-        //stage.sizeToScene();
         window.setAlwaysOnTop(true);
         if (show) {
             window.show();
         }
+  ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (window != null) {
+                    window.close();
+                }
+                dragged.node().parentProperty().removeListener(this);
+            }
+        };
+  
         dragged.node().parentProperty().addListener(pcl);
         return window;
     }

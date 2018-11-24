@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Your Organisation.
+ * Copyright 2017 Your Organisation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,38 +17,53 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.vns.javafx.dock.DockUtil;
+import org.vns.javafx.dock.api.DockRegistry;
+import org.vns.javafx.dock.api.Dockable;
 
 /**
  *
  * @author Valery
  */
-public class TestCss01 extends Application {
+public class TestDockUtilBounds extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-       
+        VBox root = new VBox();
         //root.setStyle("-fx-background-color: YELLOW");
         Button b1 = new Button("Button b1");
-        Button b2 = new Button("b2r");
-        //b1.setGraphic(b2);
-        Pane p1 = new TestCssCustomClass();
-        VBox root = new VBox(p1);
-        //dockPane.dock(p1, Side.TOP).getContext().setTitle("Pane p1");
-        Scene primaryScene = new Scene(root);
-        double cw = 100;
-        double ch = 100;
-        double sw = 10; //stroke width
-        double swDelta = 10; //stroke width
+        Button b2 = new Button("Button b2");
         
-      
-        primaryStage.setScene(primaryScene);
-
+        Button spBtn1 = new Button("StackPane spBtn1");
+        Button spBtn2 = new Button("--- StackPane spBtn1 ---");
+        
+        StackPane stackPane = new StackPane(spBtn1,spBtn2);
+        //dockPane.dock(p1, Side.TOP).getContext().setTitle("Pane p1");
+        Scene scene = new Scene(root);
+        DockRegistry.makeDockable(spBtn1);
+        root.getChildren().addAll(b1, b2, stackPane);
+        
+        primaryStage.setTitle("JavaFX TestCanvas");
+        primaryStage.setScene(scene);
+        scene.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            System.err.println("findDockable spBtn2 = " + DockUtil.findDockable(spBtn1,  e.getScreenX(), e.getScreenY()));
+            System.err.println("layoutContext = " + Dockable.of(spBtn1).getContext().getLayoutContext());
+            System.err.println("findDockable stackPane = " + DockUtil.findDockable(stackPane,  e.getScreenX(), e.getScreenY()));            
+            
+        });
+        b1.setOnAction(e -> {
+            
+        });
+        spBtn2.setScaleX(0.5);
+        spBtn2.setScaleY(0.5);
+        
         primaryStage.setOnShown(s -> {
 
         });
@@ -57,7 +72,7 @@ public class TestCss01 extends Application {
        
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
-        //Dockable.initDefaultStylesheet(null);
+        Dockable.initDefaultStylesheet(null);
     }
 
     /**

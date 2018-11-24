@@ -66,20 +66,21 @@ public class TreeItemObjectChangeListener implements ChangeListener {
         Property prop = treeItem.getProperty(propertyName);
         TreeItemEx propItem = treeItem.getTreeItem(propertyName);
         int insertPos = propItem == null ? 0 : treeItem.getInsertPos(propertyName);
-        SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
+//        SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
         NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
 
         if (propItem == null) {
-            System.err.println("TreeItemObjectChangeListener oldValue = " + oldValue + "; newValue = " + newValue );   
             if (oldValue == null && newValue != null) {
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                if (item != null && sr != null && !sr.contains(newValue)) {
+/*                if (item != null && sr != null && !sr.contains(newValue)) {
                     //
                     //changed outside and not by dragging 
                     //
                     treeItem.getChildren().add(insertPos, item);
                     item.setExpanded(false);
-                } else if (item != null ) {
+                } else 
+*/                
+                if (item != null ) {
                     treeItem.getChildren().add(insertPos, item);
                     if (nf != null && (newValue instanceof Node)) {
                         Platform.runLater(() -> {
@@ -96,26 +97,29 @@ public class TreeItemObjectChangeListener implements ChangeListener {
 
             if (oldValue != null && newValue == null) {
                 if (((prop instanceof NodeContent) && ((NodeContent) prop).isHideWhenNull())) {
-                    if (sr != null) {
+/*                    if (sr != null) {
                         //savasr.save(oldValue);
                     }
+*/
                     propItemParent.getChildren().remove(propItem);
                     //SceneView.reset(propItem);
                     
 
                 } else {
-                    if (sr != null) {
+  /*                  if (sr != null) {
                        //sava sr.save(oldValue);
                     }
-
+*/
                     TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
-                    if ( item != null && sr != null && !sr.contains(newValue)) {
+/*                    if ( item != null && sr != null && !sr.contains(newValue)) {
                         //
                         //changed outside and not by dragging 
                         //
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                         item.setExpanded(false);
-                    } else if ( item != null ) {
+                    } else 
+*/
+                    if ( item != null ) {
                         item.setExpanded(false);
                         propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     }
@@ -123,17 +127,18 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                 
             } else if ( newValue != null ) {
                 // May be is NodeContent and not hidden when null
-//                System.err.println("build newValue = " + newValue + "; prop = " + prop.getName());
                 TreeItemEx item = new TreeItemBuilder().build(newValue, prop);
 
-                if (item != null && sr != null && !sr.contains(newValue)) {
+/*                if (item != null && sr != null && !sr.contains(newValue)) {
                     //
                     //changed outside and not by dragging 
                     //
                     List<Boolean> expValues = downUpExpandedValues(propItemParent);
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     item.setExpanded(false);
-                } else if ( item != null ){
+                } else 
+*/
+                if ( item != null ){
                     item.setExpanded(false);
                     propItemParent.getChildren().set(propItemParent.getChildren().indexOf(propItem), item);
                     if (nf != null && (newValue instanceof Node)) {
@@ -144,20 +149,12 @@ public class TreeItemObjectChangeListener implements ChangeListener {
                 }
 
             }
-            if ( oldValue != null ) {
-                System.err.println("TreeItemObjectChangeListener oldValue = " + oldValue);
-                System.err.println("TreeItemObjectChangeListener newValue = " + newValue);
-                if ( oldValue instanceof Node ) {
-                    
-                    //SceneView.reset((Node) oldValue);
-                }
-            }
         }
     }
 
-    protected Object getPropertyValue() {
+/*    protected Object getPropertyValue() {
         Object retval = null;
         return retval;
     }
-
+*/
 }

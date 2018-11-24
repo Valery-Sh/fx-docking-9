@@ -72,8 +72,8 @@ public class LayoutContextFactory {
             retval = new ListBasedTargetContext(targetNode);
         } else if (targetNode instanceof BorderPane) {
             retval = new DockBorderPaneContext(targetNode);
-            
-            for ( Node obj : ((BorderPane)targetNode).getChildren() ) {
+
+            for (Node obj : ((BorderPane) targetNode).getChildren()) {
                 DockableContext dc = null;
                 if (Dockable.of(obj) != null) {
                     dc = Dockable.of(obj).getContext();
@@ -81,7 +81,7 @@ public class LayoutContextFactory {
                     dc = DockRegistry.makeDockable(obj).getContext();
                 }
                 dc.setLayoutContext(retval);
-                
+
             }
         } else if ((targetNode instanceof SplitPane && !(targetNode instanceof DockSplitPane))) {
             retval = new ListBasedTargetContext(targetNode);
@@ -467,8 +467,9 @@ public class LayoutContextFactory {
             if (getIndicatorPopup().getDraggedNode() != null) {
                 x = getIndicatorPopup().getDraggedNode().getScene().getWindow().getX();
                 y = getIndicatorPopup().getDraggedNode().getScene().getWindow().getY();
-                Node n = getIndicatorPopup().getDraggedNode();
-                Bounds b = n.localToScreen(n.getBoundsInLocal());
+                //Node n = getIndicatorPopup().getDraggedNode();
+                //Bounds b = n.localToScreen(n.getBoundsInLocal());
+                //Bounds b = n.localToScreen(n.getBoundsInLocal());
             }
             if (DockUtil.contains(p, x, y)) {
                 adjustPlace(p, x, y);
@@ -618,15 +619,18 @@ public class LayoutContextFactory {
                 return false;
             }
             int idx = -1;
-            Node innerNode = null;
-            for (int i = 0; i < items.size(); i++) {
+            Node innerNode = TopNodeHelper.getTop(targetNode, mousePos.getX(), mousePos.getY(), n -> {return getItems().contains(n);} );
+            if ( innerNode != null ) {
+                idx = getItems().indexOf(innerNode);
+            }
+/*            for (int i = 0; i < items.size(); i++) {
                 innerNode = items.get(i);
                 if (DockUtil.contains(innerNode, mousePos.getX(), mousePos.getY())) {
-//                    items.add(i, node);
                     idx = i;
                     break;
                 }
             }
+*/
             if (idx == -1) {
                 items.add((T) node);
             } else if (((targetNode instanceof VBox) || ((targetNode instanceof Accordion)))) {
@@ -703,7 +707,7 @@ public class LayoutContextFactory {
             boolean visible = true;
 
             Pane p = (Pane) getIndicatorPane();
-
+            //System.err.println("showDockPlace DockUtil.contains(p, x, y) = " + DockUtil.contains(p, x, y));
             if (DockUtil.contains(p, x, y)) {
 
                 adjustPlace(p, x, y);
@@ -726,53 +730,64 @@ public class LayoutContextFactory {
 
         }
 
-        protected void adjustPlace(Node pane, double x, double y) {
+        protected void adjustPlace(Node indPane, double x, double y) {
             Rectangle r = (Rectangle) getDockPlace();
             ListBasedTargetContext ctx = (ListBasedTargetContext) getLayoutContext();
             Region targetPane = (Region) ctx.getLayoutNode();
-            Node innerNode = null;
-            for (int i = 0; i < ctx.getItems().size(); i++) {
-                if (DockUtil.contains((Node) ctx.getItems().get(i), x, y)) {
-                    innerNode = (Node) ctx.getItems().get(i);
-                    break;
-                }
-            }
-
-            Bounds b = pane.getLayoutBounds();
+            System.err.println("targetPane.getHeight = " + targetPane.getHeight());
+            System.err.println("targetPane.getWidth = " + targetPane.getWidth());
+            Node innerNode = TopNodeHelper.getTop(ctx.getLayoutNode(), x, y, n -> {
+                return ctx.getItems().contains(n);
+            });
+            System.err.println("innereNode = " + innerNode);
+            //
+            // We know that the indicatore pate never transformed
+            //
+            Bounds indBounds = indPane.getBoundsInLocal();
             Insets ins = getIndicatorPane().getInsets();
 
             if (innerNode != null) {
-                b = innerNode.getBoundsInParent();
-                if ((targetPane instanceof VBox) || (targetPane instanceof Accordion)) {
-                    Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
-                    r.setWidth(targetPane.getWidth());
-                    r.setX(b.getMinX() + ins.getLeft());
-                    r.setHeight(b.getHeight() / 2);
+                Bounds screenBounds = innerNode.localToScreen(innerNode.parentToLocal(innerNode.getBoundsInParent()));
+                Bounds nodeBounds = indPane.screenToLocal(screenBounds);
 
-                    if (y < b1.getMinY() + b.getHeight() / 2) {
-                        r.setY(b.getMinY() + ins.getTop());
+                if ((targetPane instanceof VBox) || (targetPane instanceof Accordion)) {
+                    r.setX(ins.getLeft());
+                    r.setWidth(indBounds.getWidth() - ins.getLeft() - ins.getRight());
+
+                    if (nodeBounds.getHeight() < 20) {
+                        r.setHeight(nodeBounds.getHeight() / 2);
                     } else {
-                        r.setY(b.getMinY() + ins.getTop() + b.getHeight() / 2);
+                        r.setHeight(10);
+                    }
+                    if (y < screenBounds.getMinY() + screenBounds.getHeight() / 2) {
+                        r.setY(nodeBounds.getMinY());
+                    } else if (nodeBounds.getHeight() < 20) {
+                        r.setY(nodeBounds.getMinY() + nodeBounds.getHeight() / 2);
+                    } else {
+                        r.setY(nodeBounds.getMinY() + nodeBounds.getHeight() - 10);
                     }
 
                 } else if (targetPane instanceof HBox) {
-                    Bounds b1 = innerNode.localToScreen(innerNode.getBoundsInLocal());
-                    r.setHeight(targetPane.getHeight());
-                    r.setX(b.getMinX() + ins.getLeft());
-                    r.setY(b.getMinY() + ins.getTop());
-                    r.setWidth(b.getWidth() / 2);
-
-                    if (x < b1.getMinX() + b.getWidth() / 2) {
-                        r.setX(b.getMinX() + ins.getLeft());
+                    r.setHeight(indBounds.getHeight() - ins.getTop() - ins.getBottom());
+                    r.setY(ins.getTop());
+                    if (nodeBounds.getWidth() < 20) {
+                        r.setWidth(nodeBounds.getWidth() / 2);
                     } else {
-                        r.setX(b.getMinX() + (b.getWidth() / 2) + ins.getLeft());
+                        r.setWidth(10);
+                    }
+                    if (x < screenBounds.getMinX() + nodeBounds.getWidth() / 2) {
+                        r.setX(nodeBounds.getMinX());
+                    } else if (nodeBounds.getWidth() < 20) {
+                        r.setX(nodeBounds.getMinX() + (nodeBounds.getWidth() / 2));
+                    } else {
+                        r.setX(nodeBounds.getMinX() + nodeBounds.getWidth() - 10);
                     }
                 } else {
-                    r.setWidth(b.getWidth());
-                    r.setHeight(b.getHeight());
+                    r.setWidth(nodeBounds.getWidth());
+                    r.setHeight(nodeBounds.getHeight());
 
-                    r.setX(b.getMinX());
-                    r.setY(b.getMinY());
+                    r.setX(nodeBounds.getMinX());
+                    r.setY(nodeBounds.getMinY());
                 }
             }
         }

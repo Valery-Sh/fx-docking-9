@@ -8,6 +8,7 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -53,8 +54,9 @@ public class TestBorderPane extends Application {
         borderPane.getChildren().add(b03);
         borderPane.setCenter(b04);
         System.err.println("0 borderPane.getChildren().size()=" + borderPane.getChildren().size());
-        
+      
         b01.setOnAction(e->{
+            
             borderPane.setCenter(null);
             System.err.println("1 borderPane.getChildren().size()=" + borderPane.getChildren().size());            
         });

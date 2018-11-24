@@ -53,13 +53,11 @@ public class DesignerScenePaneContext extends ScenePaneContext {
 
     @Override
     public boolean isAcceptable(Dockable dockable) {
-        System.err.println("IS ACCEPTABLE node = " + dockable.node());
         return super.isAcceptable(dockable);
     }
     
     @Override
     public void remove(Object obj) {
-        System.err.println("DesignerScenePaneContext.remove obj = " + obj);
         if (!(obj instanceof Node)) {
             return;
         }
@@ -83,19 +81,14 @@ public class DesignerScenePaneContext extends ScenePaneContext {
                 return;
             }
             if ( sgv.getRoot() == sgv.getRoot().getScene().getRoot() ) {
-                System.err.println("scene.setRoot(null");
                 sgv.setRoot(null);
                 sgv.getRoot().getScene().setRoot(null);
                 return;
             } else {
                 TreeItemBuilder builder = new TreeItemBuilder();
                 TreeItemEx it = builder.build(sgv.getRoot().getScene().getRoot());
-                //EditorUtil.findTreeItemByObject(tv, obj);        
                 it = EditorUtil.findChildTreeItem(it, item.getValue());
-                System.err.println("DesignerScenePaneContext remove it.getValue() = " + it.getValue());
                 builder.updateOnMove(it);
-                it = EditorUtil.findChildTreeItem(it, item.getValue());
-                System.err.println("DesignerScenePaneContext remove it) = " + it);
                 sgv.setRoot(null);
                 tv.setRoot(null);
                 return;

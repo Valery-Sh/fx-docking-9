@@ -93,7 +93,7 @@ public class DemoDesigner1 extends Application {
 
         StackPane formPane = new StackPane();
         formPane.setStyle("-fx-background-color: yellow");
-        formPane.getChildren().addAll(formButton, resetButton);
+        formPane.getChildren().addAll(formButton);//, resetButton);
         formDockNode.setContent(formPane);
         LayoutContextFactory ctxFactory = new LayoutContextFactory();
         LayoutContext ctx = ctxFactory.getContext(formPane);
@@ -101,7 +101,8 @@ public class DemoDesigner1 extends Application {
         DockRegistry.makeDockLayout(formPane, ctx);
         BorderPane root1 = new BorderPane();
         Button eb = new Button("Ext Button");
-        
+        eb.setScaleX(0.5);
+        eb.setTranslateY(20);
         eb.setOnMousePressed(e -> {
             System.err.println("@@ eb mousepressed");
         });
@@ -135,7 +136,10 @@ public class DemoDesigner1 extends Application {
         //cb.setMouseTransparent(true);
         //cb.getItems().add("item 1");
         //cb.getItems().add("item 2");
-        VBox centerPane = new VBox(eb,tx, cb);
+        DockNode dn = new DockNode("Dock Node");
+        dn.setContent(new Label("Dock Node Content"));
+        dn.setScaleX(0.5);
+        VBox centerPane = new VBox(eb,tx, cb,dn);
         centerPane.setId("CCCCCCCCCCCCCCCCCCC");
         root1.setCenter(centerPane);
         root1.setLeft(new Label("My Label 1"));
@@ -147,6 +151,7 @@ public class DemoDesigner1 extends Application {
         //root1.setCenter(eb);
         //VBox root1 = new VBox();
         HBox hbox = new HBox(new Label("root1 Label"));
+        
         //root1.getChildren().add(hbox);
         root1.setId("root1");
         sceneView.setRoot(root1);
@@ -168,6 +173,11 @@ public class DemoDesigner1 extends Application {
             System.err.println("handler cb mouse pressed source = " + e.getSource() + "; target = " + e.getTarget());
             e.consume();
         });   
+        cb.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            System.err.println("handler cb mouse ENTERED source = " + e.getSource() + "; target = " + e.getTarget());
+            e.consume();
+        });   
+        
         root1.setStyle("-fx-padding: 5 5 5 5");
         
 
@@ -214,12 +224,15 @@ public class DemoDesigner1 extends Application {
             System.err.println("EventDisp formButton = " + formButton.getEventDispatcher());
             //eb.setFocusTraversable(false);
             if ( nd != null && nd.getScaleX() == 1 ) {
-                nd.setScaleX(0.5);
+                nd.setScaleY(0.5);
+                nd.setScaleX(0.8);
                 //if ( nd instanceof VBox) {
                 if ( false) {                    
-                    eb.setTranslateX(10);
+                    eb.setTranslateY(5);
+                    eb.setTranslateX(5);
                 } else {
-                    nd.setTranslateX(10);
+                    nd.setTranslateY(5);
+                    nd.setTranslateX(5);
                 }
             } else if ( nd != null ) {
                 nd.setScaleX(1);

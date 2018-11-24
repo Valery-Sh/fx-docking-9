@@ -87,7 +87,8 @@ public abstract class Selection {
         void setSource(Object source);
 
         void handle(MouseEvent event, Node node);
-
+        void mousePressed(MouseEvent ev);
+        void mouseReleased(MouseEvent ev);
     }
 
     public static class SelectionHandler implements SelectionListener {
@@ -109,21 +110,17 @@ public abstract class Selection {
 
         @Override
         public void handle(MouseEvent ev) {
-//            System.err.println("Selection handle ev.source = " + ev.getSource());
-//            System.err.println("Selection handle ev.target = " + ev.getTarget());
-
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePressed(ev);
 
             }
             if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                mouseRelesed(ev);
+                mouseReleased(ev);
             }
         }
 
-        protected void mousePressed(MouseEvent ev) {
-//            System.err.println("Selection mousePressed ev.source = " + ev.getSource());
-//            System.err.println("Selection mousePressed ev.target = " + ev.getTarget());
+        @Override
+        public void mousePressed(MouseEvent ev) {
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             if (nf != null && (ev.getSource() instanceof Node)) {
                 nf.show((Node) ev.getSource());
@@ -132,7 +129,8 @@ public abstract class Selection {
 
         }
 
-        protected void mouseRelesed(MouseEvent ev) {
+        @Override
+        public void mouseReleased(MouseEvent ev) {
             if ((ev.getSource() == getSource() || getSource() == null) && Dockable.of(ev.getSource()) != null) {
 
                 //Selection sel = DockRegistry.lookup(Selection.class);
@@ -143,25 +141,23 @@ public abstract class Selection {
         @Override
         public void handle(MouseEvent ev, Node node) {
             if (ev.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                
                 mousePressed(ev, node);
             }
             if (ev.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                mouseRelesed(ev, node);
+                mouseReleased(ev, node);
             }
 
         }
 
         protected void mousePressed(MouseEvent ev, Node node) {
-//            System.err.println("new Selection mousePressed node = " + node);
-//            System.err.println("new Selection mousePressed ev.source = " + ev.getSource());
-//            System.err.println("new Selection mousePressed ev.target = " + ev.getTarget());
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             nf.show(node);
             ev.consume();
 
         }
 
-        protected void mouseRelesed(MouseEvent ev, Node node) {
+        protected void mouseReleased(MouseEvent ev, Node node) {
             if (Dockable.of(node) != null) {
                 ev.consume();
             }

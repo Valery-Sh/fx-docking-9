@@ -46,13 +46,6 @@ public interface IndicatorManager {
         
     }
 
-/*    default void showSideIndicator(Node targetNode) {
-        
-    }    
-*/    
-/*    default void showIndicator(double mouseScreenX, double mouseScreenY) {
-        
-    }
-*/    
+
     PositionIndicator getPositionIndicator();
 }

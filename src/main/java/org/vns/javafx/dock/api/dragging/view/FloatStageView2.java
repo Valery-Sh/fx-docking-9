@@ -27,7 +27,6 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
-import org.vns.javafx.dock.api.StyleUtil;
 
 /**
  *
@@ -60,30 +59,13 @@ public class FloatStageView2 extends FloatStageView {
 
         setFloatingWindow(window);
 
-        windowRoot = new StackPane() {
-            @Override
-            public String getUserAgentStylesheet() {
-                return Dockable.class.getResource("resources/default.css").toExternalForm();
-            }
-        };
+        windowRoot = createRoot(node);  
+        
         Scene scene = new Scene(windowRoot);
         window.setScene(scene);
         setWindowRoot(windowRoot);
 
-        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
-            @Override
-            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
-                if (window != null) {
-                    window.hide();
-                }
-                dockable.node().parentProperty().removeListener(this);
-            }
-        };
-
         windowRoot.getStyleClass().add("sidebar-popup-root");
-        //StyleUtil.styleSideBarPopupRoot(windowRoot);
-
-        windowRoot.getChildren().add(node);
 
         window.getScene().setRoot(windowRoot);
         window.sizeToScene();
@@ -95,6 +77,15 @@ public class FloatStageView2 extends FloatStageView {
         window.setOnHidden(e -> {
             DockRegistry.unregister(window);
         });
+        ChangeListener<Parent> pcl = new ChangeListener<Parent>() {
+            @Override
+            public void changed(ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) {
+                if (window != null) {
+                    window.hide();
+                }
+                dockable.node().parentProperty().removeListener(this);
+            }
+        };
 
         dockable.node().parentProperty().addListener(pcl);
         if (stageStyle == StageStyle.TRANSPARENT) {

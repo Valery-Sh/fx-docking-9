@@ -216,7 +216,7 @@ public class EditorUtil {
         return retval;
     }
 
-    public static TreeViewEx getTargetTreeView(double x, double y) {
+/*    public static TreeViewEx getTargetTreeView(double x, double y) {
         TreeViewEx retval = null;
         List<Stage> allStages = StageHelper.getStages();
         if (allStages.isEmpty()) {
@@ -241,7 +241,7 @@ public class EditorUtil {
 
         return retval;
     }
-
+*/
     public static String changeNodeStyle(String oldStyle, String newStyle) {
         String retval = "";
         if (oldStyle == null || oldStyle.trim().isEmpty() || newStyle == null || newStyle.trim().isEmpty()) {

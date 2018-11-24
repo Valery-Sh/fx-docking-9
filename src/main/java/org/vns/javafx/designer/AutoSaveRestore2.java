@@ -57,13 +57,10 @@ public class AutoSaveRestore2 implements SaveRestore {
         if (toSave instanceof TreeItemEx) {
             obj = ((TreeItemEx) toSave).getValue();
         }
-
-        System.err.println("AutoSaveRestore save 1 obj = " + obj);
         saved = false;
         if (objectToSave == null || obj != objectToSave) {
             return;
         }
-        System.err.println("AutoSaveRestore save 1.0");
         if (dragInitiator == PALETTE_PANE) {
             objectToSave = null;
             clear();
@@ -81,42 +78,34 @@ public class AutoSaveRestore2 implements SaveRestore {
         if (sgv == null) {
             return;
         }
-//        clear();
         this.objectToSave = obj;
         if (obj == null) {
             return;
         }
-        System.err.println("AutoSaveRestore save 2");
         objectItem = EditorUtil.findTreeItemByObject(sgv.getTreeView(), obj);
         if (objectItem == null) {
             return;
         }
-        System.err.println("AutoSaveRestore save 3 objectItem.value = " + objectItem.getValue());
         parentItem = (TreeItemEx) objectItem.getParent(); // may be null for root item    
         listIndex = parentItem.getChildren().indexOf(objectItem);
-        System.err.println("AutoSaveRestore save 3 objectItem.parent = " + objectItem.getParent());
         if (parentItem == null) {
             return;
         }
         saved = true;
         propertyName = objectItem.getPropertyName();
-        System.err.println("AutoSaveRestore save 4");
     }
 
     @Override
     public void save(Object obj, int listIndex) {
-        System.err.println("AutoSaveRestore save(idx) 1 obj = " + obj);
         saved = false;
         if (objectToSave == null || obj != objectToSave) {
             return;
         }
-        System.err.println("AutoSaveRestore save(idx) 2");
         if (dragInitiator == PALETTE_PANE) {
             objectToSave = null;
             clear();
             return;
         }
-        System.err.println("AutoSaveRestore save(idx) 3");
         if (dragInitiator == TRASH_TRAY) {
             this.listIndex = listIndex;
             return;
@@ -129,8 +118,6 @@ public class AutoSaveRestore2 implements SaveRestore {
         if (sgv == null) {
             return;
         }
-        System.err.println("AutoSaveRestore save(idx) 4");
-        //clear();
         this.listIndex = listIndex;
         if (obj == null) {
             return;
@@ -141,12 +128,11 @@ public class AutoSaveRestore2 implements SaveRestore {
         if (objectItem == null) {
             return;
         }
-        System.err.println("AutoSaveRestore save(idx) 5");
+
         parentItem = (TreeItemEx) objectItem.getParent(); // may be null for root item        '
         if (parentItem == null) {
             return;
         }
-        System.err.println("AutoSaveRestore save(idx) 6");
         saved = true;
         propertyName = objectItem.getPropertyName();
     }
@@ -187,18 +173,13 @@ public class AutoSaveRestore2 implements SaveRestore {
             }
             return;
         }
-        System.err.println("AutoSaveRestore restore 1");
-
         if (parentItem == null) {
             return;
         }
-        System.err.println("AutoSaveRestore restore 2");
 
         if (listIndex < 0) {
             return;
         }
-        System.err.println("AutoSaveRestore restore 3");
-
         if (parentItem.getItemType() == ItemType.LIST) {
             TreeItemEx p = (TreeItemEx) parentItem.getParent();
             BeanAdapter ba = new BeanAdapter(p.getValue());
@@ -221,17 +202,11 @@ public class AutoSaveRestore2 implements SaveRestore {
             }
         }
 
-        System.err.println("AutoSaveRestore restore 4");
-
         item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), obj);
         if (verify(item, objectItem)) {
-            System.err.println("AutoSaveRestore restore 5");
-
             restoreExpanded(item, objectItem);
             item.setExpanded(objectItem.isExpanded());
         }
-        System.err.println("AutoSaveRestore restore 6");
-
     }
 
     protected boolean verify(TreeItemEx item, TreeItemEx objItem) {
@@ -290,24 +265,16 @@ public class AutoSaveRestore2 implements SaveRestore {
         objectToSave = null;
     }
 
-    /*    @Override
-    public void add(Object toSave) {
-        clear();
-        this.objectToSave = toSave;
-    }
-     */
+
     @Override
     public void add(Dockable dockable) {
-        System.err.println("AutoSaveRestore add 1");
         clear();
         if (dockable == null || dockable.getContext().getLayoutContext() == null || dockable.getContext().getLayoutContext().getLayoutNode() == null) {
             return;
         }
 
         objectToSave = dockable.getContext().getDragValue();
-        System.err.println("AutoSaveRestore 2 toSave add = " + objectToSave);
         Node node = dockable.getContext().getLayoutContext().getLayoutNode();
-        System.err.println("AutoSaveRestore 3 node add = " + node);
         if (node instanceof PalettePane) {
             dragInitiator = PALETTE_PANE;
         } else if (node instanceof TrashTray) {

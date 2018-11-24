@@ -32,8 +32,6 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     private Point2D startMousePos;
     private DragManager dragManager;
     
-    //private DragContainer dragContainer;
-
     protected MouseDragHandler(DockableContext context) {
         this.context = context;
     }
@@ -43,14 +41,8 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
     protected void prepare() {
         
     }
-    public abstract void mousePressed(MouseEvent ev); /*8 {
-        if (!ev.isPrimaryButtonDown()) {
-            return;
-        }
-        setStartMousePos(new Point2D(ev.getX(), ev.getY()));
-        ev.consume();
-    }
-*/
+    public abstract void mousePressed(MouseEvent ev); 
+    
     public void mouseReleased(MouseEvent ev) {
         startMousePos = null;
         ev.consume();
@@ -95,14 +87,7 @@ public abstract class MouseDragHandler implements EventHandler<MouseEvent> {
         return context;
     }
 
-/*    public DragContainer getDragContainer() {
-        return dragContainer;
-    }
 
-    public void setDragContainer(DragContainer dragContainer) {
-        this.dragContainer = dragContainer;
-    }
-*/
     public DragManager createDragManager(MouseEvent ev) {
         dragManager = getContext().newDragManager();
         return dragManager;

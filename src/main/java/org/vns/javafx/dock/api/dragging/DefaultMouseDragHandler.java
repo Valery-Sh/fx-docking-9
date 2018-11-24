@@ -34,20 +34,16 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         if (!ev.isPrimaryButtonDown()) {
             return;
         }
-//        System.err.println("DefaultDragHandler mousePressed source " + ev.getSource());
-//        System.err.println("DefaultDragHandler mousePressed target " + ev.getTarget());
         setStartMousePos(new Point2D(ev.getX(), ev.getY()));
         ev.consume();
     }
     @Override
     public void mouseDragDetected(MouseEvent ev) {
-//        System.err.println("DefaultMouseDragHandler dragDetected source = " + ev.getSource());
-//        System.err.println("DefaultMouseDragHandler dragDetected target = " + ev.getTarget());
-        
         if (!ev.isPrimaryButtonDown() || getStartMousePos() == null ) {
             ev.consume();
             return;
         }
+        
         Dockable dockable = getContext().dockable();
         if (!getContext().isDraggable()) {
             ev.consume();
@@ -60,12 +56,8 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
         
         DragManager dm;
         
-        //DragContainer dc = dockable.getContext().getDragContainer();
         DragContainer dc = dockable.getContext().getDragContainer();
-/*        if ( dc != null ) {
-            dockable.getContext().setDragContainer(dc);
-        }
-*/        
+     
         if (!dockable.getContext().isFloating()) {
              dm = createDragManager(ev);
         } else if ( (dc != null) && dc.getPlaceholder() != null) {
@@ -75,7 +67,6 @@ public class DefaultMouseDragHandler extends MouseDragHandler {
              dm = createDragManager(ev);
         }
         ev.consume();
-
         dm.mouseDragDetected(ev, getStartMousePos());
     }
 }

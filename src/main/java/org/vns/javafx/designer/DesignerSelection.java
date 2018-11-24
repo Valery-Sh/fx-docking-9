@@ -40,7 +40,6 @@ public class DesignerSelection extends Selection {
 
     @Override
     public void setSelected(Object toSelect) {
-//        System.err.println("DesignerSelection: setLelected = " + toSelect);
         if (toSelect instanceof Node) {
             NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
             if (nf != null) {
@@ -54,11 +53,9 @@ public class DesignerSelection extends Selection {
     protected void selectedChanged(ObservableValue ov, Object oldValue, Object newValue) {
 
         NodeFraming nf = DockRegistry.lookup(NodeFraming.class);
-//        System.err.println("1 Designerselection: selectedChanged nf = " + nf);
         if (newValue == null) {
             if (nf != null) {
                 nf.hide();
-//                resizer = null;
             }
             return;
         }
@@ -67,18 +64,13 @@ public class DesignerSelection extends Selection {
             nf.hide();
         }
         if (newValue instanceof Node) {
-//            System.err.println("DesignerSelection: selectedChanged = " + newValue);
-
             nf.show((Node) newValue);
         }
-//        System.err.println("2 Designerselection: selectedChanged newValue = " + newValue);
-
         notifySelected(newValue);
     }
 
     @Override
     public void notifySelected(Object value) {
-//        System.err.println("notifySelected");
         SceneView sgv = DesignerLookup.lookup(SceneView.class);
         if (sgv != null) {
             TreeItemEx item;
@@ -88,10 +80,7 @@ public class DesignerSelection extends Selection {
                 item = EditorUtil.findTreeItemByObject(sgv.getTreeView(), value);
             }
             if (item != null) {
-//                System.err.println("DesignerSelection: item.value=" + item.getValue());
-//                sgv.getTreeView().getSelectionModel().selectFirst();
                 sgv.getTreeView().getSelectionModel().select(item);
-                //DesignerLookup.lookup(SceneGraphView.class).getTreeView().requestFocus();
             }
         }
     }

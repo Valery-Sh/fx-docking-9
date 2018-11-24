@@ -246,7 +246,7 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allWindows.forEach(w -> {
-            Node topNode = TopNodeHelper.getTopNode(w, x, y, n -> {
+            Node topNode = TopNodeHelper.getTop(w, x, y, n -> {
                 return (n instanceof Node);
             });
             if (topNode != null) {
@@ -279,7 +279,7 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allWindows.forEach(w -> {
-            Node topNode = TopNodeHelper.getTopNode(w, x, y, n -> {
+            Node topNode = TopNodeHelper.getTop(w, x, y, n -> {
                 return isDockLayout(n);
             });
             if (topNode != null) {
@@ -313,7 +313,7 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
-            Node topNode = TopNodeHelper.getTopNode(s, x, y, n -> {
+            Node topNode = TopNodeHelper.getTop(s, x, y, n -> {
                 return predicate.test(n);
             });
             if (topNode != null) {

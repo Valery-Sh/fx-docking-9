@@ -24,7 +24,7 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
     public static final String LOOKUP_SELECTOR = "UUID-e651abfa-c321-4249-b78a-120db404b641";
     private final SceneView sceneGraphView;
             
-    private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
+//    private final NodeDragEvent nodeDragEvent = new NodeDragEvent((MouseEvent) null);
     private DragEvent dragEvent;
     private boolean dragAccepted;
 
@@ -59,11 +59,11 @@ public class TreeViewEx<T> extends TreeView { //implements EventHandler<NodeDrag
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
     }
     
-    public NodeDragEvent getNodeDragEvent(MouseEvent ev) {
+/*    public NodeDragEvent getNodeDragEvent(MouseEvent ev) {
         nodeDragEvent.setMouseEvent(ev);
         return nodeDragEvent;
     }
-
+*/
     public DragEvent getDragEvent() {
         return dragEvent;
     }

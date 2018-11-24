@@ -266,7 +266,7 @@ public class PalettePane extends Control {
         }
     }
 
-    public void setCustomEventDispather(Object value) {
+/*    public void setCustomEventDispather(Object value) {
         if (!(value instanceof Node)) {
             return;
         }
@@ -279,7 +279,7 @@ public class PalettePane extends Control {
             ped.start((Node) value);
         }
     }
-
+*/
     @Override
     public String getUserAgentStylesheet() {
         return DesignerLookup.class.getResource("resources/styles/designer-default.css").toExternalForm();
@@ -1256,7 +1256,7 @@ public class PalettePane extends Control {
 
     }
 
-    public static class MouseEventDispatcher implements PaletteEventDispatcher {
+/*    public static class MouseEventDispatcher implements PaletteEventDispatcher {
 
         private EventDispatcher initial;
         private Node node;
@@ -1341,20 +1341,6 @@ public class PalettePane extends Control {
         }
 
         protected Event pressed(Event event, EventDispatchChain tail) {
-/*            System.err.println("pressed dispatch node " + node);
-            System.err.println("pressed dispatch source " + event.getSource());
-            System.err.println("pressed dispatch target " + event.getTarget());
-            System.err.println("pressed dispatch isConsumed " + event.isConsumed());
-            System.err.println("-----------");
-
-            //if (!acceptable(event)) {
-            System.err.println("not acceptable pressed dispatch source " + event.getSource());
-            System.err.println("not acceptable pressed dispatch target " + event.getTarget());
-            System.err.println("=======");
-*/
-            //return initial.dispatchEvent(event, tail);
-            //return null;
-            //}
             if (true) {
                 return initial.dispatchEvent(event, tail);
             }
@@ -1409,12 +1395,6 @@ public class PalettePane extends Control {
         }
 
         protected Event dragDetected(Event event, EventDispatchChain tail) {
-/*            System.err.println("dragDetected dispatch node " + node);
-            System.err.println("dragDetected dispatch source " + event.getSource());
-            System.err.println("dragDetected dispatch target " + event.getTarget());
-            System.err.println("dragDetected dispatch isConsumed " + event.isConsumed());
-            System.err.println("-----------");
-*/
             if (true) {
                 return initial.dispatchEvent(event, tail);
             }
@@ -1428,12 +1408,6 @@ public class PalettePane extends Control {
         }
 
         protected Event dragged(Event event, EventDispatchChain tail) {
-            System.err.println("PalettePane dragged node = " + node);
-            System.err.println("PalettePane dragged source = " + event.getSource());
-            System.err.println("PalettePane dragged target = " + event.getTarget());
-            if (true) {
-                return initial.dispatchEvent(event, tail);
-            }
             if (!acceptable(event)) {
                 return initial.dispatchEvent(event, tail);
             }
@@ -1450,5 +1424,5 @@ public class PalettePane extends Control {
         }
 
     }
-
+*/
 }//PalettePane

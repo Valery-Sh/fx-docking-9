@@ -5,6 +5,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -193,11 +194,26 @@ public class IndicatorPopup extends Popup implements IndicatorManager {
             Pane indicatorPane = targetContext.getPositionIndicator().getIndicatorPane();
             Insets ins = indicatorPane.getInsets();
             if (getTargetNode() instanceof Region) {
-                indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));
+/*                indicatorPane.prefHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));*
                 indicatorPane.prefWidthProperty().bind(((Region) getTargetNode()).widthProperty().add(ins.getLeft() + ins.getRight()));
 
                 indicatorPane.minHeightProperty().bind(((Region) getTargetNode()).heightProperty().add(ins.getTop() + ins.getBottom()));
                 indicatorPane.minWidthProperty().bind(((Region) getTargetNode()).widthProperty().add(ins.getLeft() + ins.getRight()));
+*/                
+                    Bounds b = getTargetNode().getBoundsInParent();
+                    indicatorPane.setPrefHeight(b.getHeight());
+                    indicatorPane.setPrefWidth(b.getWidth());
+                    indicatorPane.setMinHeight(b.getHeight());
+                    indicatorPane.setMinWidth(b.getWidth());
+                    
+                    getTargetNode().boundsInParentProperty().addListener((ov, oldValue, newValue) -> {
+                    indicatorPane.setPrefHeight(newValue.getHeight());
+                    indicatorPane.setPrefWidth(newValue.getWidth());
+                    indicatorPane.setMinHeight(newValue.getHeight());
+                    indicatorPane.setMinWidth(newValue.getWidth());
+
+                });
+
             } else {
                 getTargetNode().layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
                     indicatorPane.setPrefHeight(newValue.getHeight());
