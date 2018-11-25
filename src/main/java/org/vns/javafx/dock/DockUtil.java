@@ -14,7 +14,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import org.vns.javafx.dock.api.DockableContext;
-import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.LayoutContext;
 import org.vns.javafx.dock.api.TopNodeHelper;
 import org.vns.javafx.dock.api.Dockable;
@@ -24,29 +23,32 @@ import org.vns.javafx.dock.api.Dockable;
  * @author Valery
  */
 public class DockUtil {
+
     public static Window getOwnerWindow(Node node) {
         Window retval = null;
-        if ( node != null && node.getScene() != null && node.getScene().getWindow() != null ) {
+        if (node != null && node.getScene() != null && node.getScene().getWindow() != null) {
             retval = node.getScene().getWindow();
         }
         return retval;
     }
+
     public static double widthOf(Node node) {
         double w = 0;
-        if ((node instanceof Region)) {
-            w = ((Region) node).getWidth();
+        if (node.getScene() != null && node.getScene().getWindow() != null && node.getScene().getWindow().isShowing()) {            w = node.localToScreen(node.getBoundsInLocal()).getWidth();
         } else {
             w = node.getLayoutBounds().getWidth();
         }
         return w;
     }
+
     public static double heightOf(Node node) {
         double h = 0;
-        if ((node instanceof Region)) {
-            h = ((Region) node).getHeight();
+        if (node.getScene() != null && node.getScene().getWindow() != null && node.getScene().getWindow().isShowing()) {
+            h = node.localToScreen(node.getBoundsInLocal()).getHeight();
         } else {
             h = node.getLayoutBounds().getHeight();
         }
+
         return h;
     }
 
@@ -55,7 +57,7 @@ public class DockUtil {
         Predicate<Node> predicate = (node) -> {
             Point2D p = node.localToScreen(0, 0);
             boolean b = false;
-         
+
             if (Dockable.of(node) != null) {
                 b = true;
                 LayoutContext layoutContext = Dockable.of(node).getContext().getLayoutContext();
@@ -68,12 +70,11 @@ public class DockUtil {
             }
             return b;
         };
-        //return TopNodeHelper.getTopNode(root.getScene().getWindow(), screenX, screenY, predicate);
+        //return TopNodeHelperOLD.getTopNode(root.getScene().getWindow(), screenX, screenY, predicate);
         return TopNodeHelper.getTop(root.getScene().getWindow(), screenX, screenY, predicate);
     }
 
-
-    public static Node findNode(Parent root, Node toSearch) {
+    private static Node findNode(Parent root, Node toSearch) {
         if (toSearch == null) {
             return null;
         }
@@ -98,12 +99,13 @@ public class DockUtil {
                     && !(p.getClass().getName().startsWith("com.sun.javafx"));
         });
     }
+
     /**
-     * Returns {@code true} if the given point (specified in the screen coordinate space)
-     * is contained within the shape of the given node. 
-     * The method doesn't take into account the visibility an transparency of the 
+     * Returns {@code true} if the given point (specified in the screen
+     * coordinate space) is contained within the shape of the given node. The
+     * method doesn't take into account the visibility an transparency of the
      * specified node.
-     * 
+     *
      * @param node the node to be checked
      * @param screenX the x coordinate of the screen
      * @param screenY the y coordinate of the screen
@@ -111,16 +113,16 @@ public class DockUtil {
      */
     public static boolean contains(Node node, double screenX, double screenY) {
         Bounds b = node.localToScreen(node.getBoundsInLocal());
-        if ( b == null ) {
+        if (b == null) {
             return false;
         }
         return b.contains(screenX, screenY);
-    }    
-    
-    public static Bounds getHalfBounds(Side side,Node node, double x, double y) {
+    }
+
+    public static Bounds getHalfBounds(Side side, Node node, double x, double y) {
         Bounds retval;
-        Bounds b  = node.localToScreen(node.getBoundsInLocal());
-        if ( ! b.contains(x,y)) {
+        Bounds b = node.localToScreen(node.getBoundsInLocal());
+        if (!b.contains(x, y)) {
             retval = null;
         } else if (side == Side.TOP) {
             retval = new BoundingBox(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight() / 2);
@@ -132,34 +134,36 @@ public class DockUtil {
             retval = new BoundingBox(b.getMinX() + b.getWidth() / 2, b.getMinY(), b.getWidth() / 2, b.getHeight());
         }
         return retval;
-    }        
-    public static Node findNode(Pane pane, double x, double y) {
+    }
+
+    private static Node findNode(Pane pane, double x, double y) {
         Node retval = null;
-        for ( Node node : pane.getChildren() ) {
-            if ( contains(node, x, y) ) {
+        for (Node node : pane.getChildren()) {
+            if (contains(node, x, y)) {
                 retval = node;
                 break;
             }
         }
         return retval;
     }
- /**
-     * Returns {@code true} if the given point (specified in the screen coordinate space)
-     * is contained within the given window. 
-     * The method doesn't take into account the visibility an transparency of the 
-     * specified node.
-     * 
+
+    /**
+     * Returns {@code true} if the given point (specified in the screen
+     * coordinate space) is contained within the given window. The method
+     * doesn't take into account the visibility an transparency of the specified
+     * node.
+     *
      * @param node the node to be checked
      * @param screenX the x coordinate of the screen
      * @param screenY the y coordinate of the screen
      * @return true if the node contains the point. Otherwise returns false
      */
     public static boolean contains(Window win, double screenX, double screenY) {
-        return ((screenX >= win.getX() && screenX <= win.getX() + win.getWidth() 
+        return ((screenX >= win.getX() && screenX <= win.getX() + win.getWidth()
                 && screenY >= win.getY() && screenY <= win.getY() + win.getHeight()));
     }
 
-    public static Node findNode(List<Node> list, double x, double y) {
+    private static Node findNode(List<Node> list, double x, double y) {
         Node retval = null;
         for (Node node : list) {
             if (!(node instanceof Region)) {
@@ -201,7 +205,7 @@ public class DockUtil {
         }
     }
 
-    public static List<Parent> getParentChain(Parent root, Node child, Predicate<Parent> predicate) {
+    private static List<Parent> getParentChain(Parent root, Node child, Predicate<Parent> predicate) {
         List<Parent> retval = new ArrayList<>();
         Node p = child;
         while (true) {
@@ -218,7 +222,7 @@ public class DockUtil {
         return retval;
     }
 
-    public static Parent getImmediateParent(Parent root, Node child) {
+    private static Parent getImmediateParent(Parent root, Node child) {
         Parent retval = null;
         List<Node> list = root.getChildrenUnmodifiable();
         for (int i = 0; i < list.size(); i++) {
@@ -237,7 +241,7 @@ public class DockUtil {
         return retval;
     }
 
-    public static Parent getImmediateParent(Parent root, Node child, Predicate<Parent> predicate) {
+    private static Parent getImmediateParent(Parent root, Node child, Predicate<Parent> predicate) {
         List<Parent> chain = getParentChain(root, child, predicate);
         Parent retval = null;
         if (!chain.isEmpty() && root != chain.get(chain.size() - 1)) {
@@ -246,7 +250,7 @@ public class DockUtil {
         return retval;
     }
 
-    public static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
+    private static Parent getImmediateParent(Node child, Predicate<Parent> predicate) {
 
         if (child == null) {
             return null;

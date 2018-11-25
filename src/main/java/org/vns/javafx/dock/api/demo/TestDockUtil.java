@@ -7,20 +7,13 @@ package org.vns.javafx.dock.api.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.vns.javafx.dock.DockNode;
-import org.vns.javafx.dock.DockSideBar;
 import org.vns.javafx.dock.DockUtil;
 import org.vns.javafx.dock.api.Dockable;
 
@@ -45,7 +38,7 @@ public class TestDockUtil extends Application {
         rootPane.setMouseTransparent(false);
         rootPane.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             System.err.println("Node x = " + e.getScreenX() + "; y = " + e.getScreenY());
-            System.err.println("   --- Node = " + DockUtil.findNode(rootPane, e.getScreenX(), e.getScreenY()));
+           // System.err.println("   --- Node = " + DockUtil.findNode(rootPane, e.getScreenX(), e.getScreenY()));
         });
 /*        rootPane.setOnMouseClicked(e -> {
             System.err.println("Node x = " + e.getScreenX() + "; y = " + e.getScreenY());

@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import static org.vns.javafx.dock.api.LayoutContext.getValue;
+import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
  *
@@ -16,7 +17,7 @@ import static org.vns.javafx.dock.api.LayoutContext.getValue;
 public class ScenePaneContext extends LayoutContext {
 
     private final Dockable dockable;
-   
+
     public ScenePaneContext(Dockable dockable) {
         super();
         this.dockable = dockable;
@@ -55,15 +56,27 @@ public class ScenePaneContext extends LayoutContext {
         if (!contains(dockNode)) {
             //return;
         }
-        if (DockRegistry.getInstance().getBeanRemover() != null) {
-            DockRegistry.getInstance().getBeanRemover().remove(dockNode);
+        if (!(obj instanceof Node) || ((Node) obj).getParent() == null) {
+            return;
         }
+        Node node = ((Node) obj).getParent();
+        while (node != null) {
+            if (ReflectHelper.isPublic(node.getClass())) {
+                break;
+            }
+            node = node.getParent();
+        }
+        if (node == null) {
+            return;
+        }
+//        if (DockRegistry.getInstance().getBeanRemover() != null) {
+//            DockRegistry.getInstance().getBeanRemover().remove(dockNode);
+//        }
     }
-
 
     @Override
     public void dock(Point2D mousePos, Dockable dockable) {
-        if ( ! isAcceptable(dockable)) {
+        if (!isAcceptable(dockable)) {
             return;
         }
         Object o = getValue(dockable);
@@ -88,11 +101,12 @@ public class ScenePaneContext extends LayoutContext {
             d.getContext().setLayoutContext(this);
         }
     }
-    
+
     public static class ScenePaneContextFactory {
+
         public ScenePaneContext getContext(Dockable dockable) {
             return new ScenePaneContext(dockable);
         }
     }
-  
+
 }

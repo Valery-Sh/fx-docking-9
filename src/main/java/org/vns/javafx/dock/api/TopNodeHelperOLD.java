@@ -16,7 +16,7 @@ import org.vns.javafx.dock.api.dragging.view.FramePane;
  *
  * @author Valery Shyshkin
  */
-public class TopNodeHelper2 {
+public class TopNodeHelperOLD {
 
     public static Node getTopNode(Collection<Node> nodes) {
         List<Node> visNodes = new ArrayList<>();
@@ -54,7 +54,7 @@ public class TopNodeHelper2 {
         if (node1 == node2) {
             return node1;
         }
-        
+
         Node retval;// = null;
         List<Node> chain1 = getParentChain(node1);
         List<Node> chain2 = getParentChain(node2);
@@ -75,9 +75,9 @@ public class TopNodeHelper2 {
                 break;
             }
         }
-        
+
         int idx2 = chain2.indexOf(chain1.get(idx1));
-        
+
         if (idx1 == 0) {
             retval = node2;
         } else if (idx2 == 0) {
@@ -101,11 +101,12 @@ public class TopNodeHelper2 {
         }
         return retval;
     }
+
     /**
-     * Returns a list of parent nodes for the given node.
-     * The first element of the list is the specified node, the second is
-     * the parent of the first, the third is the parent of the second etc.
-     * 
+     * Returns a list of parent nodes for the given node. The first element of
+     * the list is the specified node, the second is the parent of the first,
+     * the third is the parent of the second etc.
+     *
      * @param node a top most node from which the parent chain starts.
      * @return a list of parent nodes for the given node.
      */
@@ -126,14 +127,14 @@ public class TopNodeHelper2 {
 
     public static List<Node> getParentChain(Node node, Predicate<Node> predicate) {
         List<Node> retval = new ArrayList<>();
-        getParentChain(node).forEach( p -> {
-            if ( predicate.test(p)) {
+        getParentChain(node).forEach(p -> {
+            if (predicate.test(p)) {
                 retval.add(p);
             }
         });
         return retval;
     }
-    
+
     public static Node getTopNode(Stage stage, double screenX, double screenY) {
         return getTopNode(stage, screenX, screenY, (n -> {
             return true;
@@ -152,19 +153,166 @@ public class TopNodeHelper2 {
 
     public static Node getTopNode(Window stage, double screenX, double screenY, Predicate<Node> predicate) {
         String skipWithSyleClass = FramePane.CSS_CLASS;
-        
+
         Node retval = null;
         Node node = getTopNode(getNodes(stage, screenX, screenY, n -> {
-            return ! n.getStyleClass().contains(skipWithSyleClass)   ; } 
+            return !n.getStyleClass().contains(skipWithSyleClass);
+        }
         ));
         while (node != null) {
-            if (! node.getStyleClass().contains(skipWithSyleClass) && node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
+            if (!node.getStyleClass().contains(skipWithSyleClass) && node.isVisible() && node.contains(node.screenToLocal(screenX, screenY)) && predicate.test(node)) {
                 retval = node;
                 break;
             }
             node = node.getParent();
         }
+        System.err.println("TopNodeHelperOLD getTopNode(Window stage...) = " + node);
         return retval;
+    }
+
+    /**
+     * Returns the top node in the scene graph of the scene of the specified
+     * window. May be used with the code dealing with the mouse events and takes
+     * into account the visible property and mouseTransparent property of the
+     * tested nodes..
+     *
+     * @param win the window to be tested
+     * @param screenX the x coordinate in the screen coordinate space
+     * @param screenY the y coordinate in the screen coordinate space
+     * @param predicate the predicate used to filter nodes
+     *
+     * @return the top node in the scene graph or null if not found
+     */
+    public static Node pickTop(Window win, double screenX, double screenY, Predicate<Node> predicate) {
+        if (win == null || win.getScene() == null || win.getScene().getRoot() == null) {
+            return null;
+        }
+        Parent root = win.getScene().getRoot();
+        String skip = FramePane.CSS_CLASS;
+        Point2D p = root.screenToLocal(screenX, screenY);
+
+        if (!root.contains(p) || !root.isVisible() || root.isMouseTransparent() || root.getStyleClass().contains(skip) || !predicate.test(root)) {
+            return null;
+        }
+        return TopNodeHelperOLD.pickTopExclusive(root, screenX, screenY, predicate);
+    }
+
+    /**
+     * Returns the top node in the scene graph of the specified node. May be
+     * used with the code dealing with the mouse events and takes into account
+     * the visible property and mouseTransparent property. If no node found the
+     * node given as parameter returns even if it is not visible or transparent
+     * or doesn't tested by the predicate. The code which uses this method must
+     * test the returned node whether it is the same as the node specified as a
+     * parameter.
+     *
+     * @param node the node to be tested
+     * @param screenX the x coordinate in the screen coordinate space
+     * @param screenY the y coordinate in the screen coordinate space
+     * @param predicate the predicate used to filter nodes
+     * @return the top node which is not the same as the node given by the
+     * parameter or the node specified as a parameter.
+     */
+    public static Node pickTopExclusive(Node node, double screenX, double screenY, Predicate<Node> predicate) {
+        String skip = FramePane.CSS_CLASS;
+        Point2D p = node.screenToLocal(screenX, screenY);
+
+        if (!(node.isVisible() && !node.isMouseTransparent() && node.contains(p) && !node.getStyleClass().contains(skip))) {
+            return node;
+        }
+        if (node instanceof Parent) {
+            Node top = null;
+            List<Node> children = ((Parent) node).getChildrenUnmodifiable();
+            for (int i = children.size() - 1; i >= 0; i--) {
+                Node c = children.get(i);
+                p = c.screenToLocal(screenX, screenY);
+                if (c.isVisible() && !node.isMouseTransparent() && c.contains(p) && predicate.test(c) && !c.getStyleClass().contains(skip)) {
+                    top = c;
+                    break;
+                }
+            }
+
+            if (top != null) {
+                return TopNodeHelperOLD.pickTopExclusive(top, screenX, screenY, predicate);
+            }
+        }
+        return node;
+    }
+
+    public static Node pickTopExclusive(Node node, double screenX, double screenY) {
+        return TopNodeHelperOLD.pickTopExclusive(node, screenX, screenY, c -> {
+            return true;
+        });
+    }
+ /**
+     * Returns the top node in the scene graph of the specified node. 
+     * The method doesn't take into account the {@code visible} property and 
+     * {@code mouseTransparent} property. If no node found the method return {@code null}.
+     * If the specified node doesn't contain the given point the method returns null.
+     * 
+     * @param node the node to be tested
+     * @param screenX the x coordinate in the screen coordinate space
+     * @param screenY the y coordinate in the screen coordinate space
+     * 
+     * @return the top node in the scene graph of the node given as parameter
+     */
+    public static Node getTop(Node node, double screenX, double screenY) {
+        return getTop(node, screenX, screenY, n -> {
+            return true;
+        });
+    }
+
+    /**
+     * Returns the top node in the scene graph of the specified node. 
+     * The method doesn't take into account the {@code visible} property and 
+     * {@code mouseTransparent} property. If no node found the method return {@code null}.
+     * If the specified node doesn't contain the given point or does not pass 
+     * the test specified by the predicate the the method returns null.
+     * 
+     * @param node the node to be tested
+     * @param screenX the x coordinate in the screen coordinate space
+     * @param screenY the y coordinate in the screen coordinate space
+     * @param predicate the predicate used to filter nodes
+     * @return the top node in the scene graph of the node given as parameter
+     */
+    public static Node getTop(Node node, double screenX, double screenY, Predicate<Node> predicate) {
+
+        String skip = FramePane.CSS_CLASS;
+        Point2D p = node.screenToLocal(screenX, screenY);
+
+        if (!(node.contains(p) && !node.getStyleClass().contains(skip))) {
+            return null;
+        }
+        if (!(node instanceof Parent)) {
+            return node;
+        }
+        return testTop(node, screenX, screenY, predicate);
+    }
+
+    private static Node testTop(Node node, double screenX, double screenY, Predicate<Node> predicate) {
+        String skip = FramePane.CSS_CLASS;
+        Point2D p = node.screenToLocal(screenX, screenY);
+
+        if (!(node.contains(p) && !node.getStyleClass().contains(skip))) {
+            return node;
+        }
+        if (node instanceof Parent) {
+            Node top = null;
+            List<Node> children = ((Parent) node).getChildrenUnmodifiable();
+            for (int i = children.size() - 1; i >= 0; i--) {
+                Node c = children.get(i);
+                p = c.screenToLocal(screenX, screenY);
+                if (c.isVisible() && !node.isMouseTransparent() && c.contains(p) && predicate.test(c) && !c.getStyleClass().contains(skip)) {
+                    top = c;
+                    break;
+                }
+            }
+
+            if (top != null) {
+                return TopNodeHelperOLD.pickTopExclusive(top, screenX, screenY, predicate);
+            }
+        }
+        return node;
     }
 
     /**
@@ -212,7 +360,7 @@ public class TopNodeHelper2 {
         Parent root = stage.getScene().getRoot();
         boolean inside = root.localToScreen(root.getBoundsInLocal()).contains(screenX, screenY);
         if (inside && predicate.test(root)) {
-            retval.add(0,root);
+            retval.add(0, root);
         }
         return retval;
     }

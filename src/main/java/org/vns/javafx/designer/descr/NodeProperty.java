@@ -13,38 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.DefaultProperty;
+package org.vns.javafx.designer.descr;
 
 /**
  *
  * @author Valery
  */
-public class Property extends NodeElement {
+public abstract class  NodeProperty extends NodeElement {
 
     private String name;
 
     private NodeDescriptor descriptor;
-
+    /**
+     * Returns the name of the property
+     * @return the name of the property
+     */
     public String getName() {
         return name;
     }
-
+    /**
+     * Sets the name of the property
+     */
     public void setName(String name) {
         this.name = name;
     }
-
+    /**
+     * Checks whether the parent node descriptor defines the default property
+     * with the same name as this object has.
+     * @return true if the parent node descriptor defines the default property 
+     * with the same name as this object has. Otherwise returns false
+     */
     protected boolean isDefault() {
         return getName().equals(getDescriptor().getDefaultContentProperty().getName());
     }
-
+    /**
+     * Returns the parent node descriptor
+     * @return the parent node descriptor
+     */
     protected NodeDescriptor getDescriptor() {
         return descriptor;
     }
-
+    /**
+     * Sets the parent node descriptor
+     */
     protected void setDescriptor(NodeDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -55,12 +66,8 @@ public class Property extends NodeElement {
      * 
      * 
      */
-    public static Object getValue(TreeItemEx item, String propertyName) {
-        Object retval = null;
-        return retval;
-    }
 
-    public static String getDefaultPropertyAnnotation(Class<?> clazz) {
+  /*  public static String getDefaultPropertyAnnotation(Class<?> clazz) {
         String retval = null;
         DefaultProperty[] dp = (DefaultProperty[]) clazz.getAnnotationsByType(DefaultProperty.class);
         if (dp.length > 0) {
@@ -83,5 +90,5 @@ public class Property extends NodeElement {
         }
         return retval;
     }
-
+*/
 }

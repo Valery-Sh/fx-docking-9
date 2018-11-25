@@ -36,12 +36,12 @@ public class DockRegistry {
     private final ObservableMap<Node, Dockable> dockables = FXCollections.observableHashMap();
     private final ObservableMap<Node, DockLayout> dockLayouts = FXCollections.observableHashMap();
 
-    private BeanRemover beanRemover;
+//    private BeanRemover beanRemover;
 
     private boolean registerDone;
 
     private DockRegistry() {
-        beanRemover = new DefaultNodeRemover();
+        //beanRemover = new DefaultNodeRemover();
         lookup = new BaseContextLookup();
         init();
     }
@@ -89,7 +89,7 @@ public class DockRegistry {
         return SingletonInstance.instance;
     }
 
-    public BeanRemover getBeanRemover() {
+/*    public BeanRemover getBeanRemover() {
 //        if ( beanRemover == null )
         return beanRemover;
     }
@@ -97,7 +97,7 @@ public class DockRegistry {
     public void setBeanRemover(BeanRemover beanRemover) {
         this.beanRemover = beanRemover;
     }
-
+*/
     public static void register(Window window, boolean excluded) {
         register(window);
         if (excluded && !getInstance().getExcluded().contains(window)) {
@@ -246,9 +246,14 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allWindows.forEach(w -> {
+            
             Node topNode = TopNodeHelper.getTop(w, x, y, n -> {
+            //Node topNode = TopNodeHelperOLD.getTopNode(w, x, y, n -> {
                 return (n instanceof Node);
             });
+            System.err.println("----------------------------");
+            System.err.println("DockRegistry topNodeHelper topNode = " + topNode);
+            System.err.println("----------------------------");
             if (topNode != null) {
                 targetStages.add(w);
             }
@@ -279,9 +284,15 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allWindows.forEach(w -> {
+             System.err.println("1) DockRegistry topNodeHelper");
+            
             Node topNode = TopNodeHelper.getTop(w, x, y, n -> {
+            //Node topNode = TopNodeHelperOLD.getTopNode(w, x, y, n -> {
                 return isDockLayout(n);
             });
+            System.err.println("----------------------------");
+            System.err.println("2) DockRegistry topNodeHelper topNode = " + topNode);
+            System.err.println("----------------------------");            
             if (topNode != null) {
                 targetStages.add(w);
             }
@@ -313,7 +324,9 @@ public class DockRegistry {
         }
         List<Window> targetStages = new ArrayList<>();
         allStages.forEach(s -> {
+             System.err.println("DockRegistry topNodeHelper 2");
             Node topNode = TopNodeHelper.getTop(s, x, y, n -> {
+            //Node topNode = TopNodeHelperOLD.getTopNode(s, x, y, n -> {
                 return predicate.test(n);
             });
             if (topNode != null) {

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import org.vns.javafx.BaseContextLookup;
-import org.vns.javafx.dock.api.ApplicationContext;
 import org.vns.javafx.ContextLookup;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.SaveRestore;
@@ -105,8 +104,8 @@ public class DesignerLookup { // implements ContextLookup {
         saveDockRegistry(SelectionListener.class);        
         DockRegistry.getInstance().getLookup().putUnique(SelectionListener.class, new SelectionHandler());
 
-        saveDockRegistry(ApplicationContext.class);        
-        DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
+//        saveDockRegistry(ApplicationContext.class);        
+//        DockRegistry.getInstance().getLookup().putUnique(ApplicationContext.class, new DesignerApplicationContext());
         
         saveDockRegistry(ScenePaneContextFactory.class);        
         DockRegistry.getInstance().getLookup().putUnique(ScenePaneContextFactory.class, new DesignerScenePaneContextFactory());
@@ -140,7 +139,7 @@ public class DesignerLookup { // implements ContextLookup {
         getInstance().lookup.remove(key, obj);
     }
 
-    public static class DesignerApplicationContext implements ApplicationContext {
+/*    public static class DesignerApplicationContext implements ApplicationContext {
 
         @Override
         public boolean isDesignerContext() {
@@ -148,7 +147,7 @@ public class DesignerLookup { // implements ContextLookup {
         }
 
     }
-
+*/
     private static class SingletonInstance {
 
         private static final DesignerLookup INSTANCE = new DesignerLookup();

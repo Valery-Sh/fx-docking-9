@@ -31,7 +31,7 @@ public class TopNodeHelper {
      *
      * @return the top node in the scene graph or null if not found
      */
-    public static Node pickTop(Window win, double screenX, double screenY, Predicate<Node> predicate) {
+/*    public static Node pickTop(Window win, double screenX, double screenY, Predicate<Node> predicate) {
         if (win == null || win.getScene() == null || win.getScene().getRoot() == null) {
             return null;
         }
@@ -44,7 +44,7 @@ public class TopNodeHelper {
         }
         return TopNodeHelper.pickTopExclusive(root, screenX, screenY, predicate);
     }
-
+*/
     /**
      * Returns the top node in the scene graph of the specified node. May be
      * used with the code dealing with the mouse events and takes into account
@@ -61,7 +61,7 @@ public class TopNodeHelper {
      * @return the top node which is not the same as the node given by the
      * parameter or the node specified as a parameter.
      */
-    public static Node pickTopExclusive(Node node, double screenX, double screenY, Predicate<Node> predicate) {
+  /*  public static Node pickTopExclusive(Node node, double screenX, double screenY, Predicate<Node> predicate) {
         String skip = FramePane.CSS_CLASS;
         Point2D p = node.screenToLocal(screenX, screenY);
 
@@ -86,12 +86,40 @@ public class TopNodeHelper {
         }
         return node;
     }
+    public static Node getTopExclusive(Node node, double screenX, double screenY, Predicate<Node> predicate) {
+        String skip = FramePane.CSS_CLASS;
+        Point2D p = node.screenToLocal(screenX, screenY);
 
+        if (!(node.contains(p) && !node.getStyleClass().contains(skip))) {
+            return null;
+        }
+        if (! (node instanceof Parent) ) {
+            return null;
+        }
+            Node top = null;
+            List<Node> children = ((Parent) node).getChildrenUnmodifiable();
+            for (int i = children.size() - 1; i >= 0; i--) {
+                Node c = children.get(i);
+                p = c.screenToLocal(screenX, screenY);
+                
+                if (c.isVisible() && !node.isMouseTransparent() && c.contains(p) && predicate.test(c) && !c.getStyleClass().contains(skip)) {
+                    top = c;
+                    break;
+                }
+            }
+
+            if (top != null) {
+                return TopNodeHelper.pickTopExclusive(top, screenX, screenY, predicate);
+            }
+        return node;
+    }
+    
     public static Node pickTopExclusive(Node node, double screenX, double screenY) {
         return TopNodeHelper.pickTopExclusive(node, screenX, screenY, c -> {
             return true;
         });
     }
+*/    
     /**
      * Returns the top node in the scene graph of the scene of the specified
      * window. May be used with the code dealing with the mouse events and takes
@@ -150,13 +178,25 @@ public class TopNodeHelper {
         String skip = FramePane.CSS_CLASS;
         Point2D p = node.screenToLocal(screenX, screenY);
 
-        if (!(node.contains(p) && !node.getStyleClass().contains(skip))) {
+        if (!node.contains(p) || node.getStyleClass().contains(skip)) {
             return null;
         }
-        if (!(node instanceof Parent)) {
+        if (!(node instanceof Parent) && predicate.test(node)) {
             return node;
+        } else if (!(node instanceof Parent) ) {
+            return null;
         }
-        return testTop(node, screenX, screenY, predicate);
+        
+        Node top = testTop(node, screenX, screenY, predicate);
+        System.err.println("************* 1) top = " + top);
+        if ( top == null ) {
+            return null;
+        }
+        while ( top != null && ! predicate.test(top)   ) {
+            top = top.getParent();
+        }
+        System.err.println("************* 2) return top = " + top);
+        return top;
     }
 
     private static Node testTop(Node node, double screenX, double screenY, Predicate<Node> predicate) {
@@ -172,14 +212,14 @@ public class TopNodeHelper {
             for (int i = children.size() - 1; i >= 0; i--) {
                 Node c = children.get(i);
                 p = c.screenToLocal(screenX, screenY);
-                if (c.isVisible() && !node.isMouseTransparent() && c.contains(p) && predicate.test(c) && !c.getStyleClass().contains(skip)) {
+                if (c.isVisible() && !node.isMouseTransparent() && c.contains(p) && !c.getStyleClass().contains(skip)) {
                     top = c;
                     break;
                 }
             }
 
             if (top != null) {
-                return TopNodeHelper.pickTopExclusive(top, screenX, screenY, predicate);
+                return testTop(top, screenX, screenY, predicate);
             }
         }
         return node;

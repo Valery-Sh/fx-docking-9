@@ -1,5 +1,9 @@
 package org.vns.javafx.designer;
 
+import org.vns.javafx.designer.descr.NodeProperty;
+import org.vns.javafx.designer.descr.NodeDescriptorRegistry;
+import org.vns.javafx.designer.descr.NodeList;
+import org.vns.javafx.designer.descr.NodeDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -91,12 +95,12 @@ public class TreeItemEx extends TreeItem<Object> {
         return propTreeItem;
     }
 
-    public Property getProperty(String propertyName) {
+    public NodeProperty getProperty(String propertyName) {
         if (propertyName == null) {
             return null;
         }
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue());
-        Property prop = null;
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(this.getValue().getClass());
+        NodeProperty prop = null;
         for (int i = 0; i < nd.getProperties().size(); i++) {
             if (propertyName.equals(nd.getProperties().get(i).getName())) {
                 prop = nd.getProperties().get(i);
@@ -108,7 +112,7 @@ public class TreeItemEx extends TreeItem<Object> {
 
     protected int getIndex(String propertyName) {
         int index = -1;
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue().getClass());
         for (int i = 0; i < nd.getProperties().size(); i++) {
             if (propertyName.equals(nd.getProperties().get(i).getName())) {
                 index = i;
@@ -156,7 +160,7 @@ public class TreeItemEx extends TreeItem<Object> {
         if ((getValue() instanceof Node)) {
             Selection.addListeners((Node) getValue());
         }
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue().getClass());
         Object changeListener;
         if (this.getItemType() == ItemType.LIST) {
             changeListener = new TreeItemListObjectChangeListener(this, getPropertyName());
@@ -169,7 +173,7 @@ public class TreeItemEx extends TreeItem<Object> {
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
 
-            Property p = nd.getProperties().get(i);
+            NodeProperty p = nd.getProperties().get(i);
             Object v = new BeanAdapter(getValue()).get(p.getName());
 
             if (v != null && (v instanceof List)) {
@@ -231,12 +235,12 @@ public class TreeItemEx extends TreeItem<Object> {
             Selection.removeListeners((Node) getValue());
         }
 
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue().getClass());
 
         for (int i = 0; i < nd.getProperties().size(); i++) {
 
             Object changeListener; // = changeListeners.get(propertyName);
-            Property p = nd.getProperties().get(i);
+            NodeProperty p = nd.getProperties().get(i);
             if (List.class.isAssignableFrom(getValue().getClass())) {
             } else {
                 changeListener = changeListeners2.get(p.getName());
@@ -273,14 +277,14 @@ public class TreeItemEx extends TreeItem<Object> {
             Selection.removeListeners((Node) getValue());
         }
 
-        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue());
+        NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(getValue().getClass());
         removeListeners();
         if ( true ) {
             return;
         }
         for (int i = 0; i < nd.getProperties().size(); i++) {
             Object changeListener; // = changeListeners.get(propertyName);
-            Property p = nd.getProperties().get(i);
+            NodeProperty p = nd.getProperties().get(i);
             if (List.class.isAssignableFrom(getValue().getClass())) {
             } else {
                 try {

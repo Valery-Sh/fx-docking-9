@@ -15,8 +15,6 @@
  */
 package org.vns.javafx.dock.api.dragging;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vns.javafx.dock.api.dragging.view.FloatViewFactory;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,7 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.vns.javafx.designer.AutoSaveRestore2;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.DockRegistry;
 import org.vns.javafx.dock.api.Dockable;
@@ -41,8 +38,6 @@ import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIER;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.CARRIERED;
 import static org.vns.javafx.dock.api.dragging.DragManager.HideOption.NONE;
 import org.vns.javafx.dock.api.dragging.view.FloatView;
-import org.vns.javafx.dock.api.dragging.view.FloatView.RootPane;
-import org.vns.javafx.dock.api.dragging.view.FloatWindowView;
 import org.vns.javafx.dock.api.dragging.view.FramePane;
 import org.vns.javafx.dock.api.indicator.IndicatorManager;
 
@@ -263,11 +258,13 @@ public class SimpleDragManager implements DragManager, EventHandler<MouseEvent> 
             return;
         }
         FramePane.hideAll(resultStage);
-
-        //Node topPane = TopNodeHelper.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+        System.err.println("BEFORE getTopNode");
+        //Node topPane = TopNodeHelperOLD.getTopNode(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
+            
         Node topPane = TopNodeHelper.getTop(resultStage, ev.getScreenX(), ev.getScreenY(), (n) -> {
             return DockRegistry.isDockLayout(n);
         });
+        System.err.println("AFTER topPane = " + topPane);
         if (topPane != null) {
             root = topPane;
         } else if (!DockRegistry.isDockLayout(root)) {

@@ -13,28 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.designer.descr;
 
 /**
- *
+ * The base class used to describe a property/
+ * 
  * @author Valery Shyshkin
  */
-public class NodeElement {
+public abstract class NodeElement {
     private String styleClass;
     private String title; 
-
+    /**
+     * Returns the text which can be used as a style class
+     * for visual representation of the element.
+     * 
+     * @return the text that can be used as a style class
+     * for visual representation of the element.
+     */
     public String getStyleClass() {
         return styleClass;
     }
-
+    /**
+     * Sets the text which can be used as a style class
+     * for visual representation of the element.
+     */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }
-
+    /**
+     * Returns the text which can be used as a title
+     * for visual representation of the element.
+     * 
+     * @return  the text which can be used as a title for visual representation 
+     * of the element.
+     */
     public String getTitle() {
         return title;
     }
-
+    /**
+     * Sets the text which can be used as a title
+     * for visual representation of the element.
+     */
     public void setTitle(String title) {
         this.title = title;
     }

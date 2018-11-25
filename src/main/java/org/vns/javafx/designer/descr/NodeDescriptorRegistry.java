@@ -1,4 +1,4 @@
-package org.vns.javafx.designer;
+package org.vns.javafx.designer.descr;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -26,7 +26,56 @@ public class NodeDescriptorRegistry {
         return SingletonInstance.INSTANCE;
     }
 
-    public NodeDescriptor getDescriptor(Object o) {
+    public NodeDescriptor getDescriptor(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+        if (descriptors.isEmpty()) {
+            //createDefaultDescriptors();
+            loadDefaultDescriptors();
+        }
+        NodeDescriptor retval;
+       
+        retval = find(clazz);
+        
+        if (retval == null) {
+            //
+            // try to find DefaultProperty
+            //
+            Annotation annotation = clazz.getDeclaredAnnotation(DefaultProperty.class);
+            if (annotation != null) {
+                String name = ((DefaultProperty) annotation).value();
+                retval = new NodeDescriptor();
+                retval.setType(clazz.getName());
+                try {
+
+                    Method method = MethodUtil.getMethod(clazz, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
+                    Class returnType = method.getReturnType();
+                    NodeProperty p;
+                    if (ObservableList.class.equals(returnType)) {
+                        p = new NodeList();
+                    } else {
+                        p = new NodeContent();
+                    }
+                    p.setName(name);
+                    retval.getProperties().add(p);
+                    register(clazz, retval);
+                } catch (NoSuchMethodException ex) {
+                    Logger.getLogger(NodeDescriptorRegistry.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        if (retval == null) {
+            retval = new NodeDescriptor();
+            retval.setType(clazz.getName());
+            retval.setStyleClass("tree-item-node-unknownnode");
+            register(clazz, retval);
+
+        }
+        return retval;
+    }
+
+    public NodeDescriptor getDescriptor__OLD(Object o) {
         if (o == null) {
             return null;
         }
@@ -54,7 +103,7 @@ public class NodeDescriptorRegistry {
                     Method method = MethodUtil.getMethod(o.getClass(), "get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
                     //Method method = o.getClass().getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[0]);
                     Class returnType = method.getReturnType();
-                    Property p;
+                    NodeProperty p;
                     if (ObservableList.class.equals(returnType)) {
                         p = new NodeList();
                     } else {
@@ -74,7 +123,7 @@ public class NodeDescriptorRegistry {
         }
         return retval;
     }
-
+    
     protected NodeDescriptor find(Class clazz) {
         if (descriptors.isEmpty()) {
             //createDefaultDescriptors();
@@ -134,8 +183,8 @@ public class NodeDescriptorRegistry {
         descriptors.remove(key.getClass());
     }
 
-    public boolean exists(Object obj) {
-        return getDescriptor(obj) != null;
+    public boolean exists(Class clazz) {
+        return getDescriptor(clazz) != null;
     }
 
     protected void loadDefaultDescriptors() {

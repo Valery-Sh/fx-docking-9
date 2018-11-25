@@ -9,6 +9,7 @@
 <?import org.vns.javafx.designer.*?>
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    
     <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text"  defaultProperty="graphic">
         <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"  replaceable="true"/>
     </NodeDescriptor>
@@ -17,9 +18,9 @@
         <NodeList name="children" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.VBox">
-        <NodeList name="children" title="List of Child" />
+        <NodeList name="children" title="List of Child"/>
     </NodeDescriptor>
-    <NodeDescriptor type="javafx.scene.layout.HBox" defaultProperty="children" >
+    <NodeDescriptor type="javafx.scene.layout.HBox">
         <NodeList name="children" />
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.control.Accordion" defaultProperty="panes" >
@@ -31,7 +32,7 @@
     </NodeDescriptor>
     
     <NodeDescriptor type="javafx.scene.control.TitledPane">
-        <NodeContent name="graphic" title="insert graphic"  styleClass="labeled-insert-graphic" />
+        <NodeContent name="graphic" title="insert graphic"  styleClass="labeled-insert-graphic"  hideWhenNull="true"/>
         <NodeContent name="content"  />
     </NodeDescriptor>
     

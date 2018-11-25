@@ -51,6 +51,7 @@ import org.vns.javafx.designer.PalettePane;
 import org.vns.javafx.designer.DesignerLookup;
 import org.vns.javafx.designer.SceneView;
 import org.vns.javafx.designer.TrashTray;
+import org.vns.javafx.designer.TreeItemBuilder;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.dragging.DragManager;
 
@@ -139,10 +140,13 @@ public class DemoDesigner1 extends Application {
         DockNode dn = new DockNode("Dock Node");
         dn.setContent(new Label("Dock Node Content"));
         dn.setScaleX(0.5);
+        Pane topPane = new Pane();
         VBox centerPane = new VBox(eb,tx, cb,dn);
         centerPane.setId("CCCCCCCCCCCCCCCCCCC");
+        root1.setTop(topPane);
         root1.setCenter(centerPane);
         root1.setLeft(new Label("My Label 1"));
+        //new TreeItemBuilder().build(null);
 /*        System.err.println("root1.getChildren = " + root1.getChildren());
         root1.getChildren().forEach(n1 -> {
             System.err.println("root1 node = " + n1);

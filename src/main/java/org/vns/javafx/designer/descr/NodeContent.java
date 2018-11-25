@@ -13,28 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.designer.descr;
 
 
 /**
- *
+ * The class is used to describe a property of the object when the type of 
+ * the property is not an (@code ObservableList}.
+ * For example the {@code Labeled} object has a property named {@code graphic}. 
+ * this property is described by the object of this class.
+ * 
  * @author Valery Shyshkin
  */
-public class NodeContent extends Property {
+public class NodeContent extends NodeProperty {
     
     public static String DEFAULT_STYLE_CLASS = "node-insert-content";
     public static String DEFAULT_TITLE = "insert content";
     
     private boolean hideWhenNull;
     private boolean replaceable;
-    
+    /**
+     * Create an instance of the class.
+     */
     public NodeContent() {
     }
-
+    /**
+     * Checks whether this object has visual representation if the value that
+     * this object describes is null.
+     * @return true if this object has visual representation if the value that
+     * this object describes is null. Otherwise return false
+     */
     public boolean isHideWhenNull() {
         return hideWhenNull;
     }
-
+    /**
+     * Sets the boolean value which defines whether this object has visual representation if the value that
+     * this object describes is null.
+     */
     public void setHideWhenNull(boolean hideWhenNull) {
         this.hideWhenNull = hideWhenNull;
     }
@@ -47,6 +61,12 @@ public class NodeContent extends Property {
         this.replaceable = replaceable;
     }
     
+    /**
+     * Checks whether the parent node descriptor defines the default property
+     * with the same name as this object has.
+     * @return true if the parent node descriptor defines the default property 
+     * with the same name as this object has. Otherwise returns false
+     */  
     @Override
     public boolean isDefault() {
         return super.isDefault();

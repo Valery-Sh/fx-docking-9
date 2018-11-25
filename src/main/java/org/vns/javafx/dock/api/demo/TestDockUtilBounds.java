@@ -67,6 +67,10 @@ public class TestDockUtilBounds extends Application {
         primaryStage.setOnShown(s -> {
 
         });
+        spBtn1.setPrefHeight(76);
+        System.err.println("DockUtil.heightOf(spBtn1) = " + DockUtil.heightOf(spBtn1));
+        System.err.println("layoutBounds.getHeight()(spBtn1) = " + spBtn1.getLayoutBounds().getHeight());
+        System.err.println("spBtn1.getHeight = " + spBtn1.getHeight());        
         primaryStage.setAlwaysOnTop(true);
         primaryStage.show();
        

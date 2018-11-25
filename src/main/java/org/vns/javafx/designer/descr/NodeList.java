@@ -13,24 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vns.javafx.designer;
+package org.vns.javafx.designer.descr;
 
 
 /**
- *
- * @author Valery
+ * The class is used to describe a property of the object when the type of 
+ * the property is (@code ObservableList}.
+ * For example the {@code Pane} object has a property named {@code children}. 
+ * This property is described by the object of this class.
+ * 
+ * @author Valery Shyshkin
  */
-public class NodeList extends Property {
+public class NodeList extends NodeProperty {
 
     public static String DEFAULT_STYLE_CLASS = "tree-item-list-header";;
-    public static String DEFAULT_TITLE = "List of nodes";
+    public static String DEFAULT_TITLE = "list of nodes";
     
     private boolean alwaysVisible;
-
+    /**
+     * Checks whether this object has visual representation.  
+     * By default returns false.
+     * @return true if this object has visual representation. false - otherwise 
+     */
     public boolean isAlwaysVisible() {
         return alwaysVisible;
     }
-
+    /**
+     * Sets the value to define whether this object has visual representation.  
+     */
     public void setAlwaysVisible(boolean alwaysVisible) {
         this.alwaysVisible = alwaysVisible;
     }

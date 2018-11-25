@@ -15,6 +15,10 @@
  */
 package org.vns.javafx.designer;
 
+import org.vns.javafx.designer.descr.NodeProperty;
+import org.vns.javafx.designer.descr.NodeDescriptorRegistry;
+import org.vns.javafx.designer.descr.NodeList;
+import org.vns.javafx.designer.descr.NodeDescriptor;
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -190,9 +194,9 @@ public class AutoSaveRestore2 implements SaveRestore {
             ba.put(propertyName, obj);
 
         } else {
-            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parentItem.getValue());
+            NodeDescriptor nd = NodeDescriptorRegistry.getInstance().getDescriptor(parentItem.getValue().getClass());
             BeanAdapter ba = new BeanAdapter(parentItem.getValue());
-            for (Property p : nd.getProperties()) {
+            for (NodeProperty p : nd.getProperties()) {
                 if (p instanceof NodeList) {
                     List list = (List) ba.get(p.getName());
                     if (list != null && list.size() >= listIndex) {

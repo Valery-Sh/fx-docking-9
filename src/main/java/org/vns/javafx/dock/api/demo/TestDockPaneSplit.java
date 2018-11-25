@@ -71,8 +71,8 @@ public class TestDockPaneSplit extends Application {
         Button btn2 = new Button("BOTTON 2");
         
         btn1.setOnAction(a-> {
-            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn1, nd-> {return  (nd instanceof SplitPane);});
-            System.err.println("DN1: sp.getDividers().size=" + sp.getDividers().size());
+            //SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn1, nd-> {return  (nd instanceof SplitPane);});
+            //System.err.println("DN1: sp.getDividers().size=" + sp.getDividers().size());
             //SplitPane.Divider d = sp.getDividers().get(0);
             /*System.err.println("divider.pos=" + d.getPosition());
             sp.getDividers().forEach(di -> {
@@ -83,30 +83,30 @@ public class TestDockPaneSplit extends Application {
         });
         
         btn2.setOnAction(a-> {
-            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn2, nd-> {return  (nd instanceof SplitPane);});
-            System.err.println("DN2: sp.getDividers().size=" + sp.getDividers().size());
-            sp.getDividers().forEach(di -> {
-                System.err.println(" --- pos=" + di.getPosition());
-            });
+            //SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn2, nd-> {return  (nd instanceof SplitPane);});
+            //System.err.println("DN2: sp.getDividers().size=" + sp.getDividers().size());
+            //sp.getDividers().forEach(di -> {
+            //    System.err.println(" --- pos=" + di.getPosition());
+            //});
             
         });
 
         btn3.setOnAction(a-> {
-            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn3, nd-> {return  (nd instanceof SplitPane);});
+/*            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn3, nd-> {return  (nd instanceof SplitPane);});
             System.err.println("DN3: sp.getDividers().size=" + sp.getDividers().size());
             sp.getDividers().forEach(di -> {
                 System.err.println(" --- pos=" + di.getPosition());
             });
-            
+*/            
         });
         
         btn3_1.setOnAction(a-> {
-            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn3_1, nd-> {return  (nd instanceof SplitPane);});
+/*            SplitPane sp = (SplitPane) DockUtil.getImmediateParent(cc, dn3_1, nd-> {return  (nd instanceof SplitPane);});
             System.err.println("DN3_1: sp.getDividers().size=" + sp.getDividers().size());
             sp.getDividers().forEach(di -> {
                 System.err.println(" --- pos=" + di.getPosition());
             });
-            
+*/            
         });
         
         dn2.setContent(btn2);

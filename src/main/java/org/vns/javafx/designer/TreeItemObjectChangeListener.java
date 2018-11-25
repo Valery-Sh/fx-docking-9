@@ -15,6 +15,8 @@
  */
 package org.vns.javafx.designer;
 
+import org.vns.javafx.designer.descr.NodeProperty;
+import org.vns.javafx.designer.descr.NodeContent;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -63,7 +65,7 @@ public class TreeItemObjectChangeListener implements ChangeListener {
 
     @Override
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-        Property prop = treeItem.getProperty(propertyName);
+        NodeProperty prop = treeItem.getProperty(propertyName);
         TreeItemEx propItem = treeItem.getTreeItem(propertyName);
         int insertPos = propItem == null ? 0 : treeItem.getInsertPos(propertyName);
 //        SaveRestore sr = DockRegistry.lookup(SaveRestore.class);
