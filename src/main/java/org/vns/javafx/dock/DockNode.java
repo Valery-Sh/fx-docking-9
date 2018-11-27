@@ -12,7 +12,7 @@ import org.vns.javafx.dock.api.DockableContext;
 import org.vns.javafx.dock.api.Dockable;
 
 /**
- * The objects of the class can be used as {@code DoclLayout) or/and {@code Dockable)
+ * The objects of the class can be used as {@code DoclLayout} or(and) {@code Dockable}
  * objects. By default it has a title bar which is defined as a dragNode.
  * 
  * @author Valery Shyshkin
@@ -32,12 +32,15 @@ public class DockNode extends Control { //implements Dockable {
     }
     /**
      * Creates a new instance of the class with the specified title.
+     * @param title the value used as a title of the new object
      */
     public DockNode(String title) {
         init(null, title);
     }
     /**
      * Creates a new instance of the class with the specified identifier and title.
+     * @param id the value used as an id property of the new node
+     * @param title the value used as a title of the new object
      */
     public DockNode(String id, String title) {
         init(null, title);
@@ -99,6 +102,7 @@ public class DockNode extends Control { //implements Dockable {
     }
     /**
      * Sets the given value used as a title of the DockNode.
+     * @param title the new value to be set
      */
     public void setTitle(String title) {
         context.setTitle(title);
@@ -112,6 +116,7 @@ public class DockNode extends Control { //implements Dockable {
     }
     /**
      * Sets an object of type Node which is used a title bar of the DockNode.
+     * @param node the new value to be set
      */
     public void setTitleBar(Node node) {
         context.setTitleBar(node);
@@ -126,6 +131,7 @@ public class DockNode extends Control { //implements Dockable {
     }
     /**
      * Sets an object of type Node which is used start dragging of the DockNode.
+     * @param dragSource the new value to be set
      */
     public void setDragNode(Node dragSource) {
         context.setDragNode(dragSource);

@@ -48,6 +48,7 @@ public class NodeContent extends NodeProperty {
     /**
      * Sets the boolean value which defines whether this object has visual representation if the value that
      * this object describes is null.
+     * @param hideWhenNull the value to be set
      */
     public void setHideWhenNull(boolean hideWhenNull) {
         this.hideWhenNull = hideWhenNull;

@@ -36,6 +36,7 @@ public abstract class NodeElement {
     /**
      * Sets the text which can be used as a style class
      * for visual representation of the element.
+     * @param styleClass the new styleClass to be set
      */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
@@ -53,6 +54,7 @@ public abstract class NodeElement {
     /**
      * Sets the text which can be used as a title
      * for visual representation of the element.
+     * @param title the new title to be set
      */
     public void setTitle(String title) {
         this.title = title;

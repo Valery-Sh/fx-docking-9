@@ -40,6 +40,7 @@ public class NodeList extends NodeProperty {
     }
     /**
      * Sets the value to define whether this object has visual representation.  
+     * @param  alwaysVisible the new value to be set
      */
     public void setAlwaysVisible(boolean alwaysVisible) {
         this.alwaysVisible = alwaysVisible;

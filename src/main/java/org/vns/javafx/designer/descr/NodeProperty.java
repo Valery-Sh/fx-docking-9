@@ -33,6 +33,7 @@ public abstract class  NodeProperty extends NodeElement {
     }
     /**
      * Sets the name of the property
+     * @param name the new property name 
      */
     public void setName(String name) {
         this.name = name;
@@ -55,6 +56,7 @@ public abstract class  NodeProperty extends NodeElement {
     }
     /**
      * Sets the parent node descriptor
+     * @param descriptor the object to be set
      */
     protected void setDescriptor(NodeDescriptor descriptor) {
         this.descriptor = descriptor;

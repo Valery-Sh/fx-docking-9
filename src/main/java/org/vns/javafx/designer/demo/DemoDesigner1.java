@@ -49,9 +49,11 @@ import org.vns.javafx.dock.api.LayoutContextFactory;
 
 import org.vns.javafx.designer.PalettePane;
 import org.vns.javafx.designer.DesignerLookup;
+import org.vns.javafx.designer.EditorUtil;
 import org.vns.javafx.designer.SceneView;
 import org.vns.javafx.designer.TrashTray;
 import org.vns.javafx.designer.TreeItemBuilder;
+import org.vns.javafx.designer.TreeItemEx;
 import org.vns.javafx.dock.api.DockLayout;
 import org.vns.javafx.dock.api.dragging.DragManager;
 
@@ -141,7 +143,7 @@ public class DemoDesigner1 extends Application {
         dn.setContent(new Label("Dock Node Content"));
         dn.setScaleX(0.5);
         Pane topPane = new Pane();
-        VBox centerPane = new VBox(eb,tx, cb,dn);
+        MyVBox centerPane = new MyVBox(eb,tx, cb,dn);
         centerPane.setId("CCCCCCCCCCCCCCCCCCC");
         root1.setTop(topPane);
         root1.setCenter(centerPane);
@@ -227,6 +229,11 @@ public class DemoDesigner1 extends Application {
             System.err.println("EventDisp = " + cb.getEventDispatcher());
             System.err.println("EventDisp formButton = " + formButton.getEventDispatcher());
             //eb.setFocusTraversable(false);
+            TreeItemEx o = EditorUtil.findTreeItemByObject(sceneView.getTreeView(), centerPane);
+            System.err.println("TREEITEMEX VBox itemValue = " + o.getItemType() );
+            o = EditorUtil.findTreeItemByObject(sceneView.getTreeView(), topPane);
+            System.err.println("TREEITEMEX Pane itemValue = " + o.getItemType() );
+            System.err.println("TREEITEMEX ROOT itemValue = " + ((TreeItemEx)sceneView.getTreeView().getRoot()).getItemType() );
             if ( nd != null && nd.getScaleX() == 1 ) {
                 nd.setScaleY(0.5);
                 nd.setScaleX(0.8);

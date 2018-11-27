@@ -6,16 +6,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 -->
-<?import org.vns.javafx.designer.*?>
+<?import org.vns.javafx.designer.descr.*?>
 
 <GraphDescriptor fx:id="gd"  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="236.0" prefWidth="260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    
+
     <NodeDescriptor type="javafx.scene.control.Labeled" titleProperty="text"  defaultProperty="graphic">
         <NodeContent name="graphic" title="graphic" hideWhenNull="true" styleClass="labeled-insert-graphic"  replaceable="true"/>
     </NodeDescriptor>
     
     <NodeDescriptor type="javafx.scene.layout.Pane">
-        <NodeList name="children" />
+        <NodeList name="children"/>
     </NodeDescriptor>
     <NodeDescriptor type="javafx.scene.layout.VBox">
         <NodeList name="children" title="List of Child"/>
@@ -36,7 +36,7 @@
         <NodeContent name="content"  />
     </NodeDescriptor>
     
-     <NodeDescriptor type="org.vns.javafx.dock.DockPane" >
+    <NodeDescriptor type="org.vns.javafx.dock.DockPane" >
         <NodeContent name="root" styleClass="" />
     </NodeDescriptor>     
     

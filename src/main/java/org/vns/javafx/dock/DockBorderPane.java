@@ -1,12 +1,11 @@
 package org.vns.javafx.dock;
 
-import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import org.vns.javafx.dock.api.DockBorderPaneContext;
 import org.vns.javafx.dock.api.DockRegistry;
 
 /**
- * The objects of the class can be used as {@code DoclLayout) or/and {@code Dockable)
+ * The objects of the class can be used as {@code DockLayout} or (and) {@code Dockable}
  * objects.
  * 
  * @author Valery Shyshkin

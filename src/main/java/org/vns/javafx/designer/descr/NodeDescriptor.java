@@ -102,6 +102,7 @@ public class NodeDescriptor {
     }
     /**
      * Sets the fully qualified name of the class of objects this class describes. 
+     * @param type the new fully qualified name of the class of objects this class describes. 
      */
     public void setType(String type) {
         this.type = type;
@@ -131,6 +132,7 @@ public class NodeDescriptor {
     /**
      * Sets the string value which can be used as a style class for a {@code styleable}
      * for visual representation of the descriptor.
+     * @param styleClass the new styleClass to be set
      */
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
@@ -152,6 +154,7 @@ public class NodeDescriptor {
      * descriptor defines and which can be used to visually represent this descriptor.
      * For example the {@code Labeled} objects has the property named {@code text} and
      * the value of the property can be used to visually represent this descriptor.
+     * @param titleProperty the name of titleProperty to be set
      */
     public void setTitleProperty(String titleProperty) {
         this.titleProperty = titleProperty;
@@ -180,6 +183,7 @@ public class NodeDescriptor {
     }
     /**
      * Sets the value of the {@code &commat;DefaultProperty} annotation.
+     * @param annotationDefaultProperty the value to be set
      */
     protected void setAnnotationDefaultProperty(String annotationDefaultProperty) {
         this.annotationDefaultProperty = annotationDefaultProperty;
@@ -190,6 +194,7 @@ public class NodeDescriptor {
      * For example the class {@code TitledPane} annotated with {@code &commat;DefaultProperty(content)}
      * annotation.The instance of this class for the {@code TitledPane} takes into account 
      * the annotation but we can change it to for instance {@code graphic} property.
+     * @param defaultProperty the new value to be set
      */
     public void setDefaultProperty(String defaultProperty) {
         this.defaultProperty = defaultProperty;

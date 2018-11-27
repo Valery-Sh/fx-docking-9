@@ -40,7 +40,24 @@ import org.vns.javafx.dock.api.bean.ReflectHelper;
 
 /**
  *
- * @author Valery
+ * The objects of this class are used to create a representation of a specified
+ * object as a tree of objects of type
+ * {@link org.vns.javafx.designer.TreeItemEx}. To create the tree the following
+ * code may be used
+ * <pre>
+ *  Object obj = ...
+ *  TreItemExe result = build(obj);
+ * </pre>
+ *
+ * The variable {@code result} may contain a list of children. And each child
+ * may contain a list of children respectively and so on.
+ *
+ * <p>
+ * To create the tree the class uses objects of type (@link
+ * org.vns.javafx.designer.descr.NodeDescriptor}.
+ * </p>
+ *
+ * @author Valery Shyshkin
  */
 public class TreeItemBuilder {
 
@@ -72,11 +89,6 @@ public class TreeItemBuilder {
         }
         palette.setLayoutContext(obj);
         palette.setDockableContext(obj);
-        
-        
-        //palette.setCustomizer(obj);
-        //palette.setCustomEventDispather(obj);
-
     }
 
     public TreeItemEx build(Object obj) {
@@ -87,7 +99,7 @@ public class TreeItemBuilder {
         if (SceneView.isFrame(obj)) {
             return null;
         }
-        
+
         setContexts(obj);
         PalettePane.addDesignerStyles(obj);
         TreeItemEx retval;
@@ -143,7 +155,6 @@ public class TreeItemBuilder {
                     retval.getChildren().add(listItem);
                     listItem.setPropertyName(cp.getName());
                     PalettePane.addDesignerStyles(cpObj);
-
                 }
 
             } else if ((cp instanceof NodeContent) && (cpObj != null || !((NodeContent) cp).isHideWhenNull())) {
@@ -171,7 +182,7 @@ public class TreeItemBuilder {
         }
 
         Label label = new Label((obj.getClass().getSimpleName() + " " + text).trim());
-        
+
         String styleClass = nd.getStyleClass();
         if (styleClass == null) {
             styleClass = "tree-item-node-" + obj.getClass().getSimpleName().toLowerCase();
@@ -249,12 +260,12 @@ public class TreeItemBuilder {
         AnchorPane.setTopAnchor(box, ANCHOR_OFFSET);
         TreeItemEx retval = new TreeItemEx();
         retval.setValue(obj);
-        
+
         box.getChildren().add(createContentItemContent(obj, cp));
         retval.setCellGraphic(anchorPane);
         retval.setItemType(TreeItemEx.ItemType.CONTENT);
         try {
-            
+
             retval.registerChangeHandlers();
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
             Logger.getLogger(TreeItemBuilder.class.getName()).log(Level.SEVERE, null, ex);
@@ -332,7 +343,7 @@ public class TreeItemBuilder {
 
         NodeDescriptor nd = null;
         if (!isList) {
-            if ( target.getValue() != null ) {
+            if (target.getValue() != null) {
                 nd = NodeDescriptorRegistry.getInstance().getDescriptor(target.getValue().getClass());
             }
         }

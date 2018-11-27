@@ -1,13 +1,10 @@
 package org.vns.javafx.designer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.DefaultProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,12 +13,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Shape;
@@ -265,11 +260,7 @@ public class SceneView extends Control implements DockLayout {
         });
     }
 
-    /**
-     *
-     * @param root the node used to add two objects of type {@link org.vns.javafx.dock.api.dragging.view.FramePane
-     * }.
-     */
+   
     public static void addFramePanes(Parent parent) {
         Node framePane = parent.lookup("#" + FramePane.PARENT_ID);
         if (framePane == null) {

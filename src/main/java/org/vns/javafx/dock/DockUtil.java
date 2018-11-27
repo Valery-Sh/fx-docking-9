@@ -153,7 +153,7 @@ public class DockUtil {
      * doesn't take into account the visibility an transparency of the specified
      * node.
      *
-     * @param node the node to be checked
+     * @param win the window to be checked
      * @param screenX the x coordinate of the screen
      * @param screenY the y coordinate of the screen
      * @return true if the node contains the point. Otherwise returns false
