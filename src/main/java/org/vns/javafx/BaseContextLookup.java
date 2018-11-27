@@ -16,15 +16,12 @@
 
 package org.vns.javafx;
 
-import org.vns.javafx.dock.api.*;
-import org.vns.javafx.ContextLookup;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
-import org.vns.javafx.ContextLookup;
 
 /**
  *
